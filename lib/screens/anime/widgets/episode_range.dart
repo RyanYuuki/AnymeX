@@ -33,7 +33,6 @@ class EpisodeChunkSelector extends StatelessWidget {
 
                 return InkWell(
                   onTap: () {
-                    selectedChunkIndex.value = index;
                     onChunkSelected(index);
                   },
                   borderRadius: BorderRadius.circular(12),

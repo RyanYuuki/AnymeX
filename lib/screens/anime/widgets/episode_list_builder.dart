@@ -13,6 +13,7 @@ import 'package:anymex/screens/anime/widgets/episode/normal_episode.dart';
 import 'package:anymex/screens/anime/widgets/episode_range.dart';
 import 'package:anymex/screens/anime/widgets/track_dialog.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
@@ -23,7 +24,6 @@ import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
@@ -56,25 +56,29 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   final Rx<Episode> savedEpisode = Episode(number: "1").obs;
   List<Episode> offlineEpisodes = [];
   bool _initializedChunk = false;
+  Worker? _authLoginWorker;
+  Worker? _userProgressWorker;
+  Worker? _currentMediaWorker;
+  VoidCallback? _offlineStorageListener;
+  bool _isUpdatingChunk = false;
 
   @override
   void initState() {
     super.initState();
     _initUserProgress();
     _initEpisodes();
+    _updateChunkIndex();
 
-    ever(auth.isLoggedIn, (_) => _initUserProgress());
-    ever(userProgress, (_) {
+    _authLoginWorker = ever(auth.isLoggedIn, (_) => _initUserProgress());
+    _userProgressWorker = ever(userProgress, (_) {
       _initEpisodes();
-      _updateChunkIndex();
     });
-    ever(auth.currentMedia, (_) {
+    _currentMediaWorker = ever(auth.currentMedia, (_) {
       _initUserProgress();
       _initEpisodes();
-      _updateChunkIndex();
     });
 
-    offlineStorage.addListener(() {
+    _offlineStorageListener = () {
       final savedData = offlineStorage.getAnimeById(widget.anilistData!.id);
       if (savedData?.currentEpisode != null) {
         savedEpisode.value = savedData!.currentEpisode!;
@@ -82,33 +86,76 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
         _initEpisodes();
         _updateChunkIndex();
       }
-    });
+    };
+    offlineStorage.addListener(_offlineStorageListener!);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _updateChunkIndex();
     });
   }
 
+  @override
+  void didUpdateWidget(covariant EpisodeListBuilder oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final oldLen = oldWidget.episodeList.length;
+    final newLen = widget.episodeList.length;
+    final oldFirst = oldLen > 0 ? oldWidget.episodeList.first.number : null;
+    final newFirst = newLen > 0 ? widget.episodeList.first.number : null;
+    final oldLast = oldLen > 0 ? oldWidget.episodeList.last.number : null;
+    final newLast = newLen > 0 ? widget.episodeList.last.number : null;
+
+    final contentChanged =
+        oldLen != newLen || oldFirst != newFirst || oldLast != newLast;
+
+    if (contentChanged) {
+      _initializedChunk = false;
+      _initEpisodes();
+      _updateChunkIndex();
+    }
+  }
+
+  @override
+  void dispose() {
+    _authLoginWorker?.dispose();
+    _userProgressWorker?.dispose();
+    _currentMediaWorker?.dispose();
+    if (_offlineStorageListener != null) {
+      offlineStorage.removeListener(_offlineStorageListener!);
+    }
+    super.dispose();
+  }
+
   void _updateChunkIndex() {
-    if (!mounted) return;
+    try {
+      if (!mounted || _isUpdatingChunk) return;
+      _isUpdatingChunk = true;
+      try {
+        final chunkedEpisodes = chunkEpisodes(
+            widget.episodeList, calculateChunkSize(widget.episodeList));
 
-    final chunkedEpisodes = chunkEpisodes(
-        widget.episodeList, calculateChunkSize(widget.episodeList));
+        if (chunkedEpisodes.length > 1) {
+          final progress = continueEpisode.value.number.toInt();
 
-    if (chunkedEpisodes.length > 1) {
-      final progress = continueEpisode.value.number.toInt();
-
-      final chunkIndex = findChunkIndexFromProgress(
-        progress,
-        chunkedEpisodes,
-      );
-      final maxIndex = chunkedEpisodes.length - 1;
-      if (maxIndex < 1) {
-        selectedChunkIndex.value = 0;
-      } else {
-        selectedChunkIndex.value = chunkIndex.clamp(1, maxIndex);
+          final chunkIndex = findChunkIndexFromProgress(
+            progress,
+            chunkedEpisodes,
+          );
+          final maxIndex = chunkedEpisodes.length - 1;
+          final nextIndex = maxIndex < 1 ? 0 : chunkIndex.clamp(1, maxIndex);
+          if (selectedChunkIndex.value != nextIndex) {
+            selectedChunkIndex.value = nextIndex;
+          }
+          _initializedChunk = true;
+        } else {
+          if (selectedChunkIndex.value != 0) {
+            selectedChunkIndex.value = 0;
+          }
+        }
+      } finally {
+        _isUpdatingChunk = false;
       }
-      _initializedChunk = true;
+    } catch (e) {
+      Logger.e(e.toString(), stackTrace: StackTrace.current);
     }
   }
 
@@ -126,22 +173,42 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       progress = savedAnime?.currentEpisode?.number.toInt();
     }
 
-    userProgress.value = !isLogged.value && progress != null && progress > 1
+    final nextProgress = !isLogged.value && progress != null && progress > 1
         ? progress - 1
         : progress ?? 0;
+    if (userProgress.value != nextProgress) {
+      userProgress.value = nextProgress;
+    }
   }
 
   void _initEpisodes() {
+    if (widget.episodeList.isEmpty) {
+      final fallback = Episode(number: "1", title: "Episode 1");
+      savedEpisode.value = fallback;
+      selectedEpisode.value = fallback;
+      continueEpisode.value = fallback;
+      offlineEpisodes = const [];
+      return;
+    }
+
     final savedData = offlineStorage.getAnimeById(widget.anilistData!.id);
     final nextEpisode = widget.episodeList
         .firstWhereOrNull((e) => e.number.toInt() == (userProgress.value + 1));
     final fallbackEP = widget.episodeList
         .firstWhereOrNull((e) => e.number.toInt() == (userProgress.value));
     final saved = savedData?.currentEpisode;
-    savedEpisode.value = saved ?? widget.episodeList[0];
+    final nextSaved = saved ?? widget.episodeList[0];
+    if (savedEpisode.value.number != nextSaved.number) {
+      savedEpisode.value = nextSaved;
+    }
     offlineEpisodes = savedData?.watchedEpisodes ?? widget.episodeList;
-    selectedEpisode.value = nextEpisode ?? fallbackEP ?? savedEpisode.value;
-    continueEpisode.value = nextEpisode ?? fallbackEP ?? savedEpisode.value;
+    final nextSelected = nextEpisode ?? fallbackEP ?? savedEpisode.value;
+    if (selectedEpisode.value.number != nextSelected.number) {
+      selectedEpisode.value = nextSelected;
+    }
+    if (continueEpisode.value.number != nextSelected.number) {
+      continueEpisode.value = nextSelected;
+    }
   }
 
   void _handleEpisodeSelection(Episode episode) async {
@@ -150,32 +217,45 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     fetchServers(episode);
   }
 
+  Episode _resolveEpisode(Episode episode) {
+    if (widget.episodeList.isEmpty) {
+      return Episode(number: "1", title: "Episode 1");
+    }
+    return widget.episodeList
+            .firstWhereOrNull((e) => e.number == episode.number) ??
+        widget.episodeList.first;
+  }
+
   Widget _buildContinueButton() {
+    final resolvedContinue = _resolveEpisode(continueEpisode.value);
+    final resolvedProgress = _resolveEpisode(savedEpisode.value);
+
     return ContinueEpisodeButton(
       height: getResponsiveSize(context, mobileSize: 80, desktopSize: 100),
-      onPressed: () => _handleEpisodeSelection(continueEpisode.value),
-      backgroundImage: continueEpisode.value.thumbnail ??
-          savedEpisode.value.thumbnail ??
+      onPressed: () => _handleEpisodeSelection(resolvedContinue),
+      backgroundImage: resolvedContinue.thumbnail ??
+          resolvedProgress.thumbnail ??
           widget.anilistData!.cover ??
           widget.anilistData!.poster,
-      episode: continueEpisode.value,
-      progressEpisode: savedEpisode.value,
+      episode: resolvedContinue,
+      progressEpisode: resolvedProgress,
       data: widget.anilistData!,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final chunkedEpisodes = chunkEpisodes(
-        widget.episodeList, calculateChunkSize(widget.episodeList));
-
-    if (selectedChunkIndex.value >= chunkedEpisodes.length) {
-      selectedChunkIndex.value = chunkedEpisodes.length - 1;
+    if (widget.episodeList.isEmpty) {
+      return const SizedBox(
+        height: 200,
+        child: Center(child: ExpressiveLoadingIndicator()),
+      );
     }
 
-    final isAnify = (widget.episodeList.isNotEmpty &&
-            (widget.episodeList[0].thumbnail?.isNotEmpty ?? false))
-        .obs;
+    final chunkedEpisodes = chunkEpisodes(
+        widget.episodeList, calculateChunkSize(widget.episodeList));
+    final hasAnifyThumbs = widget.episodeList.isNotEmpty &&
+        (widget.episodeList[0].thumbnail?.isNotEmpty ?? false);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -184,18 +264,22 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
           padding: const EdgeInsets.symmetric(vertical: 10.0),
           child: Obx(() => _buildContinueButton()),
         ),
-        EpisodeChunkSelector(
-          chunks: chunkedEpisodes,
-          selectedChunkIndex: selectedChunkIndex,
-          onChunkSelected: (index) {
-            selectedChunkIndex.value = index;
-            setState(() {});
-          },
-        ),
+        if (chunkedEpisodes.isNotEmpty)
+          EpisodeChunkSelector(
+            chunks: chunkedEpisodes,
+            selectedChunkIndex: selectedChunkIndex,
+            onChunkSelected: (index) {
+              if (index != selectedChunkIndex.value) {
+                selectedChunkIndex.value = index;
+              }
+            },
+          ),
         Obx(() {
-          final selectedEpisodes = chunkedEpisodes.isNotEmpty
-              ? chunkedEpisodes[selectedChunkIndex.value]
-              : [];
+          final safeChunkIndex = chunkedEpisodes.isEmpty
+              ? 0
+              : selectedChunkIndex.value.clamp(0, chunkedEpisodes.length - 1);
+          final selectedEpisodes =
+              chunkedEpisodes.isNotEmpty ? chunkedEpisodes[safeChunkIndex] : [];
 
           return GridView.builder(
             padding: const EdgeInsets.only(top: 15),
@@ -213,7 +297,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
               mainAxisSpacing:
                   getResponsiveSize(context, mobileSize: 15, desktopSize: 10),
               crossAxisSpacing: 15,
-              mainAxisExtent: isAnify.value
+              mainAxisExtent: hasAnifyThumbs
                   ? 200
                   : getResponsiveSize(context,
                       mobileSize: 100, desktopSize: 130),
@@ -238,7 +322,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                   child: BetterEpisode(
                     episode: episode,
                     isSelected: isSelected,
-                    layoutType: isAnify.value
+                    layoutType: hasAnifyThumbs
                         ? EpisodeLayoutType.detailed
                         : EpisodeLayoutType.compact,
                     fallbackImageUrl:
@@ -255,9 +339,6 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     );
   }
 
-  HeadlessInAppWebView? headlessWebView;
-  Timer? scrapingTimer;
-
   Future<void> fetchServers(Episode ep) async {
     showModalBottomSheet(
       context: context,
@@ -269,192 +350,28 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       builder: (context) {
         return SizedBox(
           width: double.infinity,
-          child: General.universalScrapper.get<bool>(false)
-              ? _buildUniversalScraper(ep.link!)
-              : FutureBuilder<List<Video>>(
-                  future: sourceController.activeSource.value!.methods
-                      .getVideoList(
-                          DEpisode(episodeNumber: ep.number, url: ep.link)),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return _buildScrapingLoadingState(true);
-                    } else if (snapshot.hasError) {
-                      return _buildErrorState(snapshot.error.toString());
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return _buildEmptyState();
-                    } else {
-                      streamList.value = snapshot.data
-                              ?.map((e) => hive.Video.fromVideo(e))
-                              .toList() ??
-                          [];
-                      return _buildServerList();
-                    }
-                  },
-                ),
+          child: FutureBuilder<List<Video>>(
+            future: sourceController.activeSource.value!.methods
+                .getVideoList(DEpisode(episodeNumber: ep.number, url: ep.link)),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return _buildScrapingLoadingState(true);
+              } else if (snapshot.hasError) {
+                return _buildErrorState(snapshot.error.toString());
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return _buildEmptyState();
+              } else {
+                streamList.value = snapshot.data
+                        ?.map((e) => hive.Video.fromVideo(e))
+                        .toList() ??
+                    [];
+                return _buildServerList();
+              }
+            },
+          ),
         );
       },
     );
-  }
-
-  Widget _buildUniversalScraper(String url) {
-    return FutureBuilder<List<Video>>(
-      future: _scrapeVideoStreams(url),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return _buildScrapingLoadingState(false);
-        } else if (snapshot.hasError) {
-          return _buildErrorState(snapshot.error.toString());
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return _buildEmptyState();
-        } else {
-          streamList.value = streamList.value =
-              snapshot.data?.map((e) => hive.Video.fromVideo(e)).toList() ?? [];
-          return _buildServerList();
-        }
-      },
-    );
-  }
-
-  Future<List<Video>> _scrapeVideoStreams(String url) async {
-    final completer = Completer<List<Video>>();
-    final foundVideos = <Video>[];
-    debugPrint('Calling => $url');
-
-    await headlessWebView?.dispose();
-
-    scrapingTimer = Timer(Duration(seconds: 30), () {
-      headlessWebView?.dispose();
-      if (!completer.isCompleted) {
-        completer.complete(foundVideos);
-      }
-    });
-
-    try {
-      headlessWebView = HeadlessInAppWebView(
-        initialUrlRequest: URLRequest(url: WebUri(url)),
-        initialSettings: InAppWebViewSettings(
-          userAgent:
-              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-          javaScriptEnabled: true,
-        ),
-        onLoadStop: (controller, loadedUrl) async {
-          await Future.delayed(Duration(seconds: 8));
-
-          try {
-            await controller.evaluateJavascript(source: """
-          const playButtons = document.querySelectorAll('button[class*="play"], .play-button, [aria-label*="play"], [title*="play"]');
-          playButtons.forEach(btn => btn.click());
-          
-          const videos = document.querySelectorAll('video');
-          videos.forEach(video => {
-            video.play().catch(e => {});
-            video.click();
-          });
-          
-          const containers = document.querySelectorAll('.video-container, .player-container, .video-player, .player');
-          containers.forEach(container => container.click());
-        """);
-          } catch (e) {
-            print('JavaScript execution error: $e');
-          }
-
-          await Future.delayed(Duration(seconds: 5));
-
-          if (!completer.isCompleted) {
-            completer.complete(foundVideos);
-          }
-        },
-        shouldInterceptRequest: (controller, request) async {
-          final requestUrl = request.url.toString();
-          final headers = request.headers ?? {};
-          print('Intercepted request: $requestUrl');
-
-          if (_isVideoStream(requestUrl)) {
-            final video = Video(
-              requestUrl,
-              _extractQuality(requestUrl),
-              url,
-              headers:
-                  headers.isNotEmpty ? Map<String, String>.from(headers) : null,
-            );
-
-            final baseUrl = requestUrl.split('?')[0];
-            if (!foundVideos.any((v) => v.url.split('?')[0] == baseUrl)) {
-              foundVideos.add(video);
-              print(
-                  'Added video stream: $requestUrl (Quality: ${video.quality})');
-            } else {
-              print('Skipped duplicate stream: $requestUrl');
-            }
-          }
-
-          return null;
-        },
-        onReceivedServerTrustAuthRequest: (controller, challenge) async {
-          return ServerTrustAuthResponse(
-              action: ServerTrustAuthResponseAction.PROCEED);
-        },
-      );
-
-      await headlessWebView?.run();
-    } catch (e) {
-      print('Headless WebView error: $e');
-      if (!completer.isCompleted) {
-        completer.complete(foundVideos);
-      }
-    }
-
-    final result = await completer.future;
-    scrapingTimer?.cancel();
-    await headlessWebView?.dispose();
-
-    print('Final video count: ${result.length}');
-    return result;
-  }
-
-  bool _isVideoStream(String url) {
-    final lowercaseUrl = url.toLowerCase();
-    return lowercaseUrl.contains('m3u8') ||
-        lowercaseUrl.contains('.mp4') ||
-        lowercaseUrl.contains('manifest') ||
-        (lowercaseUrl.contains('video') &&
-            (lowercaseUrl.contains('stream') ||
-                lowercaseUrl.contains('play'))) ||
-        lowercaseUrl.contains('playlist') ||
-        lowercaseUrl.contains('.mpd');
-  }
-
-  String _extractQuality(String url) {
-    final lowercaseUrl = url.toLowerCase();
-    final filename = url.split('/').last.toLowerCase();
-
-    if (filename.contains('master.m3u8')) return 'Auto';
-    if (filename.contains('playlist.m3u8')) return 'Auto';
-
-    final qualityPatterns = [
-      RegExp(r'\b2160p\b', caseSensitive: false), // 4K
-      RegExp(r'\b1080p\b', caseSensitive: false),
-      RegExp(r'\b720p\b', caseSensitive: false),
-      RegExp(r'\b480p\b', caseSensitive: false),
-      RegExp(r'\b360p\b', caseSensitive: false),
-      RegExp(r'\b240p\b', caseSensitive: false),
-    ];
-
-    final qualityLabels = ['4K', '1080p', '720p', '480p', '360p', '240p'];
-
-    for (int i = 0; i < qualityPatterns.length; i++) {
-      if (qualityPatterns[i].hasMatch(url)) {
-        return qualityLabels[i];
-      }
-    }
-
-    if (lowercaseUrl.contains('4k') || lowercaseUrl.contains('uhd')) {
-      return '4K';
-    }
-
-    if (lowercaseUrl.contains('hd')) return 'HD';
-
-    return url.split('/').last;
   }
 
   Widget _buildScrapingLoadingState(bool fromSrc) {
@@ -485,13 +402,6 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
         ],
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    scrapingTimer?.cancel();
-    headlessWebView?.dispose();
-    super.dispose();
   }
 
   Widget _buildErrorState(String errorMessage) {
@@ -659,6 +569,10 @@ class ContinueEpisodeButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
+        final safeTitle = (episode.title?.trim().isNotEmpty ?? false)
+            ? episode.title!.trim()
+            : "Episode ${episode.number}";
+        final episodeLabel = 'Episode ${episode.number}: $safeTitle';
         final double progressPercentage;
         if (progressEpisode.number != episode.number ||
             progressEpisode.timeStampInMilliseconds == null ||
@@ -722,8 +636,7 @@ class ContinueEpisodeButton extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Episode ${episode.number}: ${episode.title}'
-                              .toUpperCase(),
+                          episodeLabel.toUpperCase(),
                           style: textStyle ??
                               TextStyle(
                                 color: textColor,
@@ -739,10 +652,7 @@ class ContinueEpisodeButton extends StatelessWidget {
                                 Container(
                                   color: context.colors.primary,
                                   height: 2,
-                                  width: 6 *
-                                      'Episode ${episode.number}: ${episode.title}'
-                                          .length
-                                          .toDouble(),
+                                  width: 6 * episodeLabel.length.toDouble(),
                                 )
                               ],
                             ))
