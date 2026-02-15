@@ -1,17 +1,18 @@
+import 'dart:io';
 import 'dart:ui';
+
 import 'package:anymex/utils/logger.dart';
-import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
-import 'package:html/parser.dart' as parser;
-import 'package:share_plus/share_plus.dart';
 import 'package:flutter/services.dart';
-import 'dart:io';
+import 'package:get/get.dart';
+import 'package:html/parser.dart' as parser;
+import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:share_plus/share_plus.dart';
 
 enum VisualSource { anilist, livechart, mal }
 
@@ -66,19 +67,21 @@ class _VisualsPopupState extends State<VisualsPopup> {
 
         final scrapedImages = elements
             .map((e) => e.attributes['href'])
-            .where((href) => href != null && (href.contains('.jpg') || href.contains('.png') || href.contains('.webp')))
+            .where((href) =>
+                href != null &&
+                (href.contains('.jpg') ||
+                    href.contains('.png') ||
+                    href.contains('.webp')))
             .map((href) {
-               
-                var clean = href!;
-                if (clean.contains('/r/') && clean.contains('/images/')) {
-                  
-                   final regex = RegExp(r'/r/\d+x\d+');
-                   clean = clean.replaceAll(regex, '');
-                }
-                if (clean.contains('?')) {
-                  clean = clean.split('?').first;
-                }
-                return clean;
+              var clean = href!;
+              if (clean.contains('/r/') && clean.contains('/images/')) {
+                final regex = RegExp(r'/r/\d+x\d+');
+                clean = clean.replaceAll(regex, '');
+              }
+              if (clean.contains('?')) {
+                clean = clean.split('?').first;
+              }
+              return clean;
             })
             .cast<String>()
             .toList();
@@ -150,66 +153,68 @@ class _VisualsPopupState extends State<VisualsPopup> {
 
   Future<void> _saveImage(String url) async {
     try {
-      snackBar("Downloading image...", context: context);
+      snackBar("Downloading image...");
       final response = await http.get(Uri.parse(url));
 
       if (!mounted) return;
 
       if (response.statusCode != 200) {
-        snackBar("Failed to download image", context: context);
+        snackBar("Failed to download image");
         return;
       }
 
       final bytes = response.bodyBytes;
-      
+
       String extension = "jpg";
       try {
         final uri = Uri.parse(url);
         final path = uri.path;
         if (path.contains('.')) {
           extension = path.split('.').last;
-          if (extension.length > 4 || extension.contains('/')) extension = "jpg";
+          if (extension.length > 4 || extension.contains('/'))
+            extension = "jpg";
         }
       } catch (_) {}
-      
-      final fileName = "anymex_${DateTime.now().millisecondsSinceEpoch}.$extension";
+
+      final fileName =
+          "anymex_${DateTime.now().millisecondsSinceEpoch}.$extension";
 
       if (Platform.isAndroid) {
-         Future<bool> check(Permission p) async {
-            var status = await p.status;
-            if (!status.isGranted) {
-               status = await p.request();
-            }
-            return status.isGranted;
-         }
+        Future<bool> check(Permission p) async {
+          var status = await p.status;
+          if (!status.isGranted) {
+            status = await p.request();
+          }
+          return status.isGranted;
+        }
 
-         await check(Permission.storage);
-         await check(Permission.photos);
-         await check(Permission.manageExternalStorage);
+        await check(Permission.storage);
+        await check(Permission.photos);
+        await check(Permission.manageExternalStorage);
 
         try {
           final directory = Directory('/storage/emulated/0/Download/AnymeX');
           if (!await directory.exists()) {
             await directory.create(recursive: true);
           }
-          
+
           final file = File('${directory.path}/$fileName');
           await file.writeAsBytes(bytes);
-          
+
           try {
             const platform = MethodChannel('com.ryan.anymex/utils');
             await platform.invokeMethod('scanFile', {'path': file.path});
-          } catch(_) {}
+          } catch (_) {}
 
           if (!mounted) return;
-          snackBar("Saved to Downloads/AnymeX/$fileName", context: context);
-          
+          snackBar("Saved to Downloads/AnymeX/$fileName");
         } catch (e) {
-           // Fallback
-           final tempDir = await getTemporaryDirectory();
-           final file = File('${tempDir.path}/$fileName');
-           await file.writeAsBytes(bytes);
-           await Share.shareXFiles([XFile(file.path)], text: "Visual from AnymeX");
+          // Fallback
+          final tempDir = await getTemporaryDirectory();
+          final file = File('${tempDir.path}/$fileName');
+          await file.writeAsBytes(bytes);
+          await Share.shareXFiles([XFile(file.path)],
+              text: "Visual from AnymeX");
         }
       } else if (Platform.isIOS) {
         final tempDir = await getTemporaryDirectory();
@@ -220,25 +225,22 @@ class _VisualsPopupState extends State<VisualsPopup> {
         // pc
         String? downloadPath = (await getDownloadsDirectory())?.path;
 
-       
         if (Platform.isLinux || Platform.isMacOS) {
           final home = Platform.environment['HOME'];
           if (home != null) {
-           
             final cleanDownload = downloadPath?.replaceAll(RegExp(r'/$'), '');
             final cleanHome = home.replaceAll(RegExp(r'/$'), '');
-            
+
             if (cleanDownload == null || cleanDownload == cleanHome) {
               downloadPath = '$cleanHome/Downloads';
             }
           }
-        } 
-        
-        else if (Platform.isWindows) {
+        } else if (Platform.isWindows) {
           final userProfile = Platform.environment['USERPROFILE'];
-           if (userProfile != null && (downloadPath == null || downloadPath == userProfile)) {
-             downloadPath = '$userProfile\\Downloads';
-           }
+          if (userProfile != null &&
+              (downloadPath == null || downloadPath == userProfile)) {
+            downloadPath = '$userProfile\\Downloads';
+          }
         }
 
         final path = downloadPath ?? '.';
@@ -250,11 +252,11 @@ class _VisualsPopupState extends State<VisualsPopup> {
         final file = File('${saveDir.path}/$fileName');
         await file.writeAsBytes(bytes);
         if (!mounted) return;
-        snackBar("Saved to $path/AnymeX", context: context);
+        snackBar("Saved to $path/AnymeX");
       }
     } catch (e) {
       if (mounted) {
-        snackBar("Error saving image", context: context);
+        snackBar("Error saving image");
       }
     }
   }
@@ -286,8 +288,9 @@ class _VisualsPopupState extends State<VisualsPopup> {
   @override
   Widget build(BuildContext context) {
     final currentList = images[currentSource] ?? [];
-   
-    final effectiveIndex = (currentIndex < currentList.length) ? currentIndex : 0;
+
+    final effectiveIndex =
+        (currentIndex < currentList.length) ? currentIndex : 0;
     final currentImage =
         currentList.isNotEmpty ? currentList[effectiveIndex] : null;
 
@@ -295,13 +298,12 @@ class _VisualsPopupState extends State<VisualsPopup> {
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-         
           Positioned.fill(
             child: Container(
               color: Colors.black,
             ),
           ),
-          
+
           // Main thing
           Positioned.fill(
               child: GestureDetector(
@@ -326,10 +328,11 @@ class _VisualsPopupState extends State<VisualsPopup> {
                         maxScale: 4.0,
                         child: CachedNetworkImage(
                           imageUrl: currentImage,
-                          key: ValueKey(currentImage), 
+                          key: ValueKey(currentImage),
                           fit: BoxFit.contain,
                           placeholder: (context, url) => const Center(
-                            child: CircularProgressIndicator(color: Colors.white),
+                            child:
+                                CircularProgressIndicator(color: Colors.white),
                           ),
                           errorWidget: (context, url, error) => Center(
                             child: Column(
@@ -357,13 +360,14 @@ class _VisualsPopupState extends State<VisualsPopup> {
                   ),
           )),
 
-          // top 
+          // top
           Positioned(
             top: 0,
             left: 0,
             right: 0,
             child: Container(
-              padding: EdgeInsets.fromLTRB(10, MediaQuery.of(context).padding.top + 10, 10, 20),
+              padding: EdgeInsets.fromLTRB(
+                  10, MediaQuery.of(context).padding.top + 10, 10, 20),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [Colors.black.withOpacity(0.8), Colors.transparent],
@@ -374,25 +378,25 @@ class _VisualsPopupState extends State<VisualsPopup> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                 _buildCircleButton(
+                  _buildCircleButton(
                     icon: Icons.close,
                     onTap: () => Get.back(),
                   ),
                   if (currentList.isNotEmpty)
                     Container(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(30),
-                        border: Border.all(color: Colors.white.withOpacity(0.1)),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 10,
-                          )
-                        ]
-                      ),
+                          color: Colors.white.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(30),
+                          border:
+                              Border.all(color: Colors.white.withOpacity(0.1)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 10,
+                            )
+                          ]),
                       child: AnymexText(
                         text: "${effectiveIndex + 1} / ${currentList.length}",
                         color: Colors.white,
@@ -400,17 +404,16 @@ class _VisualsPopupState extends State<VisualsPopup> {
                       ),
                     ),
                   if (currentImage != null)
-                   _buildCircleButton(
-                    icon: Icons.download_rounded,
-                    onTap: () => _saveImage(currentImage),
-                  ),
+                    _buildCircleButton(
+                      icon: Icons.download_rounded,
+                      onTap: () => _saveImage(currentImage),
+                    ),
                 ],
               ),
             ),
           ),
 
-         
-          // Bottom 3 
+          // Bottom 3
           Positioned(
             bottom: 40,
             left: 0,
@@ -421,31 +424,41 @@ class _VisualsPopupState extends State<VisualsPopup> {
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(100),
-                      border: Border.all(color: Colors.white.withOpacity(0.15)),
-                       boxShadow: [
+                        color: Colors.black.withOpacity(0.5),
+                        borderRadius: BorderRadius.circular(100),
+                        border:
+                            Border.all(color: Colors.white.withOpacity(0.15)),
+                        boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.3),
                             blurRadius: 20,
                             spreadRadius: 2,
                           )
-                        ]
-                    ),
+                        ]),
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           _buildSourceButton(
-                              "Anilist", VisualSource.anilist, "https://anilist.co/img/icons/android-chrome-192x192.png", const Color(0xFF02A9FF)),
+                              "Anilist",
+                              VisualSource.anilist,
+                              "https://anilist.co/img/icons/android-chrome-192x192.png",
+                              const Color(0xFF02A9FF)),
                           if (widget.isAnime) ...[
                             _buildSourceButton(
-                                "LiveChart", VisualSource.livechart, "https://www.livechart.me/favicon_32x32.png", const Color(0xFF5ABF16)),
+                                "LiveChart",
+                                VisualSource.livechart,
+                                "https://www.livechart.me/favicon_32x32.png",
+                                const Color(0xFF5ABF16)),
                             _buildSourceButton(
-                                "MAL", VisualSource.mal, "https://cdn.myanimelist.net/img/sp/icon/apple-touch-icon-256.png", const Color(0xFF2E51A2)),
+                                "MAL",
+                                VisualSource.mal,
+                                "https://cdn.myanimelist.net/img/sp/icon/apple-touch-icon-256.png",
+                                const Color(0xFF2E51A2)),
                           ],
                         ],
                       ),
@@ -460,7 +473,8 @@ class _VisualsPopupState extends State<VisualsPopup> {
     );
   }
 
-  Widget _buildCircleButton({required IconData icon, required VoidCallback onTap}) {
+  Widget _buildCircleButton(
+      {required IconData icon, required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -480,16 +494,17 @@ class _VisualsPopupState extends State<VisualsPopup> {
     final isSelected = currentSource == source;
     return GestureDetector(
       onTap: () => _switchSource(source),
-
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 4),
-        padding: EdgeInsets.symmetric(horizontal: isSelected ? 20 : 12, vertical: 10),
+        padding: EdgeInsets.symmetric(
+            horizontal: isSelected ? 20 : 12, vertical: 10),
         decoration: BoxDecoration(
           color: isSelected ? brandColor : Colors.white.withOpacity(0.1),
           borderRadius: BorderRadius.circular(40),
           border: Border.all(
-            color: isSelected ? brandColor.withOpacity(0.5) : Colors.transparent
-          ),
+              color: isSelected
+                  ? brandColor.withOpacity(0.5)
+                  : Colors.transparent),
           boxShadow: isSelected
               ? [
                   BoxShadow(
@@ -503,10 +518,14 @@ class _VisualsPopupState extends State<VisualsPopup> {
         child: Row(
           children: [
             CachedNetworkImage(
-                imageUrl: iconUrl,
-                height: 24,
-                width: 24,
-                errorWidget: (context, url, error) => Icon(Icons.image, size: 24, color: isSelected ? Colors.white : Colors.white.withOpacity(0.7)),
+              imageUrl: iconUrl,
+              height: 24,
+              width: 24,
+              errorWidget: (context, url, error) => Icon(Icons.image,
+                  size: 24,
+                  color: isSelected
+                      ? Colors.white
+                      : Colors.white.withOpacity(0.7)),
             ),
             if (isSelected) ...[
               const SizedBox(width: 10),
@@ -522,7 +541,4 @@ class _VisualsPopupState extends State<VisualsPopup> {
       ),
     );
   }
-
-
-
 }

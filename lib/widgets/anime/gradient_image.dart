@@ -86,7 +86,7 @@ class GradientPoster extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap: () {
-                  snackBar("come-on man, long press it !!!", context: context);
+                  snackBar("come-on man, long press it !!!");
                 },
                 onLongPress: () {
                   Get.to(
