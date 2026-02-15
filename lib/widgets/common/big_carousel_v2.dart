@@ -5,10 +5,9 @@ import 'package:flutter/gestures.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
-import 'package:anymex/utils/color_extractor.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/big_carousel.dart';
+import 'package:anymex/widgets/common/carousel/carousel_types.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
@@ -284,7 +283,7 @@ class _BigCarouselV2State extends State<BigCarouselV2> {
   }
 }
 
-class _CarouselCard extends StatefulWidget {
+class _CarouselCard extends StatelessWidget {
   final Media media;
   final bool isActive;
   final CarouselType carouselType;
@@ -300,58 +299,12 @@ class _CarouselCard extends StatefulWidget {
   });
 
   @override
-  State<_CarouselCard> createState() => _CarouselCardState();
-}
-
-class _CarouselCardState extends State<_CarouselCard> {
-  ColorScheme? _colorScheme;
-  bool _isExtracted = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _extractColorLazily();
-  }
-
-  void _extractColorLazily() async {
-    if (_isExtracted) return;
-    _isExtracted = true;
-
-    final cachedColor = ImageColorExtractor.getCachedColor(widget.media.poster);
-    if (cachedColor != null) {
-      if (mounted) {
-        setState(() {
-          _colorScheme = ColorScheme.fromSeed(
-            seedColor: cachedColor,
-            brightness: Get.theme.brightness,
-          );
-        });
-      }
-      return;
-    }
-
-    final color = await ImageColorExtractor.extractColor(
-      widget.media.poster,
-      targetSize: const Size(50, 50),
-    );
-
-    if (color != null && mounted) {
-      setState(() {
-        _colorScheme = ColorScheme.fromSeed(
-          seedColor: color,
-          brightness: Get.theme.brightness,
-        );
-      });
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final tag = '${widget.media.id}-carousel-${Random().nextInt(100)}';
-    final colorScheme = _colorScheme ?? Get.theme.colorScheme;
+    final tag = '${media.id}-carousel-${Random().nextInt(100)}';
+    final colorScheme = Get.theme.colorScheme;
 
     return GestureDetector(
-      onTap: widget.onTap,
+      onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 400),
         curve: Curves.easeOutCubic,
@@ -372,8 +325,10 @@ class _CarouselCardState extends State<_CarouselCard> {
                 tag: tag,
                 child: AnymeXImage(
                   imageUrl: getResponsiveValue(context,
-                      mobileValue: widget.media.largePoster,
-                      desktopValue: widget.media.cover),
+                      mobileValue: media.largePoster != "?"
+                          ? media.largePoster
+                          : media.cover,
+                      desktopValue: media.cover),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -401,7 +356,7 @@ class _CarouselCardState extends State<_CarouselCard> {
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
-                              widget.carouselType == CarouselType.manga
+                              carouselType == CarouselType.manga
                                   ? Iconsax.book_1
                                   : Iconsax.play5,
                               color: colorScheme.onPrimary,
@@ -414,7 +369,7 @@ class _CarouselCardState extends State<_CarouselCard> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  widget.media.title,
+                                  media.title,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
@@ -431,7 +386,7 @@ class _CarouselCardState extends State<_CarouselCard> {
                                         size: 12, color: colorScheme.primary),
                                     const SizedBox(width: 4),
                                     Text(
-                                      widget.media.rating.toString(),
+                                      media.rating.toString(),
                                       style: TextStyle(
                                         fontSize: 11,
                                         fontWeight: FontWeight.w600,
@@ -443,14 +398,14 @@ class _CarouselCardState extends State<_CarouselCard> {
                                     _buildDot(colorScheme),
                                     const SizedBox(width: 8),
                                     Icon(
-                                        widget.media.mediaType == ItemType.manga
+                                        media.mediaType == ItemType.manga
                                             ? Iconsax.book
                                             : Icons.play_circle_rounded,
                                         size: 12,
                                         color: colorScheme.primary),
                                     const SizedBox(width: 4),
                                     Text(
-                                      widget.media.totalEpisodes,
+                                      media.totalEpisodes,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
@@ -466,7 +421,7 @@ class _CarouselCardState extends State<_CarouselCard> {
                                         size: 12, color: colorScheme.primary),
                                     const SizedBox(width: 4),
                                     GestureDetector(
-                                      onTap: widget.onShowDescription,
+                                      onTap: onShowDescription,
                                       child: Container(
                                         color: Colors.transparent,
                                         child: Text(
