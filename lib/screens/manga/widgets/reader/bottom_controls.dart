@@ -141,19 +141,19 @@ class ReaderBottomControls extends StatelessWidget {
                 final targetIndex =
                     isNext ? currentIndex + 1 : currentIndex - 1;
 
-
-
-                final targetChapter = (targetIndex >= 0 && targetIndex < controller.chapterList.length)
+                final targetChapter = (targetIndex >= 0 &&
+                        targetIndex < controller.chapterList.length)
                     ? controller.chapterList[targetIndex]
                     : null;
-                
+
                 String titleText;
                 if (targetChapter != null) {
-                   titleText = targetChapter.title ?? 'Chapter ${targetChapter.number}';
+                  titleText =
+                      targetChapter.title ?? 'Chapter ${targetChapter.number}';
                 } else if (targetIndex < 0) {
-                   titleText = "This is the First Chapter"; 
+                  titleText = "This is the First Chapter";
                 } else {
-                   titleText = "This is the Last Chapter";
+                  titleText = "This is the Last Chapter";
                 }
 
                 String subtitleText;
@@ -266,8 +266,11 @@ class ReaderBottomControls extends StatelessWidget {
                   ? controller.pageList.length - 1
                   : 1,
               onChanged: (value) {
-                controller.currentPageIndex.value = value.toInt();
-                controller.navigateToPage(value.toInt() - 1);
+                final targetPage = value.toInt();
+                if (controller.currentPageIndex.value != targetPage) {
+                  controller.currentPageIndex.value = targetPage;
+                  controller.navigateToPage(targetPage - 1);
+                }
               },
             ),
           ));
@@ -297,15 +300,13 @@ class ReaderBottomControls extends StatelessWidget {
     final isNext = controller.isOverscrollingNext.value;
 
     if (dir.axis == Axis.vertical) {
-
       return isNext ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded;
     } else {
-    
-      final isRTL = dir.reversed; 
+      final isRTL = dir.reversed;
       if (isRTL) {
-          return isNext ? Icons.arrow_back_rounded : Icons.arrow_forward_rounded;
+        return isNext ? Icons.arrow_back_rounded : Icons.arrow_forward_rounded;
       } else {
-          return isNext ? Icons.arrow_forward_rounded : Icons.arrow_back_rounded;
+        return isNext ? Icons.arrow_forward_rounded : Icons.arrow_back_rounded;
       }
     }
   }
