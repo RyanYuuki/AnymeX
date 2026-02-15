@@ -8,6 +8,8 @@ void showFilterBottomSheet(
   Map<String, dynamic>? currentFilters,
   bool isManga = false,
 }) {
+    BuildContext context, Function(dynamic args) onApplyFilter,
+    {Map<String, dynamic>? currentFilters, String mediaType = 'anime'}) {
   showModalBottomSheet(
     context: context,
     backgroundColor: Colors.transparent,
@@ -18,6 +20,13 @@ void showFilterBottomSheet(
       currentFilters: currentFilters,
       isManga: isManga,
     ),
+    builder: (BuildContext context) {
+      return FuturisticFilterSheet(
+        onApplyFilter: onApplyFilter,
+        currentFilters: currentFilters,
+        mediaType: mediaType,
+      );
+    },
   );
 }
 
@@ -196,11 +205,13 @@ class FilterSheet extends StatefulWidget {
     required this.onApplyFilter,
     this.currentFilters,
     this.isManga = false,
+    this.mediaType = 'anime',
   });
 
   final Function(dynamic) onApplyFilter;
   final Map<String, dynamic>? currentFilters;
   final bool isManga;
+  final String mediaType;
 
   @override
   State<FilterSheet> createState() => _FilterSheetState();
@@ -221,6 +232,95 @@ class _FilterSheetState extends State<FilterSheet> {
 
   final int _thisYear = DateTime.now().year;
   final int _prevYear = DateTime.now().year - 1;
+class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
+    with TickerProviderStateMixin {
+  late AnimationController _slideController;
+  late AnimationController _fadeController;
+  late Animation<double> _slideAnimation;
+  late Animation<double> _fadeAnimation;
+
+  final Map<String, Map<String, String>> sortOptions = {
+    'Score': {
+      'desc': 'SCORE_DESC',
+      'asc': 'SCORE',
+      'label': 'SCORE',
+    },
+    'Popularity': {
+      'desc': 'POPULARITY_DESC',
+      'asc': 'POPULARITY',
+      'label': 'POPULARITY',
+    },
+    'Trending': {
+      'desc': 'TRENDING_DESC',
+      'asc': 'TRENDING',
+      'label': 'TRENDING',
+    },
+    'Start Date': {
+      'desc': 'START_DATE_DESC',
+      'asc': 'START_DATE',
+      'label': 'START_DATE',
+    },
+    'Title': {
+      'desc': 'TITLE_ROMAJI_DESC',
+      'asc': 'TITLE_ROMAJI',
+      'label': 'TITLE_ROMAJI',
+    },
+  };
+
+  final List<String> seasons = ['WINTER', 'SPRING', 'SUMMER', 'FALL'];
+  final List<String> statuses = [
+    'All',
+    'FINISHED',
+    'NOT_YET_RELEASED',
+    'RELEASING',
+    'CANCELLED',
+    'HIATUS'
+  ];
+
+  final List<String> animeFormats = [
+    'TV',
+    'TV SHORT',
+    'MOVIE',
+    'SPECIAL',
+    'OVA',
+    'ONA'
+  ];
+
+  final List<String> mangaFormats = [
+    'MANGA',
+    'NOVEL',
+    'ONE_SHOT',
+  ];
+
+  final List<String> genres = [
+    'Action',
+    'Adventure',
+    'Comedy',
+    'Drama',
+    'Fantasy',
+    'Horror',
+    'Mecha',
+    'Music',
+    'Mystery',
+    'Psychological',
+    'Romance',
+    'Sci-Fi',
+    'Slice of Life',
+    'Sports',
+    'Supernatural',
+  ];
+
+  String? selectedSortBy;
+  String? selectedSortType;
+  String? selectedSeason;
+  String? selectedStatus;
+  String? selectedFormat;
+  List<String> selectedGenres = [];
+
+  List<String> get formats =>
+      widget.mediaType == 'manga' ? mangaFormats : animeFormats;
+
+  bool get isManga => widget.mediaType == 'manga';
 
   @override
   void initState() {
@@ -548,6 +648,48 @@ class _FilterSheetState extends State<FilterSheet> {
           ),
         );
       }).toList(),
+  Widget _buildFiltersSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader('FILTERS', Icons.filter_list_rounded),
+        Row(
+          children: [
+            // Only show Season filter for anime, not manga
+            if (!isManga) ...[
+              Expanded(
+                child: _buildNeonSelector(
+                  hint: 'Season',
+                  value: selectedSeason,
+                  options: seasons,
+                  onChanged: (value) => setState(() => selectedSeason = value),
+                  icon: Icons.calendar_today_rounded,
+                ),
+              ),
+              const SizedBox(width: 12),
+            ],
+            Expanded(
+              child: _buildNeonSelector(
+                hint: 'Status',
+                value: selectedStatus,
+                options: statuses,
+                onChanged: (value) => setState(() => selectedStatus = value),
+                icon: Icons.info_outline_rounded,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        _buildNeonSelector(
+          hint: 'Format',
+          value: selectedFormat,
+          options: formats,
+          onChanged: (value) => setState(() => selectedFormat = value),
+          icon: isManga
+              ? Icons.menu_book_rounded
+              : Icons.video_library_rounded,
+        ),
+      ],
     );
   }
 
