@@ -1,29 +1,29 @@
 // ignore_for_file: invalid_use_of_protected_member
 
 import 'dart:async';
-import 'package:anymex/controllers/settings/settings.dart';
+
+import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/jikan.dart';
+import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
+import 'package:anymex/database/isar_models/episode.dart';
+import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/screens/anime/widgets/episode_list_builder.dart';
+import 'package:anymex/screens/anime/widgets/wrongtitle_modal.dart';
 import 'package:anymex/screens/extensions/ExtensionSettings/ExtensionSettings.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
-import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/controllers/services/jikan.dart';
-import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/database/isar_models/episode.dart';
-import 'package:anymex/screens/anime/widgets/episode_list_builder.dart';
-import 'package:anymex/screens/anime/widgets/wrongtitle_modal.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/no_source.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_dropdown.dart';
-import 'package:anymex/widgets/header.dart';
-import 'package:anymex/widgets/helper/tv_wrapper.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
+import 'package:anymex/widgets/header.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
-import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:dartotsu_extension_bridge/Models/Source.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class EpisodeSection extends StatefulWidget {

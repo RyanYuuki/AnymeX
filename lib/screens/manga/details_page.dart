@@ -127,8 +127,13 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   }
 
   final sourceController = Get.find<SourceController>();
+  int _chapterRequestVersion = 0;
 
   String posterColor = '';
+
+  int _beginChapterRequest() => ++_chapterRequestVersion;
+  bool _isStaleChapterRequest(int requestId) =>
+      requestId != _chapterRequestVersion;
 
   @override
   void initState() {
@@ -168,8 +173,15 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
 
   Future<void> _fetchAnilistData() async {
     try {
-      final tempData = await mediaService.service
-          .fetchDetails(FetchDetailsParams(id: widget.media.id.toString()));
+      Media tempData;
+      try {
+        tempData = await mediaService.service
+            .fetchDetails(FetchDetailsParams(id: widget.media.id.toString()));
+      } catch (e) {
+        if (!e.toString().contains("dynamic")) rethrow;
+        tempData = await mediaService.service
+            .fetchDetails(FetchDetailsParams(id: widget.media.id.toString()));
+      }
       final isExtensions = mediaService == ServicesType.extensions;
 
       setState(() {
@@ -194,22 +206,25 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
         await _mapToService();
       }
     } catch (e, stackTrace) {
-      if (e.toString().contains("dynamic")) {
-        _fetchAnilistData();
-      }
       Logger.i(e.toString());
       Logger.i(stackTrace.toString());
     }
   }
 
-  Future<void> _mapToService() async {
+  Future<void> _mapToService({int? requestId}) async {
+    final activeRequestId = requestId ?? _beginChapterRequest();
+    chapterList?.clear();
     final key =
         '${sourceController.activeMangaSource.value?.id}-${anilistData?.id}-${mediaService.index}';
     final savedTitle = DynamicKeys.mappedMediaTitle.get<String?>(key, null);
-    final mappedData = await mapMedia(formatTitles(anilistData!), searchedTitle,
-        savedTitle: savedTitle);
-    if (mappedData != null) {
-      await _fetchSourceDetails(mappedData);
+    final baseMedia = anilistData ?? widget.media;
+    final mappedData =
+        await mapMedia(formatTitles(baseMedia), searchedTitle, savedTitle: savedTitle);
+    if (_isStaleChapterRequest(activeRequestId) || !mounted) {
+      return;
+    }
+    if (mappedData != null && mappedData.id.toString().isNotEmpty) {
+      await _fetchSourceDetails(mappedData, requestId: activeRequestId);
     }
   }
 
@@ -222,11 +237,24 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
     setState(() {});
   }
 
-  Future<void> _fetchSourceDetails(Media media) async {
+  Future<void> _fetchSourceDetails(Media media, {int? requestId}) async {
+    final activeRequestId = requestId ?? _beginChapterRequest();
     try {
-      final episodeFuture = await sourceController
-          .activeMangaSource.value!.methods
-          .getDetail(DMedia.withUrl(media.id));
+      chapterList?.clear();
+      dynamic episodeFuture;
+      try {
+        episodeFuture = await sourceController
+            .activeMangaSource.value!.methods
+            .getDetail(DMedia.withUrl(media.id));
+      } catch (e) {
+        if (!e.toString().contains("dynamic")) rethrow;
+        episodeFuture = await sourceController
+            .activeMangaSource.value!.methods
+            .getDetail(DMedia.withUrl(media.id));
+      }
+      if (_isStaleChapterRequest(activeRequestId) || !mounted) {
+        return;
+      }
 
       final episodes = _convertChapters(
         episodeFuture.episodes!.reversed.toList(),
@@ -237,8 +265,8 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
 
       setState(() {});
     } catch (e) {
-      if (e.toString().contains("dynamic")) {
-        _fetchSourceDetails(media);
+      if (_isStaleChapterRequest(activeRequestId) || !mounted) {
+        return;
       }
       Logger.i(e.toString());
     }
@@ -522,8 +550,8 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
       anilistData: anilistData ?? widget.media,
       chapterList: chapterList!,
       sourceController: sourceController,
-      mapToAnilist: _mapToService,
-      getDetailsFromSource: _fetchSourceDetails,
+      mapToAnilist: () => _mapToService(),
+      getDetailsFromSource: (media) => _fetchSourceDetails(media),
       showWrongTitleModal: showWrongTitleModal,
     );
   }
