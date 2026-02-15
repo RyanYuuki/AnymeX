@@ -1,1000 +1,727 @@
-// ignore_for_file: deprecated_member_use
-
-import 'package:anymex/controllers/service_handler/params.dart';
-import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/database/data_keys/keys.dart';
-import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/screens/anime/details_page.dart';
-import 'package:anymex/screens/manga/details_page.dart';
-import 'package:anymex/screens/search/widgets/inline_search_history.dart';
-import 'package:anymex/screens/search/widgets/search_widgets.dart';
-import 'package:anymex/screens/settings/misc/sauce_finder_view.dart';
-import 'package:anymex/utils/function.dart';
-import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/helper/platform_builder.dart';
-import 'package:anymex/widgets/media_items/media_item.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:get/get.dart';
-import 'package:iconsax/iconsax.dart';
+import 'package:flutter/services.dart';
 
-enum ViewMode { grid, list }
-
-enum SearchState { initial, loading, success, error, empty }
-
-class SearchPage extends StatefulWidget {
-  final String searchTerm;
-  final dynamic source;
-  final bool isManga;
-  final Map<String, dynamic>? initialFilters;
-
-  const SearchPage({
-    super.key,
-    required this.searchTerm,
-    required this.isManga,
-    this.source,
-    this.initialFilters,
-  });
-
-  @override
-  State<SearchPage> createState() => _SearchPageState();
+void showFilterBottomSheet(
+  BuildContext context,
+  Function(dynamic args) onApplyFilter, {
+  Map<String, dynamic>? currentFilters,
+  String mediaType = 'anime',
+}) {
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.transparent,
+    isScrollControlled: true,
+    useSafeArea: true,
+    builder: (BuildContext context) {
+      return FilterSheet(
+        onApplyFilter: onApplyFilter,
+        currentFilters: currentFilters,
+        mediaType: mediaType,
+      );
+    },
+  );
 }
 
-class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
-  final TextEditingController _searchController = TextEditingController();
-  final ServiceHandler _serviceHandler = Get.find<ServiceHandler>();
-  final RxList<String> _searchedTerms = <String>[].obs;
+const _animeSorts = {
+  'Trending': 'TRENDING_DESC',
+  'Popularity': 'POPULARITY_DESC',
+  'Score': 'SCORE_DESC',
+  'Newest': 'START_DATE_DESC',
+  'Oldest': 'START_DATE',
+  'Title A–Z': 'TITLE_ROMAJI',
+  'Title Z–A': 'TITLE_ROMAJI_DESC',
+  'Episodes': 'EPISODES_DESC',
+  'Favourites': 'FAVOURITES_DESC',
+};
 
-  List<Media>? _searchResults;
-  ViewMode _currentViewMode = ViewMode.grid;
-  SearchState _searchState = SearchState.initial;
-  String? _errorMessage;
-  Map<String, dynamic> _activeFilters = {};
-  RxBool isAdult = false.obs;
+const _mangaSorts = {
+  'Trending': 'TRENDING_DESC',
+  'Popularity': 'POPULARITY_DESC',
+  'Score': 'SCORE_DESC',
+  'Newest': 'START_DATE_DESC',
+  'Oldest': 'START_DATE',
+  'Title A–Z': 'TITLE_ROMAJI',
+  'Title Z–A': 'TITLE_ROMAJI_DESC',
+  'Chapters': 'CHAPTERS_DESC',
+  'Volumes': 'VOLUMES_DESC',
+  'Favourites': 'FAVOURITES_DESC',
+};
 
-  final FocusNode _searchFocusNode = FocusNode();
+const _animeFormats = [
+  'TV',
+  'TV_SHORT',
+  'MOVIE',
+  'SPECIAL',
+  'OVA',
+  'ONA',
+  'MUSIC'
+];
+const _animeFormatLabels = {
+  'TV': 'TV',
+  'TV_SHORT': 'TV Short',
+  'MOVIE': 'Movie',
+  'SPECIAL': 'Special',
+  'OVA': 'OVA',
+  'ONA': 'ONA',
+  'MUSIC': 'Music',
+};
+
+const _mangaFormats = ['MANGA', 'NOVEL', 'ONE_SHOT'];
+const _mangaFormatLabels = {
+  'MANGA': 'Manga',
+  'NOVEL': 'Light Novel',
+  'ONE_SHOT': 'One Shot',
+};
+
+const _statuses = [
+  'FINISHED',
+  'RELEASING',
+  'NOT_YET_RELEASED',
+  'CANCELLED',
+  'HIATUS'
+];
+const _statusLabels = {
+  'FINISHED': 'Finished',
+  'RELEASING': 'Releasing',
+  'NOT_YET_RELEASED': 'Upcoming',
+  'CANCELLED': 'Cancelled',
+  'HIATUS': 'Hiatus',
+};
+
+const _seasons = ['WINTER', 'SPRING', 'SUMMER', 'FALL'];
+const _seasonLabels = {
+  'WINTER': 'Winter',
+  'SPRING': 'Spring',
+  'SUMMER': 'Summer',
+  'FALL': 'Fall',
+};
+
+const _allGenres = [
+  'Action',
+  'Adventure',
+  'Comedy',
+  'Drama',
+  'Ecchi',
+  'Fantasy',
+  'Horror',
+  'Mahou Shoujo',
+  'Mecha',
+  'Music',
+  'Mystery',
+  'Psychological',
+  'Romance',
+  'Sci-Fi',
+  'Slice of Life',
+  'Sports',
+  'Supernatural',
+  'Thriller',
+];
+
+const _animeTags = [
+  'Shounen', 'Shoujo', 'Seinen', 'Josei', 'Kids', 'Isekai', 'School', 'Harem',
+  'Villainess', 'Reincarnation', 'Time Travel', 'Historical', 'Martial Arts',
+  'Post-Apocalyptic', 'Dystopian', 'Space', 'Cyberpunk', 'Steampunk', 'Vampire',
+  'Demons', 'Gods', 'Magic', 'Samurai', 'Military', 'Coming of Age', 'Cooking',
+  'Idol', 'Parody', 'Super Power', 'LGBTQ+', 'Tragedy', 'Gore',
+];
+
+const _mangaTags = [
+  'Shounen', 'Shoujo', 'Seinen', 'Josei', 'Kids', 'Manhwa', 'Manhua', 'Webtoon',
+  'Light Novel', 'Isekai', 'Reincarnation', 'Time Travel', 'Historical',
+  'Villainess', 'Martial Arts', 'School', 'Harem', 'Reverse Harem',
+  'Post-Apocalyptic', 'Dystopian', 'Space', 'Cyberpunk', 'Steampunk', 'Vampire',
+  'Demons', 'Gods', 'Magic', 'Samurai', 'Military', 'Coming of Age', 'Cooking',
+  'Idol', 'LGBTQ+', 'Tragedy', 'Parody', 'Gore',
+];
+
+class FilterSheet extends StatefulWidget {
+  const FilterSheet({
+    super.key,
+    required this.onApplyFilter,
+    this.currentFilters,
+    this.mediaType = 'anime',
+  });
+
+  final Function(dynamic) onApplyFilter;
+  final Map<String, dynamic>? currentFilters;
+  final String mediaType;
+
+  @override
+  State<FilterSheet> createState() => _FilterSheetState();
+}
+
+class _FilterSheetState extends State<FilterSheet> {
+  String? _sort;
+  String? _season;
+  String? _status;
+  String? _format;
+  String? _year;
+  final Set<String> _genres = {};
+  final Set<String> _tags = {};
+  String _genreSearch = '';
+  String _tagSearch = '';
+
+  late final TextEditingController _yearController;
+
+  final int _thisYear = DateTime.now().year;
+  final int _prevYear = DateTime.now().year - 1;
+
+  bool get isManga => widget.mediaType == 'manga';
+  Map<String, String> get _sortMap => isManga ? _mangaSorts : _animeSorts;
+  List<String> get _formatList => isManga ? _mangaFormats : _animeFormats;
+  Map<String, String> get _formatLabelMap => isManga ? _mangaFormatLabels : _animeFormatLabels;
+  List<String> get _tagList => isManga ? _mangaTags : _animeTags;
 
   @override
   void initState() {
     super.initState();
-    _initializeAnimations();
-    _initializeData();
+    _loadFilters();
+    _yearController = TextEditingController(text: _year ?? '');
   }
 
-  void _initializeAnimations() {
-    _searchFocusNode.addListener(() {
-      setState(() {});
-    });
-  }
-
-  void _initializeData() {
-    _searchController.text = widget.searchTerm;
-    _searchedTerms.value = DynamicKeys.searchHistory.get<List<String>>(
-      '${widget.isManga ? 'manga' : 'anime'}_${serviceHandler.serviceType.value.name}',
-      <String>[],
-    );
-
-    if (widget.initialFilters != null) {
-      _activeFilters = Map<String, dynamic>.from(widget.initialFilters!);
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _performSearch(filters: _activeFilters);
-      });
-    } else if (widget.searchTerm.isNotEmpty) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _performSearch();
-      });
-    }
-  }
-
-  void _saveHistory() {
-    DynamicKeys.searchHistory.set(
-      '${widget.isManga ? 'manga' : 'anime'}_${serviceHandler.serviceType.value.name}',
-      _searchedTerms.toList(),
-    );
-  }
-
-  Future<void> _performSearch({
-    String? query,
-    Map<String, dynamic>? filters,
-  }) async {
-    final searchQuery = query ?? _searchController.text.trim();
-
-    if (searchQuery.isEmpty && (filters == null || filters.isEmpty)) {
-      setState(() {
-        _searchState = SearchState.initial;
-        _searchResults = null;
-        _errorMessage = null;
-      });
-      return;
-    }
-
-    setState(() {
-      _searchState = SearchState.loading;
-      _errorMessage = null;
-    });
-
-    try {
-      if (filters != null) {
-        _activeFilters = Map<String, dynamic>.from(filters);
-      }
-
-      final results = (await _serviceHandler.search(SearchParams(
-            query: searchQuery,
-            isManga: widget.isManga,
-            filters: _activeFilters.isNotEmpty ? _activeFilters : null,
-            args: isAdult.value,
-          ))) ??
-          [];
-
-      if (searchQuery.isNotEmpty && !_searchedTerms.contains(searchQuery)) {
-        _searchedTerms.add(searchQuery);
-        _saveHistory();
-      }
-
-      setState(() {
-        _searchResults = results;
-        _searchState =
-            results.isEmpty ? SearchState.empty : SearchState.success;
-      });
-    } catch (e) {
-      setState(() {
-        _searchState = SearchState.error;
-        _errorMessage = _getErrorMessage(e);
-      });
-      Logger.i('Search failed: $e');
-    }
-  }
-
-  String _getErrorMessage(dynamic error) {
-    if (error.toString().contains('network') ||
-        error.toString().contains('connection')) {
-      return 'Network error. Please check your connection.';
-    } else if (error.toString().contains('timeout')) {
-      return 'Search timed out. Please try again.';
-    } else if (error.toString().contains('404')) {
-      return 'Service not available. Please try later.';
-    } else {
-      return 'Something went wrong. Please try again.';
-    }
+  void _loadFilters() {
+    final f = widget.currentFilters;
+    if (f == null) return;
+    _sort = f['sort'] is List ? (f['sort'] as List).first : f['sort'];
+    _season = f['season'];
+    _status = f['status'];
+    _format = f['format'];
+    _year = f['year']?.toString();
+    if (f['genres'] is List) _genres.addAll(List<String>.from(f['genres']));
+    if (f['tags'] is List) _tags.addAll(List<String>.from(f['tags']));
   }
 
   @override
   void dispose() {
-    _searchController.dispose();
-    _searchFocusNode.dispose();
+    _yearController.dispose();
     super.dispose();
   }
 
-  Widget _buildModernSearchBar() {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
-        boxShadow: _searchFocusNode.hasFocus
-            ? [
-                BoxShadow(
-                  color: context.colors.primary.opaque(0.1),
-                  blurRadius: 20,
-                  spreadRadius: 2,
-                ),
-              ]
-            : null,
-      ),
-      child: TextField(
-        controller: _searchController,
-        focusNode: _searchFocusNode,
-        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              fontWeight: FontWeight.w500,
-            ),
-        decoration: InputDecoration(
-          filled: true,
-          fillColor: context.colors.surfaceContainer.opaque(.5),
-          hintText:
-              'Search ${serviceHandler.serviceType.value == ServicesType.simkl ? 'movie or series' : widget.isManga ? 'manga' : 'anime'}...',
-          hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: context.colors.onSurface.opaque(0.5),
-              ),
-          prefixIcon: Icon(
-            Iconsax.search_normal,
-            color: _searchFocusNode.hasFocus
-                ? context.colors.primary
-                : context.colors.onSurface.opaque(0.5),
-          ),
-          suffixIcon: _searchController.text.isNotEmpty
-              ? IconButton(
-                  onPressed: () {
-                    _searchController.clear();
-                    setState(() {
-                      _searchState = SearchState.initial;
-                      _searchResults = null;
-                    });
-                  },
-                  icon: Icon(
-                    Iconsax.close_circle,
-                    color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
-                  ),
-                )
-              : serviceHandler.serviceType.value != ServicesType.anilist
-                  ? null
-                  : IconButton(
-                      onPressed: _showFilterBottomSheet,
-                      icon: Icon(
-                        Iconsax.setting_4,
-                        color: _activeFilters.isNotEmpty
-                            ? context.colors.primary
-                            : Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .opaque(0.7),
-                      ),
-                    ),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        ),
-        onSubmitted: (query) => _performSearch(query: query),
-        onChanged: (value) => setState(() {}),
-      ),
-    );
+  String? get _sortLabel => _sort == null
+      ? null
+      : _sortMap.entries
+          .firstWhere((e) => e.value == _sort, orElse: () => const MapEntry('', ''))
+          .key;
+
+  int get _activeCount {
+    int c = 0;
+    if (_sort != null) c++;
+    if (_season != null) c++;
+    if (_status != null) c++;
+    if (_format != null) c++;
+    if (_year != null) c++;
+    return c + _genres.length + _tags.length;
   }
 
-  Widget _buildControlsSection() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        children: [
-          if (!General.hideAdultContent.get(true) &&
-              (serviceHandler.serviceType.value.isAL ||
-                  serviceHandler.serviceType.value.isMal)) ...[
-            Obx(() {
-              return _buildToggleButton(
-                label: 'Adult',
-                isActive: isAdult.value,
-                onTap: () => isAdult.value = !isAdult.value,
-              );
-            }),
-            const SizedBox(width: 12),
-          ],
-          if (serviceHandler.serviceType.value == ServicesType.anilist) ...[
-            _buildActionButton(
-              icon: Iconsax.setting_4,
-              label: 'Filters',
-              isActive: _activeFilters.isNotEmpty,
-              onTap: _showFilterBottomSheet,
-            ),
-            if (!widget.isManga &&
-                serviceHandler.serviceType.value == ServicesType.anilist) ...[
-              const SizedBox(width: 12),
-              _buildActionButton(
-                icon: Iconsax.eye,
-                label: 'Image',
-                isActive: false,
-                onTap: () => navigate(() => const SauceFinderView()),
-              ),
-            ],
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildToggleButton({
-    required String label,
-    required bool isActive,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isActive
-              ? context.colors.primary.opaque(0.1)
-              : context.colors.surfaceContainer.opaque(0.3),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isActive
-                ? context.colors.primary
-                : context.colors.outline.opaque(0.3),
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              label,
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: isActive
-                        ? context.colors.primary
-                        : context.colors.onSurface,
-                    fontWeight: FontWeight.w600,
-                  ),
-            ),
-            const SizedBox(width: 8),
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              width: 20,
-              height: 12,
-              decoration: BoxDecoration(
-                color: isActive
-                    ? context.colors.primary
-                    : context.colors.outline.opaque(0.3),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: AnimatedAlign(
-                duration: const Duration(milliseconds: 200),
-                alignment:
-                    isActive ? Alignment.centerRight : Alignment.centerLeft,
-                child: Container(
-                  width: 8,
-                  height: 8,
-                  margin: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    color: context.colors.surface,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActionButton({
-    required IconData icon,
-    required String label,
-    required bool isActive,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isActive
-              ? context.colors.primary.opaque(0.1)
-              : context.colors.surfaceContainer.opaque(0.3),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isActive
-                ? context.colors.primary
-                : context.colors.outline.opaque(0.3),
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 18,
-              color:
-                  isActive ? context.colors.primary : context.colors.onSurface,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              label,
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: isActive
-                        ? context.colors.primary
-                        : context.colors.onSurface,
-                    fontWeight: FontWeight.w600,
-                  ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildViewModeToggle() {
-    return Container(
-      decoration: BoxDecoration(
-        color: context.colors.surface.opaque(0.5),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: context.colors.outline.opaque(0.3),
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildViewModeButton(ViewMode.grid, Iconsax.grid_1),
-          _buildViewModeButton(ViewMode.list, Iconsax.menu_1),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildViewModeButton(ViewMode mode, IconData icon) {
-    final isActive = _currentViewMode == mode;
-    return GestureDetector(
-      onTap: () => setState(() => _currentViewMode = mode),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: isActive ? context.colors.primary : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Icon(
-          icon,
-          size: 20,
-          color: isActive ? context.colors.onPrimary : context.colors.onSurface,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActiveFilters() {
-    if (_activeFilters.isEmpty) return const SizedBox.shrink();
-
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: _buildFilterChips(),
-        ),
-      ),
-    );
-  }
-
-  List<Widget> _buildFilterChips() {
-    List<Widget> chips = [];
-
-    _activeFilters.forEach((key, value) {
-      if (key == 'genres' && value is List && value.isNotEmpty) {
-        for (var genre in value) {
-          chips.add(_buildFilterChip(genre, () => _removeFilter(key, genre)));
-        }
-      } else if (value != null && value.toString().isNotEmpty) {
-        String displayText = _formatFilterValue(key, value);
-        chips.add(
-            _buildFilterChip(displayText, () => _removeFilter(key, value)));
-      }
+  void _reset() {
+    setState(() {
+      _sort = _season = _status = _format = _year = null;
+      _genres.clear();
+      _tags.clear();
+      _genreSearch = '';
+      _tagSearch = '';
+      _yearController.clear();
     });
-
-    return chips;
   }
 
-  Widget _buildFilterChip(String text, VoidCallback onRemove) {
-    return Container(
-      margin: const EdgeInsets.only(right: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: context.colors.primary.opaque(0.1),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: context.colors.primary.opaque(0.3),
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            text,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: context.colors.primary,
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-          const SizedBox(width: 4),
-          GestureDetector(
-            onTap: onRemove,
-            child: Icon(
-              Icons.close,
-              size: 16,
-              color: context.colors.primary.opaque(0.7),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMainContent() {
-    switch (_searchState) {
-      case SearchState.initial:
-        return _buildInitialState();
-      case SearchState.loading:
-        return _buildLoadingState();
-      case SearchState.success:
-        return _buildSuccessState();
-      case SearchState.error:
-        return _buildErrorState();
-      case SearchState.empty:
-        return _buildEmptyState();
-    }
-  }
-
-  Widget _buildInitialState() {
-    return Expanded(
-      child: InlineSearchHistory(
-        searchTerms: _searchedTerms,
-        onTermSelected: (term) {
-          _searchController.text = term;
-          _performSearch(query: term);
-        },
-        onHistoryUpdated: (updatedTerms) {
-          setState(() {
-            _searchedTerms.value = updatedTerms;
-          });
-          _saveHistory();
-        },
-      ),
-    );
-  }
-
-  Widget _buildLoadingState() {
-    return Expanded(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: context.colors.primary.opaque(0.1, iReallyMeanIt: true),
-                shape: BoxShape.circle,
-              ),
-              child: const ExpressiveLoadingIndicator(),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'Searching...',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .opaque(0.7, iReallyMeanIt: true),
-                    fontWeight: FontWeight.w500,
-                  ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildErrorState() {
-    return Expanded(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: context.colors.error.opaque(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Iconsax.warning_2,
-                size: 48,
-                color: context.colors.error,
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'Oops! Something went wrong',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              _errorMessage ?? 'Please try again later',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
-                  ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: () => _performSearch(),
-              icon: Icon(Iconsax.refresh, color: context.colors.onPrimary),
-              label: const Text('Try Again'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: context.colors.primary,
-                foregroundColor: context.colors.onPrimary,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return Expanded(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceVariant.opaque(0.5),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Iconsax.search_normal,
-                size: 48,
-                color: context.colors.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'No results found',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Try adjusting your search terms or filters',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
-                  ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSuccessState() {
-    return Expanded(
-      child: _buildSearchResults(),
-    );
-  }
-
-  Widget _buildSearchResults() {
-    if (_searchResults == null || _searchResults!.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    return GridView.builder(
-      padding: const EdgeInsets.all(20),
-      physics: const BouncingScrollPhysics(),
-      gridDelegate: _currentViewMode == ViewMode.list
-          ? const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 1,
-              mainAxisExtent: 130,
-            )
-          : SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: getResponsiveValue(context,
-                  mobileValue: 3,
-                  desktopValue: getResponsiveCrossAxisVal(
-                      MediaQuery.of(context).size.width,
-                      itemWidth: 108)),
-              crossAxisSpacing: 12.0,
-              mainAxisSpacing: 12.0,
-              mainAxisExtent: 240,
-            ),
-      itemCount: _searchResults!.length,
-      itemBuilder: (context, index) {
-        final media = _searchResults![index];
-        return AnimationConfiguration.staggeredGrid(
-          position: index,
-          columnCount: _currentViewMode == ViewMode.list ? 1 : 3,
-          child: ScaleAnimation(
-            duration: const Duration(milliseconds: 100),
-            child: _currentViewMode == ViewMode.list
-                ? _buildListItem(media)
-                : GridAnimeCard(
-                    data: media,
-                    isManga: widget.isManga,
-                    variant: CardVariant.search),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildListItem(Media media) {
-    return GestureDetector(
-      onTap: () => _navigateToDetails(media),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          color:
-              Theme.of(context).colorScheme.surfaceContainerHighest.opaque(0.3),
-          border: Border.all(
-            color: context.colors.outline.opaque(0.1, iReallyMeanIt: true),
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Hero(
-                tag: media.title,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: CachedNetworkImage(
-                    width: 60,
-                    height: 88,
-                    imageUrl: media.poster,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => Container(
-                      color: context.colors.surfaceVariant,
-                      child: Icon(
-                        Iconsax.image,
-                        color: context.colors.onSurfaceVariant,
-                      ),
-                    ),
-                    errorWidget: (context, url, error) => Container(
-                      color: context.colors.surfaceVariant,
-                      child: Icon(
-                        Iconsax.warning_2,
-                        color: context.colors.error,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      media.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                    ),
-                    if (media.rating != "??") ...[
-                      const SizedBox(height: 8),
-                      _buildRatingChip(media.rating),
-                    ],
-                  ],
-                ),
-              ),
-              Icon(
-                Iconsax.arrow_right_3,
-                color:
-                    context.colors.onSurface.opaque(0.5, iReallyMeanIt: true),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildRatingChip(String rating) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: context.colors.primary.opaque(0.1, iReallyMeanIt: true),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: context.colors.primary.opaque(0.3, iReallyMeanIt: true),
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Iconsax.star5,
-            size: 14,
-            color: context.colors.primary,
-          ),
-          const SizedBox(width: 4),
-          Text(
-            rating,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: context.colors.primary,
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showFilterBottomSheet() {
-    showFilterBottomSheet(context, (filters) {
-      _performSearch(filters: filters);
-    }, currentFilters: _activeFilters, isManga: widget.isManga);
-  }
-
-  void _removeFilter(String key, dynamic value) {
-    if (_activeFilters.containsKey(key)) {
-      setState(() {
-        if (key == 'genres' && _activeFilters[key] is List) {
-          List<String> genres = List<String>.from(_activeFilters[key]);
-          genres.remove(value);
-          if (genres.isEmpty) {
-            _activeFilters.remove(key);
-          } else {
-            _activeFilters[key] = genres;
-          }
-        } else {
-          _activeFilters.remove(key);
-        }
-      });
-      _performSearch(filters: _activeFilters);
-    }
-  }
-
-  String _formatFilterValue(String key, dynamic value) {
-    switch (key) {
-      case 'sort':
-        return "Sort: ${_formatSortBy(value.toString())}";
-      case 'season':
-        return "Season: ${value.toString().toLowerCase().capitalize}";
-      case 'status':
-        return value.toString() != 'All'
-            ? "Status: ${_formatStatus(value.toString())}"
-            : "";
-      case 'format':
-        return "Format: $value";
-      default:
-        return "$key: $value";
-    }
-  }
-
-  String _formatSortBy(String sortBy) {
-    switch (sortBy) {
-      case 'SCORE_DESC':
-        return 'Score ↓';
-      case 'SCORE':
-        return 'Score ↑';
-      case 'POPULARITY_DESC':
-        return 'Popularity ↓';
-      case 'POPULARITY':
-        return 'Popularity ↑';
-      case 'TRENDING_DESC':
-        return 'Trending ↓';
-      case 'TRENDING':
-        return 'Trending ↑';
-      case 'START_DATE_DESC':
-        return 'Newest';
-      case 'START_DATE':
-        return 'Oldest';
-      case 'TITLE_ROMAJI':
-        return 'Title A-Z';
-      case 'TITLE_ROMAJI_DESC':
-        return 'Title Z-A';
-      default:
-        return sortBy;
-    }
-  }
-
-  String _formatStatus(String status) {
-    switch (status) {
-      case 'FINISHED':
-        return 'Finished';
-      case 'NOT_YET_RELEASED':
-        return 'Not Released';
-      case 'RELEASING':
-        return 'Airing';
-      case 'CANCELLED':
-        return 'Cancelled';
-      case 'HIATUS':
-        return 'On Hiatus';
-      default:
-        return status;
-    }
-  }
-
-  void _navigateToDetails(Media media) {
-    if (widget.isManga) {
-      navigate(() => MangaDetailsPage(
-            media: media,
-            tag: media.title,
-          ));
-    } else {
-      navigate(() => AnimeDetailsPage(
-            media: media,
-            tag: media.title,
-          ));
-    }
+  void _apply() {
+    widget.onApplyFilter({
+      'sort': _sort != null ? [_sort!] : null,
+      'season': _season,
+      'status': _status,
+      'format': _format,
+      'year': _year != null ? int.tryParse(_year!) : null,
+      'genres': _genres.isEmpty ? null : _genres.toList(),
+      'tags': _tags.isEmpty ? null : _tags.toList(),
+    });
+    Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Glow(
-      child: SafeArea(
-        child: Scaffold(
-          body: Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+    final cs = context.colors;
+
+    return Container(
+      constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.93),
+      decoration: BoxDecoration(
+        color: cs.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      child: Column(
+        children: [
+          _buildHandle(cs),
+          _buildHeader(cs),
+          Expanded(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _label('SORT BY', Icons.swap_vert_rounded),
+                  _buildWrapGroup(
+                    items: _sortMap.keys.toList(),
+                    selected: _sortLabel,
+                    onTap: (label) => setState(() {
+                      final v = _sortMap[label];
+                      _sort = _sort == v ? null : v;
+                    }),
+                  ),
+                  _gap(),
+                  if (!isManga) ...[
+                    _label('SEASON', Icons.calendar_today_outlined),
+                    _buildWrapGroup(
+                      items: _seasons,
+                      labels: _seasonLabels,
+                      selected: _season,
+                      onTap: (v) => setState(() => _season = _season == v ? null : v),
+                    ),
+                    _gap(),
+                  ],
+                  _label('YEAR', Icons.date_range_outlined),
+                  _buildYearRow(),
+                  _gap(),
+                  _label('STATUS', Icons.radio_button_on_rounded),
+                  _buildWrapGroup(
+                    items: _statuses,
+                    labels: _statusLabels,
+                    selected: _status,
+                    onTap: (v) => setState(() => _status = _status == v ? null : v),
+                  ),
+                  _gap(),
+                  _label('FORMAT', Icons.video_collection_outlined),
+                  _buildWrapGroup(
+                    items: _formatList,
+                    labels: _formatLabelMap,
+                    selected: _format,
+                    onTap: (v) => setState(() => _format = _format == v ? null : v),
+                  ),
+                  _gap(),
+                  _label('GENRES', Icons.theater_comedy_outlined),
+                  _ChipPicker(
+                    allItems: _allGenres,
+                    selected: _genres,
+                    searchQuery: _genreSearch,
+                    onSearch: (q) => setState(() => _genreSearch = q),
+                    onTap: (v) => setState(() => _genres.contains(v) ? _genres.remove(v) : _genres.add(v)),
+                    hint: 'Search genres',
+                  ),
+                  _gap(),
+                  _label('TAGS', Icons.label_outline_rounded),
+                  _ChipPicker(
+                    allItems: _tagList,
+                    selected: _tags,
+                    searchQuery: _tagSearch,
+                    onSearch: (q) => setState(() => _tagSearch = q),
+                    onTap: (v) => setState(() => _tags.contains(v) ? _tags.remove(v) : _tags.add(v)),
+                    hint: 'Search tags',
+                  ),
+                  const SizedBox(height: 8),
+                ],
+              ),
+            ),
+          ),
+          _buildApplyBar(cs),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHandle(ColorScheme cs) => Padding(
+        padding: const EdgeInsets.only(top: 14, bottom: 4),
+        child: Center(
+          child: Container(
+            width: 36,
+            height: 4,
+            decoration: BoxDecoration(
+              color: cs.onSurface.withOpacity(0.13),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+        ),
+      );
+
+  Widget _buildHeader(ColorScheme cs) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 8, 16, 16),
+      child: Row(
+        children: [
+          Text(
+            'Filters',
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w800,
+              letterSpacing: -0.3,
+              color: cs.onSurface,
+            ),
+          ),
+          if (_activeCount > 0) ...[
+            const SizedBox(width: 10),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: cs.primary,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                '$_activeCount',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: cs.onPrimary,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+          ],
+          const Spacer(),
+          if (_activeCount > 0)
+            GestureDetector(
+              onTap: _reset,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                decoration: BoxDecoration(
+                  color: cs.primary.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Container(
-                      margin: const EdgeInsets.only(right: 5),
-                      decoration: BoxDecoration(
-                        color: context.colors.surface.opaque(0.3),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color:
-                              Theme.of(context).colorScheme.outline.opaque(0.3),
-                        ),
-                      ),
-                      child: IconButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        icon: Icon(
-                          Iconsax.arrow_left_2,
-                          color: context.colors.onSurface,
-                        ),
+                    Icon(Icons.refresh_rounded, size: 14, color: cs.primary),
+                    const SizedBox(width: 5),
+                    Text(
+                      'Reset',
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: cs.primary,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
-                    Expanded(child: _buildModernSearchBar()),
                   ],
                 ),
               ),
-              _buildControlsSection(),
-              const SizedBox(height: 16),
-              _buildActiveFilters(),
-              if (_searchState == SearchState.success &&
-                  _searchResults!.isNotEmpty) ...[
-                Container(
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                  child: Row(
-                    children: [
-                      Text(
-                        'Search Results',
-                        style:
-                            Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .primary
-                              .opaque(0.1, iReallyMeanIt: true),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          '${_searchResults!.length}',
-                          style:
-                              Theme.of(context).textTheme.labelSmall?.copyWith(
-                                    color: context.colors.primary,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                        ),
-                      ),
-                      if (_searchState == SearchState.success) ...[
-                        const Spacer(),
-                        _buildViewModeToggle(),
-                      ],
-                    ],
-                  ),
-                ),
-              ],
-              _buildMainContent(),
-            ],
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _label(String text, IconData icon) {
+    final cs = context.colors;
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        children: [
+          Icon(icon, size: 13, color: cs.primary.withOpacity(0.8)),
+          const SizedBox(width: 6),
+          Text(
+            text,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: cs.onSurface.withOpacity(0.42),
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.3,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _gap() => const SizedBox(height: 22);
+
+  Widget _buildWrapGroup({
+    required List<String> items,
+    required String? selected,
+    required void Function(String) onTap,
+    Map<String, String>? labels,
+  }) {
+    final cs = context.colors;
+    final theme = Theme.of(context);
+
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: items.map((item) {
+        final isSelected = selected == item;
+        final label = labels?[item] ?? item;
+        return GestureDetector(
+          onTap: () => onTap(item),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 160),
+            curve: Curves.easeOutCubic,
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              color: isSelected ? cs.primary : cs.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: isSelected ? Colors.transparent : cs.outline.withOpacity(0.18),
+              ),
+            ),
+            child: Text(
+              label,
+              style: theme.textTheme.bodySmall?.copyWith(
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                color: isSelected ? cs.onPrimary : cs.onSurface.withOpacity(0.7),
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildYearRow() {
+    final cs = context.colors;
+    final theme = Theme.of(context);
+
+    Widget yearChip(String y) {
+      final isSelected = _year == y;
+      return GestureDetector(
+        onTap: () {
+          _setYear(_year == y ? null : y);
+          if (_year != y) _yearController.text = y;
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 160),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: isSelected ? cs.primary : cs.surfaceContainerHighest,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: isSelected ? Colors.transparent : cs.outline.withOpacity(0.18),
+            ),
+          ),
+          child: Text(
+            y,
+            style: theme.textTheme.bodySmall?.copyWith(
+              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+              color: isSelected ? cs.onPrimary : cs.onSurface.withOpacity(0.7),
+            ),
           ),
         ),
+      );
+    }
+
+    final isCustom = _year != null &&
+        _year != _thisYear.toString() &&
+        _year != _prevYear.toString();
+
+    return Row(
+      children: [
+        yearChip(_thisYear.toString()),
+        const SizedBox(width: 8),
+        yearChip(_prevYear.toString()),
+        const SizedBox(width: 8),
+        Expanded(
+          child: AnimatedContainer(
+            alignment: Alignment.center,
+            duration: const Duration(milliseconds: 160),
+            height: 38,
+            decoration: BoxDecoration(
+              color: isCustom ? cs.primary.withOpacity(0.08) : cs.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: isCustom ? cs.primary.withOpacity(0.6) : cs.outline.withOpacity(0.18),
+                width: isCustom ? 1.5 : 1,
+              ),
+            ),
+            child: TextField(
+              controller: _yearController,
+              keyboardType: TextInputType.number,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+                LengthLimitingTextInputFormatter(4),
+              ],
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: isCustom ? cs.primary : cs.onSurface.withOpacity(0.7),
+                fontWeight: isCustom ? FontWeight.w700 : FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
+              decoration: InputDecoration(
+                filled: false,
+                hintText: 'Custom year',
+                hintStyle: theme.textTheme.bodySmall?.copyWith(
+                  color: cs.onSurface.withOpacity(0.35),
+                ),
+                border: InputBorder.none,
+                isDense: true,
+              ),
+              onChanged: (v) {
+                if (v.length == 4) {
+                  final parsed = int.tryParse(v);
+                  if (parsed != null && parsed >= 1960 && parsed <= DateTime.now().year) {
+                    setState(() => _year = v);
+                  }
+                } else {
+                  setState(() => _year = null);
+                }
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildApplyBar(ColorScheme cs) {
+    final theme = Theme.of(context);
+    final bottomPad = MediaQuery.of(context).padding.bottom;
+
+    return Container(
+      padding: EdgeInsets.fromLTRB(20, 12, 20, bottomPad + 16),
+      decoration: BoxDecoration(
+        color: cs.surface,
+        border: Border(top: BorderSide(color: cs.outline.withOpacity(0.1))),
       ),
+      child: Row(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: cs.outline.withOpacity(0.22)),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: IconButton(
+              onPressed: _reset,
+              icon: Icon(Icons.refresh_rounded, color: cs.onSurface.withOpacity(0.55)),
+              tooltip: 'Reset all',
+              style: IconButton.styleFrom(
+                minimumSize: const Size(50, 50),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: FilledButton(
+              onPressed: _apply,
+              style: FilledButton.styleFrom(
+                minimumSize: const Size(0, 50),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              ),
+              child: Text(
+                _activeCount > 0 ? 'Apply  ·  $_activeCount active' : 'Apply Filters',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: cs.onPrimary,
+                  letterSpacing: 0.1,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ChipPicker extends StatelessWidget {
+  const _ChipPicker({
+    required this.allItems,
+    required this.selected,
+    required this.searchQuery,
+    required this.onSearch,
+    required this.onTap,
+    required this.hint,
+  });
+
+  final List<String> allItems;
+  final Set<String> selected;
+  final String searchQuery;
+  final void Function(String) onSearch;
+  final void Function(String) onTap;
+  final String hint;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = context.colors;
+    final theme = Theme.of(context);
+
+    final filtered = allItems
+        .where((item) =>
+            searchQuery.isEmpty || item.toLowerCase().contains(searchQuery.toLowerCase()))
+        .toList()
+      ..sort((a, b) {
+        final aS = selected.contains(a);
+        final bS = selected.contains(b);
+        if (aS == bS) return a.compareTo(b);
+        return aS ? -1 : 1;
+      });
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            height: 42,
+            decoration: BoxDecoration(
+              color: cs.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: cs.outline.withOpacity(0.18)),
+            ),
+            child: Row(
+              children: [
+                const SizedBox(width: 14),
+                Icon(Icons.search_rounded, size: 17, color: cs.onSurface.withOpacity(0.35)),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: TextField(
+                    onChanged: onSearch,
+                    style: theme.textTheme.bodySmall?.copyWith(color: cs.onSurface),
+                    decoration: InputDecoration(
+                      hintText: hint,
+                      hintStyle: theme.textTheme.bodySmall?.copyWith(color: cs.onSurface.withOpacity(0.32)),
+                      border: InputBorder.none,
+                      isDense: true,
+                      filled: false,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 14),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: filtered.map((item) {
+            final isSelected = selected.contains(item);
+            return GestureDetector(
+              onTap: () => onTap(item),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 150),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                decoration: BoxDecoration(
+                  color: isSelected ? cs.primary.withOpacity(0.1) : cs.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(9),
+                  border: Border.all(
+                    color: isSelected ? cs.primary.withOpacity(0.6) : cs.outline.withOpacity(0.18),
+                    width: isSelected ? 1.5 : 1,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (isSelected) ...[
+                      Icon(Icons.check_rounded, size: 12, color: cs.primary),
+                      const SizedBox(width: 5),
+                    ],
+                    Text(
+                      item,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                        color: isSelected ? cs.primary : cs.onSurface.withOpacity(0.68),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
     );
   }
 }
