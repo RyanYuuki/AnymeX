@@ -5,7 +5,7 @@ import 'package:super_sliver_list/super_sliver_list.dart';
 
 void showFilterBottomSheet(
     BuildContext context, Function(dynamic args) onApplyFilter,
-    {Map<String, dynamic>? currentFilters}) {
+    {Map<String, dynamic>? currentFilters, String mediaType = 'anime'}) {
   showModalBottomSheet(
     context: context,
     backgroundColor: Colors.transparent,
@@ -14,6 +14,7 @@ void showFilterBottomSheet(
       return FuturisticFilterSheet(
         onApplyFilter: onApplyFilter,
         currentFilters: currentFilters,
+        mediaType: mediaType,
       );
     },
   );
@@ -24,10 +25,12 @@ class FuturisticFilterSheet extends StatefulWidget {
     super.key,
     required this.onApplyFilter,
     this.currentFilters,
+    this.mediaType = 'anime',
   });
 
   final Function(dynamic args) onApplyFilter;
   final Map<String, dynamic>? currentFilters;
+  final String mediaType;
 
   @override
   State<FuturisticFilterSheet> createState() => _FuturisticFilterSheetState();
@@ -77,7 +80,8 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
     'CANCELLED',
     'HIATUS'
   ];
-  final List<String> formats = [
+
+  final List<String> animeFormats = [
     'TV',
     'TV SHORT',
     'MOVIE',
@@ -85,6 +89,13 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
     'OVA',
     'ONA'
   ];
+
+  final List<String> mangaFormats = [
+    'MANGA',
+    'NOVEL',
+    'ONE_SHOT',
+  ];
+
   final List<String> genres = [
     'Action',
     'Adventure',
@@ -109,6 +120,11 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
   String? selectedStatus;
   String? selectedFormat;
   List<String> selectedGenres = [];
+
+  List<String> get formats =>
+      widget.mediaType == 'manga' ? mangaFormats : animeFormats;
+
+  bool get isManga => widget.mediaType == 'manga';
 
   @override
   void initState() {
@@ -332,16 +348,19 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
         _buildSectionHeader('FILTERS', Icons.filter_list_rounded),
         Row(
           children: [
-            Expanded(
-              child: _buildNeonSelector(
-                hint: 'Season',
-                value: selectedSeason,
-                options: seasons,
-                onChanged: (value) => setState(() => selectedSeason = value),
-                icon: Icons.calendar_today_rounded,
+            // Only show Season filter for anime, not manga
+            if (!isManga) ...[
+              Expanded(
+                child: _buildNeonSelector(
+                  hint: 'Season',
+                  value: selectedSeason,
+                  options: seasons,
+                  onChanged: (value) => setState(() => selectedSeason = value),
+                  icon: Icons.calendar_today_rounded,
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
+              const SizedBox(width: 12),
+            ],
             Expanded(
               child: _buildNeonSelector(
                 hint: 'Status',
@@ -359,7 +378,9 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
           value: selectedFormat,
           options: formats,
           onChanged: (value) => setState(() => selectedFormat = value),
-          icon: Icons.video_library_rounded,
+          icon: isManga
+              ? Icons.menu_book_rounded
+              : Icons.video_library_rounded,
         ),
       ],
     );
