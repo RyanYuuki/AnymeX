@@ -287,58 +287,58 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   }
 
   void navigateForward() {
-  final isReversed = readingDirection.value.reversed;
+    final isReversed = readingDirection.value.reversed;
 
-  if (readingLayout.value == MangaPageViewMode.continuous) {
-    final double offset =
-        (Get.height * 0.7) * scrollSpeedMultiplier.value;
+    if (readingLayout.value == MangaPageViewMode.continuous) {
+      final double offset =
+          (Get.height * 0.7) * scrollSpeedMultiplier.value;
 
-    scrollOffsetController?.animateScroll(
-      offset: isReversed ? -offset : offset,
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeOut,
-    );
-  } else {
-    if (isReversed) {
-      pageController?.previousPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
+      scrollOffsetController?.animateScroll(
+        offset: isReversed ? -offset : offset,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOut,
       );
     } else {
-      pageController?.nextPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
+      if (isReversed) {
+        pageController?.previousPage(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      } else {
+        pageController?.nextPage(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
     }
   }
-}
 
   void navigateBackward() {
-  final isReversed = readingDirection.value.reversed;
+    final isReversed = readingDirection.value.reversed;
 
-  if (readingLayout.value == MangaPageViewMode.continuous) {
-    final double offset =
-        (Get.height * 0.7) * scrollSpeedMultiplier.value;
+    if (readingLayout.value == MangaPageViewMode.continuous) {
+      final double offset =
+          (Get.height * 0.7) * scrollSpeedMultiplier.value;
 
-    scrollOffsetController?.animateScroll(
-      offset: isReversed ? offset : -offset,
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeOut,
-    );
-  } else {
-    if (isReversed) {
-      pageController?.nextPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
+      scrollOffsetController?.animateScroll(
+        offset: isReversed ? offset : -offset,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOut,
       );
     } else {
-      pageController?.previousPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
+      if (isReversed) {
+        pageController?.nextPage(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      } else {
+        pageController?.previousPage(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
     }
   }
-}
 
   void toggleVolumeKeys() {
     volumeKeysEnabled.value = !volumeKeysEnabled.value;
@@ -506,6 +506,9 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     });
 
     currentChapter.value = chapterList[index];
+    
+    // Reset page index to 1 when navigating to a different chapter
+    // This ensures we start from the beginning of the new chapter
     currentPageIndex.value = 1;
 
     final chapter = currentChapter.value;
@@ -1094,6 +1097,11 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     _isNavigating = true;
     _resetOverscroll();
     WidgetsBinding.instance.addPostFrameCallback((_) => _initTracking());
+    
+    // Save current page index for this chapter before resetting
+    final chapterBeingLoaded = currentChapter.value;
+    final savedPageForThisChapter = savedChapter.value?.pageNumber;
+    
     currentPageIndex.value = 1;
     _syncAvailability();
 
@@ -1111,23 +1119,39 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
         _computeSpreads();
 
-        currentPageIndex.value = 1;
         _safelyUpdateTotalPages(pageList.length);
-
         _initTracking();
 
-        final saved = savedChapter.value;
-        if (saved != null &&
-            saved.pageNumber != null &&
-            _isValidPageNumber(saved.pageNumber!)) {
-          _safelyUpdateTotalPages(pageList.length);
-
-          if (saved.pageNumber! > 1) {
-            currentPageIndex.value = saved.pageNumber!;
-            await Future.delayed(const Duration(milliseconds: 100));
-            navigateToPage(saved.pageNumber! - 1);
-          }
+        // Check if this is the same chapter we're loading (not a chapter navigation)
+        final currentChapterAfterLoad = currentChapter.value;
+        
+        // Determine which page to navigate to:
+        // 1. If there's a saved page for this specific chapter number, use that
+        // 2. Otherwise, if it's the same chapter we were in before loading and we have a saved page, use that
+        // 3. Default to page 1
+        int targetPageIndex = 0; // Index 0 = page 1
+        
+        if (savedPageForThisChapter != null && 
+            savedPageForThisChapter > 0 && 
+            savedPageForThisChapter <= pageList.length &&
+            chapterBeingLoaded == currentChapterAfterLoad) {
+          // Use the saved page for this chapter
+          targetPageIndex = savedPageForThisChapter - 1;
+        } else if (savedChapter.value != null &&
+            savedChapter.value!.pageNumber != null &&
+            savedChapter.value!.pageNumber! > 0 &&
+            savedChapter.value!.pageNumber! <= pageList.length) {
+          // Use the general saved chapter page if available
+          targetPageIndex = savedChapter.value!.pageNumber! - 1;
         }
+
+        // Navigate to the target page
+        if (targetPageIndex >= 0 && targetPageIndex < pageList.length) {
+          currentPageIndex.value = targetPageIndex + 1;
+          await Future.delayed(const Duration(milliseconds: 100));
+          navigateToPage(targetPageIndex);
+        }
+        
         print("INTIAL CHAPTER ${currentChapter.value?.toJson()}");
       } else {
         throw Exception('No pages found for this chapter');
