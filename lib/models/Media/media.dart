@@ -124,6 +124,45 @@ class Media {
     );
   }
 
+  factory Media.fromJikan(Map<String, dynamic> json, {bool isManga = false}) {
+    return Media(
+      id: json['mal_id']?.toString() ?? '0',
+      title: json['title'] ?? '??',
+      romajiTitle: json['title_english'] ?? json['title'] ?? '??',
+      description: json['synopsis'] ?? '??',
+      poster: json['images']?['jpg']?['image_url'] ?? '??',
+      cover: json['images']?['jpg']?['large_image_url'] ??
+          json['images']?['jpg']?['image_url'] ??
+          '??',
+      totalEpisodes: json['episodes']?.toString() ?? '??',
+      totalChapters: json['chapters']?.toString() ?? '??',
+      type: json['type'] ?? '??',
+      season: json['season'] ?? '??',
+      premiered: json['aired']?['from'] ?? json['published']?['from'] ?? '??',
+      duration: json['duration'] ?? '??',
+      status: (json['status'] ?? '??').replaceAll('_', ' '),
+      rating: json['score']?.toString() ?? '??',
+      popularity: json['popularity']?.toString() ?? '??',
+      format: json['type'] ?? '??',
+      aired: json['aired']?['from'] ?? json['published']?['from'] ?? '??',
+      genres: (json['genres'] as List<dynamic>?)
+              ?.map((g) => g['name']?.toString() ?? '??')
+              .toList() ??
+          [],
+      studios: (json['studios'] as List<dynamic>?)
+          ?.map((s) => s['name']?.toString() ?? '??')
+          .toList(),
+      characters: [],
+      relations: [],
+      recommendations: [],
+      nextAiringEpisode: null,
+      rankings: [],
+      mediaContent: [],
+      mediaType: isManga ? ItemType.manga : ItemType.anime,
+      serviceType: ServicesType.mal,
+    );
+  }
+
   factory Media.fromFullMAL(Map<String, dynamic> json) {
     final node = json;
 

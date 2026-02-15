@@ -1,12 +1,11 @@
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/player/player_adaptor.dart';
 import 'package:anymex/models/ui/ui_adaptor.dart';
 import 'package:anymex/screens/onboarding/welcome_dialog.dart';
-import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/shaders.dart';
 import 'package:anymex/utils/updater.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 
@@ -17,7 +16,6 @@ class Settings extends GetxController {
   late Rx<PlayerSettings> playerSettings;
   final canShowUpdate = true.obs;
 
-  /// Beta Updates Toggle
   RxBool enableBetaUpdates = false.obs;
 
   RxBool isTV = false.obs;
@@ -49,12 +47,9 @@ class Settings extends GetxController {
     playerSettings =
         Rx<PlayerSettings>(playerBox.get('settings') ?? PlayerSettings());
     selectedShader = PlayerUiKeys.selectedShaderLegacy.get<String>("");
-    selectedProfile =
-        PlayerUiKeys.selectedProfile.get<String>("MID-END");
+    selectedProfile = PlayerUiKeys.selectedProfile.get<String>("MID-END");
 
-    /// Load saved beta toggle preference
-    enableBetaUpdates.value =
-        General.enableBetaUpdates.get<bool>(false);
+    enableBetaUpdates.value = General.enableBetaUpdates.get<bool>(false);
 
     isTv().then((e) {
       isTV.value = e;
@@ -65,16 +60,14 @@ class Settings extends GetxController {
     });
   }
 
-  /// Manual Update check (from About page)
   void checkForUpdates(BuildContext context) {
     UpdateManager().checkForUpdates(
       context,
-      RxBool(true), // Always allow manual checks
+      RxBool(true),
       isBeta: enableBetaUpdates.value,
     );
   }
 
-  /// Save beta toggle preference
   void saveBetaUpdateToggle(bool value) {
     enableBetaUpdates.value = value;
     General.enableBetaUpdates.set(value);
@@ -131,6 +124,10 @@ class Settings extends GetxController {
   set historyCardStyle(int value) =>
       _setUISetting((s) => s?.historyCardStyle = value);
 
+  int get carouselStyle => _getUISetting((s) => s.carouselStyle);
+  set carouselStyle(int value) =>
+      _setUISetting((s) => s?.carouselStyle = value);
+
   double get glowDensity => _getUISetting((s) => s.glowDensity);
   set glowDensity(double value) => _setUISetting((s) => s?.glowDensity = value);
 
@@ -165,8 +162,7 @@ class Settings extends GetxController {
   bool get saikouLayout => _getUISetting((s) => s.saikouLayout);
   set saikouLayout(bool value) => _setUISetting((s) => s?.saikouLayout = value);
 
-  bool get enablePosterKenBurns =>
-      _getUISetting((s) => s.enablePosterKenBurns);
+  bool get enablePosterKenBurns => _getUISetting((s) => s.enablePosterKenBurns);
   set enablePosterKenBurns(bool value) =>
       _setUISetting((s) => s?.enablePosterKenBurns = value);
 
@@ -188,7 +184,6 @@ class Settings extends GetxController {
   set animationDuration(int value) =>
       _setUISetting((s) => s?.animationDuration = value);
 
-  // Player Settings
   bool get defaultPortraitMode =>
       _getPlayerSetting((s) => s.defaultPortraitMode);
   set defaultPortraitMode(bool value) =>
