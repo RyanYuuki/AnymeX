@@ -5,7 +5,7 @@ import 'package:super_sliver_list/super_sliver_list.dart';
 
 void showFilterBottomSheet(
     BuildContext context, Function(dynamic args) onApplyFilter,
-    {Map<String, dynamic>? currentFilters}) {
+    {Map<String, dynamic>? currentFilters, String mediaType = 'anime'}) {
   showModalBottomSheet(
     context: context,
     backgroundColor: Colors.transparent,
@@ -14,6 +14,7 @@ void showFilterBottomSheet(
       return FuturisticFilterSheet(
         onApplyFilter: onApplyFilter,
         currentFilters: currentFilters,
+        mediaType: mediaType,
       );
     },
   );
@@ -24,10 +25,12 @@ class FuturisticFilterSheet extends StatefulWidget {
     super.key,
     required this.onApplyFilter,
     this.currentFilters,
+    this.mediaType = 'anime',
   });
 
   final Function(dynamic args) onApplyFilter;
   final Map<String, dynamic>? currentFilters;
+  final String mediaType;
 
   @override
   State<FuturisticFilterSheet> createState() => _FuturisticFilterSheetState();
@@ -69,29 +72,116 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
   };
 
   final List<String> seasons = ['WINTER', 'SPRING', 'SUMMER', 'FALL'];
-  final List<String> statuses = [
-    'All',
+
+  final List<String> animeStatuses = [
     'FINISHED',
-    'NOT_YET_RELEASED',
     'RELEASING',
+    'NOT_YET_RELEASED',
     'CANCELLED',
-    'HIATUS'
   ];
-  final List<String> formats = [
+  final Map<String, String> animeStatusLabels = {
+    'FINISHED': 'Finished',
+    'RELEASING': 'Airing',
+    'NOT_YET_RELEASED': 'Not Yet Aired',
+    'CANCELLED': 'Cancelled',
+  };
+
+  final List<String> mangaStatuses = [
+    'FINISHED',
+    'RELEASING',
+    'NOT_YET_RELEASED',
+    'HIATUS',
+    'CANCELLED',
+  ];
+  final Map<String, String> mangaStatusLabels = {
+    'FINISHED': 'Finished',
+    'RELEASING': 'Releasing',
+    'NOT_YET_RELEASED': 'Not Yet Released',
+    'HIATUS': 'Hiatus',
+    'CANCELLED': 'Cancelled',
+  };
+
+  final List<String> animeFormats = [
     'TV',
-    'TV SHORT',
+    'TV_SHORT',
     'MOVIE',
     'SPECIAL',
     'OVA',
-    'ONA'
+    'ONA',
+    'MUSIC',
   ];
+  final Map<String, String> animeFormatLabels = {
+    'TV': 'TV Show',
+    'TV_SHORT': 'TV Short',
+    'MOVIE': 'Movie',
+    'SPECIAL': 'Special',
+    'OVA': 'OVA',
+    'ONA': 'ONA',
+    'MUSIC': 'Music',
+  };
+
+  final List<String> mangaFormats = ['MANGA', 'NOVEL', 'ONE_SHOT'];
+  final Map<String, String> mangaFormatLabels = {
+    'MANGA': 'Manga',
+    'NOVEL': 'Light Novel',
+    'ONE_SHOT': 'One Shot',
+  };
+
+  final Map<String, String> countryOptions = {
+    'JP': 'Japan',
+    'KR': 'South Korea',
+    'CN': 'China',
+    'TW': 'Taiwan',
+  };
+
+  final Map<String, int> animeStreamingServices = {
+    'Crunchyroll': 5,
+    'Hulu': 7,
+    'Netflix': 10,
+    'YouTube': 13,
+    'HIDIVE': 20,
+    'Amazon Prime Video': 21,
+    'Vimeo': 22,
+    'RetroCrush': 27,
+    'Adult Swim': 28,
+    'Japanese Film Archives': 29,
+    'Tubi TV': 30,
+    'Crackle': 31,
+    'AsianCrush': 32,
+    'Midnight Pulp': 33,
+    'Bilibili': 45,
+    'Disney Plus': 118,
+    'Bilibili TV': 119,
+    'Tencent Video': 121,
+    'iQ': 122,
+    'Youku': 126,
+    'WeTV': 131,
+    'Niconico Video': 180,
+    'iQIYI': 204,
+    'Star+': 210,
+    'Max': 211,
+    'Viki': 214,
+    'Cineverse': 216,
+    'Youku TV': 218,
+    'Coolmic': 226,
+    'Criterion Channel': 230,
+    'Hoopla': 239,
+    'Laftel': 245,
+    'OceanVeil': 249,
+    'Apple TV+': 250,
+    'Bandai Channel': 251,
+    'Prime Video': 261,
+  };
+
   final List<String> genres = [
     'Action',
     'Adventure',
     'Comedy',
     'Drama',
+    'Ecchi',
     'Fantasy',
     'Horror',
+    'Mahou Shoujo',
     'Mecha',
     'Music',
     'Mystery',
@@ -101,14 +191,114 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
     'Slice of Life',
     'Sports',
     'Supernatural',
+    'Thriller',
   ];
 
+  final List<String> allTags = [
+    '4-koma', 'Achromatic', 'Achronological Order', 'Acrobatics', 'Acting',
+    'Adoption', 'Advertisement', 'Afterlife', 'Age Gap', 'Age Regression',
+    'Agender', 'Agriculture', 'Airsoft', 'Alchemy', 'Aliens',
+    'Alternate Universe', 'American Football', 'Amnesia', 'Anachronism',
+    'Ancient China', 'Angels', 'Animals', 'Anthology', 'Anthropomorphism',
+    'Anti-Hero', 'Archery', 'Aromantic', 'Arranged Marriage',
+    'Artificial Intelligence', 'Asexual', 'Assassins', 'Astronomy',
+    'Athletics', 'Augmented Reality', 'Autobiographical', 'Aviation',
+    'Badminton', 'Ballet', 'Bar', 'Band', 'Baseball', 'Basketball',
+    'Battle Royale', 'Biographical', 'Bisexual', 'Blackmail', 'Board Game',
+    'Boarding School', 'Body Horror', 'Body Image', 'Body Swapping', 'Bowling',
+    'Boxing', 'Boys\' Love', 'Bullying', 'Butler', 'Calligraphy', 'Camping',
+    'Cannibalism', 'Card Battle', 'Cars', 'Centaur', 'CGI', 'Cheerleading',
+    'Chibi', 'Chimera', 'Chuunibyou', 'Circus', 'Class Struggle',
+    'Classic Literature', 'Classical Music', 'Clone', 'Coastal', 'Cohabitation',
+    'College', 'Coming of Age', 'Conspiracy', 'Cosmic Horror', 'Cosplay',
+    'Cowboys', 'Creature Taming', 'Crime', 'Criminal Organization',
+    'Crossdressing', 'Crossover', 'Cult', 'Cultivation', 'Curses',
+    'Cute Boys Doing Cute Things', 'Cute Girls Doing Cute Things', 'Cyberpunk',
+    'Cyborg', 'Cycling', 'Dancing', 'Death Game', 'Delinquents', 'Demons',
+    'Denpa', 'Desert', 'Detective', 'Dinosaurs', 'Disability',
+    'Dissociative Identities', 'Dragons', 'Drawing', 'Drugs', 'Dullahan',
+    'Dungeon', 'Dystopian', 'E-Sports', 'Eco-Horror', 'Economics',
+    'Educational', 'Elderly Protagonist', 'Elf', 'Ensemble Cast',
+    'Environmental', 'Episodic', 'Ero Guro', 'Espionage', 'Estranged Family',
+    'Exorcism', 'Fairy', 'Fairy Tale', 'Fake Relationship', 'Family Life',
+    'Fashion', 'Female Harem', 'Female Protagonist', 'Femboy', 'Fencing',
+    'Filmmaking', 'Firefighters', 'Fishing', 'Fitness', 'Flash', 'Food',
+    'Football', 'Foreign', 'Found Family', 'Fugitive', 'Full CGI', 'Full Color',
+    'Gambling', 'Gangs', 'Gender Bending', 'Ghost', 'Go', 'Goblin', 'Gods',
+    'Golf', 'Gore', 'Guns', 'Gyaru', 'Handball', 'Henshin', 'Heterosexual',
+    'Hikikomori', 'Hip-hop Music', 'Historical', 'Homeless', 'Horticulture',
+    'Ice Skating', 'Idol', 'Indigenous Cultures', 'Inn', 'Isekai', 'Iyashikei',
+    'Jazz Music', 'Josei', 'Judo', 'Kabuki', 'Kaiju', 'Karuta', 'Kemonomimi',
+    'Kids', 'Kingdom Management', 'Konbini', 'Kuudere', 'Lacrosse',
+    'Language Barrier', 'LGBTQ+ Themes', 'Long Strip', 'Lost Civilization',
+    'Love Triangle', 'Mafia', 'Magic', 'Mahjong', 'Maids', 'Makeup',
+    'Male Harem', 'Male Protagonist', 'Manzai', 'Marriage', 'Martial Arts',
+    'Matchmaking', 'Matriarchy', 'Medicine', 'Medieval', 'Memory Manipulation',
+    'Mermaid', 'Meta', 'Metal Music', 'Military', 'Mixed Gender Harem',
+    'Mixed Media', 'Modeling', 'Monster Boy', 'Monster Girl', 'Mopeds',
+    'Motorcycles', 'Mountaineering', 'Musical Theater', 'Mythology',
+    'Natural Disaster', 'Necromancy', 'Nekomimi', 'Ninja', 'No Dialogue',
+    'Noir', 'Non-fiction', 'Nudity', 'Nun', 'Office', 'Office Lady', 'Oiran',
+    'Ojou-sama', 'Orphan', 'Otaku Culture', 'Outdoor Activities', 'Pandemic',
+    'Parenthood', 'Parkour', 'Parody', 'Philosophy', 'Photography', 'Pirates',
+    'Poker', 'Police', 'Politics', 'Polyamorous', 'Post-Apocalyptic', 'POV',
+    'Pregnancy', 'Primarily Adult Cast', 'Primarily Animal Cast',
+    'Primarily Child Cast', 'Primarily Female Cast', 'Primarily Male Cast',
+    'Primarily Teen Cast', 'Prison', 'Proxy Battle', 'Psychosexual', 'Puppetry',
+    'Rakugo', 'Real Robot', 'Rehabilitation', 'Reincarnation', 'Religion',
+    'Rescue', 'Restaurant', 'Revenge', 'Reverse Isekai', 'Robots', 'Rock Music',
+    'Rotoscoping', 'Royal Affairs', 'Rugby', 'Rural', 'Samurai', 'Satire',
+    'School', 'School Club', 'Scuba Diving', 'Seinen', 'Shapeshifting', 'Ships',
+    'Shogi', 'Shoujo', 'Shounen', 'Shrine Maiden', 'Skateboarding', 'Skeleton',
+    'Slapstick', 'Slavery', 'Snowscape', 'Software Development', 'Space',
+    'Space Opera', 'Spearplay', 'Steampunk', 'Stop Motion', 'Succubus',
+    'Suicide', 'Sumo', 'Super Power', 'Super Robot', 'Superhero', 'Surfing',
+    'Surreal Comedy', 'Survival', 'Swimming', 'Swordplay', 'Table Tennis',
+    'Tanks', 'Tanned Skin', 'Teacher', 'Teens\' Love', 'Tennis', 'Terrorism',
+    'Time Loop', 'Time Manipulation', 'Time Skip', 'Tokusatsu', 'Tomboy',
+    'Torture', 'Tragedy', 'Trains', 'Transgender', 'Travel', 'Triads',
+    'Tsundere', 'Twins', 'Unrequited Love', 'Urban', 'Urban Fantasy', 'Vampire',
+    'Vertical Video', 'Veterinarian', 'Video Games', 'Vikings', 'Villainess',
+    'Virtual World', 'Vocal Synth', 'Volleyball', 'VTuber', 'War', 'Werewolf',
+    'Wilderness', 'Witch', 'Work', 'Wrestling', 'Writing', 'Wuxia', 'Yakuza',
+    'Yandere', 'Youkai', 'Yuri', 'Zombie',
+  ];
+
+  // State
   String? selectedSortBy;
   String? selectedSortType;
   String? selectedSeason;
   String? selectedStatus;
-  String? selectedFormat;
+  List<String> selectedFormats = [];
   List<String> selectedGenres = [];
+  List<String> selectedTags = [];
+  String? selectedCountry;
+  List<int> selectedStreamingOn = [];
+  int? selectedYear;
+  RangeValues yearRange = const RangeValues(1940, 2027);
+  bool useYearRange = false;
+  RangeValues episodeRange = const RangeValues(0, 150);
+  bool useEpisodeRange = false;
+  RangeValues durationRange = const RangeValues(0, 170);
+  bool useDurationRange = false;
+  RangeValues chaptersRange = const RangeValues(0, 500);
+  bool useChaptersRange = false;
+  RangeValues volumesRange = const RangeValues(0, 50);
+  bool useVolumesRange = false;
+  bool showAdult = false;
+  bool showDoujin = false;
+  bool onlyShowMine = false;
+  bool hideMine = false;
+
+  List<String> get formats =>
+      widget.mediaType == 'manga' ? mangaFormats : animeFormats;
+  Map<String, String> get formatLabels =>
+      widget.mediaType == 'manga' ? mangaFormatLabels : animeFormatLabels;
+  List<String> get statuses =>
+      widget.mediaType == 'manga' ? mangaStatuses : animeStatuses;
+  Map<String, String> get statusLabels =>
+      widget.mediaType == 'manga' ? mangaStatusLabels : animeStatusLabels;
+  bool get isManga => widget.mediaType == 'manga';
 
   @override
   void initState() {
@@ -142,6 +332,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
     if (widget.currentFilters != null) {
       final filters = widget.currentFilters!;
 
+      // sort is stored as the raw API value e.g. "SCORE_DESC"
       String? currentSort = filters['sort'];
       if (currentSort != null) {
         for (String sortKey in sortOptions.keys) {
@@ -157,12 +348,76 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
         }
       }
 
-      selectedSeason = filters['season'];
-      selectedStatus = filters['status'];
-      selectedFormat = filters['format'];
+      // Keys match GraphQL variable names exactly
+      selectedSeason = filters['season'];           // $season: MediaSeason
+      selectedStatus = filters['status'];           // $status: MediaStatus
+      selectedCountry = filters['countryOfOrigin']; // $countryOfOrigin: CountryCode
+      showAdult = filters['isAdult'] ?? false;      // $isAdult: Boolean
+      onlyShowMine = filters['onList'] ?? false;    // $onList: Boolean (show my list)
+      hideMine = filters['onList'] == false
+          ? true
+          : false; // onList=false means hide
 
+      if (filters['format'] is List) {
+        selectedFormats = List<String>.from(filters['format']); // $format: [MediaFormat]
+      }
       if (filters['genres'] != null && filters['genres'] is List) {
-        selectedGenres = List<String>.from(filters['genres']);
+        selectedGenres = List<String>.from(filters['genres']); // $genres: [String]
+      }
+      if (filters['tags'] is List) {
+        selectedTags = List<String>.from(filters['tags']); // $tags: [String]
+      }
+      if (filters['licensedBy'] is List) {
+        selectedStreamingOn = List<int>.from(filters['licensedBy']); // $licensedBy: [Int]
+      }
+
+      // $seasonYear: Int (single year)
+      selectedYear = filters['seasonYear'];
+
+      // Year range: $yearGreater / $yearLesser (stored as FuzzyDateInt e.g. 20230000)
+      final yg = filters['yearGreater'];
+      final yl = filters['yearLesser'];
+      if (yg != null && yl != null) {
+        final startYear = (yg as int) ~/ 10000;
+        final endYear = (yl as int) ~/ 10000;
+        yearRange = RangeValues(startYear.toDouble(), endYear.toDouble());
+        useYearRange = true;
+      }
+
+      // Episode range: $episodeGreater / $episodeLesser
+      final eg = filters['episodeGreater'];
+      final el = filters['episodeLesser'];
+      if (eg != null && el != null) {
+        episodeRange =
+            RangeValues((eg as int).toDouble(), (el as int).toDouble());
+        useEpisodeRange = true;
+      }
+
+      // Duration range: $durationGreater / $durationLesser
+      final dg = filters['durationGreater'];
+      final dl = filters['durationLesser'];
+      if (dg != null && dl != null) {
+        durationRange =
+            RangeValues((dg as int).toDouble(), (dl as int).toDouble());
+        useDurationRange = true;
+      }
+
+      // Chapter range: $chapterGreater / $chapterLesser
+      final cg = filters['chapterGreater'];
+      final cl = filters['chapterLesser'];
+      if (cg != null && cl != null) {
+        chaptersRange =
+            RangeValues((cg as int).toDouble(), (cl as int).toDouble());
+        useChaptersRange = true;
+      }
+
+      // Volume range: $volumeGreater / $volumeLesser
+      final vg = filters['volumeGreater'];
+      final vl = filters['volumeLesser'];
+      if (vg != null && vl != null) {
+        volumesRange =
+            RangeValues((vg as int).toDouble(), (vl as int).toDouble());
+        useVolumesRange = true;
       }
     }
   }
@@ -210,7 +465,20 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                           const SizedBox(height: 24),
                           _buildFiltersSection(),
                           const SizedBox(height: 24),
+                          _buildYearSection(),
+                          const SizedBox(height: 24),
+                          if (!isManga) _buildAnimeRangeSection(),
+                          if (isManga) _buildMangaRangeSection(),
+                          const SizedBox(height: 24),
                           _buildGenresSection(),
+                          const SizedBox(height: 24),
+                          _buildTagsSection(),
+                          const SizedBox(height: 24),
+                          if (!isManga) ...[
+                            _buildStreamingSection(),
+                            const SizedBox(height: 24),
+                          ],
+                          _buildTogglesSection(),
                           const SizedBox(height: 32),
                           _buildActionButtons(),
                         ],
@@ -332,21 +600,30 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
         _buildSectionHeader('FILTERS', Icons.filter_list_rounded),
         Row(
           children: [
-            Expanded(
-              child: _buildNeonSelector(
-                hint: 'Season',
-                value: selectedSeason,
-                options: seasons,
-                onChanged: (value) => setState(() => selectedSeason = value),
-                icon: Icons.calendar_today_rounded,
+            if (!isManga) ...[
+              Expanded(
+                child: _buildNeonSelector(
+                  hint: 'Season',
+                  value: selectedSeason,
+                  options: seasons,
+                  optionLabels: {
+                    'WINTER': '❄️ Winter',
+                    'SPRING': '🌸 Spring',
+                    'SUMMER': '☀️ Summer',
+                    'FALL': '🍂 Fall',
+                  },
+                  onChanged: (value) => setState(() => selectedSeason = value),
+                  icon: Icons.calendar_today_rounded,
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
+              const SizedBox(width: 12),
+            ],
             Expanded(
               child: _buildNeonSelector(
-                hint: 'Status',
+                hint: isManga ? 'Publishing Status' : 'Airing Status',
                 value: selectedStatus,
                 options: statuses,
+                optionLabels: statusLabels,
                 onChanged: (value) => setState(() => selectedStatus = value),
                 icon: Icons.info_outline_rounded,
               ),
@@ -354,13 +631,204 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
           ],
         ),
         const SizedBox(height: 12),
-        _buildNeonSelector(
-          hint: 'Format',
-          value: selectedFormat,
-          options: formats,
-          onChanged: (value) => setState(() => selectedFormat = value),
-          icon: Icons.video_library_rounded,
+        if (isManga) ...[
+          _buildNeonSelector(
+            hint: 'Country of Origin',
+            value: selectedCountry,
+            options: countryOptions.keys.toList(),
+            optionLabels: countryOptions,
+            onChanged: (value) => setState(() => selectedCountry = value),
+            icon: Icons.flag_rounded,
+          ),
+          const SizedBox(height: 12),
+        ],
+        _buildSectionHeader('FORMAT', Icons.video_library_rounded),
+        _buildMultiFormatChips(),
+      ],
+    );
+  }
+
+  Widget _buildMultiFormatChips() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: formats.map((fmt) {
+        final isSelected = selectedFormats.contains(fmt);
+        final label = formatLabels[fmt] ?? fmt;
+        return GestureDetector(
+          onTap: () => setState(() => isSelected
+              ? selectedFormats.remove(fmt)
+              : selectedFormats.add(fmt)),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: isSelected
+                    ? colorScheme.primary
+                    : colorScheme.outline.opaque(0.3, iReallyMeanIt: true),
+                width: isSelected ? 2 : 1,
+              ),
+              color: isSelected
+                  ? colorScheme.primary.opaque(0.12, iReallyMeanIt: true)
+                  : Colors.transparent,
+            ),
+            child: Text(
+              label,
+              style: theme.textTheme.bodySmall?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: isSelected
+                    ? colorScheme.primary
+                    : colorScheme.onSurface.opaque(0.7, iReallyMeanIt: true),
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildYearSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader('YEAR', Icons.date_range_rounded),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Use Year Range',
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(fontWeight: FontWeight.w600),
+            ),
+            Switch(
+              value: useYearRange,
+              activeColor: Theme.of(context).colorScheme.primary,
+              onChanged: (v) => setState(() {
+                useYearRange = v;
+                if (v) selectedYear = null;
+              }),
+            ),
+          ],
         ),
+        const SizedBox(height: 8),
+        if (!useYearRange)
+          _buildNeonSelector(
+            hint: 'Year',
+            value: selectedYear?.toString(),
+            options: List.generate(
+                    2027 - 1940 + 1, (i) => (1940 + i).toString())
+                .reversed
+                .toList(),
+            optionLabels: {},
+            onChanged: (v) =>
+                setState(() => selectedYear = v != null ? int.parse(v) : null),
+            icon: Icons.calendar_month_rounded,
+          )
+        else
+          _buildRangeSlider(
+            label:
+                '${yearRange.start.toInt()} – ${yearRange.end.toInt() >= 2027 ? "2027+" : yearRange.end.toInt()}',
+            values: yearRange,
+            min: 1940,
+            max: 2027,
+            divisions: 2027 - 1940,
+            onChanged: (v) => setState(() => yearRange = v),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildAnimeRangeSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader(
+            'EPISODES & DURATION', Icons.play_circle_outline_rounded),
+        _buildSwitchRow(
+          label: 'Filter by Episode Count',
+          value: useEpisodeRange,
+          onChanged: (v) => setState(() => useEpisodeRange = v),
+        ),
+        if (useEpisodeRange) ...[
+          const SizedBox(height: 8),
+          _buildRangeSlider(
+            label:
+                '${episodeRange.start.toInt()} – ${episodeRange.end.toInt() >= 150 ? "150+" : episodeRange.end.toInt()} eps',
+            values: episodeRange,
+            min: 0,
+            max: 150,
+            divisions: 150,
+            onChanged: (v) => setState(() => episodeRange = v),
+          ),
+        ],
+        const SizedBox(height: 12),
+        _buildSwitchRow(
+          label: 'Filter by Duration (min)',
+          value: useDurationRange,
+          onChanged: (v) => setState(() => useDurationRange = v),
+        ),
+        if (useDurationRange) ...[
+          const SizedBox(height: 8),
+          _buildRangeSlider(
+            label:
+                '${durationRange.start.toInt()} – ${durationRange.end.toInt() >= 170 ? "170+" : durationRange.end.toInt()} min',
+            values: durationRange,
+            min: 0,
+            max: 170,
+            divisions: 170,
+            onChanged: (v) => setState(() => durationRange = v),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildMangaRangeSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader('CHAPTERS & VOLUMES', Icons.menu_book_rounded),
+        _buildSwitchRow(
+          label: 'Filter by Chapter Count',
+          value: useChaptersRange,
+          onChanged: (v) => setState(() => useChaptersRange = v),
+        ),
+        if (useChaptersRange) ...[
+          const SizedBox(height: 8),
+          _buildRangeSlider(
+            label:
+                '${chaptersRange.start.toInt()} – ${chaptersRange.end.toInt() >= 500 ? "500+" : chaptersRange.end.toInt()} chapters',
+            values: chaptersRange,
+            min: 0,
+            max: 500,
+            divisions: 100,
+            onChanged: (v) => setState(() => chaptersRange = v),
+          ),
+        ],
+        const SizedBox(height: 12),
+        _buildSwitchRow(
+          label: 'Filter by Volume Count',
+          value: useVolumesRange,
+          onChanged: (v) => setState(() => useVolumesRange = v),
+        ),
+        if (useVolumesRange) ...[
+          const SizedBox(height: 8),
+          _buildRangeSlider(
+            label:
+                '${volumesRange.start.toInt()} – ${volumesRange.end.toInt() >= 50 ? "50+" : volumesRange.end.toInt()} volumes',
+            values: volumesRange,
+            min: 0,
+            max: 50,
+            divisions: 50,
+            onChanged: (v) => setState(() => volumesRange = v),
+          ),
+        ],
       ],
     );
   }
@@ -430,16 +898,316 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
     );
   }
 
+  Widget _buildTagsSection() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final hasSelected = selectedTags.isNotEmpty;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader('TAGS', Icons.label_rounded),
+        if (hasSelected) ...[
+          Wrap(
+            spacing: 8,
+            runSpacing: 4,
+            children: selectedTags
+                .map((t) => Chip(
+                      label: Text(t,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onPrimary,
+                              fontWeight: FontWeight.w600)),
+                      backgroundColor: colorScheme.primary,
+                      deleteIconColor: colorScheme.onPrimary,
+                      onDeleted: () => setState(() => selectedTags.remove(t)),
+                    ))
+                .toList(),
+          ),
+          const SizedBox(height: 8),
+        ],
+        SizedBox(
+          width: double.infinity,
+          child: _buildTappableBox(
+            isActive: hasSelected,
+            onTap: _showTagsSheet,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.add_rounded,
+                    size: 20,
+                    color: hasSelected
+                        ? colorScheme.primary
+                        : colorScheme.onSurface
+                            .opaque(0.7, iReallyMeanIt: true)),
+                const SizedBox(width: 8),
+                Text(
+                  hasSelected
+                      ? 'Edit Tags (${selectedTags.length})'
+                      : 'Add Tags',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: hasSelected
+                        ? colorScheme.onSurface
+                        : colorScheme.onSurface
+                            .opaque(0.5, iReallyMeanIt: true),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStreamingSection() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final hasSelected = selectedStreamingOn.isNotEmpty;
+    final selectedNames = animeStreamingServices.entries
+        .where((e) => selectedStreamingOn.contains(e.value))
+        .map((e) => e.key)
+        .toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader('STREAMING ON', Icons.live_tv_rounded),
+        if (hasSelected) ...[
+          Wrap(
+            spacing: 8,
+            runSpacing: 4,
+            children: selectedNames
+                .map((name) => Chip(
+                      label: Text(name,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onPrimary,
+                              fontWeight: FontWeight.w600)),
+                      backgroundColor: colorScheme.primary,
+                      deleteIconColor: colorScheme.onPrimary,
+                      onDeleted: () => setState(() => selectedStreamingOn
+                          .remove(animeStreamingServices[name]!)),
+                    ))
+                .toList(),
+          ),
+          const SizedBox(height: 8),
+        ],
+        SizedBox(
+          width: double.infinity,
+          child: _buildTappableBox(
+            isActive: hasSelected,
+            onTap: _showStreamingSheet,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.add_rounded,
+                    size: 20,
+                    color: hasSelected
+                        ? colorScheme.primary
+                        : colorScheme.onSurface
+                            .opaque(0.7, iReallyMeanIt: true)),
+                const SizedBox(width: 8),
+                Text(
+                  hasSelected
+                      ? 'Edit Services (${selectedStreamingOn.length})'
+                      : 'Select Streaming Service',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: hasSelected
+                        ? colorScheme.onSurface
+                        : colorScheme.onSurface
+                            .opaque(0.5, iReallyMeanIt: true),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTogglesSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader('OPTIONS', Icons.toggle_on_rounded),
+        Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: [
+            _buildToggleChip(
+                label: '🔞 Adult',
+                value: showAdult,
+                onTap: () => setState(() => showAdult = !showAdult)),
+            _buildToggleChip(
+                label: '📚 Doujin',
+                value: showDoujin,
+                onTap: () => setState(() => showDoujin = !showDoujin)), // maps to source: DOUJIN
+            _buildToggleChip(
+                label: isManga ? '📖 My Manga Only' : '📺 My Anime Only',
+                value: onlyShowMine,
+                onTap: () => setState(() {
+                      onlyShowMine = !onlyShowMine;
+                      if (onlyShowMine) hideMine = false;
+                    })),
+            _buildToggleChip(
+                label: isManga ? '🚫 Hide My Manga' : '🚫 Hide My Anime',
+                value: hideMine,
+                onTap: () => setState(() {
+                      hideMine = !hideMine;
+                      if (hideMine) onlyShowMine = false;
+                    })),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildToggleChip({
+    required String label,
+    required bool value,
+    required VoidCallback onTap,
+  }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: value
+                ? colorScheme.primary
+                : colorScheme.outline.opaque(0.3, iReallyMeanIt: true),
+            width: value ? 2 : 1,
+          ),
+          color: value
+              ? colorScheme.primary.opaque(0.1, iReallyMeanIt: true)
+              : Colors.transparent,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (value)
+              Padding(
+                padding: const EdgeInsets.only(right: 6),
+                child: Icon(Icons.check_circle_rounded,
+                    size: 16, color: colorScheme.primary),
+              ),
+            Text(label,
+                style: theme.textTheme.bodySmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: value
+                        ? colorScheme.primary
+                        : colorScheme.onSurface
+                            .opaque(0.7, iReallyMeanIt: true))),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── Shared helpers ──────────────────────────────────────────────────────
+
+  Widget _buildTappableBox({
+    required bool isActive,
+    required Widget child,
+    VoidCallback? onTap,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isActive
+              ? colorScheme.primary.opaque(0.6, iReallyMeanIt: true)
+              : colorScheme.outline.opaque(0.3, iReallyMeanIt: true),
+          width: isActive ? 2 : 1,
+        ),
+        color: isActive
+            ? colorScheme.primary.opaque(0.05, iReallyMeanIt: true)
+            : colorScheme.surface.opaque(0.5, iReallyMeanIt: true),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: onTap,
+          child: Padding(padding: const EdgeInsets.all(16), child: child),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRangeSlider({
+    required String label,
+    required RangeValues values,
+    required double min,
+    required double max,
+    required int divisions,
+    required Function(RangeValues) onChanged,
+  }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Text(label,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.primary, fontWeight: FontWeight.w700)),
+        ),
+        RangeSlider(
+          values: values,
+          min: min,
+          max: max,
+          divisions: divisions,
+          activeColor: colorScheme.primary,
+          inactiveColor: colorScheme.primary.opaque(0.2, iReallyMeanIt: true),
+          onChanged: onChanged,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSwitchRow({
+    required String label,
+    required bool value,
+    required Function(bool) onChanged,
+  }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label,
+            style: theme.textTheme.bodyMedium
+                ?.copyWith(fontWeight: FontWeight.w600)),
+        Switch(
+            value: value,
+            activeColor: colorScheme.primary,
+            onChanged: onChanged),
+      ],
+    );
+  }
+
   Widget _buildNeonSelector({
     required String hint,
     required String? value,
     required List<String> options,
+    required Map<String, String> optionLabels,
     required Function(String?) onChanged,
     required IconData icon,
   }) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final hasValue = value != null;
+    final displayLabel =
+        hasValue ? (optionLabels[value] ?? value) : 'Select $hint';
 
     return Container(
       decoration: BoxDecoration(
@@ -461,6 +1229,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
           onTap: () => _showNeonBottomSheet(
             title: hint,
             options: options,
+            optionLabels: optionLabels,
             selectedValue: value,
             onSelected: onChanged,
             icon: icon,
@@ -492,7 +1261,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        value ?? 'Select $hint',
+                        displayLabel,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                           color: hasValue
@@ -753,6 +1522,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
     _showNeonBottomSheet(
       title: 'Sort By',
       options: sortOptions.keys.toList(),
+      optionLabels: {},
       selectedValue: selectedSortBy,
       onSelected: (value) {
         setState(() {
@@ -764,9 +1534,201 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
     );
   }
 
+  void _showTagsSheet() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final TextEditingController searchCtrl = TextEditingController();
+    List<String> filtered = List.from(allTags);
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setModalState) => Container(
+          height: MediaQuery.of(context).size.height * 0.8,
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            borderRadius:
+                const BorderRadius.vertical(top: Radius.circular(24)),
+            border: Border.all(
+                color: colorScheme.primary.opaque(0.3, iReallyMeanIt: true),
+                width: 1),
+          ),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    Container(
+                      width: 50,
+                      height: 5,
+                      decoration: BoxDecoration(
+                          color: colorScheme.primary,
+                          borderRadius: BorderRadius.circular(3)),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.label_rounded,
+                            color: colorScheme.primary, size: 24),
+                        const SizedBox(width: 8),
+                        Text('SELECT TAGS',
+                            style: theme.textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 1.5,
+                                color: colorScheme.onSurface)),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: searchCtrl,
+                      onChanged: (q) => setModalState(() {
+                        filtered = allTags
+                            .where((t) =>
+                                t.toLowerCase().contains(q.toLowerCase()))
+                            .toList();
+                      }),
+                      decoration: InputDecoration(
+                        hintText: 'Search tags...',
+                        prefixIcon: const Icon(Icons.search),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 16),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                  itemCount: filtered.length,
+                  itemBuilder: (_, i) {
+                    final tag = filtered[i];
+                    final isSelected = selectedTags.contains(tag);
+                    return CheckboxListTile(
+                      title: Text(tag,
+                          style: theme.textTheme.bodyMedium
+                              ?.copyWith(fontWeight: FontWeight.w500)),
+                      value: isSelected,
+                      activeColor: colorScheme.primary,
+                      onChanged: (v) => setModalState(() => setState(() => v ==
+                              true
+                          ? selectedTags.add(tag)
+                          : selectedTags.remove(tag))),
+                    );
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: _buildNeonButton(
+                  text: 'DONE (${selectedTags.length} selected)',
+                  icon: Icons.check_rounded,
+                  isPrimary: true,
+                  onTap: () => Navigator.pop(ctx),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showStreamingSheet() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setModalState) => Container(
+          height: MediaQuery.of(context).size.height * 0.7,
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            borderRadius:
+                const BorderRadius.vertical(top: Radius.circular(24)),
+            border: Border.all(
+                color: colorScheme.primary.opaque(0.3, iReallyMeanIt: true),
+                width: 1),
+          ),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    Container(
+                      width: 50,
+                      height: 5,
+                      decoration: BoxDecoration(
+                          color: colorScheme.primary,
+                          borderRadius: BorderRadius.circular(3)),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.live_tv_rounded,
+                            color: colorScheme.primary, size: 24),
+                        const SizedBox(width: 8),
+                        Text('STREAMING ON',
+                            style: theme.textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 1.5,
+                                color: colorScheme.onSurface)),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                  children: animeStreamingServices.entries
+                      .map((entry) => CheckboxListTile(
+                            title: Text(entry.key,
+                                style: theme.textTheme.bodyMedium
+                                    ?.copyWith(fontWeight: FontWeight.w500)),
+                            value:
+                                selectedStreamingOn.contains(entry.value),
+                            activeColor: colorScheme.primary,
+                            onChanged: (v) =>
+                                setModalState(() => setState(() => v == true
+                                    ? selectedStreamingOn.add(entry.value)
+                                    : selectedStreamingOn
+                                        .remove(entry.value))),
+                          ))
+                      .toList(),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: _buildNeonButton(
+                  text: 'DONE',
+                  icon: Icons.check_rounded,
+                  isPrimary: true,
+                  onTap: () => Navigator.pop(ctx),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   void _showNeonBottomSheet({
     required String title,
     required List<String> options,
+    required Map<String, String> optionLabels,
     required String? selectedValue,
     required Function(String?) onSelected,
     required IconData icon,
@@ -863,6 +1825,20 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                   ],
                 ),
               ),
+              if (selectedValue != null)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+                  child: FutureisticOptionTile(
+                    option: '— Clear —',
+                    isSelected: false,
+                    onTap: () {
+                      onSelected(null);
+                      Navigator.pop(context);
+                    },
+                    colorScheme: colorScheme,
+                    theme: theme,
+                  ),
+                ),
               ConstrainedBox(
                 constraints: BoxConstraints(
                   maxHeight: MediaQuery.of(context).size.height * 0.5,
@@ -873,12 +1849,13 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                   itemCount: options.length,
                   itemBuilder: (context, index) {
                     final option = options[index];
+                    final label = optionLabels[option] ?? option;
                     final isSelected = selectedValue == option;
 
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 12),
                       child: FutureisticOptionTile(
-                        option: option,
+                        option: label,
                         isSelected: isSelected,
                         onTap: () {
                           onSelected(option);
@@ -904,24 +1881,103 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
       selectedSortType = null;
       selectedSeason = null;
       selectedStatus = null;
-      selectedFormat = null;
+      selectedCountry = null;
+      selectedYear = null;
+      selectedFormats.clear();
       selectedGenres.clear();
+      selectedTags.clear();
+      selectedStreamingOn.clear();
+      useYearRange = false;
+      yearRange = const RangeValues(1940, 2027);
+      useEpisodeRange = false;
+      episodeRange = const RangeValues(0, 150);
+      useDurationRange = false;
+      durationRange = const RangeValues(0, 170);
+      useChaptersRange = false;
+      chaptersRange = const RangeValues(0, 500);
+      useVolumesRange = false;
+      volumesRange = const RangeValues(0, 50);
+      showAdult = false;
+      showDoujin = false;
+      onlyShowMine = false;
+      hideMine = false;
     });
   }
 
   void _applyFilters() {
-    String? finalSort;
+    // $sort: [MediaSort]
+    List<String>? finalSort;
     if (selectedSortBy != null && selectedSortType != null) {
-      finalSort = sortOptions[selectedSortBy!]![selectedSortType!];
+      final s = sortOptions[selectedSortBy!]![selectedSortType!];
+      if (s != null) finalSort = [s];
     }
 
-    widget.onApplyFilter({
+    final Map<String, dynamic> result = {
+      // $season: MediaSeason
       'season': selectedSeason,
+      // $sort: [MediaSort]
       'sort': finalSort,
-      'format': selectedFormat,
+      // $format: [MediaFormat]
+      'format': selectedFormats.isEmpty ? null : selectedFormats,
+      // $genres: [String]
       'genres': selectedGenres.isEmpty ? null : selectedGenres,
+      // $tags: [String]
+      'tags': selectedTags.isEmpty ? null : selectedTags,
+      // $status: MediaStatus
       'status': selectedStatus,
-    });
+      // $countryOfOrigin: CountryCode
+      'countryOfOrigin': selectedCountry,
+      // $isAdult: Boolean
+      'isAdult': showAdult,
+      // $licensedBy: [Int]
+      'licensedBy': selectedStreamingOn.isEmpty ? null : selectedStreamingOn,
+      // $isLicensed: Boolean — only when streaming filter is active
+      'isLicensed': selectedStreamingOn.isNotEmpty ? true : null,
+      // $onList: Boolean (true=only my list, false=hide my list, null=all)
+      'onList': onlyShowMine ? true : hideMine ? false : null,
+      // $source: MediaSource (DOUJIN when doujin toggle is on)
+      'source': showDoujin ? 'DOUJIN' : null,
+    };
+
+    // $seasonYear: Int — single year
+    if (!useYearRange && selectedYear != null) {
+      result['seasonYear'] = selectedYear;
+      // $year: String — used as startDate_like e.g. "2023%"
+      result['year'] = '${selectedYear}%';
+    }
+
+    // Year range → FuzzyDateInt (YYYYMMDD where MM/DD = 0 means any)
+    // $yearGreater / $yearLesser: FuzzyDateInt
+    if (useYearRange && yearRange.end < 2027) {
+      result['yearGreater'] = yearRange.start.toInt() * 10000;
+      result['yearLesser'] = (yearRange.end.toInt() + 1) * 10000;
+    }
+
+    if (!isManga) {
+      // $episodeGreater / $episodeLesser: Int
+      if (useEpisodeRange && episodeRange.end < 150) {
+        result['episodeGreater'] = episodeRange.start.toInt();
+        result['episodeLesser'] = episodeRange.end.toInt();
+      }
+      // $durationGreater / $durationLesser: Int
+      if (useDurationRange && durationRange.end < 170) {
+        result['durationGreater'] = durationRange.start.toInt();
+        result['durationLesser'] = durationRange.end.toInt();
+      }
+    } else {
+      // $chapterGreater / $chapterLesser: Int
+      if (useChaptersRange && chaptersRange.end < 500) {
+        result['chapterGreater'] = chaptersRange.start.toInt();
+        result['chapterLesser'] = chaptersRange.end.toInt();
+      }
+      // $volumeGreater / $volumeLesser: Int
+      if (useVolumesRange && volumesRange.end < 50) {
+        result['volumeGreater'] = volumesRange.start.toInt();
+        result['volumeLesser'] = volumesRange.end.toInt();
+      }
+    }
+
+    widget.onApplyFilter(result);
     Navigator.pop(context);
   }
 }
