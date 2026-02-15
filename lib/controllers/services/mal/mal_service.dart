@@ -109,22 +109,33 @@ class MalService extends GetxController implements BaseService, OnlineService {
   Future<void> fetchHomePage() async {
     try {
       trendingAnimes.value = (await fetchDataFromApi(
-          'https://api.myanimelist.net/v2/anime/ranking?ranking_type=airing&limit=15')).removeDupes();
+              'https://api.myanimelist.net/v2/anime/ranking?ranking_type=airing&limit=15'))
+          .removeDupes();
+      for (var i in trendingAnimes) {
+        print("${i.cover} - ${i.poster}");
+      }
       popularAnimes.value = (await fetchDataFromApi(
-          'https://api.myanimelist.net/v2/anime/ranking?ranking_type=bypopularity&limit=15')).removeDupes();
+              'https://api.myanimelist.net/v2/anime/ranking?ranking_type=bypopularity&limit=15'))
+          .removeDupes();
       topAnimes.value = (await fetchDataFromApi(
-          'https://api.myanimelist.net/v2/anime/ranking?ranking_type=tv&limit=15')).removeDupes();
+              'https://api.myanimelist.net/v2/anime/ranking?ranking_type=tv&limit=15'))
+          .removeDupes();
       upcomingAnimes.value = (await fetchDataFromApi(
-          'https://api.myanimelist.net/v2/anime/ranking?ranking_type=upcoming&limit=15')).removeDupes();
-      
+              'https://api.myanimelist.net/v2/anime/ranking?ranking_type=upcoming&limit=15'))
+          .removeDupes();
+
       trendingManga.value = (await fetchDataFromApi(
-          'https://api.myanimelist.net/v2/manga/ranking?ranking_type=all&limit=15')).removeDupes();
+              'https://api.myanimelist.net/v2/manga/ranking?ranking_type=all&limit=15'))
+          .removeDupes();
       topManga.value = (await fetchDataFromApi(
-          'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manga&limit=15')).removeDupes();
+              'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manga&limit=15'))
+          .removeDupes();
       topManhwa.value = (await fetchDataFromApi(
-          'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manhwa&limit=15')).removeDupes();
+              'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manhwa&limit=15'))
+          .removeDupes();
       topManhua.value = (await fetchDataFromApi(
-          'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manhua&limit=15')).removeDupes();
+              'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manhua&limit=15'))
+          .removeDupes();
     } catch (e) {
       Logger.i('Error fetching home page data: $e');
     }
@@ -162,10 +173,21 @@ class MalService extends GetxController implements BaseService, OnlineService {
   @override
   Future<List<Media>> search(SearchParams params) async {
     final mediaType = params.isManga ? 'manga' : 'anime';
-    final data = await fetchDataFromApi(
-      'https://api.myanimelist.net/v2/$mediaType?q=${params.query}&limit=30',
+    final response = await get(
+      Uri.parse(
+          'https://api.jikan.moe/v4/$mediaType?q=${Uri.encodeComponent(params.query)}&limit=25&sfw=${!params.args}'),
     );
-    return data;
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return (data['data'] as List<dynamic>)
+          .map((e) => Media.fromJikan(e, isManga: params.isManga))
+          .toList()
+          .removeDupes();
+    } else {
+      Logger.i('Jikan search failed: ${response.statusCode}');
+      return [];
+    }
   }
 
   @override

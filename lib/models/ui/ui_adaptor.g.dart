@@ -51,13 +51,15 @@ class UISettingsAdapter extends TypeAdapter<UISettings> {
         liquidMode: fields[18] ?? true,
         liquidBackgroundPath: fields[19] ?? '',
         retainOriginalColor: fields[20] ?? false,
-        usePosterColor: fields[21] ?? false);
+        usePosterColor: fields[21] ?? false,
+        enablePosterKenBurns: fields[22] ?? true,
+        carouselStyle: fields[23] ?? 0);
   }
 
   @override
   void write(BinaryWriter writer, UISettings obj) {
     writer
-      ..writeByte(22)
+      ..writeByte(24)
       ..writeByte(0)
       ..write(obj.glowMultiplier)
       ..writeByte(1)
@@ -101,7 +103,11 @@ class UISettingsAdapter extends TypeAdapter<UISettings> {
       ..writeByte(20)
       ..write(obj.retainOriginalColor)
       ..writeByte(21)
-      ..write(obj.usePosterColor);
+      ..write(obj.usePosterColor)
+      ..writeByte(22)
+      ..write(obj.enablePosterKenBurns)
+      ..writeByte(23)
+      ..write(obj.carouselStyle);
   }
 
   @override

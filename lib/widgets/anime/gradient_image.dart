@@ -86,7 +86,7 @@ class GradientPoster extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap: () {
-                  snackBar("come-on man, long press it !!!", context: context);
+                  snackBar("come-on man, long press it !!!");
                 },
                 onLongPress: () {
                   Get.to(
@@ -155,6 +155,27 @@ class GradientPoster extends StatelessWidget {
                 ],
               )
             ],
+          ),
+        ),
+        Positioned(
+          top: MediaQuery.of(context).padding.top + 8,
+          left: 20,
+          child: AnymexOnTap(
+            onTap: () {
+              Navigator.of(context, rootNavigator: true)
+                  .popUntil((route) => route.isFirst);
+            },
+            margin: 0,
+            child: IconButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: context.colors.surfaceContainer,
+              ),
+              onPressed: () {
+                Navigator.of(context, rootNavigator: true)
+                    .popUntil((route) => route.isFirst);
+              },
+              icon: const Icon(Icons.home),
+            ),
           ),
         ),
         Positioned(
