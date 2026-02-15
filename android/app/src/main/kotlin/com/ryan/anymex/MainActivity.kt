@@ -1,5 +1,8 @@
 package com.ryan.anymex
 
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import android.view.KeyEvent
 import android.view.KeyEvent.ACTION_DOWN
 import android.view.KeyEvent.KEYCODE_VOLUME_DOWN
@@ -65,6 +68,27 @@ class MainActivity: FlutterActivity() {
                         }
                     } else {
                         result.error("INVALID_PATH", "Path cannot be null", null)
+                    }
+                }
+                "openOpenByDefaultSettings" -> {
+                    try {
+                        val packageUri = Uri.parse("package:$packageName")
+                        val openByDefaultIntent = Intent(Settings.ACTION_APP_OPEN_BY_DEFAULT_SETTINGS).apply {
+                            data = packageUri
+                        }
+
+                        if (openByDefaultIntent.resolveActivity(packageManager) != null) {
+                            startActivity(openByDefaultIntent)
+                        } else {
+                            val fallbackIntent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                data = packageUri
+                            }
+                            startActivity(fallbackIntent)
+                        }
+
+                        result.success(true)
+                    } catch (e: Exception) {
+                        result.error("OPEN_DEFAULT_SETTINGS_FAILED", e.message, null)
                     }
                 }
                 else -> result.notImplemented()

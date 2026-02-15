@@ -99,10 +99,10 @@ void main(List<String> args) async {
           .forEach(registerProtocolHandler);
     }
     Database().init();
-    initDeepLinkListener();
     HttpOverrides.global = MyHttpoverrides();
     await initializeHive();
     _initializeGetxController();
+    initDeepLinkListener();
     initializeDateFormatting();
     MediaKit.ensureInitialized();
     if (!Platform.isAndroid && !Platform.isIOS) {
