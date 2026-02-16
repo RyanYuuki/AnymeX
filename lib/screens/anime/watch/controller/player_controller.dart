@@ -87,7 +87,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final String? itemName;
   final String? offlineVideoPath;
   final bool shouldTrack;
-
   final RxBool isPipMode = false.obs;
 
   PlayerController(model.Video video, Episode episode, this.episodeList,
