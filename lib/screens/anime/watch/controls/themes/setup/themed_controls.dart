@@ -1,7 +1,6 @@
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
-import 'package:anymex/screens/anime/watch/controls/themes/player_control_theme_data.dart';
-import 'package:anymex/screens/anime/watch/controls/themes/player_control_theme_registry.dart';
+import 'package:anymex/screens/anime/watch/controls/themes/setup/player_control_theme_registry.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -16,8 +15,7 @@ class ThemedTopControls extends StatelessWidget {
     return Obx(() {
       final theme =
           PlayerControlThemeRegistry.resolve(settings.playerControlThemeRx.value);
-      final data = PlayerTopSectionData.fromContext(context, controller);
-      return theme.buildTopControls(context, data);
+      return theme.buildTopControls(context, controller);
     });
   }
 }
@@ -33,8 +31,7 @@ class ThemedCenterControls extends StatelessWidget {
     return Obx(() {
       final theme =
           PlayerControlThemeRegistry.resolve(settings.playerControlThemeRx.value);
-      final data = PlayerCenterSectionData.fromContext(context, controller);
-      return theme.buildCenterControls(context, data);
+      return theme.buildCenterControls(context, controller);
     });
   }
 }
@@ -50,8 +47,7 @@ class ThemedBottomControls extends StatelessWidget {
     return Obx(() {
       final theme =
           PlayerControlThemeRegistry.resolve(settings.playerControlThemeRx.value);
-      final data = PlayerBottomSectionData.fromContext(context, controller);
-      return theme.buildBottomControls(context, data);
+      return theme.buildBottomControls(context, controller);
     });
   }
 }

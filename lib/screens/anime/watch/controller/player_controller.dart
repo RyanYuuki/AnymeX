@@ -1087,7 +1087,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       selectedSubsTrack.value = null;
       _basePlayer.setSubtitleTrack(SubtitleTrack.no());
 
-      subtitleText.clear();
+      subtitleText.value = [];
       translatedSubtitle.value = '';
 
       SubtitlePreTranslator.clearCache();

@@ -513,7 +513,8 @@ class ChipTabs extends StatelessWidget {
 
                   return Row(children: [
                     InkWell(
-                      onLongPress: () => Get.to(() => const HistoryEditor()),
+                      onLongPress: () =>
+                          Get.to(() => HistoryEditor(type: controller.type.value)),
                       child: Padding(
                         padding: const EdgeInsets.only(right: 8),
                         child: AnymexIconChip(
