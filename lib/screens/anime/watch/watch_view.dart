@@ -1,12 +1,9 @@
-import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/database/isar_models/video.dart' as model;
 import 'package:anymex/models/Media/media.dart' as anymex;
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
-import 'package:anymex/screens/anime/watch/controls/bottom_controls.dart';
-import 'package:anymex/screens/anime/watch/controls/center_controls.dart';
-import 'package:anymex/screens/anime/watch/controls/top_controls.dart';
+import 'package:anymex/screens/anime/watch/controls/themes/themed_controls.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/double_tap_seek.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/overlay.dart';
@@ -84,15 +81,15 @@ class _WatchScreenState extends State<WatchScreen> {
         ),
         const Align(
           alignment: Alignment.center,
-          child: CenterControls(),
+          child: ThemedCenterControls(),
         ),
         const Align(
           alignment: Alignment.topCenter,
-          child: TopControls(),
+          child: ThemedTopControls(),
         ),
         const Align(
           alignment: Alignment.bottomCenter,
-          child: BottomControls(),
+          child: ThemedBottomControls(),
         ),
         MediaIndicatorBuilder(
           isVolumeIndicator: false,

@@ -26,6 +26,7 @@ enum PlayerKeys { useLibass, useMediaKit }
 
 enum PlayerUiKeys {
   bottomControlsSettings,
+  playerControlTheme,
   currentVisualProfile,
   currentVisualSettings,
   selectedShader,

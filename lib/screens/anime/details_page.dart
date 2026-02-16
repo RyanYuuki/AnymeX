@@ -97,6 +97,11 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   final RxInt timeLeft = 0.obs;
 
   String posterColor = '';
+  int _sourceRequestVersion = 0;
+
+  int _beginSourceRequest() => ++_sourceRequestVersion;
+  bool _isStaleSourceRequest(int requestId) =>
+      requestId != _sourceRequestVersion;
 
   void _onPageSelected(int index) {
     selectedPage.value = index;
@@ -273,15 +278,22 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     } finally {}
   }
 
-  Future<void> _mapToService() async {
+  Future<void> _mapToService({int? requestId}) async {
+    final activeRequestId = requestId ?? _beginSourceRequest();
+    episodeList.clear();
+    rawEpisodes.clear();
+    episodeError.value = false;
     final key =
         '${sourceController.activeSource.value?.id}-${anilistData?.id}-${anilistData?.serviceType.index}';
     final savedTitle = DynamicKeys.mappedMediaTitle.get<String?>(key, null);
     final mappedData = await mapMedia(
         formatTitles(widget.media) ?? [], searchedTitle,
         savedTitle: savedTitle);
-    if (mappedData != null) {
-      await _fetchSourceDetails(mappedData);
+    if (_isStaleSourceRequest(activeRequestId) || !mounted) {
+      return;
+    }
+    if (mappedData != null && mappedData.id.toString().isNotEmpty) {
+      await _fetchSourceDetails(mappedData, requestId: activeRequestId);
     }
   }
 
@@ -297,11 +309,17 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     setState(() {});
   }
 
-  Future<void> _fetchSourceDetails(Media media) async {
+  Future<void> _fetchSourceDetails(Media media, {int? requestId}) async {
+    final activeRequestId = requestId ?? _beginSourceRequest();
     try {
       episodeError.value = false;
+      episodeList.clear();
+      rawEpisodes.clear();
       final episodeFuture = await sourceController.activeSource.value!.methods
           .getDetail(DMedia.withUrl(media.id));
+      if (_isStaleSourceRequest(activeRequestId) || !mounted) {
+        return;
+      }
 
       final episodes = _convertEpisodes(
         episodeFuture.episodes!.reversed.toList(),
@@ -315,24 +333,34 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       if (mounted) {
         setState(() {});
       }
-      applyAnifyCovers();
+      await applyAnifyCovers(requestId: activeRequestId);
     } catch (e) {
+      if (_isStaleSourceRequest(activeRequestId) || !mounted) {
+        return;
+      }
       episodeError.value = true;
       Logger.i(e.toString());
     }
   }
 
-  Future<void> applyAnifyCovers() async {
+  Future<void> applyAnifyCovers({int? requestId}) async {
+    final activeRequestId = requestId ?? _sourceRequestVersion;
+    // Never pass RxList directly into metadata mappers; they may return
+    // the same reference, which can cause RxList.value = RxList recursion.
+    final baseEpisodes = List<Episode>.from(episodeList);
     final newEps = await AnilistData.fetchEpisodesFromAnify(
       widget.media.id.toString(),
-      episodeList,
+      baseEpisodes,
     );
+    if (_isStaleSourceRequest(activeRequestId) || !mounted) {
+      return;
+    }
     if (newEps.isNotEmpty &&
         newEps.first.thumbnail == null &&
         (newEps.first.thumbnail?.isEmpty ?? true)) {
       showAnify.value = false;
     }
-    episodeList.value = newEps;
+    episodeList.assignAll(newEps);
     _applyFillerInfo();
     if (mounted) {
       setState(() {});
@@ -670,8 +698,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         anilistData: anilistData ?? widget.media,
         episodeList: (isAnify.value) ? episodeList : rawEpisodes,
         episodeError: episodeError,
-        mapToAnilist: _mapToService,
-        getDetailsFromSource: _fetchSourceDetails,
+        mapToAnilist: () => _mapToService(),
+        getDetailsFromSource: (media) => _fetchSourceDetails(media),
         isAnify: isAnify,
         showAnify: showAnify,
       );

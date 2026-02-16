@@ -41,23 +41,27 @@ import '../../../../database/isar_models/track.dart' as model;
 
 extension PlayerControllerExtensions on PlayerController {
   bool get hasNextEpisode {
-    final index = episodeList.indexWhere((e) => e.number == currentEpisode.value.number);
+    final index =
+        episodeList.indexWhere((e) => e.number == currentEpisode.value.number);
     return index != -1 && index < episodeList.length - 1;
   }
 
   bool get hasPreviousEpisode {
-    final index = episodeList.indexWhere((e) => e.number == currentEpisode.value.number);
+    final index =
+        episodeList.indexWhere((e) => e.number == currentEpisode.value.number);
     return index > 0;
   }
 
   Episode? get nextEpisode {
-    final index = episodeList.indexWhere((e) => e.number == currentEpisode.value.number);
+    final index =
+        episodeList.indexWhere((e) => e.number == currentEpisode.value.number);
     if (index == -1 || index >= episodeList.length - 1) return null;
     return episodeList[index + 1];
   }
 
   Episode? get previousEpisode {
-    final index = episodeList.indexWhere((e) => e.number == currentEpisode.value.number);
+    final index =
+        episodeList.indexWhere((e) => e.number == currentEpisode.value.number);
     if (index <= 0) return null;
     return episodeList[index - 1];
   }
@@ -448,7 +452,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       _basePlayer = BetterPlayerImpl(configuration: config);
     }
 
-
     _basePlayer.initialize().then((_) {
       if (isOffline.value && offlineVideoPath != null) {
         final stamp =
@@ -733,6 +736,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       _resetAutoHideTimer();
     }
   }
+
   Future<void> fetchEpisode(Episode episode) async {
     if (isOffline.value) return;
 
@@ -1272,8 +1276,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   Future<void> _trackLocally() async {
     if (isOffline.value) {
-      DynamicKeys.offlineVideoProgress.set(
-          offlineVideoPath, currentPosition.value.inMilliseconds);
+      DynamicKeys.offlineVideoProgress
+          .set(offlineVideoPath, currentPosition.value.inMilliseconds);
       return;
     }
 
@@ -1349,10 +1353,12 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     try {
       final service = anilistData.serviceType.onlineService;
       final currEpisodeNum = (currentEpisode.value.number ?? "1").toInt();
-      
-      final int newProgress = hasCrossedLimit ? currEpisodeNum : currEpisodeNum - 1;
 
-      final int previousProgress = int.tryParse(service.currentMedia.value.episodeCount ?? '0') ?? 0;
+      final int newProgress =
+          hasCrossedLimit ? currEpisodeNum : currEpisodeNum - 1;
+
+      final int previousProgress =
+          int.tryParse(service.currentMedia.value.episodeCount ?? '0') ?? 0;
 
       if (newProgress <= previousProgress) {
         return;
@@ -1368,7 +1374,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
               ? 'COMPLETED'
               : 'CURRENT',
           syncIds: [anilistData.idMal]));
-          
+
       service.setCurrentMedia(anilistData.id.toString());
       Logger.i(
           'Online tracking completed for episode ${currentEpisode.value.number}, progress updated to: $newProgress');

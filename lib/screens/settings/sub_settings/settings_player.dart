@@ -5,6 +5,7 @@ import 'package:anymex/constants/contants.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/other_features.dart';
+import 'package:anymex/screens/anime/watch/controls/themes/player_control_theme_registry.dart';
 import 'package:anymex/utils/subtitle_translator.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/checkmark_tile.dart';
@@ -275,6 +276,20 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
         });
   }
 
+  void _showPlayerControlThemeDialog() {
+    showSelectionDialog<String>(
+      title: 'Control Theme',
+      items: PlayerControlThemeRegistry.themes.map((e) => e.id).toList(),
+      selectedItem: settings.playerControlThemeRx,
+      getTitle: (id) => PlayerControlThemeRegistry.resolve(id).name,
+      onItemSelected: (id) {
+        settings.playerControlTheme = id;
+        setState(() {});
+      },
+      leadingIcon: Icons.style_rounded,
+    );
+  }
+
   void _showResizeModeDialog() {
     final currentFit = settings.resizeMode;
     final selectedLabel = resizeModeList.firstWhere(
@@ -409,17 +424,17 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                     PlayerKeys.useLibass.set<bool>(val);
                                     setState(() {});
                                   }),
-                              // CustomTile(
-                              //   padding: 10,
-                              //   descColor:
-                              //       Theme.of(context).colorScheme.primary,
-                              //   isDescBold: true,
-                              //   icon: HugeIcons.strokeRoundedPlaySquare,
-                              //   onTap: () => showPlayerStyleDialog(),
-                              //   title: "Player Theme",
-                              //   description:
-                              //       numToPlayerStyle(settings.playerStyle),
-                              // ),
+                              CustomTile(
+                                padding: 10,
+                                descColor: Theme.of(context).colorScheme.primary,
+                                isDescBold: true,
+                                icon: HugeIcons.strokeRoundedPlaySquare,
+                                onTap: _showPlayerControlThemeDialog,
+                                title: 'Player Theme',
+                                description: PlayerControlThemeRegistry.resolve(
+                                  settings.playerControlTheme,
+                                ).name,
+                              ),
                               CustomSwitchTile(
                                   padding: const EdgeInsets.all(10),
                                   icon: Icons.stay_current_portrait,
