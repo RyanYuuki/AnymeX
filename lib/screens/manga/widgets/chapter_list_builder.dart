@@ -353,10 +353,19 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
     final continueChapter =
         chapterState.readChapter ?? chapterState.continueChapter;
 
-    final existsInList = continueChapter != null &&
-        filteredFullChapters.any((e) => e.link == continueChapter.link);
+    if (continueChapter == null) {
+      return const SizedBox.shrink();
+    }
 
-    if (!existsInList) {
+    var targetChapter = filteredFullChapters
+        .firstWhereOrNull((e) => e.link == continueChapter.link);
+
+    if (targetChapter == null) {
+      targetChapter = filteredFullChapters
+          .firstWhereOrNull((e) => e.number == continueChapter.number);
+    }
+
+    if (targetChapter == null) {
       return const SizedBox.shrink();
     }
 
@@ -366,12 +375,12 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
         onPressed: () => _chapterService.navigateToReading(
             widget.anilistData,
             filteredFullChapters,
-            continueChapter,
+            targetChapter!,
             context,
             () => setState(() {})),
         height: getResponsiveSize(context, mobileSize: 80, desktopSize: 100),
         backgroundImage: widget.anilistData.cover ?? widget.anilistData.poster,
-        chapter: continueChapter,
+        chapter: targetChapter,
       ),
     );
   }
