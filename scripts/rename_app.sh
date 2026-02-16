@@ -59,10 +59,17 @@ WINDOWS_CMAKE="windows/CMakeLists.txt"
 # Validate Arguments
 ###############################################
 if [ -z "$1" ]; then
-  log_error "Usage: $0 <new_version> (e.g., 1.0.0+1)"
+  log_error "Usage: $0 <pubspec_version> [display_version]"
 fi
 
-NEW_VERSION="$1"
+NEW_VERSION="$1"      # For pubspec.yaml (e.g., 3.0.4+26)
+DISPLAY_VERSION="$2"  # For settings_about.dart (e.g., v3.0.4-beta or v3.0.4+1-beta)
+
+# If no display version provided, use pubspec version's semver
+if [ -z "$DISPLAY_VERSION" ]; then
+  SEMVER=$(echo "$NEW_VERSION" | cut -d'+' -f1)
+  DISPLAY_VERSION="v${SEMVER}"
+fi
 
 echo "════════════════════════════════════════════"
 echo "  Cross-Platform Beta Rename"
@@ -71,7 +78,8 @@ echo "  Old Package: $OLD_PKG"
 echo "  New Package: $NEW_PKG"
 echo "  Old Name:    $OLD_APP_NAME"
 echo "  New Name:    $NEW_APP_NAME"
-echo "  Version:     $NEW_VERSION"
+echo "  Pubspec Version: $NEW_VERSION"
+echo "  Display Version: $DISPLAY_VERSION"
 echo "════════════════════════════════════════════"
 echo ""
 
@@ -302,14 +310,15 @@ else
     if [ -d "$DIR" ]; then
       log_info "Android: $folder ($SIZE px)"
 
-      $CONVERT_CMD "$BASE_ICON" -resize "${SIZE}x${SIZE}" "$DIR/ic_launcher.png" 2>/dev/null || log_warn "Failed to create ic_launcher.png"
-      $CONVERT_CMD "$BASE_ICON" -resize "${SIZE}x${SIZE}" "$DIR/ic_rounded_launcher.png" 2>/dev/null || log_warn "Failed to create ic_rounded_launcher.png"
-      $CONVERT_CMD "$TRANSPARENT_ICON" -resize "${SIZE}x${SIZE}" "$DIR/ic_launcher_foreground.png" 2>/dev/null || log_warn "Failed to create ic_launcher_foreground.png"
-      $CONVERT_CMD "$TRANSPARENT_ICON" -resize "${SIZE}x${SIZE}" -monochrome "$DIR/ic_launcher_monochrome.png" 2>/dev/null || log_warn "Failed to create ic_launcher_monochrome.png"
+      # Resize to fit within square, preserve aspect ratio, center with transparent background
+      $CONVERT_CMD "$BASE_ICON" -resize "${SIZE}x${SIZE}>" -background transparent -gravity center -extent "${SIZE}x${SIZE}" "$DIR/ic_launcher.png" 2>/dev/null || log_warn "Failed to create ic_launcher.png"
+      $CONVERT_CMD "$BASE_ICON" -resize "${SIZE}x${SIZE}>" -background transparent -gravity center -extent "${SIZE}x${SIZE}" "$DIR/ic_rounded_launcher.png" 2>/dev/null || log_warn "Failed to create ic_rounded_launcher.png"
+      $CONVERT_CMD "$TRANSPARENT_ICON" -resize "${SIZE}x${SIZE}>" -background transparent -gravity center -extent "${SIZE}x${SIZE}" "$DIR/ic_launcher_foreground.png" 2>/dev/null || log_warn "Failed to create ic_launcher_foreground.png"
+      $CONVERT_CMD "$TRANSPARENT_ICON" -resize "${SIZE}x${SIZE}>" -monochrome -background transparent -gravity center -extent "${SIZE}x${SIZE}" "$DIR/ic_launcher_monochrome.png" 2>/dev/null || log_warn "Failed to create ic_launcher_monochrome.png"
       $CONVERT_CMD -size "${SIZE}x${SIZE}" canvas:black "$DIR/ic_launcher_background.png" 2>/dev/null || log_warn "Failed to create ic_launcher_background.png"
 
-      $CONVERT_CMD "$BASE_ICON" -resize "$BANNER" "$DIR/tv_banner.png" 2>/dev/null || log_warn "Failed to create tv_banner.png"
-      $CONVERT_CMD "$BASE_ICON" -resize "$BANNER" "$DIR/tv_banner_adaptive_fore.png" 2>/dev/null || log_warn "Failed to create tv_banner_adaptive_fore.png"
+      $CONVERT_CMD "$BASE_ICON" -resize "$BANNER>" -background black -gravity center -extent "$BANNER" "$DIR/tv_banner.png" 2>/dev/null || log_warn "Failed to create tv_banner.png"
+      $CONVERT_CMD "$BASE_ICON" -resize "$BANNER>" -background black -gravity center -extent "$BANNER" "$DIR/tv_banner_adaptive_fore.png" 2>/dev/null || log_warn "Failed to create tv_banner_adaptive_fore.png"
       $CONVERT_CMD -size "$BANNER" canvas:black "$DIR/tv_banner_adaptive_back.png" 2>/dev/null || log_warn "Failed to create tv_banner_adaptive_back.png"
 
       log_success "Android icons updated in $DIR"
@@ -326,7 +335,8 @@ else
       if [ -f "$ICON" ]; then
         SIZE=$($IDENTIFY_CMD -format "%wx%h" "$ICON" 2>/dev/null || echo "")
         if [ -n "$SIZE" ]; then
-          $CONVERT_CMD "$BETA_LOGO_TRANSPARENT" -resize "$SIZE" "$ICON" 2>/dev/null || log_warn "Failed to update $ICON"
+          # Resize to fit, preserve aspect ratio, center with transparent background - NO CROPPING
+          $CONVERT_CMD "$BETA_LOGO_TRANSPARENT" -resize "${SIZE}>" -background transparent -gravity center -extent "$SIZE" "$ICON" 2>/dev/null || log_warn "Failed to update $ICON"
         fi
       fi
     done
@@ -345,7 +355,8 @@ else
       if [ -f "$ICON" ]; then
         SIZE=$($IDENTIFY_CMD -format "%wx%h" "$ICON" 2>/dev/null || echo "")
         if [ -n "$SIZE" ]; then
-          $CONVERT_CMD "$BETA_LOGO_TRANSPARENT" -resize "$SIZE" "$ICON" 2>/dev/null || log_warn "Failed to update $ICON"
+          # Resize to fit, preserve aspect ratio, center with transparent background - NO CROPPING
+          $CONVERT_CMD "$BETA_LOGO_TRANSPARENT" -resize "${SIZE}>" -background transparent -gravity center -extent "$SIZE" "$ICON" 2>/dev/null || log_warn "Failed to update $ICON"
         fi
       fi
     done
@@ -360,8 +371,9 @@ else
   WIN_ICO="windows/runner/resources/app_icon.ico"
   if [ -f "$WIN_ICO" ]; then
     log_info "Windows: Updating $WIN_ICO"
-    # multi-size ICO from one PNG
-    $CONVERT_CMD "$BETA_LOGO" -resize 256x256 -define icon:auto-resize=16,24,32,48,64,128,256 "$WIN_ICO" 2>/dev/null || log_warn "Failed to update Windows icon"
+    # Resize to fit within 256x256, preserve aspect ratio, center with transparent background - NO CROPPING
+    # Then create multi-size ICO from one PNG
+    $CONVERT_CMD "$BETA_LOGO" -resize "256x256>" -background transparent -gravity center -extent "256x256" -define icon:auto-resize=16,24,32,48,64,128,256 "$WIN_ICO" 2>/dev/null || log_warn "Failed to update Windows icon"
     log_success "Windows app_icon.ico updated from beta logo"
   else
     log_warn "Windows ICO not found at $WIN_ICO (skipping)"
@@ -382,6 +394,21 @@ log_info "Cleaning Flutter build cache..."
 flutter clean > /dev/null 2>&1 || true
 rm -rf .dart_tool/
 log_success "Build cache cleaned"
+
+###############################################
+# BETA: Update version display in settings_about.dart
+###############################################
+log_info "Beta: Updating version display in settings_about.dart..."
+
+DART_ABOUT_FILE="lib/screens/settings/sub_settings/settings_about.dart"
+
+if [ -f "$DART_ABOUT_FILE" ]; then
+  # Replace version display with the tag version (no build number)
+  sed "${SED_INPLACE[@]}" 's/version: "v\$version"/version: "'"$DISPLAY_VERSION"'"/g' "$DART_ABOUT_FILE"
+  log_success "Updated version display to $DISPLAY_VERSION"
+else
+  log_warn "Settings about file not found at $DART_ABOUT_FILE. Skipping."
+fi
 
 ###############################################
 # Summary
