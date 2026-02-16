@@ -4,8 +4,9 @@ import 'dart:io';
 import 'package:anymex/constants/contants.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/data_keys/keys.dart';
+import 'package:anymex/screens/anime/watch/controls/themes/setup/media_indicator_theme_registry.dart';
+import 'package:anymex/screens/anime/watch/controls/themes/setup/player_control_theme_registry.dart';
 import 'package:anymex/screens/other_features.dart';
-import 'package:anymex/screens/anime/watch/controls/themes/player_control_theme_registry.dart';
 import 'package:anymex/utils/subtitle_translator.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/checkmark_tile.dart';
@@ -95,7 +96,8 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
     _hiddenButtonIds = [];
     _buttonConfigs = {};
 
-    final String jsonString = PlayerUiKeys.bottomControlsSettings.get<String>('{}');
+    final String jsonString =
+        PlayerUiKeys.bottomControlsSettings.get<String>('{}');
     final Map<String, dynamic> decodedConfig = json.decode(jsonString);
 
     if (decodedConfig.isEmpty) _initializeDefaultButtonLayout();
@@ -290,6 +292,20 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
     );
   }
 
+  void _showMediaIndicatorThemeDialog() {
+    showSelectionDialog<String>(
+      title: 'Swipe Indicator Theme',
+      items: MediaIndicatorThemeRegistry.themes.map((e) => e.id).toList(),
+      selectedItem: settings.mediaIndicatorThemeRx,
+      getTitle: (id) => MediaIndicatorThemeRegistry.resolve(id).name,
+      onItemSelected: (id) {
+        settings.mediaIndicatorTheme = id;
+        setState(() {});
+      },
+      leadingIcon: Icons.tune_rounded,
+    );
+  }
+
   void _showResizeModeDialog() {
     final currentFit = settings.resizeMode;
     final selectedLabel = resizeModeList.firstWhere(
@@ -426,13 +442,27 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                   }),
                               CustomTile(
                                 padding: 10,
-                                descColor: Theme.of(context).colorScheme.primary,
+                                descColor:
+                                    Theme.of(context).colorScheme.primary,
                                 isDescBold: true,
                                 icon: HugeIcons.strokeRoundedPlaySquare,
                                 onTap: _showPlayerControlThemeDialog,
                                 title: 'Player Theme',
                                 description: PlayerControlThemeRegistry.resolve(
                                   settings.playerControlTheme,
+                                ).name,
+                              ),
+                              CustomTile(
+                                padding: 10,
+                                descColor:
+                                    Theme.of(context).colorScheme.primary,
+                                isDescBold: true,
+                                icon: Icons.tune_rounded,
+                                onTap: _showMediaIndicatorThemeDialog,
+                                title: 'Swipe Indicator Theme',
+                                description:
+                                    MediaIndicatorThemeRegistry.resolve(
+                                  settings.mediaIndicatorTheme,
                                 ).name,
                               ),
                               CustomSwitchTile(

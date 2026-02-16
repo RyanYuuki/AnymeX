@@ -16,6 +16,8 @@ class Settings extends GetxController {
   late Rx<PlayerSettings> playerSettings;
   final canShowUpdate = true.obs;
   final playerControlThemeRx = 'default'.obs;
+  final mediaIndicatorThemeRx = 'default'.obs;
+  final readerControlThemeRx = 'default'.obs;
 
   RxBool enableBetaUpdates = false.obs;
 
@@ -51,6 +53,10 @@ class Settings extends GetxController {
     selectedProfile = PlayerUiKeys.selectedProfile.get<String>("MID-END");
     playerControlThemeRx.value =
         PlayerUiKeys.playerControlTheme.get<String>('default');
+    mediaIndicatorThemeRx.value =
+        PlayerUiKeys.mediaIndicatorTheme.get<String>('default');
+    readerControlThemeRx.value =
+        ReaderKeys.readerControlTheme.get<String>('default');
 
     enableBetaUpdates.value = General.enableBetaUpdates.get<bool>(false);
 
@@ -249,6 +255,18 @@ class Settings extends GetxController {
   set playerControlTheme(String value) {
     playerControlThemeRx.value = value;
     PlayerUiKeys.playerControlTheme.set(value);
+  }
+
+  String get mediaIndicatorTheme => mediaIndicatorThemeRx.value;
+  set mediaIndicatorTheme(String value) {
+    mediaIndicatorThemeRx.value = value;
+    PlayerUiKeys.mediaIndicatorTheme.set(value);
+  }
+
+  String get readerControlTheme => readerControlThemeRx.value;
+  set readerControlTheme(String value) {
+    readerControlThemeRx.value = value;
+    ReaderKeys.readerControlTheme.set(value);
   }
 
   int get subtitleOutlineWidth =>

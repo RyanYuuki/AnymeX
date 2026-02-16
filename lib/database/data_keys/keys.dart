@@ -27,6 +27,7 @@ enum PlayerKeys { useLibass, useMediaKit }
 enum PlayerUiKeys {
   bottomControlsSettings,
   playerControlTheme,
+  mediaIndicatorTheme,
   currentVisualProfile,
   currentVisualSettings,
   selectedShader,
@@ -37,6 +38,7 @@ enum PlayerUiKeys {
 }
 
 enum ReaderKeys {
+  readerControlTheme,
   readingLayout,
   readingDirection,
   imageWidth,

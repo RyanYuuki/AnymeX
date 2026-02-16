@@ -325,15 +325,11 @@ class SourceController extends GetxController implements BaseService {
       _kAnimeRepo => SourceKeys.activeAnimeRepo.get<String>(""),
       _kMangaRepo => SourceKeys.activeMangaRepo.get<String>(""),
       _kNovelRepo => SourceKeys.activeNovelRepo.get<String>(""),
-      _kAniyomiAnimeRepo =>
-        SourceKeys.activeAniyomiAnimeRepo.get<String>(""),
-      _kAniyomiMangaRepo =>
-        SourceKeys.activeAniyomiMangaRepo.get<String>(""),
+      _kAniyomiAnimeRepo => SourceKeys.activeAniyomiAnimeRepo.get<String>(""),
+      _kAniyomiMangaRepo => SourceKeys.activeAniyomiMangaRepo.get<String>(""),
       'activeSourceId' => SourceKeys.activeSourceId.get<String>(""),
-      'activeMangaSourceId' =>
-        SourceKeys.activeMangaSourceId.get<String>(""),
-      'activeNovelSourceId' =>
-        SourceKeys.activeNovelSourceId.get<String>(""),
+      'activeMangaSourceId' => SourceKeys.activeMangaSourceId.get<String>(""),
+      'activeNovelSourceId' => SourceKeys.activeNovelSourceId.get<String>(""),
       _ => '',
     };
   }
@@ -427,17 +423,17 @@ class SourceController extends GetxController implements BaseService {
         .findAllSync();
 
     _homeSections.value = [
-      Obx(() => buildSection(
-            'Continue Watching',
-            animeLibrary,
-            variant: DataVariant.offline,
-          )),
-      Obx(() => buildSection(
-            'Continue Reading',
-            mangaLibrary,
-            variant: DataVariant.offline,
-            type: ItemType.manga,
-          )),
+      buildSection(
+        'Continue Watching',
+        animeLibrary,
+        variant: DataVariant.offline,
+      ),
+      buildSection(
+        'Continue Reading',
+        mangaLibrary,
+        variant: DataVariant.offline,
+        type: ItemType.manga,
+      ),
     ];
   }
 
