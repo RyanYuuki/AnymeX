@@ -41,11 +41,13 @@ class _ProgressSliderState extends State<ProgressSlider> {
           child: Slider(
             year2023: false,
             label: PlayerUtils.formatDuration(Duration(milliseconds: position)),
-            divisions: duration <= 0
-                ? 1
-                : fullDuration.inSeconds < 60
-                    ? fullDuration.inSeconds
-                    : Duration(milliseconds: duration).inSeconds ~/ 10,
+            divisions: widget.style == SliderStyle.ios
+                ? null
+                : duration <= 0
+                    ? 1
+                    : fullDuration.inSeconds < 60
+                        ? fullDuration.inSeconds
+                        : Duration(milliseconds: duration).inSeconds ~/ 10,
             focusNode: FocusNode(canRequestFocus: false, skipTraversal: true),
             min: 0,
             value: clampedPosition,
