@@ -740,19 +740,81 @@ class PlayerBottomSheets {
     );
   }
 
-  static showLoader() {
+  static void showLoader() {
     Get.bottomSheet(
-      ClipRRect(
-        borderRadius: BorderRadius.circular((20)),
-        child: Container(
-          color: Get.theme.colorScheme.surface,
-          child: const Center(
-            child: ExpressiveLoadingIndicator(),
+      PopScope(
+        canPop: false,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+            width: double.infinity,
+            color: Get.theme.colorScheme.surface,
+            child: const Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(height: 32),
+                ExpressiveLoadingIndicator(),
+                SizedBox(height: 24),
+                _LoaderContent(),
+                SizedBox(height: 24),
+              ],
+            ),
           ),
         ),
       ),
+      isDismissible: false,
+      enableDrag: false,
     );
   }
 
-  static hideLoader() => Get.back();
+  static hideLoader() {
+    if (Get.isBottomSheetOpen ?? false) {
+      Get.back();
+    }
+  }
+}
+
+class _LoaderContent extends StatefulWidget {
+  const _LoaderContent();
+
+  @override
+  State<_LoaderContent> createState() => _LoaderContentState();
+}
+
+class _LoaderContentState extends State<_LoaderContent> {
+  bool _showWarning = false;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(const Duration(seconds: 8), () {
+      if (mounted) setState(() => _showWarning = true);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      child: _showWarning
+          ? Column(
+              children: [
+                Text(
+                  'Taking longer than expected...',
+                  style: Get.theme.textTheme.bodyMedium?.copyWith(
+                    color: Get.theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextButton.icon(
+                  onPressed: () => Get.back(), // closes bottom sheet only
+                  icon: const Icon(Icons.arrow_back_rounded),
+                  label: const Text('Go Back'),
+                ),
+              ],
+            )
+          : const SizedBox.shrink(),
+    );
+  }
 }
