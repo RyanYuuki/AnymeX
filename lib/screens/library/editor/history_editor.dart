@@ -1,18 +1,20 @@
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
+import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
-import 'package:anymex/screens/library/controller/library_controller.dart';
-import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 class HistoryEditor extends StatefulWidget {
-  const HistoryEditor({super.key});
+  final ItemType type;
+
+  const HistoryEditor({super.key, required this.type});
 
   @override
   State<HistoryEditor> createState() => _HistoryEditorState();
@@ -24,32 +26,47 @@ class _HistoryEditorState extends State<HistoryEditor> {
 
   final offlineStorage = Get.find<OfflineStorageController>();
 
-  Future<void> _deleteHistory(OfflineMedia media) async {
-    final mediaToUpdate = offlineStorage.getAnimeById(media.mediaId ?? '');
-    if (mediaToUpdate == null) return;
+  bool get _isAnime => widget.type == ItemType.anime;
+  String get _historyLabel => _isAnime ? 'watch history' : 'read history';
+  String get _historyTitle => _isAnime ? 'Watch History' : 'Read History';
 
-    await offlineStorage.addOrUpdateAnime(
-      convertOfflineToMedia(mediaToUpdate),
-      mediaToUpdate.episodes,
-      null,
+  Stream<List<OfflineMedia>> _historyStream() {
+    if (widget.type == ItemType.anime) {
+      return offlineStorage.watchAnimeLibrary().map((items) =>
+          items.where((e) => e.currentEpisode?.currentTrack != null).toList()
+            ..sort((a, b) => (b.currentEpisode?.lastWatchedTime ?? 0)
+                .compareTo(a.currentEpisode?.lastWatchedTime ?? 0)));
+    }
+
+    if (widget.type == ItemType.manga) {
+      return offlineStorage.watchMangaLibrary().map((items) =>
+          items.where((e) => e.currentChapter?.link != null).toList()
+            ..sort((a, b) => (b.currentChapter?.lastReadTime ?? 0)
+                .compareTo(a.currentChapter?.lastReadTime ?? 0)));
+    }
+
+    return offlineStorage.watchNovelLibrary().map((items) =>
+        items.where((e) => e.currentChapter?.link != null).toList()
+          ..sort((a, b) => (b.currentChapter?.lastReadTime ?? 0)
+              .compareTo(a.currentChapter?.lastReadTime ?? 0)));
+  }
+
+  Future<void> _deleteHistory(OfflineMedia media) async {
+    final deleted = await offlineStorage.clearMediaHistory(
+      media.mediaId ?? '',
+      mediaType: widget.type,
     );
+    if (!deleted) return;
 
     HapticFeedback.lightImpact();
     snackBar('History item deleted');
-    Get.delete<LibraryController>();
   }
 
   Future<void> _deleteAllHistory(List<OfflineMedia> items) async {
-    for (var media in items) {
-      final mediaToUpdate = offlineStorage.getAnimeById(media.mediaId ?? '');
-      if (mediaToUpdate == null) continue;
-
-      await offlineStorage.addOrUpdateAnime(
-        convertOfflineToMedia(mediaToUpdate),
-        mediaToUpdate.episodes,
-        null,
-      );
-    }
+    final deletedCount = await offlineStorage.clearMediaHistoryBulk(
+      items.map((e) => e.mediaId ?? ''),
+      mediaType: widget.type,
+    );
 
     setState(() {
       _selectedMediaIds.clear();
@@ -57,21 +74,14 @@ class _HistoryEditorState extends State<HistoryEditor> {
     });
 
     HapticFeedback.mediumImpact();
-    snackBar('All history cleared');
-    Get.delete<LibraryController>();
+    snackBar(deletedCount > 0 ? 'All history cleared' : 'No history to clear');
   }
 
-  Future<void> _deleteSelectedHistory(List<OfflineMedia> allItems) async {
-    for (var mediaId in _selectedMediaIds) {
-      final mediaToUpdate = offlineStorage.getAnimeById(mediaId);
-      if (mediaToUpdate == null) continue;
-
-      await offlineStorage.addOrUpdateAnime(
-        convertOfflineToMedia(mediaToUpdate),
-        mediaToUpdate.episodes,
-        null,
-      );
-    }
+  Future<void> _deleteSelectedHistory() async {
+    final deletedCount = await offlineStorage.clearMediaHistoryBulk(
+      _selectedMediaIds,
+      mediaType: widget.type,
+    );
 
     setState(() {
       _selectedMediaIds.clear();
@@ -79,8 +89,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
     });
 
     HapticFeedback.mediumImpact();
-    snackBar('${_selectedMediaIds.length} history items deleted');
-    Get.delete<LibraryController>();
+    snackBar('$deletedCount history items deleted');
   }
 
   void _toggleSelection(String mediaId) {
@@ -119,17 +128,33 @@ class _HistoryEditorState extends State<HistoryEditor> {
     HapticFeedback.selectionClick();
   }
 
+  String _formatChapterNumber(double? number) {
+    if (number == null) return '?';
+    return number % 1 == 0 ? number.toInt().toString() : number.toString();
+  }
+
+  Widget _buildHistoryProgress(OfflineMedia item, ThemeData theme) {
+    if (_isAnime) {
+      final episode = item.currentEpisode;
+      if (episode?.currentTrack == null) return const SizedBox.shrink();
+      return _buildEpisodeProgressBar(episode!, theme);
+    }
+
+    final chapter = item.currentChapter;
+    if (chapter?.pageNumber == null || chapter?.totalPages == null) {
+      return const SizedBox.shrink();
+    }
+
+    return _buildChapterProgressBar(chapter!, theme);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Glow(
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: StreamBuilder<List<OfflineMedia>>(
-          stream: offlineStorage.watchAnimeLibrary().map((items) => items
-              .where((e) => e.currentEpisode?.currentTrack != null)
-              .toList()
-            ..sort((a, b) => (b.currentEpisode?.lastWatchedTime ?? 0)
-                .compareTo(a.currentEpisode?.lastWatchedTime ?? 0))),
+          stream: _historyStream(),
           builder: (context, snapshot) {
             final historyItems = snapshot.data ?? [];
 
@@ -144,9 +169,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
           },
         ),
         floatingActionButton: StreamBuilder<List<OfflineMedia>>(
-          stream: offlineStorage.watchAnimeLibrary().map((items) => items
-              .where((e) => e.currentEpisode?.currentTrack != null)
-              .toList()),
+          stream: _historyStream(),
           builder: (context, snapshot) {
             final historyItems = snapshot.data ?? [];
             return _buildFAB(historyItems);
@@ -208,7 +231,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Watch History',
+                  _historyTitle,
                   style: TextStyle(
                     color: theme.colorScheme.onSurface,
                     fontWeight: FontWeight.w700,
@@ -314,7 +337,19 @@ class _HistoryEditorState extends State<HistoryEditor> {
     final theme = Theme.of(context);
     final mediaId = item.mediaId ?? '';
     final isSelected = _selectedMediaIds.contains(mediaId);
-    final episode = item.currentEpisode!;
+    final episode = item.currentEpisode;
+    final chapter = item.currentChapter;
+
+    final subtitle = _isAnime
+        ? (episode?.title ?? 'Episode ${episode?.number ?? '?'}')
+        : (chapter?.title ??
+            'Chapter ${_formatChapterNumber(chapter?.number)}');
+    final subMeta = _isAnime
+        ? 'Episode ${episode?.number ?? '?'}'
+        : 'Chapter ${_formatChapterNumber(chapter?.number)}';
+    final imageUrl = _isAnime
+        ? (episode?.thumbnail ?? item.poster ?? item.cover ?? '')
+        : (item.cover ?? item.poster ?? '');
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
@@ -393,8 +428,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
                   child: AnymeXImage(
                     width: 80,
                     height: 80,
-                    imageUrl:
-                        episode.thumbnail ?? item.poster ?? item.cover ?? '',
+                    imageUrl: imageUrl,
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -415,7 +449,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        episode.title ?? 'Episode ${episode.number}',
+                        subtitle,
                         style: TextStyle(
                           color: theme.colorScheme.onSurface.opaque(0.7),
                           fontSize: 14,
@@ -426,7 +460,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Episode ${episode.number}',
+                        subMeta,
                         style: TextStyle(
                           color: theme.colorScheme.onSurface.opaque(0.6),
                           fontSize: 12,
@@ -434,8 +468,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      if (episode.currentTrack != null)
-                        _buildProgressBar(episode, theme),
+                      _buildHistoryProgress(item, theme),
                     ],
                   ),
                 ),
@@ -470,7 +503,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
     );
   }
 
-  Widget _buildProgressBar(Episode episode, ThemeData theme) {
+  Widget _buildEpisodeProgressBar(Episode episode, ThemeData theme) {
     final currentTrack = episode.timeStampInMilliseconds ?? 1;
     final totalDuration = episode.durationInMilliseconds ?? 1;
     final progress = (currentTrack / totalDuration).clamp(0.0, 1.0);
@@ -490,6 +523,50 @@ class _HistoryEditorState extends State<HistoryEditor> {
             ),
             Text(
               ' / ${_formatDuration(totalDuration)}',
+              style: TextStyle(
+                color: theme.colorScheme.onSurface.opaque(0.4),
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(4),
+          child: LinearProgressIndicator(
+            value: progress,
+            backgroundColor: theme.colorScheme.surfaceVariant.opaque(0.3),
+            valueColor: AlwaysStoppedAnimation<Color>(
+              theme.colorScheme.primary,
+            ),
+            minHeight: 6,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildChapterProgressBar(Chapter chapter, ThemeData theme) {
+    final currentPage = chapter.pageNumber ?? 1;
+    final totalPages = (chapter.totalPages ?? 1) <= 0 ? 1 : chapter.totalPages!;
+    final progress = (currentPage / totalPages).clamp(0.0, 1.0);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              '$currentPage',
+              style: TextStyle(
+                color: theme.colorScheme.onSurface.opaque(0.6),
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            Text(
+              ' / $totalPages pages',
               style: TextStyle(
                 color: theme.colorScheme.onSurface.opaque(0.4),
                 fontSize: 11,
@@ -550,7 +627,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
           ),
           const SizedBox(height: 24),
           Text(
-            'No watch history',
+            _isAnime ? 'No watch history' : 'No read history',
             style: TextStyle(
               color: theme.colorScheme.onSurface,
               fontSize: 24,
@@ -559,7 +636,9 @@ class _HistoryEditorState extends State<HistoryEditor> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Your watch history will appear here\nonce you start watching',
+            _isAnime
+                ? 'Your watch history will appear here\nonce you start watching'
+                : 'Your read history will appear here\nonce you start reading',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: theme.colorScheme.onSurface.opaque(0.6),
@@ -578,7 +657,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
 
     if (_isSelecting && _selectedMediaIds.isNotEmpty) {
       return FloatingActionButton.extended(
-        onPressed: () => _deleteSelectedHistory(historyItems),
+        onPressed: _deleteSelectedHistory,
         backgroundColor: theme.colorScheme.error.opaque(0.7),
         foregroundColor: theme.colorScheme.onError,
         elevation: 8,
@@ -617,7 +696,13 @@ class _HistoryEditorState extends State<HistoryEditor> {
 
   void _showDeleteDialog(OfflineMedia item) {
     final theme = Theme.of(context);
-    final episode = item.currentEpisode!;
+    final episode = item.currentEpisode;
+    final chapter = item.currentChapter;
+
+    final itemName = _isAnime
+        ? (episode?.title ?? 'Episode ${episode?.number ?? '?'}')
+        : (chapter?.title ??
+            'Chapter ${_formatChapterNumber(chapter?.number)}');
 
     showDialog(
       context: context,
@@ -632,7 +717,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
           ),
         ),
         content: Text(
-          'Remove "${episode.title ?? 'Episode ${episode.number}'}" from your watch history?',
+          'Remove "$itemName" from your $_historyLabel?',
           style: TextStyle(color: theme.colorScheme.onSurface),
         ),
         actions: [
@@ -677,7 +762,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
           ),
         ),
         content: Text(
-          'Are you sure you want to clear all watch history? This action cannot be undone.',
+          'Are you sure you want to clear all $_historyLabel? This action cannot be undone.',
           style: TextStyle(color: theme.colorScheme.onSurface),
         ),
         actions: [

@@ -104,6 +104,7 @@ class HistoryModel {
                 } else {
                   if (media.currentEpisode?.source == null) {
                     snackBar("Cant Play since user closed the app abruptly");
+                    return;
                   }
                   final source = Get.find<SourceController>()
                       .getExtensionByName(media.currentEpisode!.source!);

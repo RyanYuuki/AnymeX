@@ -3,7 +3,7 @@ import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/database/isar_models/video.dart' as model;
 import 'package:anymex/models/Media/media.dart' as anymex;
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
-import 'package:anymex/screens/anime/watch/controls/themes/themed_controls.dart';
+import 'package:anymex/screens/anime/watch/controls/themes/setup/themed_controls.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/double_tap_seek.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/overlay.dart';
