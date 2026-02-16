@@ -36,6 +36,8 @@ import 'package:rxdart/rxdart.dart' show ThrottleExtensions;
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:volume_controller/volume_controller.dart';
+import 'package:flutter_in_app_pip/flutter_in_app_pip.dart';
+import '../controls/widgets/pip_ui.dart';
 
 import '../../../../database/isar_models/track.dart' as model;
 
@@ -85,6 +87,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final String? itemName;
   final String? offlineVideoPath;
   final bool shouldTrack;
+
+  final RxBool isPipMode = false.obs;
 
   PlayerController(model.Video video, Episode episode, this.episodeList,
       this.anilistData, List<model.Video> episodes,
@@ -305,6 +309,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   @override
   void onClose() {
+    if (isPipMode.value) {
+      PictureInPictureController.instance.stop();
+    }
     WidgetsBinding.instance.removeObserver(this);
     super.onClose();
   }
@@ -355,6 +362,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         return DeviceOrientation.landscapeLeft;
       } else if (event.x < -threshold) {
         return DeviceOrientation.landscapeRight;
+
       }
 
       if (event.y.abs() < 0.5) {
@@ -956,6 +964,20 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _basePlayer.setAudioTrack(track);
   }
 
+  void togglePip() async {
+    if (isPipMode.value) {
+      PictureInPictureController.instance.stop();
+      isPipMode.value = false;
+    } else {
+      isPipMode.value = true;
+      PictureInPictureController.instance.start(
+        widget: PipUi(controller: this),
+        parentContext: Get.context!,
+        aspectRatio: 16 / 9,
+      );
+    }
+  }
+
   void setSubtitleTrack(SubtitleTrack track) {
     _basePlayer.setSubtitleTrack(track);
   }
@@ -1206,7 +1228,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     onUserInteraction();
   }
 
-  Episode? _getNextNonFillerEpisode() {
+   Episode? _getNextNonFillerEpisode() {
     final currentIndex = currentEpisodeIndex;
     int skippedCount = 0;
 
@@ -1258,8 +1280,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void openColorProfileBottomSheet(BuildContext context) {
     if (_basePlayer is MediaKitPlayer) {
-      ColorProfileBottomSheet.showColorProfileSheet(
-          context, this, (_basePlayer as MediaKitPlayer).nativePlayer);
+      ColorProfileManager().applyColorProfile(currentVisualProfile.value,
+          (_basePlayer as MediaKitPlayer).nativePlayer);
     } else {
       snackBar('Color profiles only available with MediaKit player');
     }
