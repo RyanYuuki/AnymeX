@@ -498,22 +498,32 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     final oldChapter = currentChapter.value;
     final oldPage = currentPageIndex.value;
 
-    Future.microtask(() {
-      _performSave(
-          reason: 'Chapter navigation',
-          manualChapter: oldChapter,
-          manualPage: oldPage);
-    });
+   
+    _performSave(
+        reason: 'Chapter navigation',
+        manualChapter: oldChapter,
+        manualPage: oldPage);
 
     currentChapter.value = chapterList[index];
     
-    // Reset page index to 1 when navigating to a different chapter
-    // This ensures we start from the beginning of the new chapter
-    currentPageIndex.value = 1;
+   
+    final savedChap = offlineStorageController.getReadChapter(
+        media.id, chapterList[index].number ?? 0);
+    
+    
+    savedChapter.value = savedChap;
+    
+    final savedPage = savedChap?.pageNumber ?? chapterList[index].pageNumber;
+
+    if (savedPage != null && savedPage > 1 && savedPage <= (chapterList[index].totalPages ?? 9999)) {
+      currentPageIndex.value = savedPage;
+    } else {
+      currentPageIndex.value = 1;
+    }
 
     final chapter = currentChapter.value;
     if (chapter?.link != null) {
-      await fetchImages(chapter!.link!);
+      await fetchImages(chapter!.link!, initialPage: currentPageIndex.value);
     } else {
       _isNavigating = false;
     }
@@ -1093,7 +1103,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     canGoNext.value = index < chapterList.length - 1;
   }
 
-  Future<void> fetchImages(String url) async {
+  Future<void> fetchImages(String url, {int? initialPage}) async {
     _isNavigating = true;
     _resetOverscroll();
     WidgetsBinding.instance.addPostFrameCallback((_) => _initTracking());
@@ -1102,7 +1112,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     final chapterBeingLoaded = currentChapter.value;
     final savedPageForThisChapter = savedChapter.value?.pageNumber;
     
-    currentPageIndex.value = 1;
+   
+    currentPageIndex.value = initialPage ?? 1;
     _syncAvailability();
 
     try {
@@ -1128,8 +1139,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         // Determine which page to navigate to:
         // 1. If there's a saved page for this specific chapter number, use that
         // 2. Otherwise, if it's the same chapter we were in before loading and we have a saved page, use that
-        // 3. Default to page 1
-        int targetPageIndex = 0; // Index 0 = page 1
+        // 3. Default to initialPage passed (or page 1)
+        int targetPageIndex = (initialPage ?? 1) - 1; 
         
         if (savedPageForThisChapter != null && 
             savedPageForThisChapter > 0 && 
@@ -1156,6 +1167,15 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       } else {
         throw Exception('No pages found for this chapter');
       }
+      
+    
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (readingLayout.value == MangaPageViewMode.paged) {
+          _syncPageToSpread();
+        } else {
+             _syncPageToSpread();
+        }
+      });
     } catch (e) {
       Logger.i('Error fetching images: ${e.toString()}');
       loadingState.value = LoadingState.error;
