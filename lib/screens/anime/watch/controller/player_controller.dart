@@ -1280,8 +1280,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void openColorProfileBottomSheet(BuildContext context) {
     if (_basePlayer is MediaKitPlayer) {
-      ColorProfileManager().applyColorProfile(currentVisualProfile.value,
-          (_basePlayer as MediaKitPlayer).nativePlayer);
+      ColorProfileBottomSheet.showColorProfileSheet(
+          context, this, (_basePlayer as MediaKitPlayer).nativePlayer);
     } else {
       snackBar('Color profiles only available with MediaKit player');
     }
