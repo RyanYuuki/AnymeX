@@ -1228,7 +1228,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     onUserInteraction();
   }
 
-   Episode? _getNextNonFillerEpisode() {
+  Episode? _getNextNonFillerEpisode() {
     final currentIndex = currentEpisodeIndex;
     int skippedCount = 0;
 
