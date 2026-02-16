@@ -362,7 +362,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         return DeviceOrientation.landscapeLeft;
       } else if (event.x < -threshold) {
         return DeviceOrientation.landscapeRight;
-
       }
 
       if (event.y.abs() < 0.5) {
