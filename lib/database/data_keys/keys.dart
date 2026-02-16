@@ -38,6 +38,7 @@ enum PlayerUiKeys {
 }
 
 enum ReaderKeys {
+  readerControlTheme,
   readingLayout,
   readingDirection,
   imageWidth,
