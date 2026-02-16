@@ -1376,3 +1376,4 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       Logger.i('Failed to track online: $e');
     }
   }
+}

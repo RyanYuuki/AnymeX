@@ -304,7 +304,6 @@ class Deeplink {
       navigate(() => MangaDetailsPage(
             media: media,
             tag: tag,
-            initialTabIndex: target.initialTabIndex,
           ));
       return;
     }
