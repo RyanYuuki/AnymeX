@@ -372,6 +372,7 @@ class BetterPlayerImpl extends BasePlayer {
     double? width,
     double? height,
   }) {
+    _controller.setOverriddenFit(fit ?? BoxFit.contain);
     return BetterPlayer(
       controller: _controller,
     );
