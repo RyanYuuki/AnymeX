@@ -3,8 +3,8 @@ import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:anymex/database/data_keys/keys.dart';
-import 'package:anymex/screens/anime/watch/controls/themes/player_control_theme.dart';
-import 'package:anymex/screens/anime/watch/controls/themes/player_control_theme_data.dart';
+import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
+import 'package:anymex/screens/anime/watch/controls/themes/setup/player_control_theme.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart';
@@ -25,8 +25,8 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
   String get name => 'iOS 26 Glass';
 
   @override
-  Widget buildTopControls(BuildContext context, PlayerTopSectionData data) {
-    final controller = data.controller;
+  Widget buildTopControls(BuildContext context, PlayerController controller) {
+    final isDesktop = !_isMobilePlatform;
 
     return Obx(() {
       if (controller.isLocked.value) {
@@ -55,10 +55,10 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
               right: false,
               child: Padding(
                 padding: EdgeInsets.symmetric(
-                  horizontal: data.isDesktop ? 28 : 14,
-                  vertical: data.isDesktop ? 16 : 8,
+                  horizontal: isDesktop ? 28 : 14,
+                  vertical: isDesktop ? 16 : 8,
                 ),
-                child: _buildTopSection(context, data),
+                child: _buildTopSection(context, controller, isDesktop),
               ),
             ),
           ),
@@ -67,15 +67,15 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
     });
   }
 
-  Widget _buildTopSection(BuildContext context, PlayerTopSectionData data) {
-    final controller = data.controller;
-    final theme = data.theme;
+  Widget _buildTopSection(
+      BuildContext context, PlayerController controller, bool isDesktop) {
+    final theme = Theme.of(context);
 
     return _GlassPanel(
       radius: 24,
       padding: EdgeInsets.symmetric(
-        horizontal: data.isDesktop ? 16 : 12,
-        vertical: data.isDesktop ? 12 : 10,
+        horizontal: isDesktop ? 16 : 12,
+        vertical: isDesktop ? 12 : 10,
       ),
       child: Row(
         children: [
@@ -173,9 +173,8 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
   }
 
   @override
-  Widget buildCenterControls(
-      BuildContext context, PlayerCenterSectionData data) {
-    final controller = data.controller;
+  Widget buildCenterControls(BuildContext context, PlayerController controller) {
+    final isDesktop = !_isMobilePlatform;
 
     return Obx(() {
       if (controller.isLocked.value) return const SizedBox.shrink();
@@ -191,72 +190,64 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
               scale: controller.showControls.value ? 1 : 0.88,
               duration: const Duration(milliseconds: 320),
               curve: Curves.easeOutBack,
-              child: _GlassPanel(
-                radius: 40,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 18,
-                  vertical: 14,
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _IosGlassIconButton(
-                      icon: CupertinoIcons.backward_end_fill,
-                      tooltip: 'Previous Episode',
-                      enabled: controller.canGoBackward.value,
-                      onPressed: () => controller.navigator(false),
-                    ),
-                    const SizedBox(width: 12),
-                    _IosGlassIconButton(
-                      icon: data.isDesktop
-                          ? CupertinoIcons.gobackward_30
-                          : CupertinoIcons.gobackward_15,
-                      tooltip: data.isDesktop ? 'Replay 30s' : 'Replay',
-                      onPressed: () {
-                        final currentPos = controller.currentPosition.value;
-                        final seekBy = Duration(
-                            seconds: data.isDesktop
-                                ? 30
-                                : controller.playerSettings.seekDuration);
-                        final newPos = currentPos - seekBy;
-                        controller.seekTo(
-                          newPos.isNegative ? Duration.zero : newPos,
-                        );
-                      },
-                    ),
-                    const SizedBox(width: 14),
-                    Obx(() => _GlassPlayButton(
-                          isPlaying: controller.isPlaying.value,
-                          isBuffering: controller.isBuffering.value,
-                          onTap: controller.togglePlayPause,
-                        )),
-                    const SizedBox(width: 14),
-                    _IosGlassIconButton(
-                      icon: data.isDesktop
-                          ? CupertinoIcons.goforward_30
-                          : CupertinoIcons.goforward_15,
-                      tooltip: data.isDesktop ? 'Forward 30s' : 'Forward',
-                      onPressed: () {
-                        final currentPos = controller.currentPosition.value;
-                        final duration = controller.episodeDuration.value;
-                        final seekBy = Duration(
-                            seconds: data.isDesktop
-                                ? 30
-                                : controller.playerSettings.seekDuration);
-                        final newPos = currentPos + seekBy;
-                        controller
-                            .seekTo(newPos > duration ? duration : newPos);
-                      },
-                    ),
-                    const SizedBox(width: 12),
-                    _IosGlassIconButton(
-                      icon: CupertinoIcons.forward_end_fill,
-                      tooltip: 'Next Episode',
-                      enabled: controller.canGoForward.value,
-                      onPressed: () => controller.navigator(true),
-                    ),
-                  ],
-                ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _IosGlassIconButton(
+                    icon: CupertinoIcons.backward_end_fill,
+                    tooltip: 'Previous Episode',
+                    enabled: controller.canGoBackward.value,
+                    onPressed: () => controller.navigator(false),
+                  ),
+                  const SizedBox(width: 12),
+                  _IosGlassIconButton(
+                    icon: isDesktop
+                        ? CupertinoIcons.gobackward_30
+                        : CupertinoIcons.gobackward_15,
+                    tooltip: isDesktop ? 'Replay 30s' : 'Replay',
+                    onPressed: () {
+                      final currentPos = controller.currentPosition.value;
+                      final seekBy = Duration(
+                          seconds: isDesktop
+                              ? 30
+                              : controller.playerSettings.seekDuration);
+                      final newPos = currentPos - seekBy;
+                      controller.seekTo(
+                        newPos.isNegative ? Duration.zero : newPos,
+                      );
+                    },
+                  ),
+                  const SizedBox(width: 14),
+                  Obx(() => _GlassPlayButton(
+                        isPlaying: controller.isPlaying.value,
+                        isBuffering: controller.isBuffering.value,
+                        onTap: controller.togglePlayPause,
+                      )),
+                  const SizedBox(width: 14),
+                  _IosGlassIconButton(
+                    icon: isDesktop
+                        ? CupertinoIcons.goforward_30
+                        : CupertinoIcons.goforward_15,
+                    tooltip: isDesktop ? 'Forward 30s' : 'Forward',
+                    onPressed: () {
+                      final currentPos = controller.currentPosition.value;
+                      final duration = controller.episodeDuration.value;
+                      final seekBy = Duration(
+                          seconds: isDesktop
+                              ? 30
+                              : controller.playerSettings.seekDuration);
+                      final newPos = currentPos + seekBy;
+                      controller.seekTo(newPos > duration ? duration : newPos);
+                    },
+                  ),
+                  const SizedBox(width: 12),
+                  _IosGlassIconButton(
+                    icon: CupertinoIcons.forward_end_fill,
+                    tooltip: 'Next Episode',
+                    enabled: controller.canGoForward.value,
+                    onPressed: () => controller.navigator(true),
+                  ),
+                ],
               ),
             ),
           ),
@@ -266,9 +257,8 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
   }
 
   @override
-  Widget buildBottomControls(
-      BuildContext context, PlayerBottomSectionData data) {
-    final controller = data.controller;
+  Widget buildBottomControls(BuildContext context, PlayerController controller) {
+    final isDesktop = !_isMobilePlatform;
 
     return Obx(() {
       if (controller.isLocked.value) {
@@ -279,8 +269,8 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
           right: false,
           child: Padding(
             padding: EdgeInsets.symmetric(
-              horizontal: data.isDesktop ? 28 : 14,
-              vertical: data.isDesktop ? 18 : 8,
+              horizontal: isDesktop ? 28 : 14,
+              vertical: isDesktop ? 18 : 8,
             ),
             child: const _GlassPanel(
               radius: 26,
@@ -313,10 +303,27 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
               right: false,
               child: Padding(
                 padding: EdgeInsets.symmetric(
-                  horizontal: data.isDesktop ? 28 : 14,
-                  vertical: data.isDesktop ? 18 : 8,
+                  horizontal: isDesktop ? 28 : 14,
+                  vertical: isDesktop ? 18 : 8,
                 ),
-                child: _buildBottomSection(context, data),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: _GlassActionChip(
+                        icon: CupertinoIcons.forward_fill,
+                        label: '+${controller.playerSettings.skipDuration}',
+                        onTap: controller.isLocked.value
+                            ? null
+                            : () => controller
+                                .megaSeek(controller.playerSettings.skipDuration),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    _buildBottomSection(context, controller),
+                  ],
+                ),
               ),
             ),
           ),
@@ -326,8 +333,7 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
   }
 
   Widget _buildBottomSection(
-      BuildContext context, PlayerBottomSectionData data) {
-    final controller = data.controller;
+      BuildContext context, PlayerController controller) {
 
     final String jsonString =
         PlayerUiKeys.bottomControlsSettings.get<String>('{}');
@@ -463,18 +469,6 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Align(
-            alignment: Alignment.centerRight,
-            child: _GlassActionChip(
-              icon: CupertinoIcons.forward_fill,
-              label: '+${controller.playerSettings.skipDuration}',
-              onTap: controller.isLocked.value
-                  ? null
-                  : () => controller
-                      .megaSeek(controller.playerSettings.skipDuration),
-            ),
-          ),
-          const SizedBox(height: 8),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 4),
             child: ProgressSlider(style: SliderStyle.ios),
@@ -830,3 +824,5 @@ String _qualityLabel(int? videoHeight) {
   if (videoHeight >= 360) return '360p';
   return '';
 }
+
+bool get _isMobilePlatform => Platform.isAndroid || Platform.isIOS;
