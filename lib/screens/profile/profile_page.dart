@@ -152,7 +152,6 @@ class ProfilePage extends StatelessWidget {
                       ),
                     ),
 
-                    // ── About / Bio ──────────────────────────────────────
                     if (user.about != null && user.about!.trim().isNotEmpty) ...[
                       const SizedBox(height: 20),
                       Padding(
@@ -236,7 +235,6 @@ class ProfilePage extends StatelessWidget {
                       ),
                     ],
 
-                    // ── Favourite Anime ──────────────────────────────────
                     if (user.favourites?.anime.isNotEmpty ?? false) ...[
                       const SizedBox(height: 20),
                       Padding(
@@ -248,7 +246,6 @@ class ProfilePage extends StatelessWidget {
                       _buildMediaFavCarousel(context, user.favourites!.anime),
                     ],
 
-                    // ── Favourite Manga ──────────────────────────────────
                     if (user.favourites?.manga.isNotEmpty ?? false) ...[
                       const SizedBox(height: 10),
                       Padding(
@@ -260,7 +257,6 @@ class ProfilePage extends StatelessWidget {
                       _buildMediaFavCarousel(context, user.favourites!.manga),
                     ],
 
-                    // ── Favourite Characters ─────────────────────────────
                     if (user.favourites?.characters.isNotEmpty ?? false) ...[
                       const SizedBox(height: 10),
                       Padding(
@@ -277,7 +273,6 @@ class ProfilePage extends StatelessWidget {
                               .toList()),
                     ],
 
-                    // ── Favourite Staff ──────────────────────────────────
                     if (user.favourites?.staff.isNotEmpty ?? false) ...[
                       const SizedBox(height: 10),
                       Padding(
@@ -294,7 +289,6 @@ class ProfilePage extends StatelessWidget {
                               .toList()),
                     ],
 
-                    // ── Favourite Studios ────────────────────────────────
                     if (user.favourites?.studios.isNotEmpty ?? false) ...[
                       const SizedBox(height: 10),
                       Padding(
@@ -352,7 +346,6 @@ class ProfilePage extends StatelessWidget {
 
   Widget _buildSliverAppBar(
       BuildContext context, String avatarUrl, String? bannerUrl, String name) {
-    // Use bannerImage when set; fall back to avatar (blurred) as before
     final hasBanner = bannerUrl != null && bannerUrl.trim().isNotEmpty;
     final imageUrl = hasBanner ? bannerUrl : avatarUrl;
 
@@ -383,7 +376,6 @@ class ProfilePage extends StatelessWidget {
               errorBuilder: (context, error, stackTrace) =>
                   Container(color: context.theme.colorScheme.surfaceContainer),
             ),
-            // Only blur when falling back to avatar (no banner set)
             if (!hasBanner)
               BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
@@ -607,8 +599,6 @@ class ProfilePage extends StatelessWidget {
       ],
     );
   }
-
-  // ── Favourite carousels (new) ────────────────────────────────────────────
 
   Widget _buildMediaFavCarousel(
       BuildContext context, List<FavouriteMedia> items) {
