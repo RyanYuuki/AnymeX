@@ -406,6 +406,7 @@ class AnilistAuth extends GetxController {
     Viewer {
       id
       name
+      about(asHtml: false)
       avatar {
         large
       }
@@ -427,9 +428,39 @@ class AnilistAuth extends GetxController {
       favourites {
         anime {
           pageInfo { total }
+          nodes {
+            id
+            title { userPreferred english romaji }
+            coverImage { large }
+          }
         }
         manga {
           pageInfo { total }
+          nodes {
+            id
+            title { userPreferred english romaji }
+            coverImage { large }
+          }
+        }
+        characters {
+          nodes {
+            id
+            name { full }
+            image { large medium }
+          }
+        }
+        staff {
+          nodes {
+            id
+            name { full userPreferred }
+            image { large }
+          }
+        }
+        studios {
+          nodes {
+            id
+            name
+          }
         }
       }
     }

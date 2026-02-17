@@ -1,10 +1,11 @@
 import 'dart:ui';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
+import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
 
@@ -28,7 +29,7 @@ class ProfilePage extends StatelessWidget {
           return CustomScrollView(
             physics: const BouncingScrollPhysics(),
             slivers: [
-              _buildSliverAppBar(context, bannerUrl, user.name ?? 'Guest'),
+              _buildSliverAppBar(context, bannerUrl, user.cover, user.name ?? 'Guest'),
               SliverToBoxAdapter(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -150,18 +151,188 @@ class ProfilePage extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 30),
-                    ReusableCarousel(
-                      data: authController.currentlyWatching,
-                      title: "Currently Watching",
-                      variant: DataVariant.anilist,
-                    ),
-                    const SizedBox(height: 10),
-                    ReusableCarousel(
-                      data: authController.currentlyReading,
-                      title: "Currently Reading",
-                      variant: DataVariant.anilist,
-                    ),
+
+                    if (user.about != null && user.about!.trim().isNotEmpty) ...[
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: _buildSectionHeader(
+                            context, "About", IconlyLight.profile),
+                      ),
+                      const SizedBox(height: 10),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: context.theme.colorScheme.surfaceContainerLow,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: context.theme.colorScheme.outlineVariant
+                                  .withOpacity(0.3),
+                            ),
+                          ),
+                          child: MarkdownBody(
+                            data: user.about!,
+                            softLineBreak: true,
+                            shrinkWrap: true,
+                            styleSheet: MarkdownStyleSheet(
+                              p: TextStyle(
+                                fontSize: 13.5,
+                                height: 1.65,
+                                color: context.theme.colorScheme.onSurfaceVariant,
+                                fontFamily: 'Poppins',
+                              ),
+                              strong: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                color: context.theme.colorScheme.onSurface,
+                              ),
+                              em: TextStyle(
+                                fontStyle: FontStyle.italic,
+                                color: context.theme.colorScheme.onSurface,
+                              ),
+                              h1: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: context.theme.colorScheme.onSurface,
+                              ),
+                              h2: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: context.theme.colorScheme.onSurface,
+                              ),
+                              h3: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: context.theme.colorScheme.onSurface,
+                              ),
+                              blockquoteDecoration: BoxDecoration(
+                                color: context.theme.colorScheme.primary
+                                    .withOpacity(0.07),
+                                borderRadius: BorderRadius.circular(4),
+                                border: Border(
+                                  left: BorderSide(
+                                    color: context.theme.colorScheme.primary,
+                                    width: 3,
+                                  ),
+                                ),
+                              ),
+                              code: TextStyle(
+                                fontFamily: 'monospace',
+                                fontSize: 12,
+                                backgroundColor:
+                                    context.theme.colorScheme.surfaceContainer,
+                                color: context.theme.colorScheme.primary,
+                              ),
+                              a: TextStyle(
+                                color: context.theme.colorScheme.primary,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+
+                    if (user.favourites?.anime.isNotEmpty ?? false) ...[
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: _buildSectionHeader(
+                            context, "Favourite Anime", IconlyBold.video),
+                      ),
+                      const SizedBox(height: 10),
+                      _buildMediaFavCarousel(context, user.favourites!.anime),
+                    ],
+
+                    if (user.favourites?.manga.isNotEmpty ?? false) ...[
+                      const SizedBox(height: 10),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: _buildSectionHeader(
+                            context, "Favourite Manga", IconlyBold.document),
+                      ),
+                      const SizedBox(height: 10),
+                      _buildMediaFavCarousel(context, user.favourites!.manga),
+                    ],
+
+                    if (user.favourites?.characters.isNotEmpty ?? false) ...[
+                      const SizedBox(height: 10),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: _buildSectionHeader(context,
+                            "Favourite Characters", IconlyBold.profile),
+                      ),
+                      const SizedBox(height: 10),
+                      _buildPersonCarousel(
+                          context,
+                          user.favourites!.characters
+                              .map((c) =>
+                                  _PersonItem(name: c.name, image: c.image))
+                              .toList()),
+                    ],
+
+                    if (user.favourites?.staff.isNotEmpty ?? false) ...[
+                      const SizedBox(height: 10),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: _buildSectionHeader(
+                            context, "Favourite Staff", IconlyBold.two_users),
+                      ),
+                      const SizedBox(height: 10),
+                      _buildPersonCarousel(
+                          context,
+                          user.favourites!.staff
+                              .map((s) =>
+                                  _PersonItem(name: s.name, image: s.image))
+                              .toList()),
+                    ],
+
+                    if (user.favourites?.studios.isNotEmpty ?? false) ...[
+                      const SizedBox(height: 10),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: _buildSectionHeader(context, "Favourite Studios",
+                            Icons.business_rounded),
+                      ),
+                      const SizedBox(height: 10),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: user.favourites!.studios
+                              .map(
+                                (studio) => Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 14, vertical: 8),
+                                  decoration: BoxDecoration(
+                                    color: context
+                                        .theme.colorScheme.surfaceContainer,
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                      color: context.theme.colorScheme
+                                          .outlineVariant
+                                          .withOpacity(0.3),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    studio.name ?? '',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color:
+                                          context.theme.colorScheme.onSurface,
+                                    ),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ),
+                    ],
+
                     const SizedBox(height: 50),
                   ],
                 ),
@@ -174,7 +345,10 @@ class ProfilePage extends StatelessWidget {
   }
 
   Widget _buildSliverAppBar(
-      BuildContext context, String imageUrl, String name) {
+      BuildContext context, String avatarUrl, String? bannerUrl, String name) {
+    final hasBanner = bannerUrl != null && bannerUrl.trim().isNotEmpty;
+    final imageUrl = hasBanner ? bannerUrl : avatarUrl;
+
     return SliverAppBar(
       expandedHeight: 220.0,
       floating: false,
@@ -202,12 +376,13 @@ class ProfilePage extends StatelessWidget {
               errorBuilder: (context, error, stackTrace) =>
                   Container(color: context.theme.colorScheme.surfaceContainer),
             ),
-            BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-              child: Container(
-                color: context.theme.colorScheme.surface.withOpacity(0.2),
+            if (!hasBanner)
+              BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                child: Container(
+                  color: context.theme.colorScheme.surface.withOpacity(0.2),
+                ),
               ),
-            ),
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -424,4 +599,137 @@ class ProfilePage extends StatelessWidget {
       ],
     );
   }
+
+  Widget _buildMediaFavCarousel(
+      BuildContext context, List<FavouriteMedia> items) {
+    return SizedBox(
+      height: 190,
+      child: ListView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        scrollDirection: Axis.horizontal,
+        itemCount: items.length,
+        itemBuilder: (context, index) {
+          final item = items[index];
+          return _buildMediaCard(context, item.cover, item.title);
+        },
+      ),
+    );
+  }
+
+  Widget _buildMediaCard(
+      BuildContext context, String? imageUrl, String? title) {
+    return Container(
+      width: 112,
+      margin: const EdgeInsets.only(right: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: imageUrl != null
+                ? Image.network(
+                    imageUrl,
+                    width: 112,
+                    height: 150,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(
+                      width: 112,
+                      height: 150,
+                      color: context.theme.colorScheme.surfaceContainer,
+                    ),
+                  )
+                : Container(
+                    width: 112,
+                    height: 150,
+                    color: context.theme.colorScheme.surfaceContainer,
+                  ),
+          ),
+          const SizedBox(height: 5),
+          Text(
+            title ?? '',
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+              color: context.theme.colorScheme.onSurface,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPersonCarousel(
+      BuildContext context, List<_PersonItem> items) {
+    return SizedBox(
+      height: 128,
+      child: ListView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        scrollDirection: Axis.horizontal,
+        itemCount: items.length,
+        itemBuilder: (context, index) {
+          final item = items[index];
+          return _buildPersonCard(context, item.image, item.name);
+        },
+      ),
+    );
+  }
+
+  Widget _buildPersonCard(
+      BuildContext context, String? imageUrl, String? name) {
+    return Container(
+      width: 78,
+      margin: const EdgeInsets.only(right: 10),
+      child: Column(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(50),
+            child: imageUrl != null
+                ? Image.network(
+                    imageUrl,
+                    width: 70,
+                    height: 70,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(
+                      width: 70,
+                      height: 70,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: context.theme.colorScheme.surfaceContainer,
+                      ),
+                    ),
+                  )
+                : Container(
+                    width: 70,
+                    height: 70,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: context.theme.colorScheme.surfaceContainer,
+                    ),
+                  ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            name ?? '',
+            style: TextStyle(
+              fontSize: 10.5,
+              fontWeight: FontWeight.w500,
+              color: context.theme.colorScheme.onSurface,
+            ),
+            maxLines: 2,
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PersonItem {
+  final String? name;
+  final String? image;
+
+  const _PersonItem({this.name, this.image});
 }
