@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/utils/function.dart';
@@ -231,6 +230,16 @@ class ProfilePage extends StatelessWidget {
 
   Widget _buildAvatarAndName(
       BuildContext context, String avatarUrl, String name) {
+    final handler = Get.find<ServiceHandler>();
+    final expiry = handler.profileData.value.tokenExpiry;
+
+    String expiryText = "";
+    if (expiry != null) {
+      final days = expiry.difference(DateTime.now()).inDays;
+      final months = (days / 30).floor();
+      expiryText = "Reconnect in $months months";
+    }
+
     return Transform.translate(
       offset: const Offset(0, -50),
       child: Column(
@@ -281,6 +290,18 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
           ),
+          if (expiryText.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            Text(
+              expiryText,
+              style: TextStyle(
+                fontSize: 11,
+                color:
+                    context.theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ]
         ],
       ),
     );
