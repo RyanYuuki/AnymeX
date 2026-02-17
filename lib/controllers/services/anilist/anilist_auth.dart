@@ -19,7 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher_string.dart';
 
 class AnilistAuth extends GetxController {
@@ -35,7 +35,10 @@ class AnilistAuth extends GetxController {
   RxList<TrackedMedia> currentlyReading = <TrackedMedia>[].obs;
   RxList<TrackedMedia> mangaList = <TrackedMedia>[].obs;
 
-  void _handle403(Response response) {
+  /// Throws an [Exception] with a descriptive message when the AniList API
+  /// returns a 403. Extracts the error message from the response body if
+  /// available, otherwise falls back to a generic forbidden message.
+  void _handle403(http.Response response) {
     dynamic errorJson;
     try {
       errorJson = jsonDecode(response.body);
@@ -362,7 +365,7 @@ class AnilistAuth extends GetxController {
 
   Future<void> _exchangeCodeForToken(String code, String clientId,
       String clientSecret, String redirectUri) async {
-    final response = await post(
+    final response = await http.post(
       Uri.parse('https://anilist.co/api/v2/oauth/token'),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -437,7 +440,7 @@ class AnilistAuth extends GetxController {
   ''';
 
     try {
-      final response = await post(
+      final response = await http.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -492,7 +495,7 @@ class AnilistAuth extends GetxController {
   ''';
 
     try {
-      final response = await post(
+      final response = await http.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -580,7 +583,7 @@ class AnilistAuth extends GetxController {
         throw Exception('Failed to get user ID');
       }
 
-      final response = await post(
+      final response = await http.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -661,7 +664,7 @@ class AnilistAuth extends GetxController {
         throw Exception('Failed to get user ID');
       }
 
-      final response = await post(
+      final response = await http.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -745,7 +748,7 @@ class AnilistAuth extends GetxController {
         variables['progress'] = progress;
       }
 
-      final response = await post(
+      final response = await http.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -841,7 +844,7 @@ class AnilistAuth extends GetxController {
         throw Exception('Failed to get user ID');
       }
 
-      final response = await post(
+      final response = await http.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -920,7 +923,7 @@ class AnilistAuth extends GetxController {
   ''';
 
     try {
-      final response = await post(
+      final response = await http.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -975,7 +978,7 @@ class AnilistAuth extends GetxController {
   ''';
 
     try {
-      final response = await post(
+      final response = await http.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -1025,7 +1028,7 @@ class AnilistAuth extends GetxController {
   ''';
 
     try {
-      final response = await post(
+      final response = await http.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
