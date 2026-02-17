@@ -35,6 +35,25 @@ class AnilistAuth extends GetxController {
   RxList<TrackedMedia> currentlyReading = <TrackedMedia>[].obs;
   RxList<TrackedMedia> mangaList = <TrackedMedia>[].obs;
 
+  /// Throws an [Exception] with a descriptive message when the AniList API
+  /// returns a 403. Extracts the error message from the response body if
+  /// available, otherwise falls back to a generic forbidden message.
+  void _handle403(Response response) {
+    dynamic errorJson;
+    try {
+      errorJson = jsonDecode(response.body);
+    } catch (_) {}
+
+    const base = "Why is it 403";
+    final apiMessage =
+        errorJson?['errors']?[0]?['message'] as String?;
+    final message = apiMessage != null && apiMessage.isNotEmpty
+        ? "$base: $apiMessage"
+        : "$base: Forbidden (error 403)";
+
+    throw Exception(message);
+  }
+
   Future<void> tryAutoLogin() async {
     isLoggedIn.value = false;
     final token = AuthKeys.authToken.get<String?>();
@@ -446,19 +465,7 @@ class AnilistAuth extends GetxController {
         // fetchFollowersAndFollowing(userProfile.id ?? '');
         CommentsDatabase().login();
       } else if (response.statusCode == 403) {
-        dynamic errorJson;
-        try {
-          errorJson = jsonDecode(response.body);
-        } catch (_) {}
-
-        String message = "Why is it 403";
-        if (errorJson != null && errorJson['errors'] != null) {
-          final apiMessage = errorJson['errors'][0]['message'] ?? "";
-          message = "$message: $apiMessage";
-        } else {
-          message = "$message: Forbidden (error 403)";
-        }
-        throw Exception(message);
+        _handle403(response);
       } else {
         Logger.i('Failed to load user profile: ${response.statusCode}');
         throw Exception('Failed to load user profile');
@@ -512,19 +519,7 @@ class AnilistAuth extends GetxController {
 
         profileData.value = updatedProfile;
       } else if (response.statusCode == 403) {
-        dynamic errorJson;
-        try {
-          errorJson = jsonDecode(response.body);
-        } catch (_) {}
-
-        String message = "Why is it 403";
-        if (errorJson != null && errorJson['errors'] != null) {
-          final apiMessage = errorJson['errors'][0]['message'] ?? "";
-          message = "$message: $apiMessage";
-        } else {
-          message = "$message: Forbidden (error 403)";
-        }
-        throw Exception(message);
+        _handle403(response);
       } else {
         Logger.i('Failed to load followers/following: ${response.statusCode}');
         throw Exception('Failed to load followers/following ${response.body}');
@@ -634,19 +629,7 @@ class AnilistAuth extends GetxController {
           Logger.i('Unexpected response structure: ${response.body}');
         }
       } else if (response.statusCode == 403) {
-        dynamic errorJson;
-        try {
-          errorJson = jsonDecode(response.body);
-        } catch (_) {}
-
-        String message = "Why is it 403";
-        if (errorJson != null && errorJson['errors'] != null) {
-          final apiMessage = errorJson['errors'][0]['message'] ?? "";
-          message = "$message: $apiMessage";
-        } else {
-          message = "$message: Forbidden (error 403)";
-        }
-        throw Exception(message);
+        _handle403(response);
       } else {
         Logger.i('Fetch failed with status code: ${response.statusCode}');
         Logger.i('Response body: ${response.body}');
@@ -706,19 +689,7 @@ class AnilistAuth extends GetxController {
           fetchUserMangaList();
         }
       } else if (response.statusCode == 403) {
-        dynamic errorJson;
-        try {
-          errorJson = jsonDecode(response.body);
-        } catch (_) {}
-
-        String message = "Why is it 403";
-        if (errorJson != null && errorJson['errors'] != null) {
-          final apiMessage = errorJson['errors'][0]['message'] ?? "";
-          message = "$message: $apiMessage";
-        } else {
-          message = "$message: Forbidden (error 403)";
-        }
-        throw Exception(message);
+        _handle403(response);
       } else {
         Logger.i('Failed to delete media with list ID $listId');
         Logger.i('${response.statusCode}: ${response.body}');
@@ -812,19 +783,7 @@ class AnilistAuth extends GetxController {
         }
         setCurrentMedia(listId, isManga: !isAnime);
       } else if (response.statusCode == 403) {
-        dynamic errorJson;
-        try {
-          errorJson = jsonDecode(response.body);
-        } catch (_) {}
-
-        String message = "Why is it 403";
-        if (errorJson != null && errorJson['errors'] != null) {
-          final apiMessage = errorJson['errors'][0]['message'] ?? "";
-          message = "$message: $apiMessage";
-        } else {
-          message = "$message: Forbidden (error 403)";
-        }
-        throw Exception(message);
+        _handle403(response);
       } else {
         Logger.i('Update failed with status code: ${response.statusCode}');
         Logger.i('Response body: ${response.body}');
@@ -930,19 +889,7 @@ class AnilistAuth extends GetxController {
           Logger.i('Unexpected response structure: ${response.body}');
         }
       } else if (response.statusCode == 403) {
-        dynamic errorJson;
-        try {
-          errorJson = jsonDecode(response.body);
-        } catch (_) {}
-
-        String message = "Why is it 403";
-        if (errorJson != null && errorJson['errors'] != null) {
-          final apiMessage = errorJson['errors'][0]['message'] ?? "";
-          message = "$message: $apiMessage";
-        } else {
-          message = "$message: Forbidden (error 403)";
-        }
-        throw Exception(message);
+        _handle403(response);
       } else {
         Logger.i('Fetch failed with status code: ${response.statusCode}');
         Logger.i('Response body: ${response.body}');
@@ -997,19 +944,7 @@ class AnilistAuth extends GetxController {
       if (response.statusCode == 200) {
         Logger.i('Anime status updated successfully: ${response.body}');
       } else if (response.statusCode == 403) {
-        dynamic errorJson;
-        try {
-          errorJson = jsonDecode(response.body);
-        } catch (_) {}
-
-        String message = "Why is it 403";
-        if (errorJson != null && errorJson['errors'] != null) {
-          final apiMessage = errorJson['errors'][0]['message'] ?? "";
-          message = "$message: $apiMessage";
-        } else {
-          message = "$message: Forbidden (error 403)";
-        }
-        throw Exception(message);
+        _handle403(response);
       } else {
         Logger.i('Failed to update anime status: ${response.statusCode}');
         Logger.i('Response body: ${response.body}');
@@ -1064,19 +999,7 @@ class AnilistAuth extends GetxController {
       if (response.statusCode == 200) {
         Logger.i('Manga status updated successfully: ${response.body}');
       } else if (response.statusCode == 403) {
-        dynamic errorJson;
-        try {
-          errorJson = jsonDecode(response.body);
-        } catch (_) {}
-
-        String message = "Why is it 403";
-        if (errorJson != null && errorJson['errors'] != null) {
-          final apiMessage = errorJson['errors'][0]['message'] ?? "";
-          message = "$message: $apiMessage";
-        } else {
-          message = "$message: Forbidden (error 403)";
-        }
-        throw Exception(message);
+        _handle403(response);
       } else {
         Logger.i('Failed to update manga status: ${response.statusCode}');
         Logger.i('Response body: ${response.body}');
@@ -1120,19 +1043,7 @@ class AnilistAuth extends GetxController {
       if (response.statusCode == 200) {
         return true;
       } else if (response.statusCode == 403) {
-        dynamic errorJson;
-        try {
-          errorJson = jsonDecode(response.body);
-        } catch (_) {}
-
-        String message = "Why is it 403";
-        if (errorJson != null && errorJson['errors'] != null) {
-          final apiMessage = errorJson['errors'][0]['message'] ?? "";
-          message = "$message: $apiMessage";
-        } else {
-          message = "$message: Forbidden (error 403)";
-        }
-        throw Exception(message);
+        _handle403(response);
       }
       return false;
     } catch (e) {
