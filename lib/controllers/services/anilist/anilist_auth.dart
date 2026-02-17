@@ -35,9 +35,6 @@ class AnilistAuth extends GetxController {
   RxList<TrackedMedia> currentlyReading = <TrackedMedia>[].obs;
   RxList<TrackedMedia> mangaList = <TrackedMedia>[].obs;
 
-  /// Throws an [Exception] with a descriptive message when the AniList API
-  /// returns a 403. Extracts the error message from the response body if
-  /// available, otherwise falls back to a generic forbidden message.
   void _handle403(Response response) {
     dynamic errorJson;
     try {
