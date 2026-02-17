@@ -7,6 +7,7 @@ class Profile {
   ProfileStatistics? stats;
   int? followers;
   int? following;
+  DateTime? tokenExpiry;
 
   Profile({
     this.id,
@@ -17,6 +18,7 @@ class Profile {
     this.stats,
     this.followers,
     this.following,
+    this.tokenExpiry,
   });
 
   factory Profile.fromJson(Map<String, dynamic> json) {
