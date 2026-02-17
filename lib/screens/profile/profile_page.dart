@@ -5,9 +5,13 @@ import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
+
+extension ColorToCss on Color {
+  String toCssString() => 'rgba(${red}, ${green}, ${blue}, ${opacity})';
+}
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -173,63 +177,71 @@ class ProfilePage extends StatelessWidget {
                                   .withOpacity(0.3),
                             ),
                           ),
-                          child: MarkdownBody(
-                            data: user.about!,
-                            softLineBreak: true,
-                            shrinkWrap: true,
-                            styleSheet: MarkdownStyleSheet(
-                              p: TextStyle(
-                                fontSize: 13.5,
-                                height: 1.65,
-                                color: context.theme.colorScheme.onSurfaceVariant,
-                                fontFamily: 'Poppins',
-                              ),
-                              strong: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                color: context.theme.colorScheme.onSurface,
-                              ),
-                              em: TextStyle(
-                                fontStyle: FontStyle.italic,
-                                color: context.theme.colorScheme.onSurface,
-                              ),
-                              h1: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: context.theme.colorScheme.onSurface,
-                              ),
-                              h2: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: context.theme.colorScheme.onSurface,
-                              ),
-                              h3: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: context.theme.colorScheme.onSurface,
-                              ),
-                              blockquoteDecoration: BoxDecoration(
-                                color: context.theme.colorScheme.primary
-                                    .withOpacity(0.07),
-                                borderRadius: BorderRadius.circular(4),
-                                border: Border(
-                                  left: BorderSide(
-                                    color: context.theme.colorScheme.primary,
-                                    width: 3,
-                                  ),
-                                ),
-                              ),
-                              code: TextStyle(
-                                fontFamily: 'monospace',
-                                fontSize: 12,
-                                backgroundColor:
-                                    context.theme.colorScheme.surfaceContainer,
-                                color: context.theme.colorScheme.primary,
-                              ),
-                              a: TextStyle(
-                                color: context.theme.colorScheme.primary,
-                                decoration: TextDecoration.underline,
-                              ),
+                          child: HtmlWidget(
+                            user.about!,
+                            textStyle: TextStyle(
+                              fontSize: 13.5,
+                              height: 1.65,
+                              color: context.theme.colorScheme.onSurfaceVariant,
+                              fontFamily: 'Poppins',
                             ),
+                            customStylesBuilder: (element) {
+                              if (element.localName == 'strong') {
+                                return {
+                                  'font-weight': '700',
+                                  'color': context.theme.colorScheme.onSurface.toCssString(),
+                                };
+                              }
+                              if (element.localName == 'em') {
+                                return {
+                                  'font-style': 'italic',
+                                  'color': context.theme.colorScheme.onSurface.toCssString(),
+                                };
+                              }
+                              if (element.localName == 'h1') {
+                                return {
+                                  'font-size': '18px',
+                                  'font-weight': 'bold',
+                                  'color': context.theme.colorScheme.onSurface.toCssString(),
+                                };
+                              }
+                              if (element.localName == 'h2') {
+                                return {
+                                  'font-size': '16px',
+                                  'font-weight': 'bold',
+                                  'color': context.theme.colorScheme.onSurface.toCssString(),
+                                };
+                              }
+                              if (element.localName == 'h3') {
+                                return {
+                                  'font-size': '14px',
+                                  'font-weight': 'bold',
+                                  'color': context.theme.colorScheme.onSurface.toCssString(),
+                                };
+                              }
+                              if (element.localName == 'blockquote') {
+                                return {
+                                  'background-color': context.theme.colorScheme.primary.withOpacity(0.07).toCssString(),
+                                  'padding': '8px',
+                                  'border-left': '3px solid ${context.theme.colorScheme.primary.toCssString()}',
+                                };
+                              }
+                              if (element.localName == 'code') {
+                                return {
+                                  'font-family': 'monospace',
+                                  'font-size': '12px',
+                                  'background-color': context.theme.colorScheme.surfaceContainer.toCssString(),
+                                  'color': context.theme.colorScheme.primary.toCssString(),
+                                };
+                              }
+                              if (element.localName == 'a') {
+                                return {
+                                  'color': context.theme.colorScheme.primary.toCssString(),
+                                  'text-decoration': 'underline',
+                                };
+                              }
+                              return null;
+                            },
                           ),
                         ),
                       ),
@@ -278,7 +290,7 @@ class ProfilePage extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20.0),
                         child: _buildSectionHeader(
-                            context, "Favourite Staff", IconlyBold.two_users),
+                            context, "Favourite Staff", Icons.people_rounded),
                       ),
                       const SizedBox(height: 10),
                       _buildPersonCarousel(
