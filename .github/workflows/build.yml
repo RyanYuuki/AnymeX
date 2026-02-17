@@ -149,36 +149,22 @@ jobs:
             echo "🔵 Beta build detected"
             echo "────────────────────────────────────────────"
 
-            # Extract version part (remove v)
-            # v3.0.4-beta → 3.0.4-beta
-            # v3.0.4+1-beta → 3.0.4+1-beta
-            VERSION_PART=$(echo "$TAG" | sed 's/^v//')
+            # Extract base version (remove v and -beta)
+            BASE_VERSION=$(echo "$TAG" | sed 's/^v//' | sed 's/-beta$//')
 
-            echo "Display version: v$VERSION_PART"
+            echo "Base version: $BASE_VERSION"
 
-            # For pubspec.yaml, we need only semver (before any +)
-            # 3.0.4+1-beta → 3.0.4
-            # 3.0.4-beta → 3.0.4
-            if [[ "$VERSION_PART" == *"+"* ]]; then
-              SEMVER=$(echo "$VERSION_PART" | cut -d'+' -f1 | cut -d'-' -f1)
-            else
-              SEMVER=$(echo "$VERSION_PART" | cut -d'-' -f1)
-            fi
-
-            echo "Semver: $SEMVER"
-
-            # GitHub build number
+            # Append build number for beta builds
             BUILD_NUMBER="${GITHUB_RUN_NUMBER}"
+            VERSION="${BASE_VERSION}+${BUILD_NUMBER}"
 
-            # pubspec.yaml version (valid Flutter format)
-            PUBSPEC_VERSION="${SEMVER}+${BUILD_NUMBER}"
+            echo "Final beta version: $VERSION"
 
-            # Display version is just tag without v (no build number)
-            DISPLAY_VERSION="v${VERSION_PART}"
-
-            echo "Pubspec version: $PUBSPEC_VERSION"
-            echo "Display version: $DISPLAY_VERSION"
-            echo ""
+            # Validate final version
+            if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+\+[0-9]+$ ]]; then
+              echo "❌ Version format invalid after adding build number: $VERSION"
+              exit 1
+            fi
 
             # Check if rename script exists
             if [ ! -f "scripts/rename_app.sh" ]; then
@@ -189,16 +175,16 @@ jobs:
 
             # Make script executable and run
             chmod +x scripts/rename_app.sh
-            echo "Running rename script..."
+            echo ""
+            echo "Running rename script with version: $VERSION"
             echo "════════════════════════════════════════════"
 
-            if ./scripts/rename_app.sh "$PUBSPEC_VERSION" "$DISPLAY_VERSION"; then
+            if ./scripts/rename_app.sh "$VERSION"; then
               echo ""
               echo "✅ Beta rename completed successfully"
               echo "   Package: com.ryan.anymex → com.ryan.anymexbeta"
               echo "   App Name: AnymeX → AnymeX β"
-              echo "   Pubspec Version: $PUBSPEC_VERSION"
-              echo "   Display Version: $DISPLAY_VERSION"
+              echo "   Version: $VERSION"
             else
               echo ""
               echo "❌ Beta rename failed"
@@ -212,7 +198,6 @@ jobs:
             echo ""
             echo "Tag formats:"
             echo "  • Beta:   v0.0.0-beta (triggers rename)"
-            echo "  • Beta with iteration:   v0.0.0+1-beta (triggers rename)"
             echo "  • Stable: v0.0.0 (no rename)"
           fi
 
@@ -467,16 +452,10 @@ jobs:
           echo "🎯 FLUTTER"
           echo "────────────────────────────────────────────"
 
-          TAG="${GITHUB_REF_NAME}"
-          VERSION_PART=$(echo "$TAG" | sed 's/^v//')
-          if [[ "$VERSION_PART" == *"+"* ]]; then
-            SEMVER=$(echo "$VERSION_PART" | cut -d'+' -f1 | cut -d'-' -f1)
-          else
-            SEMVER=$(echo "$VERSION_PART" | cut -d'-' -f1)
-          fi
+          BASE_VERSION=$(echo "${GITHUB_REF_NAME}" | sed 's/^v//' | sed 's/-beta$//')
           BUILD_NUMBER="${GITHUB_RUN_NUMBER}"
-          VERSION="${SEMVER}+${BUILD_NUMBER}"
-
+          VERSION="${BASE_VERSION}+${BUILD_NUMBER}"
+          
           if grep -q "version: $VERSION" pubspec.yaml 2>/dev/null; then
             echo "✅ Version updated in pubspec.yaml: $VERSION"
           else
