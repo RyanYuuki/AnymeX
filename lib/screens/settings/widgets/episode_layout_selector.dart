@@ -87,7 +87,7 @@ class _EpisodeLayoutSelectorState extends State<EpisodeLayoutSelector> {
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
-      constraints: const BoxConstraints(maxHeight: 460),
+      constraints: const BoxConstraints(maxHeight: 420),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -196,7 +196,7 @@ class _EpisodeLayoutSelectorState extends State<EpisodeLayoutSelector> {
   }) {
     return Container(
       key: key,
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: context.colors.outline.opaque(0.25)),
@@ -227,7 +227,7 @@ class _EpisodeLayoutSelectorState extends State<EpisodeLayoutSelector> {
               color: context.colors.onSurface.opaque(0.7),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           child,
         ],
       ),
@@ -239,7 +239,7 @@ class _EpisodeLayoutSelectorState extends State<EpisodeLayoutSelector> {
     bool highlighted = false,
   }) {
     return Container(
-      height: showSynopsis ? 92 : 64,
+      height: showSynopsis ? 88 : 60,
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
@@ -344,7 +344,7 @@ class _EpisodeLayoutSelectorState extends State<EpisodeLayoutSelector> {
               final isFocused = index == 6;
               return Container(
                 width: itemWidth,
-                height: 30,
+                height: 28,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
