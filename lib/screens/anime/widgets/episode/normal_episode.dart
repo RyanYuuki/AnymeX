@@ -16,6 +16,7 @@ class BetterEpisode extends StatelessWidget {
   final Episode episode;
   final bool isSelected;
   final EpisodeLayoutType layoutType;
+  final bool showTitleInBlockLayout;
   final String? fallbackImageUrl;
   final List<Episode>? offlineEpisodes;
   final VoidCallback? onTap;
@@ -25,6 +26,7 @@ class BetterEpisode extends StatelessWidget {
     required this.episode,
     this.isSelected = false,
     this.layoutType = EpisodeLayoutType.compact,
+    this.showTitleInBlockLayout = false,
     this.fallbackImageUrl,
     this.offlineEpisodes,
     this.onTap,
@@ -43,7 +45,11 @@ class BetterEpisode extends StatelessWidget {
           _buildCompactLayout(context, episodeProgress, isFiller, hasProgress),
         EpisodeLayoutType.detailed =>
           _buildDetailedLayout(context, episodeProgress, isFiller, hasProgress),
-        EpisodeLayoutType.blocks => _buildBlockLayout(context, isFiller),
+        EpisodeLayoutType.blocks => _buildBlockLayout(
+            context,
+            isFiller,
+            showTitle: showTitleInBlockLayout,
+          ),
       },
     );
   }
@@ -133,10 +139,45 @@ class BetterEpisode extends StatelessWidget {
     );
   }
 
-  Widget _buildBlockLayout(BuildContext context, bool isFiller) {
+  Widget _buildBlockLayout(
+    BuildContext context,
+    bool isFiller, {
+    required bool showTitle,
+  }) {
+    if (!showTitle) {
+      return Container(
+        clipBehavior: Clip.antiAlias,
+        alignment: Alignment.center,
+        constraints: const BoxConstraints(minHeight: 44),
+        decoration: BoxDecoration(
+          color: _getBackgroundColor(context, isFiller),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: isFiller
+                ? Colors.orange.opaque(0.75)
+                : isSelected
+                    ? context.colors.primary.opaque(0.75)
+                    : context.colors.outline.opaque(0.25),
+            width: isSelected ? 1.4 : 1,
+          ),
+        ),
+        child: AnymexText(
+          text: episode.number,
+          size: 15,
+          variant: TextVariant.bold,
+          color: context.colors.onSurface,
+        ),
+      );
+    }
+
+    final title = (episode.title?.trim().isNotEmpty ?? false)
+        ? episode.title!
+        : 'Episode ${episode.number}';
+
     return Container(
       clipBehavior: Clip.antiAlias,
-      alignment: Alignment.center,
+      constraints: const BoxConstraints(minHeight: 58),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
         color: _getBackgroundColor(context, isFiller),
         borderRadius: BorderRadius.circular(10),
@@ -149,19 +190,51 @@ class BetterEpisode extends StatelessWidget {
           width: isSelected ? 1.4 : 1,
         ),
       ),
-      child: Stack(
+      child: Row(
         children: [
-          Positioned.fill(
-            child: Align(
-              alignment: Alignment.center,
-              child: AnymexText(
-                text: episode.number,
-                size: 15,
-                variant: TextVariant.bold,
-                color: context.colors.onSurface,
+          Container(
+            width: 48,
+            height: 34,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: isFiller
+                  ? Colors.orange.opaque(0.25)
+                  : context.colors.primary.opaque(0.2),
+              border: Border.all(
+                color: isFiller
+                    ? Colors.orange.opaque(0.8)
+                    : context.colors.primary.opaque(0.45),
               ),
             ),
+            child: AnymexText(
+              text: episode.number,
+              size: 13,
+              variant: TextVariant.bold,
+              color: context.colors.onSurface,
+            ),
           ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: AnymexText(
+              text: title,
+              variant: TextVariant.bold,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          if (isFiller)
+            Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: Container(
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.orange.opaque(0.9),
+                ),
+              ),
+            ),
         ],
       ),
     );
