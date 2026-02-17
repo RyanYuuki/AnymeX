@@ -442,7 +442,7 @@ class AnilistAuth extends GetxController {
 
         Logger.i(
             'User profile fetched: ${userProfile.name} (ID: ${userProfile.id})');
-        
+
         // fetchFollowersAndFollowing(userProfile.id ?? '');
         CommentsDatabase().login();
       } else if (response.statusCode == 403) {
