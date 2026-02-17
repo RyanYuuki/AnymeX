@@ -498,32 +498,19 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     final oldChapter = currentChapter.value;
     final oldPage = currentPageIndex.value;
 
-   
-    _performSave(
-        reason: 'Chapter navigation',
-        manualChapter: oldChapter,
-        manualPage: oldPage);
+    Future.microtask(() {
+      _performSave(
+          reason: 'Chapter navigation',
+          manualChapter: oldChapter,
+          manualPage: oldPage);
+    });
 
     currentChapter.value = chapterList[index];
-    
-   
-    final savedChap = offlineStorageController.getReadChapter(
-        media.id, chapterList[index].number ?? 0);
-    
-    
-    savedChapter.value = savedChap;
-    
-    final savedPage = savedChap?.pageNumber ?? chapterList[index].pageNumber;
-
-    if (savedPage != null && savedPage > 1 && savedPage <= (chapterList[index].totalPages ?? 9999)) {
-      currentPageIndex.value = savedPage;
-    } else {
-      currentPageIndex.value = 1;
-    }
+    currentPageIndex.value = 1;
 
     final chapter = currentChapter.value;
     if (chapter?.link != null) {
-      await fetchImages(chapter!.link!, initialPage: currentPageIndex.value);
+      await fetchImages(chapter!.link!);
     } else {
       _isNavigating = false;
     }
@@ -1103,17 +1090,11 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     canGoNext.value = index < chapterList.length - 1;
   }
 
-  Future<void> fetchImages(String url, {int? initialPage}) async {
+  Future<void> fetchImages(String url) async {
     _isNavigating = true;
     _resetOverscroll();
     WidgetsBinding.instance.addPostFrameCallback((_) => _initTracking());
-    
-    // Save current page index for this chapter before resetting
-    final chapterBeingLoaded = currentChapter.value;
-    final savedPageForThisChapter = savedChapter.value?.pageNumber;
-    
-   
-    currentPageIndex.value = initialPage ?? 1;
+    currentPageIndex.value = 1;
     _syncAvailability();
 
     try {
@@ -1130,52 +1111,27 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
         _computeSpreads();
 
+        currentPageIndex.value = 1;
         _safelyUpdateTotalPages(pageList.length);
+
         _initTracking();
 
-        // Check if this is the same chapter we're loading (not a chapter navigation)
-        final currentChapterAfterLoad = currentChapter.value;
-        
-        // Determine which page to navigate to:
-        // 1. If there's a saved page for this specific chapter number, use that
-        // 2. Otherwise, if it's the same chapter we were in before loading and we have a saved page, use that
-        // 3. Default to initialPage passed (or page 1)
-        int targetPageIndex = (initialPage ?? 1) - 1; 
-        
-        if (savedPageForThisChapter != null && 
-            savedPageForThisChapter > 0 && 
-            savedPageForThisChapter <= pageList.length &&
-            chapterBeingLoaded == currentChapterAfterLoad) {
-          // Use the saved page for this chapter
-          targetPageIndex = savedPageForThisChapter - 1;
-        } else if (savedChapter.value != null &&
-            savedChapter.value!.pageNumber != null &&
-            savedChapter.value!.pageNumber! > 0 &&
-            savedChapter.value!.pageNumber! <= pageList.length) {
-          // Use the general saved chapter page if available
-          targetPageIndex = savedChapter.value!.pageNumber! - 1;
-        }
+        final saved = savedChapter.value;
+        if (saved != null &&
+            saved.pageNumber != null &&
+            _isValidPageNumber(saved.pageNumber!)) {
+          _safelyUpdateTotalPages(pageList.length);
 
-        // Navigate to the target page
-        if (targetPageIndex >= 0 && targetPageIndex < pageList.length) {
-          currentPageIndex.value = targetPageIndex + 1;
-          await Future.delayed(const Duration(milliseconds: 100));
-          navigateToPage(targetPageIndex);
+          if (saved.pageNumber! > 1) {
+            currentPageIndex.value = saved.pageNumber!;
+            await Future.delayed(const Duration(milliseconds: 100));
+            navigateToPage(saved.pageNumber! - 1);
+          }
         }
-        
         print("INTIAL CHAPTER ${currentChapter.value?.toJson()}");
       } else {
         throw Exception('No pages found for this chapter');
       }
-      
-    
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (readingLayout.value == MangaPageViewMode.paged) {
-          _syncPageToSpread();
-        } else {
-             _syncPageToSpread();
-        }
-      });
     } catch (e) {
       Logger.i('Error fetching images: ${e.toString()}');
       loadingState.value = LoadingState.error;
