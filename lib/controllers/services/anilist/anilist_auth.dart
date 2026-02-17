@@ -52,7 +52,6 @@ class AnilistAuth extends GetxController {
     }
   }
 
-  // Helper to extract expiry from AniList JWT
   DateTime? getExpiryFromToken(String token) {
     try {
       final parts = token.split('.');
@@ -437,13 +436,14 @@ class AnilistAuth extends GetxController {
         final viewerData = data['data']['Viewer'];
 
         final userProfile = Profile.fromJson(viewerData);
-        userProfile.tokenExpiry = getExpiryFromToken(token); // Update expiry
+        userProfile.tokenExpiry = getExpiryFromToken(token);
         profileData.value = userProfile;
         isLoggedIn.value = true;
 
         Logger.i(
             'User profile fetched: ${userProfile.name} (ID: ${userProfile.id})');
-
+        
+        // fetchFollowersAndFollowing(userProfile.id ?? '');
         CommentsDatabase().login();
       } else if (response.statusCode == 403) {
         dynamic errorJson;
@@ -503,10 +503,8 @@ class AnilistAuth extends GetxController {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final followersCount =
-            data['data']['followers']['pageInfo']['total'] as int;
-        final followingCount =
-            data['data']['following']['pageInfo']['total'] as int;
+        final followersCount = data['data']['followers']['pageInfo']['total'] as int;
+        final followingCount = data['data']['following']['pageInfo']['total'] as int;
 
         final updatedProfile = profileData.value
           ..followers = followersCount
