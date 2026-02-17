@@ -112,7 +112,7 @@ class AnilistAuth extends GetxController {
         );
         final code = Uri.parse(result).queryParameters['code'];
         if (code != null) {
-          Logger.i("token found: $code");
+          Logger.i("token found");
           await _exchangeCodeForToken(
               code, clientId, clientSecret, redirectUri);
         }
@@ -406,7 +406,7 @@ class AnilistAuth extends GetxController {
     Viewer {
       id
       name
-      about(asHtml: false)
+      about(asHtml: true)
       avatar {
         large
       }
