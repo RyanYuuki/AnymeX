@@ -24,19 +24,6 @@ String episodeLayoutName(int index) {
   };
 }
 
-String episodeLayoutDescription(int index) {
-  if (index < 0 || index >= EpisodeListLayoutStyle.values.length) {
-    return 'Shows thumbnail, title and synopsis.';
-  }
-  return switch (EpisodeListLayoutStyle.values[index]) {
-    EpisodeListLayoutStyle.detailed => 'Shows thumbnail, title and synopsis.',
-    EpisodeListLayoutStyle.compact =>
-      'Shows only thumbnail and title in a tighter row.',
-    EpisodeListLayoutStyle.blocks =>
-      'Shows compact episode number blocks side-by-side.',
-  };
-}
-
 void showEpisodeLayoutSelector(BuildContext context) {
   final selectedIndex = settingsController.episodeListLayout.obs;
 
@@ -46,6 +33,7 @@ void showEpisodeLayoutSelector(BuildContext context) {
       return Obx(
         () => AnymexDialog(
           title: 'Episode List Layout',
+          padding: const EdgeInsets.all(16),
           onConfirm: () {
             settingsController.episodeListLayout = selectedIndex.value;
           },
@@ -87,8 +75,9 @@ class _EpisodeLayoutSelectorState extends State<EpisodeLayoutSelector> {
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
-      constraints: const BoxConstraints(maxHeight: 420),
+      constraints: const BoxConstraints(maxHeight: 360),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
@@ -103,14 +92,6 @@ class _EpisodeLayoutSelectorState extends State<EpisodeLayoutSelector> {
                 ),
               ),
             ),
-          ),
-          10.height(),
-          Text(
-            episodeLayoutDescription(_selectedIndex),
-            style: Theme.of(context)
-                .textTheme
-                .bodySmall
-                ?.copyWith(color: context.colors.onSurface.opaque(0.8)),
           ),
           12.height(),
           AnimatedSwitcher(
@@ -155,8 +136,6 @@ class _EpisodeLayoutSelectorState extends State<EpisodeLayoutSelector> {
       child: Column(
         children: [
           _buildEpisodeCardPreview(showSynopsis: true, highlighted: true),
-          const SizedBox(height: 10),
-          _buildEpisodeCardPreview(showSynopsis: true),
         ],
       ),
     );
@@ -172,8 +151,6 @@ class _EpisodeLayoutSelectorState extends State<EpisodeLayoutSelector> {
           _buildEpisodeCardPreview(showSynopsis: false, highlighted: true),
           const SizedBox(height: 10),
           _buildEpisodeCardPreview(showSynopsis: false),
-          const SizedBox(height: 10),
-          _buildEpisodeCardPreview(showSynopsis: false),
         ],
       ),
     );
@@ -183,8 +160,13 @@ class _EpisodeLayoutSelectorState extends State<EpisodeLayoutSelector> {
     return _buildPreviewShell(
       key: const ValueKey('blocks-preview'),
       title: 'Blocks Preview',
-      subtitle: '25 compact episode blocks per page',
-      child: _buildBlocksGridPreview(),
+      subtitle: '50 compact episode blocks per page',
+      child: SizedBox(
+        height: 130,
+        child: SingleChildScrollView(
+          child: _buildBlocksGridPreview(),
+        ),
+      ),
     );
   }
 
@@ -339,7 +321,7 @@ class _EpisodeLayoutSelectorState extends State<EpisodeLayoutSelector> {
           spacing: spacing,
           runSpacing: spacing,
           children: List.generate(
-            25,
+            50,
             (index) {
               final isFocused = index == 6;
               return Container(

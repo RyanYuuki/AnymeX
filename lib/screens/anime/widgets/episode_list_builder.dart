@@ -270,7 +270,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
 
   List<List<Episode>> _buildBlockChunks(List<Episode> episodes) {
     if (episodes.isEmpty) return [];
-    const pageSize = 25;
+    const pageSize = 50;
     return List.generate(
       (episodes.length / pageSize).ceil(),
       (index) => episodes.sublist(
