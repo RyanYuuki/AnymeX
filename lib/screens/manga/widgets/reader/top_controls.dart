@@ -19,8 +19,7 @@ class ReaderTopControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final isDesktop =
-          Platform.isWindows || Platform.isLinux || Platform.isMacOS;
+      final isDesktop = Platform.isWindows;
       final mediaQuery = MediaQuery.of(context);
       final statusBarHeight = mediaQuery.padding.top;
       const topControlsHeight = 50.0;

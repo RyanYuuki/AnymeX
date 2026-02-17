@@ -737,7 +737,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  Future<void> fetchEpisode(Episode episode) async {
+  Future<void> fetchEpisode(Episode episode, {Duration? savedPosition}) async {
     if (isOffline.value) return;
 
     try {
@@ -754,6 +754,13 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         return;
       }
 
+      resetListeners();
+      _basePlayer.open('');
+      setExternalSub(null);
+      currentEpisode.value = episode;
+      _hasTrackedInitialLocal = false;
+      _hasTrackedInitialOnline = false;
+
       episodeTracks.value = data.map((e) => model.Video.fromVideo(e)).toList();
 
       final previousTrack = selectedVideo.value;
@@ -762,7 +769,13 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       selectedVideo.value = matched;
       _extractSubtitles();
 
-      await _switchMedia(matched.url ?? "", matched.headers);
+      final episodeTimestamp = savedEpisode?.timeStampInMilliseconds;
+      final startPosition = episodeTimestamp != null && episodeTimestamp > 0
+          ? Duration(milliseconds: episodeTimestamp)
+          : (savedPosition ?? Duration.zero);
+
+      await _switchMedia(matched.url ?? "", matched.headers,
+          startPosition: startPosition);
     } catch (e) {
       snackBar('Failed to load episode. Check your connection.');
     } finally {
@@ -1231,22 +1244,13 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void changeEpisode(Episode episode) {
+    _basePlayer.pause();
     _trackLocally();
-
     if (!isOffline.value) {
       _trackOnline(_shouldMarkAsCompleted);
     }
-
     isEpisodePaneOpened.value = false;
-    resetListeners();
-    _basePlayer.open('');
-    setExternalSub(null);
-    currentEpisode.value = episode;
-
-    _hasTrackedInitialLocal = false;
-    _hasTrackedInitialOnline = false;
-
-    fetchEpisode(episode);
+    fetchEpisode(episode, savedPosition: currentPosition.value);
     onUserInteraction();
   }
 
@@ -1318,7 +1322,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         desc: episode.desc,
       );
 
-      offlineStorage.addOrUpdateAnime(
+      await offlineStorage.addOrUpdateAnime(
         anilistData,
         episodeList,
         episodeToSave,

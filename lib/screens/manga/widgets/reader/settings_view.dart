@@ -1,5 +1,7 @@
 import 'dart:io';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
+import 'package:anymex/screens/manga/widgets/reader/themes/setup/reader_control_theme_registry.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_tap_zones.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
@@ -7,17 +9,32 @@ import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:anymex/widgets/non_widgets/reusable_checkmark.dart';
 
 class ReaderSettings {
   final ReaderController controller;
   ReaderSettings({required this.controller});
 
   void showSettings(BuildContext context) {
+    final settings = Get.find<Settings>();
     final wasVolumeEnabled = controller.volumeKeysEnabled.value;
     if (wasVolumeEnabled) {
       controller.pauseVolumeKeys();
     }
-    
+
+    void showReaderControlThemeDialog() {
+      showSelectionDialog<String>(
+        title: 'Reader Control Theme',
+        items: ReaderControlThemeRegistry.themes.map((e) => e.id).toList(),
+        selectedItem: settings.readerControlThemeRx,
+        getTitle: (id) => ReaderControlThemeRegistry.resolve(id).name,
+        onItemSelected: (id) {
+          settings.readerControlTheme = id;
+        },
+        leadingIcon: Icons.style_rounded,
+      );
+    }
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -45,6 +62,16 @@ class ReaderSettings {
                       ),
                     ),
                   ),
+                  Obx(() {
+                    final themeId = settings.readerControlThemeRx.value;
+                    return CustomTile(
+                      title: 'Control Theme',
+                      description:
+                          ReaderControlThemeRegistry.resolve(themeId).name,
+                      icon: Icons.style_rounded,
+                      onTap: showReaderControlThemeDialog,
+                    );
+                  }),
                   Obx(() {
                     final currentLayout = controller.readingLayout.value;
                     return CustomTile(
@@ -100,7 +127,7 @@ class ReaderSettings {
                       description: 'Customize gestures',
                       icon: Icons.touch_app_rounded,
                       onTap: () {
-                        Navigator.pop(context); 
+                        Navigator.pop(context);
                         navigate(() => const TapZoneSettingsScreen());
                       },
                     ),

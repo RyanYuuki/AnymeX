@@ -22,7 +22,7 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
   String get id => 'ios26';
 
   @override
-  String get name => 'iOS 26 Glass';
+  String get name => 'iOS 26';
 
   @override
   Widget buildTopControls(BuildContext context, PlayerController controller) {
@@ -173,7 +173,8 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
   }
 
   @override
-  Widget buildCenterControls(BuildContext context, PlayerController controller) {
+  Widget buildCenterControls(
+      BuildContext context, PlayerController controller) {
     final isDesktop = !_isMobilePlatform;
 
     return Obx(() {
@@ -257,7 +258,8 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
   }
 
   @override
-  Widget buildBottomControls(BuildContext context, PlayerController controller) {
+  Widget buildBottomControls(
+      BuildContext context, PlayerController controller) {
     final isDesktop = !_isMobilePlatform;
 
     return Obx(() {
@@ -316,8 +318,8 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                         label: '+${controller.playerSettings.skipDuration}',
                         onTap: controller.isLocked.value
                             ? null
-                            : () => controller
-                                .megaSeek(controller.playerSettings.skipDuration),
+                            : () => controller.megaSeek(
+                                controller.playerSettings.skipDuration),
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -334,7 +336,6 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
 
   Widget _buildBottomSection(
       BuildContext context, PlayerController controller) {
-
     final String jsonString =
         PlayerUiKeys.bottomControlsSettings.get<String>('{}');
     final Map<String, dynamic> decodedConfig = json.decode(jsonString);

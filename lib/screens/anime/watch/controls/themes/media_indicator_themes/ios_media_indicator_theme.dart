@@ -9,7 +9,7 @@ class IosMediaIndicatorTheme extends MediaIndicatorTheme {
   String get id => 'ios';
 
   @override
-  String get name => 'iOS';
+  String get name => 'iOS 26';
 
   @override
   Widget buildIndicator(BuildContext context, MediaIndicatorThemeData data) {
