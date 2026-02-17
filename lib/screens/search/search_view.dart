@@ -246,17 +246,19 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       margin: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         children: [
+          if (!General.hideAdultContent.get(true) &&
+              (serviceHandler.serviceType.value.isAL ||
+                  serviceHandler.serviceType.value.isMal)) ...[
+            Obx(() {
+              return _buildToggleButton(
+                label: 'Adult',
+                isActive: isAdult.value,
+                onTap: () => isAdult.value = !isAdult.value,
+              );
+            }),
+            const SizedBox(width: 12),
+          ],
           if (serviceHandler.serviceType.value == ServicesType.anilist) ...[
-            if (!General.hideAdultContent.get(true)) ...[
-              Obx(() {
-                return _buildToggleButton(
-                  label: 'Adult',
-                  isActive: isAdult.value,
-                  onTap: () => isAdult.value = !isAdult.value,
-                );
-              }),
-              const SizedBox(width: 12),
-            ],
             _buildActionButton(
               icon: Iconsax.setting_4,
               label: 'Filters',
@@ -671,7 +673,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       gridDelegate: _currentViewMode == ViewMode.list
           ? const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 1,
-              mainAxisExtent: 120,
+              mainAxisExtent: 130,
             )
           : SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: getResponsiveValue(context,
@@ -813,7 +815,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   void _showFilterBottomSheet() {
     showFilterBottomSheet(context, (filters) {
       _performSearch(filters: filters);
-    }, currentFilters: _activeFilters);
+    }, currentFilters: _activeFilters, isManga: widget.isManga);
   }
 
   void _removeFilter(String key, dynamic value) {
