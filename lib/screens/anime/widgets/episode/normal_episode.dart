@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 enum EpisodeLayoutType {
   compact,
   detailed,
+  blocks,
 }
 
 class BetterEpisode extends StatelessWidget {
@@ -37,10 +38,13 @@ class BetterEpisode extends StatelessWidget {
 
     return GestureDetector(
       onTap: onTap,
-      child: layoutType == EpisodeLayoutType.compact
-          ? _buildCompactLayout(context, episodeProgress, isFiller, hasProgress)
-          : _buildDetailedLayout(
-              context, episodeProgress, isFiller, hasProgress),
+      child: switch (layoutType) {
+        EpisodeLayoutType.compact =>
+          _buildCompactLayout(context, episodeProgress, isFiller, hasProgress),
+        EpisodeLayoutType.detailed =>
+          _buildDetailedLayout(context, episodeProgress, isFiller, hasProgress),
+        EpisodeLayoutType.blocks => _buildBlockLayout(context, isFiller),
+      },
     );
   }
 
@@ -68,6 +72,8 @@ class BetterEpisode extends StatelessWidget {
       return theme.colorScheme.primary.opaque(0.4, iReallyMeanIt: true);
     } else if (isFiller) {
       return Colors.orange.withOpacity(0.15);
+    } else if (layoutType == EpisodeLayoutType.blocks) {
+      return theme.colorScheme.secondaryContainer.opaque(0.25);
     } else {
       return theme.colorScheme.secondaryContainer.opaque(
         layoutType == EpisodeLayoutType.compact ? 0.4 : 0.5,
@@ -87,7 +93,7 @@ class BetterEpisode extends StatelessWidget {
   ) {
     return Container(
       clipBehavior: Clip.antiAlias,
-      height: 100,
+      height: 92,
       decoration: BoxDecoration(
         color: _getBackgroundColor(context, isFiller),
         borderRadius: BorderRadius.circular(12),
@@ -104,8 +110,8 @@ class BetterEpisode extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (isFiller)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 2.0),
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 2.0),
                     child: AnymexText(
                       text: "[Filler]",
                       size: 10,
@@ -120,6 +126,40 @@ class BetterEpisode extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBlockLayout(BuildContext context, bool isFiller) {
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: _getBackgroundColor(context, isFiller),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: isFiller
+              ? Colors.orange.opaque(0.75)
+              : isSelected
+                  ? context.colors.primary.opaque(0.75)
+                  : context.colors.outline.opaque(0.25),
+          width: isSelected ? 1.4 : 1,
+        ),
+      ),
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: Align(
+              alignment: Alignment.center,
+              child: AnymexText(
+                text: episode.number,
+                size: 15,
+                variant: TextVariant.bold,
+                color: context.colors.onSurface,
+              ),
             ),
           ),
         ],
@@ -170,7 +210,7 @@ class BetterEpisode extends StatelessWidget {
                               borderRadius: BorderRadius.circular(4),
                               border: Border.all(
                                   color: Colors.orange.withOpacity(0.5))),
-                          child: AnymexText(
+                          child: const AnymexText(
                             text: "FILLER",
                             size: 10,
                             color: Colors.orange,

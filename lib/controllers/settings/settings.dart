@@ -134,6 +134,10 @@ class Settings extends GetxController {
   set carouselStyle(int value) =>
       _setUISetting((s) => s?.carouselStyle = value);
 
+  int get episodeListLayout => _getUISetting((s) => s.episodeListLayout);
+  set episodeListLayout(int value) =>
+      _setUISetting((s) => s?.episodeListLayout = value.clamp(0, 2).toInt());
+
   double get glowDensity => _getUISetting((s) => s.glowDensity);
   set glowDensity(double value) => _setUISetting((s) => s?.glowDensity = value);
 
