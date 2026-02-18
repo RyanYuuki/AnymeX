@@ -5,132 +5,397 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:anymex/database/data_keys/keys.dart';
+
+class AnimeSproutOptions {
+  final bool extraSeasons;
+  final bool movies;
+  final bool specials;
+  final bool music;
+
+  const AnimeSproutOptions({
+    this.extraSeasons = true,
+    this.movies = true,
+    this.specials = true,
+    this.music = false,
+  });
+
+  Map<String, String> toQueryParams({String? source}) {
+    return {
+      if (source != null) 'source': source,
+      if (extraSeasons) 'exs': 'true',
+      if (specials) 'specials': 'true',
+      if (movies) 'movies': 'true',
+      if (music) 'music': 'true',
+    };
+  }
+}
 
 Future<List<Media>> getAiRecommendations(
   bool isManga,
   int page, {
   bool isAdult = false,
   String? username,
+  AnimeSproutOptions options = const AnimeSproutOptions(),
 }) async {
-  final query = username?.trim().toLowerCase();
   final service = Get.find<ServiceHandler>();
   final isAL = service.serviceType.value == ServicesType.anilist;
-  final userName = query ?? service.onlineService.profileData.value.name;
+  final userName =
+      username?.trim() ?? service.onlineService.profileData.value.name ?? '';
 
-  Future<List<Media>> fetchRecommendations() async {
-    try {
-      final url = isManga
-          ? 'https://anibrain.ai/api/-/recommender/recs/external-list/super-media-similar?filterCountry=[]&filterFormat=["MANGA"]&filterGenre={}&filterTag={"max":{},"min":{}}&filterRelease=[1930,2025]&filterScore=0&algorithmWeights={"genre":0.3,"setting":0.15,"synopsis":0.4,"theme":0.2}&externalListProvider=${isAL ? 'AniList' : 'MyAnimeList'}&externalListProfileName=$userName&mediaType=MANGA&adult=$isAdult&page=$page'
-          : 'https://anibrain.ai/api/-/recommender/recs/external-list/super-media-similar?filterCountry=[]&filterFormat=[]&filterGenre={}&filterTag={"max":{},"min":{}}&filterRelease=[1917,2025]&filterScore=0&algorithmWeights={"genre":0.3,"setting":0.15,"synopsis":0.4,"theme":0.2}&externalListProvider=${isAL ? 'AniList' : 'MyAnimeList'}&externalListProfileName=$userName&mediaType=ANIME&adult=$isAdult&page=$page';
-
-      final resp = await http.get(Uri.parse(url));
-
-      if (resp.statusCode == 200) {
-        final document = jsonDecode(resp.body);
-        final recItems = document['data'];
-
-        return recItems.map<Media>((item) {
-          final title = item['titleEnglish'] ?? item['titleRomaji'];
-          final imageUrl = item['imgURLs'][0];
-          final synopsis = item['description'];
-          final id = isAL ? item['anilistId'] : item['myanimelistId'];
-
-          return Media(
-            id: id.toString(),
-            title: title,
-            poster: imageUrl,
-            description: synopsis,
-            serviceType: ServicesType.anilist,
-            genres: (item['genres'] as List)
-                .map((genre) => genre.toString().trim().toUpperCase())
-                .toList(),
-          );
-        }).toList();
-      } else {
-        Logger.i(
-            'Recommendation API failed: ${resp.statusCode} - ${resp.body}');
-      }
-    } catch (e) {
-      Logger.i('Recommendation fetch error: $e');
-    }
+  if (userName.isEmpty) {
+    snackBar('Please log in to get recommendations');
     return [];
   }
 
-  List<Media> recommendations = await fetchRecommendations();
+  final Set<String> trackedIds = _buildTrackedIdSet(service, isAL);
 
-  if (recommendations.isEmpty) {
-    recommendations = await syncAndFetchRecommendations(
-        userName!, isAL, fetchRecommendations);
+  List<Media> results = [];
+
+  if (isManga) {
+    results = await _fetchNativeRecommendations(
+      isManga: true,
+      isAL: isAL,
+      page: page,
+      isAdult: isAdult,
+    );
+  } else {
+    final futures = await Future.wait([
+      _fetchAnimeSproutRecommendations(
+        userName: userName,
+        isAL: isAL,
+        options: options,
+        trackedIds: trackedIds,
+      ),
+      _fetchNativeRecommendations(
+        isManga: false,
+        isAL: isAL,
+        page: page,
+        isAdult: isAdult,
+      ),
+    ]);
+
+    final sproutRecs = futures[0];
+    final nativeRecs = futures[1];
+
+    final seenIds = <String>{};
+    for (final m in sproutRecs) {
+      if (m.id != null && seenIds.add(m.id!)) {
+        results.add(m);
+      }
+    }
+    for (final m in nativeRecs) {
+      if (m.id != null && seenIds.add(m.id!)) {
+        results.add(m);
+      }
+    }
   }
 
-  if (recommendations.isEmpty) {
-    snackBar('Error Occurred!');
+  results = results
+      .where((m) => m.id != null && !trackedIds.contains(m.id!))
+      .toList();
+
+  final seen = <String>{};
+  results = results.where((m) => m.id != null && seen.add(m.id!)).toList();
+
+  if (results.isEmpty) {
+    snackBar('No recommendations found');
   }
 
-  return recommendations;
+  return results;
 }
 
-Future<List<Media>> syncAndFetchRecommendations(String username, bool isAL,
-    Future<List<Media>> Function() fetchRecommendations) async {
+Set<String> _buildTrackedIdSet(ServiceHandler service, bool isAL) {
+  final ids = <String>{};
   try {
-    snackBar("Getting Your ${isAL ? 'AniList' : 'MyAnimeList'} Data...",
-        duration: 1000);
-    await getUserList(username, isAL);
-
-    snackBar("Syncing Your List...", duration: 1000);
-    await syncUserList(username, isAL);
-
-    snackBar("Fetching AI Recommendations...", duration: 1000);
-    final recommendations = await fetchRecommendations();
-
-    if (recommendations.isNotEmpty) {
-      snackBar("Recommendations Ready!", duration: 1000);
-      return recommendations;
+    if (isAL) {
+      for (final m in service.anilistService.animeList) {
+        if (m.id != null) ids.add(m.id!);
+      }
+      for (final m in service.anilistService.mangaList) {
+        if (m.id != null) ids.add(m.id!);
+      }
+    } else {
+      for (final m in service.malService.animeList) {
+        if (m.id != null) ids.add(m.id!);
+      }
+      for (final m in service.malService.mangaList) {
+        if (m.id != null) ids.add(m.id!);
+      }
     }
   } catch (e) {
-    Logger.i('Sync and fetch error: $e');
-    snackBar('Sync Failed!');
+    Logger.i('Error building tracked IDs: $e');
   }
-
-  return [];
+  return ids;
 }
 
-Future<void> getUserList(String username, bool isAL) async {
+Future<List<Media>> _fetchAnimeSproutRecommendations({
+  required String userName,
+  required bool isAL,
+  required AnimeSproutOptions options,
+  required Set<String> trackedIds,
+}) async {
   try {
-    final url =
-        'https://anibrain.ai/api/-/list/${isAL ? 'anilist' : 'myanimelist'}/fetch-list?profileId=$username&refresh=false';
+    final source = isAL ? 'anilist' : null;
+    final params = options.toQueryParams(source: source);
+    final uri = Uri.https(
+      'anime.ameo.dev',
+      '/user/$userName/recommendations',
+      params,
+    );
 
-    final response = await http.get(Uri.parse(url));
+    final response = await http.get(uri);
+    if (response.statusCode != 200) {
+      Logger.i('AnimeSprout failed: ${response.statusCode}');
+      return [];
+    }
+
+    final body = response.body;
+    final jsonStart = body.indexOf('"initialRecommendations"');
+    if (jsonStart == -1) return [];
+
+    final scriptStart = body.lastIndexOf('<script', jsonStart);
+    final scriptEnd = body.indexOf('</script>', jsonStart);
+    if (scriptStart == -1 || scriptEnd == -1) return [];
+
+    final scriptContent = body.substring(scriptStart, scriptEnd);
+    final jsonTagStart = scriptContent.indexOf('{');
+    if (jsonTagStart == -1) return [];
+
+    final jsonStr = scriptContent.substring(jsonTagStart);
+    final jsonData = jsonDecode(jsonStr) as Map<String, dynamic>;
+
+    final initialRecs = jsonData['initialRecommendations'] as Map<String, dynamic>?;
+    if (initialRecs == null || initialRecs['type'] != 'ok') return [];
+
+    final recommendations = initialRecs['recommendations'] as List<dynamic>;
+    final animeData = initialRecs['animeData'] as Map<String, dynamic>;
+
+    final List<Media> results = [];
+
+    for (final rec in recommendations) {
+      final malId = rec['id']?.toString();
+      if (malId == null) continue;
+
+      final data = animeData[malId] as Map<String, dynamic>?;
+      if (data == null) continue;
+
+      if (rec['planToWatch'] == true) continue;
+
+      final title = (data['alternative_titles'] as Map?)?['en'] as String?;
+      final titleFallback = data['title'] as String?;
+      final picture = (data['main_picture'] as Map?)?['large'] as String?;
+      final synopsis = data['synopsis'] as String?;
+      final genres = (data['genres'] as List?)
+          ?.map((g) => (g['name'] as String).toUpperCase())
+          .toList();
+
+      String? resolvedId;
+      if (isAL) {
+        resolvedId = await _malIdToAnilistId(malId);
+        resolvedId ??= malId;
+      } else {
+        resolvedId = malId;
+      }
+
+      if (trackedIds.contains(resolvedId)) continue;
+
+      results.add(Media(
+        id: resolvedId,
+        title: (title?.isNotEmpty == true ? title : titleFallback) ?? 'Unknown',
+        poster: picture ?? '',
+        description: synopsis ?? '',
+        serviceType: isAL ? ServicesType.anilist : ServicesType.mal,
+        genres: genres ?? [],
+      ));
+    }
+
+    return results;
+  } catch (e) {
+    Logger.i('AnimeSprout fetch error: $e');
+    return [];
+  }
+}
+
+Future<String?> _malIdToAnilistId(String malId) async {
+  try {
+    final token = AuthKeys.authToken.get<String?>();
+    final query = '''
+    query(\$idMal: Int) {
+      Media(idMal: \$idMal, type: ANIME) {
+        id
+      }
+    }
+    ''';
+
+    final response = await http.post(
+      Uri.parse('https://graphql.anilist.co'),
+      headers: {
+        if (token != null) 'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'query': query,
+        'variables': {'idMal': int.tryParse(malId)},
+      }),
+    );
 
     if (response.statusCode == 200) {
-      Logger.i('User list fetched successfully: ${response.body.toString()}');
-    } else {
-      Logger.i(
-          'Failed to fetch user list: ${response.statusCode} - ${response.body}');
-      throw Exception('Failed to fetch user list');
+      final data = jsonDecode(response.body);
+      final id = data['data']?['Media']?['id'];
+      return id?.toString();
     }
   } catch (e) {
-    Logger.i('Get user list error: $e');
-    rethrow;
+    Logger.i('MAL->AL ID conversion error for $malId: $e');
+  }
+  return null;
+}
+
+Future<List<Media>> _fetchNativeRecommendations({
+  required bool isManga,
+  required bool isAL,
+  required int page,
+  required bool isAdult,
+}) async {
+  if (isAL) {
+    return _fetchAnilistRecommendations(isManga: isManga, page: page);
+  } else {
+    return _fetchMalRecommendations(isManga: isManga, page: page);
   }
 }
 
-Future<void> syncUserList(String username, bool isAL) async {
+Future<List<Media>> _fetchAnilistRecommendations({
+  required bool isManga,
+  required int page,
+}) async {
   try {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return [];
+
+    final query = '''
+    query(\$page: Int, \$type: MediaType) {
+      Page(page: \$page, perPage: 30) {
+        recommendations(sort: RATING_DESC, onList: true) {
+          rating
+          mediaRecommendation {
+            id
+            title { romaji english }
+            coverImage { large }
+            description
+            genres
+            type
+            mediaListEntry { status }
+          }
+        }
+      }
+    }
+    ''';
+
+    final response = await http.post(
+      Uri.parse('https://graphql.anilist.co'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'query': query,
+        'variables': {
+          'page': page,
+          'type': isManga ? 'MANGA' : 'ANIME',
+        },
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      Logger.i('AniList recommendations failed: ${response.statusCode}');
+      return [];
+    }
+
+    final data = jsonDecode(response.body);
+    final recs = data['data']?['Page']?['recommendations'] as List<dynamic>?;
+    if (recs == null) return [];
+
+    final results = <Media>[];
+    for (final rec in recs) {
+      final media = rec['mediaRecommendation'] as Map<String, dynamic>?;
+      if (media == null) continue;
+
+      if (media['mediaListEntry'] != null) continue;
+
+      final id = media['id']?.toString();
+      if (id == null) continue;
+
+      final titleMap = media['title'] as Map?;
+      final title = (titleMap?['english'] as String?)?.isNotEmpty == true
+          ? titleMap!['english'] as String
+          : titleMap?['romaji'] as String? ?? 'Unknown';
+
+      results.add(Media(
+        id: id,
+        title: title,
+        poster: (media['coverImage'] as Map?)?['large'] as String? ?? '',
+        description: media['description'] as String? ?? '',
+        serviceType: ServicesType.anilist,
+        genres: ((media['genres'] as List?) ?? [])
+            .map((g) => g.toString().toUpperCase())
+            .toList(),
+      ));
+    }
+
+    return results;
+  } catch (e) {
+    Logger.i('AniList recommendations error: $e');
+    return [];
+  }
+}
+
+Future<List<Media>> _fetchMalRecommendations({
+  required bool isManga,
+  required int page,
+}) async {
+  try {
+    final type = isManga ? 'manga' : 'anime';
     final url =
-        'https://anibrain.ai/api/-/super-media/external-list/create-similar?externalListProvider=${isAL ? 'AniList' : 'MyAnimeList'}&externalListProfileName=$username';
+        'https://api.jikan.moe/v4/recommendations/$type?page=$page';
 
     final response = await http.get(Uri.parse(url));
-
-    if (response.statusCode == 200) {
-      Logger.i('User list synced successfully: ${response.body.toString()}');
-    } else {
-      Logger.i(
-          'Failed to sync user list: ${response.statusCode} - ${response.body}');
-      throw Exception('Failed to sync user list');
+    if (response.statusCode != 200) {
+      Logger.i('Jikan recommendations failed: ${response.statusCode}');
+      return [];
     }
+
+    final data = jsonDecode(response.body);
+    final recs = data['data'] as List<dynamic>?;
+    if (recs == null) return [];
+
+    final results = <Media>[];
+    final seen = <String>{};
+
+    for (final rec in recs) {
+      final entries = rec['entry'] as List<dynamic>?;
+      if (entries == null) continue;
+
+      for (final entry in entries) {
+        final malId = entry['mal_id']?.toString();
+        if (malId == null || !seen.add(malId)) continue;
+
+        final title = entry['title'] as String? ?? 'Unknown';
+        final imageUrl =
+            (entry['images'] as Map?)?['jpg']?['large_image_url'] as String?;
+
+        results.add(Media(
+          id: malId,
+          title: title,
+          poster: imageUrl ?? '',
+          serviceType: ServicesType.mal,
+          genres: [],
+        ));
+      }
+    }
+
+    return results;
   } catch (e) {
-    Logger.i('Sync user list error: $e');
-    rethrow;
+    Logger.i('Jikan recommendations error: $e');
+    return [];
   }
 }
