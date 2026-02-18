@@ -1,7 +1,6 @@
 import 'dart:ui';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
-import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +8,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -59,7 +59,8 @@ class _ProfilePageState extends State<ProfilePage>
           return CustomScrollView(
             physics: const BouncingScrollPhysics(),
             slivers: [
-              _buildSliverAppBar(context, bannerUrl, user.cover, user.name ?? 'Guest', _bannerAnim),
+              _buildSliverAppBar(context, bannerUrl, user.cover,
+                  user.name ?? 'Guest', _bannerAnim),
               SliverToBoxAdapter(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -150,7 +151,6 @@ class _ProfilePageState extends State<ProfilePage>
                         ],
                       ),
                     ),
-
                     if (user.about != null && user.about!.trim().isNotEmpty) ...[
                       const SizedBox(height: 20),
                       Padding(
@@ -174,7 +174,6 @@ class _ProfilePageState extends State<ProfilePage>
                         ),
                       ),
                     ],
-
                     if (user.favourites?.anime.isNotEmpty ?? false) ...[
                       const SizedBox(height: 20),
                       Padding(
@@ -184,7 +183,6 @@ class _ProfilePageState extends State<ProfilePage>
                       const SizedBox(height: 10),
                       _buildMediaFavCarousel(context, user.favourites!.anime),
                     ],
-
                     if (user.favourites?.manga.isNotEmpty ?? false) ...[
                       const SizedBox(height: 10),
                       Padding(
@@ -194,7 +192,6 @@ class _ProfilePageState extends State<ProfilePage>
                       const SizedBox(height: 10),
                       _buildMediaFavCarousel(context, user.favourites!.manga),
                     ],
-
                     if (user.favourites?.characters.isNotEmpty ?? false) ...[
                       const SizedBox(height: 10),
                       Padding(
@@ -208,7 +205,6 @@ class _ProfilePageState extends State<ProfilePage>
                               .map((c) => _PersonItem(name: c.name, image: c.image))
                               .toList()),
                     ],
-
                     if (user.favourites?.staff.isNotEmpty ?? false) ...[
                       const SizedBox(height: 10),
                       Padding(
@@ -222,7 +218,6 @@ class _ProfilePageState extends State<ProfilePage>
                               .map((s) => _PersonItem(name: s.name, image: s.image))
                               .toList()),
                     ],
-
                     if (user.favourites?.studios.isNotEmpty ?? false) ...[
                       const SizedBox(height: 10),
                       Padding(
@@ -261,7 +256,6 @@ class _ProfilePageState extends State<ProfilePage>
                         ),
                       ),
                     ],
-
                     const SizedBox(height: 50),
                   ],
                 ),
@@ -274,53 +268,7 @@ class _ProfilePageState extends State<ProfilePage>
   }
 
   Widget _buildAboutContent(BuildContext context, String about) {
-    final segments = _splitSpoilers(about);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: segments.map((seg) {
-        if (seg.isSpoiler) {
-          return _SpoilerBlock(
-            rawContent: seg.content,
-            htmlStyle: _htmlStyle(context),
-            imgExtension: _imgExtension(context),
-            preprocessHtml: (raw) => _preprocessHtml(raw, context),
-          );
-        }
-        return Html(
-          data: _preprocessHtml(seg.content, context),
-          style: _htmlStyle(context),
-          extensions: [_imgExtension(context)],
-        );
-      }).toList(),
-    );
-  }
-
-  List<_ContentSegment> _splitSpoilers(String content) {
-    final result = <_ContentSegment>[];
-    final spoilerPattern = RegExp(r'~!([\s\S]*?)!~');
-    int lastEnd = 0;
-    for (final match in spoilerPattern.allMatches(content)) {
-      if (match.start > lastEnd) {
-        result.add(_ContentSegment(content: content.substring(lastEnd, match.start), isSpoiler: false));
-      }
-      result.add(_ContentSegment(content: match.group(1) ?? '', isSpoiler: true));
-      lastEnd = match.end;
-    }
-    if (lastEnd < content.length) {
-      result.add(_ContentSegment(content: content.substring(lastEnd), isSpoiler: false));
-    }
-    return result;
-  }
-
-  String _preprocessHtml(String raw, BuildContext context) {
-    var content = raw;
-
-    content = content.replaceAllMapped(
-        RegExp(r'\[([^\]]+)\]\(([^)]+)\)'),
-        (m) => '<a href="${m[2]}">${m[1]}</a>');
-
-    final isHtml = RegExp(r'<[a-zA-Z][^>]*>').hasMatch(content);
-    if (!isHtml) content = _mdToHtml(content);
+    var content = about;
 
     content = content
         .replaceAll('\u200e', '')
@@ -331,101 +279,239 @@ class _ProfilePageState extends State<ProfilePage>
         .replaceAll('\u034f', '')
         .replaceAll('&lrm;', '')
         .replaceAll('&#8206;', '')
-        .replaceAll('&nbsp;', '\u00a0')
-        .replaceAll('&#160;', '\u00a0')
+        .replaceAll('&nbsp;', ' ')
+        .replaceAll('&#160;', ' ')
         .replaceAll('&thinsp;', '')
         .replaceAll('&emsp;', '')
         .replaceAll('&ensp;', '');
-    
+
     content = content.replaceAllMapped(
-      RegExp(
-        r'(<a\b[^>]*>\s*<img\b[^>]*/?\s*>\s*</a>)'
-        r'(?:\s*<a\b[^>]*>\s*<img\b[^>]*/?\s*>\s*</a>)+',
-        dotAll: true,
-      ),
-      (m) => '<div style="display:flex;flex-direction:row;flex-wrap:wrap;'
-          'gap:8px;align-items:center;justify-content:center;">'
-          '${m[0]}</div>',
+      RegExp(r'img(\d+)\(([^)]+)\)'),
+      (m) => '<img src="${m[2]}" width="${m[1]}">',
     );
 
-    return content;
-  }
+    content = content.replaceAllMapped(
+      RegExp(r'youtube\(([^)]+)\)'),
+      (m) {
+        final uri = Uri.tryParse(m[1].trim());
+        final id = uri?.queryParameters['v'] ?? m[1].trim();
+        return '<youtube id="$id">';
+      },
+    );
 
-  Map<String, Style> _htmlStyle(BuildContext context) => {
-        'body': Style(
+    content = content.replaceAllMapped(
+      RegExp(r'webm\(([^)]+)\)'),
+      (m) => '<a href="${m[1].trim()}">▶ View video</a>',
+    );
+
+    content = content.replaceAllMapped(
+      RegExp(r'\[([^\]]+)\]\(([^)]+)\)'),
+      (m) => '<a href="${m[2]}">${m[1]}</a>',
+    );
+
+    content = content.replaceAllMapped(
+      RegExp(r'~!([\s\S]*?)!~'),
+      (m) => '<spoiler>${m[1]}</spoiler>',
+    );
+
+    content = content.replaceAllMapped(
+      RegExp(r'<(div|p)\b([^>]*?)\balign=["\'](\w+)["\']([^>]*)>',
+          caseSensitive: false),
+      (m) {
+        final tag = m[1];
+        final before = m[2] ?? '';
+        final align = m[3];
+        final after = m[4] ?? '';
+        return '<$tag$before style="text-align:$align;"$after>';
+      },
+    );
+
+    // If no HTML, convert markdown to HTML
+    final hasHtml = RegExp(r'<[a-zA-Z][^>]*>').hasMatch(content);
+    if (!hasHtml) {
+      content = _mdToHtml(content);
+    }
+
+    return Html(
+      data: content,
+      style: {
+        "body": Style(
           margin: Margins.zero,
           padding: HtmlPaddings.zero,
           fontSize: FontSize(13.5),
-          lineHeight: LineHeight(1.65),
+          lineHeight: LineHeight(1.6),
           color: context.theme.colorScheme.onSurfaceVariant,
           fontFamily: 'Poppins',
         ),
-        'div': Style(
+        "div": Style(
           margin: Margins.only(bottom: 8),
-          textAlign: TextAlign.center,
         ),
-        'p': Style(
+        "p": Style(
           margin: Margins.only(bottom: 8),
-          color: context.theme.colorScheme.onSurfaceVariant,
         ),
-        'a': Style(
-          color: context.theme.colorScheme.primary,
+        "a": Style(
+          display: Display.inline,
           textDecoration: TextDecoration.none,
-          display: Display.inlineBlock,
+          color: context.theme.colorScheme.primary,
         ),
-        'strong': Style(
-          fontWeight: FontWeight.w700,
-          color: context.theme.colorScheme.onSurface,
+        "img": Style(
+          display: Display.inline,
+          margin: Margins.only(right: 4, bottom: 4),
         ),
-        'b': Style(
-          fontWeight: FontWeight.w700,
-          color: context.theme.colorScheme.onSurface,
-        ),
-        'em': Style(
-          fontStyle: FontStyle.italic,
-          color: context.theme.colorScheme.onSurface,
-        ),
-        'i': Style(
-          fontStyle: FontStyle.italic,
-          color: context.theme.colorScheme.onSurface,
-        ),
-        'h1': Style(fontSize: FontSize(18), fontWeight: FontWeight.bold, color: context.theme.colorScheme.onSurface),
-        'h2': Style(fontSize: FontSize(16), fontWeight: FontWeight.bold, color: context.theme.colorScheme.onSurface),
-        'h3': Style(fontSize: FontSize(14), fontWeight: FontWeight.bold, color: context.theme.colorScheme.onSurface),
-        'code': Style(
+        "h1": Style(
+            fontSize: FontSize(20),
+            fontWeight: FontWeight.bold,
+            color: context.theme.colorScheme.onSurface),
+        "h2": Style(
+            fontSize: FontSize(18),
+            fontWeight: FontWeight.bold,
+            color: context.theme.colorScheme.onSurface),
+        "h3": Style(
+            fontSize: FontSize(16),
+            fontWeight: FontWeight.bold,
+            color: context.theme.colorScheme.onSurface),
+        "h4": Style(
+            fontSize: FontSize(14),
+            fontWeight: FontWeight.bold,
+            color: context.theme.colorScheme.onSurface),
+        "h5": Style(
+            fontSize: FontSize(13),
+            fontWeight: FontWeight.bold,
+            color: context.theme.colorScheme.onSurface),
+        "strong": Style(
+            fontWeight: FontWeight.w700,
+            color: context.theme.colorScheme.onSurface),
+        "b": Style(
+            fontWeight: FontWeight.w700,
+            color: context.theme.colorScheme.onSurface),
+        "em": Style(
+            fontStyle: FontStyle.italic,
+            color: context.theme.colorScheme.onSurface),
+        "i": Style(
+            fontStyle: FontStyle.italic,
+            color: context.theme.colorScheme.onSurface),
+        "del": Style(
+            textDecoration: TextDecoration.lineThrough,
+            color: context.theme.colorScheme.onSurfaceVariant),
+        "code": Style(
           fontFamily: 'monospace',
           fontSize: FontSize(12),
           backgroundColor: context.theme.colorScheme.surfaceContainer,
           color: context.theme.colorScheme.primary,
         ),
-        'blockquote': Style(
+        "blockquote": Style(
           backgroundColor: context.theme.colorScheme.primary.withOpacity(0.07),
           padding: HtmlPaddings.symmetric(horizontal: 12, vertical: 8),
           margin: Margins.only(left: 0, right: 0, top: 4, bottom: 4),
-          border: Border(left: BorderSide(color: context.theme.colorScheme.primary, width: 3)),
+          border: Border(
+              left: BorderSide(
+                  color: context.theme.colorScheme.primary, width: 3)),
         ),
-        'img': Style(margin: Margins.only(bottom: 8)),
-      };
-
-  TagExtension _imgExtension(BuildContext context) => TagExtension(
-        tagsToExtend: {'img'},
-        builder: (extensionContext) {
-          final src = extensionContext.attributes['src'] ?? '';
-          final widthAttr = extensionContext.attributes['width'];
-          final heightAttr = extensionContext.attributes['height'];
-          final double? w = widthAttr != null ? double.tryParse(widthAttr) : null;
-          final double? h = heightAttr != null ? double.tryParse(heightAttr) : null;
-          final isIcon = w != null && w <= 80;
-          return CachedNetworkImage(
-            imageUrl: src,
-            width: isIcon ? w : double.infinity,
-            height: h ?? (isIcon ? 60 : null),
-            fit: isIcon ? BoxFit.contain : BoxFit.fitWidth,
-            errorWidget: (_, __, ___) => SizedBox(width: w ?? 40, height: h ?? 40),
-            placeholder: (_, __) => SizedBox(width: w ?? 40, height: h ?? 40),
-          );
-        },
-      );
+        "ul": Style(margin: Margins.only(bottom: 8, left: 16)),
+        "ol": Style(margin: Margins.only(bottom: 8, left: 16)),
+        "li": Style(
+          margin: Margins.only(bottom: 4),
+          color: context.theme.colorScheme.onSurfaceVariant,
+        ),
+      },
+      extensions: [
+        // Custom img rendering
+        TagExtension(
+          tagsToExtend: {"img"},
+          builder: (ext) {
+            final src = ext.attributes["src"] ?? "";
+            final widthAttr = ext.attributes["width"];
+            final heightAttr = ext.attributes["height"];
+            double? parsePx(String? value) {
+              if (value == null) return null;
+              return double.tryParse(value.replaceAll("px", ""));
+            }
+            final w = parsePx(widthAttr);
+            final h = parsePx(heightAttr);
+            final isIcon = w != null && w <= 80;
+            return CachedNetworkImage(
+              imageUrl: src,
+              width: isIcon ? w : (w ?? double.infinity),
+              height: h,
+              fit: BoxFit.contain,
+              errorWidget: (_, __, ___) =>
+                  SizedBox(width: w ?? 40, height: h ?? 40),
+              placeholder: (_, __) =>
+                  SizedBox(width: w ?? 40, height: h ?? 40),
+            );
+          },
+        ),
+        // Spoiler tag
+        TagExtension(
+          tagsToExtend: {"spoiler"},
+          builder: (ext) {
+            return _SpoilerWidget(
+              child: Html(
+                data: ext.innerHtml,
+                style: {
+                  "body": Style(
+                    margin: Margins.zero,
+                    padding: HtmlPaddings.zero,
+                    color: context.theme.colorScheme.onSurfaceVariant,
+                    fontFamily: 'Poppins',
+                    fontSize: FontSize(13.5),
+                  ),
+                },
+              ),
+            );
+          },
+        ),
+        // YouTube embed
+        TagExtension(
+          tagsToExtend: {"youtube"},
+          builder: (ext) {
+            final id = ext.attributes["id"] ?? "";
+            if (id.isEmpty) return const SizedBox.shrink();
+            return GestureDetector(
+              onTap: () => launchUrl(
+                Uri.parse("https://www.youtube.com/watch?v=$id"),
+                mode: LaunchMode.externalApplication,
+              ),
+              child: Container(
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: Colors.black,
+                ),
+                clipBehavior: Clip.hardEdge,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    CachedNetworkImage(
+                      imageUrl:
+                          "https://img.youtube.com/vi/$id/hqdefault.jpg",
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      errorWidget: (_, __, ___) => Container(
+                        height: 200,
+                        color: Colors.black54,
+                        child: const Icon(Icons.play_circle_outline,
+                            color: Colors.white, size: 48),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.play_arrow,
+                          color: Colors.white, size: 32),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
 
   String _mdToHtml(String md) {
     final lines = md.split('\n');
@@ -433,18 +519,32 @@ class _ProfilePageState extends State<ProfilePage>
     for (final rawLine in lines) {
       var line = rawLine.trim();
       if (line.isEmpty) continue;
-      if (RegExp(r'^<(div|p|h[1-6]|ul|ol|li|blockquote|br)', caseSensitive: false).hasMatch(line)) {
+      if (RegExp(
+              r'^<(div|p|h[1-6]|ul|ol|li|blockquote|br|spoiler|youtube)',
+              caseSensitive: false)
+          .hasMatch(line)) {
         buffer.writeln(line);
         continue;
       }
       line = line
-          .replaceAllMapped(RegExp(r'\*\*\*(.*?)\*\*\*'), (m) => '<strong><em>${m[1]}</em></strong>')
-          .replaceAllMapped(RegExp(r'\*\*(.*?)\*\*'), (m) => '<strong>${m[1]}</strong>')
+          .replaceAllMapped(RegExp(r'\*\*\*(.*?)\*\*\*'),
+              (m) => '<strong><em>${m[1]}</em></strong>')
+          .replaceAllMapped(
+              RegExp(r'\*\*(.*?)\*\*'), (m) => '<strong>${m[1]}</strong>')
+          .replaceAllMapped(RegExp(r'_(.*?)_'), (m) => '<em>${m[1]}</em>')
+          .replaceAllMapped(RegExp(r'\*(.*?)\*'), (m) => '<em>${m[1]}</em>')
           .replaceAllMapped(RegExp(r'~~(.*?)~~'), (m) => '<del>${m[1]}</del>')
           .replaceAllMapped(RegExp(r'`(.*?)`'), (m) => '<code>${m[1]}</code>')
-          .replaceAllMapped(RegExp(r'^### (.+)$'), (m) => '<h3>${m[1]}</h3>')
-          .replaceAllMapped(RegExp(r'^## (.+)$'), (m) => '<h2>${m[1]}</h2>')
-          .replaceAllMapped(RegExp(r'^# (.+)$'), (m) => '<h1>${m[1]}</h1>');
+          .replaceAllMapped(
+              RegExp(r'^#{5}\s+(.+)$'), (m) => '<h5>${m[1]}</h5>')
+          .replaceAllMapped(
+              RegExp(r'^#{4}\s+(.+)$'), (m) => '<h4>${m[1]}</h4>')
+          .replaceAllMapped(
+              RegExp(r'^#{3}\s+(.+)$'), (m) => '<h3>${m[1]}</h3>')
+          .replaceAllMapped(
+              RegExp(r'^#{2}\s+(.+)$'), (m) => '<h2>${m[1]}</h2>')
+          .replaceAllMapped(
+              RegExp(r'^#\s+(.+)$'), (m) => '<h1>${m[1]}</h1>');
       if (RegExp(r'^<h[1-6]>').hasMatch(line)) {
         buffer.writeln(line);
       } else {
@@ -494,7 +594,8 @@ class _ProfilePageState extends State<ProfilePage>
             if (!hasBanner)
               BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-                child: Container(color: context.theme.colorScheme.surface.withOpacity(0.2)),
+                child: Container(
+                    color: context.theme.colorScheme.surface.withOpacity(0.2)),
               ),
             Container(
               decoration: BoxDecoration(
@@ -516,7 +617,8 @@ class _ProfilePageState extends State<ProfilePage>
     );
   }
 
-  Widget _buildAvatarAndName(BuildContext context, String avatarUrl, String name) {
+  Widget _buildAvatarAndName(
+      BuildContext context, String avatarUrl, String name) {
     final handler = Get.find<ServiceHandler>();
     final expiry = handler.profileData.value.tokenExpiry;
     String expiryText = "";
@@ -567,7 +669,10 @@ class _ProfilePageState extends State<ProfilePage>
             ),
             child: Text(
               "Anilist Member",
-              style: TextStyle(fontSize: 12, color: context.theme.colorScheme.primary, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                  fontSize: 12,
+                  color: context.theme.colorScheme.primary,
+                  fontWeight: FontWeight.w600),
             ),
           ),
           if (expiryText.isNotEmpty) ...[
@@ -586,16 +691,26 @@ class _ProfilePageState extends State<ProfilePage>
     );
   }
 
-  Widget _buildHighlightCard(BuildContext context, String label, String value, IconData icon, Color color) {
+  Widget _buildHighlightCard(BuildContext context, String label, String value,
+      IconData icon, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
-      decoration: BoxDecoration(color: context.theme.colorScheme.surfaceContainer, borderRadius: BorderRadius.circular(20)),
+      decoration: BoxDecoration(
+          color: context.theme.colorScheme.surfaceContainer,
+          borderRadius: BorderRadius.circular(20)),
       child: Column(
         children: [
           Icon(icon, color: color, size: 28),
           const SizedBox(height: 10),
-          Text(value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: context.theme.colorScheme.onSurface)),
-          Text(label, style: TextStyle(fontSize: 12, color: context.theme.colorScheme.onSurfaceVariant)),
+          Text(value,
+              style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: context.theme.colorScheme.onSurface)),
+          Text(label,
+              style: TextStyle(
+                  fontSize: 12,
+                  color: context.theme.colorScheme.onSurfaceVariant)),
         ],
       ),
     );
@@ -611,44 +726,68 @@ class _ProfilePageState extends State<ProfilePage>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: context.theme.colorScheme.onSurfaceVariant)),
-          Text("$value%", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: context.theme.colorScheme.primary)),
+          Text(label,
+              style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: context.theme.colorScheme.onSurfaceVariant)),
+          Text("$value%",
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: context.theme.colorScheme.primary)),
         ],
       ),
     );
   }
 
-  Widget _buildSectionHeader(BuildContext context, String title, IconData icon) {
+  Widget _buildSectionHeader(
+      BuildContext context, String title, IconData icon) {
     return Row(
       children: [
         Icon(icon, size: 18, color: context.theme.colorScheme.primary),
         const SizedBox(width: 8),
         Text(title,
             style: TextStyle(
-                fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Poppins-SemiBold', color: context.theme.colorScheme.onSurface)),
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Poppins-SemiBold',
+                color: context.theme.colorScheme.onSurface)),
       ],
     );
   }
 
-  Widget _buildStatRow(BuildContext context, String label, String value, IconData icon) {
+  Widget _buildStatRow(
+      BuildContext context, String label, String value, IconData icon) {
     return Row(
       children: [
         Container(
           padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(color: context.theme.colorScheme.surface, borderRadius: BorderRadius.circular(8)),
-          child: Icon(icon, size: 16, color: context.theme.colorScheme.onSurfaceVariant),
+          decoration: BoxDecoration(
+              color: context.theme.colorScheme.surface,
+              borderRadius: BorderRadius.circular(8)),
+          child: Icon(icon,
+              size: 16, color: context.theme.colorScheme.onSurfaceVariant),
         ),
         const SizedBox(width: 15),
         Expanded(
           child: Text(label,
-              style: TextStyle(fontSize: 14, color: context.theme.colorScheme.onSurfaceVariant, fontWeight: FontWeight.w500)),
+              style: TextStyle(
+                  fontSize: 14,
+                  color: context.theme.colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w500)),
         ),
-        Text(value, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: context.theme.colorScheme.onSurface)),
+        Text(value,
+            style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: context.theme.colorScheme.onSurface)),
       ],
     );
   }
 
-  Widget _buildMediaFavCarousel(BuildContext context, List<FavouriteMedia> items) {
+  Widget _buildMediaFavCarousel(
+      BuildContext context, List<FavouriteMedia> items) {
     return SizedBox(
       height: 190,
       child: ListView.builder(
@@ -663,7 +802,8 @@ class _ProfilePageState extends State<ProfilePage>
     );
   }
 
-  Widget _buildMediaCard(BuildContext context, String? imageUrl, String? title) {
+  Widget _buildMediaCard(
+      BuildContext context, String? imageUrl, String? title) {
     return Container(
       width: 112,
       margin: const EdgeInsets.only(right: 10),
@@ -674,14 +814,27 @@ class _ProfilePageState extends State<ProfilePage>
             borderRadius: BorderRadius.circular(12),
             child: imageUrl != null
                 ? CachedNetworkImage(
-                    imageUrl: imageUrl, width: 112, height: 150, fit: BoxFit.cover,
-                    errorWidget: (_, __, ___) => Container(width: 112, height: 150, color: context.theme.colorScheme.surfaceContainer))
-                : Container(width: 112, height: 150, color: context.theme.colorScheme.surfaceContainer),
+                    imageUrl: imageUrl,
+                    width: 112,
+                    height: 150,
+                    fit: BoxFit.cover,
+                    errorWidget: (_, __, ___) => Container(
+                        width: 112,
+                        height: 150,
+                        color: context.theme.colorScheme.surfaceContainer))
+                : Container(
+                    width: 112,
+                    height: 150,
+                    color: context.theme.colorScheme.surfaceContainer),
           ),
           const SizedBox(height: 5),
           Text(title ?? '',
-              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: context.theme.colorScheme.onSurface),
-              maxLines: 2, overflow: TextOverflow.ellipsis),
+              style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                  color: context.theme.colorScheme.onSurface),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis),
         ],
       ),
     );
@@ -702,7 +855,8 @@ class _ProfilePageState extends State<ProfilePage>
     );
   }
 
-  Widget _buildPersonCard(BuildContext context, String? imageUrl, String? name) {
+  Widget _buildPersonCard(
+      BuildContext context, String? imageUrl, String? name) {
     return Container(
       width: 78,
       margin: const EdgeInsets.only(right: 10),
@@ -712,27 +866,36 @@ class _ProfilePageState extends State<ProfilePage>
             borderRadius: BorderRadius.circular(50),
             child: imageUrl != null
                 ? CachedNetworkImage(
-                    imageUrl: imageUrl, width: 70, height: 70, fit: BoxFit.cover,
+                    imageUrl: imageUrl,
+                    width: 70,
+                    height: 70,
+                    fit: BoxFit.cover,
                     errorWidget: (_, __, ___) => Container(
-                        width: 70, height: 70,
-                        decoration: BoxDecoration(shape: BoxShape.circle, color: context.theme.colorScheme.surfaceContainer)))
-                : Container(width: 70, height: 70,
-                    decoration: BoxDecoration(shape: BoxShape.circle, color: context.theme.colorScheme.surfaceContainer)),
+                        width: 70,
+                        height: 70,
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: context.theme.colorScheme.surfaceContainer)))
+                : Container(
+                    width: 70,
+                    height: 70,
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: context.theme.colorScheme.surfaceContainer)),
           ),
           const SizedBox(height: 6),
           Text(name ?? '',
-              style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w500, color: context.theme.colorScheme.onSurface),
-              maxLines: 2, textAlign: TextAlign.center, overflow: TextOverflow.ellipsis),
+              style: TextStyle(
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w500,
+                  color: context.theme.colorScheme.onSurface),
+              maxLines: 2,
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis),
         ],
       ),
     );
   }
-}
-
-class _ContentSegment {
-  final String content;
-  final bool isSpoiler;
-  const _ContentSegment({required this.content, required this.isSpoiler});
 }
 
 class _PersonItem {
@@ -741,44 +904,34 @@ class _PersonItem {
   const _PersonItem({this.name, this.image});
 }
 
-class _SpoilerBlock extends StatefulWidget {
-  final String rawContent;
-  final Map<String, Style> htmlStyle;
-  final TagExtension imgExtension;
-  final String Function(String) preprocessHtml;
-
-  const _SpoilerBlock({
-    required this.rawContent,
-    required this.htmlStyle,
-    required this.imgExtension,
-    required this.preprocessHtml,
-  });
-
+class _SpoilerWidget extends StatefulWidget {
+  final Widget child;
+  const _SpoilerWidget({required this.child});
   @override
-  State<_SpoilerBlock> createState() => _SpoilerBlockState();
+  State<_SpoilerWidget> createState() => _SpoilerWidgetState();
 }
 
-class _SpoilerBlockState extends State<_SpoilerBlock> {
-  bool _revealed = false;
+class _SpoilerWidgetState extends State<_SpoilerWidget> {
+  bool open = false;
 
   @override
   Widget build(BuildContext context) {
-    final scheme = context.theme.colorScheme;
-
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color: scheme.surfaceContainer.withOpacity(0.6),
+        color: context.theme.colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: scheme.outlineVariant.withOpacity(0.4)),
+        border: Border.all(
+          color: context.theme.colorScheme.outlineVariant.withOpacity(0.4),
+        ),
       ),
-      child: _revealed ? _buildRevealed(context, scheme) : _buildHidden(context, scheme),
+      child: open ? _buildRevealed(context) : _buildHidden(context),
     );
   }
 
-  Widget _buildHidden(BuildContext context, ColorScheme scheme) {
+  Widget _buildHidden(BuildContext context) {
     return InkWell(
-      onTap: () => setState(() => _revealed = true),
+      onTap: () => setState(() => open = true),
       borderRadius: BorderRadius.circular(12),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -786,14 +939,17 @@ class _SpoilerBlockState extends State<_SpoilerBlock> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.visibility_off_rounded,
-                size: 16, color: scheme.onSurfaceVariant.withOpacity(0.7)),
+                size: 16,
+                color: context.theme.colorScheme.onSurfaceVariant
+                    .withOpacity(0.7)),
             const SizedBox(width: 8),
             Text(
-              'Spoiler, tap to reveal',
+              'Spoiler — tap to reveal',
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
-                color: scheme.onSurfaceVariant.withOpacity(0.7),
+                color: context.theme.colorScheme.onSurfaceVariant
+                    .withOpacity(0.7),
                 fontStyle: FontStyle.italic,
               ),
             ),
@@ -803,29 +959,27 @@ class _SpoilerBlockState extends State<_SpoilerBlock> {
     );
   }
 
-  Widget _buildRevealed(BuildContext context, ColorScheme scheme) {
-    final html = widget.preprocessHtml(widget.rawContent);
+  Widget _buildRevealed(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Align(
           alignment: Alignment.topRight,
           child: InkWell(
-            onTap: () => setState(() => _revealed = false),
-            borderRadius: const BorderRadius.only(topRight: Radius.circular(12)),
+            onTap: () => setState(() => open = false),
+            borderRadius:
+                const BorderRadius.only(topRight: Radius.circular(12)),
             child: Padding(
               padding: const EdgeInsets.all(8),
-              child: Icon(Icons.close_rounded, size: 18, color: scheme.onSurfaceVariant),
+              child: Icon(Icons.close_rounded,
+                  size: 18,
+                  color: context.theme.colorScheme.onSurfaceVariant),
             ),
           ),
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-          child: Html(
-            data: html,
-            style: widget.htmlStyle,
-            extensions: [widget.imgExtension],
-          ),
+          child: widget.child,
         ),
       ],
     );
