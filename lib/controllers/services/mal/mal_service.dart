@@ -246,6 +246,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                   borderRadius: 16.multiplyRadius(),
                   backgroundImage: [
                         ...popularAnimes,
+                        ...popularMangas,
                         ...trendingMangas,
                         ...trendingAnimes
                       ].where((e) => e.cover != null).last.cover ??
