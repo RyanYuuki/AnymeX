@@ -79,6 +79,7 @@ enum AuthKeys {
   malAuthToken,
   malRefreshToken,
   simklAuthToken,
+  malSessionId,
 }
 
 enum SearchKeys { novelSearchedQueries }
