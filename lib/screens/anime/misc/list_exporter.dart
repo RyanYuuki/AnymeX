@@ -14,6 +14,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
+import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 
 class ListExporterPage extends StatefulWidget {
   final bool isManga;
@@ -134,15 +135,16 @@ class _ListExporterPageState extends State<ListExporterPage> {
       throw Exception('Not logged into AniList');
     }
 
+    final anilistAuth = Get.find<AnilistAuth>();
     final trackedList = widget.isManga 
-        ? serviceHandler.anilistService.mangaList 
-        : serviceHandler.anilistService.animeList;
+        ? anilistAuth.mangaList 
+        : anilistAuth.animeList;
 
     if (trackedList.isEmpty) {
       if (widget.isManga) {
-        await serviceHandler.anilistService.fetchUserMangaList();
+        await anilistAuth.fetchUserMangaList();
       } else {
-        await serviceHandler.anilistService.fetchUserAnimeList();
+        await anilistAuth.fetchUserAnimeList();
       }
     }
 
