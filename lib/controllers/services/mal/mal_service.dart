@@ -644,6 +644,9 @@ class MalService extends GetxController implements BaseService, OnlineService {
     }
 
     if (req.statusCode == 200) {
+      // snackBar(
+      //     "${isAnime ? 'Anime' : 'Manga'} Tracked to ${isAnime ? 'Episode' : 'Chapter'} $progress Successfully!");
+      
       final newMedia = currentMedia.value
         ..episodeCount = progress.toString()
         ..watchingStatus = status
@@ -728,6 +731,8 @@ class MalService extends GetxController implements BaseService, OnlineService {
     AuthKeys.malSessionId.delete();
     isLoggedIn.value = false;
     profileData.value = Profile();
+    // animeList.value = [];
+    // mangaList.value = [];
     continueWatching.value = [];
     continueReading.value = [];
   }
