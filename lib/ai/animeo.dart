@@ -7,6 +7,31 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:anymex/database/data_keys/keys.dart';
 
+class RecommendationCache {
+  static final Map<String, List<Media>> _cache = {};
+  static final Map<String, int> _pageCache = {};
+  
+  static List<Media>? get(String key, int page) {
+    final cacheKey = '$key:$page';
+    return _cache[cacheKey];
+  }
+  
+  static void set(String key, int page, List<Media> items) {
+    final cacheKey = '$key:$page';
+    _cache[cacheKey] = items;
+    _pageCache[key] = page;
+  }
+  
+  static int getCurrentPage(String key) {
+    return _pageCache[key] ?? 1;
+  }
+  
+  static void clear() {
+    _cache.clear();
+    _pageCache.clear();
+  }
+}
+
 class AnimeSproutOptions {
   final bool extraSeasons;
   final bool movies;
@@ -37,6 +62,7 @@ Future<List<Media>> getAiRecommendations(
   bool isAdult = false,
   String? username,
   AnimeSproutOptions options = const AnimeSproutOptions(),
+  bool refresh = false,
 }) async {
   final service = Get.find<ServiceHandler>();
   final isAL = service.serviceType.value == ServicesType.anilist;
@@ -46,6 +72,15 @@ Future<List<Media>> getAiRecommendations(
   if (userName.isEmpty) {
     snackBar('Please log in to get recommendations');
     return [];
+  }
+
+  final cacheKey = '${isManga ? 'manga' : 'anime'}:$userName:${isAL ? 'al' : 'mal'}:${isAdult ? 'adult' : 'sfw'}';
+  
+  if (!refresh) {
+    final cached = RecommendationCache.get(cacheKey, page);
+    if (cached != null) {
+      return cached;
+    }
   }
 
   final Set<String> trackedIds = _buildTrackedIdSet(service, isAL);
@@ -66,6 +101,7 @@ Future<List<Media>> getAiRecommendations(
         isAL: isAL,
         options: options,
         trackedIds: trackedIds,
+        isAdult: isAdult,
       ),
       _fetchNativeRecommendations(
         isManga: false,
@@ -73,17 +109,19 @@ Future<List<Media>> getAiRecommendations(
         page: page,
         isAdult: isAdult,
       ),
-    ]);
+    ], eagerError: false);
 
     final sproutRecs = futures[0];
     final nativeRecs = futures[1];
 
     final seenIds = <String>{};
+    
     for (final m in sproutRecs) {
       if (m.id != null && seenIds.add(m.id!)) {
         results.add(m);
       }
     }
+    
     for (final m in nativeRecs) {
       if (m.id != null && seenIds.add(m.id!)) {
         results.add(m);
@@ -98,9 +136,11 @@ Future<List<Media>> getAiRecommendations(
   final seen = <String>{};
   results = results.where((m) => m.id != null && seen.add(m.id!)).toList();
 
-  if (results.isEmpty) {
+  if (results.isEmpty && page == 1) {
     snackBar('No recommendations found');
   }
+
+  RecommendationCache.set(cacheKey, page, results);
 
   return results;
 }
@@ -134,17 +174,19 @@ Future<List<Media>> _fetchAnimeSproutRecommendations({
   required bool isAL,
   required AnimeSproutOptions options,
   required Set<String> trackedIds,
+  required bool isAdult,
 }) async {
   try {
     final source = isAL ? 'anilist' : null;
     final params = options.toQueryParams(source: source);
+    
     final uri = Uri.https(
       'anime.ameo.dev',
       '/user/$userName/recommendations',
       params,
     );
 
-    final response = await http.get(uri);
+    final response = await http.get(uri).timeout(const Duration(seconds: 10));
     if (response.statusCode != 200) {
       Logger.i('AnimeSprout failed: ${response.statusCode}');
       return [];
@@ -172,8 +214,12 @@ Future<List<Media>> _fetchAnimeSproutRecommendations({
     final animeData = initialRecs['animeData'] as Map<String, dynamic>;
 
     final List<Media> results = [];
+    final batchSize = 20;
+    int processed = 0;
 
     for (final rec in recommendations) {
+      if (processed >= 50) break;
+
       final malId = rec['id']?.toString();
       if (malId == null) continue;
 
@@ -181,6 +227,13 @@ Future<List<Media>> _fetchAnimeSproutRecommendations({
       if (data == null) continue;
 
       if (rec['planToWatch'] == true) continue;
+
+      if (!isAdult) {
+        final nsfw = data['nsfw'] == true || 
+                     (data['genres'] as List?)?.any((g) => 
+                       ['HENTAI', 'EROTICA'].contains(g['name']?.toUpperCase())) == true;
+        if (nsfw) continue;
+      }
 
       final title = (data['alternative_titles'] as Map?)?['en'] as String?;
       final titleFallback = data['title'] as String?;
@@ -192,7 +245,7 @@ Future<List<Media>> _fetchAnimeSproutRecommendations({
 
       String? resolvedId;
       if (isAL) {
-        resolvedId = await _malIdToAnilistId(malId);
+        resolvedId = await _getAnilistIdFromMal(malId);
         resolvedId ??= malId;
       } else {
         resolvedId = malId;
@@ -208,6 +261,8 @@ Future<List<Media>> _fetchAnimeSproutRecommendations({
         serviceType: isAL ? ServicesType.anilist : ServicesType.mal,
         genres: genres ?? [],
       ));
+      
+      processed++;
     }
 
     return results;
@@ -217,7 +272,13 @@ Future<List<Media>> _fetchAnimeSproutRecommendations({
   }
 }
 
-Future<String?> _malIdToAnilistId(String malId) async {
+final Map<String, String> _malToAnilistCache = {};
+
+Future<String?> _getAnilistIdFromMal(String malId) async {
+  if (_malToAnilistCache.containsKey(malId)) {
+    return _malToAnilistCache[malId];
+  }
+
   try {
     final token = AuthKeys.authToken.get<String?>();
     final query = '''
@@ -238,15 +299,18 @@ Future<String?> _malIdToAnilistId(String malId) async {
         'query': query,
         'variables': {'idMal': int.tryParse(malId)},
       }),
-    );
+    ).timeout(const Duration(seconds: 5));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      final id = data['data']?['Media']?['id'];
-      return id?.toString();
+      final id = data['data']?['Media']?['id']?.toString();
+      if (id != null) {
+        _malToAnilistCache[malId] = id;
+        return id;
+      }
     }
   } catch (e) {
-    Logger.i('MAL->AL ID conversion error for $malId: $e');
+    Logger.i('MAL->AL conversion error for $malId: $e');
   }
   return null;
 }
@@ -258,25 +322,33 @@ Future<List<Media>> _fetchNativeRecommendations({
   required bool isAdult,
 }) async {
   if (isAL) {
-    return _fetchAnilistRecommendations(isManga: isManga, page: page);
+    return _fetchAnilistRecommendations(
+      isManga: isManga, 
+      page: page,
+      isAdult: isAdult,
+    );
   } else {
-    return _fetchMalRecommendations(isManga: isManga, page: page);
+    return _fetchMalRecommendations(
+      isManga: isManga, 
+      page: page,
+      isAdult: isAdult,
+    );
   }
 }
 
 Future<List<Media>> _fetchAnilistRecommendations({
   required bool isManga,
   required int page,
+  required bool isAdult,
 }) async {
   try {
     final token = AuthKeys.authToken.get<String?>();
     if (token == null) return [];
 
     final query = '''
-    query(\$page: Int, \$type: MediaType) {
+    query(\$page: Int, \$type: MediaType, \$isAdult: Boolean) {
       Page(page: \$page, perPage: 30) {
         recommendations(sort: RATING_DESC, onList: true) {
-          rating
           mediaRecommendation {
             id
             title { romaji english }
@@ -284,6 +356,7 @@ Future<List<Media>> _fetchAnilistRecommendations({
             description
             genres
             type
+            isAdult
             mediaListEntry { status }
           }
         }
@@ -302,9 +375,10 @@ Future<List<Media>> _fetchAnilistRecommendations({
         'variables': {
           'page': page,
           'type': isManga ? 'MANGA' : 'ANIME',
+          'isAdult': isAdult,
         },
       }),
-    );
+    ).timeout(const Duration(seconds: 10));
 
     if (response.statusCode != 200) {
       Logger.i('AniList recommendations failed: ${response.statusCode}');
@@ -321,6 +395,7 @@ Future<List<Media>> _fetchAnilistRecommendations({
       if (media == null) continue;
 
       if (media['mediaListEntry'] != null) continue;
+      if (!isAdult && media['isAdult'] == true) continue;
 
       final id = media['id']?.toString();
       if (id == null) continue;
@@ -352,19 +427,20 @@ Future<List<Media>> _fetchAnilistRecommendations({
 Future<List<Media>> _fetchMalRecommendations({
   required bool isManga,
   required int page,
+  required bool isAdult,
 }) async {
   try {
     final type = isManga ? 'manga' : 'anime';
-    final url =
-        'https://api.jikan.moe/v4/recommendations/$type?page=$page';
+    final url = 'https://api.jikan.moe/v4/recommendations/$type?page=$page';
 
-    final response = await http.get(Uri.parse(url));
+    final response = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 10));
     if (response.statusCode != 200) {
       Logger.i('Jikan recommendations failed: ${response.statusCode}');
       return [];
     }
 
     final data = jsonDecode(response.body);
+    final pagination = data['pagination'] as Map<String, dynamic>?;
     final recs = data['data'] as List<dynamic>?;
     if (recs == null) return [];
 
@@ -379,14 +455,22 @@ Future<List<Media>> _fetchMalRecommendations({
         final malId = entry['mal_id']?.toString();
         if (malId == null || !seen.add(malId)) continue;
 
+        if (!isAdult) {
+          final genres = entry['genres'] as List? ?? [];
+          final isNsfw = genres.any((g) => 
+            ['Hentai', 'Erotica'].contains(g['name']));
+          if (isNsfw) continue;
+        }
+
         final title = entry['title'] as String? ?? 'Unknown';
-        final imageUrl =
-            (entry['images'] as Map?)?['jpg']?['large_image_url'] as String?;
+        final imageUrl = (entry['images'] as Map?)?['jpg']?['large_image_url'] as String?;
+        final synopsis = entry['synopsis'] as String?;
 
         results.add(Media(
           id: malId,
           title: title,
           poster: imageUrl ?? '',
+          description: synopsis ?? '',
           serviceType: ServicesType.mal,
           genres: [],
         ));
