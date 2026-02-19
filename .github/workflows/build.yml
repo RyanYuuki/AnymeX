@@ -891,28 +891,27 @@ jobs:
           allowUpdates: true
           tag: ${{ github.ref_name }}
 
-  post-release:
+  # =================================================================
+  # AUR update is MANDATORY for the official repo on stable releases.
+  # This is a standalone job (not part of the optional matrix below)
+  # so its failure will fail the overall workflow run.
+  # =================================================================
+  post-release-aur:
     if: github.repository == 'RyanYuuki/AnymeX' && !contains(github.ref_name, '-beta')
     needs: [build-all-platforms, release]
-    strategy:
-      fail-fast: false
-      matrix:
-        job: [aur, scoop, chocolatey]
-    runs-on: ${{ matrix.job == 'chocolatey' && 'windows-latest' || 'ubuntu-latest' }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{ matrix.job == 'chocolatey' && 'main' || github.ref }}
+          ref: ${{ github.ref }}
 
       - name: Download Linux Artifact
-        if: matrix.job == 'aur'
         uses: actions/download-artifact@v4
         with:
           name: linux
           path: .
       
       - name: Update AUR
-        if: matrix.job == 'aur'
         env:
           VERSION: ${{ github.ref_name }}
           AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
@@ -1101,10 +1100,28 @@ jobs:
             git push origin master
             echo "Successfully pushed to AUR!"
           fi
-      
+
+  # =================================================================
+  # Scoop and Chocolatey updates are OPTIONAL (continue-on-error).
+  # They run in parallel and their failure does not fail the workflow.
+  # Skipped entirely on forks and beta releases.
+  # =================================================================
+  post-release-optional:
+    if: github.repository == 'RyanYuuki/AnymeX' && !contains(github.ref_name, '-beta')
+    needs: [build-all-platforms, release]
+    strategy:
+      fail-fast: false
+      matrix:
+        job: [scoop, chocolatey]
+    runs-on: ${{ matrix.job == 'chocolatey' && 'windows-latest' || 'ubuntu-latest' }}
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ matrix.job == 'chocolatey' && 'main' || github.ref }}
+
       - name: Update Scoop
         if: matrix.job == 'scoop'
-        continue-on-error: true
         env:
           VERSION: ${{ github.ref_name }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -1174,7 +1191,6 @@ jobs:
       
       - name: Update Chocolatey
         if: matrix.job == 'chocolatey'
-        continue-on-error: true
         env:
           CHOCO_API_KEY: ${{ secrets.CHOCO_API_KEY }}
         shell: pwsh
