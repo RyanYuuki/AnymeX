@@ -246,6 +246,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                   borderRadius: 16.multiplyRadius(),
                   backgroundImage: [
                         ...popularAnimes,
+                        ...popularMangas,
                         ...trendingMangas,
                         ...trendingAnimes
                       ].where((e) => e.cover != null).last.cover ??
@@ -425,8 +426,6 @@ class MalService extends GetxController implements BaseService, OnlineService {
       if (code != null) {
         Logger.i("Authorization code: $code");
         await _exchangeCodeForTokenMAL(code, clientId, codeChallenge, secret);
-
-        // After successful login, fetch and store the session ID
         await _fetchAndStoreMalSessionId();
       }
     } catch (e) {
@@ -444,7 +443,6 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
       Logger.i('Attempting to fetch MAL session ID with token');
 
-      // First, try to get session from the main page with authorization
       final response = await http.get(
         Uri.parse('https://myanimelist.net/'),
         headers: {
@@ -456,12 +454,10 @@ class MalService extends GetxController implements BaseService, OnlineService {
         },
       );
 
-      // Check all response headers for cookies
       if (response.headers.containsKey('set-cookie')) {
         final cookies = response.headers['set-cookie']!;
         Logger.i('Raw cookie header: $cookies');
         
-        // Try multiple regex patterns to catch the session ID
         final patterns = [
           RegExp(r'MALHLOGSESSID=([^;]+)'),
           RegExp(r'mal_session_id=([^;]+)'),
@@ -475,8 +471,6 @@ class MalService extends GetxController implements BaseService, OnlineService {
             if (sessionId != null && sessionId.isNotEmpty) {
               await AuthKeys.malSessionId.set(sessionId);
               Logger.i('MAL session ID stored successfully: $sessionId');
-              
-              // Verify it was stored
               final verify = AuthKeys.malSessionId.get<String?>();
               Logger.i('Verification - stored session: $verify');
               return;
@@ -485,7 +479,6 @@ class MalService extends GetxController implements BaseService, OnlineService {
         }
       }
 
-      // If no session cookie, try the export page
       Logger.i('No session cookie in main page, trying export page');
       final exportResponse = await http.get(
         Uri.parse('https://myanimelist.net/panel.php?go=export'),
@@ -503,15 +496,12 @@ class MalService extends GetxController implements BaseService, OnlineService {
           if (sessionId != null && sessionId.isNotEmpty) {
             await AuthKeys.malSessionId.set(sessionId);
             Logger.i('MAL session ID stored from export page: $sessionId');
-            
-            // Verify storage
             final verify = AuthKeys.malSessionId.get<String?>();
             Logger.i('Verification - stored session: $verify');
           }
         }
       }
 
-      // If still no session, try to create one by accessing the export form
       if (AuthKeys.malSessionId.get<String?>() == null) {
         Logger.i('Attempting to create session via export form');
         final formResponse = await http.post(
@@ -522,7 +512,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
           },
           body: {
-            'type': '1', // Anime type
+            'type': '1',
             'subexport': 'Export My List',
           },
         );
@@ -735,7 +725,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
   Future<void> logout() async {
     AuthKeys.malAuthToken.delete();
     AuthKeys.malRefreshToken.delete();
-    AuthKeys.malSessionId.delete(); // Also delete the session ID on logout
+    AuthKeys.malSessionId.delete();
     isLoggedIn.value = false;
     profileData.value = Profile();
     continueWatching.value = [];
