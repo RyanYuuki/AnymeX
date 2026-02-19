@@ -138,10 +138,8 @@ Future<List<Media>> getAiRecommendations(
 
   results = uniqueMap.values.toList();
 
-  // Enhanced adult content filter
   if (!isAdult) {
     results = results.where((media) {
-      // Check genres for adult content
       final hasAdultGenres = media.genres.any((g) {
         final genre = g.toUpperCase();
         return genre.contains('HENTAI') || 
@@ -153,8 +151,6 @@ Future<List<Media>> getAiRecommendations(
       });
       
       final isMediaAdult = media.isAdult == true;
-      
-      // Check title for adult indicators
       final titleHasAdult = media.title.toLowerCase().contains('hentai') ||
                            media.title.toLowerCase().contains('erotica') ||
                            media.title.toLowerCase().contains('nsfw');
@@ -418,7 +414,6 @@ Future<List<Media>> _fetchAnilistRecommendations({
     final token = AuthKeys.authToken.get<String?>();
     if (token == null) return [];
 
-    // Fixed query - removed unused $type variable
     final query = '''
     query(\$page: Int) {
       Page(page: \$page, perPage: 50) {
@@ -497,14 +492,10 @@ Future<List<Media>> _fetchAnilistRecommendations({
       final media = rec['mediaRecommendation'] as Map<String, dynamic>?;
       if (media == null) continue;
 
-      // Filter by type client-side
       final mediaType = media['type'] as String?;
       if (mediaType == null) continue;
-      
       if (isManga && mediaType != 'MANGA') continue;
       if (!isManga && mediaType != 'ANIME') continue;
-
-      // Adult content filter
       if (!isAdult && media['isAdult'] == true) continue;
 
       final id = media['id']?.toString();
@@ -521,7 +512,6 @@ Future<List<Media>> _fetchAnilistRecommendations({
         romajiTitle = titleMap['romaji'] ?? title;
       }
 
-      // Check for adult content in genres
       final genres = (media['genres'] as List?)
           ?.map((g) => g.toString().toUpperCase())
           .where((g) => g.isNotEmpty)
@@ -596,7 +586,6 @@ Future<List<Media>> _fetchMalRecommendations({
     final results = <Media>[];
     final seen = <String>{};
 
-    // Adult content keywords to filter
     final adultKeywords = [
       'Hentai', 'Erotica', 'Ecchi', 'Adult', '18+', 
       'Sex', 'Porn', 'NSFW', 'Mature'
@@ -610,10 +599,8 @@ Future<List<Media>> _fetchMalRecommendations({
         final malId = entry['mal_id']?.toString();
         if (malId == null || !seen.add(malId)) continue;
 
-        // Check multiple sources for adult content
         bool isAdultContent = false;
 
-        // Check genres
         final genres = entry['genres'] as List? ?? [];
         isAdultContent = genres.any((g) {
           final genreName = g['name']?.toString() ?? '';
@@ -621,7 +608,6 @@ Future<List<Media>> _fetchMalRecommendations({
             genreName.toLowerCase().contains(keyword.toLowerCase()));
         });
 
-        // Check demographics
         if (!isAdultContent) {
           final demographics = entry['demographics'] as List? ?? [];
           isAdultContent = demographics.any((d) {
@@ -631,20 +617,17 @@ Future<List<Media>> _fetchMalRecommendations({
           });
         }
 
-        // Check explicit/genre tags
         if (!isAdultContent) {
           final explicitGenres = entry['explicit_genres'] as List? ?? [];
           isAdultContent = explicitGenres.isNotEmpty;
         }
 
-        // Check rating
         if (!isAdultContent) {
           final rating = entry['rating']?.toString() ?? '';
           isAdultContent = rating.toLowerCase().contains('rx') || 
                           rating.toLowerCase().contains('hentai');
         }
 
-        // Filter if not adult mode and content is adult
         if (!isAdult && isAdultContent) {
           Logger.i('Filtered adult content: ${entry['title']}');
           continue;
