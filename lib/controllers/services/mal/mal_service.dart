@@ -246,7 +246,6 @@ class MalService extends GetxController implements BaseService, OnlineService {
                   borderRadius: 16.multiplyRadius(),
                   backgroundImage: [
                         ...popularAnimes,
-                        ...popularMangas,
                         ...trendingMangas,
                         ...trendingAnimes
                       ].where((e) => e.cover != null).last.cover ??
@@ -426,6 +425,8 @@ class MalService extends GetxController implements BaseService, OnlineService {
       if (code != null) {
         Logger.i("Authorization code: $code");
         await _exchangeCodeForTokenMAL(code, clientId, codeChallenge, secret);
+
+        // After successful login, fetch and store the session ID
         await _fetchAndStoreMalSessionId();
       }
     } catch (e) {
@@ -435,21 +436,107 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
   Future<void> _fetchAndStoreMalSessionId() async {
     try {
+      final token = AuthKeys.malAuthToken.get<String?>();
+      if (token == null) {
+        Logger.i('No MAL token found for session fetch');
+        return;
+      }
+
+      Logger.i('Attempting to fetch MAL session ID with token');
+
+      // First, try to get session from the main page with authorization
       final response = await http.get(
         Uri.parse('https://myanimelist.net/'),
         headers: {
+          'Authorization': 'Bearer $token',
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.9',
+          'Connection': 'keep-alive',
+        },
+      );
+
+      // Check all response headers for cookies
+      if (response.headers.containsKey('set-cookie')) {
+        final cookies = response.headers['set-cookie']!;
+        Logger.i('Raw cookie header: $cookies');
+        
+        // Try multiple regex patterns to catch the session ID
+        final patterns = [
+          RegExp(r'MALHLOGSESSID=([^;]+)'),
+          RegExp(r'mal_session_id=([^;]+)'),
+          RegExp(r'session_id=([^;]+)'),
+        ];
+
+        for (final pattern in patterns) {
+          final match = pattern.firstMatch(cookies);
+          if (match != null) {
+            final sessionId = match.group(1);
+            if (sessionId != null && sessionId.isNotEmpty) {
+              await AuthKeys.malSessionId.set(sessionId);
+              Logger.i('MAL session ID stored successfully: $sessionId');
+              
+              // Verify it was stored
+              final verify = AuthKeys.malSessionId.get<String?>();
+              Logger.i('Verification - stored session: $verify');
+              return;
+            }
+          }
+        }
+      }
+
+      // If no session cookie, try the export page
+      Logger.i('No session cookie in main page, trying export page');
+      final exportResponse = await http.get(
+        Uri.parse('https://myanimelist.net/panel.php?go=export'),
+        headers: {
+          'Authorization': 'Bearer $token',
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
         },
       );
 
-      final cookieHeader = response.headers['set-cookie'];
-      if (cookieHeader != null) {
-        final RegExp sessionRegex = RegExp(r'MALHLOGSESSID=([^;]+)');
-        final match = sessionRegex.firstMatch(cookieHeader);
+      if (exportResponse.headers.containsKey('set-cookie')) {
+        final cookies = exportResponse.headers['set-cookie']!;
+        final match = RegExp(r'MALHLOGSESSID=([^;]+)').firstMatch(cookies);
         if (match != null) {
           final sessionId = match.group(1);
-          AuthKeys.malSessionId.set(sessionId);
-          Logger.i("MAL session ID stored successfully");
+          if (sessionId != null && sessionId.isNotEmpty) {
+            await AuthKeys.malSessionId.set(sessionId);
+            Logger.i('MAL session ID stored from export page: $sessionId');
+            
+            // Verify storage
+            final verify = AuthKeys.malSessionId.get<String?>();
+            Logger.i('Verification - stored session: $verify');
+          }
+        }
+      }
+
+      // If still no session, try to create one by accessing the export form
+      if (AuthKeys.malSessionId.get<String?>() == null) {
+        Logger.i('Attempting to create session via export form');
+        final formResponse = await http.post(
+          Uri.parse('https://myanimelist.net/panel.php?go=export'),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+          },
+          body: {
+            'type': '1', // Anime type
+            'subexport': 'Export My List',
+          },
+        );
+
+        if (formResponse.headers.containsKey('set-cookie')) {
+          final cookies = formResponse.headers['set-cookie']!;
+          final match = RegExp(r'MALHLOGSESSID=([^;]+)').firstMatch(cookies);
+          if (match != null) {
+            final sessionId = match.group(1);
+            if (sessionId != null && sessionId.isNotEmpty) {
+              await AuthKeys.malSessionId.set(sessionId);
+              Logger.i('MAL session ID created via export: $sessionId');
+            }
+          }
         }
       }
     } catch (e) {
@@ -567,9 +654,6 @@ class MalService extends GetxController implements BaseService, OnlineService {
     }
 
     if (req.statusCode == 200) {
-      // snackBar(
-      //     "${isAnime ? 'Anime' : 'Manga'} Tracked to ${isAnime ? 'Episode' : 'Chapter'} $progress Successfully!");
-
       final newMedia = currentMedia.value
         ..episodeCount = progress.toString()
         ..watchingStatus = status
@@ -651,11 +735,9 @@ class MalService extends GetxController implements BaseService, OnlineService {
   Future<void> logout() async {
     AuthKeys.malAuthToken.delete();
     AuthKeys.malRefreshToken.delete();
-    AuthKeys.malSessionId.delete();
+    AuthKeys.malSessionId.delete(); // Also delete the session ID on logout
     isLoggedIn.value = false;
     profileData.value = Profile();
-    // animeList.value = [];
-    // mangaList.value = [];
     continueWatching.value = [];
     continueReading.value = [];
   }
