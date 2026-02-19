@@ -14,6 +14,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
+import 'package:anymex/models/Anilist/anilist_auth.dart';
 
 class ListExporterPage extends StatefulWidget {
   final bool isManga;
@@ -57,7 +58,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
       }
 
       final response = await http.get(
-        Uri.parse('https://myanimelist.net/panel.php?go=export'),
+        Uri.parse('https://myanimelist.net/'),
         headers: {
           'Cookie': 'MALHLOGSESSID=$sessionId',
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
@@ -65,8 +66,8 @@ class _ListExporterPageState extends State<ListExporterPage> {
       );
 
       if (response.statusCode == 200) {
-        final RegExp tokenRegex = RegExp(r'name="csrf_token" value="([^"]+)"');
-        final match = tokenRegex.firstMatch(response.body);
+        final RegExp csrfRegex = RegExp(r'<meta[^>]*name="csrf_token"[^>]*content="([^"]+)"');
+        final match = csrfRegex.firstMatch(response.body);
         return match?.group(1);
       }
     } catch (e) {
@@ -112,6 +113,16 @@ class _ListExporterPageState extends State<ListExporterPage> {
         [XFile(file.path)], 
         text: 'Here is your exported ${widget.isManga ? "Manga" : "Anime"} list from MyAnimeList.',
       );
+    } else if (response.statusCode == 403) {
+      final body = response.body;
+      if (body.contains('badresult')) {
+        if (body.contains('Your username or password is incorrect')) {
+          throw Exception('Invalid credentials. Please login again.');
+        } else if (body.contains('Too many failed login attempts')) {
+          throw Exception('Too many failed attempts. Please try again later.');
+        }
+      }
+      throw Exception('Failed to export MAL list. Please try again.');
     } else {
       throw Exception('Failed to export MAL list: ${response.statusCode}');
     }
@@ -124,20 +135,16 @@ class _ListExporterPageState extends State<ListExporterPage> {
       throw Exception('Not logged into AniList');
     }
 
-    final userId = serviceHandler.profileData.value.id;
-    if (userId == null) {
-      throw Exception('Could not get user ID');
-    }
-
+    final anilistAuth = Get.find<AnilistAuth>();
     final trackedList = widget.isManga 
-        ? serviceHandler.anilistService.mangaList 
-        : serviceHandler.anilistService.animeList;
+        ? anilistAuth.mangaList 
+        : anilistAuth.animeList;
 
     if (trackedList.isEmpty) {
       if (widget.isManga) {
-        await serviceHandler.anilistService.fetchUserMangaList();
+        await anilistAuth.fetchUserMangaList();
       } else {
-        await serviceHandler.anilistService.fetchUserAnimeList();
+        await anilistAuth.fetchUserAnimeList();
       }
     }
 
@@ -244,7 +251,6 @@ class _ListExporterPageState extends State<ListExporterPage> {
     final isLoggedIn = serviceHandler.isLoggedIn.value;
     final serviceType = serviceHandler.serviceType.value;
     final serviceName = serviceType == ServicesType.mal ? 'MyAnimeList' : 'AniList';
-    const mediaType = 'Anime';
 
     return Glow(
       child: Scaffold(
