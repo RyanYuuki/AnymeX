@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -15,8 +14,6 @@ import 'package:share_plus/share_plus.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/logger.dart';
 
-enum ExportService { anilist, mal }
-
 class ListExporterPage extends StatefulWidget {
   final bool isManga;
   const ListExporterPage({super.key, required this.isManga});
@@ -27,39 +24,41 @@ class ListExporterPage extends StatefulWidget {
 
 class _ListExporterPageState extends State<ListExporterPage> {
   final serviceHandler = Get.find<ServiceHandler>();
-  final TextEditingController _usernameController = TextEditingController();
-  
-  ExportService _selectedService = ExportService.anilist;
   bool _isLoading = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _autoFillDetails();
-  }
-
-  void _autoFillDetails() {
-    if (serviceHandler.isLoggedIn.value) {
-      final currentService = serviceHandler.serviceType.value;
-      
-      if (currentService == ServicesType.mal) {
-        _selectedService = ExportService.mal;
-      } else {
-        _selectedService = ExportService.anilist;
-      }
-
-      if (serviceHandler.profileData.value.name != null) {
-        _usernameController.text = serviceHandler.profileData.value.name!;
-      }
-    }
-  }
 
   Future<String?> _getMalCsrfToken() async {
     try {
+      final sessionId = AuthKeys.malSessionId.get<String?>();
+      if (sessionId == null) {
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              title: const Text('Session Expired'),
+              content: const Text('Your MAL session has expired. Please login again to export your list.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    Navigator.pop(ctx);
+                    await serviceHandler.malService.login(context);
+                  },
+                  child: const Text('Login'),
+                ),
+              ],
+            ),
+          );
+        }
+        return null;
+      }
+
       final response = await http.get(
         Uri.parse('https://myanimelist.net/panel.php?go=export'),
         headers: {
-          'Cookie': 'MALHLOGSESSID=${AuthKeys.malSessionId.get<String?>() ?? ''}',
+          'Cookie': 'MALHLOGSESSID=$sessionId',
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         },
       );
@@ -77,20 +76,21 @@ class _ListExporterPageState extends State<ListExporterPage> {
 
   Future<void> _exportMalList() async {
     final token = AuthKeys.malAuthToken.get<String?>();
+    final sessionId = AuthKeys.malSessionId.get<String?>();
     
-    if (token == null) {
-      throw Exception('Not logged into MyAnimeList');
+    if (token == null || sessionId == null) {
+      throw Exception('Not properly logged into MyAnimeList. Please login again.');
     }
 
     final csrfToken = await _getMalCsrfToken();
     if (csrfToken == null) {
-      throw Exception('Failed to get CSRF token');
+      throw Exception('Failed to get CSRF token. Please try logging in again.');
     }
 
     final response = await http.post(
       Uri.parse('https://myanimelist.net/panel.php?go=export2'),
       headers: {
-        'Cookie': 'MALHLOGSESSID=${AuthKeys.malSessionId.get<String?>() ?? ''}',
+        'Cookie': 'MALHLOGSESSID=$sessionId',
         'Content-Type': 'application/x-www-form-urlencoded',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
       },
@@ -128,147 +128,66 @@ class _ListExporterPageState extends State<ListExporterPage> {
       throw Exception('Could not get user ID');
     }
 
-    final query = '''
-    query(\$userId: Int, \$type: MediaType) {
-      MediaListCollection(userId: \$userId, type: \$type) {
-        lists {
-          name
-          entries {
-            media {
-              id
-              idMal
-              title {
-                romaji
-                english
-                native
-              }
-              format
-              episodes
-              chapters
-              volumes
-              status
-              averageScore
-              coverImage {
-                large
-              }
-              startDate {
-                year
-                month
-                day
-              }
-              endDate {
-                year
-                month
-                day
-              }
-            }
-            progress
-            progressVolumes
-            status
-            score
-            startedAt {
-              year
-              month
-              day
-            }
-            completedAt {
-              year
-              month
-              day
-            }
-            updatedAt
-            createdAt
-          }
-        }
+    final trackedList = widget.isManga 
+        ? serviceHandler.anilistService.mangaList 
+        : serviceHandler.anilistService.animeList;
+
+    if (trackedList.isEmpty) {
+      if (widget.isManga) {
+        await serviceHandler.anilistService.fetchUserMangaList();
+      } else {
+        await serviceHandler.anilistService.fetchUserAnimeList();
       }
     }
-    ''';
 
-    final response = await http.post(
-      Uri.parse('https://graphql.anilist.co'),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      body: json.encode({
-        'query': query,
-        'variables': {
-          'userId': int.parse(userId),
-          'type': widget.isManga ? 'MANGA' : 'ANIME',
-        },
-      }),
+    final xml = _convertAnilistToXml(trackedList, widget.isManga);
+    
+    final tempDir = await getTemporaryDirectory();
+    final fileName = '${serviceHandler.profileData.value.name}_${widget.isManga ? 'manga' : 'anime'}_list.xml';
+    final file = File('${tempDir.path}/$fileName');
+    await file.writeAsString(xml);
+    
+    await Share.shareXFiles(
+      [XFile(file.path)], 
+      text: 'Here is your exported ${widget.isManga ? "Manga" : "Anime"} list from AniList.',
     );
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      
-      final xml = _convertAnilistToXml(data['data']['MediaListCollection'], widget.isManga);
-      
-      final tempDir = await getTemporaryDirectory();
-      final fileName = '${serviceHandler.profileData.value.name}_${widget.isManga ? 'manga' : 'anime'}_list.xml';
-      final file = File('${tempDir.path}/$fileName');
-      await file.writeAsString(xml);
-      
-      await Share.shareXFiles(
-        [XFile(file.path)], 
-        text: 'Here is your exported ${widget.isManga ? "Manga" : "Anime"} list from AniList.',
-      );
-    } else {
-      throw Exception('Failed to fetch AniList: ${response.statusCode}');
-    }
   }
 
-  String _convertAnilistToXml(Map<String, dynamic> data, bool isManga) {
+  String _convertAnilistToXml(RxList<TrackedMedia> trackedList, bool isManga) {
     final buffer = StringBuffer();
     buffer.writeln('<?xml version="1.0" encoding="UTF-8"?>');
     buffer.writeln('<myanimelist>');
     
-    final lists = data['lists'] as List<dynamic>? ?? [];
-    
-    for (final list in lists) {
-      final entries = list['entries'] as List<dynamic>? ?? [];
-      for (final entry in entries) {
-        final media = entry['media'];
-        final myStatus = entry['status'];
-        
-        String malStatus;
-        switch (myStatus) {
-          case 'CURRENT':
-            malStatus = isManga ? 'Reading' : 'Watching';
-            break;
-          case 'COMPLETED':
-            malStatus = 'Completed';
-            break;
-          case 'PAUSED':
-            malStatus = 'On-Hold';
-            break;
-          case 'DROPPED':
-            malStatus = 'Dropped';
-            break;
-          case 'PLANNING':
-            malStatus = isManga ? 'Plan to Read' : 'Plan to Watch';
-            break;
-          default:
-            malStatus = isManga ? 'Reading' : 'Watching';
-        }
-
-        buffer.writeln('  <anime>');
-        buffer.writeln('    <series_animedb_id>${media['idMal'] ?? media['id']}</series_animedb_id>');
-        buffer.writeln('    <series_title>${_escapeXml(media['title']['english'] ?? media['title']['romaji'] ?? media['title']['native'])}</series_title>');
-        buffer.writeln('    <series_type>${_getFormat(media['format'])}</series_type>');
-        buffer.writeln('    <series_episodes>${isManga ? (media['chapters'] ?? 0) : (media['episodes'] ?? 0)}</series_episodes>');
-        buffer.writeln('    <my_id>${media['id']}</my_id>');
-        buffer.writeln('    <my_watched_episodes>${entry['progress'] ?? 0}</my_watched_episodes>');
-        buffer.writeln('    <my_start_date>${_formatDate(entry['startedAt'])}</my_start_date>');
-        buffer.writeln('    <my_finish_date>${_formatDate(entry['completedAt'])}</my_finish_date>');
-        buffer.writeln('    <my_score>${entry['score']?.round() ?? 0}</my_score>');
-        buffer.writeln('    <my_status>$malStatus</my_status>');
-        buffer.writeln('    <my_rewatching>0</my_rewatching>');
-        buffer.writeln('    <my_rewatching_ep>0</my_rewatching_ep>');
-        buffer.writeln('    <update_on_import>1</update_on_import>');
-        buffer.writeln('  </anime>');
+    for (final entry in trackedList) {
+      String malStatus;
+      switch (entry.watchingStatus) {
+        case 'CURRENT':
+          malStatus = isManga ? 'Reading' : 'Watching';
+          break;
+        case 'COMPLETED':
+          malStatus = 'Completed';
+          break;
+        case 'PAUSED':
+          malStatus = 'On-Hold';
+          break;
+        case 'DROPPED':
+          malStatus = 'Dropped';
+          break;
+        case 'PLANNING':
+          malStatus = isManga ? 'Plan to Read' : 'Plan to Watch';
+          break;
+        default:
+          malStatus = isManga ? 'Reading' : 'Watching';
       }
+
+      buffer.writeln('  <anime>');
+      buffer.writeln('    <series_animedb_id>${entry.id}</series_animedb_id>');
+      buffer.writeln('    <series_title>${_escapeXml(entry.title)}</series_title>');
+      buffer.writeln('    <series_episodes>${isManga ? (entry.chapterCount ?? 0) : (entry.episodeCount ?? 0)}</series_episodes>');
+      buffer.writeln('    <my_watched_episodes>${entry.userProgress ?? 0}</my_watched_episodes>');
+      buffer.writeln('    <my_score>${entry.userScore?.round() ?? 0}</my_score>');
+      buffer.writeln('    <my_status>$malStatus</my_status>');
+      buffer.writeln('  </anime>');
     }
     
     buffer.writeln('</myanimelist>');
@@ -285,41 +204,6 @@ class _ListExporterPageState extends State<ListExporterPage> {
         .replaceAll("'", '&apos;');
   }
 
-  String _getFormat(String? format) {
-    switch (format) {
-      case 'TV':
-        return 'TV';
-      case 'TV_SHORT':
-        return 'TV';
-      case 'MOVIE':
-        return 'Movie';
-      case 'SPECIAL':
-        return 'Special';
-      case 'OVA':
-        return 'OVA';
-      case 'ONA':
-        return 'ONA';
-      case 'MUSIC':
-        return 'Music';
-      case 'MANGA':
-        return 'Manga';
-      case 'NOVEL':
-        return 'Novel';
-      case 'ONE_SHOT':
-        return 'One Shot';
-      default:
-        return 'Unknown';
-    }
-  }
-
-  String _formatDate(Map<String, dynamic>? date) {
-    if (date == null) return '0000-00-00';
-    final year = date['year']?.toString() ?? '0000';
-    final month = date['month']?.toString().padLeft(2, '0') ?? '00';
-    final day = date['day']?.toString().padLeft(2, '0') ?? '00';
-    return '$year-$month-$day';
-  }
-
   Future<void> _exportList() async {
     if (!serviceHandler.isLoggedIn.value) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -331,7 +215,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
     setState(() => _isLoading = true);
 
     try {
-      if (_selectedService == ExportService.mal) {
+      if (serviceHandler.serviceType.value == ServicesType.mal) {
         await _exportMalList();
       } else {
         await _exportAnilistList();
@@ -357,6 +241,9 @@ class _ListExporterPageState extends State<ListExporterPage> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final isLoggedIn = serviceHandler.isLoggedIn.value;
+    final serviceType = serviceHandler.serviceType.value;
+    final serviceName = serviceType == ServicesType.mal ? 'MyAnimeList' : 'AniList';
+    const mediaType = 'Anime';
 
     return Glow(
       child: Scaffold(
@@ -390,50 +277,49 @@ class _ListExporterPageState extends State<ListExporterPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const AnymexText(
-                      text: "Select Source",
+                    AnymexText(
+                      text: isLoggedIn 
+                          ? "Ready to export your $serviceName ${widget.isManga ? 'Manga' : 'Anime'} list?"
+                          : "Please login to export your list",
                       variant: TextVariant.bold,
-                      size: 16,
+                      size: 18,
+                      color: isLoggedIn ? colorScheme.primary : Colors.red,
                     ),
-                    const SizedBox(height: 15),
-                    Row(
-                      children: [
-                        _buildRadio(ExportService.anilist, "AniList"),
-                        const SizedBox(width: 15),
-                        _buildRadio(ExportService.mal, "MyAnimeList"),
-                      ],
-                    ),
-                    const SizedBox(height: 25),
-                    const AnymexText(
-                      text: "Username",
-                      variant: TextVariant.bold,
-                      size: 16,
-                    ),
-                    const SizedBox(height: 10),
-                    AbsorbPointer(
-                      absorbing: true,
-                      child: CustomSearchBar(
-                        controller: _usernameController,
-                        hintText: serviceHandler.profileData.value.name ?? "Enter username",
-                        disableIcons: true,
-                        onSubmitted: (_) {},
+                    const SizedBox(height: 20),
+                    if (isLoggedIn) ...[
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            backgroundImage: serviceHandler.profileData.value.avatar != null
+                                ? NetworkImage(serviceHandler.profileData.value.avatar!)
+                                : null,
+                            radius: 25,
+                            child: serviceHandler.profileData.value.avatar == null
+                                ? Text(serviceHandler.profileData.value.name?[0].toUpperCase() ?? '?')
+                                : null,
+                          ),
+                          const SizedBox(width: 15),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                AnymexText(
+                                  text: serviceHandler.profileData.value.name ?? 'User',
+                                  variant: TextVariant.bold,
+                                  size: 16,
+                                ),
+                                const SizedBox(height: 5),
+                                AnymexText(
+                                  text: "Exporting your ${widget.isManga ? 'manga' : 'anime'} list...",
+                                  size: 14,
+                                  color: Colors.grey,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    if (!isLoggedIn)
-                      const AnymexText(
-                        text: "Note: Please login first to export your list.",
-                        size: 12,
-                        color: Colors.red,
-                        fontStyle: FontStyle.italic,
-                      )
-                    else
-                      const AnymexText(
-                        text: "Note: Your list will be exported from your account.",
-                        size: 12,
-                        color: Colors.grey,
-                        fontStyle: FontStyle.italic,
-                      ),
+                    ],
                   ],
                 ),
               ),
@@ -457,7 +343,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
                              const Icon(HugeIcons.strokeRoundedDownload01, color: Colors.white),
                              const SizedBox(width: 10),
                              AnymexText(
-                               text: "Export ${_selectedService == ExportService.anilist ? 'AniList' : 'MAL'} XML",
+                               text: "Export ${serviceType == ServicesType.mal ? 'MAL' : 'AniList'} XML",
                                variant: TextVariant.bold,
                                color: Colors.white,
                                size: 16,
@@ -468,45 +354,6 @@ class _ListExporterPageState extends State<ListExporterPage> {
               ),
               const SizedBox(height: 30),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildRadio(ExportService value, String label) {
-    final isSelected = _selectedService == value;
-    final colorScheme = Theme.of(context).colorScheme;
-    final isLoggedIn = serviceHandler.isLoggedIn.value;
-
-    bool isAvailable = true;
-    if (value == ExportService.mal) {
-      isAvailable = serviceHandler.serviceType.value == ServicesType.mal && isLoggedIn;
-    } else {
-      isAvailable = serviceHandler.serviceType.value == ServicesType.anilist && isLoggedIn;
-    }
-
-    return Expanded(
-      child: GestureDetector(
-        onTap: isAvailable ? () => setState(() => _selectedService = value) : null,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            color: isSelected ? colorScheme.primary : Colors.transparent,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: isSelected 
-                  ? colorScheme.primary 
-                  : colorScheme.outlineVariant.withOpacity(0.5),
-            ),
-          ),
-          child: Center(
-            child: AnymexText(
-              text: label,
-              variant: TextVariant.semiBold,
-              color: isSelected ? Colors.white : colorScheme.onSurface,
-            ),
           ),
         ),
       ),
