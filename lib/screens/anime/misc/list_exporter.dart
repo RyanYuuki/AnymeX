@@ -13,6 +13,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/logger.dart';
+import 'package:anymex/models/Anilist/anilist_media_user.dart';
 
 class ListExporterPage extends StatefulWidget {
   final bool isManga;
