@@ -137,7 +137,6 @@ class _ListExporterPageState extends State<ListExporterPage> {
 
     final anilistAuth = Get.find<AnilistAuth>();
     
-    // Refresh lists to ensure we have latest data
     if (widget.isManga) {
       await anilistAuth.fetchUserMangaList();
     } else {
@@ -172,10 +171,8 @@ class _ListExporterPageState extends State<ListExporterPage> {
     buffer.writeln('<myanimelist>');
     
     for (final entry in trackedList) {
-      // Skip entries with no ID
       if (entry.id == null || entry.id!.isEmpty) continue;
 
-      // Convert AniList status to MAL format
       String malStatus;
       switch (entry.watchingStatus?.toUpperCase()) {
         case 'CURRENT':
@@ -199,14 +196,11 @@ class _ListExporterPageState extends State<ListExporterPage> {
           malStatus = isManga ? 'Reading' : 'Watching';
       }
 
-      // Convert score (AniList uses 0-100, MAL uses 0-10)
       int malScore = 0;
       if (entry.userScore != null) {
-        // If score is already 0-10
         if (entry.userScore! <= 10) {
           malScore = entry.userScore!.round();
         } else {
-          // Convert from 0-100 to 0-10
           malScore = (entry.userScore! / 10).round();
         }
       } else if (entry.score != null) {
@@ -220,10 +214,8 @@ class _ListExporterPageState extends State<ListExporterPage> {
         }
       }
 
-      // Ensure score is between 0-10
       malScore = malScore.clamp(0, 10);
 
-      // Total episodes/chapters
       final totalEpisodes = isManga 
           ? (entry.chapterCount?.isNotEmpty == true ? entry.chapterCount : entry.totalEpisodes)
           : (entry.episodeCount?.isNotEmpty == true ? entry.episodeCount : entry.totalEpisodes);
@@ -231,8 +223,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
       buffer.writeln('  <anime>');
       buffer.writeln('    <series_animedb_id>${_escapeXml(entry.id)}</series_animedb_id>');
       buffer.writeln('    <series_title>${_escapeXml(entry.title ?? 'Unknown')}</series_title>');
-      
-      // Add series type if available
+    
       if (entry.format != null && entry.format!.isNotEmpty) {
         buffer.writeln('    <series_type>${_escapeXml(_getMalFormat(entry.format!))}</series_type>');
       }
@@ -242,7 +233,6 @@ class _ListExporterPageState extends State<ListExporterPage> {
       buffer.writeln('    <my_score>$malScore</my_score>');
       buffer.writeln('    <my_status>${_escapeXml(malStatus)}</my_status>');
       
-      // Optional fields
       if (entry.mediaListId != null) {
         buffer.writeln('    <my_id>${_escapeXml(entry.mediaListId)}</my_id>');
       }
