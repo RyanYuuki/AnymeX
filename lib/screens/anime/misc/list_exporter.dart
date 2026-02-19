@@ -107,7 +107,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
       final tempDir = await getTemporaryDirectory();
       final fileName = '${serviceHandler.profileData.value.name}_${widget.isManga ? 'manga' : 'anime'}_list.xml';
       final file = File('${tempDir.path}/$fileName');
-      await file.writeAsString(response.body);
+      await file.writeAsString(response.body, flush: true);
       
       await Share.shareXFiles(
         [XFile(file.path)], 
@@ -136,24 +136,28 @@ class _ListExporterPageState extends State<ListExporterPage> {
     }
 
     final anilistAuth = Get.find<AnilistAuth>();
+    
+    // Refresh lists to ensure we have latest data
+    if (widget.isManga) {
+      await anilistAuth.fetchUserMangaList();
+    } else {
+      await anilistAuth.fetchUserAnimeList();
+    }
+
     final trackedList = widget.isManga 
         ? anilistAuth.mangaList 
         : anilistAuth.animeList;
 
     if (trackedList.isEmpty) {
-      if (widget.isManga) {
-        await anilistAuth.fetchUserMangaList();
-      } else {
-        await anilistAuth.fetchUserAnimeList();
-      }
+      throw Exception('No ${widget.isManga ? 'manga' : 'anime'} found in your list');
     }
 
-    final xml = _convertAnilistToXml(trackedList, widget.isManga);
+    final xml = _convertAnilistToMalXml(trackedList, widget.isManga);
     
     final tempDir = await getTemporaryDirectory();
     final fileName = '${serviceHandler.profileData.value.name}_${widget.isManga ? 'manga' : 'anime'}_list.xml';
     final file = File('${tempDir.path}/$fileName');
-    await file.writeAsString(xml);
+    await file.writeAsString(xml, flush: true);
     
     await Share.shareXFiles(
       [XFile(file.path)], 
@@ -161,14 +165,19 @@ class _ListExporterPageState extends State<ListExporterPage> {
     );
   }
 
-  String _convertAnilistToXml(RxList<TrackedMedia> trackedList, bool isManga) {
+  String _convertAnilistToMalXml(RxList<TrackedMedia> trackedList, bool isManga) {
     final buffer = StringBuffer();
     buffer.writeln('<?xml version="1.0" encoding="UTF-8"?>');
+    buffer.writeln('<!DOCTYPE myanimelist SYSTEM "myanimelist.dtd">');
     buffer.writeln('<myanimelist>');
     
     for (final entry in trackedList) {
+      // Skip entries with no ID
+      if (entry.id == null || entry.id!.isEmpty) continue;
+
+      // Convert AniList status to MAL format
       String malStatus;
-      switch (entry.watchingStatus) {
+      switch (entry.watchingStatus?.toUpperCase()) {
         case 'CURRENT':
           malStatus = isManga ? 'Reading' : 'Watching';
           break;
@@ -182,24 +191,97 @@ class _ListExporterPageState extends State<ListExporterPage> {
           malStatus = 'Dropped';
           break;
         case 'PLANNING':
+        case 'PLAN_TO_WATCH':
+        case 'PLAN_TO_READ':
           malStatus = isManga ? 'Plan to Read' : 'Plan to Watch';
           break;
         default:
           malStatus = isManga ? 'Reading' : 'Watching';
       }
 
+      // Convert score (AniList uses 0-100, MAL uses 0-10)
+      int malScore = 0;
+      if (entry.userScore != null) {
+        // If score is already 0-10
+        if (entry.userScore! <= 10) {
+          malScore = entry.userScore!.round();
+        } else {
+          // Convert from 0-100 to 0-10
+          malScore = (entry.userScore! / 10).round();
+        }
+      } else if (entry.score != null) {
+        final score = double.tryParse(entry.score!);
+        if (score != null) {
+          if (score <= 10) {
+            malScore = score.round();
+          } else {
+            malScore = (score / 10).round();
+          }
+        }
+      }
+
+      // Ensure score is between 0-10
+      malScore = malScore.clamp(0, 10);
+
+      // Total episodes/chapters
+      final totalEpisodes = isManga 
+          ? (entry.chapterCount?.isNotEmpty == true ? entry.chapterCount : entry.totalEpisodes)
+          : (entry.episodeCount?.isNotEmpty == true ? entry.episodeCount : entry.totalEpisodes);
+
       buffer.writeln('  <anime>');
-      buffer.writeln('    <series_animedb_id>${entry.id}</series_animedb_id>');
-      buffer.writeln('    <series_title>${_escapeXml(entry.title)}</series_title>');
-      buffer.writeln('    <series_episodes>${isManga ? (entry.chapterCount ?? 0) : (entry.episodeCount ?? 0)}</series_episodes>');
+      buffer.writeln('    <series_animedb_id>${_escapeXml(entry.id)}</series_animedb_id>');
+      buffer.writeln('    <series_title>${_escapeXml(entry.title ?? 'Unknown')}</series_title>');
+      
+      // Add series type if available
+      if (entry.format != null && entry.format!.isNotEmpty) {
+        buffer.writeln('    <series_type>${_escapeXml(_getMalFormat(entry.format!))}</series_type>');
+      }
+      
+      buffer.writeln('    <series_episodes>${_escapeXml(totalEpisodes ?? '0')}</series_episodes>');
       buffer.writeln('    <my_watched_episodes>${entry.userProgress ?? 0}</my_watched_episodes>');
-      buffer.writeln('    <my_score>${entry.userScore?.round() ?? 0}</my_score>');
-      buffer.writeln('    <my_status>$malStatus</my_status>');
+      buffer.writeln('    <my_score>$malScore</my_score>');
+      buffer.writeln('    <my_status>${_escapeXml(malStatus)}</my_status>');
+      
+      // Optional fields
+      if (entry.mediaListId != null) {
+        buffer.writeln('    <my_id>${_escapeXml(entry.mediaListId)}</my_id>');
+      }
+      
+      buffer.writeln('    <my_rewatching>0</my_rewatching>');
+      buffer.writeln('    <my_rewatching_ep>0</my_rewatching_ep>');
+      buffer.writeln('    <update_on_import>1</update_on_import>');
       buffer.writeln('  </anime>');
     }
     
     buffer.writeln('</myanimelist>');
     return buffer.toString();
+  }
+
+  String _getMalFormat(String format) {
+    switch (format.toUpperCase()) {
+      case 'TV':
+        return 'TV';
+      case 'TV_SHORT':
+        return 'TV';
+      case 'MOVIE':
+        return 'Movie';
+      case 'SPECIAL':
+        return 'Special';
+      case 'OVA':
+        return 'OVA';
+      case 'ONA':
+        return 'ONA';
+      case 'MUSIC':
+        return 'Music';
+      case 'MANGA':
+        return 'Manga';
+      case 'NOVEL':
+        return 'Novel';
+      case 'ONE_SHOT':
+        return 'One Shot';
+      default:
+        return 'Unknown';
+    }
   }
 
   String _escapeXml(String? text) {
