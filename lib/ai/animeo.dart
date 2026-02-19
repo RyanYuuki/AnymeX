@@ -10,22 +10,22 @@ import 'package:anymex/database/data_keys/keys.dart';
 class RecommendationCache {
   static final Map<String, List<Media>> _cache = {};
   static final Map<String, int> _pageCache = {};
-  
+
   static List<Media>? get(String key, int page) {
     final cacheKey = '$key:$page';
     return _cache[cacheKey];
   }
-  
+
   static void set(String key, int page, List<Media> items) {
     final cacheKey = '$key:$page';
     _cache[cacheKey] = items;
     _pageCache[key] = page;
   }
-  
+
   static int getCurrentPage(String key) {
     return _pageCache[key] ?? 1;
   }
-  
+
   static void clear() {
     _cache.clear();
     _pageCache.clear();
@@ -74,8 +74,9 @@ Future<List<Media>> getAiRecommendations(
     return [];
   }
 
-  final cacheKey = '${isManga ? 'manga' : 'anime'}:$userName:${isAL ? 'al' : 'mal'}:${isAdult ? 'adult' : 'sfw'}';
-  
+  final cacheKey =
+      '${isManga ? 'manga' : 'anime'}:$userName:${isAL ? 'al' : 'mal'}:${isAdult ? 'adult' : 'sfw'}';
+
   if (!refresh) {
     final cached = RecommendationCache.get(cacheKey, page);
     if (cached != null) {
@@ -83,66 +84,134 @@ Future<List<Media>> getAiRecommendations(
     }
   }
 
-  final Set<String> trackedIds = _buildTrackedIdSet(service, isAL);
+  final trackedIds = _buildTrackedIdSet(service, isAL);
 
   List<Media> results = [];
 
-  if (isManga) {
-    results = await _fetchNativeRecommendations(
-      isManga: true,
+  final List<Future<List<Media>>> futures = [];
+
+  if (!isManga) {
+    futures.add(_fetchAnimeSproutRecommendations(
+      userName: userName,
       isAL: isAL,
-      page: page,
+      options: options,
+      trackedIds: trackedIds,
       isAdult: isAdult,
-    );
-  } else {
-    final futures = await Future.wait([
-      _fetchAnimeSproutRecommendations(
-        userName: userName,
-        isAL: isAL,
-        options: options,
-        trackedIds: trackedIds,
-        isAdult: isAdult,
-      ),
-      _fetchNativeRecommendations(
-        isManga: false,
-        isAL: isAL,
-        page: page,
-        isAdult: isAdult,
-      ),
-    ], eagerError: false);
+    ));
+  }
 
-    final sproutRecs = futures[0];
-    final nativeRecs = futures[1];
+  futures.add(_fetchNativeRecommendations(
+    isManga: isManga,
+    isAL: isAL,
+    page: page,
+    isAdult: isAdult,
+  ));
 
-    final seenIds = <String>{};
-    
-    for (final m in sproutRecs) {
-      if (m.id != null && seenIds.add(m.id!)) {
-        results.add(m);
-      }
-    }
-    
-    for (final m in nativeRecs) {
-      if (m.id != null && seenIds.add(m.id!)) {
-        results.add(m);
+  final resultsList = await Future.wait(futures, eagerError: false);
+
+  final Map<String, Media> uniqueMap = {};
+
+  for (final recList in resultsList) {
+    for (final media in recList) {
+      if (media.id != null && !trackedIds.contains(media.id)) {
+        bool isDuplicate = false;
+        for (final existingId in uniqueMap.keys) {
+          if (existingId == media.id) {
+            isDuplicate = true;
+            break;
+          }
+          if (isAL && media.idMal.isNotEmpty) {
+            final existingMedia = uniqueMap[existingId];
+            if (existingMedia?.idMal == media.idMal) {
+              isDuplicate = true;
+              break;
+            }
+          }
+        }
+
+        if (!isDuplicate) {
+          uniqueMap[media.id!] = media;
+        }
       }
     }
   }
 
-  results = results
-      .where((m) => m.id != null && !trackedIds.contains(m.id!))
-      .toList();
+  results = uniqueMap.values.toList();
 
-  final seen = <String>{};
-  results = results.where((m) => m.id != null && seen.add(m.id!)).toList();
+  // Enhanced adult content filter
+  if (!isAdult) {
+    results = results.where((media) {
+      // Check genres for adult content
+      final hasAdultGenres = media.genres.any((g) {
+        final genre = g.toUpperCase();
+        return genre.contains('HENTAI') || 
+               genre.contains('EROTICA') || 
+               genre.contains('ADULT') || 
+               genre.contains('18+') ||
+               genre.contains('ECCHI') ||
+               genre.contains('MATURE');
+      });
+      
+      final isMediaAdult = media.isAdult == true;
+      
+      // Check title for adult indicators
+      final titleHasAdult = media.title.toLowerCase().contains('hentai') ||
+                           media.title.toLowerCase().contains('erotica') ||
+                           media.title.toLowerCase().contains('nsfw');
+      
+      return !hasAdultGenres && !isMediaAdult && !titleHasAdult;
+    }).toList();
+  }
+
+  const int pageSize = 30;
+  final startIndex = (page - 1) * pageSize;
+  if (startIndex < results.length) {
+    final endIndex = (startIndex + pageSize).clamp(0, results.length);
+    results = results.sublist(startIndex, endIndex);
+  } else {
+    results = [];
+  }
 
   if (results.isEmpty && page == 1) {
     snackBar('No recommendations found');
   }
 
   RecommendationCache.set(cacheKey, page, results);
-
   return results;
+}
+
+Future<void> loadNextPage({
+  required bool isManga,
+  required int currentPage,
+  required bool showAdult,
+  required bool hasMorePages,
+  required List<Media> recommendations,
+  required void Function(
+          List<Media> updated, int newPage, bool morePages, bool isLoading)
+      onUpdate,
+}) async {
+  if (!hasMorePages) return;
+
+  onUpdate(recommendations, currentPage, hasMorePages, true);
+
+  final nextPage = currentPage + 1;
+  final moreRecs = await getAiRecommendations(
+    isManga,
+    nextPage,
+    isAdult: showAdult,
+    refresh: false,
+  );
+
+  if (moreRecs.isNotEmpty) {
+    onUpdate(
+      [...recommendations, ...moreRecs],
+      nextPage,
+      moreRecs.length >= 30,
+      false,
+    );
+  } else {
+    onUpdate(recommendations, currentPage, false, false);
+  }
 }
 
 Set<String> _buildTrackedIdSet(ServiceHandler service, bool isAL) {
@@ -179,7 +248,7 @@ Future<List<Media>> _fetchAnimeSproutRecommendations({
   try {
     final source = isAL ? 'anilist' : null;
     final params = options.toQueryParams(source: source);
-    
+
     final uri = Uri.https(
       'anime.ameo.dev',
       '/user/$userName/recommendations',
@@ -207,14 +276,14 @@ Future<List<Media>> _fetchAnimeSproutRecommendations({
     final jsonStr = scriptContent.substring(jsonTagStart);
     final jsonData = jsonDecode(jsonStr) as Map<String, dynamic>;
 
-    final initialRecs = jsonData['initialRecommendations'] as Map<String, dynamic>?;
+    final initialRecs =
+        jsonData['initialRecommendations'] as Map<String, dynamic>?;
     if (initialRecs == null || initialRecs['type'] != 'ok') return [];
 
     final recommendations = initialRecs['recommendations'] as List<dynamic>;
     final animeData = initialRecs['animeData'] as Map<String, dynamic>;
 
     final List<Media> results = [];
-    final batchSize = 20;
     int processed = 0;
 
     for (final rec in recommendations) {
@@ -229,9 +298,11 @@ Future<List<Media>> _fetchAnimeSproutRecommendations({
       if (rec['planToWatch'] == true) continue;
 
       if (!isAdult) {
-        final nsfw = data['nsfw'] == true || 
-                     (data['genres'] as List?)?.any((g) => 
-                       ['HENTAI', 'EROTICA'].contains(g['name']?.toUpperCase())) == true;
+        final nsfw = data['nsfw'] == true ||
+            (data['genres'] as List?)?.any((g) =>
+                    ['HENTAI', 'EROTICA']
+                        .contains(g['name']?.toUpperCase())) ==
+                true;
         if (nsfw) continue;
       }
 
@@ -246,7 +317,6 @@ Future<List<Media>> _fetchAnimeSproutRecommendations({
       String? resolvedId;
       if (isAL) {
         resolvedId = await _getAnilistIdFromMal(malId);
-        resolvedId ??= malId;
       } else {
         resolvedId = malId;
       }
@@ -254,14 +324,17 @@ Future<List<Media>> _fetchAnimeSproutRecommendations({
       if (trackedIds.contains(resolvedId)) continue;
 
       results.add(Media(
-        id: resolvedId,
-        title: (title?.isNotEmpty == true ? title : titleFallback) ?? 'Unknown',
+        id: resolvedId ?? '',
+        idMal: malId,
+        title:
+            (title?.isNotEmpty == true ? title : titleFallback) ?? 'Unknown',
+        romajiTitle: titleFallback ?? 'Unknown',
         poster: picture ?? '',
         description: synopsis ?? '',
         serviceType: isAL ? ServicesType.anilist : ServicesType.mal,
         genres: genres ?? [],
       ));
-      
+
       processed++;
     }
 
@@ -323,13 +396,13 @@ Future<List<Media>> _fetchNativeRecommendations({
 }) async {
   if (isAL) {
     return _fetchAnilistRecommendations(
-      isManga: isManga, 
+      isManga: isManga,
       page: page,
       isAdult: isAdult,
     );
   } else {
     return _fetchMalRecommendations(
-      isManga: isManga, 
+      isManga: isManga,
       page: page,
       isAdult: isAdult,
     );
@@ -345,40 +418,65 @@ Future<List<Media>> _fetchAnilistRecommendations({
     final token = AuthKeys.authToken.get<String?>();
     if (token == null) return [];
 
+    // Fixed query - removed unused $type variable
     final query = '''
-    query(\$page: Int, \$type: MediaType, \$isAdult: Boolean) {
-      Page(page: \$page, perPage: 30) {
-        recommendations(sort: RATING_DESC, onList: true) {
+    query(\$page: Int) {
+      Page(page: \$page, perPage: 50) {
+        recommendations(sort: RATING_DESC) {
           mediaRecommendation {
             id
-            title { romaji english }
-            coverImage { large }
+            idMal
+            title {
+              romaji
+              english
+              native
+            }
+            coverImage {
+              large
+              color
+            }
             description
             genres
             type
             isAdult
-            mediaListEntry { status }
+            averageScore
+            format
+            status
+            episodes
+            chapters
+            volumes
           }
         }
       }
     }
     ''';
 
+    Logger.i('Fetching AniList recommendations for page $page');
+
     final response = await http.post(
       Uri.parse('https://graphql.anilist.co'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
       body: jsonEncode({
         'query': query,
         'variables': {
           'page': page,
-          'type': isManga ? 'MANGA' : 'ANIME',
-          'isAdult': isAdult,
         },
       }),
-    ).timeout(const Duration(seconds: 10));
+    ).timeout(const Duration(seconds: 15));
+
+    if (response.statusCode == 429) {
+      Logger.i('Rate limited, waiting 3 seconds...');
+      await Future.delayed(const Duration(seconds: 3));
+      return _fetchAnilistRecommendations(
+        isManga: isManga, 
+        page: page, 
+        isAdult: isAdult
+      );
+    }
 
     if (response.statusCode != 200) {
       Logger.i('AniList recommendations failed: ${response.statusCode}');
@@ -387,36 +485,76 @@ Future<List<Media>> _fetchAnilistRecommendations({
 
     final data = jsonDecode(response.body);
     final recs = data['data']?['Page']?['recommendations'] as List<dynamic>?;
-    if (recs == null) return [];
+    if (recs == null || recs.isEmpty) {
+      Logger.i('No recommendations found');
+      return [];
+    }
 
     final results = <Media>[];
+    final seenIds = <String>{};
+
     for (final rec in recs) {
       final media = rec['mediaRecommendation'] as Map<String, dynamic>?;
       if (media == null) continue;
 
-      if (media['mediaListEntry'] != null) continue;
+      // Filter by type client-side
+      final mediaType = media['type'] as String?;
+      if (mediaType == null) continue;
+      
+      if (isManga && mediaType != 'MANGA') continue;
+      if (!isManga && mediaType != 'ANIME') continue;
+
+      // Adult content filter
       if (!isAdult && media['isAdult'] == true) continue;
 
       final id = media['id']?.toString();
-      if (id == null) continue;
+      if (id == null || !seenIds.add(id)) continue;
 
       final titleMap = media['title'] as Map?;
-      final title = (titleMap?['english'] as String?)?.isNotEmpty == true
-          ? titleMap!['english'] as String
-          : titleMap?['romaji'] as String? ?? 'Unknown';
+      String title = 'Unknown';
+      String romajiTitle = 'Unknown';
+      if (titleMap != null) {
+        title = titleMap['english'] ??
+            titleMap['romaji'] ??
+            titleMap['native'] ??
+            'Unknown';
+        romajiTitle = titleMap['romaji'] ?? title;
+      }
+
+      // Check for adult content in genres
+      final genres = (media['genres'] as List?)
+          ?.map((g) => g.toString().toUpperCase())
+          .where((g) => g.isNotEmpty)
+          .toList() ?? [];
+
+      if (!isAdult) {
+        final hasAdultGenres = genres.any((g) =>
+            ['HENTAI', 'EROTICA', 'ADULT', '18+', 'ECCHI'].contains(g));
+        if (hasAdultGenres) continue;
+      }
+
+      final coverImage = media['coverImage'] as Map?;
+      final poster = coverImage?['large'] as String? ?? '';
 
       results.add(Media(
         id: id,
+        idMal: media['idMal']?.toString() ?? '',
         title: title,
-        poster: (media['coverImage'] as Map?)?['large'] as String? ?? '',
+        romajiTitle: romajiTitle,
+        poster: poster,
         description: media['description'] as String? ?? '',
         serviceType: ServicesType.anilist,
-        genres: ((media['genres'] as List?) ?? [])
-            .map((g) => g.toString().toUpperCase())
-            .toList(),
+        genres: genres,
+        rating: media['averageScore']?.toString() ?? '0',
+        format: media['format']?.toString() ?? '',
+        totalEpisodes: media['episodes']?.toString() ?? '0',
+        totalChapters: media['chapters']?.toString() ?? '0',
+        status: media['status']?.toString() ?? '',
+        isAdult: media['isAdult'] as bool?,
       ));
     }
 
+    Logger.i('Fetched ${results.length} AniList recommendations');
     return results;
   } catch (e) {
     Logger.i('AniList recommendations error: $e');
@@ -433,19 +571,36 @@ Future<List<Media>> _fetchMalRecommendations({
     final type = isManga ? 'manga' : 'anime';
     final url = 'https://api.jikan.moe/v4/recommendations/$type?page=$page';
 
-    final response = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 10));
+    final response =
+        await http.get(Uri.parse(url)).timeout(const Duration(seconds: 10));
+    
+    if (response.statusCode == 429) {
+      Logger.i('Jikan rate limited, waiting...');
+      await Future.delayed(const Duration(seconds: 2));
+      return _fetchMalRecommendations(
+        isManga: isManga, 
+        page: page, 
+        isAdult: isAdult
+      );
+    }
+
     if (response.statusCode != 200) {
       Logger.i('Jikan recommendations failed: ${response.statusCode}');
       return [];
     }
 
     final data = jsonDecode(response.body);
-    final pagination = data['pagination'] as Map<String, dynamic>?;
     final recs = data['data'] as List<dynamic>?;
     if (recs == null) return [];
 
     final results = <Media>[];
     final seen = <String>{};
+
+    // Adult content keywords to filter
+    final adultKeywords = [
+      'Hentai', 'Erotica', 'Ecchi', 'Adult', '18+', 
+      'Sex', 'Porn', 'NSFW', 'Mature'
+    ];
 
     for (final rec in recs) {
       final entries = rec['entry'] as List<dynamic>?;
@@ -455,28 +610,66 @@ Future<List<Media>> _fetchMalRecommendations({
         final malId = entry['mal_id']?.toString();
         if (malId == null || !seen.add(malId)) continue;
 
-        if (!isAdult) {
-          final genres = entry['genres'] as List? ?? [];
-          final isNsfw = genres.any((g) => 
-            ['Hentai', 'Erotica'].contains(g['name']));
-          if (isNsfw) continue;
+        // Check multiple sources for adult content
+        bool isAdultContent = false;
+
+        // Check genres
+        final genres = entry['genres'] as List? ?? [];
+        isAdultContent = genres.any((g) {
+          final genreName = g['name']?.toString() ?? '';
+          return adultKeywords.any((keyword) => 
+            genreName.toLowerCase().contains(keyword.toLowerCase()));
+        });
+
+        // Check demographics
+        if (!isAdultContent) {
+          final demographics = entry['demographics'] as List? ?? [];
+          isAdultContent = demographics.any((d) {
+            final demoName = d['name']?.toString() ?? '';
+            return adultKeywords.any((keyword) => 
+              demoName.toLowerCase().contains(keyword.toLowerCase()));
+          });
+        }
+
+        // Check explicit/genre tags
+        if (!isAdultContent) {
+          final explicitGenres = entry['explicit_genres'] as List? ?? [];
+          isAdultContent = explicitGenres.isNotEmpty;
+        }
+
+        // Check rating
+        if (!isAdultContent) {
+          final rating = entry['rating']?.toString() ?? '';
+          isAdultContent = rating.toLowerCase().contains('rx') || 
+                          rating.toLowerCase().contains('hentai');
+        }
+
+        // Filter if not adult mode and content is adult
+        if (!isAdult && isAdultContent) {
+          Logger.i('Filtered adult content: ${entry['title']}');
+          continue;
         }
 
         final title = entry['title'] as String? ?? 'Unknown';
-        final imageUrl = (entry['images'] as Map?)?['jpg']?['large_image_url'] as String?;
+        final imageUrl =
+            (entry['images'] as Map?)?['jpg']?['large_image_url'] as String?;
         final synopsis = entry['synopsis'] as String?;
 
         results.add(Media(
           id: malId,
+          idMal: malId,
           title: title,
+          romajiTitle: title,
           poster: imageUrl ?? '',
           description: synopsis ?? '',
           serviceType: ServicesType.mal,
-          genres: [],
+          genres: genres.map((g) => g['name']?.toString() ?? '').toList(),
+          isAdult: isAdultContent,
         ));
       }
     }
 
+    Logger.i('Fetched ${results.length} MAL recommendations');
     return results;
   } catch (e) {
     Logger.i('Jikan recommendations error: $e');
