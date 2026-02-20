@@ -186,6 +186,7 @@ void _initializeGetxController() async {
   Get.put(GreetingController());
   Get.put(CommentumService());
   Get.put(CommentPreloader());
+  Get.put(CloudSyncController(), permanent: true);
   Get.lazyPut(() => CacheController());
 }
 
