@@ -879,7 +879,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   Future<void> _switchMedia(String url, Map<String, String>? headers,
       {Duration? startPosition}) async {
-    await _basePlayer.open('');
+    if (_basePlayer is MediaKitPlayer) {
+      await _basePlayer.open("");
+    }
     await _basePlayer.open(url, headers: headers, startPosition: startPosition);
   }
 
