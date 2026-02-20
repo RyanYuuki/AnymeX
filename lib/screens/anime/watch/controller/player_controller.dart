@@ -456,12 +456,12 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       if (isOffline.value && offlineVideoPath != null) {
         final stamp =
             DynamicKeys.offlineVideoProgress.get<int?>(offlineVideoPath, null);
-        _basePlayer.open(
+        _openWithCloudFallback(
           offlineVideoPath!,
           startPosition: Duration(milliseconds: stamp ?? 0),
         );
       } else {
-        _basePlayer.open(
+        _openWithCloudFallback(
           selectedVideo.value!.url ?? "",
           headers: selectedVideo.value!.headers,
           startPosition: Duration(
@@ -472,6 +472,67 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       _performInitialTracking();
       applySavedProfile();
     });
+  }
+
+  Future<void> _openWithCloudFallback(
+    String path, {
+    Map<String, String>? headers,
+    Duration? startPosition,
+  }) async {
+    // Check if it's a cloud file
+    if (path.contains('drive.google.com') || path.contains('googledrive')) {
+      try {
+        // Extract file ID from Google Drive URL
+        final uri = Uri.parse(path);
+        String? fileId;
+
+        if (uri.pathSegments.contains('d') && uri.pathSegments.length > 1) {
+          fileId = uri.pathSegments[uri.pathSegments.indexOf('d') + 1];
+        } else {
+          fileId = uri.queryParameters['id'];
+        }
+
+        if (fileId != null) {
+          // Check for newer version in Drive
+          final cloudTimestamp = await _getCloudFileTimestamp(fileId);
+          final localKey = 'cloud_${fileId}_timestamp';
+          final localTimestamp = await _getLocalTimestamp(localKey);
+
+          if (cloudTimestamp != null &&
+              (localTimestamp == null || cloudTimestamp > localTimestamp)) {
+            // Newer version available, download or stream from cloud
+            await _basePlayer.open(path,
+                headers: headers, startPosition: startPosition);
+            // Update local timestamp
+            await _saveLocalTimestamp(localKey, cloudTimestamp);
+            return;
+          }
+        }
+      } catch (e) {
+        Logger.e('Error checking cloud timestamp: $e');
+        // Fall back to normal open if cloud check fails
+      }
+    }
+
+    // Default: open normally
+    await _basePlayer.open(path, headers: headers, startPosition: startPosition);
+  }
+
+  Future<int?> _getCloudFileTimestamp(String fileId) async {
+    // This would need to be implemented based on your cloud storage API
+    // For Google Drive, you'd need to use the Drive API
+    // For now, return null to skip cloud check
+    return null;
+  }
+
+  Future<int?> _getLocalTimestamp(String key) async {
+    // Get timestamp from local storage
+    return DynamicKeys.cloudTimestamps.get<int?>(key, null);
+  }
+
+  Future<void> _saveLocalTimestamp(String key, int timestamp) async {
+    // Save timestamp to local storage
+    await DynamicKeys.cloudTimestamps.set(key, timestamp);
   }
 
   void _initializeAniSkip() {
@@ -877,7 +938,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   Future<void> _switchMedia(String url, Map<String, String>? headers,
       {Duration? startPosition}) async {
     await _basePlayer.open('');
-    await _basePlayer.open(url, headers: headers, startPosition: startPosition);
+    await _openWithCloudFallback(url,
+        headers: headers, startPosition: startPosition);
   }
 
   @override
