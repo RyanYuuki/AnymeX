@@ -53,13 +53,14 @@ class UISettingsAdapter extends TypeAdapter<UISettings> {
         retainOriginalColor: fields[20] ?? false,
         usePosterColor: fields[21] ?? false,
         enablePosterKenBurns: fields[22] ?? true,
-        carouselStyle: fields[23] ?? 0);
+        carouselStyle: fields[23] ?? 0,
+        episodeListLayout: fields[24] ?? 0);
   }
 
   @override
   void write(BinaryWriter writer, UISettings obj) {
     writer
-      ..writeByte(24)
+      ..writeByte(25)
       ..writeByte(0)
       ..write(obj.glowMultiplier)
       ..writeByte(1)
@@ -107,7 +108,9 @@ class UISettingsAdapter extends TypeAdapter<UISettings> {
       ..writeByte(22)
       ..write(obj.enablePosterKenBurns)
       ..writeByte(23)
-      ..write(obj.carouselStyle);
+      ..write(obj.carouselStyle)
+      ..writeByte(24)
+      ..write(obj.episodeListLayout);
   }
 
   @override

@@ -76,6 +76,9 @@ class UISettings extends HiveObject {
   @HiveField(23)
   int carouselStyle;
 
+  @HiveField(24)
+  int episodeListLayout;
+
   UISettings({
     this.glowMultiplier = 1.0,
     this.radiusMultiplier = 1.0,
@@ -101,6 +104,7 @@ class UISettings extends HiveObject {
     this.usePosterColor = false,
     this.enablePosterKenBurns = true,
     this.carouselStyle = 0,
+    this.episodeListLayout = 0,
   })  : homePageCards = homePageCards ??
             {
               "Continue Watching": true,
@@ -138,5 +142,6 @@ class UISettings extends HiveObject {
     homePageCardsMal = Map<String, bool>.from(homePageCardsMal);
     homePageCardsMal.putIfAbsent('Recommended Animes', () => true);
     homePageCardsMal.putIfAbsent('Recommended Mangas', () => true);
+    episodeListLayout = episodeListLayout.clamp(0, 2);
   }
 }
