@@ -1,6 +1,7 @@
 import 'package:anymex/utils/logger.dart';
 
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
+import 'package:anymex/controllers/sync/cloud_sync_controller.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
@@ -127,9 +128,43 @@ class NovelReaderController extends GetxController {
       loadingState.value = LoadingState.loaded;
 
       await _waitForScrollAndJump();
+      _resumeFromCloudIfNewer();
     } catch (e) {
       Logger.i(e.toString());
       loadingState.value = LoadingState.error;
+    }
+  }
+
+  Future<void> _resumeFromCloudIfNewer() async {
+    final ctrl = Get.isRegistered<CloudSyncController>()
+        ? Get.find<CloudSyncController>()
+        : null;
+    if (ctrl == null || !ctrl.isSignedIn.value || !ctrl.syncEnabled.value) return;
+    try {
+      final chapter = currentChapter.value;
+      if (chapter.number == null) return;
+      final localUpdated = chapter.lastReadTime ?? 0;
+
+      final entry = await ctrl.fetchNewerChapterProgress(
+        mediaId: media.id,
+        mediaType: 'novel',
+        chapterNumber: chapter.number!,
+        localUpdatedAt: localUpdated,
+      ).timeout(const Duration(seconds: 4), onTimeout: () => null);
+
+      if (entry?.scrollOffset != null) {
+        final offset = entry!.scrollOffset!;
+        await Future.delayed(const Duration(milliseconds: 200));
+        if (scrollController.hasClients &&
+            offset <= scrollController.position.maxScrollExtent) {
+          scrollController.animateTo(
+            offset,
+            duration: const Duration(milliseconds: 400),
+            curve: Curves.easeInOut,
+          );
+        }
+      }
+    } catch (e) {
     }
   }
 
