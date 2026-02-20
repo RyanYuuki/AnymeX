@@ -497,6 +497,12 @@ class OfflineStorageController extends GetxController {
 
       await isar.offlineMedias.put(existingAnime);
     });
+
+    // Sync progress with AniList/MyAnimeList
+    final syncCtrl = Get.find<ServiceHandler>().syncController;
+    if (syncCtrl != null) {
+      await syncCtrl.pushEpisodeProgress(animeId, episode.number);
+    }
   }
 
   Episode? getWatchedEpisode(String anilistId, String episodeNumber) {
@@ -545,6 +551,12 @@ class OfflineStorageController extends GetxController {
 
       await isar.offlineMedias.put(existingManga);
     });
+
+    // Sync progress with AniList/MyAnimeList
+    final syncCtrl = Get.find<ServiceHandler>().syncController;
+    if (syncCtrl != null) {
+      await syncCtrl.pushChapterProgress(mangaId, chapter.number);
+    }
   }
 
   Chapter? getReadChapter(String anilistId, double number) {
