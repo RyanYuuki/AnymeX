@@ -51,6 +51,8 @@ enum ReaderKeys {
   volumeKeysEnabled,
   invertVolumeKeys,
   dualPageMode,
+  autoScrollEnabled,
+  autoScrollSpeed,
 }
 
 enum LocalSourceKeys {
