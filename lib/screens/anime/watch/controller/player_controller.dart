@@ -7,6 +7,7 @@ import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/controllers/sync/cloud_sync_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/database/isar_models/video.dart' as model;
@@ -456,17 +457,12 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       if (isOffline.value && offlineVideoPath != null) {
         final stamp =
             DynamicKeys.offlineVideoProgress.get<int?>(offlineVideoPath, null);
-        _openWithCloudFallback(
+        _basePlayer.open(
           offlineVideoPath!,
           startPosition: Duration(milliseconds: stamp ?? 0),
         );
       } else {
-        _openWithCloudFallback(
-          selectedVideo.value!.url ?? "",
-          headers: selectedVideo.value!.headers,
-          startPosition: Duration(
-              milliseconds: savedEpisode?.timeStampInMilliseconds ?? 0),
-        );
+        _openWithCloudFallback();
       }
 
       _performInitialTracking();
@@ -474,47 +470,36 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     });
   }
 
-  Future<void> _openWithCloudFallback(
-    String path, {
-    Map<String, String>? headers,
-    Duration? startPosition,
-  }) async {
-    if (path.contains('drive.google.com') || path.contains('googledrive')) {
-      try {
-        final uri = Uri.parse(path);
-        String? fileId;
+  Future<void> _openWithCloudFallback() async {
+    final localStamp = savedEpisode?.timeStampInMilliseconds ?? 0;
+    final url = selectedVideo.value?.url ?? '';
+    final headers = selectedVideo.value?.headers;
+    final episodeNum = currentEpisode.value.number ?? '';
 
-        if (uri.pathSegments.contains('d') && uri.pathSegments.length > 1) {
-          fileId = uri.pathSegments[uri.pathSegments.indexOf('d') + 1];
-        } else {
-          fileId = uri.queryParameters['id'];
+    Duration startPosition = Duration(milliseconds: localStamp);
+
+    try {
+      final ctrl = Get.isRegistered<CloudSyncController>()
+          ? Get.find<CloudSyncController>()
+          : null;
+      if (ctrl != null && ctrl.isSignedIn.value && ctrl.syncEnabled.value) {
+        final cloudMs = await ctrl.fetchNewerEpisodeTimestamp(
+          mediaId: anilistData.id,
+          malId: anilistData.idMal?.toString(),
+          episodeNumber: episodeNum,
+          localTimestampMs: localStamp,
+        ).timeout(const Duration(seconds: 4), onTimeout: () => null);
+
+        if (cloudMs != null && cloudMs > localStamp) {
+          startPosition = Duration(milliseconds: cloudMs);
         }
-
-        if (fileId != null) {
-          final cloudTimestamp = await _getCloudFileTimestamp(fileId);
-          final localKey = 'cloud_${fileId}_timestamp';
-          final localTimestamp = await _getLocalTimestamp(localKey);
-
-          if (cloudTimestamp != null &&
-              (localTimestamp == null || cloudTimestamp > localTimestamp)) {
-            await _basePlayer.open(path,
-                headers: headers, startPosition: startPosition);
-            await _saveLocalTimestamp(localKey, cloudTimestamp);
-            return;
-          }
-        }
-      } catch (e) {
-        Logger.e('Error checking cloud timestamp: $e');
       }
-    }
+    } catch (_) {}
 
-    await _basePlayer.open(path, headers: headers, startPosition: startPosition);
+    await _basePlayer.open(url, headers: headers, startPosition: startPosition);
   }
 
   Future<int?> _getCloudFileTimestamp(String fileId) async {
-    // This would need to be implemented based on your cloud storage API
-    // For Google Drive, you'd need to use the Drive API
-    // For now, return null to skip cloud check
     return null;
   }
 
@@ -929,7 +914,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   Future<void> _switchMedia(String url, Map<String, String>? headers,
       {Duration? startPosition}) async {
     await _basePlayer.open('');
-    await _openWithCloudFallback(url, headers: headers, startPosition: startPosition); 
+    await _basePlayer.open(url, headers: headers, startPosition: startPosition);
   }
 
   @override
