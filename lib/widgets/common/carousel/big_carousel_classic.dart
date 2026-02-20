@@ -36,6 +36,30 @@ class BigCarouselClassic extends StatefulWidget {
 class _BigCarouselClassicState extends State<BigCarouselClassic> {
   int activeIndex = 0;
   final CarouselSliderController controller = CarouselSliderController();
+  double _scrollDelta = 0;
+  DateTime _lastScrollTime = DateTime.now();
+
+  void _handleScroll(Offset delta, PointerDeviceKind kind) {
+    final now = DateTime.now();
+    if (now.difference(_lastScrollTime) < const Duration(milliseconds: 300)) {
+      return;
+    }
+
+  
+    if (delta.dx != 0) {
+      _scrollDelta -= delta.dx;
+    }
+
+    if (_scrollDelta.abs() > 50) { 
+      if (_scrollDelta > 0) {
+        controller.nextPage();
+      } else {
+        controller.previousPage();
+      }
+      _scrollDelta = 0;
+      _lastScrollTime = now;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,14 +69,15 @@ class _BigCarouselClassicState extends State<BigCarouselClassic> {
       child: Column(
         children: [
           Listener(
+            behavior: HitTestBehavior.translucent,
             onPointerSignal: (pointerSignal) {
               if (pointerSignal is PointerScrollEvent) {
-                if (pointerSignal.scrollDelta.dx > 0) {
-                  controller.nextPage();
-                } else if (pointerSignal.scrollDelta.dx < 0) {
-                  controller.previousPage();
-                }
+                _handleScroll(pointerSignal.scrollDelta, pointerSignal.kind);
               }
+            },
+            onPointerPanZoomUpdate: (event) {
+               
+              _handleScroll(event.panDelta, event.kind);
             },
             child: AnymexOnTapAdv(
               onKeyEvent: (node, event) {
@@ -81,6 +106,14 @@ class _BigCarouselClassicState extends State<BigCarouselClassic> {
                 return KeyEventResult.handled;
               },
               scale: 1,
+              child: ScrollConfiguration(
+              behavior: ScrollConfiguration.of(context).copyWith(
+                dragDevices: {
+                  PointerDeviceKind.touch,
+                  PointerDeviceKind.mouse,
+                  PointerDeviceKind.trackpad,
+                },
+              ),
               child: CarouselSlider.builder(
                 itemCount: newData.length,
                 disableGesture: false,
@@ -235,6 +268,7 @@ class _BigCarouselClassicState extends State<BigCarouselClassic> {
                 ),
                 carouselController: controller,
               ),
+            ),
             ),
           ),
           const SizedBox(height: 16),

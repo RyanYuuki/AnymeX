@@ -135,7 +135,8 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
             widget.episodeList, calculateChunkSize(widget.episodeList));
 
         if (chunkedEpisodes.length > 1) {
-          final progress = continueEpisode.value.number.toInt();
+          final progress =
+              double.tryParse(continueEpisode.value.number)?.toInt() ?? 0;
 
           final chunkIndex = findChunkIndexFromProgress(
             progress,
@@ -168,7 +169,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     if (isLogged.value) {
       final trackedMedia = auth.onlineService.animeList
           .firstWhereOrNull((e) => e.id == widget.anilistData!.id);
-      progress = trackedMedia?.episodeCount?.toInt();
+      progress = double.tryParse(trackedMedia?.episodeCount ?? '')?.toInt();
     } else {
       final savedAnime = offlineStorage.getAnimeById(widget.anilistData!.id);
       progress = savedAnime?.currentEpisode?.number.toInt();

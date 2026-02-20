@@ -182,29 +182,46 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
     }
 
     return SizedBox(
-      width: 100,
+      width: updateAvailable ? 150 : 100,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
+          if (updateAvailable) ...[
+            Container(
+              decoration: BoxDecoration(
+                color: theme.tertiaryContainer,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: AnymexOnTap(
+                onTap: _handleUpdate,
+                child: IconButton(
+                  onPressed: _handleUpdate,
+                  icon: Icon(
+                    Icons.update,
+                    size: 18,
+                    color: theme.onTertiaryContainer,
+                  ),
+                  tooltip: "Update",
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+          ],
           Container(
             decoration: BoxDecoration(
-              color: updateAvailable
-                  ? theme.tertiaryContainer
-                  : theme.errorContainer.withAlpha(122),
+              color: theme.errorContainer.withAlpha(122),
               borderRadius: BorderRadius.circular(8),
             ),
             child: AnymexOnTap(
-              onTap: () => _onActionTap(updateAvailable),
+              onTap: () => _onActionTap(false),
               child: IconButton(
-                onPressed: () => _onActionTap(updateAvailable),
+                onPressed: () => _onActionTap(false),
                 icon: Icon(
+                  Iconsax.trash,
                   size: 18,
-                  updateAvailable ? Icons.update : Iconsax.trash,
-                  color: updateAvailable
-                      ? theme.onTertiaryContainer
-                      : theme.onErrorContainer,
+                  color: theme.onErrorContainer,
                 ),
-                tooltip: updateAvailable ? "Update" : "Delete",
+                tooltip: "Delete",
               ),
             ),
           ),

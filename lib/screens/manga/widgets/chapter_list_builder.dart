@@ -22,6 +22,7 @@ import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/utils/logger.dart';
 
 class ChapterState {
   final int? userProgress;
@@ -93,7 +94,7 @@ class ChapterService {
         _auth.serviceType.value != ServicesType.extensions) {
       final temp = _auth.onlineService.mangaList
           .firstWhereOrNull((e) => e.id == anilistData.id);
-      return temp?.episodeCount?.toInt() ?? 1;
+      return double.tryParse(temp?.episodeCount ?? '')?.toInt() ?? 1;
     } else {
       return _offlineStorage
               .getMangaById(anilistData.id)
@@ -162,10 +163,22 @@ class ChapterService {
       Chapter currentChapter,
       BuildContext context,
       VoidCallback onReturn) async {
+  
+    List<Chapter> optimizedList = chapterList;
+    
+    if (currentChapter.scanlator != null && currentChapter.scanlator!.isNotEmpty) {
+      final hasScanlatorDuplicates = chapterList.where((e) => e.number == currentChapter.number).length > 1;
+      
+      if (hasScanlatorDuplicates) {
+        optimizedList = chapterList.where((e) => e.scanlator == currentChapter.scanlator).toList();
+        Logger.i("Filtered reading list to scanlator: ${currentChapter.scanlator}");
+      }
+    }
+
     if (General.shouldAskForTrack.get(true) == false) {
       await navigate(() => ReadingPage(
             anilistData: anilistData,
-            chapterList: chapterList,
+            chapterList: optimizedList,
             currentChapter: currentChapter,
             shouldTrack: true,
           ));
@@ -181,7 +194,7 @@ class ChapterService {
     if (shouldTrack != null) {
       await navigate(() => ReadingPage(
             anilistData: anilistData,
-            chapterList: chapterList,
+            chapterList: optimizedList,
             currentChapter: currentChapter,
             shouldTrack: shouldTrack,
           ));
@@ -341,10 +354,19 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
     final continueChapter =
         chapterState.readChapter ?? chapterState.continueChapter;
 
-    final existsInList = continueChapter != null &&
-        filteredFullChapters.any((e) => e.link == continueChapter.link);
+    if (continueChapter == null) {
+      return const SizedBox.shrink();
+    }
 
-    if (!existsInList) {
+    var targetChapter = filteredFullChapters
+        .firstWhereOrNull((e) => e.link == continueChapter.link);
+
+    if (targetChapter == null) {
+      targetChapter = filteredFullChapters
+          .firstWhereOrNull((e) => e.number == continueChapter.number);
+    }
+
+    if (targetChapter == null) {
       return const SizedBox.shrink();
     }
 
@@ -354,12 +376,12 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
         onPressed: () => _chapterService.navigateToReading(
             widget.anilistData,
             filteredFullChapters,
-            continueChapter,
+            targetChapter!,
             context,
             () => setState(() {})),
         height: getResponsiveSize(context, mobileSize: 80, desktopSize: 100),
         backgroundImage: widget.anilistData.cover ?? widget.anilistData.poster,
-        chapter: continueChapter,
+        chapter: targetChapter,
       ),
     );
   }
@@ -689,10 +711,10 @@ class ContinueChapterButton extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Continue: ${chapter.title}'.toUpperCase(),
-              style: textStyle ??
+              'Continue: ${this.chapter.title}'.toUpperCase(),
+              style: this.textStyle ??
                   TextStyle(
-                    color: textColor,
+                    color: this.textColor,
                     fontFamily: 'Poppins-SemiBold',
                   ),
             ),
@@ -701,7 +723,7 @@ class ContinueChapterButton extends StatelessWidget {
               color: context.colors.primary,
               height: 2,
               width: 6 *
-                  'Chapter ${chapter.number}: ${chapter.title}'
+                  'Chapter ${this.chapter.number}: ${this.chapter.title}'
                       .length
                       .toDouble(),
             ),
