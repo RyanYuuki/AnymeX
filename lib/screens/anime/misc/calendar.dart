@@ -10,12 +10,12 @@ import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/anime/misc/dub_service.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -436,13 +436,14 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
                                       child: s.name
                                               .toLowerCase()
                                               .contains('apple')
-                                          ? CachedNetworkImage(
+                                          ? AnymeXImage(
                                               // color: Colors.white,
                                               imageUrl:
                                                   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVCJpAHzn91VMfwirwAbAmV-ONO02UjmCj2w&s",
                                               height: 20,
                                               width: 20,
-                                              fit: BoxFit.cover)
+                                              fit: BoxFit.cover,
+                                              radius: 0)
                                           : SvgPicture.network(
                                               s.icon,
                                               height: 20,

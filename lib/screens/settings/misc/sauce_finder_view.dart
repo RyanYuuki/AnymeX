@@ -6,6 +6,7 @@ import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/sauce_finder.dart';
 import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
@@ -629,34 +630,10 @@ class _SauceFinderViewState extends State<SauceFinderView> {
             borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
             child: AspectRatio(
               aspectRatio: 16 / 9,
-              child: Image.network(
-                _result!.previewImage,
+              child: AnymeXImage(
+                imageUrl: _result!.previewImage,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    width: double.infinity,
-                    height: 200,
-                    color: colorScheme.surfaceContainerHighest,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.broken_image_rounded,
-                          size: 48,
-                          color: colorScheme.onSurface.opaque(0.3),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Image not available',
-                          style: TextStyle(
-                            color: colorScheme.onSurface.opaque(0.5),
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
+                radius: 0,
               ),
             ),
           ),

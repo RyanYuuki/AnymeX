@@ -6,6 +6,7 @@ import 'package:anymex/screens/anime/widgets/comments/controller/comments_contro
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/policy_sheet.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
@@ -531,14 +532,10 @@ class _CommentSectionState extends State<CommentSection> {
       ),
       child: ClipOval(
         child: controller.profile.avatar?.isNotEmpty == true
-            ? Image.network(
-                controller.profile.avatar!,
+            ? AnymeXImage(
+                imageUrl: controller.profile.avatar!,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Icon(
-                  Icons.person_rounded,
-                  color: colorScheme.onSurfaceVariant,
-                  size: 20,
-                ),
+                radius: 0,
               )
             : Icon(
                 Icons.person_rounded,
@@ -784,14 +781,10 @@ class _CommentSectionState extends State<CommentSection> {
           ),
           child: ClipOval(
             child: comment.avatarUrl?.isNotEmpty == true
-                ? Image.network(
-                    comment.avatarUrl!,
+                ? AnymeXImage(
+                    imageUrl: comment.avatarUrl!,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Icon(
-                      Icons.person_rounded,
-                      color: colorScheme.onSurfaceVariant,
-                      size: 18,
-                    ),
+                    radius: 0,
                   )
                 : Icon(
                     Icons.person_rounded,

@@ -6,6 +6,7 @@ import 'package:anymex/models/Media/staff.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/header.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';

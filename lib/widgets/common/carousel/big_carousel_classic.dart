@@ -8,10 +8,10 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/carousel/carousel_types.dart';
 import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -531,12 +531,12 @@ class _BigCarouselClassicState extends State<BigCarouselClassic> {
         tag: tag,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(12),
-          child: CachedNetworkImage(
+          child: AnymeXImage(
               imageUrl: posterUrl,
               fit: BoxFit.cover,
               width: double.infinity,
               alignment: Alignment.topCenter,
-              placeholder: (context, url) => placeHolderWidget(context)),
+              radius: 0),
         ),
       ),
     );
