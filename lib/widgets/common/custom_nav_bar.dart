@@ -23,6 +23,7 @@ class CustomNavBar extends StatelessWidget {
     final isSimkl = Get.find<ServiceHandler>().serviceType.value.isSimkl;
     return SafeArea(
       child: Stack(
+        alignment: Alignment.center,
         children: [
           Positioned.fill(
             child: ClipRRect(
@@ -62,11 +63,13 @@ class CustomNavBar extends StatelessWidget {
                 ];
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: List.generate(
                     4,
                     (index) => AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
                       curve: Curves.easeInOut,
+                      alignment: Alignment.center,
                       width:
                           selectedIndex == index ? activeWidth : inactiveWidth,
                       child: _NavItem(
@@ -159,7 +162,7 @@ class _NavItemState extends State<_NavItem>
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        padding: const EdgeInsets.symmetric(vertical: 8),
         decoration: BoxDecoration(
           color: widget.isActive
               ? context.theme.colorScheme.primary
@@ -171,6 +174,7 @@ class _NavItemState extends State<_NavItem>
             scale: _scaleAnimation,
             child: Row(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 300),

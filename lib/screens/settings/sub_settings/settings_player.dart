@@ -7,6 +7,7 @@ import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/anime/watch/controls/themes/setup/media_indicator_theme_registry.dart';
 import 'package:anymex/screens/anime/watch/controls/themes/setup/player_control_theme_registry.dart';
 import 'package:anymex/screens/other_features.dart';
+import 'package:anymex/screens/settings/sub_settings/widgets/settings_json_shared.dart';
 import 'package:anymex/utils/subtitle_translator.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/checkmark_tile.dart';
@@ -419,9 +420,9 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                 CustomSwitchTile(
                                     icon: Icons.subtitles,
                                     padding: const EdgeInsets.all(10),
-                                    title: "Use Old Player",
+                                    title: "Use LibMpv for Playback",
                                     description:
-                                        "Pick wisely! (OLD -> FEATURES, NEW -> PERFORMANCE)",
+                                        "Pick wisely! (LibMpv -> FEATURES, ExoPlayer -> PERFORMANCE)",
                                     switchValue:
                                         PlayerKeys.useMediaKit.get<bool>(false),
                                     onChanged: (val) {
@@ -451,6 +452,18 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                 description: PlayerControlThemeRegistry.resolve(
                                   settings.playerControlTheme,
                                 ).name,
+                              ),
+                              CustomTile(
+                                padding: 10,
+                                descColor:
+                                    Theme.of(context).colorScheme.primary,
+                                isDescBold: true,
+                                icon: Icons.data_object_rounded,
+                                onTap: () => showJsonPlayerThemesSheet(
+                                    context, setState, settings),
+                                title: 'JSON Theme Manager',
+                                description:
+                                    '${PlayerControlThemeRegistry.jsonThemes.length} imported theme(s)',
                               ),
                               CustomTile(
                                 padding: 10,

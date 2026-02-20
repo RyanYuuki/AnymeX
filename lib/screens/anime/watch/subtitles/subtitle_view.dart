@@ -6,7 +6,7 @@ import 'package:anymex/screens/anime/watch/subtitles/repository/imdb_repo.dart';
 import 'package:anymex/screens/anime/watch/subtitles/repository/subtitle_repo.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_chip.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -811,18 +811,12 @@ class _SubtitleSearchBottomSheetState extends State<SubtitleSearchBottomSheet> {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(4),
-                    child: CachedNetworkImage(
+                    child: AnymeXImage(
                       imageUrl: subtitle.flagUrl,
                       width: 24,
                       height: 18,
                       fit: BoxFit.cover,
-                      errorWidget: (_, __, ___) => Container(
-                        width: 24,
-                        height: 18,
-                        color: colorScheme.surfaceVariant,
-                        child: Icon(Icons.flag,
-                            size: 12, color: colorScheme.onSurfaceVariant),
-                      ),
+                      radius: 0,
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -883,11 +877,10 @@ class _SubtitleSearchBottomSheetState extends State<SubtitleSearchBottomSheet> {
         height: height,
         color: colorScheme.surfaceVariant,
         child: item.image != null
-            ? CachedNetworkImage(
+            ? AnymeXImage(
                 imageUrl: item.image!,
                 fit: BoxFit.cover,
-                errorWidget: (_, __, ___) =>
-                    Icon(Icons.movie, color: colorScheme.onSurfaceVariant),
+                radius: 0,
               )
             : Icon(Icons.movie, color: colorScheme.onSurfaceVariant),
       ),
@@ -903,11 +896,10 @@ class _SubtitleSearchBottomSheetState extends State<SubtitleSearchBottomSheet> {
         height: height,
         color: colorScheme.surfaceVariant,
         child: episode.image != null
-            ? CachedNetworkImage(
+            ? AnymeXImage(
                 imageUrl: episode.image!,
                 fit: BoxFit.cover,
-                errorWidget: (_, __, ___) =>
-                    Icon(Icons.tv, color: colorScheme.onSurfaceVariant),
+                radius: 0,
               )
             : Icon(Icons.tv, color: colorScheme.onSurfaceVariant),
       ),

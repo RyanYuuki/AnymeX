@@ -4,13 +4,13 @@ import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/history/tap_history_cards.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -381,11 +381,12 @@ class ImageButton extends StatelessWidget {
             child: ClipRRect(
               borderRadius:
                   BorderRadius.circular(borderRadius.multiplyRadius()),
-              child: CachedNetworkImage(
+              child: AnymeXImage(
                 height: height,
                 width: width,
                 imageUrl: backgroundImage,
                 fit: BoxFit.cover,
+                radius: 0,
               ),
             ),
           ),

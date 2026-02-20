@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:anymex/controllers/services/storage/anymex_cache_manager.dart';
 import 'package:anymex/controllers/discord/discord_login.dart';
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -216,7 +217,10 @@ class DiscordTile extends StatelessWidget {
         child: CircleAvatar(
           radius: 28,
           backgroundColor: colors.surfaceContainerHighest,
-          backgroundImage: CachedNetworkImageProvider(url),
+          backgroundImage: CachedNetworkImageProvider(
+            url,
+            cacheManager: AnymeXCacheManager.instance,
+          ),
         ),
       );
     }
@@ -371,7 +375,10 @@ class TrackingServiceCard extends StatelessWidget {
         decoration: BoxDecoration(
             shape: BoxShape.circle,
             image: DecorationImage(
-                image: CachedNetworkImageProvider(avatarUrl),
+                image: CachedNetworkImageProvider(
+                  avatarUrl,
+                  cacheManager: AnymeXCacheManager.instance,
+                ),
                 fit: BoxFit.cover)),
       );
     }

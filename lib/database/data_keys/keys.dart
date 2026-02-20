@@ -10,6 +10,7 @@ enum General {
   hasAcceptedCommentRules,
   universalScrapper,
   enableBetaUpdates,
+  imageCacheThresholdGb,
 }
 
 enum ThemeKeys {
@@ -27,6 +28,7 @@ enum PlayerKeys { useLibass, useMediaKit }
 enum PlayerUiKeys {
   bottomControlsSettings,
   playerControlTheme,
+  playerControlThemesJson,
   mediaIndicatorTheme,
   currentVisualProfile,
   currentVisualSettings,
