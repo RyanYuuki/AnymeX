@@ -19,7 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher_string.dart';
 
 class AnilistAuth extends GetxController {
@@ -34,6 +34,22 @@ class AnilistAuth extends GetxController {
 
   RxList<TrackedMedia> currentlyReading = <TrackedMedia>[].obs;
   RxList<TrackedMedia> mangaList = <TrackedMedia>[].obs;
+
+  void _handle403(http.Response response) {
+    dynamic errorJson;
+    try {
+      errorJson = jsonDecode(response.body);
+    } catch (_) {}
+
+    const base = "Why is it 403";
+    final apiMessage =
+        errorJson?['errors']?[0]?['message'] as String?;
+    final message = apiMessage != null && apiMessage.isNotEmpty
+        ? "$base: $apiMessage"
+        : "$base: Forbidden (error 403)";
+
+    throw Exception(message);
+  }
 
   Future<void> tryAutoLogin() async {
     isLoggedIn.value = false;
@@ -50,6 +66,25 @@ class AnilistAuth extends GetxController {
         Logger.i('Error checking Commentum role during auto login: $e');
       }
     }
+  }
+
+  DateTime? getExpiryFromToken(String token) {
+    try {
+      final parts = token.split('.');
+      if (parts.length != 3) return null;
+
+      final payload = parts[1];
+      String normalizedSource = base64Url.normalize(payload);
+      final String decoded = utf8.decode(base64Url.decode(normalizedSource));
+      final Map<String, dynamic> map = json.decode(decoded);
+
+      if (map.containsKey('exp')) {
+        return DateTime.fromMillisecondsSinceEpoch(map['exp'] * 1000);
+      }
+    } catch (e) {
+      Logger.i('Error decoding token: $e');
+    }
+    return null;
   }
 
   Future<void> login(BuildContext context) async {
@@ -77,7 +112,7 @@ class AnilistAuth extends GetxController {
         );
         final code = Uri.parse(result).queryParameters['code'];
         if (code != null) {
-          Logger.i("token found: $code");
+          Logger.i("token found");
           await _exchangeCodeForToken(
               code, clientId, clientSecret, redirectUri);
         }
@@ -327,7 +362,7 @@ class AnilistAuth extends GetxController {
 
   Future<void> _exchangeCodeForToken(String code, String clientId,
       String clientSecret, String redirectUri) async {
-    final response = await post(
+    final response = await http.post(
       Uri.parse('https://anilist.co/api/v2/oauth/token'),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -371,6 +406,7 @@ class AnilistAuth extends GetxController {
     Viewer {
       id
       name
+      about(asHtml: true)
       avatar {
         large
       }
@@ -392,9 +428,39 @@ class AnilistAuth extends GetxController {
       favourites {
         anime {
           pageInfo { total }
+          nodes {
+            id
+            title { userPreferred english romaji }
+            coverImage { large }
+          }
         }
         manga {
           pageInfo { total }
+          nodes {
+            id
+            title { userPreferred english romaji }
+            coverImage { large }
+          }
+        }
+        characters {
+          nodes {
+            id
+            name { full }
+            image { large medium }
+          }
+        }
+        staff {
+          nodes {
+            id
+            name { full userPreferred }
+            image { large }
+          }
+        }
+        studios {
+          nodes {
+            id
+            name
+          }
         }
       }
     }
@@ -402,7 +468,7 @@ class AnilistAuth extends GetxController {
   ''';
 
     try {
-      final response = await post(
+      final response = await http.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -417,6 +483,7 @@ class AnilistAuth extends GetxController {
         final viewerData = data['data']['Viewer'];
 
         final userProfile = Profile.fromJson(viewerData);
+        userProfile.tokenExpiry = getExpiryFromToken(token);
         profileData.value = userProfile;
         isLoggedIn.value = true;
 
@@ -425,6 +492,8 @@ class AnilistAuth extends GetxController {
 
         // fetchFollowersAndFollowing(userProfile.id ?? '');
         CommentsDatabase().login();
+      } else if (response.statusCode == 403) {
+        _handle403(response);
       } else {
         Logger.i('Failed to load user profile: ${response.statusCode}');
         throw Exception('Failed to load user profile');
@@ -454,7 +523,7 @@ class AnilistAuth extends GetxController {
   ''';
 
     try {
-      final response = await post(
+      final response = await http.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -477,6 +546,8 @@ class AnilistAuth extends GetxController {
           ..following = followingCount;
 
         profileData.value = updatedProfile;
+      } else if (response.statusCode == 403) {
+        _handle403(response);
       } else {
         Logger.i('Failed to load followers/following: ${response.statusCode}');
         throw Exception('Failed to load followers/following ${response.body}');
@@ -540,7 +611,7 @@ class AnilistAuth extends GetxController {
         throw Exception('Failed to get user ID');
       }
 
-      final response = await post(
+      final response = await http.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -585,6 +656,8 @@ class AnilistAuth extends GetxController {
         } else {
           Logger.i('Unexpected response structure: ${response.body}');
         }
+      } else if (response.statusCode == 403) {
+        _handle403(response);
       } else {
         Logger.i('Fetch failed with status code: ${response.statusCode}');
         Logger.i('Response body: ${response.body}');
@@ -619,7 +692,7 @@ class AnilistAuth extends GetxController {
         throw Exception('Failed to get user ID');
       }
 
-      final response = await post(
+      final response = await http.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -643,6 +716,8 @@ class AnilistAuth extends GetxController {
         } else {
           fetchUserMangaList();
         }
+      } else if (response.statusCode == 403) {
+        _handle403(response);
       } else {
         Logger.i('Failed to delete media with list ID $listId');
         Logger.i('${response.statusCode}: ${response.body}');
@@ -701,7 +776,7 @@ class AnilistAuth extends GetxController {
         variables['progress'] = progress;
       }
 
-      final response = await post(
+      final response = await http.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -735,6 +810,8 @@ class AnilistAuth extends GetxController {
           fetchUserMangaList();
         }
         setCurrentMedia(listId, isManga: !isAnime);
+      } else if (response.statusCode == 403) {
+        _handle403(response);
       } else {
         Logger.i('Update failed with status code: ${response.statusCode}');
         Logger.i('Response body: ${response.body}');
@@ -795,7 +872,7 @@ class AnilistAuth extends GetxController {
         throw Exception('Failed to get user ID');
       }
 
-      final response = await post(
+      final response = await http.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -839,6 +916,8 @@ class AnilistAuth extends GetxController {
         } else {
           Logger.i('Unexpected response structure: ${response.body}');
         }
+      } else if (response.statusCode == 403) {
+        _handle403(response);
       } else {
         Logger.i('Fetch failed with status code: ${response.statusCode}');
         Logger.i('Response body: ${response.body}');
@@ -872,7 +951,7 @@ class AnilistAuth extends GetxController {
   ''';
 
     try {
-      final response = await post(
+      final response = await http.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -892,6 +971,8 @@ class AnilistAuth extends GetxController {
 
       if (response.statusCode == 200) {
         Logger.i('Anime status updated successfully: ${response.body}');
+      } else if (response.statusCode == 403) {
+        _handle403(response);
       } else {
         Logger.i('Failed to update anime status: ${response.statusCode}');
         Logger.i('Response body: ${response.body}');
@@ -925,7 +1006,7 @@ class AnilistAuth extends GetxController {
   ''';
 
     try {
-      final response = await post(
+      final response = await http.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -945,6 +1026,8 @@ class AnilistAuth extends GetxController {
 
       if (response.statusCode == 200) {
         Logger.i('Manga status updated successfully: ${response.body}');
+      } else if (response.statusCode == 403) {
+        _handle403(response);
       } else {
         Logger.i('Failed to update manga status: ${response.statusCode}');
         Logger.i('Response body: ${response.body}');
@@ -958,7 +1041,6 @@ class AnilistAuth extends GetxController {
     final token = AuthKeys.authToken.get<String?>();
     if (token == null) return false;
 
-   
     final String idField = type == "CHARACTER" ? "characterId" : "staffId";
     final mutation = '''
     mutation (\$id: Int) {
@@ -974,7 +1056,7 @@ class AnilistAuth extends GetxController {
   ''';
 
     try {
-      final response = await post(
+      final response = await http.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -986,7 +1068,12 @@ class AnilistAuth extends GetxController {
         }),
       );
 
-      return response.statusCode == 200;
+      if (response.statusCode == 200) {
+        return true;
+      } else if (response.statusCode == 403) {
+        _handle403(response);
+      }
+      return false;
     } catch (e) {
       Logger.i("Error toggling favorite: $e");
       return false;
