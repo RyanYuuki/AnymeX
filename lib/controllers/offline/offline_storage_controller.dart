@@ -1,5 +1,6 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/controllers/sync/cloud_sync_controller.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/database/isar_models/custom_list.dart';
 import 'package:anymex/database/isar_models/episode.dart';
@@ -18,6 +19,16 @@ enum MediaLibraryType {
 }
 
 class OfflineStorageController extends GetxController {
+  CloudSyncController? get _syncCtrl =>
+      Get.isRegistered<CloudSyncController>()
+          ? Get.find<CloudSyncController>()
+          : null;
+
+  (String mediaId, String? malId) _extractIds(String primaryId,
+      {String? malIdHint}) {
+    return (primaryId, malIdHint);
+  }
+
   Stream<List<OfflineMedia>> watchAnimeLibrary() {
     return isar.offlineMedias
         .filter()
@@ -498,10 +509,10 @@ class OfflineStorageController extends GetxController {
       await isar.offlineMedias.put(existingAnime);
     });
 
-    final syncCtrl = Get.find<ServiceHandler>().syncController;
-    if (syncCtrl != null) {
-      await syncCtrl.pushEpisodeProgress(animeId, episode.number);
-    }
+    _syncCtrl?.pushEpisodeProgress(
+      mediaId: animeId,
+      episode: episode,
+    );
   }
 
   Episode? getWatchedEpisode(String anilistId, String episodeNumber) {
@@ -551,10 +562,11 @@ class OfflineStorageController extends GetxController {
       await isar.offlineMedias.put(existingManga);
     });
 
-    final syncCtrl = Get.find<ServiceHandler>().syncController;
-    if (syncCtrl != null) {
-      await syncCtrl.pushChapterProgress(mangaId, chapter.number);
-    }
+    _syncCtrl?.pushChapterProgress(
+      mediaId: mangaId,
+      mediaType: existingManga?.mediaTypeIndex == 2 ? 'novel' : 'manga',
+      chapter: chapter,
+    );
   }
 
   Chapter? getReadChapter(String anilistId, double number) {
