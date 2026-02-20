@@ -225,6 +225,23 @@ class ThemeRenderer {
       }
 
       final slot = zone.slotFor(locked);
+
+      Widget? outsideRow;
+      if (!slot.outside.isCompletelyEmpty) {
+        final row = _buildThreeColumnRow(
+          left: slot.outside.left,
+          center: slot.outside.center,
+          right: slot.outside.right,
+          vibes: zone.vibes,
+          isTitleZone: false,
+          absoluteCenter: zone.vibes.absoluteCenter,
+        );
+        outsideRow = Padding(
+          padding: zone.outsidePadding,
+          child: row,
+        );
+      }
+
       final kids = <Widget>[];
 
       if (!slot.topRow.isCompletelyEmpty) {
@@ -275,16 +292,31 @@ class ThemeRenderer {
         ));
       }
 
-      if (kids.isEmpty) return const SizedBox.shrink();
+      final hasInsideContent = kids.isNotEmpty;
+      if (outsideRow == null && !hasInsideContent) {
+        return const SizedBox.shrink();
+      }
+
+      final columnKids = <Widget>[];
+      if (outsideRow != null) columnKids.add(outsideRow);
+
+      if (hasInsideContent) {
+        Widget insideContent = Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: kids,
+        );
+        insideContent = _slapPanelOn(
+            insideContent, def.styles.panel.mash(zone.vibes.panelOverride));
+        columnKids.add(insideContent);
+      }
 
       Widget content = Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: kids,
+        children: columnKids,
       );
 
-      content = _slapPanelOn(
-          content, def.styles.panel.mash(zone.vibes.panelOverride));
       content = _wrapInShell(content, zone.vibes, 2);
       content = _animateVisibility(content, zone.vibes, visible);
       return content;
@@ -1248,7 +1280,11 @@ class ThemeRenderer {
     if (hex.length == 3) {
       hex = hex.split('').map((c) => '$c$c').join();
     } else if (hex.length == 4) {
-      hex = hex.split('').map((c) => '$c$c').join();
+      final a = hex[0];
+      final r = hex[1];
+      final g = hex[2];
+      final b = hex[3];
+      hex = '$a$a$r$r$g$g$b$b';
     }
     if (hex.length < 6) hex = hex.padLeft(6, '0');
     if (hex.length == 6) hex = 'FF$hex';
@@ -1783,24 +1819,32 @@ class ThreeColumnSlot {
 
 class BottomSlotDef {
   const BottomSlotDef({
+    this.outside = const ThreeColumnSlot(),
     this.topRow = const ThreeColumnSlot(),
     this.left = const [],
     this.center = const [],
     this.right = const [],
   });
 
+  final ThreeColumnSlot outside;
   final ThreeColumnSlot topRow;
   final List<ThemeItem> left;
   final List<ThemeItem> center;
   final List<ThemeItem> right;
 
   bool get isCompletelyEmpty =>
+      outside.isCompletelyEmpty &&
       topRow.isCompletelyEmpty &&
       left.isEmpty &&
       center.isEmpty &&
       right.isEmpty;
 
   factory BottomSlotDef.fromJson(Map<String, dynamic> json) {
+    final outsideRaw = json['outside'];
+    final ThreeColumnSlot outside = outsideRaw is Map
+        ? ThreeColumnSlot.fromJson(_asMap(outsideRaw))
+        : const ThreeColumnSlot();
+
     final topRowRaw = json['top'];
     ThreeColumnSlot topRow;
     if (topRowRaw is Map) {
@@ -1814,6 +1858,7 @@ class BottomSlotDef {
     }
 
     return BottomSlotDef(
+      outside: outside,
       topRow: topRow,
       left: _parseItems(json['left']),
       center: _parseItems(json['center']),
@@ -1921,6 +1966,7 @@ class BottomZone {
     required this.showProgress,
     required this.progressStyle,
     required this.progressPadding,
+    required this.outsidePadding,
     required this.vibes,
   });
 
@@ -1929,6 +1975,8 @@ class BottomZone {
   final bool showProgress;
   final SliderStyle progressStyle;
   final EdgeInsets progressPadding;
+
+  final EdgeInsets outsidePadding;
   final ZoneVibes vibes;
 
   BottomSlotDef slotFor(bool isLocked) {
@@ -1968,6 +2016,8 @@ class BottomZone {
           fallback: SliderStyle.ios),
       progressPadding: _readEdgeInsets(
           json['progressPadding'], const EdgeInsets.symmetric(horizontal: 4)),
+      outsidePadding: _readEdgeInsets(
+          json['outsidePadding'], const EdgeInsets.only(bottom: 6)),
       vibes: vibes,
     );
   }
@@ -2243,6 +2293,8 @@ void _collectItemIdsFromThreeColumn(dynamic raw, Set<String> out) {
 void _collectItemIdsFromBottomSlot(dynamic raw, Set<String> out) {
   final map = _asMap(raw);
   if (map.isEmpty) return;
+
+  _collectItemIdsFromThreeColumn(map['outside'], out);
 
   _collectItemIdsFromThreeColumn(map['top'], out);
   _collectItemIdsFromList(map['topLeft'], out);
