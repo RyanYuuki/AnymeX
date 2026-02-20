@@ -7,6 +7,7 @@ import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/controllers/sync/cloud_sync_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -958,6 +959,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       offlineStorageController.addOrUpdateManga(media, chapterList, chapter);
     }
 
+    _resumeFromCloudIfNewer();
+
     if (!shouldTrack) return;
 
     final chapterNumber = chapter.number?.toInt();
@@ -975,6 +978,35 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
             syncIds: [media.idMal],
             isAnime: false));
       }
+    }
+  }
+
+  Future<void> _resumeFromCloudIfNewer() async {
+    final ctrl = Get.isRegistered<CloudSyncController>()
+        ? Get.find<CloudSyncController>()
+        : null;
+    if (ctrl == null || !ctrl.isSignedIn.value || !ctrl.syncEnabled.value) return;
+    try {
+      final chapter = currentChapter.value;
+      if (chapter?.number == null) return;
+      final localUpdated = chapter?.lastReadTime ?? 0;
+
+      final entry = await ctrl.fetchNewerChapterProgress(
+        mediaId: media.id,
+        malId: media.idMal?.toString(),
+        mediaType: 'manga',
+        chapterNumber: chapter!.number!,
+        localUpdatedAt: localUpdated,
+      ).timeout(const Duration(seconds: 4), onTimeout: () => null);
+
+      if (entry != null && entry.pageNumber != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (entry.pageNumber! > 0 && entry.pageNumber! <= pageList.length) {
+            navigateToPage(entry.pageNumber! - 1);
+          }
+        });
+      }
+    } catch (e) {
     }
   }
 
