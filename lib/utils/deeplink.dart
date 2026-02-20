@@ -4,6 +4,7 @@ import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
+import 'package:anymex/screens/anime/watch/controls/themes/setup/player_control_theme_registry.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/utils/extensions.dart';
 import 'package:anymex/utils/function.dart';
@@ -23,6 +24,11 @@ class Deeplink {
   };
 
   static void handleDeepLink(Uri uri) {
+    if (_isThemeDeepLink(uri)) {
+      _handleThemeDeepLink(uri);
+      return;
+    }
+
     if (uri.host != 'add-repo') {
       final mediaTarget = _parseMediaTarget(uri);
       if (mediaTarget == null) return;
@@ -77,6 +83,55 @@ class Deeplink {
       snackBar("Added Repo Links Successfully!");
     } else {
       snackBar("Missing required parameters in the link.");
+    }
+  }
+
+  static bool _isThemeDeepLink(Uri uri) {
+    if (!_supportedCustomSchemes.contains(uri.scheme.toLowerCase())) {
+      return false;
+    }
+    if (uri.host.toLowerCase() == 'theme') return true;
+    final segments = _compactSegments(uri.pathSegments);
+    return segments.isNotEmpty && segments.first.toLowerCase() == 'theme';
+  }
+
+  static Future<void> _handleThemeDeepLink(Uri uri) async {
+    final type = (uri.queryParameters['type'] ?? '').trim().toLowerCase();
+    if (type.isEmpty) {
+      errorSnackBar('Missing "type" query parameter. Use type=player.');
+      return;
+    }
+    if (type != 'player') {
+      errorSnackBar('Unsupported theme type "$type". Supported: player.');
+      return;
+    }
+
+    final rawUrl = uri.queryParameters['url']?.trim();
+    if (rawUrl == null || rawUrl.isEmpty) {
+      errorSnackBar('Missing "url" query parameter for the theme JSON.');
+      return;
+    }
+
+    snackBar('Importing player theme from link...');
+    final result = await PlayerControlThemeRegistry.importFromUrl(rawUrl);
+
+    if (result.hasErrors) {
+      final extra = result.errors.length > 1
+          ? ' (+${result.errors.length - 1} more issue(s))'
+          : '';
+      errorSnackBar('Theme is invalid: ${result.errors.first}$extra');
+      return;
+    }
+
+    final imported = result.importedCount;
+    final label = imported == 1 ? 'theme' : 'themes';
+    if (result.hasWarnings) {
+      final more = result.warnings.length > 1
+          ? ' (+${result.warnings.length - 1} more warning(s))'
+          : '';
+      warningSnackBar('Theme imported with warning: ${result.warnings.first}$more');
+    } else {
+      successSnackBar('Theme JSON is valid. Imported $imported $label.');
     }
   }
 
