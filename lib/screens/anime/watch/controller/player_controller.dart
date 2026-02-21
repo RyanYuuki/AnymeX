@@ -252,6 +252,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           .map((e) => AudioTrack.uri(e.file ?? '', title: e.label))
           .toList();
     });
+    if (PlayerKeys.useLibass.get(false)) {
+      snackBar(
+          "if subtitle is not showing up then disable libass in settings and restart",
+          duration: 3000);
+    }
   }
 
   static void initializePlayerControlsIfNeeded(Settings settings) {
