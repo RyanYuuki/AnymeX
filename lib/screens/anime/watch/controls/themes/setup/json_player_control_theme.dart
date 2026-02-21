@@ -626,11 +626,11 @@ class ThemeRenderer {
     final baseTextStyle = def.styles.text.mash(item.style);
 
     final resolvedTopColor = _resolveColor(
-      topColor ?? baseTextStyle.color,
+      topColor ?? baseTextStyle.textColor,
       fallback: Colors.white.withValues(alpha: 0.65),
     );
     final resolvedBottomColor = _resolveColor(
-      bottomColor ?? baseTextStyle.color,
+      bottomColor ?? baseTextStyle.textColor,
       fallback: Colors.white,
     );
 
@@ -799,11 +799,12 @@ class ThemeRenderer {
     final borderColor = _resolveColor(style.borderColor,
         fallback: Colors.white.withValues(alpha: 0.30));
     final textColor = _resolveColor(style.textColor, fallback: Colors.white);
+    final bgColor = _resolveColor(style.backgroundColor, fallback: color);
 
     return Container(
       padding: style.padding,
       decoration: BoxDecoration(
-        color: color,
+        color: bgColor,
         borderRadius: BorderRadius.circular(style.radius),
         border: Border.all(color: borderColor, width: style.borderWidth),
       ),
@@ -827,21 +828,38 @@ class ThemeRenderer {
   Widget _makeTextThing(
       {required String value, required ThemeItem item, int maxLines = 1}) {
     final style = def.styles.text.mash(item.style);
-    final color = _resolveColor(style.color, fallback: Colors.white);
+    final textColor = _resolveColor(style.textColor, fallback: Colors.white);
     final textAlign = _parseTextAlign(item.grabString('textAlign'));
 
-    return Text(
+    final hasBackground = style.backgroundColor != null &&
+        style.backgroundColor!.trim().isNotEmpty &&
+        style.backgroundColor!.trim().toLowerCase() != 'transparent';
+
+    final textWidget = Text(
       value,
       maxLines: maxLines,
       overflow: TextOverflow.ellipsis,
       textAlign: textAlign,
       style: TextStyle(
-        color: color,
+        color: textColor,
         fontSize: style.fontSize,
         fontWeight: style.fontWeight,
         letterSpacing: style.letterSpacing,
         height: style.height,
       ),
+    );
+
+    if (!hasBackground) return textWidget;
+
+    final bgColor =
+        _resolveColor(style.backgroundColor, fallback: Colors.transparent);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: textWidget,
     );
   }
 
@@ -1133,6 +1151,12 @@ class ThemeRenderer {
       if (palVal != null && palVal != token) token = palVal;
     }
 
+    final rgbaMatch = _rgbaColorRegex.firstMatch(token);
+    if (rgbaMatch != null) {
+      final c = _parseRgba(rgbaMatch);
+      if (c != null) return c;
+    }
+
     final dynMatch = _dynColorRegex.firstMatch(token);
     if (dynMatch != null) {
       final key = dynMatch.group(1)?.trim() ?? '';
@@ -1275,24 +1299,47 @@ class ThemeRenderer {
 
   Color? _parseHex(String? input) {
     if (input == null) return null;
-    var hex = input.trim().replaceAll('#', '');
+
+    String hex = input.trim();
     if (hex.isEmpty) return null;
-    if (hex.length == 3) {
-      hex = hex.split('').map((c) => '$c$c').join();
-    } else if (hex.length == 4) {
-      final a = hex[0];
-      final r = hex[1];
-      final g = hex[2];
-      final b = hex[3];
-      hex = '$a$a$r$r$g$g$b$b';
+
+    if (hex.codeUnitAt(0) == 35) {
+      hex = hex.substring(1);
     }
-    if (hex.length < 6) hex = hex.padLeft(6, '0');
-    if (hex.length == 6) hex = 'FF$hex';
-    if (hex.length > 8) hex = hex.substring(hex.length - 8);
-    if (hex.length != 8) return null;
-    final intVal = int.tryParse(hex, radix: 16);
-    if (intVal == null) return null;
-    return Color(intVal);
+
+    int len = hex.length;
+
+    if (len == 3) {
+      final r = hex.codeUnitAt(0);
+      final g = hex.codeUnitAt(1);
+      final b = hex.codeUnitAt(2);
+      hex = '${String.fromCharCodes([r, r, g, g, b, b])}FF';
+      len = 8;
+    } else if (len == 4) {
+      final r = hex.codeUnitAt(0);
+      final g = hex.codeUnitAt(1);
+      final b = hex.codeUnitAt(2);
+      final a = hex.codeUnitAt(3);
+      hex = String.fromCharCodes([r, r, g, g, b, b, a, a]);
+      len = 8;
+    } else if (len == 6) {
+      hex = '${hex}FF';
+      len = 8;
+    }
+
+    if (len != 8) return null;
+
+    final rgba = int.tryParse(hex, radix: 16);
+    if (rgba == null) return null;
+
+    final r = (rgba >> 24) & 0xFF;
+    final g = (rgba >> 16) & 0xFF;
+    final b = (rgba >> 8) & 0xFF;
+    final a = rgba & 0xFF;
+
+    final argb = (a << 24) | (r << 16) | (g << 8) | b;
+
+    return Color(argb);
   }
 
   String _getTitleText() {
@@ -1615,6 +1662,7 @@ class ChipStyleDef {
   const ChipStyleDef({
     this.radius = 14,
     this.color,
+    this.backgroundColor,
     this.borderColor,
     this.borderWidth = 0.6,
     this.textColor,
@@ -1626,6 +1674,7 @@ class ChipStyleDef {
 
   final double radius;
   final String? color;
+  final String? backgroundColor;
   final String? borderColor;
   final double borderWidth;
   final String? textColor;
@@ -1638,6 +1687,7 @@ class ChipStyleDef {
     return ChipStyleDef(
       radius: _readDouble(json['radius'], 14),
       color: _readString(json['color']),
+      backgroundColor: _readString(json['backgroundColor']),
       borderColor: _readString(json['borderColor']),
       borderWidth: _readDouble(json['borderWidth'], 0.6),
       textColor: _readString(json['textColor']),
@@ -1654,6 +1704,7 @@ class ChipStyleDef {
     return ChipStyleDef(
       radius: _readDouble(over['radius'], radius),
       color: _readString(over['color']) ?? color,
+      backgroundColor: _readString(over['backgroundColor']) ?? backgroundColor,
       borderColor: _readString(over['borderColor']) ?? borderColor,
       borderWidth: _readDouble(over['borderWidth'], borderWidth),
       textColor: _readString(over['textColor']) ?? textColor,
@@ -1669,14 +1720,16 @@ class ChipStyleDef {
 
 class TextStyleDef {
   const TextStyleDef({
-    this.color,
+    this.textColor,
+    this.backgroundColor,
     this.fontSize = 14,
     this.fontWeight = FontWeight.w700,
     this.letterSpacing = 0.2,
     this.height = 1.2,
   });
 
-  final String? color;
+  final String? textColor;
+  final String? backgroundColor;
   final double fontSize;
   final FontWeight fontWeight;
   final double letterSpacing;
@@ -1684,7 +1737,8 @@ class TextStyleDef {
 
   factory TextStyleDef.fromJson(Map<String, dynamic> json) {
     return TextStyleDef(
-      color: _readString(json['color']),
+      textColor: _readString(json['textColor']),
+      backgroundColor: _readString(json['backgroundColor']),
       fontSize: _readDouble(json['fontSize'], 14),
       fontWeight: _parseFontWeight(json['fontWeight'], FontWeight.w700),
       letterSpacing: _readDouble(json['letterSpacing'], 0.2),
@@ -1695,7 +1749,8 @@ class TextStyleDef {
   TextStyleDef mash(Map<String, dynamic> over) {
     if (over.isEmpty) return this;
     return TextStyleDef(
-      color: _readString(over['color']) ?? color,
+      textColor: _readString(over['textColor']) ?? textColor,
+      backgroundColor: _readString(over['backgroundColor']) ?? backgroundColor,
       fontSize: _readDouble(over['fontSize'], fontSize),
       fontWeight: _parseFontWeight(over['fontWeight'], fontWeight),
       letterSpacing: _readDouble(over['letterSpacing'], letterSpacing),
@@ -2175,6 +2230,19 @@ final Set<String> _supportedThemeItemIds = {
 final RegExp _dynColorRegex =
     RegExp(r'^dynamic\(([^,\)]+)(?:,\s*([0-9]*\.?[0-9]+))?\)$');
 final RegExp _hexColorRegex = RegExp(r'^hex\((#[0-9a-fA-F]+)\)$');
+final RegExp _rgbaColorRegex = RegExp(
+    r'^rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([0-9]*\.?[0-9]+))?\s*\)$');
+
+Color? _parseRgba(RegExpMatch m) {
+  final r = int.tryParse(m.group(1) ?? '');
+  final g = int.tryParse(m.group(2) ?? '');
+  final b = int.tryParse(m.group(3) ?? '');
+  if (r == null || g == null || b == null) return null;
+  final aRaw = m.group(4);
+  final a = aRaw != null ? (double.tryParse(aRaw) ?? 1.0) : 1.0;
+  final ai = (a.clamp(0.0, 1.0) * 255).round();
+  return Color.fromARGB(ai, r.clamp(0, 255), g.clamp(0, 255), b.clamp(0, 255));
+}
 
 Map<String, dynamic> _asMap(dynamic raw) {
   if (raw is Map<String, dynamic>) return raw;
