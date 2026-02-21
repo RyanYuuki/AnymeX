@@ -10,6 +10,7 @@ import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/controllers/services/mal/mal_service.dart';
 import 'package:anymex/controllers/services/simkl/simkl_service.dart';
+import 'package:anymex/controllers/services/storage/storage_manager_service.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/sync/cloud_sync_controller.dart';
@@ -33,13 +34,13 @@ import 'package:anymex/widgets/adaptive_wrapper.dart';
 import 'package:anymex/widgets/animation/more_page_transitions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/navbar.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_splash_screen.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_titlebar.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:app_links/app_links.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -99,7 +100,7 @@ void main(List<String> args) async {
       ['dar', 'anymex', 'sugoireads', 'mangayomi']
           .forEach(registerProtocolHandler);
     }
-    Database().init();
+    await Database().init();
     HttpOverrides.global = MyHttpoverrides();
     await initializeHive();
     _initializeGetxController();
@@ -189,6 +190,7 @@ void _initializeGetxController() async {
   Get.put(CommentPreloader());
   Get.put(CloudSyncController(), permanent: true);
   Get.lazyPut(() => CacheController());
+  await StorageManagerService().enforceImageCacheLimit();
 }
 
 class MainApp extends StatefulWidget {
@@ -389,12 +391,11 @@ class _FilterScreenState extends State<FilterScreen> {
                               child: authService.isLoggedIn.value
                                   ? ClipRRect(
                                       borderRadius: BorderRadius.circular(59),
-                                      child: CachedNetworkImage(
+                                      child: AnymeXImage(
                                           width: 40,
                                           height: 40,
                                           fit: BoxFit.cover,
-                                          errorWidget: (context, url, error) =>
-                                              const Icon(IconlyBold.profile),
+                                          radius: 0,
                                           imageUrl: authService
                                                   .profileData.value.avatar ??
                                               ''),

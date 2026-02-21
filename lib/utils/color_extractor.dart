@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:anymex/controllers/services/storage/anymex_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -28,7 +29,10 @@ class ImageColorExtractor {
       if (isBase64) {
         imageProvider = MemoryImage(_base64ToBytes(imageUrl));
       } else {
-        imageProvider = CachedNetworkImageProvider(imageUrl);
+        imageProvider = CachedNetworkImageProvider(
+          imageUrl,
+          cacheManager: AnymeXCacheManager.instance,
+        );
       }
 
       final size = targetSize ?? const Size(100, 100);
@@ -67,7 +71,10 @@ class ImageColorExtractor {
     try {
       final imageProvider = isBase64
           ? MemoryImage(_base64ToBytes(imageUrl))
-          : CachedNetworkImageProvider(imageUrl) as ImageProvider;
+          : CachedNetworkImageProvider(
+              imageUrl,
+              cacheManager: AnymeXCacheManager.instance,
+            ) as ImageProvider;
 
       final imageStream = imageProvider.resolve(const ImageConfiguration());
       final completer = Completer<ui.Image>();

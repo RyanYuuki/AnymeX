@@ -1,6 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 
 enum TextVariant { regular, semiBold, bold }
 
@@ -34,6 +33,93 @@ class AnymexText extends StatelessWidget {
     this.minFontSize = 10,
     this.stepGranularity = 1,
   });
+
+  const AnymexText.regular({
+    Key? key,
+    required String text,
+    Color? color,
+    double? size,
+    TextAlign? textAlign,
+    TextOverflow? overflow = TextOverflow.ellipsis,
+    int? maxLines = 2,
+    FontStyle fontStyle = FontStyle.normal,
+    bool stripHtml = false,
+    bool autoResize = false,
+    double? minFontSize = 10,
+    double? stepGranularity = 1,
+  }) : this(
+          key: key,
+          text: text,
+          variant: TextVariant.regular,
+          color: color,
+          size: size,
+          textAlign: textAlign,
+          overflow: overflow,
+          maxLines: maxLines,
+          fontStyle: fontStyle,
+          stripHtml: stripHtml,
+          autoResize: autoResize,
+          minFontSize: minFontSize,
+          stepGranularity: stepGranularity,
+        );
+
+  const AnymexText.semiBold({
+    Key? key,
+    required String text,
+    Color? color,
+    double? size,
+    TextAlign? textAlign,
+    TextOverflow? overflow = TextOverflow.ellipsis,
+    int? maxLines = 2,
+    FontStyle fontStyle = FontStyle.normal,
+    bool stripHtml = false,
+    bool autoResize = false,
+    double? minFontSize = 10,
+    double? stepGranularity = 1,
+  }) : this(
+          key: key,
+          text: text,
+          variant: TextVariant.semiBold,
+          color: color,
+          size: size,
+          textAlign: textAlign,
+          overflow: overflow,
+          maxLines: maxLines,
+          fontStyle: fontStyle,
+          stripHtml: stripHtml,
+          autoResize: autoResize,
+          minFontSize: minFontSize,
+          stepGranularity: stepGranularity,
+        );
+
+  const AnymexText.bold({
+    Key? key,
+    required String text,
+    Color? color,
+    double? size,
+    TextAlign? textAlign,
+    TextOverflow? overflow = TextOverflow.ellipsis,
+    int? maxLines = 2,
+    FontStyle fontStyle = FontStyle.normal,
+    bool stripHtml = false,
+    bool autoResize = false,
+    double? minFontSize = 10,
+    double? stepGranularity = 1,
+  }) : this(
+          key: key,
+          text: text,
+          variant: TextVariant.bold,
+          color: color,
+          size: size,
+          textAlign: textAlign,
+          overflow: overflow,
+          maxLines: maxLines,
+          fontStyle: fontStyle,
+          stripHtml: stripHtml,
+          autoResize: autoResize,
+          minFontSize: minFontSize,
+          stepGranularity: stepGranularity,
+        );
 
   @override
   Widget build(BuildContext context) {

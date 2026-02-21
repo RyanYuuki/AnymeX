@@ -23,7 +23,7 @@ String buildNFTitle(PlayerController c) {
 }
 
 void showNFMoreSheet(BuildContext context, PlayerController controller) {
-  showModalBottomSheet(
+  showBottomSheet(
     context: context,
     backgroundColor: const Color(0xFF141414),
     shape: const RoundedRectangleBorder(

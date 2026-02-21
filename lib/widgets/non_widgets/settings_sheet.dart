@@ -7,10 +7,10 @@ import 'package:anymex/screens/settings/settings.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -234,14 +234,13 @@ class SettingsSheet extends StatelessWidget {
                 child: serviceHandler.isLoggedIn.value
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(50),
-                        child: CachedNetworkImage(
+                        child: AnymeXImage(
                             fit: BoxFit.cover,
                             width: 45,
                             height: 45,
-                            errorWidget: (context, url, error) =>
-                                const Icon(IconlyBold.profile),
-                            imageUrl:
-                                serviceHandler.profileData.value.avatar ?? ''),
+                            radius: 0,
+                            imageUrl: serviceHandler.profileData.value.avatar ??
+                                ''),
                       )
                     : Icon(
                         Icons.person,

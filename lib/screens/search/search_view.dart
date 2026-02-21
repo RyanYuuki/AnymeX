@@ -13,9 +13,9 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/media_items/media_item.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -726,25 +726,12 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                 tag: media.title,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
-                  child: CachedNetworkImage(
+                  child: AnymeXImage(
                     width: 60,
                     height: 88,
                     imageUrl: media.poster,
                     fit: BoxFit.cover,
-                    placeholder: (context, url) => Container(
-                      color: context.colors.surfaceVariant,
-                      child: Icon(
-                        Iconsax.image,
-                        color: context.colors.onSurfaceVariant,
-                      ),
-                    ),
-                    errorWidget: (context, url, error) => Container(
-                      color: context.colors.surfaceVariant,
-                      child: Icon(
-                        Iconsax.warning_2,
-                        color: context.colors.error,
-                      ),
-                    ),
+                    radius: 0,
                   ),
                 ),
               ),
