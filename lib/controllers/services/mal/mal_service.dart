@@ -447,17 +447,13 @@ class MalService extends GetxController implements BaseService, OnlineService {
         Uri.parse('https://myanimelist.net/'),
         headers: {
           'Authorization': 'Bearer $token',
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-          'Accept-Language': 'en-US,en;q=0.9',
-          'Connection': 'keep-alive',
         },
       );
 
       if (response.headers.containsKey('set-cookie')) {
         final cookies = response.headers['set-cookie']!;
         Logger.i('Raw cookie header: $cookies');
-        
+
         final patterns = [
           RegExp(r'MALHLOGSESSID=([^;]+)'),
           RegExp(r'mal_session_id=([^;]+)'),
@@ -469,7 +465,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
           if (match != null) {
             final sessionId = match.group(1);
             if (sessionId != null && sessionId.isNotEmpty) {
-              await AuthKeys.malSessionId.set(sessionId);
+              AuthKeys.malSessionId.set(sessionId);
               Logger.i('MAL session ID stored successfully: $sessionId');
               final verify = AuthKeys.malSessionId.get<String?>();
               Logger.i('Verification - stored session: $verify');
@@ -484,7 +480,6 @@ class MalService extends GetxController implements BaseService, OnlineService {
         Uri.parse('https://myanimelist.net/panel.php?go=export'),
         headers: {
           'Authorization': 'Bearer $token',
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
         },
       );
 
@@ -494,7 +489,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
         if (match != null) {
           final sessionId = match.group(1);
           if (sessionId != null && sessionId.isNotEmpty) {
-            await AuthKeys.malSessionId.set(sessionId);
+            AuthKeys.malSessionId.set(sessionId);
             Logger.i('MAL session ID stored from export page: $sessionId');
             final verify = AuthKeys.malSessionId.get<String?>();
             Logger.i('Verification - stored session: $verify');
@@ -509,7 +504,6 @@ class MalService extends GetxController implements BaseService, OnlineService {
           headers: {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/x-www-form-urlencoded',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
           },
           body: {
             'type': '1',
@@ -523,7 +517,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
           if (match != null) {
             final sessionId = match.group(1);
             if (sessionId != null && sessionId.isNotEmpty) {
-              await AuthKeys.malSessionId.set(sessionId);
+              AuthKeys.malSessionId.set(sessionId);
               Logger.i('MAL session ID created via export: $sessionId');
             }
           }
@@ -646,7 +640,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
     if (req.statusCode == 200) {
       // snackBar(
       //     "${isAnime ? 'Anime' : 'Manga'} Tracked to ${isAnime ? 'Episode' : 'Chapter'} $progress Successfully!");
-      
+
       final newMedia = currentMedia.value
         ..episodeCount = progress.toString()
         ..watchingStatus = status
