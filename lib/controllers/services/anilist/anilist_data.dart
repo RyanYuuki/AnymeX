@@ -232,7 +232,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
 
   void _initFallback() {
     if (trendingAnimes.isEmpty) {
-      upcomingAnimes.value = fb.upcomingAnimes.removeDupes(); 
+      upcomingAnimes.value = fb.upcomingAnimes.removeDupes();
       popularAnimes.value = fb.popularAnimes.removeDupes();
       trendingAnimes.value = fb.trendingAnimes.removeDupes();
       latestAnimes.value = fb.latestAnimes.removeDupes();
@@ -628,11 +628,7 @@ averageScore
     final data = await anilistSearch(
         isManga: params.isManga,
         query: params.query,
-        sort: filters?['sort'],
-        season: filters?['season'],
-        status: filters?['status'],
-        format: filters?['format'],
-        genres: filters?['genres'],
+        filters: filters,
         isAdult: params.args);
     return data;
   }
@@ -640,24 +636,117 @@ averageScore
   static Future<List<Media>> anilistSearch(
       {required bool isManga,
       String? query,
-      String? sort,
-      String? season,
-      String? status,
-      String? format,
-      List<String>? genres,
+      Map<String, dynamic>? filters,
       required bool isAdult}) async {
     const url = 'https://graphql.anilist.co/';
-    final headers = {'Content-Type': 'application/json'};
+    final token = AuthKeys.authToken.get<String?>();
+    final headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
 
     final Map<String, dynamic> variables = {
       if (query != null && query.isNotEmpty) 'search': query,
-      if (sort != null) 'sort': [sort],
-      if (season != null) 'season': season.toUpperCase(),
-      if (status != null && status != 'All') 'status': status.toUpperCase(),
-      if (format != null) 'format': format.replaceAll(' ', '_').toUpperCase(),
-      if (genres != null && genres.isNotEmpty) 'genre_in': genres,
       'isAdult': isAdult,
     };
+
+    if (filters != null) {
+      if (filters['isAdult'] == true) {
+        variables['isAdult'] = true;
+      }
+    }
+
+    final Map<String, String> typeMap = {
+      'search': 'String',
+      'sort': '[MediaSort]',
+      'season': 'MediaSeason',
+      'status': 'MediaStatus',
+      'format_in': '[MediaFormat]',
+      'genre_in': '[String]',
+      'genre_not_in': '[String]',
+      'tag_in': '[String]',
+      'tag_not_in': '[String]',
+      'source_in': '[MediaSource]',
+      'countryOfOrigin': 'CountryCode',
+      'licensedById_in': '[Int]',
+      'isLicensed': 'Boolean',
+      'onList': 'Boolean',
+      'seasonYear': 'Int',
+      'year': 'String',
+      'startDate_like': 'String',
+      'startDate_greater': 'FuzzyDateInt',
+      'startDate_lesser': 'FuzzyDateInt',
+      'episodes_greater': 'Int',
+      'episodes_lesser': 'Int',
+      'duration_greater': 'Int',
+      'duration_lesser': 'Int',
+      'chapters_greater': 'Int',
+      'chapters_lesser': 'Int',
+      'volumes_greater': 'Int',
+      'volumes_lesser': 'Int',
+      'isAdult': 'Boolean',
+    };
+
+    if (filters != null) {
+      filters.forEach((key, value) {
+        if (value == null) return;
+
+        String apiKey = key;
+        const keyMapping = {
+          'format': 'format_in',
+          'genres': 'genre_in',
+          'tags': 'tag_in',
+          'licensedBy': 'licensedById_in',
+          'source': 'source_in',
+          'year': 'startDate_like',
+          'yearGreater': 'startDate_greater',
+          'yearLesser': 'startDate_lesser',
+          'episodeGreater': 'episodes_greater',
+          'episodeLesser': 'episodes_lesser',
+          'durationGreater': 'duration_greater',
+          'durationLesser': 'duration_lesser',
+          'chapterGreater': 'chapters_greater',
+          'chapterLesser': 'chapters_lesser',
+          'volumeGreater': 'volumes_greater',
+          'volumeLesser': 'volumes_lesser',
+        };
+        apiKey = keyMapping[key] ?? key;
+
+        if (apiKey == 'format_in' && value is List) {
+          variables[apiKey] = value
+              .map((e) => e.toString().replaceAll(' ', '_').toUpperCase())
+              .toList();
+        } else if (apiKey == 'format_in' && value is String) {
+          variables[apiKey] = [
+            value.toString().replaceAll(' ', '_').toUpperCase()
+          ];
+        } else if (apiKey == 'source_in') {
+          if (value is List) {
+            variables[apiKey] =
+                value.map((e) => e.toString().toUpperCase()).toList();
+          } else {
+            variables[apiKey] = [value.toString().toUpperCase()];
+          }
+        } else if (apiKey == 'status' && value.toString() != 'All') {
+          variables[apiKey] = value.toString().toUpperCase();
+        } else if (apiKey == 'season') {
+          variables[apiKey] = value.toString().toUpperCase();
+        } else if (apiKey == 'genre_not_in' || apiKey == 'tag_not_in') {
+          variables[apiKey] = value;
+        } else {
+          variables[apiKey] = value;
+        }
+      });
+    }
+
+    final validVariables =
+        variables.keys.where((k) => typeMap.containsKey(k)).toList();
+
+    final String queryArgsDef =
+        validVariables.map((k) => '\$$k: ${typeMap[k]}').join(', ');
+    final String queryArgsPass =
+        validVariables.map((k) => '$k: \$$k').join(',\n        ');
 
     final String commonFields = '''
     id
@@ -670,58 +759,33 @@ averageScore
       large
     }
     type
-averageScore
+    averageScore
     ${isManga ? 'chapters' : 'episodes'}
   ''';
 
-    dynamic body;
-    if (query != null && query.isNotEmpty) {
-      body = jsonEncode({
-        'query': '''
-  query (\$search: String, \$sort: [MediaSort], \$season: MediaSeason, \$status: MediaStatus, \$format: MediaFormat, \$genre_in: [String], \$isAdult: Boolean) {
-    Page (page: 1) {
+    final String queryStr = '''
+  query (\$page: Int${queryArgsDef.isNotEmpty ? ', $queryArgsDef' : ''}) {
+    Page (page: \$page) {
       media (
-        ${query.isNotEmpty ? 'search: \$search,' : ''}
         type: ${isManga ? "MANGA" : "ANIME"},
-        sort: \$sort,
-        season: \$season,
-        status: \$status,
-        format: \$format,
-        genre_in: \$genre_in,
-        isAdult: \$isAdult
+        $queryArgsPass
       ) {
         $commonFields
       }
     }
   }
-  ''',
-        'variables': variables,
-      });
-    } else {
-      body = jsonEncode({
-        'query': '''
-  query (\$sort: [MediaSort], \$season: MediaSeason, \$status: MediaStatus, \$format: MediaFormat, \$genre_in: [String], \$isAdult: Boolean) {
-    Page (page: 1) {
-      media (
-        type: ${isManga ? "MANGA" : "ANIME"},
-        sort: \$sort,
-        season: \$season,
-        status: \$status,
-        format: \$format,
-        genre_in: \$genre_in,
-        isAdult: \$isAdult
-      ) {
-        $commonFields
-      }
-    }
-  }
-  ''',
-        'variables': variables,
-      });
-    }
+  ''';
+
+    variables.removeWhere((k, v) => !typeMap.containsKey(k));
+
+    final Map<String, dynamic> body = {
+      'query': queryStr,
+      'variables': {'page': 1, ...variables},
+    };
 
     try {
-      final response = await post(Uri.parse(url), headers: headers, body: body);
+      final response =
+          await post(Uri.parse(url), headers: headers, body: jsonEncode(body));
 
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
@@ -793,17 +857,263 @@ averageScore
 
   @override
   Future<void> fetchHomePage() async {
-    Future.wait([
+    await Future.wait([
       fetchAnilistHomepage(),
       fetchAnilistMangaPage(),
     ]);
   }
 
+  static Map<String, dynamic>? _cachedAnimeFilterData;
+  static Map<String, dynamic>? _cachedMangaFilterData;
+
+  static Future<Map<String, dynamic>> fetchFilterData({
+    bool isManga = false,
+  }) async {
+    final cached = isManga ? _cachedMangaFilterData : _cachedAnimeFilterData;
+    if (cached != null) return cached;
+
+    const url = 'https://graphql.anilist.co/';
+    final headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+
+    List<String> genres = [];
+    List<String> tags = [];
+    List<Map<String, dynamic>> streamingServices = [];
+    List<String> formats = [];
+    List<String> statuses = [];
+    List<String> sources = [];
+    List<String> seasons = [];
+    List<String> sortOptions = [];
+    List<String> countries = [];
+    int minYear = 1940;
+    double maxEpisodes = 150;
+    double maxDuration = 170;
+    double maxChapters = 500;
+    double maxVolumes = 50;
+
+    final field1 = isManga ? 'chapters' : 'episodes';
+    final field2 = isManga ? 'volumes' : 'duration';
+
+    final batchQuery = '''
+    query(\$mediaType: MediaType, \$sort1: [MediaSort], \$sort2: [MediaSort]) {
+      GenreCollection
+      MediaTagCollection { name isAdult }
+      ExternalLinkSourceCollection { id site type language icon }
+      formats: __type(name: "MediaFormat") { enumValues { name } }
+      statuses: __type(name: "MediaStatus") { enumValues { name } }
+      sources: __type(name: "MediaSource") { enumValues { name } }
+      seasons: __type(name: "MediaSeason") { enumValues { name } }
+      sorts: __type(name: "MediaSort") { enumValues { name } }
+      maxField1: Page(perPage: 1) {
+        media(sort: \$sort1, type: \$mediaType) { $field1 }
+      }
+      maxField2: Page(perPage: 1) {
+        media(sort: \$sort2, type: \$mediaType) { $field2 }
+      }
+      oldestMedia: Page(perPage: 1) {
+        media(sort: START_DATE, type: \$mediaType) {
+          startDate { year }
+        }
+      }
+      countryList: Page(perPage: 100) {
+        media(sort: POPULARITY_DESC, type: \$mediaType) { countryOfOrigin }
+      }
+    }
+    ''';
+
+    final variables = {
+      'mediaType': isManga ? 'MANGA' : 'ANIME',
+      'sort1': [isManga ? 'CHAPTERS_DESC' : 'EPISODES_DESC'],
+      'sort2': [isManga ? 'VOLUMES_DESC' : 'DURATION_DESC'],
+    };
+
+    try {
+      var response = await post(
+        Uri.parse(url),
+        headers: headers,
+        body: jsonEncode({'query': batchQuery, 'variables': variables}),
+      );
+
+      
+      if (response.statusCode == 429) {
+        final retryAfter =
+            int.tryParse(response.headers['retry-after'] ?? '') ?? 60;
+        await Future.delayed(Duration(seconds: retryAfter));
+        response = await post(
+          Uri.parse(url),
+          headers: headers,
+          body: jsonEncode({'query': batchQuery, 'variables': variables}),
+        );
+      }
+
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body) as Map<String, dynamic>;
+
+       
+        final errors = body['errors'] as List?;
+        if (errors != null && errors.isNotEmpty) {
+          Logger.i(
+              'GraphQL errors in filter data: ${errors.map((e) => e['message']).join(', ')}');
+        }
+
+        final data = body['data'] as Map<String, dynamic>?;
+        if (data == null) {
+          Logger.i('No data in filter response');
+        } else {
+          final genreList = data['GenreCollection'] as List?;
+          if (genreList != null) {
+            genres = genreList.cast<String>()..sort();
+          }
+
+          final tagList = data['MediaTagCollection'] as List?;
+          if (tagList != null) {
+            tags = tagList
+                .where((t) => t['isAdult'] != true)
+                .map<String>((t) => t['name'] as String)
+                .toList()
+              ..sort();
+          }
+
+          final linkSources = data['ExternalLinkSourceCollection'] as List?;
+          if (linkSources != null) {
+            streamingServices = linkSources
+                .where((s) => s['type'] == 'STREAMING')
+                .map<Map<String, dynamic>>((s) => {
+                      'id': s['id'] as int,
+                      'site': s['site'] as String,
+                      'language': s['language'] as String?,
+                      'icon': s['icon'] as String?,
+                    })
+                .toList();
+          }
+
+          formats = _extractEnumValues(data['formats']);
+          statuses = _extractEnumValues(data['statuses']);
+          sources = _extractEnumValues(data['sources']);
+          seasons = _extractEnumValues(data['seasons']);
+          sortOptions = _extractEnumValues(data['sorts']);
+
+          final f1Media = (data['maxField1']?['media'] as List?) ?? [];
+          if (f1Media.isNotEmpty && f1Media[0][field1] != null) {
+            final v = (f1Media[0][field1] as int).toDouble();
+            if (isManga) {
+              maxChapters = v;
+            } else {
+              maxEpisodes = v;
+            }
+          }
+
+          final f2Media = (data['maxField2']?['media'] as List?) ?? [];
+          if (f2Media.isNotEmpty && f2Media[0][field2] != null) {
+            final v = (f2Media[0][field2] as int).toDouble();
+            if (isManga) {
+              maxVolumes = v;
+            } else {
+              maxDuration = v;
+            }
+          }
+
+          final oldest = (data['oldestMedia']?['media'] as List?) ?? [];
+          if (oldest.isNotEmpty) {
+            final year = oldest[0]?['startDate']?['year'] as int?;
+            if (year != null) minYear = year;
+          }
+
+          final countryMedia = (data['countryList']?['media'] as List?) ?? [];
+          final apiCountries = countryMedia
+              .map((m) => m['countryOfOrigin'] as String?)
+              .whereType<String>()
+              .toSet();
+         
+          const coreCountries = ['JP', 'KR', 'CN', 'TW'];
+          final extras = apiCountries
+              .where((c) => !coreCountries.contains(c))
+              .toList()
+            ..sort();
+          countries = [...coreCountries, ...extras];
+        }
+      }
+    } catch (e) {
+      Logger.i('Error fetching filter data: $e');
+    }
+
+    final result = {
+      'genres': genres,
+      'tags': tags,
+      'streamingServices': streamingServices,
+      'formats': formats,
+      'statuses': statuses,
+      'sources': sources,
+      'seasons': seasons,
+      'sortOptions': sortOptions,
+      'countries': countries,
+      'minYear': minYear,
+      'maxEpisodes': maxEpisodes,
+      'maxDuration': maxDuration,
+      'maxChapters': maxChapters,
+      'maxVolumes': maxVolumes,
+    };
+
+    if (isManga) {
+      _cachedMangaFilterData = result;
+    } else {
+      _cachedAnimeFilterData = result;
+    }
+    return result;
+  }
+
+  static List<String> _extractEnumValues(Map<String, dynamic>? typeData) {
+    final values = typeData?['enumValues'] as List?;
+    if (values == null) return [];
+    return values.map<String>((v) => v['name'] as String).toList();
+  }
+
+  static Map<String, dynamic>? _cachedMalAnimeFilterData;
+  static Map<String, dynamic>? _cachedMalMangaFilterData;
+
+  static Future<Map<String, dynamic>> fetchMalFilterData({
+    bool isManga = false,
+  }) async {
+    final cached =
+        isManga ? _cachedMalMangaFilterData : _cachedMalAnimeFilterData;
+    if (cached != null) return cached;
+
+    List<String> genres = [];
+
+    try {
+      final type = isManga ? 'manga' : 'anime';
+      final response = await get(
+        Uri.parse('https://api.jikan.moe/v4/genres/$type?filter=genres'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final list = data['data'] as List?;
+        if (list != null) {
+          genres = list.map<String>((g) => g['name'] as String).toList()
+            ..sort();
+        }
+      }
+    } catch (e) {
+      Logger.i('Error fetching MAL filter data: $e');
+    }
+
+    final result = {'genres': genres};
+
+    if (isManga) {
+      _cachedMalMangaFilterData = result;
+    } else {
+      _cachedMalAnimeFilterData = result;
+    }
+    return result;
+  }
+
   Future<dynamic> getCharacterDetails(String id) async {
     const String url = 'https://graphql.anilist.co';
     final Map<String, dynamic> variables = {'id': int.tryParse(id)};
-    
-    
+
     final token = AuthKeys.authToken.get<String?>();
     final headers = {
       'Content-Type': 'application/json',
@@ -840,10 +1150,8 @@ averageScore
     int staffPage = 1;
     bool charHasNext = true;
     bool staffHasNext = true;
-    
     List<dynamic> allCharacterEdges = [];
     List<dynamic> allStaffEdges = [];
-    
     final token = AuthKeys.authToken.get<String?>();
     final headers = {
       'Content-Type': 'application/json',
@@ -857,10 +1165,8 @@ averageScore
     try {
       Map<String, dynamic>? initialData;
       int loopCount = 0;
-      
       while (staffHasNext && loopCount < 20) {
         Logger.i("Loop $loopCount: charPage=$charPage, staffPage=$staffPage");
-        
         final variables = {
           'id': int.tryParse(id),
           'characterPage': charPage,
@@ -879,61 +1185,60 @@ averageScore
         if (response.statusCode == 200) {
           final data = json.decode(response.body);
           final staffData = data['data']['Staff'];
-          
+
           if (loopCount == 0) {
             initialData = staffData;
           }
-          
+
           // Character
           if (charHasNext) {
             final charData = staffData['characters'];
             if (charData != null) {
-               final edges = charData['edges'] as List?;
-               if (edges != null) {
-                 Logger.i("Fetched ${edges.length} character edges");
-                 allCharacterEdges.addAll(edges);
-               }
-               
-               final pageInfo = charData['pageInfo'];
-               charHasNext = pageInfo?['hasNextPage'] ?? false;
-               if (charHasNext) charPage++;
+              final edges = charData['edges'] as List?;
+              if (edges != null) {
+                Logger.i("Fetched ${edges.length} character edges");
+                allCharacterEdges.addAll(edges);
+              }
+
+              final pageInfo = charData['pageInfo'];
+              charHasNext = pageInfo?['hasNextPage'] ?? false;
+              if (charHasNext) charPage++;
             } else {
               charHasNext = false;
             }
           }
-          
+
           // Staff
           if (staffHasNext) {
             final stfMedia = staffData['staffMedia'];
             if (stfMedia != null) {
-               final edges = stfMedia['edges'] as List?;
-               if (edges != null) allStaffEdges.addAll(edges);
-               
-               final pageInfo = stfMedia['pageInfo'];
-               staffHasNext = pageInfo?['hasNextPage'] ?? false;
-               if (staffHasNext) staffPage++;
+              final edges = stfMedia['edges'] as List?;
+              if (edges != null) allStaffEdges.addAll(edges);
+
+              final pageInfo = stfMedia['pageInfo'];
+              staffHasNext = pageInfo?['hasNextPage'] ?? false;
+              if (staffHasNext) staffPage++;
             } else {
               staffHasNext = false;
             }
           }
-          
         } else {
-          Logger.i('Error fetching staff details page $loopCount: ${response.statusCode}');
-          break; 
+          Logger.i(
+              'Error fetching staff details page $loopCount: ${response.statusCode}');
+          break;
         }
         loopCount++;
       }
-      
+
       if (initialData != null) {
         final finalData = Map<String, dynamic>.from(initialData);
-        
-        
+
         if (finalData['characters'] == null) finalData['characters'] = {};
         finalData['characters']['edges'] = allCharacterEdges;
-        
+
         if (finalData['staffMedia'] == null) finalData['staffMedia'] = {};
         finalData['staffMedia']['edges'] = allStaffEdges;
-        
+
         return Staff.fromDetailJson(finalData);
       }
     } catch (e) {
