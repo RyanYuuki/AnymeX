@@ -24,6 +24,7 @@ class CloudSyncController extends GetxController {
 
   final isSignedIn = false.obs;
   final isAuthenticating = false.obs;
+  final lastAuthError = RxnString();
   final isSyncing = false.obs;
   final lastSyncTime = Rx<DateTime?>(null);
   final syncEnabled = true.obs;
@@ -51,6 +52,7 @@ class CloudSyncController extends GetxController {
         isAuthenticating.value) {
       return;
     }
+    lastAuthError.value = null;
     isAuthenticating.value = true;
     try {
       _account = await _googleSignIn!.signIn();
@@ -59,12 +61,14 @@ class CloudSyncController extends GetxController {
       }
     } on PlatformException catch (e, st) {
       _handleSignInPlatformException(e, st);
-    } catch (e) {
-      Logger.e('[CloudSyncController] signIn error: $e');
+    } catch (e, st) {
+      Logger.e('[CloudSyncController] signIn error: $e', stackTrace: st);
+      final errorText = _truncateError(e.toString());
+      lastAuthError.value = errorText;
       snackBar(
-        'Google sign-in failed. Please try again.',
-        duration: 3500,
-        maxLines: 3,
+        'Google sign-in failed: $errorText',
+        duration: 7000,
+        maxLines: 6,
       );
     } finally {
       isAuthenticating.value = false;
@@ -73,30 +77,22 @@ class CloudSyncController extends GetxController {
 
   void _handleSignInPlatformException(PlatformException e, StackTrace st) {
     Logger.e('[CloudSyncController] signIn error: $e', stackTrace: st);
-    final errorText = '${e.message ?? ''} ${e.details ?? ''}';
-    final isApi10 =
-        e.code == 'sign_in_failed' && errorText.contains('ApiException: 10');
+    final errorText = _platformErrorText(e);
+    lastAuthError.value = errorText;
 
-    if (isApi10) {
+    if (e.code == 'sign_in_canceled') {
       snackBar(
-        'Google Sign-In is not configured for this build (ApiException 10). '
-        'Add this app\'s SHA-1/SHA-256 for com.ryan.anymex in Firebase/Google Cloud, '
-        'download a new android/app/google-services.json, then reinstall the app.',
-        duration: 9000,
-        maxLines: 6,
+        'Google sign-in canceled: $errorText',
+        duration: 3500,
+        maxLines: 4,
       );
       return;
     }
 
-    if (e.code == 'sign_in_canceled') {
-      snackBar('Google sign-in canceled.', duration: 2000);
-      return;
-    }
-
     snackBar(
-      'Google sign-in failed (${e.code}). Please try again.',
-      duration: 3500,
-      maxLines: 3,
+      'Google sign-in failed: $errorText',
+      duration: 8000,
+      maxLines: 7,
     );
   }
 
@@ -106,6 +102,7 @@ class CloudSyncController extends GetxController {
     _account = null;
     _service.clear();
     isSignedIn.value = false;
+    lastAuthError.value = null;
     await _storage.delete(key: _kAccessTokenKey);
     await _storage.delete(key: _kExpiryKey);
   }
@@ -128,6 +125,7 @@ class CloudSyncController extends GetxController {
       final expiry = DateTime.now().add(const Duration(minutes: 55));
       _service.setCredentials(token, expiry);
       isSignedIn.value = true;
+      lastAuthError.value = null;
       await _storage.write(key: _kAccessTokenKey, value: token);
       await _storage.write(
           key: _kExpiryKey, value: expiry.millisecondsSinceEpoch.toString());
@@ -256,5 +254,27 @@ class CloudSyncController extends GetxController {
     } finally {
       isSyncing.value = false;
     }
+  }
+
+  String _platformErrorText(PlatformException e) {
+    final parts = <String>['code=${e.code}'];
+    final msg = e.message?.trim();
+    if (msg != null && msg.isNotEmpty) {
+      parts.add(_truncateError(msg));
+    }
+
+    final details = e.details?.toString().trim();
+    if (details != null &&
+        details.isNotEmpty &&
+        details != 'null' &&
+        (msg == null || !msg.contains(details))) {
+      parts.add(_truncateError(details));
+    }
+    return parts.join(' | ');
+  }
+
+  String _truncateError(String text, {int max = 220}) {
+    if (text.length <= max) return text;
+    return '${text.substring(0, max)}...';
   }
 }

@@ -57,6 +57,7 @@ class _SyncCard extends StatelessWidget {
       final isSignedIn = controller.isSignedIn.value;
       final isSyncing = controller.isSyncing.value;
       final isAuthenticating = controller.isAuthenticating.value;
+      final lastAuthError = controller.lastAuthError.value;
       final lastSync = controller.lastSyncTime.value;
       final syncEnabled = controller.syncEnabled.value;
       final isBusy = isSyncing || isAuthenticating;
@@ -119,6 +120,7 @@ class _SyncCard extends StatelessWidget {
                                 isSignedIn,
                                 isSyncing,
                                 isAuthenticating,
+                                lastAuthError,
                                 lastSync,
                               ),
                               color: isSignedIn
@@ -181,9 +183,17 @@ class _SyncCard extends StatelessWidget {
     });
   }
 
-  String _subtitle(bool isSignedIn, bool isSyncing, bool isAuthenticating,
-      DateTime? lastSync) {
+  String _subtitle(
+    bool isSignedIn,
+    bool isSyncing,
+    bool isAuthenticating,
+    String? lastAuthError,
+    DateTime? lastSync,
+  ) {
     if (isAuthenticating) return 'Opening Google sign-in…';
+    if (!isSignedIn && lastAuthError != null && lastAuthError.isNotEmpty) {
+      return lastAuthError;
+    }
     if (!isSignedIn) return 'Sign in to sync progress across devices';
     if (isSyncing) return 'Syncing…';
     if (lastSync == null) return 'Connected · waiting for first sync';

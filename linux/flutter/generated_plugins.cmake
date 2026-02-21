@@ -7,6 +7,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   desktop_webview_window
   dynamic_color
   flutter_qjs
+  flutter_secure_storage_linux
   gtk
   isar_community_flutter_libs
   media_kit_libs_linux
