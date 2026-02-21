@@ -95,6 +95,13 @@
             <data android:scheme="aniyomi" android:host="add-repo" />
         </intent-filter>  
 
+        <intent-filter android:label="Add Player Theme">
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="anymex" android:host="theme" />
+        </intent-filter>
+
         <intent-filter android:label="Open AniList Link">
             <action android:name="android.intent.action.VIEW" />
             <category android:name="android.intent.category.DEFAULT" />

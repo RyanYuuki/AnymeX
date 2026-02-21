@@ -11,6 +11,7 @@ import 'package:anymex/screens/local_source/player/offline_player.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
@@ -783,32 +784,12 @@ class _WatchOfflineState extends State<WatchOffline> {
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
-      child: Image.network(
-        posterUrl,
+      child: AnymeXImage(
+        imageUrl: posterUrl,
         width: double.infinity,
         height: double.infinity,
         fit: BoxFit.cover,
-        loadingBuilder: (context, child, loadingProgress) {
-          if (loadingProgress == null) return child;
-          return Center(
-            child: SizedBox(
-              width: 20,
-              height: 20,
-              child: ExpressiveLoadingIndicator(
-                color: theme.colorScheme.primary,
-              ),
-            ),
-          );
-        },
-        errorBuilder: (context, error, stackTrace) {
-          return Center(
-            child: Icon(
-              Iconsax.video_play,
-              color: theme.colorScheme.primary,
-              size: 32,
-            ),
-          );
-        },
+        radius: 0,
       ),
     );
   }

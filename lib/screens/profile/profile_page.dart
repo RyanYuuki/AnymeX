@@ -5,6 +5,7 @@ import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
@@ -197,11 +198,10 @@ class ProfilePage extends StatelessWidget {
         background: Stack(
           fit: StackFit.expand,
           children: [
-            Image.network(
-              imageUrl,
+            AnymeXImage(
+              imageUrl: imageUrl,
               fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) =>
-                  Container(color: context.theme.colorScheme.surfaceContainer),
+              radius: 0,
             ),
             BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),

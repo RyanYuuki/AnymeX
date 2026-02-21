@@ -30,6 +30,7 @@ import 'package:anymex/widgets/non_widgets/anymex_toast.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
 import 'package:dartotsu_extension_bridge/Models/DEpisode.dart' as d;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -317,7 +318,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.detached ||
         state == AppLifecycleState.inactive) {
-      _trackLocally();
+      if (!kDebugMode) {
+        _trackLocally();
+      }
     }
   }
 
@@ -913,7 +916,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   Future<void> _switchMedia(String url, Map<String, String>? headers,
       {Duration? startPosition}) async {
-    await _basePlayer.open('');
+    if (_basePlayer is MediaKitPlayer) {
+      await _basePlayer.open("");
+    }
     await _basePlayer.open(url, headers: headers, startPosition: startPosition);
   }
 

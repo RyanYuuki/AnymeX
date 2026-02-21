@@ -2,9 +2,9 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:anymex/utils/logger.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -326,28 +326,11 @@ class _VisualsPopupState extends State<VisualsPopup> {
                       child: InteractiveViewer(
                         minScale: 0.5,
                         maxScale: 4.0,
-                        child: CachedNetworkImage(
+                        child: AnymeXImage(
                           imageUrl: currentImage,
                           key: ValueKey(currentImage),
                           fit: BoxFit.contain,
-                          placeholder: (context, url) => const Center(
-                            child:
-                                CircularProgressIndicator(color: Colors.white),
-                          ),
-                          errorWidget: (context, url, error) => Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(Icons.broken_image,
-                                    color: Colors.white, size: 50),
-                                const SizedBox(height: 10),
-                                AnymexText(
-                                  text: "Failed to load image",
-                                  color: Colors.white.withOpacity(0.7),
-                                ),
-                              ],
-                            ),
-                          ),
+                          radius: 0,
                         ),
                       ),
                     ),
@@ -517,15 +500,11 @@ class _VisualsPopupState extends State<VisualsPopup> {
         ),
         child: Row(
           children: [
-            CachedNetworkImage(
+            AnymeXImage(
               imageUrl: iconUrl,
               height: 24,
               width: 24,
-              errorWidget: (context, url, error) => Icon(Icons.image,
-                  size: 24,
-                  color: isSelected
-                      ? Colors.white
-                      : Colors.white.withOpacity(0.7)),
+              radius: 0,
             ),
             if (isSelected) ...[
               const SizedBox(width: 10),

@@ -55,7 +55,7 @@ class Episode {
 
   factory Episode.fromJson(Map<String, dynamic> json) {
     return Episode(
-      number: (json['number'] ?? 1),
+      number: (json['number'] ?? 1).toString(),
       link: json['link'] as String?,
       title: json['title'] as String?,
       desc: json['desc'] as String?,
