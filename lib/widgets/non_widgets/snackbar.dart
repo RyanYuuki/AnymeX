@@ -6,6 +6,15 @@ import 'package:get/get.dart';
 
 OverlayEntry? _currentSnackBar;
 
+void _removeSnackBarEntry(OverlayEntry entry) {
+  if (identical(_currentSnackBar, entry)) {
+    _currentSnackBar = null;
+  }
+  if (entry.mounted) {
+    entry.remove();
+  }
+}
+
 void snackBar(
   String message, {
   int duration = 2000,
@@ -18,15 +27,46 @@ void snackBar(
   bool showCloseButton = false,
   bool showDurationAnimation = true,
 }) {
-  final context = Get.context!;
-  final theme = Theme.of(context);
+  final navigatorContext = Get.key.currentContext ?? Get.context;
+  final theme = navigatorContext != null
+      ? Theme.of(navigatorContext)
+      : ThemeData.fallback();
 
-  if (_currentSnackBar != null) {
-    _currentSnackBar?.remove();
-    _currentSnackBar = null;
+  final overlayContext = Get.overlayContext;
+  final overlayState = Get.key.currentState?.overlay ??
+      (overlayContext != null
+          ? Overlay.maybeOf(overlayContext, rootOverlay: true)
+          : null) ??
+      (navigatorContext != null
+          ? Overlay.maybeOf(navigatorContext, rootOverlay: true)
+          : null);
+
+  if (overlayState == null) {
+    final messenger = navigatorContext != null
+        ? ScaffoldMessenger.maybeOf(navigatorContext)
+        : null;
+    if (messenger != null) {
+      final fallbackMessage =
+          title == null || title.isEmpty ? message : '$title: $message';
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(fallbackMessage),
+          duration: Duration(milliseconds: duration),
+        ),
+      );
+    } else {
+      debugPrint('[snackBar] Overlay unavailable. Message dropped: $message');
+    }
+    return;
   }
 
-  _currentSnackBar = OverlayEntry(
+  final activeEntry = _currentSnackBar;
+  if (activeEntry != null) {
+    _removeSnackBarEntry(activeEntry);
+  }
+
+  late final OverlayEntry entry;
+  entry = OverlayEntry(
     builder: (context) => _SnackBarWidget(
       message: message,
       title: title,
@@ -43,13 +83,13 @@ void snackBar(
       duration: Duration(milliseconds: duration),
       theme: theme,
       onDismiss: () {
-        _currentSnackBar?.remove();
-        _currentSnackBar = null;
+        _removeSnackBarEntry(entry);
       },
     ),
   );
+  _currentSnackBar = entry;
 
-  Overlay.of(Get.overlayContext!).insert(_currentSnackBar!);
+  overlayState.insert(entry);
 }
 
 class _SnackBarWidget extends StatefulWidget {
@@ -96,6 +136,7 @@ class _SnackBarWidgetState extends State<_SnackBarWidget>
 
   double _dragOffset = 0.0;
   bool _isDragging = false;
+  bool _hasDismissed = false;
 
   @override
   void initState() {
@@ -147,13 +188,16 @@ class _SnackBarWidgetState extends State<_SnackBarWidget>
   }
 
   void _dismiss() {
+    if (_hasDismissed) return;
+    _hasDismissed = true;
     _entryController.reverse().then((_) {
       if (mounted) widget.onDismiss();
     });
   }
 
   void _dismissWithSwipe(double direction) {
-    if (!mounted) return;
+    if (!mounted || _hasDismissed) return;
+    _hasDismissed = true;
     final screenWidth = MediaQuery.of(context).size.width;
 
     setState(() {

@@ -4,7 +4,8 @@ import 'package:anymex/controllers/sync/cloud_sync_service.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/utils/logger.dart';
-import 'package:flutter/foundation.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -22,6 +23,8 @@ class CloudSyncController extends GetxController {
   ];
 
   final isSignedIn = false.obs;
+  final isAuthenticating = false.obs;
+  final lastAuthError = RxnString();
   final isSyncing = false.obs;
   final lastSyncTime = Rx<DateTime?>(null);
   final syncEnabled = true.obs;
@@ -44,13 +47,53 @@ class CloudSyncController extends GetxController {
       Platform.isAndroid || Platform.isIOS || Platform.isMacOS;
 
   Future<void> signIn() async {
-    if (!_isPlatformSupported || _googleSignIn == null) return;
+    if (!_isPlatformSupported ||
+        _googleSignIn == null ||
+        isAuthenticating.value) {
+      return;
+    }
+    lastAuthError.value = null;
+    isAuthenticating.value = true;
     try {
       _account = await _googleSignIn!.signIn();
-      if (_account != null) await _refreshAndApply();
-    } catch (e) {
-      Logger.e('[CloudSyncController] signIn error: $e');
+      if (_account != null) {
+        await _refreshAndApply();
+      }
+    } on PlatformException catch (e, st) {
+      _handleSignInPlatformException(e, st);
+    } catch (e, st) {
+      Logger.e('[CloudSyncController] signIn error: $e', stackTrace: st);
+      final errorText = _truncateError(e.toString());
+      lastAuthError.value = errorText;
+      snackBar(
+        'Google sign-in failed: $errorText',
+        duration: 7000,
+        maxLines: 6,
+      );
+    } finally {
+      isAuthenticating.value = false;
     }
+  }
+
+  void _handleSignInPlatformException(PlatformException e, StackTrace st) {
+    Logger.e('[CloudSyncController] signIn error: $e', stackTrace: st);
+    final errorText = _platformErrorText(e);
+    lastAuthError.value = errorText;
+
+    if (e.code == 'sign_in_canceled') {
+      snackBar(
+        'Google sign-in canceled: $errorText',
+        duration: 3500,
+        maxLines: 4,
+      );
+      return;
+    }
+
+    snackBar(
+      'Google sign-in failed: $errorText',
+      duration: 8000,
+      maxLines: 7,
+    );
   }
 
   Future<void> signOut() async {
@@ -59,6 +102,7 @@ class CloudSyncController extends GetxController {
     _account = null;
     _service.clear();
     isSignedIn.value = false;
+    lastAuthError.value = null;
     await _storage.delete(key: _kAccessTokenKey);
     await _storage.delete(key: _kExpiryKey);
   }
@@ -81,6 +125,7 @@ class CloudSyncController extends GetxController {
       final expiry = DateTime.now().add(const Duration(minutes: 55));
       _service.setCredentials(token, expiry);
       isSignedIn.value = true;
+      lastAuthError.value = null;
       await _storage.write(key: _kAccessTokenKey, value: token);
       await _storage.write(
           key: _kExpiryKey, value: expiry.millisecondsSinceEpoch.toString());
@@ -101,7 +146,7 @@ class CloudSyncController extends GetxController {
       return false;
     }
   }
-  
+
   Future<void> pushEpisodeProgress({
     required String mediaId,
     String? malId,
@@ -117,7 +162,8 @@ class CloudSyncController extends GetxController {
         episodeNumber: episode.number,
         timestampMs: episode.timeStampInMilliseconds,
         durationMs: episode.durationInMilliseconds,
-        updatedAt: episode.lastWatchedTime ?? DateTime.now().millisecondsSinceEpoch,
+        updatedAt:
+            episode.lastWatchedTime ?? DateTime.now().millisecondsSinceEpoch,
       );
       await _service.upsert(entry);
     }));
@@ -141,12 +187,13 @@ class CloudSyncController extends GetxController {
         totalPages: chapter.totalPages,
         scrollOffset: chapter.currentOffset,
         maxScrollOffset: chapter.maxOffset,
-        updatedAt: chapter.lastReadTime ?? DateTime.now().millisecondsSinceEpoch,
+        updatedAt:
+            chapter.lastReadTime ?? DateTime.now().millisecondsSinceEpoch,
       );
       await _service.upsert(entry);
     }));
   }
-  
+
   Future<int?> fetchNewerEpisodeTimestamp({
     required String mediaId,
     String? malId,
@@ -161,7 +208,8 @@ class CloudSyncController extends GetxController {
       if (entry.episodeNumber != episodeNumber) return null;
       final cloud = entry.timestampMs ?? 0;
       if (cloud > localTimestampMs) {
-        Logger.i('[CloudSync] Newer timestamp found: ${cloud}ms > ${localTimestampMs}ms');
+        Logger.i(
+            '[CloudSync] Newer timestamp found: ${cloud}ms > ${localTimestampMs}ms');
         return cloud;
       }
       return null;
@@ -185,7 +233,8 @@ class CloudSyncController extends GetxController {
       if (entry.mediaType != mediaType) return null;
       if (entry.chapterNumber != chapterNumber) return null;
       if (entry.updatedAt > localUpdatedAt) {
-        Logger.i('[CloudSync] Newer chapter progress found for $mediaId ch$chapterNumber');
+        Logger.i(
+            '[CloudSync] Newer chapter progress found for $mediaId ch$chapterNumber');
         return entry;
       }
       return null;
@@ -205,5 +254,27 @@ class CloudSyncController extends GetxController {
     } finally {
       isSyncing.value = false;
     }
+  }
+
+  String _platformErrorText(PlatformException e) {
+    final parts = <String>['code=${e.code}'];
+    final msg = e.message?.trim();
+    if (msg != null && msg.isNotEmpty) {
+      parts.add(_truncateError(msg));
+    }
+
+    final details = e.details?.toString().trim();
+    if (details != null &&
+        details.isNotEmpty &&
+        details != 'null' &&
+        (msg == null || !msg.contains(details))) {
+      parts.add(_truncateError(details));
+    }
+    return parts.join(' | ');
+  }
+
+  String _truncateError(String text, {int max = 220}) {
+    if (text.length <= max) return text;
+    return '${text.substring(0, max)}...';
   }
 }
