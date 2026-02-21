@@ -52,6 +52,14 @@ class PlayerSettings {
   String translateTo;
   @HiveField(23)
   bool autoSkipFiller;
+  @HiveField(24)
+  double subtitleOpacity;
+  @HiveField(25)
+  double subtitleBottomMargin;
+  @HiveField(26)
+  String subtitleOutlineType;
+  @HiveField(27)
+  String subtitleFont;
 
   PlayerSettings(
       {this.speed = 1.0,
@@ -77,5 +85,9 @@ class PlayerSettings {
       this.autoTranslate = false,
       this.translateTo = 'en',
       this.transitionSubtitle = true,
+      this.subtitleOpacity = 1.0,
+      this.subtitleBottomMargin = 10.0,
+      this.subtitleOutlineType = "Outline",
+      this.subtitleFont = "Poppins",
       this.autoSkipFiller = false});
 }
