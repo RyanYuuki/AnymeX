@@ -24,6 +24,18 @@ import 'package:iconsax/iconsax.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:outlined_text/outlined_text.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+const Map<String, List<String>> fontGroups = {
+  'Latin': ['Trebuchet', 'Bahnschrift', 'Tahoma', 'Roboto', 'Open Sans', 'Montserrat', 'Anime Ace 3'],
+  'Devanagari': ['Poppins', 'Hind', 'Ravi Prakash'],
+  'Bengali/Assamese': ['Hind Siliguri'],
+  'Japanese': ['Noto Sans JP', 'M Plus 1p', 'Cinecaption'],
+  'Chinese': ['Noto Sans SC', 'Noto Sans TC', 'Zcool Qingke', 'Lxgw Wenkai'],
+  'Korean': ['Nanum Gothic', 'Gothic A1', 'Nanum Pen Script'],
+  'Arabic': ['Tajawal', 'Amiri', 'Changa'],
+  'Cyrillic': ['Alegreya Sans', 'Roboto'],
+};
 
 class SettingsPlayer extends StatefulWidget {
   final bool isModal;
@@ -383,13 +395,64 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
     );
   }
 
+  void _showFontSelectionDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Select Subtitle Font"),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView(
+            shrinkWrap: true,
+            children: fontGroups.entries.map((group) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Text(group.key, style: TextStyle(color: context.colors.primary, fontWeight: FontWeight.bold)),
+                  ),
+                  ...group.value.map((font) => ListTile(
+                    title: Text(font),
+                    onTap: () {
+                      final current = settings.playerSettings.value;
+                      current.subtitleFont = font;
+                      settings.playerSettings.refresh();
+                      Navigator.pop(context);
+                    },
+                    trailing: settings.playerSettings.value.subtitleFont == font 
+                      ? Icon(Icons.check, color: context.colors.primary) 
+                      : null,
+                  )),
+                  const Divider(),
+                ],
+              );
+            }).toList(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showOutlineTypeDialog() {
+    final types = ["Outline", "Shine", "Drop Shadow", "None"];
+    showSelectionDialog<String>(
+      title: "Outline Type",
+      items: types,
+      selectedItem: settings.playerSettings.value.subtitleOutlineType.obs,
+      getTitle: (v) => v,
+      onItemSelected: (v) {
+        final current = settings.playerSettings.value;
+        current.subtitleOutlineType = v;
+        settings.playerSettings.refresh();
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Glow(
         child: Scaffold(
-            //	backgroundColor: widget.isModal
-            //  ? context.colors.surfaceContainer
-            //  : Colors.transparent,
             body: Column(children: [
       if (!widget.isModal) const NestedHeader(title: 'Player Settings'),
       Expanded(
@@ -632,7 +695,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                   setState(() {});
                                 },
                               ),
-                              if (!widget.isModal)
+                              if (settings.playerSettings.value.autoTranslate)
                                 CustomTile(
                                   padding: 10.0,
                                   icon: Icons.language,
@@ -645,7 +708,48 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                     _showTranslationLanguageDialog();
                                   },
                                 ),
-
+                              CustomTile(
+                                padding: 10,
+                                icon: Icons.font_download_rounded,
+                                title: 'Subtitle Font',
+                                description: settings.playerSettings.value.subtitleFont,
+                                onTap: _showFontSelectionDialog,
+                              ),
+                              CustomTile(
+                                padding: 10,
+                                icon: Icons.format_paint_rounded,
+                                title: 'Outline Type',
+                                description: settings.playerSettings.value.subtitleOutlineType,
+                                onTap: _showOutlineTypeDialog,
+                              ),
+                              CustomSliderTile(
+                                sliderValue: settings.playerSettings.value.subtitleOpacity,
+                                min: 0.1,
+                                max: 1.0,
+                                divisions: 10,
+                                onChanged: (val) {
+                                  final current = settings.playerSettings.value;
+                                  current.subtitleOpacity = val;
+                                  settings.playerSettings.refresh();
+                                },
+                                title: 'Subtitle Transparency',
+                                description: 'Adjust text visibility',
+                                icon: Icons.opacity,
+                              ),
+                              CustomSliderTile(
+                                sliderValue: settings.playerSettings.value.subtitleBottomMargin,
+                                min: 0.0,
+                                max: 100.0,
+                                divisions: 20,
+                                onChanged: (val) {
+                                  final current = settings.playerSettings.value;
+                                  current.subtitleBottomMargin = val;
+                                  settings.playerSettings.refresh();
+                                },
+                                title: 'Bottom Margin',
+                                description: 'Distance from bottom of screen',
+                                icon: Icons.vertical_align_bottom,
+                              ),
                               CustomTile(
                                 padding: 10,
                                 description: 'Change subtitle colors',
