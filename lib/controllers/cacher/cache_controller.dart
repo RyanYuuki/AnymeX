@@ -1,8 +1,9 @@
 import 'dart:convert';
-import 'package:anymex/utils/logger.dart';
+
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/utils/logger.dart';
+import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:get/get.dart';
 
 final cacheController = Get.find<CacheController>();
@@ -54,7 +55,11 @@ class CacheController extends GetxController {
   }
 
   List<Media> getStoredAnime() {
-    return currentPool.map((e) => cacheDataParser(e)).toList();
+    return currentPool
+        .map((e) => cacheDataParser(e))
+        .toList()
+        .reversed
+        .toList();
   }
 
   Media? getCacheById(String id) {
