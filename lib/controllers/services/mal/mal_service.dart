@@ -31,7 +31,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 
 class MalService extends GetxController implements BaseService, OnlineService {
   @override
@@ -173,7 +173,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
   @override
   Future<List<Media>> search(SearchParams params) async {
     final mediaType = params.isManga ? 'manga' : 'anime';
-    final response = await get(
+    final response = await http.get(
       Uri.parse(
           'https://api.jikan.moe/v4/$mediaType?q=${Uri.encodeComponent(params.query)}&limit=25&sfw=${!params.args}'),
     );
@@ -352,7 +352,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
   Future<bool> _validateToken(String token) async {
     try {
-      final response = await get(
+      final response = await http.get(
         Uri.parse('https://api.myanimelist.net/v2/users/@me'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -370,7 +370,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
     final clientId = dotenv.env['MAL_CLIENT_ID'] ?? '';
     final clientSecret = dotenv.env['MAL_CLIENT_SECRET'] ?? '';
 
-    final response = await post(
+    final response = await http.post(
       Uri.parse('https://myanimelist.net/v1/oauth2/token'),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -426,15 +426,117 @@ class MalService extends GetxController implements BaseService, OnlineService {
       if (code != null) {
         Logger.i("Authorization code: $code");
         await _exchangeCodeForTokenMAL(code, clientId, codeChallenge, secret);
+        await _fetchAndStoreMalSessionId();
       }
     } catch (e) {
       Logger.i('Error during MyAnimeList login: $e');
     }
   }
 
+  Future<void> _fetchAndStoreMalSessionId() async {
+    try {
+      final token = AuthKeys.malAuthToken.get<String?>();
+      if (token == null) {
+        Logger.i('No MAL token found for session fetch');
+        return;
+      }
+
+      Logger.i('Attempting to fetch MAL session ID with token');
+
+      final response = await http.get(
+        Uri.parse('https://myanimelist.net/'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.9',
+          'Connection': 'keep-alive',
+        },
+      );
+
+      if (response.headers.containsKey('set-cookie')) {
+        final cookies = response.headers['set-cookie']!;
+        Logger.i('Raw cookie header: $cookies');
+        
+        final patterns = [
+          RegExp(r'MALHLOGSESSID=([^;]+)'),
+          RegExp(r'mal_session_id=([^;]+)'),
+          RegExp(r'session_id=([^;]+)'),
+        ];
+
+        for (final pattern in patterns) {
+          final match = pattern.firstMatch(cookies);
+          if (match != null) {
+            final sessionId = match.group(1);
+            if (sessionId != null && sessionId.isNotEmpty) {
+              await AuthKeys.malSessionId.set(sessionId);
+              Logger.i('MAL session ID stored successfully: $sessionId');
+              final verify = AuthKeys.malSessionId.get<String?>();
+              Logger.i('Verification - stored session: $verify');
+              return;
+            }
+          }
+        }
+      }
+
+      Logger.i('No session cookie in main page, trying export page');
+      final exportResponse = await http.get(
+        Uri.parse('https://myanimelist.net/panel.php?go=export'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        },
+      );
+
+      if (exportResponse.headers.containsKey('set-cookie')) {
+        final cookies = exportResponse.headers['set-cookie']!;
+        final match = RegExp(r'MALHLOGSESSID=([^;]+)').firstMatch(cookies);
+        if (match != null) {
+          final sessionId = match.group(1);
+          if (sessionId != null && sessionId.isNotEmpty) {
+            await AuthKeys.malSessionId.set(sessionId);
+            Logger.i('MAL session ID stored from export page: $sessionId');
+            final verify = AuthKeys.malSessionId.get<String?>();
+            Logger.i('Verification - stored session: $verify');
+          }
+        }
+      }
+
+      if (AuthKeys.malSessionId.get<String?>() == null) {
+        Logger.i('Attempting to create session via export form');
+        final formResponse = await http.post(
+          Uri.parse('https://myanimelist.net/panel.php?go=export'),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+          },
+          body: {
+            'type': '1',
+            'subexport': 'Export My List',
+          },
+        );
+
+        if (formResponse.headers.containsKey('set-cookie')) {
+          final cookies = formResponse.headers['set-cookie']!;
+          final match = RegExp(r'MALHLOGSESSID=([^;]+)').firstMatch(cookies);
+          if (match != null) {
+            final sessionId = match.group(1);
+            if (sessionId != null && sessionId.isNotEmpty) {
+              await AuthKeys.malSessionId.set(sessionId);
+              Logger.i('MAL session ID created via export: $sessionId');
+            }
+          }
+        }
+      }
+    } catch (e) {
+      Logger.i('Error fetching MAL session ID: $e');
+    }
+  }
+
   Future<void> _exchangeCodeForTokenMAL(
       String code, String clientId, String codeVerifier, String secret) async {
-    final response = await post(
+    final response = await http.post(
       Uri.parse('https://myanimelist.net/v1/oauth2/token'),
       body: {
         'client_id': clientId,
@@ -472,7 +574,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
         throw Exception('MAL_CLIENT_ID is not set in .env file.');
       }
       final tokenn = token ?? AuthKeys.malAuthToken.get<String?>();
-      final response = await get(Uri.parse(url),
+      final response = await http.get(Uri.parse(url),
           headers: useAuthHeader
               ? {
                   'Authorization': 'Bearer $tokenn',
@@ -484,7 +586,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (auth) {
-          final rep = await get(
+          final rep = await http.get(
               Uri.parse('https://api.jikan.moe/v4/users/${data['name']}/full'));
           return jsonDecode(rep.body)..['picture'] = data['picture'];
         }
@@ -523,7 +625,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
         'num_chapters_read': progress.toString(),
     };
 
-    final req = await put(
+    final req = await http.put(
       url,
       headers: {
         'Authorization': 'Bearer $token',
@@ -544,7 +646,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
     if (req.statusCode == 200) {
       // snackBar(
       //     "${isAnime ? 'Anime' : 'Manga'} Tracked to ${isAnime ? 'Episode' : 'Chapter'} $progress Successfully!");
-
+      
       final newMedia = currentMedia.value
         ..episodeCount = progress.toString()
         ..watchingStatus = status
@@ -569,7 +671,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
     final url = Uri.parse(
         'https://api.myanimelist.net/v2/${isAnime ? 'anime' : 'manga'}/$listId/my_list_status');
 
-    final req = await delete(
+    final req = await http.delete(
       url,
       headers: {
         'Authorization': 'Bearer $token',
@@ -626,6 +728,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
   Future<void> logout() async {
     AuthKeys.malAuthToken.delete();
     AuthKeys.malRefreshToken.delete();
+    AuthKeys.malSessionId.delete();
     isLoggedIn.value = false;
     profileData.value = Profile();
     // animeList.value = [];
