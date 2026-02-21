@@ -2,12 +2,263 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+// ---------------------------------------------------------------------------
+// FilterConfig – each service provides its own filter options
+// ---------------------------------------------------------------------------
+
+/// Describes which filter fields a service supports and what values they accept.
+/// Pass a [FilterConfig] to [showFilterBottomSheet] so the sheet is fully
+/// driven by the service rather than hardcoded values.
+class FilterConfig {
+  const FilterConfig({
+    this.sorts = const {},
+    this.formats = const [],
+    this.formatLabels = const {},
+    this.statuses = const [],
+    this.statusLabels = const {},
+    this.seasons = const [],
+    this.seasonLabels = const {},
+    this.genres = const [],
+    this.tags = const [],
+    this.supportsYear = true,
+    this.supportsGenres = true,
+    this.supportsTags = true,
+    this.supportsSeason = true,
+  });
+
+  /// Map of display label → API value (e.g. 'Trending' → 'TRENDING_DESC').
+  final Map<String, String> sorts;
+  final List<String> formats;
+  final Map<String, String> formatLabels;
+  final List<String> statuses;
+  final Map<String, String> statusLabels;
+  final List<String> seasons;
+  final Map<String, String> seasonLabels;
+  final List<String> genres;
+  final List<String> tags;
+  final bool supportsYear;
+  final bool supportsGenres;
+  final bool supportsTags;
+  final bool supportsSeason;
+
+  // ── AniList anime ──────────────────────────────────────────────────────────
+
+  static const FilterConfig anilistAnime = FilterConfig(
+    sorts: {
+      'Trending': 'TRENDING_DESC',
+      'Popularity': 'POPULARITY_DESC',
+      'Score': 'SCORE_DESC',
+      'Newest': 'START_DATE_DESC',
+      'Oldest': 'START_DATE',
+      'Title A–Z': 'TITLE_ROMAJI',
+      'Title Z–A': 'TITLE_ROMAJI_DESC',
+      'Episodes': 'EPISODES_DESC',
+      'Favourites': 'FAVOURITES_DESC',
+    },
+    formats: ['TV', 'TV_SHORT', 'MOVIE', 'SPECIAL', 'OVA', 'ONA', 'MUSIC'],
+    formatLabels: {
+      'TV': 'TV',
+      'TV_SHORT': 'TV Short',
+      'MOVIE': 'Movie',
+      'SPECIAL': 'Special',
+      'OVA': 'OVA',
+      'ONA': 'ONA',
+      'MUSIC': 'Music',
+    },
+    statuses: [
+      'FINISHED',
+      'RELEASING',
+      'NOT_YET_RELEASED',
+      'CANCELLED',
+      'HIATUS',
+    ],
+    statusLabels: {
+      'FINISHED': 'Finished',
+      'RELEASING': 'Releasing',
+      'NOT_YET_RELEASED': 'Upcoming',
+      'CANCELLED': 'Cancelled',
+      'HIATUS': 'Hiatus',
+    },
+    seasons: ['WINTER', 'SPRING', 'SUMMER', 'FALL'],
+    seasonLabels: {
+      'WINTER': 'Winter',
+      'SPRING': 'Spring',
+      'SUMMER': 'Summer',
+      'FALL': 'Fall',
+    },
+    genres: [
+      'Action', 'Adventure', 'Comedy', 'Drama', 'Ecchi', 'Fantasy', 'Horror',
+      'Mahou Shoujo', 'Mecha', 'Music', 'Mystery', 'Psychological', 'Romance',
+      'Sci-Fi', 'Slice of Life', 'Sports', 'Supernatural', 'Thriller',
+    ],
+    tags: [
+      'Shounen', 'Shoujo', 'Seinen', 'Josei', 'Kids', 'Isekai', 'School',
+      'Harem', 'Reverse Harem', 'Villainess', 'Reincarnation', 'Time Travel',
+      'Historical', 'Martial Arts', 'Post-Apocalyptic', 'Dystopian', 'Space',
+      'Cyberpunk', 'Steampunk', 'Vampire', 'Demons', 'Gods', 'Magic',
+      'Samurai', 'Military', 'Coming of Age', 'Cooking', 'Idol', 'Parody',
+      'Super Power', 'LGBTQ+', 'Tragedy', 'Gore',
+    ],
+  );
+
+  // ── AniList manga ──────────────────────────────────────────────────────────
+
+  static const FilterConfig anilistManga = FilterConfig(
+    sorts: {
+      'Trending': 'TRENDING_DESC',
+      'Popularity': 'POPULARITY_DESC',
+      'Score': 'SCORE_DESC',
+      'Newest': 'START_DATE_DESC',
+      'Oldest': 'START_DATE',
+      'Title A–Z': 'TITLE_ROMAJI',
+      'Title Z–A': 'TITLE_ROMAJI_DESC',
+      'Chapters': 'CHAPTERS_DESC',
+      'Volumes': 'VOLUMES_DESC',
+      'Favourites': 'FAVOURITES_DESC',
+    },
+    formats: ['MANGA', 'NOVEL', 'ONE_SHOT'],
+    formatLabels: {
+      'MANGA': 'Manga',
+      'NOVEL': 'Novel',
+      'ONE_SHOT': 'One Shot',
+    },
+    statuses: [
+      'FINISHED',
+      'RELEASING',
+      'NOT_YET_RELEASED',
+      'CANCELLED',
+      'HIATUS',
+    ],
+    statusLabels: {
+      'FINISHED': 'Finished',
+      'RELEASING': 'Releasing',
+      'NOT_YET_RELEASED': 'Upcoming',
+      'CANCELLED': 'Cancelled',
+      'HIATUS': 'Hiatus',
+    },
+    // Manga has no seasons
+    seasons: [],
+    seasonLabels: {},
+    genres: [
+      'Action', 'Adventure', 'Comedy', 'Drama', 'Ecchi', 'Fantasy', 'Horror',
+      'Mahou Shoujo', 'Mecha', 'Music', 'Mystery', 'Psychological', 'Romance',
+      'Sci-Fi', 'Slice of Life', 'Sports', 'Supernatural', 'Thriller',
+    ],
+    tags: [
+      'Shounen', 'Shoujo', 'Seinen', 'Josei', 'Kids', 'Manhwa', 'Manhua',
+      'Webtoon', 'Light Novel', 'Isekai', 'Reincarnation', 'Time Travel',
+      'Historical', 'Villainess', 'Martial Arts', 'School', 'Harem',
+      'Reverse Harem', 'Post-Apocalyptic', 'Dystopian', 'Space', 'Cyberpunk',
+      'Steampunk', 'Vampire', 'Demons', 'Gods', 'Magic', 'Samurai',
+      'Military', 'Cooking', 'Idol', 'LGBTQ+', 'Tragedy', 'Parody', 'Gore',
+    ],
+    supportsSeason: false,
+  );
+
+  // ── MAL / Jikan (limited API) ──────────────────────────────────────────────
+  // Jikan v4 supports: type, status, genres, order_by, sort, rating.
+  // Tags are not a Jikan concept (only genre IDs), so supportsTags = false.
+
+  static const FilterConfig malAnime = FilterConfig(
+    sorts: {
+      'Score': 'score',
+      'Popularity': 'popularity',
+      'Rank': 'rank',
+      'Title': 'title',
+      'Start Date': 'start_date',
+      'Episodes': 'episodes',
+    },
+    formats: ['tv', 'movie', 'ova', 'special', 'ona', 'music'],
+    formatLabels: {
+      'tv': 'TV',
+      'movie': 'Movie',
+      'ova': 'OVA',
+      'special': 'Special',
+      'ona': 'ONA',
+      'music': 'Music',
+    },
+    statuses: ['airing', 'complete', 'upcoming'],
+    statusLabels: {
+      'airing': 'Airing',
+      'complete': 'Finished',
+      'upcoming': 'Upcoming',
+    },
+    seasons: ['winter', 'spring', 'summer', 'fall'],
+    seasonLabels: {
+      'winter': 'Winter',
+      'spring': 'Spring',
+      'summer': 'Summer',
+      'fall': 'Fall',
+    },
+    genres: [
+      'Action', 'Adventure', 'Comedy', 'Drama', 'Fantasy', 'Horror',
+      'Mystery', 'Romance', 'Sci-Fi', 'Slice of Life', 'Sports',
+      'Supernatural', 'Thriller', 'Ecchi', 'Mecha', 'Music',
+    ],
+    tags: [],
+    supportsTags: false,
+  );
+
+  static const FilterConfig malManga = FilterConfig(
+    sorts: {
+      'Score': 'score',
+      'Popularity': 'popularity',
+      'Rank': 'rank',
+      'Title': 'title',
+      'Start Date': 'start_date',
+      'Chapters': 'chapters',
+    },
+    formats: [
+      'manga', 'novel', 'lightnovel', 'oneshot', 'doujin', 'manhwa', 'manhua',
+    ],
+    formatLabels: {
+      'manga': 'Manga',
+      'novel': 'Novel',
+      'lightnovel': 'Light Novel',
+      'oneshot': 'One Shot',
+      'doujin': 'Doujin',
+      'manhwa': 'Manhwa',
+      'manhua': 'Manhua',
+    },
+    statuses: [
+      'publishing', 'complete', 'hiatus', 'discontinued', 'upcoming',
+    ],
+    statusLabels: {
+      'publishing': 'Publishing',
+      'complete': 'Finished',
+      'hiatus': 'Hiatus',
+      'discontinued': 'Cancelled',
+      'upcoming': 'Upcoming',
+    },
+    seasons: [],
+    seasonLabels: {},
+    genres: [
+      'Action', 'Adventure', 'Comedy', 'Drama', 'Fantasy', 'Horror',
+      'Mystery', 'Romance', 'Sci-Fi', 'Slice of Life', 'Sports',
+      'Supernatural', 'Thriller', 'Ecchi',
+    ],
+    tags: [],
+    supportsSeason: false,
+    supportsTags: false,
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Public entry-point
+// ---------------------------------------------------------------------------
+
 void showFilterBottomSheet(
   BuildContext context,
   Function(dynamic args) onApplyFilter, {
   Map<String, dynamic>? currentFilters,
+  /// Provide a [FilterConfig] to fully control which options appear.
+  FilterConfig? config,
+  /// Convenience flag kept for existing callers – ignored when [config] is set.
   bool isManga = false,
 }) {
+  final resolvedConfig = config ??
+      (isManga ? FilterConfig.anilistManga : FilterConfig.anilistAnime);
+
   showModalBottomSheet(
     context: context,
     backgroundColor: Colors.transparent,
@@ -16,191 +267,26 @@ void showFilterBottomSheet(
     builder: (_) => FilterSheet(
       onApplyFilter: onApplyFilter,
       currentFilters: currentFilters,
-      isManga: isManga,
+      config: resolvedConfig,
     ),
   );
 }
 
-const _animeSorts = {
-  'Trending': 'TRENDING_DESC',
-  'Popularity': 'POPULARITY_DESC',
-  'Score': 'SCORE_DESC',
-  'Newest': 'START_DATE_DESC',
-  'Oldest': 'START_DATE',
-  'Title A–Z': 'TITLE_ROMAJI',
-  'Title Z–A': 'TITLE_ROMAJI_DESC',
-  'Episodes': 'EPISODES_DESC',
-  'Favourites': 'FAVOURITES_DESC',
-};
-
-const _mangaSorts = {
-  'Trending': 'TRENDING_DESC',
-  'Popularity': 'POPULARITY_DESC',
-  'Score': 'SCORE_DESC',
-  'Newest': 'START_DATE_DESC',
-  'Oldest': 'START_DATE',
-  'Title A–Z': 'TITLE_ROMAJI',
-  'Title Z–A': 'TITLE_ROMAJI_DESC',
-  'Chapters': 'CHAPTERS_DESC',
-  'Volumes': 'VOLUMES_DESC',
-  'Favourites': 'FAVOURITES_DESC',
-};
-
-const _animeFormats = [
-  'TV',
-  'TV_SHORT',
-  'MOVIE',
-  'SPECIAL',
-  'OVA',
-  'ONA',
-  'MUSIC'
-];
-const _animeFormatLabels = {
-  'TV': 'TV',
-  'TV_SHORT': 'TV Short',
-  'MOVIE': 'Movie',
-  'SPECIAL': 'Special',
-  'OVA': 'OVA',
-  'ONA': 'ONA',
-  'MUSIC': 'Music',
-};
-
-const _mangaFormats = ['MANGA', 'NOVEL', 'ONE_SHOT'];
-const _mangaFormatLabels = {
-  'MANGA': 'Manga',
-  'NOVEL': 'Novel',
-  'ONE_SHOT': 'One Shot',
-};
-
-const _statuses = [
-  'FINISHED',
-  'RELEASING',
-  'NOT_YET_RELEASED',
-  'CANCELLED',
-  'HIATUS'
-];
-const _statusLabels = {
-  'FINISHED': 'Finished',
-  'RELEASING': 'Releasing',
-  'NOT_YET_RELEASED': 'Upcoming',
-  'CANCELLED': 'Cancelled',
-  'HIATUS': 'Hiatus',
-};
-
-const _seasons = ['WINTER', 'SPRING', 'SUMMER', 'FALL'];
-const _seasonLabels = {
-  'WINTER': 'Winter',
-  'SPRING': 'Spring',
-  'SUMMER': 'Summer',
-  'FALL': 'Fall',
-};
-
-const _allGenres = [
-  'Action',
-  'Adventure',
-  'Comedy',
-  'Drama',
-  'Ecchi',
-  'Fantasy',
-  'Horror',
-  'Mahou Shoujo',
-  'Mecha',
-  'Music',
-  'Mystery',
-  'Psychological',
-  'Romance',
-  'Sci-Fi',
-  'Slice of Life',
-  'Sports',
-  'Supernatural',
-  'Thriller',
-];
-
-const _animeTags = [
-  'Shounen',
-  'Shoujo',
-  'Seinen',
-  'Josei',
-  'Kids',
-  'Isekai',
-  'School',
-  'Harem',
-  'Reverse Harem',
-  'Villainess',
-  'Reincarnation',
-  'Time Travel',
-  'Historical',
-  'Martial Arts',
-  'Post-Apocalyptic',
-  'Dystopian',
-  'Space',
-  'Cyberpunk',
-  'Steampunk',
-  'Vampire',
-  'Demons',
-  'Gods',
-  'Magic',
-  'Samurai',
-  'Military',
-  'Coming of Age',
-  'Cooking',
-  'Idol',
-  'Parody',
-  'Super Power',
-  'LGBTQ+',
-  'Tragedy',
-  'Gore',
-];
-
-const _mangaTags = [
-  'Shounen',
-  'Shoujo',
-  'Seinen',
-  'Josei',
-  'Kids',
-  'Manhwa',
-  'Manhua',
-  'Webtoon',
-  'Light Novel',
-  'Isekai',
-  'Reincarnation',
-  'Time Travel',
-  'Historical',
-  'Villainess',
-  'Martial Arts',
-  'School',
-  'Harem',
-  'Reverse Harem',
-  'Post-Apocalyptic',
-  'Dystopian',
-  'Space',
-  'Cyberpunk',
-  'Steampunk',
-  'Vampire',
-  'Demons',
-  'Gods',
-  'Magic',
-  'Samurai',
-  'Military',
-  'Cooking',
-  'Idol',
-  'LGBTQ+',
-  'Tragedy',
-  'Parody',
-  'Gore',
-];
+// ---------------------------------------------------------------------------
+// FilterSheet widget
+// ---------------------------------------------------------------------------
 
 class FilterSheet extends StatefulWidget {
   const FilterSheet({
     super.key,
     required this.onApplyFilter,
     this.currentFilters,
-    this.isManga = false,
+    required this.config,
   });
 
   final Function(dynamic) onApplyFilter;
   final Map<String, dynamic>? currentFilters;
-  final bool isManga;
+  final FilterConfig config;
 
   @override
   State<FilterSheet> createState() => _FilterSheetState();
@@ -221,6 +307,8 @@ class _FilterSheetState extends State<FilterSheet> {
 
   final int _thisYear = DateTime.now().year;
   final int _prevYear = DateTime.now().year - 1;
+
+  FilterConfig get cfg => widget.config;
 
   @override
   void initState() {
@@ -247,17 +335,10 @@ class _FilterSheetState extends State<FilterSheet> {
     super.dispose();
   }
 
-  Map<String, String> get _sortMap =>
-      widget.isManga ? _mangaSorts : _animeSorts;
-  List<String> get _formatList =>
-      widget.isManga ? _mangaFormats : _animeFormats;
-  Map<String, String> get _formatLabelMap =>
-      widget.isManga ? _mangaFormatLabels : _animeFormatLabels;
-  List<String> get _tagList => widget.isManga ? _mangaTags : _animeTags;
-
+  /// Reverse-lookup: API value → display label.
   String? get _sortLabel => _sort == null
       ? null
-      : _sortMap.entries
+      : cfg.sorts.entries
           .firstWhere((e) => e.value == _sort,
               orElse: () => const MapEntry('', ''))
           .key;
@@ -301,6 +382,8 @@ class _FilterSheetState extends State<FilterSheet> {
     Navigator.pop(context);
   }
 
+  // ── Build ────────────────────────────────────────────────────────────────
+
   @override
   Widget build(BuildContext context) {
     final cs = context.colors;
@@ -323,71 +406,83 @@ class _FilterSheetState extends State<FilterSheet> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _label('SORT BY', Icons.swap_vert_rounded),
-                  _buildWrapGroup(
-                    items: _sortMap.keys.toList(),
-                    selected: _sortLabel,
-                    onTap: (label) => setState(() {
-                      final v = _sortMap[label];
-                      _sort = _sort == v ? null : v;
-                    }),
-                  ),
-                  _gap(),
-                  if (!widget.isManga) ...[
+                  if (cfg.sorts.isNotEmpty) ...[
+                    _label('SORT BY', Icons.swap_vert_rounded),
+                    _buildWrapGroup(
+                      items: cfg.sorts.keys.toList(),
+                      selected: _sortLabel,
+                      onTap: (label) => setState(() {
+                        final v = cfg.sorts[label];
+                        _sort = _sort == v ? null : v;
+                      }),
+                    ),
+                    _gap(),
+                  ],
+                  if (cfg.supportsSeason && cfg.seasons.isNotEmpty) ...[
                     _label('SEASON', Icons.calendar_today_outlined),
                     _buildWrapGroup(
-                      items: _seasons,
-                      labels: _seasonLabels,
+                      items: cfg.seasons,
+                      labels: cfg.seasonLabels,
                       selected: _season,
                       onTap: (v) =>
                           setState(() => _season = _season == v ? null : v),
                     ),
                     _gap(),
                   ],
-                  _label('YEAR', Icons.date_range_outlined),
-                  _buildYearRow(),
-                  _gap(),
-                  _label('STATUS', Icons.radio_button_on_rounded),
-                  _buildWrapGroup(
-                    items: _statuses,
-                    labels: _statusLabels,
-                    selected: _status,
-                    onTap: (v) =>
-                        setState(() => _status = _status == v ? null : v),
-                  ),
-                  _gap(),
-                  _label('FORMAT', Icons.video_collection_outlined),
-                  _buildWrapGroup(
-                    items: _formatList,
-                    labels: _formatLabelMap,
-                    selected: _format,
-                    onTap: (v) =>
-                        setState(() => _format = _format == v ? null : v),
-                  ),
-                  _gap(),
-                  _label('GENRES', Icons.theater_comedy_outlined),
-                  _ChipPicker(
-                    allItems: _allGenres,
-                    selected: _genres,
-                    searchQuery: _genreSearch,
-                    onSearch: (q) => setState(() => _genreSearch = q),
-                    onTap: (v) => setState(() => _genres.contains(v)
-                        ? _genres.remove(v)
-                        : _genres.add(v)),
-                    hint: 'Search genres',
-                  ),
-                  _gap(),
-                  _label('TAGS', Icons.label_outline_rounded),
-                  _ChipPicker(
-                    allItems: _tagList,
-                    selected: _tags,
-                    searchQuery: _tagSearch,
-                    onSearch: (q) => setState(() => _tagSearch = q),
-                    onTap: (v) => setState(() =>
-                        _tags.contains(v) ? _tags.remove(v) : _tags.add(v)),
-                    hint: 'Search tags',
-                  ),
-                  const SizedBox(height: 8),
+                  if (cfg.supportsYear) ...[
+                    _label('YEAR', Icons.date_range_outlined),
+                    _buildYearRow(),
+                    _gap(),
+                  ],
+                  if (cfg.statuses.isNotEmpty) ...[
+                    _label('STATUS', Icons.radio_button_on_rounded),
+                    _buildWrapGroup(
+                      items: cfg.statuses,
+                      labels: cfg.statusLabels,
+                      selected: _status,
+                      onTap: (v) =>
+                          setState(() => _status = _status == v ? null : v),
+                    ),
+                    _gap(),
+                  ],
+                  if (cfg.formats.isNotEmpty) ...[
+                    _label('FORMAT', Icons.video_collection_outlined),
+                    _buildWrapGroup(
+                      items: cfg.formats,
+                      labels: cfg.formatLabels,
+                      selected: _format,
+                      onTap: (v) =>
+                          setState(() => _format = _format == v ? null : v),
+                    ),
+                    _gap(),
+                  ],
+                  if (cfg.supportsGenres && cfg.genres.isNotEmpty) ...[
+                    _label('GENRES', Icons.theater_comedy_outlined),
+                    _ChipPicker(
+                      allItems: cfg.genres,
+                      selected: _genres,
+                      searchQuery: _genreSearch,
+                      onSearch: (q) => setState(() => _genreSearch = q),
+                      onTap: (v) => setState(() => _genres.contains(v)
+                          ? _genres.remove(v)
+                          : _genres.add(v)),
+                      hint: 'Search genres',
+                    ),
+                    _gap(),
+                  ],
+                  if (cfg.supportsTags && cfg.tags.isNotEmpty) ...[
+                    _label('TAGS', Icons.label_outline_rounded),
+                    _ChipPicker(
+                      allItems: cfg.tags,
+                      selected: _tags,
+                      searchQuery: _tagSearch,
+                      onSearch: (q) => setState(() => _tagSearch = q),
+                      onTap: (v) => setState(() =>
+                          _tags.contains(v) ? _tags.remove(v) : _tags.add(v)),
+                      hint: 'Search tags',
+                    ),
+                    const SizedBox(height: 8),
+                  ],
                 ],
               ),
             ),
@@ -397,6 +492,8 @@ class _FilterSheetState extends State<FilterSheet> {
       ),
     );
   }
+
+  // ── UI helpers ───────────────────────────────────────────────────────────
 
   Widget _buildHandle(ColorScheme cs) => Padding(
         padding: const EdgeInsets.only(top: 14, bottom: 4),
@@ -531,9 +628,10 @@ class _FilterSheetState extends State<FilterSheet> {
               boxShadow: isSelected
                   ? [
                       BoxShadow(
-                          color: cs.primary.withOpacity(0.25),
-                          blurRadius: 6,
-                          offset: const Offset(0, 2))
+                        color: cs.primary.withOpacity(0.25),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      )
                     ]
                   : null,
             ),
@@ -559,8 +657,9 @@ class _FilterSheetState extends State<FilterSheet> {
       final isSelected = _year == y;
       return GestureDetector(
         onTap: () {
-          _setYear(_year == y ? null : y);
-          if (_year != y) _yearController.text = y;
+          final next = _year == y ? null : y;
+          _setYear(next);
+          if (next != null) _yearController.text = y;
         },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 160),
@@ -576,9 +675,10 @@ class _FilterSheetState extends State<FilterSheet> {
             boxShadow: isSelected
                 ? [
                     BoxShadow(
-                        color: cs.primary.withOpacity(0.25),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2))
+                      color: cs.primary.withOpacity(0.25),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    )
                   ]
                 : null,
           ),
@@ -715,6 +815,10 @@ class _FilterSheetState extends State<FilterSheet> {
     );
   }
 }
+
+// ---------------------------------------------------------------------------
+// _ChipPicker – searchable multi-select chip grid
+// ---------------------------------------------------------------------------
 
 class _ChipPicker extends StatelessWidget {
   const _ChipPicker({
