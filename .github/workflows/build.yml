@@ -80,53 +80,6 @@ jobs:
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: ${{ env.IS_BETA_BUILD != 'true' }}
-      
-      # =================================================================
-      # Install ImageMagick depending on runner OS
-      # =================================================================
-      - name: Install ImageMagick (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y imagemagick
-
-      - name: Install ImageMagick (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          brew install imagemagick
-
-      - name: Install ImageMagick (Windows)
-        if: runner.os == 'Windows'
-        shell: powershell
-        run: |
-          choco install imagemagick --force -y
-          
-      - name: Add ImageMagick to PATH (Windows)
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          $magickPath = "C:\Program Files\ImageMagick-7.1.1-Q16-HDRI"
-          if (-not (Test-Path $magickPath)) {
-            $magickPath = Get-ChildItem "C:\Program Files" -Filter "ImageMagick*" -Directory | Select-Object -First 1 -ExpandProperty FullName
-          }
-          if ($magickPath) {
-            echo "$magickPath" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-            Write-Host "Added ImageMagick to PATH: $magickPath"
-          }
-          
-      - name: Verify ImageMagick Installation
-        shell: bash
-        run: |
-          if command -v magick >/dev/null 2>&1; then
-            echo "✅ ImageMagick installed (magick command)"
-            magick --version
-          elif command -v convert >/dev/null 2>&1; then
-            echo "✅ ImageMagick installed (convert command)"
-            convert --version
-          else
-            echo "❌ ImageMagick not found in PATH"
-            exit 1
-          fi
 
       - name: Fix line endings (Windows)
         if: runner.os == 'Windows'
