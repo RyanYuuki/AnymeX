@@ -76,6 +76,25 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   static final _assRx = RegExp(r'\{[^}]*\}');
   static final _newlineRx = RegExp(r'\\[nN]');
 
+  static const Map<String, String> availableFonts = {
+    'Trebuchet': 'Trebuchet MS',
+    'Bahnschrift': 'Bahnschrift',
+    'Tahoma': 'Tahoma',
+    'Anime Ace 3': 'AnimeAce',
+    'Poppins': 'Poppins',
+    'Hind': 'Hind',
+    'Ravi Prakash': 'RaviPrakash',
+    'Hind Siliguri': 'HindSiliguri',
+    'Noto Sans JP': 'NotoSansJP',
+    'M Plus 1p': 'MPlus1p',
+    'Cinecaption': 'Cinecaption',
+    'Nanum Gothic': 'NanumGothic',
+    'Nanum Pen': 'NanumPenScript',
+    'Tajawal': 'Tajawal',
+    'Amiri': 'Amiri',
+    'Changa': 'Changa',
+  };
+
   Rx<Episode> currentEpisode = Rx<Episode>(Episode(number: '1'));
   final List<Episode> episodeList;
   final anymex.Media anilistData;
@@ -86,6 +105,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final String? itemName;
   final String? offlineVideoPath;
   final bool shouldTrack;
+
+  final RxDouble subtitleOpacity = 1.0.obs;
+  final RxDouble subtitleBottomMargin = 10.0.obs;
+  final RxString subtitleOutlineType = "Outline".obs;
+  final RxString selectedFont = "Poppins".obs;
 
   PlayerController(model.Video video, Episode episode, this.episodeList,
       this.anilistData, List<model.Video> episodes,
@@ -252,6 +276,15 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           .map((e) => AudioTrack.uri(e.file ?? '', title: e.label))
           .toList();
     });
+  }
+
+  void updateSubtitleStyle() {
+    final current = settings.playerSettings.value;
+    current.subtitleOpacity = subtitleOpacity.value;
+    current.subtitleBottomMargin = subtitleBottomMargin.value;
+    current.subtitleOutlineType = subtitleOutlineType.value;
+    current.subtitleFont = selectedFont.value;
+    settings.playerSettings.refresh();
   }
 
   static void initializePlayerControlsIfNeeded(Settings settings) {
