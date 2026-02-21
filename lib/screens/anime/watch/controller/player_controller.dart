@@ -474,7 +474,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     final localStamp = savedEpisode?.timeStampInMilliseconds ?? 0;
     final url = selectedVideo.value?.url ?? '';
     final headers = selectedVideo.value?.headers;
-    final episodeNum = currentEpisode.value.number ?? '';
+    final episodeNum = currentEpisode.value.number;
 
     Duration startPosition = Duration(milliseconds: localStamp);
 
@@ -483,12 +483,14 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           ? Get.find<CloudSyncController>()
           : null;
       if (ctrl != null && ctrl.isSignedIn.value && ctrl.syncEnabled.value) {
-        final cloudMs = await ctrl.fetchNewerEpisodeTimestamp(
-          mediaId: anilistData.id,
-          malId: anilistData.idMal?.toString(),
-          episodeNumber: episodeNum,
-          localTimestampMs: localStamp,
-        ).timeout(const Duration(seconds: 4), onTimeout: () => null);
+        final cloudMs = await ctrl
+            .fetchNewerEpisodeTimestamp(
+              mediaId: anilistData.id,
+              malId: anilistData.idMal,
+              episodeNumber: episodeNum,
+              localTimestampMs: localStamp,
+            )
+            .timeout(const Duration(seconds: 4), onTimeout: () => null);
 
         if (cloudMs != null && cloudMs > localStamp) {
           startPosition = Duration(milliseconds: cloudMs);
@@ -497,18 +499,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     } catch (_) {}
 
     await _basePlayer.open(url, headers: headers, startPosition: startPosition);
-  }
-
-  Future<int?> _getCloudFileTimestamp(String fileId) async {
-    return null;
-  }
-
-  Future<int?> _getLocalTimestamp(String key) async {
-    return DynamicKeys.cloudTimestamps.get<int?>(key, null);
-  }
-
-  Future<void> _saveLocalTimestamp(String key, int timestamp) async {
-    await DynamicKeys.cloudTimestamps.set(key, timestamp);
   }
 
   void _initializeAniSkip() {
@@ -1393,7 +1383,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     try {
       final service = anilistData.serviceType.onlineService;
-      final currEpisodeNum = (currentEpisode.value.number ?? "1").toInt();
+      final currEpisodeNum = currentEpisode.value.number.toInt();
 
       final int newProgress =
           hasCrossedLimit ? currEpisodeNum : currEpisodeNum - 1;

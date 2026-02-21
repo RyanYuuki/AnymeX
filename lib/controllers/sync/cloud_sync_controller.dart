@@ -4,7 +4,8 @@ import 'package:anymex/controllers/sync/cloud_sync_service.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/utils/logger.dart';
-import 'package:flutter/foundation.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -22,6 +23,7 @@ class CloudSyncController extends GetxController {
   ];
 
   final isSignedIn = false.obs;
+  final isAuthenticating = false.obs;
   final isSyncing = false.obs;
   final lastSyncTime = Rx<DateTime?>(null);
   final syncEnabled = true.obs;
@@ -44,13 +46,58 @@ class CloudSyncController extends GetxController {
       Platform.isAndroid || Platform.isIOS || Platform.isMacOS;
 
   Future<void> signIn() async {
-    if (!_isPlatformSupported || _googleSignIn == null) return;
+    if (!_isPlatformSupported ||
+        _googleSignIn == null ||
+        isAuthenticating.value) {
+      return;
+    }
+    isAuthenticating.value = true;
     try {
       _account = await _googleSignIn!.signIn();
-      if (_account != null) await _refreshAndApply();
+      if (_account != null) {
+        await _refreshAndApply();
+      }
+    } on PlatformException catch (e, st) {
+      _handleSignInPlatformException(e, st);
     } catch (e) {
       Logger.e('[CloudSyncController] signIn error: $e');
+      snackBar(
+        'Google sign-in failed. Please try again.',
+        duration: 3500,
+        maxLines: 3,
+      );
+    } finally {
+      isAuthenticating.value = false;
     }
+  }
+
+  void _handleSignInPlatformException(PlatformException e, StackTrace st) {
+    Logger.e('[CloudSyncController] signIn error: $e', stackTrace: st);
+    final errorText = '${e.message ?? ''} ${e.details ?? ''}';
+    final isApi10 =
+        e.code == 'sign_in_failed' && errorText.contains('ApiException: 10');
+
+    if (isApi10) {
+      snackBar(
+        'Google Sign-In is not configured for this build (ApiException 10). '
+        'Add this app\'s SHA-1/SHA-256 for com.ryan.anymex in Firebase/Google Cloud, '
+        'download a new android/app/google-services.json, then reinstall the app.',
+        duration: 9000,
+        maxLines: 6,
+      );
+      return;
+    }
+
+    if (e.code == 'sign_in_canceled') {
+      snackBar('Google sign-in canceled.', duration: 2000);
+      return;
+    }
+
+    snackBar(
+      'Google sign-in failed (${e.code}). Please try again.',
+      duration: 3500,
+      maxLines: 3,
+    );
   }
 
   Future<void> signOut() async {
@@ -101,7 +148,7 @@ class CloudSyncController extends GetxController {
       return false;
     }
   }
-  
+
   Future<void> pushEpisodeProgress({
     required String mediaId,
     String? malId,
@@ -117,7 +164,8 @@ class CloudSyncController extends GetxController {
         episodeNumber: episode.number,
         timestampMs: episode.timeStampInMilliseconds,
         durationMs: episode.durationInMilliseconds,
-        updatedAt: episode.lastWatchedTime ?? DateTime.now().millisecondsSinceEpoch,
+        updatedAt:
+            episode.lastWatchedTime ?? DateTime.now().millisecondsSinceEpoch,
       );
       await _service.upsert(entry);
     }));
@@ -141,12 +189,13 @@ class CloudSyncController extends GetxController {
         totalPages: chapter.totalPages,
         scrollOffset: chapter.currentOffset,
         maxScrollOffset: chapter.maxOffset,
-        updatedAt: chapter.lastReadTime ?? DateTime.now().millisecondsSinceEpoch,
+        updatedAt:
+            chapter.lastReadTime ?? DateTime.now().millisecondsSinceEpoch,
       );
       await _service.upsert(entry);
     }));
   }
-  
+
   Future<int?> fetchNewerEpisodeTimestamp({
     required String mediaId,
     String? malId,
@@ -161,7 +210,8 @@ class CloudSyncController extends GetxController {
       if (entry.episodeNumber != episodeNumber) return null;
       final cloud = entry.timestampMs ?? 0;
       if (cloud > localTimestampMs) {
-        Logger.i('[CloudSync] Newer timestamp found: ${cloud}ms > ${localTimestampMs}ms');
+        Logger.i(
+            '[CloudSync] Newer timestamp found: ${cloud}ms > ${localTimestampMs}ms');
         return cloud;
       }
       return null;
@@ -185,7 +235,8 @@ class CloudSyncController extends GetxController {
       if (entry.mediaType != mediaType) return null;
       if (entry.chapterNumber != chapterNumber) return null;
       if (entry.updatedAt > localUpdatedAt) {
-        Logger.i('[CloudSync] Newer chapter progress found for $mediaId ch$chapterNumber');
+        Logger.i(
+            '[CloudSync] Newer chapter progress found for $mediaId ch$chapterNumber');
         return entry;
       }
       return null;
