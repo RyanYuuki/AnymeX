@@ -165,15 +165,22 @@ flutter:
         - family: Bahnschrift
           fonts:
             - asset: assets/fonts/bahnschrift.ttf
+            
         - family: Trebuchet
           fonts:
             - asset: assets/fonts/trebuchet.ttf
+            
         - family: Tahoma
           fonts:
             - asset: assets/fonts/tahoma.ttf
+            
         - family: AnimeAce
           fonts:
-            - asset: assets/fonts/anime_ace_3.ttf
+            - asset: assets/fonts/AnimeAce3BB_Regular.otf
+            - asset: assets/fonts/AnimeAce3BB_Bold.otf
+            - asset: assets/fonts/AnimeAce3BB_Italic.otf
+              style: italic
+          
         - family: Cinecaption
           fonts:
             - asset: assets/fonts/cinecaption.ttf
