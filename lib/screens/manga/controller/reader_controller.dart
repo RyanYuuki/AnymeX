@@ -135,6 +135,10 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   final RxBool volumeKeysEnabled = false.obs;
   final RxBool invertVolumeKeys = false.obs;
 
+  final RxBool autoScrollEnabled = false.obs;
+  final RxDouble autoScrollSpeed = 3.0.obs;
+  Timer? _autoScrollTimer;
+
   final RxBool showControls = true.obs;
 
   final Rx<LoadingState> loadingState = LoadingState.loading.obs;
@@ -374,6 +378,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     _disableVolumeKeys();
 
     pageController?.dispose();
+    _stopAutoScroll();
     super.onClose();
   }
 
@@ -492,6 +497,65 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     offlineStorageController.addOrUpdateReadChapter(media.id, chapter);
   }
 
+  void toggleAutoScroll() {
+    autoScrollEnabled.value = !autoScrollEnabled.value;
+    if (autoScrollEnabled.value) {
+      _startAutoScroll();
+    } else {
+      _stopAutoScroll();
+    }
+    savePreferences();
+  }
+
+  void setAutoScrollSpeed(double speed) {
+    autoScrollSpeed.value = speed;
+    if (autoScrollEnabled.value) {
+      _stopAutoScroll();
+      _startAutoScroll();
+    }
+    savePreferences();
+  }
+
+  void _startAutoScroll() {
+    _stopAutoScroll();
+    if (readingLayout.value == MangaPageViewMode.continuous) {
+      final pixelsPerSecond = Get.height / autoScrollSpeed.value;
+      const tickMs = 50;
+      _autoScrollTimer = Timer.periodic(
+        const Duration(milliseconds: tickMs),
+        (_) {
+          if (!autoScrollEnabled.value) {
+            _stopAutoScroll();
+            return;
+          }
+          final offset = pixelsPerSecond * tickMs / 1000;
+          final isReversed = readingDirection.value.reversed;
+          scrollOffsetController?.animateScroll(
+            offset: isReversed ? -offset : offset,
+            duration: const Duration(milliseconds: tickMs),
+            curve: Curves.linear,
+          );
+        },
+      );
+    } else {
+      _autoScrollTimer = Timer.periodic(
+        Duration(milliseconds: (autoScrollSpeed.value * 1000).toInt()),
+        (_) {
+          if (!autoScrollEnabled.value) {
+            _stopAutoScroll();
+            return;
+          }
+          navigateForward();
+        },
+      );
+    }
+  }
+
+  void _stopAutoScroll() {
+    _autoScrollTimer?.cancel();
+    _autoScrollTimer = null;
+  }
+
   void navigateToChapter(int index) async {
     if (index < 0 || index >= chapterList.length) return;
 
@@ -559,6 +623,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     overscrollToChapter.value = ReaderKeys.overscrollToChapter.get<bool>(true);
     preloadPages.value = ReaderKeys.preloadPages.get<int>(3);
     showPageIndicator.value = ReaderKeys.showPageIndicator.get<bool>(false);
+    autoScrollEnabled.value = ReaderKeys.autoScrollEnabled.get<bool>(false);
+    autoScrollSpeed.value = ReaderKeys.autoScrollSpeed.get<double>(3.0);
     // Both features: crop images AND volume keys
     cropImages.value = ReaderKeys.cropImages.get<bool>(false);
     volumeKeysEnabled.value = ReaderKeys.volumeKeysEnabled.get<bool>(false);
@@ -588,6 +654,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     ReaderKeys.overscrollToChapter.set(overscrollToChapter.value);
     ReaderKeys.preloadPages.set(preloadPages.value);
     ReaderKeys.showPageIndicator.set(showPageIndicator.value);
+    ReaderKeys.autoScrollEnabled.set(autoScrollEnabled.value);
+    ReaderKeys.autoScrollSpeed.set(autoScrollSpeed.value);
     // Both features: crop images AND volume keys
     ReaderKeys.cropImages.set(cropImages.value);
     ReaderKeys.volumeKeysEnabled.set(volumeKeysEnabled.value);
