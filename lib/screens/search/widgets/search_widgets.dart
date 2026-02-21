@@ -2,13 +2,6 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-// ---------------------------------------------------------------------------
-// FilterConfig – each service provides its own filter options
-// ---------------------------------------------------------------------------
-
-/// Describes which filter fields a service supports and what values they accept.
-/// Pass a [FilterConfig] to [showFilterBottomSheet] so the sheet is fully
-/// driven by the service rather than hardcoded values.
 class FilterConfig {
   const FilterConfig({
     this.sorts = const {},
@@ -26,7 +19,6 @@ class FilterConfig {
     this.supportsSeason = true,
   });
 
-  /// Map of display label → API value (e.g. 'Trending' → 'TRENDING_DESC').
   final Map<String, String> sorts;
   final List<String> formats;
   final Map<String, String> formatLabels;
@@ -40,8 +32,6 @@ class FilterConfig {
   final bool supportsGenres;
   final bool supportsTags;
   final bool supportsSeason;
-
-  // ── AniList anime ──────────────────────────────────────────────────────────
 
   static const FilterConfig anilistAnime = FilterConfig(
     sorts: {
@@ -101,8 +91,6 @@ class FilterConfig {
     ],
   );
 
-  // ── AniList manga ──────────────────────────────────────────────────────────
-
   static const FilterConfig anilistManga = FilterConfig(
     sorts: {
       'Trending': 'TRENDING_DESC',
@@ -136,7 +124,7 @@ class FilterConfig {
       'CANCELLED': 'Cancelled',
       'HIATUS': 'Hiatus',
     },
-    // Manga has no seasons
+    
     seasons: [],
     seasonLabels: {},
     genres: [
@@ -154,10 +142,6 @@ class FilterConfig {
     ],
     supportsSeason: false,
   );
-
-  // ── MAL / Jikan (limited API) ──────────────────────────────────────────────
-  // Jikan v4 supports: type, status, genres, order_by, sort, rating.
-  // Tags are not a Jikan concept (only genre IDs), so supportsTags = false.
 
   static const FilterConfig malAnime = FilterConfig(
     sorts: {
@@ -243,17 +227,11 @@ class FilterConfig {
   );
 }
 
-// ---------------------------------------------------------------------------
-// Public entry-point
-// ---------------------------------------------------------------------------
-
 void showFilterBottomSheet(
   BuildContext context,
   Function(dynamic args) onApplyFilter, {
   Map<String, dynamic>? currentFilters,
-  /// Provide a [FilterConfig] to fully control which options appear.
   FilterConfig? config,
-  /// Convenience flag kept for existing callers – ignored when [config] is set.
   bool isManga = false,
 }) {
   final resolvedConfig = config ??
@@ -271,10 +249,6 @@ void showFilterBottomSheet(
     ),
   );
 }
-
-// ---------------------------------------------------------------------------
-// FilterSheet widget
-// ---------------------------------------------------------------------------
 
 class FilterSheet extends StatefulWidget {
   const FilterSheet({
@@ -335,7 +309,6 @@ class _FilterSheetState extends State<FilterSheet> {
     super.dispose();
   }
 
-  /// Reverse-lookup: API value → display label.
   String? get _sortLabel => _sort == null
       ? null
       : cfg.sorts.entries
@@ -381,9 +354,7 @@ class _FilterSheetState extends State<FilterSheet> {
     });
     Navigator.pop(context);
   }
-
-  // ── Build ────────────────────────────────────────────────────────────────
-
+  
   @override
   Widget build(BuildContext context) {
     final cs = context.colors;
@@ -492,8 +463,6 @@ class _FilterSheetState extends State<FilterSheet> {
       ),
     );
   }
-
-  // ── UI helpers ───────────────────────────────────────────────────────────
 
   Widget _buildHandle(ColorScheme cs) => Padding(
         padding: const EdgeInsets.only(top: 14, bottom: 4),
@@ -815,10 +784,6 @@ class _FilterSheetState extends State<FilterSheet> {
     );
   }
 }
-
-// ---------------------------------------------------------------------------
-// _ChipPicker – searchable multi-select chip grid
-// ---------------------------------------------------------------------------
 
 class _ChipPicker extends StatelessWidget {
   const _ChipPicker({
