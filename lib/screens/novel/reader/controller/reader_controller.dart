@@ -1,5 +1,5 @@
+import 'dart:async';
 import 'package:anymex/utils/logger.dart';
-
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -50,9 +50,12 @@ class NovelReaderController extends GetxController {
   // Auto-hide timer
   RxBool autoHideEnabled = true.obs;
 
-  // Page Indicatorssss
+  // Page Indicators
   RxDouble progress = 0.0.obs;
   RxInt consecutiveReads = 0.obs;
+  RxBool autoScrollEnabled = false.obs;
+  RxDouble autoScrollSpeed = 3.0.obs;
+  Timer? _autoScrollTimer;
 
   Rx<Chapter> savedChapter = Chapter().obs;
 
@@ -69,6 +72,7 @@ class NovelReaderController extends GetxController {
   void onClose() {
     _saveTracking();
     scrollController.removeListener(_scrollListener);
+    _stopAutoScroll();
     super.onClose();
   }
 
@@ -107,9 +111,7 @@ class NovelReaderController extends GetxController {
       if (!scrollController.hasClients) continue;
       if (scrollController.position.maxScrollExtent >= current) {
         scrollController.animateTo(current,
-            duration: const Duration(
-              milliseconds: 300,
-            ),
+            duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut);
         break;
       }
@@ -139,18 +141,22 @@ class NovelReaderController extends GetxController {
     final ctrl = Get.isRegistered<GistSyncController>()
         ? Get.find<GistSyncController>()
         : null;
-    if (ctrl == null || !ctrl.isSignedIn.value || !ctrl.syncEnabled.value) return;
+    if (ctrl == null || !ctrl.isLoggedIn.value || !ctrl.syncEnabled.value) {
+      return;
+    }
     try {
       final chapter = currentChapter.value;
       if (chapter.number == null) return;
       final localUpdated = chapter.lastReadTime ?? 0;
 
-      final entry = await ctrl.fetchNewerChapterProgress(
-        mediaId: media.id,
-        mediaType: 'novel',
-        chapterNumber: chapter.number!,
-        localUpdatedAt: localUpdated,
-      ).timeout(const Duration(seconds: 4), onTimeout: () => null);
+      final entry = await ctrl
+          .fetchNewerChapterProgress(
+            mediaId: media.id,
+            mediaType: 'novel',
+            chapterNumber: chapter.number!,
+            localUpdatedAt: localUpdated,
+          )
+          .timeout(const Duration(seconds: 4), onTimeout: () => null);
 
       if (entry?.scrollOffset != null) {
         final offset = entry!.scrollOffset!;
@@ -165,7 +171,56 @@ class NovelReaderController extends GetxController {
         }
       }
     } catch (e) {
+      Logger.i('[GistSync] _resumeFromCloudIfNewer: $e');
     }
+  }
+
+  void toggleAutoScroll() {
+    autoScrollEnabled.value = !autoScrollEnabled.value;
+    if (autoScrollEnabled.value) {
+      _startAutoScroll();
+    } else {
+      _stopAutoScroll();
+    }
+  }
+
+  void setAutoScrollSpeed(double speed) {
+    autoScrollSpeed.value = speed;
+    if (autoScrollEnabled.value) {
+      _stopAutoScroll();
+      _startAutoScroll();
+    }
+  }
+
+  void _startAutoScroll() {
+    _stopAutoScroll();
+    final pixelsPerSecond = Get.height / autoScrollSpeed.value;
+    const tickMs = 50;
+    _autoScrollTimer = Timer.periodic(
+      const Duration(milliseconds: tickMs),
+      (_) {
+        if (!autoScrollEnabled.value) {
+          _stopAutoScroll();
+          return;
+        }
+        if (!scrollController.hasClients) return;
+        final current = scrollController.offset;
+        final max = scrollController.position.maxScrollExtent;
+        if (current >= max) {
+          _stopAutoScroll();
+          autoScrollEnabled.value = false;
+          return;
+        }
+        final newOffset =
+            (current + pixelsPerSecond * tickMs / 1000).clamp(0.0, max);
+        scrollController.jumpTo(newOffset);
+      },
+    );
+  }
+
+  void _stopAutoScroll() {
+    _autoScrollTimer?.cancel();
+    _autoScrollTimer = null;
   }
 
   void _saveTracking() {
