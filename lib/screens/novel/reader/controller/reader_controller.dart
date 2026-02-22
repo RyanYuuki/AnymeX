@@ -213,8 +213,7 @@ class NovelReaderController extends GetxController {
           autoScrollEnabled.value = false;
           return;
         }
-        final newOffset =
-            (current + pixelsPerSecond * tickMs / 1000).clamp(0.0, max);
+        final newOffset = (current + pixelsPerSecond * tickMs / 1000).clamp(0.0, max);
         scrollController.jumpTo(newOffset);
       },
     );
