@@ -328,16 +328,31 @@ class Media {
     );
   }
 
-  factory Media.fromJson(Map<String, dynamic> json, {Map<String, dynamic>? pageJson}) {
+  factory Media.fromJson(Map<String, dynamic> json,
+      {Map<String, dynamic>? pageJson}) {
     ItemType type = json['type'] == "ANIME"
         ? ItemType.anime
         : json['type'] == "MANGA"
             ? ItemType.manga
             : ItemType.novel;
-    
+
+    List<Media> recs = [];
+    final recsJson = json['recommendations'];
+    if (recsJson != null) {
+      if (recsJson['nodes'] != null) {
+        recs =
+            (recsJson['nodes'] as List).map((r) => Media.fromRecs(r)).toList();
+      } else if (recsJson['edges'] != null) {
+        recs = (recsJson['edges'] as List)
+            .map((e) => Media.fromRecs(e['node'] ?? {}))
+            .where((m) => m.id.isNotEmpty && m.id != '')
+            .toList();
+      }
+    }
+
     var media = Media(
       id: json['id'].toString(),
-      idMal: json['idMal'].toString(),
+      idMal: json['idMal']?.toString() ?? '0',
       romajiTitle: json['title']['romaji'] ?? '?',
       title: json['title']['english'] ?? json['title']['romaji'] ?? '?',
       description: json['description'] ?? '?',
@@ -358,24 +373,25 @@ class Media {
       seasonYear: json['seasonYear'] ?? json['startDate']?['year'],
       totalChapters: json['chapters']?.toString() ?? '?',
       genres: List<String>.from(json['genres'] ?? []),
-      studios: (json['studios']['nodes'] as List)
-          .map((el) => el['name'].toString())
-          .toList(),
-      characters: (json['characters']['edges'] as List?)
+      studios: (json['studios']?['nodes'] as List?)
+              ?.map((el) => el['name'].toString())
+              .toList() ??
+          [],
+      characters: (json['characters']?['edges'] as List?)
           ?.map((character) => Character.fromJson(character))
           .toList(),
-      relations: (json['relations']['edges'] as List)
-          .map((relation) => Relation.fromJson(relation))
-          .toList(),
-      recommendations: (json['recommendations']['nodes'] as List)
-          .map((recommendation) => Media.fromRecs(recommendation))
-          .toList(),
+      relations: (json['relations']?['edges'] as List?)
+              ?.map((relation) => Relation.fromJson(relation))
+              .toList() ??
+          [],
+      recommendations: recs,
       nextAiringEpisode: json['nextAiringEpisode'] != null
           ? NextAiringEpisode.fromJson(json['nextAiringEpisode'])
           : null,
-      rankings: (json['rankings'] as List)
-          .map((ranking) => Ranking.fromJson(ranking))
-          .toList(),
+      rankings: (json['rankings'] as List?)
+              ?.map((ranking) => Ranking.fromJson(ranking))
+              .toList() ??
+          [],
       mediaType: type,
       serviceType: ServicesType.anilist,
     );
@@ -395,6 +411,21 @@ class Media {
     return media;
   }
 
+  void mergeSecondaryData(Map<String, dynamic> mediaJson,
+      {Map<String, dynamic>? pageJson}) {
+    if (mediaJson['staffPreview'] != null) {
+      staff = (mediaJson['staffPreview']['edges'] as List?)
+          ?.map((e) => Staff.fromJson(e))
+          .toList();
+    }
+
+    if (pageJson != null) {
+      friendsWatching = (pageJson['mediaList'] as List?)
+          ?.map((e) => TrackedMedia.fromSocialJson(e))
+          .toList();
+    }
+  }
+
   factory Media.fromSmallJson(Map<String, dynamic> json, bool isManga,
       {bool isMal = false, String? role}) {
     if (json['type'] == 'MANGA') {
@@ -412,12 +443,14 @@ class Media {
       cover: json['bannerImage'],
       rating: ((json['averageScore'] ?? 0) / 10).toStringAsFixed(1),
       type: json['type'] ?? (isManga ? 'MANGA' : 'ANIME'),
-      mediaType: (json['type'] == 'MANGA' || isManga) ? ItemType.manga : ItemType.anime,
+      mediaType: (json['type'] == 'MANGA' || isManga)
+          ? ItemType.manga
+          : ItemType.anime,
       userStatus: json['mediaListEntry']?['status'],
       serviceType: ServicesType.anilist,
       characterRole: role,
       seasonYear: json['seasonYear'] ?? json['startDate']?['year'],
-    )..type = json['type'] ?? (isManga ? 'MANGA' : 'ANIME'); 
+    )..type = json['type'] ?? (isManga ? 'MANGA' : 'ANIME');
   }
   factory Media.fromCarouselData(CarouselData data, ItemType type) {
     return Media(

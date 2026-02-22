@@ -1331,16 +1331,16 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       if (currentTimestamp == null) return;
       if (episodeDuration.value.inMinutes < 1) return;
 
-      final screenshot = await _basePlayer.screenshot(
-        includeSubtitles: true,
-        format: 'image/png',
-      );
+      Uint8List? screenshot;
+      String? thumbnailBase64;
 
-      final String? thumbnailBase64 =
-          screenshot != null ? base64Encode(screenshot) : null;
+      if (settings.enableScreenshot) {
+        screenshot = await _basePlayer.screenshot(
+          includeSubtitles: true,
+          format: 'image/png',
+        );
 
-      if (screenshot == null) {
-        Logger.w('Screenshot failed — thumbnail will not be saved');
+        thumbnailBase64 = screenshot != null ? base64Encode(screenshot) : null;
       }
 
       final episodeToSave = Episode(

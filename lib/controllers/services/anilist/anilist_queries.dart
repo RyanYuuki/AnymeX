@@ -1,4 +1,4 @@
-const detailsQuery = '''
+const detailsPrimaryQuery = '''
     query (\$id: Int) {
       Media(id: \$id) {
         id
@@ -8,7 +8,6 @@ const detailsQuery = '''
           romaji
           english
           native
-          userPreferred
         }
         description
         coverImage {
@@ -27,7 +26,6 @@ const detailsQuery = '''
         chapters
         format
         popularity
-        favourites
         startDate {
           year
           month
@@ -39,42 +37,88 @@ const detailsQuery = '''
           day
         }
         genres
-        studios(isMain: true) {
+        studios {
           nodes {
-            id
             name
-            siteUrl
           }
         }
         characters(sort: [ROLE, FAVOURITES_DESC], perPage: 25, page: 1) {
           edges {
-            role
             node {
-              id
               name {
                 full
-                userPreferred
               }
               favourites
               image {
                 large
               }
-              description
-              isFavourite
             }
             voiceActors(language: JAPANESE) {
-              id
               name {
                 full
-                userPreferred
               }
               image {
                 large
               }
-              languageV2
             }
           }
         }
+        relations {
+          edges {
+            relationType
+            node {
+              id
+              title {
+                romaji
+                english
+              }
+              coverImage {
+                large
+              }
+              bannerImage
+              type
+              status
+              averageScore
+            }
+          }
+        }
+        recommendations {
+          edges {
+            node {
+              mediaRecommendation {
+                id
+                title {
+                  romaji
+                  english
+                }
+                coverImage {
+                  large
+                }
+                type
+                averageScore
+              }
+            }
+          }
+        }
+        nextAiringEpisode {
+          airingAt
+          timeUntilAiring
+          episode
+        }
+        rankings {
+          rank
+          type
+          year
+        }
+      }
+    }
+  ''';
+
+const detailsSecondaryQuery = '''
+    query (\$id: Int) {
+      Media(id: \$id) {
+        id
+        favourites
         staffPreview: staff(perPage: 25, sort: [RELEVANCE, ID]) {
           edges {
             role
@@ -89,53 +133,6 @@ const detailsQuery = '''
               }
             }
           }
-        }
-        relations {
-          edges {
-            relationType(version: 2)
-            node {
-              id
-              idMal
-              title {
-                romaji
-                english
-                userPreferred
-              }
-              coverImage {
-                large
-              }
-              type
-              status(version: 2)
-              averageScore
-            }
-          }
-        }
-        recommendations(sort: RATING_DESC) {
-          nodes {
-            mediaRecommendation {
-              id
-              title {
-                romaji
-                english
-                userPreferred
-              }
-              coverImage {
-                large
-              }
-              type
-              averageScore
-            }
-          }
-        }
-        nextAiringEpisode {
-          airingAt
-          timeUntilAiring
-          episode
-        }
-        rankings {
-          rank
-          type
-          year
         }
         externalLinks {
           url
@@ -158,7 +155,6 @@ const detailsQuery = '''
         }
       }
     }
-
   ''';
 
 const characterDetailsQuery = '''
