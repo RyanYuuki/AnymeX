@@ -57,7 +57,6 @@ class GistSyncController extends GetxController {
     );
     if (configuredRedirect != null) return configuredRedirect;
 
-    // Backward-compatible fallback: some configs store full redirect URI here.
     return _normalizeRedirectUri(
       (dotenv.env['GITHUB_CALLBACK_SCHEME'] ?? '').trim(),
     );
