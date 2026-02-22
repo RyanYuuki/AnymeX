@@ -67,6 +67,127 @@ class GistProgressEntry {
       };
 }
 
+const _dohProviders = [
+  'https://dns.google/resolve',
+  'https://cloudflare-dns.com/dns-query',
+];
+
+Future<String?> _resolveViaDoh(String hostname) async {
+  for (final provider in _dohProviders) {
+    try {
+      final uri = Uri.parse(provider).replace(
+        queryParameters: {'name': hostname, 'type': 'A'},
+      );
+      final resp = await http
+          .get(uri, headers: {'Accept': 'application/dns-json'})
+          .timeout(const Duration(seconds: 5));
+
+      if (resp.statusCode == 200) {
+        final data = json.decode(resp.body) as Map<String, dynamic>;
+        final answers = data['Answer'] as List<dynamic>?;
+        if (answers != null && answers.isNotEmpty) {
+          for (final answer in answers) {
+            if ((answer['type'] as int?) == 1) {
+              final ip = answer['data'] as String?;
+              if (ip != null && ip.isNotEmpty) {
+                Logger.i('[GistSync] DoH resolved $hostname → $ip via $provider');
+                return ip;
+              }
+            }
+          }
+        }
+      }
+    } catch (e) {
+      Logger.i('[GistSync] DoH provider $provider failed: $e');
+    }
+  }
+  return null;
+}
+
+Uri _uriWithIp(Uri originalUri, String ip) {
+  return originalUri.replace(host: ip);
+}
+
+Future<http.Response> _resilientGet(
+  Uri uri,
+  Map<String, String> headers,
+) async {
+  try {
+    final resp = await http
+        .get(uri, headers: headers)
+        .timeout(const Duration(seconds: 10));
+    if (resp.statusCode < 500) return resp;
+  } catch (e) {
+    Logger.i('[GistSync] Normal GET failed, trying DoH fallback: $e');
+  }
+
+  final ip = await _resolveViaDoh(uri.host);
+  if (ip == null) {
+    return http.get(uri, headers: headers);
+  }
+
+  final fallbackUri = _uriWithIp(uri, ip);
+  final fallbackHeaders = {
+    ...headers,
+    'Host': uri.host,
+  };
+  return http
+      .get(fallbackUri, headers: fallbackHeaders)
+      .timeout(const Duration(seconds: 10));
+}
+
+Future<http.Response> _resilientPost(
+  Uri uri,
+  Map<String, String> headers, {
+  String? body,
+}) async {
+  try {
+    final resp = await http
+        .post(uri, headers: headers, body: body)
+        .timeout(const Duration(seconds: 10));
+    if (resp.statusCode < 500) return resp;
+  } catch (e) {
+    Logger.i('[GistSync] Normal POST failed, trying DoH fallback: $e');
+  }
+
+  final ip = await _resolveViaDoh(uri.host);
+  if (ip == null) {
+    return http.post(uri, headers: headers, body: body);
+  }
+
+  final fallbackUri = _uriWithIp(uri, ip);
+  final fallbackHeaders = {...headers, 'Host': uri.host};
+  return http
+      .post(fallbackUri, headers: fallbackHeaders, body: body)
+      .timeout(const Duration(seconds: 10));
+}
+
+Future<http.Response> _resilientPatch(
+  Uri uri,
+  Map<String, String> headers, {
+  String? body,
+}) async {
+  try {
+    final resp = await http
+        .patch(uri, headers: headers, body: body)
+        .timeout(const Duration(seconds: 10));
+    if (resp.statusCode < 500) return resp;
+  } catch (e) {
+    Logger.i('[GistSync] Normal PATCH failed, trying DoH fallback: $e');
+  }
+
+  final ip = await _resolveViaDoh(uri.host);
+  if (ip == null) {
+    return http.patch(uri, headers: headers, body: body);
+  }
+
+  final fallbackUri = _uriWithIp(uri, ip);
+  final fallbackHeaders = {...headers, 'Host': uri.host};
+  return http
+      .patch(fallbackUri, headers: fallbackHeaders, body: body)
+      .timeout(const Duration(seconds: 10));
+}
+
 class GistSyncService {
   static const _fileName = 'anymex_progress.json';
   static const _apiBase = 'https://api.github.com';
@@ -101,8 +222,10 @@ class GistSyncService {
   Future<String?> _ensureGistId() async {
     if (_gistId != null) return _gistId;
     try {
-      final resp =
-          await http.get(Uri.parse('$_apiBase/gists'), headers: _headers);
+      final resp = await _resilientGet(
+        Uri.parse('$_apiBase/gists'),
+        _headers,
+      );
       if (resp.statusCode != 200) {
         Logger.e('[GistSync] List gists failed: ${resp.statusCode}');
         return null;
@@ -117,10 +240,10 @@ class GistSyncService {
           return _gistId;
         }
       }
-      
-      final create = await http.post(
+
+      final create = await _resilientPost(
         Uri.parse('$_apiBase/gists'),
-        headers: _headers,
+        _headers,
         body: json.encode({
           'description': 'AnymeX progress sync',
           'public': false,
@@ -147,9 +270,9 @@ class GistSyncService {
       final gistId = await _ensureGistId();
       if (gistId == null) return {};
 
-      final resp = await http.get(
+      final resp = await _resilientGet(
         Uri.parse('$_apiBase/gists/$gistId'),
-        headers: _headers,
+        _headers,
       );
       if (resp.statusCode != 200) return {};
 
@@ -169,9 +292,9 @@ class GistSyncService {
       final gistId = await _ensureGistId();
       if (gistId == null) return;
 
-      final resp = await http.patch(
+      final resp = await _resilientPatch(
         Uri.parse('$_apiBase/gists/$gistId'),
-        headers: _headers,
+        _headers,
         body: json.encode({
           'files': {
             _fileName: {'content': json.encode(data)},
