@@ -8,14 +8,16 @@ import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/anilist/anilist_queries.dart';
 import 'package:anymex/controllers/services/anilist/kitsu.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
-import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/database/data_keys/keys.dart';
+import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
+import 'package:anymex/models/Media/character.dart';
 import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/database/isar_models/episode.dart';
+import 'package:anymex/models/Media/staff.dart';
 import 'package:anymex/models/Service/base_service.dart';
 import 'package:anymex/models/Service/online_service.dart';
 import 'package:anymex/screens/home_page.dart';
@@ -34,8 +36,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart';
-import 'package:anymex/models/Media/character.dart';
-import 'package:anymex/models/Media/staff.dart';
 
 Map<String, dynamic> _parseJson(String body) {
   return jsonDecode(body) as Map<String, dynamic>;
@@ -819,7 +819,7 @@ averageScore
     };
 
     final Map<String, dynamic> body = {
-      'query': detailsQuery,
+      'query': detailsPrimaryQuery,
       'variables': variables,
     };
 
@@ -840,9 +840,9 @@ averageScore
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final media = data['data']['Media'];
-        final page = data['data']['Page'];
         cacheController.addCache(media);
-        return Media.fromJson(media, pageJson: page);
+        Logger.i('Primary Data Loaded for id: ${params.id}');
+        return Media.fromJson(media);
       } else if (response.statusCode == 429) {
         warningSnackBar('Chill for a min, you got rate limited.');
         throw Exception(response.body);
@@ -853,6 +853,45 @@ averageScore
       Logger.i('Error occurred while fetching details: $e');
     }
     return Media(serviceType: ServicesType.simkl);
+  }
+
+  Future<void> fetchSecondaryDetails(String id, Media media) async {
+    const String url = 'https://graphql.anilist.co/';
+    final Map<String, dynamic> variables = {
+      'id': int.parse(id),
+    };
+
+    final Map<String, dynamic> body = {
+      'query': detailsSecondaryQuery,
+      'variables': variables,
+    };
+
+    final token = AuthKeys.authToken.get<String?>();
+    final headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
+
+    try {
+      final response = await post(
+        Uri.parse(url),
+        headers: headers,
+        body: json.encode(body),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final mediaJson = data['data']['Media'];
+        final page = data['data']['Page'];
+        media.mergeSecondaryData(mediaJson, pageJson: page);
+        Logger.i('Secondary Data Loaded for id: $id');
+      } else {
+        Logger.i('Secondary fetch failed: ${response.statusCode}');
+      }
+    } catch (e) {
+      Logger.i('Error fetching secondary details: $e');
+    }
   }
 
   @override
@@ -936,7 +975,6 @@ averageScore
         body: jsonEncode({'query': batchQuery, 'variables': variables}),
       );
 
-      
       if (response.statusCode == 429) {
         final retryAfter =
             int.tryParse(response.headers['retry-after'] ?? '') ?? 60;
@@ -951,7 +989,6 @@ averageScore
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body) as Map<String, dynamic>;
 
-       
         final errors = body['errors'] as List?;
         if (errors != null && errors.isNotEmpty) {
           Logger.i(
@@ -1026,7 +1063,7 @@ averageScore
               .map((m) => m['countryOfOrigin'] as String?)
               .whereType<String>()
               .toSet();
-         
+
           const coreCountries = ['JP', 'KR', 'CN', 'TW'];
           final extras = apiCountries
               .where((c) => !coreCountries.contains(c))
