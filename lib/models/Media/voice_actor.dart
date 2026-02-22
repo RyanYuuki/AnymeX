@@ -17,8 +17,8 @@ class VoiceActor {
   factory VoiceActor.fromJson(Map<String, dynamic> json) {
     return VoiceActor(
       id: json['id']?.toString(),
-      name: json['name']['userPreferred'] ?? json['name']['full'],
-      image: json['image']['large'],
+      name: json['name']?['userPreferred'] ?? json['name']?['full'],
+      image: json['image']?['large'],
       language: json['languageV2'],
       isFavourite: (json['isFavourite'] as bool?) ?? false,
     );

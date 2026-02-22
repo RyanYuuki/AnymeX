@@ -386,10 +386,8 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
       selectedItem: settings.playerSettings.value.translateTo.obs,
       getTitle: (code) => SubtitleTranslator.languages[code]!,
       onItemSelected: (code) {
-        final current = settings.playerSettings.value;
-        current.translateTo = code;
-        settings.playerSettings.value = current;
-        settings.playerSettings.refresh();
+        settings.playerSettings.update((s) => s?.translateTo = code);
+        PlayerSettingsKeys.translateTo.set(code);
         setState(() {});
       },
     );
@@ -620,6 +618,15 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                   switchValue: settings.enableSwipeControls,
                                   onChanged: (val) =>
                                       settings.enableSwipeControls = val),
+                              CustomSwitchTile(
+                                  padding: const EdgeInsets.all(10),
+                                  icon: Icons.screenshot_rounded,
+                                  title: "Save Last Frame",
+                                  description:
+                                      "Saves a screenshot of the last frame you watched. Disabling this significantly reduces storage usage",
+                                  switchValue: settings.enableScreenshot,
+                                  onChanged: (val) =>
+                                      settings.enableScreenshot = val),
                               CustomSliderTile(
                                 sliderValue: settings.seekDuration.toDouble(),
                                 max: 50,
@@ -691,10 +698,8 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                 switchValue:
                                     settings.playerSettings.value.autoTranslate,
                                 onChanged: (val) {
-                                  final current = settings.playerSettings.value;
-                                  current.autoTranslate = val;
-                                  settings.playerSettings.value = current;
-                                  settings.playerSettings.refresh();
+                                  settings.playerSettings.update((s) => s?.autoTranslate = val);
+                                  PlayerSettingsKeys.autoTranslate.set(val);
                                   setState(() {});
                                 },
                               ),
@@ -874,6 +879,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                         content: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            _buildJsonThemeInfoCard(),
                             _buildSectionLabel('Left Side'),
                             ReorderableListView.builder(
                               key: const Key('left_list'),
@@ -967,6 +973,41 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
               .textTheme
               .titleMedium
               ?.copyWith(fontFamily: 'Poppins-SemiBold')),
+    );
+  }
+
+  Widget _buildJsonThemeInfoCard() {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: colorScheme.primaryContainer.opaque(0.18, iReallyMeanIt: true),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: colorScheme.primary.opaque(0.4, iReallyMeanIt: true),
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            Icons.info_outline_rounded,
+            size: 18,
+            color: colorScheme.primary,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'If you are using a JSON theme, changes here will not affect player controls. Switch to a built-in theme to apply these settings.',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurface,
+                    height: 1.35,
+                  ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

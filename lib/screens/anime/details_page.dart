@@ -8,7 +8,6 @@ import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/controllers/services/jikan.dart';
 import 'package:anymex/controllers/settings/methods.dart';
-import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/source/source_mapper.dart';
 import 'package:anymex/database/comments/model/comment.dart';
@@ -175,7 +174,6 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   Future<void> _fetchFillerInfo() async {
     final malId = anilistData?.idMal ?? widget.media.idMal;
 
-
     try {
       final data = await JikanService.getFillerEpisodes(malId.toString());
       if (data.isNotEmpty) {
@@ -267,6 +265,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       if (isExtensions) {
         _processExtensionData(tempData);
       } else {
+        _fetchSecondaryData(tempData);
         Future.wait([_mapToService(), _syncMediaIds(), _fetchFillerInfo()]);
       }
     } catch (e) {
@@ -276,6 +275,21 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       }
       Logger.i("Media Details Fetch Failed => $e");
     } finally {}
+  }
+
+  Future<void> _fetchSecondaryData(Media tempData) async {
+    try {
+      if (widget.media.serviceType.service is AnilistData) {
+        final anilistService = widget.media.serviceType.service as AnilistData;
+        await anilistService.fetchSecondaryDetails(
+            widget.media.id.toString(), tempData);
+        if (mounted) {
+          setState(() {});
+        }
+      }
+    } catch (e) {
+      Logger.i("Secondary Data Fetch Failed => $e");
+    }
   }
 
   Future<void> _mapToService({int? requestId}) async {

@@ -1,79 +1,31 @@
-import 'package:hive/hive.dart';
+import 'dart:convert';
 
-part 'ui_adaptor.g.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 
-@HiveType(typeId: 4)
-class UISettings extends HiveObject {
-  @HiveField(0)
+class UISettings {
   double glowMultiplier;
-
-  @HiveField(1)
   double radiusMultiplier;
-
-  @HiveField(2)
   bool saikouLayout;
-
-  @HiveField(3)
   double tabBarHeight;
-
-  @HiveField(4)
   double tabBarWidth;
-
-  @HiveField(5)
   double tabBarRoundness;
-
-  @HiveField(6)
   bool compactCards;
-
-  @HiveField(7)
   double cardRoundness;
-
-  @HiveField(8)
   double blurMultipler;
-
-  @HiveField(9)
   int animationDuration;
-
-  @HiveField(10)
   bool translucentTabBar;
-
-  @HiveField(11)
   double glowDensity;
-
-  @HiveField(12)
   Map<String, bool> homePageCards;
-
-  @HiveField(13)
   bool enableAnimation;
-
-  @HiveField(14)
   bool disableGradient;
-
-  @HiveField(15)
   Map<String, bool> homePageCardsMal;
-
-  @HiveField(16)
   int cardStyle;
-
-  @HiveField(17)
   int historyCardStyle;
-
-  @HiveField(18)
   bool liquidMode;
-
-  @HiveField(19)
   String liquidBackgroundPath;
-
-  @HiveField(20)
   bool retainOriginalColor;
-
-  @HiveField(21)
   bool usePosterColor;
-
-  @HiveField(22)
   bool enablePosterKenBurns;
-
-  @HiveField(23)
   int carouselStyle;
 
   UISettings({
@@ -138,5 +90,61 @@ class UISettings extends HiveObject {
     homePageCardsMal = Map<String, bool>.from(homePageCardsMal);
     homePageCardsMal.putIfAbsent('Recommended Animes', () => true);
     homePageCardsMal.putIfAbsent('Recommended Mangas', () => true);
+  }
+
+  factory UISettings.fromDB() {
+    final uiDefaults = UISettings();
+    final homeCardsRaw = UISettingsKeys.homePageCards.get<String?>(null);
+    final homeCardsMalRaw = UISettingsKeys.homePageCardsMal.get<String?>(null);
+    return UISettings(
+      glowMultiplier:
+          UISettingsKeys.glowMultiplier.get<double>(uiDefaults.glowMultiplier),
+      radiusMultiplier: UISettingsKeys.radiusMultiplier
+          .get<double>(uiDefaults.radiusMultiplier),
+      saikouLayout:
+          UISettingsKeys.saikouLayout.get<bool>(uiDefaults.saikouLayout),
+      tabBarHeight:
+          UISettingsKeys.tabBarHeight.get<double>(uiDefaults.tabBarHeight),
+      tabBarWidth:
+          UISettingsKeys.tabBarWidth.get<double>(uiDefaults.tabBarWidth),
+      tabBarRoundness: UISettingsKeys.tabBarRoundness
+          .get<double>(uiDefaults.tabBarRoundness),
+      compactCards:
+          UISettingsKeys.compactCards.get<bool>(uiDefaults.compactCards),
+      cardRoundness:
+          UISettingsKeys.cardRoundness.get<double>(uiDefaults.cardRoundness),
+      blurMultipler:
+          UISettingsKeys.blurMultipler.get<double>(uiDefaults.blurMultipler),
+      animationDuration: UISettingsKeys.animationDuration
+          .get<int>(uiDefaults.animationDuration),
+      translucentTabBar: UISettingsKeys.translucentTabBar
+          .get<bool>(uiDefaults.translucentTabBar),
+      glowDensity:
+          UISettingsKeys.glowDensity.get<double>(uiDefaults.glowDensity),
+      homePageCards: homeCardsRaw != null
+          ? Map<String, bool>.from(jsonDecode(homeCardsRaw))
+          : null,
+      enableAnimation:
+          UISettingsKeys.enableAnimation.get<bool>(uiDefaults.enableAnimation),
+      disableGradient:
+          UISettingsKeys.disableGradient.get<bool>(uiDefaults.disableGradient),
+      homePageCardsMal: homeCardsMalRaw != null
+          ? Map<String, bool>.from(jsonDecode(homeCardsMalRaw))
+          : null,
+      cardStyle: UISettingsKeys.cardStyle.get<int>(uiDefaults.cardStyle),
+      historyCardStyle:
+          UISettingsKeys.historyCardStyle.get<int>(uiDefaults.historyCardStyle),
+      liquidMode: UISettingsKeys.liquidMode.get<bool>(uiDefaults.liquidMode),
+      retainOriginalColor: UISettingsKeys.retainOriginalColor
+          .get<bool>(uiDefaults.retainOriginalColor),
+      liquidBackgroundPath: UISettingsKeys.liquidBackgroundPath
+          .get<String>(uiDefaults.liquidBackgroundPath),
+      usePosterColor:
+          UISettingsKeys.usePosterColor.get<bool>(uiDefaults.usePosterColor),
+      enablePosterKenBurns: UISettingsKeys.enablePosterKenBurns
+          .get<bool>(uiDefaults.enablePosterKenBurns),
+      carouselStyle:
+          UISettingsKeys.carouselStyle.get<int>(uiDefaults.carouselStyle),
+    );
   }
 }

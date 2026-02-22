@@ -1,4 +1,5 @@
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
+import 'package:anymex/screens/manga/widgets/reader/auto_scroll_menu.dart';
 import 'package:anymex/screens/manga/widgets/reader/bottom_controls.dart';
 import 'package:anymex/screens/manga/widgets/reader/themes/setup/reader_control_theme.dart';
 import 'package:anymex/screens/manga/widgets/reader/top_controls.dart';
@@ -20,5 +21,11 @@ class DefaultReaderControlTheme extends ReaderControlTheme {
   Widget buildBottomControls(
       BuildContext context, ReaderController controller) {
     return ReaderBottomControls(controller: controller);
+  }
+
+  @override
+  Widget buildCenterControls(
+      BuildContext context, ReaderController controller) {
+    return const ReaderAutoScrollMenu();
   }
 }
