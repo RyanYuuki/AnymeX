@@ -38,6 +38,7 @@ class GistSyncController extends GetxController {
   final isSyncing = false.obs;
   final syncEnabled = true.obs;
   final autoDeleteCompletedOnExit = true.obs;
+  final hasCloudGist = RxnBool();
   final lastSyncTime = Rx<DateTime?>(null);
   final lastSyncDurationMs = RxnInt();
   final lastSyncSuccessful = RxnBool();
@@ -200,6 +201,7 @@ class GistSyncController extends GetxController {
     await _storage.delete(key: _kTokenKey);
     await _storage.delete(key: _kUsernameKey);
     isLoggedIn.value = false;
+    hasCloudGist.value = null;
     githubUsername.value = null;
     lastSyncTime.value = null;
     lastSyncDurationMs.value = null;
@@ -222,6 +224,20 @@ class GistSyncController extends GetxController {
   bool get _canSync =>
       isLoggedIn.value && syncEnabled.value && _service.isReady;
 
+  Future<void> refreshCloudGistStatus() async {
+    if (!isLoggedIn.value || !_service.isReady) {
+      hasCloudGist.value = null;
+      return;
+    }
+    try {
+      hasCloudGist.value = await _service.hasSyncGist().timeout(
+            const Duration(seconds: 8),
+          );
+    } catch (e) {
+      Logger.i('[GistSync] refreshCloudGistStatus: $e');
+    }
+  }
+
   Future<void> manualSyncNow() async {
     if (!isLoggedIn.value || !_service.isReady) {
       errorSnackBar('Connect GitHub first to sync progress.');
@@ -232,18 +248,24 @@ class GistSyncController extends GetxController {
       return;
     }
 
+    final isInitializeAction = hasCloudGist.value != true;
     final stopwatch = Stopwatch()..start();
     _beginSyncOp();
     try {
       await _service.syncNow();
+      hasCloudGist.value = true;
       _markSyncSuccess(durationMs: stopwatch.elapsedMilliseconds);
       successSnackBar(
-        'Progress synced in ${_formatElapsed(stopwatch.elapsedMilliseconds)}.',
+        isInitializeAction
+            ? 'Cloud gist initialized in ${_formatElapsed(stopwatch.elapsedMilliseconds)}.'
+            : 'Progress synced in ${_formatElapsed(stopwatch.elapsedMilliseconds)}.',
       );
     } catch (e) {
       _markSyncFailure(e, durationMs: stopwatch.elapsedMilliseconds);
       errorSnackBar(
-        'Sync failed after ${_formatElapsed(stopwatch.elapsedMilliseconds)}.',
+        isInitializeAction
+            ? 'Initialization failed after ${_formatElapsed(stopwatch.elapsedMilliseconds)}.'
+            : 'Sync failed after ${_formatElapsed(stopwatch.elapsedMilliseconds)}.',
       );
     } finally {
       stopwatch.stop();
@@ -267,10 +289,12 @@ class GistSyncController extends GetxController {
       final deleted = await _service.deleteSyncGist();
       final elapsed = stopwatch.elapsedMilliseconds;
       if (!deleted) {
+        hasCloudGist.value = false;
         infoSnackBar('No AnymeX sync gist found to delete.');
         return;
       }
 
+      hasCloudGist.value = false;
       lastSyncTime.value = null;
       lastSyncDurationMs.value = null;
       lastSyncSuccessful.value = null;
@@ -302,7 +326,13 @@ class GistSyncController extends GetxController {
     final stopwatch = Stopwatch()..start();
     _beginSyncOp();
     try {
-      final raw = await _service.downloadRaw();
+      final raw = await _service.downloadRawIfExists();
+      if (raw == null) {
+        hasCloudGist.value = false;
+        infoSnackBar('No AnymeX sync gist found. Initialize first.');
+        return null;
+      }
+      hasCloudGist.value = true;
       _markSyncSuccess(durationMs: stopwatch.elapsedMilliseconds);
       return _normalizeRawData(raw);
     } catch (e) {
@@ -343,11 +373,13 @@ class GistSyncController extends GetxController {
       Map<String, dynamic> payload = normalizedImported;
 
       if (mergeWithCloud) {
-        cloudRaw = _normalizeRawData(await _service.downloadRaw());
+        cloudRaw = _normalizeRawData(
+            await _service.downloadRawIfExists() ?? const <String, dynamic>{});
         payload = _mergeRawData(cloudRaw, normalizedImported);
       }
 
       await _service.uploadRaw(payload);
+      hasCloudGist.value = true;
       _markSyncSuccess(durationMs: stopwatch.elapsedMilliseconds);
 
       return GistImportResult(
@@ -724,6 +756,7 @@ class GistSyncController extends GetxController {
     _beginSyncOp();
     try {
       await fn();
+      hasCloudGist.value = true;
       _markSyncSuccess(durationMs: stopwatch.elapsedMilliseconds);
     } catch (e) {
       _markSyncFailure(e, durationMs: stopwatch.elapsedMilliseconds);

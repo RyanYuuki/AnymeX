@@ -302,22 +302,25 @@ class GistSyncService {
     return null;
   }
 
+  Future<Map<String, dynamic>> _downloadRawByGistId(String gistId) async {
+    final resp = await _resilientGet(
+      Uri.parse('$_apiBase/gists/$gistId'),
+      _headers,
+    );
+    if (resp.statusCode != 200) return {};
+
+    final data = json.decode(resp.body) as Map<String, dynamic>;
+    final content = ((data['files'] as Map<String, dynamic>?)?[_fileName]
+        as Map<String, dynamic>?)?['content'] as String?;
+    if (content == null || content.trim().isEmpty) return {};
+    return json.decode(content) as Map<String, dynamic>;
+  }
+
   Future<Map<String, dynamic>> _downloadRaw() async {
     try {
       final gistId = await _ensureGistId();
       if (gistId == null) return {};
-
-      final resp = await _resilientGet(
-        Uri.parse('$_apiBase/gists/$gistId'),
-        _headers,
-      );
-      if (resp.statusCode != 200) return {};
-
-      final data = json.decode(resp.body) as Map<String, dynamic>;
-      final content = ((data['files'] as Map<String, dynamic>?)?[_fileName]
-          as Map<String, dynamic>?)?['content'] as String?;
-      if (content == null || content.trim().isEmpty) return {};
-      return json.decode(content) as Map<String, dynamic>;
+      return _downloadRawByGistId(gistId);
     } catch (e) {
       Logger.e('[GistSync] _downloadRaw: $e');
       return {};
@@ -329,6 +332,32 @@ class GistSyncService {
       throw StateError('Sync service is not ready.');
     }
     return _downloadRaw();
+  }
+
+  Future<Map<String, dynamic>?> downloadRawIfExists() async {
+    if (!isReady) {
+      throw StateError('Sync service is not ready.');
+    }
+    try {
+      final gistId = await _findExistingGistId();
+      if (gistId == null) return null;
+      return _downloadRawByGistId(gistId);
+    } catch (e) {
+      Logger.e('[GistSync] downloadRawIfExists: $e');
+      return null;
+    }
+  }
+
+  Future<bool> hasSyncGist() async {
+    if (!isReady) {
+      throw StateError('Sync service is not ready.');
+    }
+    try {
+      return await _findExistingGistId() != null;
+    } catch (e) {
+      Logger.e('[GistSync] hasSyncGist: $e');
+      return false;
+    }
   }
 
   Future<void> _upload(Map<String, dynamic> data) async {

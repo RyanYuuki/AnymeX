@@ -53,6 +53,7 @@ class _GistSyncCard extends StatelessWidget {
       final isSyncing = ctrl.isSyncing.value;
       final syncEnabled = ctrl.syncEnabled.value;
       final autoDeleteCompletedOnExit = ctrl.autoDeleteCompletedOnExit.value;
+      final hasCloudGist = ctrl.hasCloudGist.value;
       final lastSync = ctrl.lastSyncTime.value;
       final lastSyncSuccessful = ctrl.lastSyncSuccessful.value;
       final lastSyncDurationMs = ctrl.lastSyncDurationMs.value;
@@ -77,6 +78,7 @@ class _GistSyncCard extends StatelessWidget {
               InkWell(
                 onTap: () {
                   if (isLogged) {
+                    unawaited(ctrl.refreshCloudGistStatus());
                     _showManageSheet(context, ctrl);
                   } else {
                     ctrl.login(context);
@@ -153,6 +155,7 @@ class _GistSyncCard extends StatelessWidget {
                             colors,
                             isLogged: isLogged,
                             isSyncing: isSyncing,
+                            hasCloudGist: hasCloudGist,
                             lastSyncSuccessful: lastSyncSuccessful,
                           ),
                           shape: BoxShape.circle,
@@ -164,6 +167,7 @@ class _GistSyncCard extends StatelessWidget {
                           text: _statusText(
                             isLogged: isLogged,
                             isSyncing: isSyncing,
+                            hasCloudGist: hasCloudGist,
                             lastSync: lastSync,
                             lastSyncSuccessful: lastSyncSuccessful,
                             lastSyncDurationMs: lastSyncDurationMs,
@@ -262,10 +266,12 @@ class _GistSyncCard extends StatelessWidget {
     dynamic colors, {
     required bool isLogged,
     required bool isSyncing,
+    required bool? hasCloudGist,
     required bool? lastSyncSuccessful,
   }) {
     if (!isLogged) return colors.outline;
     if (isSyncing) return colors.primary;
+    if (hasCloudGist == false) return const Color(0xFFF59E0B);
     if (lastSyncSuccessful == false) return const Color(0xFFEF5350);
     return const Color(0xFF238636);
   }
@@ -273,14 +279,19 @@ class _GistSyncCard extends StatelessWidget {
   String _statusText({
     required bool isLogged,
     required bool isSyncing,
+    required bool? hasCloudGist,
     required DateTime? lastSync,
     required bool? lastSyncSuccessful,
     required int? lastSyncDurationMs,
     required String? lastSyncError,
   }) {
     if (!isLogged) return 'Status: Not connected';
+    if (hasCloudGist == false) {
+      if (isSyncing) return 'Status: Initializing cloud gist...';
+      return 'Status: Connected · gist not initialized';
+    }
     if (isSyncing) return 'Status: Sync in progress...';
-    if (lastSync == null) return 'Status: Connected · waiting for first sync';
+    if (lastSync == null) return 'Status: Connected';
     final base = _formatLastSync(lastSync, durationMs: lastSyncDurationMs);
     if (lastSyncSuccessful == false) {
       if (lastSyncError != null && lastSyncError.isNotEmpty) {
@@ -363,8 +374,18 @@ class _GistSyncCard extends StatelessWidget {
                   size: 18,
                 ),
                 const SizedBox(height: 14),
-                ListTile(
-                  leading: ctrl.isSyncing.value
+                Builder(builder: (context) {
+                  final needsInitialize = ctrl.hasCloudGist.value != true;
+                  final isSyncing = ctrl.isSyncing.value;
+                  final title = isSyncing
+                      ? (needsInitialize ? 'Initializing...' : 'Syncing...')
+                      : (needsInitialize ? 'Initialize' : 'Sync Now');
+                  final subtitle = needsInitialize
+                      ? (isSyncing
+                          ? 'Creating your AnymeX cloud gist'
+                          : 'Create your AnymeX cloud gist first')
+                      : 'Sync progress to your cloud gist';
+                  final leading = isSyncing
                       ? SizedBox(
                           width: 20,
                           height: 20,
@@ -373,17 +394,24 @@ class _GistSyncCard extends StatelessWidget {
                             color: ctx.colors.primary,
                           ),
                         )
-                      : const Icon(Icons.sync_rounded),
-                  title: Text(ctrl.isSyncing.value ? 'Syncing...' : 'Sync Now'),
-                  onTap: ctrl.isSyncing.value
-                      ? null
-                      : () {
-                          ctrl.manualSyncNow();
-                        },
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                  tileColor: ctx.colors.surfaceContainer,
-                ),
+                      : Icon(needsInitialize
+                          ? Icons.cloud_upload_rounded
+                          : Icons.sync_rounded);
+
+                  return ListTile(
+                    leading: leading,
+                    title: Text(title),
+                    subtitle: Text(subtitle),
+                    onTap: isSyncing
+                        ? null
+                        : () {
+                            ctrl.manualSyncNow();
+                          },
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                    tileColor: ctx.colors.surfaceContainer,
+                  );
+                }),
                 const SizedBox(height: 10),
                 ListTile(
                   leading: const Icon(Icons.download_rounded),
@@ -557,25 +585,178 @@ class _GistSyncCard extends StatelessWidget {
   Future<_GistImportMode?> _showImportModeDialog(BuildContext context) {
     return showDialog<_GistImportMode>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Import Gist JSON'),
-        content: const Text(
-          'Choose how to apply the uploaded file.\n\nMerge keeps unique entries from both sources and uses the newer updated entry when keys overlap.',
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+        child: Container(
+          decoration: BoxDecoration(
+            color: ctx.colors.surfaceContainer,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: ctx.colors.outlineVariant.withOpacity(0.35),
+            ),
+          ),
+          padding: const EdgeInsets.fromLTRB(18, 18, 18, 14),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 38,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      color: ctx.colors.primaryContainer,
+                      borderRadius: BorderRadius.circular(11),
+                    ),
+                    child: Icon(
+                      Icons.upload_file_rounded,
+                      color: ctx.colors.onPrimaryContainer,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: AnymexText(
+                      text: 'Import Gist JSON',
+                      variant: TextVariant.semiBold,
+                      size: 16,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: AnymexText(
+                  text:
+                      'Choose how to apply the selected JSON file to your AnymeX cloud gist.',
+                  size: 12,
+                  color: ctx.colors.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 14),
+              _ImportModeOptionTile(
+                icon: Icons.hub_rounded,
+                title: 'Merge With Cloud',
+                subtitle:
+                    'Keep both uploaded and cloud entries. If the same entry exists in both places, the newer one is kept.',
+                badge: 'Recommended',
+                accent: ctx.colors.primary,
+                onTap: () => Navigator.of(ctx).pop(_GistImportMode.merge),
+              ),
+              const SizedBox(height: 10),
+              _ImportModeOptionTile(
+                icon: Icons.swap_horiz_rounded,
+                title: 'Replace Cloud Gist',
+                subtitle:
+                    'Remove current cloud entries and replace them with the uploaded file.',
+                accent: ctx.colors.error,
+                onTap: () => Navigator.of(ctx).pop(_GistImportMode.replace),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  child: const Text('Cancel'),
+                ),
+              ),
+            ],
+          ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cancel'),
+      ),
+    );
+  }
+}
+
+class _ImportModeOptionTile extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final String? badge;
+  final Color accent;
+  final VoidCallback onTap;
+
+  const _ImportModeOptionTile({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.accent,
+    required this.onTap,
+    this.badge,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: Ink(
+          decoration: BoxDecoration(
+            color: colors.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: accent.withOpacity(0.35), width: 1.2),
           ),
-          OutlinedButton(
-            onPressed: () => Navigator.of(ctx).pop(_GistImportMode.merge),
-            child: const Text('Merge'),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  color: accent.withOpacity(0.14),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, color: accent, size: 18),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: AnymexText(
+                            text: title,
+                            variant: TextVariant.semiBold,
+                            size: 13,
+                          ),
+                        ),
+                        if (badge != null)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: accent.withOpacity(0.14),
+                              borderRadius: BorderRadius.circular(999),
+                            ),
+                            child: AnymexText(
+                              text: badge!,
+                              size: 10,
+                              variant: TextVariant.semiBold,
+                              color: accent,
+                            ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 3),
+                    AnymexText(
+                      text: subtitle,
+                      size: 11,
+                      maxLines: 3,
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-          FilledButton(
-            onPressed: () => Navigator.of(ctx).pop(_GistImportMode.replace),
-            child: const Text('Replace'),
-          ),
-        ],
+        ),
       ),
     );
   }
