@@ -18,6 +18,20 @@ const _kUsernameKey = 'gist_sync_github_username';
 const _kAutoDeleteCompletedKey = 'gist_sync_auto_delete_completed';
 const _kDefaultGithubCallbackScheme = 'anymex';
 
+class GistImportResult {
+  final bool merged;
+  final int cloudEntriesBefore;
+  final int importedEntries;
+  final int totalEntries;
+
+  const GistImportResult({
+    required this.merged,
+    required this.cloudEntriesBefore,
+    required this.importedEntries,
+    required this.totalEntries,
+  });
+}
+
 class GistSyncController extends GetxController {
   final isLoggedIn = false.obs;
   final isAuthenticating = false.obs;
@@ -269,6 +283,85 @@ class GistSyncController extends GetxController {
       errorSnackBar(
         'Failed to delete sync gist after ${_formatElapsed(stopwatch.elapsedMilliseconds)}.',
       );
+    } finally {
+      stopwatch.stop();
+      _endSyncOp();
+    }
+  }
+
+  Future<Map<String, dynamic>?> fetchRemoteSyncJson() async {
+    if (!isLoggedIn.value || !_service.isReady) {
+      errorSnackBar('Connect GitHub first to export sync data.');
+      return null;
+    }
+    if (isSyncing.value) {
+      infoSnackBar('Another sync action is already in progress.');
+      return null;
+    }
+
+    final stopwatch = Stopwatch()..start();
+    _beginSyncOp();
+    try {
+      final raw = await _service.downloadRaw();
+      _markSyncSuccess(durationMs: stopwatch.elapsedMilliseconds);
+      return _normalizeRawData(raw);
+    } catch (e) {
+      _markSyncFailure(e, durationMs: stopwatch.elapsedMilliseconds);
+      errorSnackBar(
+        'Failed to fetch cloud gist after ${_formatElapsed(stopwatch.elapsedMilliseconds)}.',
+      );
+      return null;
+    } finally {
+      stopwatch.stop();
+      _endSyncOp();
+    }
+  }
+
+  Future<GistImportResult?> importProgressJson(
+    Map<String, dynamic> importedRaw, {
+    required bool mergeWithCloud,
+  }) async {
+    if (!isLoggedIn.value || !_service.isReady) {
+      errorSnackBar('Connect GitHub first to import sync data.');
+      return null;
+    }
+    if (isSyncing.value) {
+      infoSnackBar('Another sync action is already in progress.');
+      return null;
+    }
+
+    final normalizedImported = _normalizeRawData(importedRaw);
+    if (importedRaw.isNotEmpty && normalizedImported.isEmpty) {
+      errorSnackBar('Selected JSON has no valid sync entries.');
+      return null;
+    }
+
+    final stopwatch = Stopwatch()..start();
+    _beginSyncOp();
+    try {
+      Map<String, dynamic> cloudRaw = const {};
+      Map<String, dynamic> payload = normalizedImported;
+
+      if (mergeWithCloud) {
+        cloudRaw = _normalizeRawData(await _service.downloadRaw());
+        payload = _mergeRawData(cloudRaw, normalizedImported);
+      }
+
+      await _service.uploadRaw(payload);
+      _markSyncSuccess(durationMs: stopwatch.elapsedMilliseconds);
+
+      return GistImportResult(
+        merged: mergeWithCloud,
+        cloudEntriesBefore: cloudRaw.length,
+        importedEntries: normalizedImported.length,
+        totalEntries: payload.length,
+      );
+    } catch (e) {
+      _markSyncFailure(e, durationMs: stopwatch.elapsedMilliseconds);
+      errorSnackBar(
+        'Failed to import sync data after ${_formatElapsed(stopwatch.elapsedMilliseconds)}.',
+      );
+      return null;
     } finally {
       stopwatch.stop();
       _endSyncOp();
@@ -681,6 +774,68 @@ class GistSyncController extends GetxController {
       return raw.replaceFirst('StateError:', '').trim();
     }
     return raw;
+  }
+
+  Map<String, dynamic> _normalizeRawData(Map<String, dynamic> raw) {
+    final normalized = <String, dynamic>{};
+    raw.forEach((key, value) {
+      final entry = _coerceEntryMap(value);
+      if (entry != null) {
+        normalized[key.toString()] = entry;
+      }
+    });
+    return normalized;
+  }
+
+  Map<String, dynamic> _mergeRawData(
+    Map<String, dynamic> cloudRaw,
+    Map<String, dynamic> importedRaw,
+  ) {
+    final merged = <String, dynamic>{
+      for (final entry in cloudRaw.entries)
+        entry.key: Map<String, dynamic>.from(
+          _coerceEntryMap(entry.value) ?? const {},
+        ),
+    };
+
+    importedRaw.forEach((key, value) {
+      final incomingEntry = _coerceEntryMap(value);
+      if (incomingEntry == null) return;
+
+      final existingEntry = _coerceEntryMap(merged[key]);
+      if (existingEntry == null) {
+        merged[key] = incomingEntry;
+        return;
+      }
+
+      if (_readUpdatedAt(incomingEntry) >= _readUpdatedAt(existingEntry)) {
+        merged[key] = incomingEntry;
+      }
+    });
+
+    return merged;
+  }
+
+  Map<String, dynamic>? _coerceEntryMap(dynamic value) {
+    if (value is Map<String, dynamic>) {
+      return Map<String, dynamic>.from(value);
+    }
+    if (value is Map) {
+      final mapped = <String, dynamic>{};
+      for (final entry in value.entries) {
+        mapped[entry.key.toString()] = entry.value;
+      }
+      return mapped;
+    }
+    return null;
+  }
+
+  int _readUpdatedAt(Map<String, dynamic> entry) {
+    final raw = entry['updatedAt'];
+    if (raw is int) return raw;
+    if (raw is num) return raw.toInt();
+    if (raw is String) return int.tryParse(raw) ?? 0;
+    return 0;
   }
 
   String _formatElapsed(int ms) {

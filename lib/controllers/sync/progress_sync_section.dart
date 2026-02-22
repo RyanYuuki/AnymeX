@@ -1,8 +1,13 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:anymex/controllers/sync/gist_sync_controller.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
@@ -342,92 +347,98 @@ class _GistSyncCard extends StatelessWidget {
   void _showManageSheet(BuildContext context, GistSyncController ctrl) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
       backgroundColor: context.colors.surface,
       builder: (ctx) => Obx(
         () => Padding(
           padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const AnymexText(
-                text: 'Manage GitHub Gist Sync',
-                variant: TextVariant.bold,
-                size: 18,
-              ),
-              const SizedBox(height: 12),
-              Container(
-                width: double.infinity,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                decoration: BoxDecoration(
-                  color: ctx.colors.surfaceContainer,
-                  borderRadius: BorderRadius.circular(12),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const AnymexText(
+                  text: 'Manage GitHub Gist Sync',
+                  variant: TextVariant.bold,
+                  size: 18,
                 ),
-                child: AnymexText(
-                  text: _statusText(
-                    isLogged: ctrl.isLoggedIn.value,
-                    isSyncing: ctrl.isSyncing.value,
-                    lastSync: ctrl.lastSyncTime.value,
-                    lastSyncSuccessful: ctrl.lastSyncSuccessful.value,
-                    lastSyncDurationMs: ctrl.lastSyncDurationMs.value,
-                    lastSyncError: ctrl.lastSyncError.value,
+                const SizedBox(height: 14),
+                ListTile(
+                  leading: ctrl.isSyncing.value
+                      ? SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.2,
+                            color: ctx.colors.primary,
+                          ),
+                        )
+                      : const Icon(Icons.sync_rounded),
+                  title: Text(ctrl.isSyncing.value ? 'Syncing...' : 'Sync Now'),
+                  onTap: ctrl.isSyncing.value
+                      ? null
+                      : () {
+                          ctrl.manualSyncNow();
+                        },
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  tileColor: ctx.colors.surfaceContainer,
+                ),
+                const SizedBox(height: 10),
+                ListTile(
+                  leading: const Icon(Icons.download_rounded),
+                  title: const Text('Export Gist JSON'),
+                  subtitle: const Text('Download your cloud progress file'),
+                  onTap: ctrl.isSyncing.value
+                      ? null
+                      : () => _exportGistJson(ctx, ctrl),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  tileColor: ctx.colors.surfaceContainer,
+                ),
+                const SizedBox(height: 10),
+                ListTile(
+                  leading: const Icon(Icons.upload_file_rounded),
+                  title: const Text('Import Gist JSON'),
+                  subtitle: const Text('Replace cloud data or merge entries'),
+                  onTap: ctrl.isSyncing.value
+                      ? null
+                      : () => _importGistJson(ctx, ctrl),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  tileColor: ctx.colors.surfaceContainer,
+                ),
+                const SizedBox(height: 10),
+                ListTile(
+                  leading: Icon(
+                    Icons.delete_forever_rounded,
+                    color: ctx.colors.error,
                   ),
-                  size: 12,
-                  color: ctx.colors.onSurfaceVariant,
+                  title: const Text('Delete Cloud Gist'),
+                  subtitle: const Text('Permanently remove AnymeX sync data'),
+                  onTap: ctrl.isSyncing.value
+                      ? null
+                      : () {
+                          _showDeleteGistDialog(ctx, ctrl);
+                        },
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  tileColor: ctx.colors.surfaceContainer,
                 ),
-              ),
-              const SizedBox(height: 14),
-              ListTile(
-                leading: const Icon(IconlyLight.logout),
-                title: const Text('Log Out'),
-                onTap: () {
-                  ctrl.logout();
-                  Navigator.pop(ctx);
-                },
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
-                tileColor: ctx.colors.surfaceContainer,
-              ),
-              const SizedBox(height: 10),
-              ListTile(
-                leading: ctrl.isSyncing.value
-                    ? SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.2,
-                          color: ctx.colors.primary,
-                        ),
-                      )
-                    : const Icon(Icons.sync_rounded),
-                title: Text(ctrl.isSyncing.value ? 'Syncing...' : 'Sync Now'),
-                onTap: ctrl.isSyncing.value
-                    ? null
-                    : () {
-                        ctrl.manualSyncNow();
-                      },
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
-                tileColor: ctx.colors.surfaceContainer,
-              ),
-              const SizedBox(height: 10),
-              ListTile(
-                leading: Icon(
-                  Icons.delete_forever_rounded,
-                  color: ctx.colors.error,
+                const SizedBox(height: 10),
+                ListTile(
+                  leading: const Icon(IconlyLight.logout),
+                  title: const Text('Log Out'),
+                  onTap: () {
+                    ctrl.logout();
+                    Navigator.pop(ctx);
+                  },
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  tileColor: ctx.colors.surfaceContainer,
                 ),
-                title: const Text('Delete Cloud Gist'),
-                subtitle: const Text('Permanently remove AnymeX sync data'),
-                onTap: ctrl.isSyncing.value
-                    ? null
-                    : () {
-                        _showDeleteGistDialog(ctx, ctrl);
-                      },
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
-                tileColor: ctx.colors.surfaceContainer,
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -446,7 +457,131 @@ class _GistSyncCard extends StatelessWidget {
       await ctrl.deleteRemoteSyncGist();
     }
   }
+
+  Future<void> _exportGistJson(
+    BuildContext context,
+    GistSyncController ctrl,
+  ) async {
+    final raw = await ctrl.fetchRemoteSyncJson();
+    if (raw == null) return;
+
+    final formattedJson = const JsonEncoder.withIndent('  ').convert(raw);
+    final fileName =
+        'anymex_progress_${DateTime.now().millisecondsSinceEpoch}.json';
+
+    try {
+      String? outputPath;
+      if (Platform.isAndroid || Platform.isIOS) {
+        outputPath = await FilePicker.platform.saveFile(
+          dialogTitle: 'Export GitHub Gist JSON',
+          fileName: fileName,
+          bytes: utf8.encode(formattedJson),
+          type: FileType.custom,
+          allowedExtensions: ['json'],
+        );
+      } else {
+        outputPath = await FilePicker.platform.saveFile(
+          dialogTitle: 'Export GitHub Gist JSON',
+          fileName: fileName,
+          type: FileType.custom,
+          allowedExtensions: ['json'],
+        );
+        if (outputPath != null) {
+          await File(outputPath).writeAsString(formattedJson, flush: true);
+        }
+      }
+
+      if (outputPath == null) return;
+      successSnackBar('Exported gist JSON.');
+    } catch (e) {
+      Logger.i('[GistSync] _exportGistJson: $e');
+      errorSnackBar('Failed to export gist JSON.');
+    }
+  }
+
+  Future<void> _importGistJson(
+    BuildContext context,
+    GistSyncController ctrl,
+  ) async {
+    try {
+      final picked = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['json'],
+        withData: true,
+      );
+      if (picked == null || picked.files.isEmpty) return;
+
+      final file = picked.files.first;
+      final bytes = file.bytes ??
+          (file.path != null ? await File(file.path!).readAsBytes() : null);
+      if (bytes == null || bytes.isEmpty) {
+        errorSnackBar('Unable to read selected JSON file.');
+        return;
+      }
+
+      final decoded = json.decode(utf8.decode(bytes));
+      if (decoded is! Map) {
+        errorSnackBar('Selected file must contain a JSON object.');
+        return;
+      }
+
+      if (!context.mounted) return;
+      final importMode = await _showImportModeDialog(context);
+      if (importMode == null) return;
+
+      final imported = decoded.map(
+        (key, value) => MapEntry(key.toString(), value),
+      );
+
+      final result = await ctrl.importProgressJson(
+        imported,
+        mergeWithCloud: importMode == _GistImportMode.merge,
+      );
+      if (result == null) return;
+
+      if (result.merged) {
+        successSnackBar(
+          'Merged ${result.importedEntries} imported entries with ${result.cloudEntriesBefore} cloud entries.',
+        );
+      } else {
+        successSnackBar(
+          'Replaced cloud gist with ${result.totalEntries} imported entries.',
+        );
+      }
+    } catch (e) {
+      Logger.i('[GistSync] _importGistJson: $e');
+      errorSnackBar('Failed to import gist JSON.');
+    }
+  }
+
+  Future<_GistImportMode?> _showImportModeDialog(BuildContext context) {
+    return showDialog<_GistImportMode>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Import Gist JSON'),
+        content: const Text(
+          'Choose how to apply the uploaded file.\n\nMerge keeps unique entries from both sources and uses the newer updated entry when keys overlap.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Cancel'),
+          ),
+          OutlinedButton(
+            onPressed: () => Navigator.of(ctx).pop(_GistImportMode.merge),
+            child: const Text('Merge'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(_GistImportMode.replace),
+            child: const Text('Replace'),
+          ),
+        ],
+      ),
+    );
+  }
 }
+
+enum _GistImportMode { replace, merge }
 
 class _DeleteGistConfirmDialog extends StatefulWidget {
   const _DeleteGistConfirmDialog();

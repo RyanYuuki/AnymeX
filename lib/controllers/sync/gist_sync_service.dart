@@ -324,6 +324,13 @@ class GistSyncService {
     }
   }
 
+  Future<Map<String, dynamic>> downloadRaw() async {
+    if (!isReady) {
+      throw StateError('Sync service is not ready.');
+    }
+    return _downloadRaw();
+  }
+
   Future<void> _upload(Map<String, dynamic> data) async {
     try {
       final gistId = await _ensureGistId();
@@ -344,6 +351,13 @@ class GistSyncService {
     } catch (e) {
       Logger.e('[GistSync] _upload: $e');
     }
+  }
+
+  Future<void> uploadRaw(Map<String, dynamic> data) async {
+    if (!isReady) {
+      throw StateError('Sync service is not ready.');
+    }
+    await _upload(data);
   }
 
   String _encodeOneEntryPerLine(Map<String, dynamic> data) {
