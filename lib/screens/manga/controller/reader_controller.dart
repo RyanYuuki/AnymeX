@@ -7,7 +7,7 @@ import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/controllers/sync/cloud_sync_controller.dart';
+import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -982,8 +982,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> _resumeFromCloudIfNewer() async {
-    final ctrl = Get.isRegistered<CloudSyncController>()
-        ? Get.find<CloudSyncController>()
+    final ctrl = Get.isRegistered<GistSyncController>()
+        ? Get.find<GistSyncController>() 
         : null;
     if (ctrl == null || !ctrl.isSignedIn.value || !ctrl.syncEnabled.value) return;
     try {
