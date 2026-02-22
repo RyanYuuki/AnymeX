@@ -53,6 +53,8 @@ enum ReaderKeys {
   volumeKeysEnabled,
   invertVolumeKeys,
   dualPageMode,
+  autoScrollEnabled,
+  autoScrollSpeed,
 }
 
 enum LocalSourceKeys {
@@ -81,6 +83,7 @@ enum AuthKeys {
   malAuthToken,
   malRefreshToken,
   simklAuthToken,
+  malSessionId,
 }
 
 enum SearchKeys { novelSearchedQueries }

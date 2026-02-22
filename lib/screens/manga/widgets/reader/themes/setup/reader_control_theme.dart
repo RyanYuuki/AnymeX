@@ -7,4 +7,5 @@ abstract class ReaderControlTheme {
 
   Widget buildTopControls(BuildContext context, ReaderController controller);
   Widget buildBottomControls(BuildContext context, ReaderController controller);
+  Widget buildCenterControls(BuildContext context, ReaderController controller);
 }

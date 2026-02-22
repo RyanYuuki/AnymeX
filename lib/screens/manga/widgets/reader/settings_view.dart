@@ -291,6 +291,39 @@ class ReaderSettings {
                     );
                   }),
                   Obx(() {
+                    return CustomSwitchTile(
+                      icon: Icons.play_arrow_rounded,
+                      title: "Auto Scroll",
+                      description: "Automatically scroll/advance pages",
+                      switchValue: controller.autoScrollEnabled.value,
+                      onChanged: (val) => controller.toggleAutoScroll(),
+                    );
+                  }),
+                  Obx(() {
+                    if (!controller.autoScrollEnabled.value) {
+                      return const SizedBox.shrink();
+                    }
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: CustomSliderTile(
+                        title: 'Auto Scroll Speed',
+                        sliderValue: controller.autoScrollSpeed.value,
+                        onChanged: (double value) {
+                          controller.setAutoScrollSpeed(value);
+                        },
+                        onChangedEnd: (e) => controller.savePreferences(),
+                        description: controller.readingLayout.value == MangaPageViewMode.continuous
+                            ? 'Seconds to scroll one screen height'
+                            : 'Seconds per page turn',
+                        icon: Icons.speed,
+                        min: 1.0,
+                        max: 10.0,
+                        label: '${controller.autoScrollSpeed.value.toStringAsFixed(1)}s',
+                        divisions: 18,
+                      ),
+                    );
+                  }),
+                  Obx(() {
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),
                       child: CustomSliderTile(
