@@ -53,6 +53,7 @@ class _GistSyncCard extends StatelessWidget {
       final isSyncing = ctrl.isSyncing.value;
       final syncEnabled = ctrl.syncEnabled.value;
       final autoDeleteCompletedOnExit = ctrl.autoDeleteCompletedOnExit.value;
+      final showExitSyncNotifications = ctrl.showExitSyncNotifications.value;
       final hasCloudGist = ctrl.hasCloudGist.value;
       final lastSync = ctrl.lastSyncTime.value;
       final lastSyncSuccessful = ctrl.lastSyncSuccessful.value;
@@ -190,65 +191,132 @@ class _GistSyncCard extends StatelessWidget {
                           color: colors.outlineVariant.withOpacity(0.3)),
                     ),
                   ),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 10),
-                        child: Row(
+                  child: hasCloudGist == true
+                      ? Column(
                           children: [
-                            Expanded(
-                              child: AnymexText(
-                                text: 'Auto-sync while watching / reading',
-                                size: 12,
-                                color: colors.onSurfaceVariant,
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 10),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: AnymexText(
+                                      text:
+                                          'Auto-sync while watching / reading',
+                                      size: 12,
+                                      color: colors.onSurfaceVariant,
+                                    ),
+                                  ),
+                                  Switch(
+                                    value: syncEnabled,
+                                    onChanged: (v) =>
+                                        ctrl.syncEnabled.value = v,
+                                    activeColor: colors.primary,
+                                    materialTapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
+                                  ),
+                                ],
                               ),
                             ),
-                            Switch(
-                              value: syncEnabled,
-                              onChanged: (v) => ctrl.syncEnabled.value = v,
-                              activeColor: colors.primary,
-                              materialTapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
-                            ),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Divider(
-                          height: 1,
-                          color: colors.outlineVariant.withOpacity(0.25),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 10),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: AnymexText(
-                                text: 'Auto-delete completed media from cloud',
-                                size: 12,
-                                color: colors.onSurfaceVariant,
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16),
+                              child: Divider(
+                                height: 1,
+                                color: colors.outlineVariant.withOpacity(0.25),
                               ),
                             ),
-                            Switch(
-                              value: autoDeleteCompletedOnExit,
-                              onChanged: (v) {
-                                unawaited(
-                                  ctrl.setAutoDeleteCompletedOnExit(v),
-                                );
-                              },
-                              activeColor: colors.primary,
-                              materialTapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 10),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: AnymexText(
+                                      text:
+                                          'Auto-delete completed media from cloud',
+                                      size: 12,
+                                      color: colors.onSurfaceVariant,
+                                    ),
+                                  ),
+                                  Switch(
+                                    value: autoDeleteCompletedOnExit,
+                                    onChanged: (v) {
+                                      unawaited(
+                                        ctrl.setAutoDeleteCompletedOnExit(v),
+                                      );
+                                    },
+                                    activeColor: colors.primary,
+                                    materialTapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16),
+                              child: Divider(
+                                height: 1,
+                                color: colors.outlineVariant.withOpacity(0.25),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 10),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: AnymexText(
+                                      text:
+                                          'Show sync notifications when exiting player / reader',
+                                      size: 12,
+                                      color: colors.onSurfaceVariant,
+                                    ),
+                                  ),
+                                  Switch(
+                                    value: showExitSyncNotifications,
+                                    onChanged: (v) {
+                                      unawaited(
+                                        ctrl.setExitSyncNotifications(v),
+                                      );
+                                    },
+                                    activeColor: colors.primary,
+                                    materialTapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
+                        )
+                      : Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 12),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: AnymexText(
+                                  text:
+                                      'Initialize cloud gist to unlock sync toggles',
+                                  size: 12,
+                                  color: colors.onSurfaceVariant,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              FilledButton.tonal(
+                                onPressed: isSyncing
+                                    ? null
+                                    : () {
+                                        unawaited(ctrl.manualSyncNow());
+                                      },
+                                child: Text(
+                                  isSyncing ? 'Initializing...' : 'Initialize',
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
                 ),
             ],
           ),

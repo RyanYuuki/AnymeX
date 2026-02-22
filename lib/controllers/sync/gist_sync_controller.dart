@@ -16,6 +16,7 @@ import 'package:http/http.dart' as http;
 const _kTokenKey = 'gist_sync_github_token';
 const _kUsernameKey = 'gist_sync_github_username';
 const _kAutoDeleteCompletedKey = 'gist_sync_auto_delete_completed';
+const _kExitSyncNotificationsKey = 'gist_sync_exit_sync_notifications';
 const _kDefaultGithubCallbackScheme = 'anymex';
 
 class GistImportResult {
@@ -38,6 +39,7 @@ class GistSyncController extends GetxController {
   final isSyncing = false.obs;
   final syncEnabled = true.obs;
   final autoDeleteCompletedOnExit = true.obs;
+  final showExitSyncNotifications = true.obs;
   final hasCloudGist = RxnBool();
   final lastSyncTime = Rx<DateTime?>(null);
   final lastSyncDurationMs = RxnInt();
@@ -72,8 +74,13 @@ class GistSyncController extends GetxController {
       final token = await _storage.read(key: _kTokenKey);
       final username = await _storage.read(key: _kUsernameKey);
       final autoDeleteRaw = await _storage.read(key: _kAutoDeleteCompletedKey);
+      final exitNotifyRaw =
+          await _storage.read(key: _kExitSyncNotificationsKey);
       if (autoDeleteRaw != null) {
         autoDeleteCompletedOnExit.value = autoDeleteRaw == 'true';
+      }
+      if (exitNotifyRaw != null) {
+        showExitSyncNotifications.value = exitNotifyRaw == 'true';
       }
       if (token != null && token.isNotEmpty) {
         _service.setToken(token);
@@ -218,6 +225,18 @@ class GistSyncController extends GetxController {
       );
     } catch (e) {
       Logger.i('[GistSync] setAutoDeleteCompletedOnExit: $e');
+    }
+  }
+
+  Future<void> setExitSyncNotifications(bool enabled) async {
+    showExitSyncNotifications.value = enabled;
+    try {
+      await _storage.write(
+        key: _kExitSyncNotificationsKey,
+        value: enabled ? 'true' : 'false',
+      );
+    } catch (e) {
+      Logger.i('[GistSync] setExitSyncNotifications: $e');
     }
   }
 
@@ -437,12 +456,12 @@ class GistSyncController extends GetxController {
 
         if (removeResult == GistRemoveResult.removed) {
           _markSyncSuccess(durationMs: elapsedMs);
-          successSnackBar(
+          _notifyExitSyncSuccess(
             'Cloud entry removed in ${_formatElapsedSeconds(elapsedMs)}.',
           );
         } else if (removeResult == GistRemoveResult.notFound) {
           _markSyncSuccess(durationMs: elapsedMs);
-          infoSnackBar(
+          _notifyExitSyncInfo(
             'No cloud entry found to remove (${_formatElapsedSeconds(elapsedMs)}).',
           );
         } else {
@@ -450,7 +469,7 @@ class GistSyncController extends GetxController {
             Exception('Cloud entry removal failed.'),
             durationMs: elapsedMs,
           );
-          errorSnackBar(
+          _notifyExitSyncError(
             'Cloud entry removal failed after ${_formatElapsedSeconds(elapsedMs)}.',
           );
         }
@@ -475,7 +494,7 @@ class GistSyncController extends GetxController {
 
       if (synced) {
         _markSyncSuccess(durationMs: elapsedMs);
-        successSnackBar(
+        _notifyExitSyncSuccess(
           'Cloud sync successful in ${_formatElapsedSeconds(elapsedMs)}.',
         );
       } else {
@@ -483,7 +502,7 @@ class GistSyncController extends GetxController {
           Exception('Cloud entry did not update as expected.'),
           durationMs: elapsedMs,
         );
-        errorSnackBar(
+        _notifyExitSyncError(
           'Cloud sync failed after ${_formatElapsedSeconds(elapsedMs)}.',
         );
       }
@@ -491,11 +510,11 @@ class GistSyncController extends GetxController {
       final elapsedMs = stopwatch.elapsedMilliseconds;
       _markSyncFailure(e, durationMs: elapsedMs);
       if (isCompleted) {
-        errorSnackBar(
+        _notifyExitSyncError(
           'Cloud entry removal failed after ${_formatElapsedSeconds(elapsedMs)}.',
         );
       } else {
-        errorSnackBar(
+        _notifyExitSyncError(
           'Cloud sync failed after ${_formatElapsedSeconds(elapsedMs)}.',
         );
       }
@@ -532,12 +551,12 @@ class GistSyncController extends GetxController {
 
         if (removeResult == GistRemoveResult.removed) {
           _markSyncSuccess(durationMs: elapsedMs);
-          successSnackBar(
+          _notifyExitSyncSuccess(
             'Cloud entry removed in ${_formatElapsedSeconds(elapsedMs)}.',
           );
         } else if (removeResult == GistRemoveResult.notFound) {
           _markSyncSuccess(durationMs: elapsedMs);
-          infoSnackBar(
+          _notifyExitSyncInfo(
             'No cloud entry found to remove (${_formatElapsedSeconds(elapsedMs)}).',
           );
         } else {
@@ -545,7 +564,7 @@ class GistSyncController extends GetxController {
             Exception('Cloud entry removal failed.'),
             durationMs: elapsedMs,
           );
-          errorSnackBar(
+          _notifyExitSyncError(
             'Cloud entry removal failed after ${_formatElapsedSeconds(elapsedMs)}.',
           );
         }
@@ -572,7 +591,7 @@ class GistSyncController extends GetxController {
 
       if (synced) {
         _markSyncSuccess(durationMs: elapsedMs);
-        successSnackBar(
+        _notifyExitSyncSuccess(
           'Cloud sync successful in ${_formatElapsedSeconds(elapsedMs)}.',
         );
       } else {
@@ -580,7 +599,7 @@ class GistSyncController extends GetxController {
           Exception('Cloud entry did not update as expected.'),
           durationMs: elapsedMs,
         );
-        errorSnackBar(
+        _notifyExitSyncError(
           'Cloud sync failed after ${_formatElapsedSeconds(elapsedMs)}.',
         );
       }
@@ -588,11 +607,11 @@ class GistSyncController extends GetxController {
       final elapsedMs = stopwatch.elapsedMilliseconds;
       _markSyncFailure(e, durationMs: elapsedMs);
       if (isCompleted) {
-        errorSnackBar(
+        _notifyExitSyncError(
           'Cloud entry removal failed after ${_formatElapsedSeconds(elapsedMs)}.',
         );
       } else {
-        errorSnackBar(
+        _notifyExitSyncError(
           'Cloud sync failed after ${_formatElapsedSeconds(elapsedMs)}.',
         );
       }
@@ -869,6 +888,21 @@ class GistSyncController extends GetxController {
     if (raw is num) return raw.toInt();
     if (raw is String) return int.tryParse(raw) ?? 0;
     return 0;
+  }
+
+  void _notifyExitSyncSuccess(String message) {
+    if (!showExitSyncNotifications.value) return;
+    successSnackBar(message);
+  }
+
+  void _notifyExitSyncInfo(String message) {
+    if (!showExitSyncNotifications.value) return;
+    infoSnackBar(message);
+  }
+
+  void _notifyExitSyncError(String message) {
+    if (!showExitSyncNotifications.value) return;
+    errorSnackBar(message);
   }
 
   String _formatElapsed(int ms) {
