@@ -1,6 +1,6 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/controllers/sync/cloud_sync_controller.dart';
+import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/database/isar_models/custom_list.dart';
 import 'package:anymex/database/isar_models/episode.dart';
@@ -19,10 +19,10 @@ enum MediaLibraryType {
 }
 
 class OfflineStorageController extends GetxController {
-  CloudSyncController? get _syncCtrl =>
-      Get.isRegistered<CloudSyncController>()
-          ? Get.find<CloudSyncController>()
-          : null;
+  GistSyncController? get _syncCtrl =>
+    Get.isRegistered<GistSyncController>()
+        ? Get.find<GistSyncController>()
+        : null;
 
   (String mediaId, String? malId) _extractIds(String primaryId,
       {String? malIdHint}) {
