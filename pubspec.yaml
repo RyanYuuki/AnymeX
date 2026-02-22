@@ -32,9 +32,6 @@ dependencies:
     flutter_secure_storage: ^9.2.2
     get: ^4.6.6
     grouped_list: ^6.0.0
-    google_sign_in: ^6.2.1
-    googleapis: ^13.2.0
-    googleapis_auth: ^1.6.0
     hive: ^2.2.3
     hive_flutter: ^1.1.0
     html: any
