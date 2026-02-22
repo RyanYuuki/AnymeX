@@ -335,8 +335,8 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
     );
   }
 
-  void _showColorSelectionDialog(
-      String title, Color currentColor, Function(String) onColorSelected) {
+    void _showColorSelectionDialog(String title, Color currentColor,
+      Function(String) onColorSelected, Map<String, Color> options) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -353,7 +353,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
             width: double.maxFinite,
             child: SuperListView(
               physics: const BouncingScrollPhysics(),
-              children: colorOptions.entries.map((entry) {
+              children: options.entries.map((entry) {
                 return RadioListTile<Color>(
                   title: Text(entry.key),
                   value: entry.value,
@@ -775,10 +775,11 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                 onTap: () {
                                   _showColorSelectionDialog(
                                       'Select Subtitle Color',
-                                      fontColorOptions[settings.subtitleColor]!,
+                                      fontColorOptions[settings.subtitleColor] ??
+                                          fontColorOptions['Default']!,
                                       (color) {
                                     settings.subtitleColor = color;
-                                  });
+                                  }, fontColorOptions);
                                 },
                               ),
                               // Subtitle Outline Color
@@ -791,9 +792,11 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                   _showColorSelectionDialog(
                                       'Select Subtitle Outline Color',
                                       colorOptions[settings
-                                          .subtitleOutlineColor]!, (color) {
+                                              .subtitleOutlineColor] ??
+                                          colorOptions['None']!,
+                                      (color) {
                                     settings.subtitleOutlineColor = color;
-                                  });
+                                  }, colorOptions);
                                 },
                               ),
 
@@ -806,9 +809,11 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                   _showColorSelectionDialog(
                                       'Select Subtitle Background Color',
                                       colorOptions[settings
-                                          .subtitleBackgroundColor]!, (color) {
+                                              .subtitleBackgroundColor] ??
+                                          colorOptions['None']!,
+                                      (color) {
                                     settings.subtitleBackgroundColor = color;
-                                  });
+                                  }, colorOptions);
                                 },
                               ),
                               // Subtitle Preview
@@ -863,16 +868,18 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                           text: Text(
                                             'Subtitle Preview Text',
                                             style: TextStyle(
-                                              color: colorOptions[
-                                                  settings.subtitleColor],
+                                              color: fontColorOptions[
+                                                  settings.subtitleColor] ??
+                                                fontColorOptions['Default'],
                                               fontSize: settings.subtitleSize
                                                   .toDouble(),
                                             ),
                                           ),
                                           strokes: [
                                             OutlinedTextStroke(
-                                                color: fontColorOptions[settings
-                                                    .subtitleOutlineColor]!,
+                                              color: colorOptions[settings
+                                                  .subtitleOutlineColor] ??
+                                                colorOptions['Black']!,
                                                 width: settings
                                                     .subtitleOutlineWidth
                                                     .toDouble())

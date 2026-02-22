@@ -68,6 +68,8 @@ class PlayerSettings {
 
   factory PlayerSettings.fromDB() {
     final defaults = PlayerSettings();
+    final storedSubtitleColor =
+        PlayerSettingsKeys.subtitleColor.get<String>(defaults.subtitleColor);
     final storedSubtitleBackgroundColor = PlayerSettingsKeys
         .subtitleBackgroundColor
         .get<String>(defaults.subtitleBackgroundColor);
@@ -81,7 +83,7 @@ class PlayerSettings {
       subtitleSize:
           PlayerSettingsKeys.subtitleSize.get<int>(defaults.subtitleSize),
       subtitleColor:
-          PlayerSettingsKeys.subtitleColor.get<String>(defaults.subtitleColor),
+          storedSubtitleColor == 'None' ? 'Default' : storedSubtitleColor,
       subtitleFont:
           PlayerSettingsKeys.subtitleFont.get<String>(defaults.subtitleFont),
       subtitleBackgroundColor: storedSubtitleBackgroundColor == 'Default'
