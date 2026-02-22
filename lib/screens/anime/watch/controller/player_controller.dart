@@ -7,7 +7,7 @@ import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/controllers/sync/cloud_sync_controller.dart';
+import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/database/isar_models/video.dart' as model;
@@ -482,10 +482,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     Duration startPosition = Duration(milliseconds: localStamp);
 
     try {
-      final ctrl = Get.isRegistered<CloudSyncController>()
-          ? Get.find<CloudSyncController>()
+      final ctrl = Get.isRegistered<GistSyncController>()
+          ? Get.find<GistSyncController>() 
           : null;
-      if (ctrl != null && ctrl.isSignedIn.value && ctrl.syncEnabled.value) {
+      if (ctrl != null && ctrl.isConnected.value && ctrl.syncEnabled.value) {
         final cloudMs = await ctrl
             .fetchNewerEpisodeTimestamp(
               mediaId: anilistData.id,
