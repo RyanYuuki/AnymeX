@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:anymex/controllers/sync/gist_sync_service.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
@@ -46,7 +47,6 @@ class GistSyncController extends GetxController {
     }
   }
   
-  @override
   Future<void> login(BuildContext context) async {
     final clientId = dotenv.env['GITHUB_CLIENT_ID'] ?? '';
     final clientSecret = dotenv.env['GITHUB_CLIENT_SECRET'] ?? '';

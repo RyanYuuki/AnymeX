@@ -1053,17 +1053,19 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     final ctrl = Get.isRegistered<GistSyncController>()
         ? Get.find<GistSyncController>() 
         : null;
-    if (ctrl == null || !ctrl.isSignedIn.value || !ctrl.syncEnabled.value) return;
+    if (ctrl == null || !ctrl.isLoggedIn.value || !ctrl.syncEnabled.value) {
+      return;
+    }
     try {
       final chapter = currentChapter.value;
-      if (chapter?.number == null) return;
-      final localUpdated = chapter?.lastReadTime ?? 0;
+      if (chapter == null || chapter.number == null) return;
+      final localUpdated = chapter.lastReadTime ?? 0;
 
       final entry = await ctrl.fetchNewerChapterProgress(
         mediaId: media.id,
-        malId: media.idMal?.toString(),
+        malId: media.idMal.toString(),
         mediaType: 'manga',
-        chapterNumber: chapter!.number!,
+        chapterNumber: chapter.number!,
         localUpdatedAt: localUpdated,
       ).timeout(const Duration(seconds: 4), onTimeout: () => null);
 
@@ -1075,6 +1077,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         });
       }
     } catch (e) {
+      Logger.i('[MangaReader] Failed to resume progress from cloud: $e');
     }
   }
 
