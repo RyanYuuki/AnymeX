@@ -112,7 +112,7 @@ class NovelReaderController extends GetxController {
       if (scrollController.position.maxScrollExtent >= current) {
         scrollController.animateTo(current,
             duration: const Duration(
-              milliseconds: 300
+              milliseconds: 300,
             ),
             curve: Curves.easeInOut);
         break;
