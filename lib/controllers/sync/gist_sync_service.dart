@@ -332,7 +332,7 @@ class GistSyncService {
         _headers,
         body: json.encode({
           'files': {
-            _fileName: {'content': json.encode(data)},
+            _fileName: {'content': _encodeOneEntryPerLine(data)},
           },
         }),
       );
@@ -342,6 +342,24 @@ class GistSyncService {
     } catch (e) {
       Logger.e('[GistSync] _upload: $e');
     }
+  }
+
+  String _encodeOneEntryPerLine(Map<String, dynamic> data) {
+    if (data.isEmpty) return '{}';
+
+    final entries = data.entries.toList()
+      ..sort((a, b) => a.key.compareTo(b.key));
+
+    final buffer = StringBuffer('{\n');
+    for (var i = 0; i < entries.length; i++) {
+      final entry = entries[i];
+      final encodedKey = json.encode(entry.key);
+      final encodedValue = json.encode(entry.value);
+      final isLast = i == entries.length - 1;
+      buffer.write('  $encodedKey: $encodedValue${isLast ? '' : ','}\n');
+    }
+    buffer.write('}');
+    return buffer.toString();
   }
 
   Future<void> syncNow() async {
