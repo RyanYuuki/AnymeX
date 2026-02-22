@@ -177,9 +177,15 @@ flutter:
         - family: AnimeAce
           fonts:
             - asset: assets/fonts/AnimeAce3BB_Regular.otf
+              weight: 400
             - asset: assets/fonts/AnimeAce3BB_Bold.otf
+              weight: 700
             - asset: assets/fonts/AnimeAce3BB_Italic.otf
               style: italic
+              weight: 400
+            - asset: assets/fonts/AnimeAce3BB_BoldItalic.otf
+              style: italic
+              weight: 700
           
         - family: Cinecaption
           fonts:

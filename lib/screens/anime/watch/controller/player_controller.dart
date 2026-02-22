@@ -76,25 +76,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   static final _assRx = RegExp(r'\{[^}]*\}');
   static final _newlineRx = RegExp(r'\\[nN]');
 
-  static const Map<String, String> availableFonts = {
-    'Trebuchet': 'Trebuchet MS',
-    'Bahnschrift': 'Bahnschrift',
-    'Tahoma': 'Tahoma',
-    'Anime Ace 3': 'AnimeAce',
-    'Poppins': 'Poppins',
-    'Hind': 'Hind',
-    'Ravi Prakash': 'RaviPrakash',
-    'Hind Siliguri': 'HindSiliguri',
-    'Noto Sans JP': 'NotoSansJP',
-    'M Plus 1p': 'MPlus1p',
-    'Cinecaption': 'Cinecaption',
-    'Nanum Gothic': 'NanumGothic',
-    'Nanum Pen': 'NanumPenScript',
-    'Tajawal': 'Tajawal',
-    'Amiri': 'Amiri',
-    'Changa': 'Changa',
-  };
-
   Rx<Episode> currentEpisode = Rx<Episode>(Episode(number: '1'));
   final List<Episode> episodeList;
   final anymex.Media anilistData;
@@ -105,11 +86,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final String? itemName;
   final String? offlineVideoPath;
   final bool shouldTrack;
-
-  final RxDouble subtitleOpacity = 1.0.obs;
-  final RxDouble subtitleBottomMargin = 10.0.obs;
-  final RxString subtitleOutlineType = "Outline".obs;
-  final RxString selectedFont = "Poppins".obs;
 
   PlayerController(model.Video video, Episode episode, this.episodeList,
       this.anilistData, List<model.Video> episodes,
@@ -281,15 +257,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           "if subtitle is not showing up then disable libass in settings and restart",
           duration: 3000);
     }
-  }
-
-  void updateSubtitleStyle() {
-    final current = settings.playerSettings.value;
-    current.subtitleOpacity = subtitleOpacity.value;
-    current.subtitleBottomMargin = subtitleBottomMargin.value;
-    current.subtitleOutlineType = subtitleOutlineType.value;
-    current.subtitleFont = selectedFont.value;
-    settings.playerSettings.refresh();
   }
 
   static void initializePlayerControlsIfNeeded(Settings settings) {
@@ -650,13 +617,19 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     int subtitleTranslateRequestId = 0;
 
     _subscriptions.add(_basePlayer.subtitleStream.listen((e) async {
-      subtitleText.value = e;
+      final sanitizedLines = e
+          .map((line) => line
+              .replaceAll(_htmlRx, '')
+              .replaceAll(_assRx, '')
+              .replaceAll(_newlineRx, '\n')
+              .trim())
+          .where((line) => line.isNotEmpty)
+          .toList();
+
+      subtitleText.value = sanitizedLines;
       final int currentRequestId = ++subtitleTranslateRequestId;
 
-      final cleanedText = [
-        for (final line in e)
-          if (line.trim().isNotEmpty) line.trim(),
-      ].join('\n');
+      final cleanedText = sanitizedLines.join('\n');
 
       if (!playerSettings.autoTranslate) {
         translatedSubtitle.value = '';
@@ -677,7 +650,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
         final cached = SubtitlePreTranslator.lookup(lookupKey);
         if (cached != null) {
-          translatedSubtitle.value = cached;
+          translatedSubtitle.value = cached
+              .replaceAll(_htmlRx, '')
+              .replaceAll(_assRx, '')
+              .replaceAll(_newlineRx, '\n')
+              .trim();
           return;
         }
 
@@ -687,10 +664,16 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
             playerSettings.translateTo,
           );
 
+          final sanitizedTranslated = translated
+              .replaceAll(_htmlRx, '')
+              .replaceAll(_assRx, '')
+              .replaceAll(_newlineRx, '\n')
+              .trim();
+
           if (currentRequestId == subtitleTranslateRequestId &&
-              translated.isNotEmpty) {
-            translatedSubtitle.value = translated;
-            SubtitlePreTranslator.manualAdd(lookupKey, translated);
+              sanitizedTranslated.isNotEmpty) {
+            translatedSubtitle.value = sanitizedTranslated;
+            SubtitlePreTranslator.manualAdd(lookupKey, sanitizedTranslated);
           }
         } catch (_) {}
       }

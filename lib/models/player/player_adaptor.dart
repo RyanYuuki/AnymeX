@@ -1,4 +1,5 @@
 import 'package:anymex/database/data_keys/keys.dart';
+import 'package:hive/hive.dart';
 
 class PlayerSettings {
   double speed;
@@ -40,7 +41,7 @@ class PlayerSettings {
     this.subtitleSize = 16,
     this.subtitleColor = "White",
     this.subtitleFont = 'Poppins',
-    this.subtitleBackgroundColor = "Black",
+    this.subtitleBackgroundColor = "None",
     this.subtitleOutlineColor = "Black",
     this.showSubtitle = true,
     this.skipDuration = 85,
@@ -67,6 +68,9 @@ class PlayerSettings {
 
   factory PlayerSettings.fromDB() {
     final defaults = PlayerSettings();
+    final storedSubtitleBackgroundColor = PlayerSettingsKeys
+        .subtitleBackgroundColor
+        .get<String>(defaults.subtitleBackgroundColor);
 
     return PlayerSettings(
       speed: PlayerSettingsKeys.speed.get<double>(defaults.speed),
@@ -80,8 +84,9 @@ class PlayerSettings {
           PlayerSettingsKeys.subtitleColor.get<String>(defaults.subtitleColor),
       subtitleFont:
           PlayerSettingsKeys.subtitleFont.get<String>(defaults.subtitleFont),
-      subtitleBackgroundColor: PlayerSettingsKeys.subtitleBackgroundColor
-          .get<String>(defaults.subtitleBackgroundColor),
+      subtitleBackgroundColor: storedSubtitleBackgroundColor == 'Default'
+          ? 'None'
+          : storedSubtitleBackgroundColor,
       subtitleOutlineColor: PlayerSettingsKeys.subtitleOutlineColor
           .get<String>(defaults.subtitleOutlineColor),
       skipDuration:

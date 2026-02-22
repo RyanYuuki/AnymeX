@@ -24,17 +24,11 @@ import 'package:iconsax/iconsax.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:outlined_text/outlined_text.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 const Map<String, List<String>> fontGroups = {
-  'Latin': ['Trebuchet', 'Bahnschrift', 'Tahoma', 'Roboto', 'Open Sans', 'Montserrat', 'Anime Ace 3'],
-  'Devanagari': ['Poppins', 'Hind', 'Ravi Prakash'],
-  'Bengali/Assamese': ['Hind Siliguri'],
-  'Japanese': ['Noto Sans JP', 'M Plus 1p', 'Cinecaption'],
-  'Chinese': ['Noto Sans SC', 'Noto Sans TC', 'Zcool Qingke', 'Lxgw Wenkai'],
-  'Korean': ['Nanum Gothic', 'Gothic A1', 'Nanum Pen Script'],
-  'Arabic': ['Tajawal', 'Amiri', 'Changa'],
-  'Cyrillic': ['Alegreya Sans', 'Roboto'],
+  'Default': ['Default'],
+  'Latin': ['Trebuchet', 'Bahnschrift', 'Tahoma', 'Anime Ace 3', 'Poppins'],
+  'Japanese': ['Cinecaption'],
 };
 
 class SettingsPlayer extends StatefulWidget {
@@ -408,20 +402,25 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Text(group.key, style: TextStyle(color: context.colors.primary, fontWeight: FontWeight.bold)),
+                    child: Text(group.key,
+                        style: TextStyle(
+                            color: context.colors.primary,
+                            fontWeight: FontWeight.bold)),
                   ),
                   ...group.value.map((font) => ListTile(
-                    title: Text(font),
-                    onTap: () {
-                      final current = settings.playerSettings.value;
-                      current.subtitleFont = font;
-                      settings.playerSettings.refresh();
-                      Navigator.pop(context);
-                    },
-                    trailing: settings.playerSettings.value.subtitleFont == font 
-                      ? Icon(Icons.check, color: context.colors.primary) 
-                      : null,
-                  )),
+                        title: Text(font),
+                        onTap: () {
+                          final current = settings.playerSettings.value;
+                          current.subtitleFont = font;
+                          PlayerSettingsKeys.subtitleFont.set(font);
+                          settings.playerSettings.refresh();
+                          Navigator.pop(context);
+                        },
+                        trailing: settings.playerSettings.value.subtitleFont ==
+                                font
+                            ? Icon(Icons.check, color: context.colors.primary)
+                            : null,
+                      )),
                   const Divider(),
                 ],
               );
@@ -442,6 +441,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
       onItemSelected: (v) {
         final current = settings.playerSettings.value;
         current.subtitleOutlineType = v;
+        PlayerSettingsKeys.subtitleOutlineType.set(v);
         settings.playerSettings.refresh();
       },
     );
@@ -698,12 +698,14 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                 switchValue:
                                     settings.playerSettings.value.autoTranslate,
                                 onChanged: (val) {
-                                  settings.playerSettings.update((s) => s?.autoTranslate = val);
+                                  settings.playerSettings
+                                      .update((s) => s?.autoTranslate = val);
                                   PlayerSettingsKeys.autoTranslate.set(val);
                                   setState(() {});
                                 },
                               ),
-                              if (settings.playerSettings.value.autoTranslate)
+                              if (!widget.isModal &&
+                                  settings.playerSettings.value.autoTranslate)
                                 CustomTile(
                                   padding: 10.0,
                                   icon: Icons.language,
@@ -720,24 +722,28 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                 padding: 10,
                                 icon: Icons.font_download_rounded,
                                 title: 'Subtitle Font',
-                                description: settings.playerSettings.value.subtitleFont,
+                                description:
+                                    settings.playerSettings.value.subtitleFont,
                                 onTap: _showFontSelectionDialog,
                               ),
                               CustomTile(
                                 padding: 10,
                                 icon: Icons.format_paint_rounded,
                                 title: 'Outline Type',
-                                description: settings.playerSettings.value.subtitleOutlineType,
+                                description: settings
+                                    .playerSettings.value.subtitleOutlineType,
                                 onTap: _showOutlineTypeDialog,
                               ),
                               CustomSliderTile(
-                                sliderValue: settings.playerSettings.value.subtitleOpacity,
+                                sliderValue: settings
+                                    .playerSettings.value.subtitleOpacity,
                                 min: 0.1,
                                 max: 1.0,
                                 divisions: 10,
                                 onChanged: (val) {
                                   final current = settings.playerSettings.value;
                                   current.subtitleOpacity = val;
+                                  PlayerSettingsKeys.subtitleOpacity.set(val);
                                   settings.playerSettings.refresh();
                                 },
                                 title: 'Subtitle Transparency',
@@ -745,13 +751,16 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                 icon: Icons.opacity,
                               ),
                               CustomSliderTile(
-                                sliderValue: settings.playerSettings.value.subtitleBottomMargin,
+                                sliderValue: settings
+                                    .playerSettings.value.subtitleBottomMargin,
                                 min: 0.0,
                                 max: 100.0,
                                 divisions: 20,
                                 onChanged: (val) {
                                   final current = settings.playerSettings.value;
                                   current.subtitleBottomMargin = val;
+                                  PlayerSettingsKeys.subtitleBottomMargin
+                                      .set(val);
                                   settings.playerSettings.refresh();
                                 },
                                 title: 'Bottom Margin',

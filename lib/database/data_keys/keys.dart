@@ -149,6 +149,9 @@ enum PlayerSettingsKeys {
   translateTo,
   autoSkipFiller,
   enableScreenshot,
+  subtitleOpacity,
+  subtitleBottomMargin,
+  subtitleOutlineType,
 }
 
 enum UISettingsKeys {
