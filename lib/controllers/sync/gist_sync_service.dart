@@ -97,7 +97,7 @@ class GistSyncService {
         'Accept': 'application/vnd.github+json',
         'Content-Type': 'application/json',
       };
-
+  
   Future<String?> _ensureGistId() async {
     if (_gistId != null) return _gistId;
     try {
@@ -117,7 +117,7 @@ class GistSyncService {
           return _gistId;
         }
       }
-
+      
       final create = await http.post(
         Uri.parse('$_apiBase/gists'),
         headers: _headers,
@@ -141,7 +141,7 @@ class GistSyncService {
     }
     return null;
   }
-
+  
   Future<Map<String, dynamic>> _downloadRaw() async {
     try {
       final gistId = await _ensureGistId();
@@ -185,7 +185,7 @@ class GistSyncService {
       Logger.e('[GistSync] _upload: $e');
     }
   }
-
+  
   Future<void> upsert(GistProgressEntry entry) async {
     if (!isReady) return;
     try {
