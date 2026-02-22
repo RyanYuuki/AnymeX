@@ -78,9 +78,9 @@ Future<String?> _resolveViaDoh(String hostname) async {
       final uri = Uri.parse(provider).replace(
         queryParameters: {'name': hostname, 'type': 'A'},
       );
-      final resp = await http
-          .get(uri, headers: {'Accept': 'application/dns-json'})
-          .timeout(const Duration(seconds: 5));
+      final resp = await http.get(uri, headers: {
+        'Accept': 'application/dns-json'
+      }).timeout(const Duration(seconds: 5));
 
       if (resp.statusCode == 200) {
         final data = json.decode(resp.body) as Map<String, dynamic>;
@@ -90,7 +90,8 @@ Future<String?> _resolveViaDoh(String hostname) async {
             if ((answer['type'] as int?) == 1) {
               final ip = answer['data'] as String?;
               if (ip != null && ip.isNotEmpty) {
-                Logger.i('[GistSync] DoH resolved $hostname → $ip via $provider');
+                Logger.i(
+                    '[GistSync] DoH resolved $hostname → $ip via $provider');
                 return ip;
               }
             }
@@ -188,6 +189,31 @@ Future<http.Response> _resilientPatch(
       .timeout(const Duration(seconds: 10));
 }
 
+Future<http.Response> _resilientDelete(
+  Uri uri,
+  Map<String, String> headers,
+) async {
+  try {
+    final resp = await http
+        .delete(uri, headers: headers)
+        .timeout(const Duration(seconds: 10));
+    if (resp.statusCode < 500) return resp;
+  } catch (e) {
+    Logger.i('[GistSync] Normal DELETE failed, trying DoH fallback: $e');
+  }
+
+  final ip = await _resolveViaDoh(uri.host);
+  if (ip == null) {
+    return http.delete(uri, headers: headers);
+  }
+
+  final fallbackUri = _uriWithIp(uri, ip);
+  final fallbackHeaders = {...headers, 'Host': uri.host};
+  return http
+      .delete(fallbackUri, headers: fallbackHeaders)
+      .timeout(const Duration(seconds: 10));
+}
+
 class GistSyncService {
   static const _fileName = 'anymex_progress.json';
   static const _apiBase = 'https://api.github.com';
@@ -218,8 +244,8 @@ class GistSyncService {
         'Accept': 'application/vnd.github+json',
         'Content-Type': 'application/json',
       };
-  
-  Future<String?> _ensureGistId() async {
+
+  Future<String?> _findExistingGistId() async {
     if (_gistId != null) return _gistId;
     try {
       final resp = await _resilientGet(
@@ -233,14 +259,23 @@ class GistSyncService {
 
       final list = json.decode(resp.body) as List<dynamic>;
       for (final g in list) {
-        final files = g['files'] as Map<String, dynamic>;
+        final files = g['files'] as Map<String, dynamic>? ?? const {};
         if (files.containsKey(_fileName)) {
           _gistId = g['id'] as String;
           Logger.i('[GistSync] Found existing gist: $_gistId');
           return _gistId;
         }
       }
+    } catch (e) {
+      Logger.e('[GistSync] _findExistingGistId: $e');
+    }
+    return null;
+  }
 
+  Future<String?> _ensureGistId() async {
+    final existing = await _findExistingGistId();
+    if (existing != null) return existing;
+    try {
       final create = await _resilientPost(
         Uri.parse('$_apiBase/gists'),
         _headers,
@@ -264,7 +299,7 @@ class GistSyncService {
     }
     return null;
   }
-  
+
   Future<Map<String, dynamic>> _downloadRaw() async {
     try {
       final gistId = await _ensureGistId();
@@ -308,7 +343,63 @@ class GistSyncService {
       Logger.e('[GistSync] _upload: $e');
     }
   }
-  
+
+  Future<void> syncNow() async {
+    if (!isReady) {
+      throw StateError('Sync service is not ready.');
+    }
+
+    final gistId = await _ensureGistId();
+    if (gistId == null) {
+      throw Exception('Unable to create or locate the AnymeX sync gist.');
+    }
+
+    final resp = await _resilientGet(
+      Uri.parse('$_apiBase/gists/$gistId'),
+      _headers,
+    );
+    if (resp.statusCode != 200) {
+      throw Exception('GitHub returned HTTP ${resp.statusCode}.');
+    }
+
+    final data = json.decode(resp.body) as Map<String, dynamic>;
+    final content = ((data['files'] as Map<String, dynamic>?)?[_fileName]
+        as Map<String, dynamic>?)?['content'] as String?;
+    if (content != null && content.trim().isNotEmpty) {
+      json.decode(content) as Map<String, dynamic>;
+    }
+  }
+
+  Future<bool> deleteSyncGist() async {
+    if (!isReady) {
+      throw StateError('Sync service is not ready.');
+    }
+
+    final gistId = await _findExistingGistId();
+    if (gistId == null) {
+      return false;
+    }
+
+    final resp = await _resilientDelete(
+      Uri.parse('$_apiBase/gists/$gistId'),
+      _headers,
+    );
+
+    if (resp.statusCode == 204) {
+      Logger.i('[GistSync] Deleted gist: $gistId');
+      _gistId = null;
+      return true;
+    }
+
+    if (resp.statusCode == 404) {
+      Logger.i('[GistSync] Gist not found while deleting: $gistId');
+      _gistId = null;
+      return false;
+    }
+
+    throw Exception('Delete gist failed: HTTP ${resp.statusCode}.');
+  }
+
   Future<void> upsert(GistProgressEntry entry) async {
     if (!isReady) return;
     try {

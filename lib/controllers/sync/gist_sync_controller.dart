@@ -22,10 +22,14 @@ class GistSyncController extends GetxController {
   final isSyncing = false.obs;
   final syncEnabled = true.obs;
   final lastSyncTime = Rx<DateTime?>(null);
+  final lastSyncDurationMs = RxnInt();
+  final lastSyncSuccessful = RxnBool();
+  final lastSyncError = RxnString();
   final githubUsername = RxnString();
   RxBool get isConnected => isLoggedIn;
   final _service = GistSyncService();
   final _storage = const FlutterSecureStorage();
+  int _activeSyncOps = 0;
 
   String? get _githubRedirectUri {
     final configured = (dotenv.env['GITHUB_CALLBACK_SCHEME'] ?? '').trim();
@@ -177,10 +181,80 @@ class GistSyncController extends GetxController {
     isLoggedIn.value = false;
     githubUsername.value = null;
     lastSyncTime.value = null;
+    lastSyncDurationMs.value = null;
+    lastSyncSuccessful.value = null;
+    lastSyncError.value = null;
   }
 
   bool get _canSync =>
       isLoggedIn.value && syncEnabled.value && _service.isReady;
+
+  Future<void> manualSyncNow() async {
+    if (!isLoggedIn.value || !_service.isReady) {
+      errorSnackBar('Connect GitHub first to sync progress.');
+      return;
+    }
+    if (isSyncing.value) {
+      infoSnackBar('Sync already in progress.');
+      return;
+    }
+
+    final stopwatch = Stopwatch()..start();
+    _beginSyncOp();
+    try {
+      await _service.syncNow();
+      _markSyncSuccess(durationMs: stopwatch.elapsedMilliseconds);
+      successSnackBar(
+        'Progress synced in ${_formatElapsed(stopwatch.elapsedMilliseconds)}.',
+      );
+    } catch (e) {
+      _markSyncFailure(e, durationMs: stopwatch.elapsedMilliseconds);
+      errorSnackBar(
+        'Sync failed after ${_formatElapsed(stopwatch.elapsedMilliseconds)}.',
+      );
+    } finally {
+      stopwatch.stop();
+      _endSyncOp();
+    }
+  }
+
+  Future<void> deleteRemoteSyncGist() async {
+    if (!isLoggedIn.value || !_service.isReady) {
+      errorSnackBar('Connect GitHub first before deleting sync data.');
+      return;
+    }
+    if (isSyncing.value) {
+      infoSnackBar('Another sync action is already in progress.');
+      return;
+    }
+
+    final stopwatch = Stopwatch()..start();
+    _beginSyncOp();
+    try {
+      final deleted = await _service.deleteSyncGist();
+      final elapsed = stopwatch.elapsedMilliseconds;
+      if (!deleted) {
+        infoSnackBar('No AnymeX sync gist found to delete.');
+        return;
+      }
+
+      lastSyncTime.value = null;
+      lastSyncDurationMs.value = null;
+      lastSyncSuccessful.value = null;
+      lastSyncError.value = null;
+
+      successSnackBar(
+          'Deleted AnymeX sync gist in ${_formatElapsed(elapsed)}.');
+    } catch (e) {
+      _markSyncFailure(e, durationMs: stopwatch.elapsedMilliseconds);
+      errorSnackBar(
+        'Failed to delete sync gist after ${_formatElapsed(stopwatch.elapsedMilliseconds)}.',
+      );
+    } finally {
+      stopwatch.stop();
+      _endSyncOp();
+    }
+  }
 
   void pushEpisodeProgress({
     required String mediaId,
@@ -294,14 +368,74 @@ class GistSyncController extends GetxController {
   }
 
   Future<void> _doUpload(Future<void> Function() fn) async {
-    isSyncing.value = true;
+    final stopwatch = Stopwatch()..start();
+    _beginSyncOp();
     try {
       await fn();
-      lastSyncTime.value = DateTime.now();
+      _markSyncSuccess(durationMs: stopwatch.elapsedMilliseconds);
     } catch (e) {
+      _markSyncFailure(e, durationMs: stopwatch.elapsedMilliseconds);
       Logger.i('[GistSync] _doUpload: $e');
     } finally {
+      stopwatch.stop();
+      _endSyncOp();
+    }
+  }
+
+  void _beginSyncOp() {
+    _activeSyncOps += 1;
+    isSyncing.value = true;
+  }
+
+  void _endSyncOp() {
+    if (_activeSyncOps > 0) {
+      _activeSyncOps -= 1;
+    }
+    if (_activeSyncOps == 0) {
       isSyncing.value = false;
     }
+  }
+
+  void _markSyncSuccess({int? durationMs}) {
+    lastSyncTime.value = DateTime.now();
+    if (durationMs != null) {
+      lastSyncDurationMs.value = durationMs;
+    }
+    lastSyncSuccessful.value = true;
+    lastSyncError.value = null;
+  }
+
+  void _markSyncFailure(Object error, {int? durationMs}) {
+    if (durationMs != null) {
+      lastSyncDurationMs.value = durationMs;
+    }
+    lastSyncSuccessful.value = false;
+    lastSyncError.value = _normalizeError(error);
+  }
+
+  String _normalizeError(Object error) {
+    final raw = error.toString().trim();
+    if (raw.startsWith('Exception:')) {
+      return raw.replaceFirst('Exception:', '').trim();
+    }
+    if (raw.startsWith('StateError:')) {
+      return raw.replaceFirst('StateError:', '').trim();
+    }
+    return raw;
+  }
+
+  String _formatElapsed(int ms) {
+    if (ms < 1000) return '${ms}ms';
+    final seconds = ms / 1000;
+    if (seconds < 60) {
+      final decimals = seconds < 10 ? 2 : 1;
+      return '${seconds.toStringAsFixed(decimals)}s';
+    }
+    final minutes = seconds / 60;
+    if (minutes < 60) {
+      return '${minutes.toStringAsFixed(1)}m';
+    }
+    final hours = minutes / 60;
+    return '${hours.toStringAsFixed(1)}h';
   }
 }
