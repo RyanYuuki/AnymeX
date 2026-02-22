@@ -488,7 +488,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     try {
       final ctrl = Get.isRegistered<GistSyncController>()
-          ? Get.find<GistSyncController>() 
+          ? Get.find<GistSyncController>()
           : null;
       if (ctrl != null && ctrl.isConnected.value && ctrl.syncEnabled.value) {
         final cloudMs = await ctrl
@@ -921,7 +921,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   Future<void> dispose() async {
     super.dispose();
     try {
-      await _trackLocally();
+      await _trackLocally(syncToCloud: false);
       if (!isOffline.value) {
         final durationMs = episodeDuration.value.inMilliseconds;
         final hasCrossedLimit = durationMs > 0
@@ -929,6 +929,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
                 settings.markAsCompleted)
             : false;
         await _trackOnline(hasCrossedLimit);
+        await _syncCloudProgressOnExit();
       }
     } catch (e) {
       Logger.e('Error saving during dispose: $e');
@@ -1315,7 +1316,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         duration: const Duration(milliseconds: 700));
   }
 
-  Future<void> _trackLocally() async {
+  Future<void> _trackLocally({bool syncToCloud = true}) async {
     if (isOffline.value) {
       DynamicKeys.offlineVideoProgress
           .set(offlineVideoPath, currentPosition.value.inMilliseconds);
@@ -1368,6 +1369,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       offlineStorage.addOrUpdateWatchedEpisode(
         anilistData.id,
         episodeToSave,
+        syncToCloud: syncToCloud,
       );
       Logger.i(
         'Saved episode ${episodeToSave.number} | '
@@ -1422,5 +1424,25 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     } catch (e) {
       Logger.i('Failed to track online: $e');
     }
+  }
+
+  Future<void> _syncCloudProgressOnExit() async {
+    final syncCtrl = Get.isRegistered<GistSyncController>()
+        ? Get.find<GistSyncController>()
+        : null;
+    if (syncCtrl == null) {
+      return;
+    }
+
+    final shouldRemove = syncCtrl.autoDeleteCompletedOnExit.value &&
+        _shouldMarkAsCompleted &&
+        !hasNextEpisode;
+
+    await syncCtrl.syncEpisodeProgressOnExit(
+      mediaId: anilistData.id,
+      malId: anilistData.idMal,
+      episode: currentEpisode.value,
+      isCompleted: shouldRemove,
+    );
   }
 }

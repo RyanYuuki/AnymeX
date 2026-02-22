@@ -47,6 +47,7 @@ class _GistSyncCard extends StatelessWidget {
           isLogged ? (ctrl.githubUsername.value ?? 'GitHub User') : '';
       final isSyncing = ctrl.isSyncing.value;
       final syncEnabled = ctrl.syncEnabled.value;
+      final autoDeleteCompletedOnExit = ctrl.autoDeleteCompletedOnExit.value;
       final lastSync = ctrl.lastSyncTime.value;
       final lastSyncSuccessful = ctrl.lastSyncSuccessful.value;
       final lastSyncDurationMs = ctrl.lastSyncDurationMs.value;
@@ -180,27 +181,64 @@ class _GistSyncCard extends StatelessWidget {
                           color: colors.outlineVariant.withOpacity(0.3)),
                     ),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 10),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: AnymexText(
-                            text: 'Auto-sync while watching / reading',
-                            size: 12,
-                            color: colors.onSurfaceVariant,
-                          ),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 10),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: AnymexText(
+                                text: 'Auto-sync while watching / reading',
+                                size: 12,
+                                color: colors.onSurfaceVariant,
+                              ),
+                            ),
+                            Switch(
+                              value: syncEnabled,
+                              onChanged: (v) => ctrl.syncEnabled.value = v,
+                              activeColor: colors.primary,
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
+                            ),
+                          ],
                         ),
-                        Switch(
-                          value: syncEnabled,
-                          onChanged: (v) => ctrl.syncEnabled.value = v,
-                          activeColor: colors.primary,
-                          materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Divider(
+                          height: 1,
+                          color: colors.outlineVariant.withOpacity(0.25),
                         ),
-                      ],
-                    ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 10),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: AnymexText(
+                                text: 'Auto-delete completed media from cloud',
+                                size: 12,
+                                color: colors.onSurfaceVariant,
+                              ),
+                            ),
+                            Switch(
+                              value: autoDeleteCompletedOnExit,
+                              onChanged: (v) {
+                                unawaited(
+                                  ctrl.setAutoDeleteCompletedOnExit(v),
+                                );
+                              },
+                              activeColor: colors.primary,
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
             ],

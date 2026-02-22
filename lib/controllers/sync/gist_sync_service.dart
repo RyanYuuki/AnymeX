@@ -67,6 +67,8 @@ class GistProgressEntry {
       };
 }
 
+enum GistRemoveResult { removed, notFound, failed }
+
 const _dohProviders = [
   'https://dns.google/resolve',
   'https://cloudflare-dns.com/dns-query',
@@ -418,8 +420,8 @@ class GistSyncService {
     throw Exception('Delete gist failed: HTTP ${resp.statusCode}.');
   }
 
-  Future<void> upsert(GistProgressEntry entry) async {
-    if (!isReady) return;
+  Future<bool> upsert(GistProgressEntry entry) async {
+    if (!isReady) return false;
     try {
       final raw = await _downloadRaw();
       final existing = raw[entry.mediaId] as Map<String, dynamic>?;
@@ -427,7 +429,7 @@ class GistSyncService {
       if (existing != null &&
           (existing['updatedAt'] as int? ?? 0) >= entry.updatedAt) {
         Logger.i('[GistSync] Remote already newer for ${entry.mediaId}');
-        return;
+        return true;
       }
 
       raw[entry.mediaId] = entry.toJson();
@@ -437,13 +439,15 @@ class GistSyncService {
 
       await _upload(raw);
       Logger.i('[GistSync] Upserted ${entry.mediaId}');
+      return true;
     } catch (e) {
       Logger.e('[GistSync] upsert: $e');
+      return false;
     }
   }
 
-  Future<void> remove(String mediaId, {String? malId}) async {
-    if (!isReady) return;
+  Future<GistRemoveResult> remove(String mediaId, {String? malId}) async {
+    if (!isReady) return GistRemoveResult.failed;
     try {
       final raw = await _downloadRaw();
       bool changed = raw.remove(mediaId) != null;
@@ -453,9 +457,12 @@ class GistSyncService {
       if (changed) {
         await _upload(raw);
         Logger.i('[GistSync] Removed $mediaId');
+        return GistRemoveResult.removed;
       }
+      return GistRemoveResult.notFound;
     } catch (e) {
       Logger.e('[GistSync] remove: $e');
+      return GistRemoveResult.failed;
     }
   }
 

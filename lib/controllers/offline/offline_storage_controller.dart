@@ -19,15 +19,9 @@ enum MediaLibraryType {
 }
 
 class OfflineStorageController extends GetxController {
-  GistSyncController? get _syncCtrl =>
-    Get.isRegistered<GistSyncController>()
-        ? Get.find<GistSyncController>()
-        : null;
-
-  (String mediaId, String? malId) _extractIds(String primaryId,
-      {String? malIdHint}) {
-    return (primaryId, malIdHint);
-  }
+  GistSyncController? get _syncCtrl => Get.isRegistered<GistSyncController>()
+      ? Get.find<GistSyncController>()
+      : null;
 
   Stream<List<OfflineMedia>> watchAnimeLibrary() {
     return isar.offlineMedias
@@ -477,7 +471,10 @@ class OfflineStorageController extends GetxController {
   }
 
   Future<void> addOrUpdateWatchedEpisode(
-      String animeId, Episode episode) async {
+    String animeId,
+    Episode episode, {
+    bool syncToCloud = true,
+  }) async {
     final existingAnime = getAnimeById(animeId);
     if (existingAnime == null) {
       Logger.i(
@@ -509,10 +506,12 @@ class OfflineStorageController extends GetxController {
       await isar.offlineMedias.put(existingAnime);
     });
 
-    _syncCtrl?.pushEpisodeProgress(
-      mediaId: animeId,
-      episode: episode,
-    );
+    if (syncToCloud) {
+      _syncCtrl?.pushEpisodeProgress(
+        mediaId: animeId,
+        episode: episode,
+      );
+    }
   }
 
   Episode? getWatchedEpisode(String anilistId, String episodeNumber) {
@@ -527,6 +526,7 @@ class OfflineStorageController extends GetxController {
     String mangaId,
     Chapter chapter, {
     Source? source,
+    bool syncToCloud = true,
   }) async {
     print(chapter.toJson());
     OfflineMedia? existingManga = getMangaById(mangaId);
@@ -562,11 +562,13 @@ class OfflineStorageController extends GetxController {
       await isar.offlineMedias.put(existingManga);
     });
 
-    _syncCtrl?.pushChapterProgress(
-      mediaId: mangaId,
-      mediaType: existingManga?.mediaTypeIndex == 2 ? 'novel' : 'manga',
-      chapter: chapter,
-    );
+    if (syncToCloud) {
+      _syncCtrl?.pushChapterProgress(
+        mediaId: mangaId,
+        mediaType: existingManga.mediaTypeIndex == 2 ? 'novel' : 'manga',
+        chapter: chapter,
+      );
+    }
   }
 
   Chapter? getReadChapter(String anilistId, double number) {

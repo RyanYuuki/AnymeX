@@ -15,6 +15,7 @@ import 'package:http/http.dart' as http;
 
 const _kTokenKey = 'gist_sync_github_token';
 const _kUsernameKey = 'gist_sync_github_username';
+const _kAutoDeleteCompletedKey = 'gist_sync_auto_delete_completed';
 const _kDefaultGithubCallbackScheme = 'anymex';
 
 class GistSyncController extends GetxController {
@@ -22,6 +23,7 @@ class GistSyncController extends GetxController {
   final isAuthenticating = false.obs;
   final isSyncing = false.obs;
   final syncEnabled = true.obs;
+  final autoDeleteCompletedOnExit = true.obs;
   final lastSyncTime = Rx<DateTime?>(null);
   final lastSyncDurationMs = RxnInt();
   final lastSyncSuccessful = RxnBool();
@@ -54,6 +56,10 @@ class GistSyncController extends GetxController {
     try {
       final token = await _storage.read(key: _kTokenKey);
       final username = await _storage.read(key: _kUsernameKey);
+      final autoDeleteRaw = await _storage.read(key: _kAutoDeleteCompletedKey);
+      if (autoDeleteRaw != null) {
+        autoDeleteCompletedOnExit.value = autoDeleteRaw == 'true';
+      }
       if (token != null && token.isNotEmpty) {
         _service.setToken(token);
         isLoggedIn.value = true;
@@ -187,6 +193,18 @@ class GistSyncController extends GetxController {
     lastSyncError.value = null;
   }
 
+  Future<void> setAutoDeleteCompletedOnExit(bool enabled) async {
+    autoDeleteCompletedOnExit.value = enabled;
+    try {
+      await _storage.write(
+        key: _kAutoDeleteCompletedKey,
+        value: enabled ? 'true' : 'false',
+      );
+    } catch (e) {
+      Logger.i('[GistSync] setAutoDeleteCompletedOnExit: $e');
+    }
+  }
+
   bool get _canSync =>
       isLoggedIn.value && syncEnabled.value && _service.isReady;
 
@@ -257,6 +275,209 @@ class GistSyncController extends GetxController {
     }
   }
 
+  Future<String?> _resolveMalId(
+    String mediaId, {
+    required String? malId,
+    required bool isManga,
+  }) async {
+    if (malId != null && malId.isNotEmpty && malId != 'null') {
+      return malId;
+    }
+    return MediaSyncer.mapMediaId(
+      mediaId,
+      type: MappingType.anilist,
+      isManga: isManga,
+    );
+  }
+
+  Future<void> syncEpisodeProgressOnExit({
+    required String mediaId,
+    String? malId,
+    String? serviceType,
+    required Episode episode,
+    required bool isCompleted,
+  }) async {
+    if (!_canSync || mediaId.isEmpty) return;
+
+    final stopwatch = Stopwatch()..start();
+    _beginSyncOp();
+    try {
+      final resolvedMalId =
+          await _resolveMalId(mediaId, malId: malId, isManga: false);
+
+      if (isCompleted) {
+        final removeResult =
+            await _service.remove(mediaId, malId: resolvedMalId);
+        final elapsedMs = stopwatch.elapsedMilliseconds;
+
+        if (removeResult == GistRemoveResult.removed) {
+          _markSyncSuccess(durationMs: elapsedMs);
+          successSnackBar(
+            'Cloud entry removed in ${_formatElapsedSeconds(elapsedMs)}.',
+          );
+        } else if (removeResult == GistRemoveResult.notFound) {
+          _markSyncSuccess(durationMs: elapsedMs);
+          infoSnackBar(
+            'No cloud entry found to remove (${_formatElapsedSeconds(elapsedMs)}).',
+          );
+        } else {
+          _markSyncFailure(
+            Exception('Cloud entry removal failed.'),
+            durationMs: elapsedMs,
+          );
+          errorSnackBar(
+            'Cloud entry removal failed after ${_formatElapsedSeconds(elapsedMs)}.',
+          );
+        }
+        return;
+      }
+
+      final updatedAt =
+          episode.lastWatchedTime ?? DateTime.now().millisecondsSinceEpoch;
+      final localEntry = GistProgressEntry(
+        mediaId: mediaId,
+        malId: resolvedMalId,
+        mediaType: 'anime',
+        serviceType: serviceType,
+        episodeNumber: episode.number,
+        timestampMs: episode.timeStampInMilliseconds,
+        durationMs: episode.durationInMilliseconds,
+        updatedAt: updatedAt,
+      );
+
+      final synced = await _service.upsert(localEntry);
+      final elapsedMs = stopwatch.elapsedMilliseconds;
+
+      if (synced) {
+        _markSyncSuccess(durationMs: elapsedMs);
+        successSnackBar(
+          'Cloud sync successful in ${_formatElapsedSeconds(elapsedMs)}.',
+        );
+      } else {
+        _markSyncFailure(
+          Exception('Cloud entry did not update as expected.'),
+          durationMs: elapsedMs,
+        );
+        errorSnackBar(
+          'Cloud sync failed after ${_formatElapsedSeconds(elapsedMs)}.',
+        );
+      }
+    } catch (e) {
+      final elapsedMs = stopwatch.elapsedMilliseconds;
+      _markSyncFailure(e, durationMs: elapsedMs);
+      if (isCompleted) {
+        errorSnackBar(
+          'Cloud entry removal failed after ${_formatElapsedSeconds(elapsedMs)}.',
+        );
+      } else {
+        errorSnackBar(
+          'Cloud sync failed after ${_formatElapsedSeconds(elapsedMs)}.',
+        );
+      }
+      Logger.i('[GistSync] syncEpisodeProgressOnExit: $e');
+    } finally {
+      stopwatch.stop();
+      _endSyncOp();
+    }
+  }
+
+  Future<void> syncChapterProgressOnExit({
+    required String mediaId,
+    String? malId,
+    String? serviceType,
+    required String mediaType,
+    required Chapter chapter,
+    required bool isCompleted,
+  }) async {
+    if (!_canSync || mediaId.isEmpty) return;
+
+    final stopwatch = Stopwatch()..start();
+    _beginSyncOp();
+    try {
+      final resolvedMalId = await _resolveMalId(
+        mediaId,
+        malId: malId,
+        isManga: mediaType != 'anime',
+      );
+
+      if (isCompleted) {
+        final removeResult =
+            await _service.remove(mediaId, malId: resolvedMalId);
+        final elapsedMs = stopwatch.elapsedMilliseconds;
+
+        if (removeResult == GistRemoveResult.removed) {
+          _markSyncSuccess(durationMs: elapsedMs);
+          successSnackBar(
+            'Cloud entry removed in ${_formatElapsedSeconds(elapsedMs)}.',
+          );
+        } else if (removeResult == GistRemoveResult.notFound) {
+          _markSyncSuccess(durationMs: elapsedMs);
+          infoSnackBar(
+            'No cloud entry found to remove (${_formatElapsedSeconds(elapsedMs)}).',
+          );
+        } else {
+          _markSyncFailure(
+            Exception('Cloud entry removal failed.'),
+            durationMs: elapsedMs,
+          );
+          errorSnackBar(
+            'Cloud entry removal failed after ${_formatElapsedSeconds(elapsedMs)}.',
+          );
+        }
+        return;
+      }
+
+      final updatedAt =
+          chapter.lastReadTime ?? DateTime.now().millisecondsSinceEpoch;
+      final localEntry = GistProgressEntry(
+        mediaId: mediaId,
+        malId: resolvedMalId,
+        mediaType: mediaType,
+        serviceType: serviceType,
+        chapterNumber: chapter.number,
+        pageNumber: chapter.pageNumber,
+        totalPages: chapter.totalPages,
+        scrollOffset: chapter.currentOffset,
+        maxScrollOffset: chapter.maxOffset,
+        updatedAt: updatedAt,
+      );
+
+      final synced = await _service.upsert(localEntry);
+      final elapsedMs = stopwatch.elapsedMilliseconds;
+
+      if (synced) {
+        _markSyncSuccess(durationMs: elapsedMs);
+        successSnackBar(
+          'Cloud sync successful in ${_formatElapsedSeconds(elapsedMs)}.',
+        );
+      } else {
+        _markSyncFailure(
+          Exception('Cloud entry did not update as expected.'),
+          durationMs: elapsedMs,
+        );
+        errorSnackBar(
+          'Cloud sync failed after ${_formatElapsedSeconds(elapsedMs)}.',
+        );
+      }
+    } catch (e) {
+      final elapsedMs = stopwatch.elapsedMilliseconds;
+      _markSyncFailure(e, durationMs: elapsedMs);
+      if (isCompleted) {
+        errorSnackBar(
+          'Cloud entry removal failed after ${_formatElapsedSeconds(elapsedMs)}.',
+        );
+      } else {
+        errorSnackBar(
+          'Cloud sync failed after ${_formatElapsedSeconds(elapsedMs)}.',
+        );
+      }
+      Logger.i('[GistSync] syncChapterProgressOnExit: $e');
+    } finally {
+      stopwatch.stop();
+      _endSyncOp();
+    }
+  }
+
   void pushEpisodeProgress({
     required String mediaId,
     String? malId,
@@ -267,7 +488,12 @@ class GistSyncController extends GetxController {
     if (!_canSync || mediaId.isEmpty) return;
 
     if (isCompleted) {
-      unawaited(_doUpload(() => _service.remove(mediaId, malId: malId)));
+      unawaited(_doUpload(() async {
+        final result = await _service.remove(mediaId, malId: malId);
+        if (result == GistRemoveResult.failed) {
+          throw Exception('Failed to remove cloud entry.');
+        }
+      }));
       return;
     }
 
@@ -280,7 +506,7 @@ class GistSyncController extends GetxController {
                   type: MappingType.anilist,
                   isManga: false,
                 );
-      await _service.upsert(GistProgressEntry(
+      final ok = await _service.upsert(GistProgressEntry(
         mediaId: mediaId,
         malId: resolvedMalId,
         mediaType: 'anime',
@@ -291,6 +517,9 @@ class GistSyncController extends GetxController {
         updatedAt:
             episode.lastWatchedTime ?? DateTime.now().millisecondsSinceEpoch,
       ));
+      if (!ok) {
+        throw Exception('Failed to sync episode progress.');
+      }
     }));
   }
 
@@ -305,7 +534,12 @@ class GistSyncController extends GetxController {
     if (!_canSync || mediaId.isEmpty) return;
 
     if (isCompleted) {
-      unawaited(_doUpload(() => _service.remove(mediaId, malId: malId)));
+      unawaited(_doUpload(() async {
+        final result = await _service.remove(mediaId, malId: malId);
+        if (result == GistRemoveResult.failed) {
+          throw Exception('Failed to remove cloud entry.');
+        }
+      }));
       return;
     }
 
@@ -318,7 +552,7 @@ class GistSyncController extends GetxController {
                   type: MappingType.anilist,
                   isManga: mediaType != 'anime',
                 );
-      await _service.upsert(GistProgressEntry(
+      final ok = await _service.upsert(GistProgressEntry(
         mediaId: mediaId,
         malId: resolvedMalId,
         mediaType: mediaType,
@@ -331,12 +565,20 @@ class GistSyncController extends GetxController {
         updatedAt:
             chapter.lastReadTime ?? DateTime.now().millisecondsSinceEpoch,
       ));
+      if (!ok) {
+        throw Exception('Failed to sync chapter progress.');
+      }
     }));
   }
 
   void removeEntry(String mediaId, {String? malId}) {
     if (!_canSync || mediaId.isEmpty) return;
-    unawaited(_doUpload(() => _service.remove(mediaId, malId: malId)));
+    unawaited(_doUpload(() async {
+      final result = await _service.remove(mediaId, malId: malId);
+      if (result == GistRemoveResult.failed) {
+        throw Exception('Failed to remove cloud entry.');
+      }
+    }));
   }
 
   Future<int?> fetchNewerEpisodeTimestamp({
@@ -454,5 +696,9 @@ class GistSyncController extends GetxController {
     }
     final hours = minutes / 60;
     return '${hours.toStringAsFixed(1)}h';
+  }
+
+  String _formatElapsedSeconds(int ms) {
+    return '${(ms / 1000).toStringAsFixed(ms < 10000 ? 2 : 1)}s';
   }
 }

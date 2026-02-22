@@ -7,7 +7,6 @@ import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 class NovelReaderController extends GetxController {
@@ -70,7 +69,8 @@ class NovelReaderController extends GetxController {
 
   @override
   void onClose() {
-    _saveTracking();
+    _saveTracking(syncToCloud: false);
+    unawaited(_syncCloudProgressOnExit());
     scrollController.removeListener(_scrollListener);
     _stopAutoScroll();
     super.onClose();
@@ -213,7 +213,8 @@ class NovelReaderController extends GetxController {
           autoScrollEnabled.value = false;
           return;
         }
-        final newOffset = (current + pixelsPerSecond * tickMs / 1000).clamp(0.0, max);
+        final newOffset =
+            (current + pixelsPerSecond * tickMs / 1000).clamp(0.0, max);
         scrollController.jumpTo(newOffset);
       },
     );
@@ -224,7 +225,7 @@ class NovelReaderController extends GetxController {
     _autoScrollTimer = null;
   }
 
-  void _saveTracking() {
+  void _saveTracking({bool syncToCloud = true}) {
     consecutiveReads.value++;
     savedChapter.value = offlineStorageController.getReadChapter(
           media.id,
@@ -237,9 +238,57 @@ class NovelReaderController extends GetxController {
             media, chapters, currentChapter.value, source);
         offlineStorageController.addOrUpdateReadChapter(
             media.id, currentChapter.value,
-            source: source);
+            source: source, syncToCloud: syncToCloud);
       });
     }
+  }
+
+  Future<void> _syncCloudProgressOnExit() async {
+    final syncCtrl = Get.isRegistered<GistSyncController>()
+        ? Get.find<GistSyncController>()
+        : null;
+    if (syncCtrl == null) {
+      return;
+    }
+
+    final shouldRemove =
+        syncCtrl.autoDeleteCompletedOnExit.value && _hasFinishedCurrentMedia();
+
+    await syncCtrl.syncChapterProgressOnExit(
+      mediaId: media.id,
+      malId: media.idMal,
+      mediaType: 'novel',
+      chapter: currentChapter.value,
+      isCompleted: shouldRemove,
+    );
+  }
+
+  bool _hasFinishedCurrentMedia() {
+    final chapter = currentChapter.value;
+    final chapterNumber = chapter.number;
+    final pageNumber = chapter.pageNumber;
+    final totalPages = chapter.totalPages;
+
+    if (chapterNumber == null ||
+        pageNumber == null ||
+        totalPages == null ||
+        totalPages <= 0 ||
+        pageNumber < totalPages) {
+      return false;
+    }
+
+    final totalChapters = double.tryParse(media.totalChapters ?? '');
+    if (totalChapters != null && totalChapters > 0) {
+      return chapterNumber >= totalChapters;
+    }
+
+    for (final item in chapters) {
+      final itemNumber = item.number;
+      if (itemNumber != null && itemNumber > chapterNumber) {
+        return false;
+      }
+    }
+    return chapters.isNotEmpty;
   }
 
   String _buildHtml(String input) {
