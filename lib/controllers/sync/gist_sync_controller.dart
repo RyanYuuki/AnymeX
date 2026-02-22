@@ -4,6 +4,7 @@ import 'package:anymex/controllers/sync/gist_sync_service.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/utils/logger.dart';
+import 'package:anymex/utils/media_syncer.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -271,9 +272,17 @@ class GistSyncController extends GetxController {
     }
 
     unawaited(_doUpload(() async {
+      final resolvedMalId =
+          (malId != null && malId.isNotEmpty && malId != 'null')
+              ? malId
+              : await MediaSyncer.mapMediaId(
+                  mediaId,
+                  type: MappingType.anilist,
+                  isManga: false,
+                );
       await _service.upsert(GistProgressEntry(
         mediaId: mediaId,
-        malId: malId,
+        malId: resolvedMalId,
         mediaType: 'anime',
         serviceType: serviceType,
         episodeNumber: episode.number,
@@ -301,9 +310,17 @@ class GistSyncController extends GetxController {
     }
 
     unawaited(_doUpload(() async {
+      final resolvedMalId =
+          (malId != null && malId.isNotEmpty && malId != 'null')
+              ? malId
+              : await MediaSyncer.mapMediaId(
+                  mediaId,
+                  type: MappingType.anilist,
+                  isManga: mediaType != 'anime',
+                );
       await _service.upsert(GistProgressEntry(
         mediaId: mediaId,
-        malId: malId,
+        malId: resolvedMalId,
         mediaType: mediaType,
         serviceType: serviceType,
         chapterNumber: chapter.number,
