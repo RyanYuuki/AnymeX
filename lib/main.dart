@@ -18,8 +18,7 @@ import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/controllers/ui/greeting.dart';
 import 'package:anymex/database/database.dart';
 import 'package:anymex/firebase_options.dart';
-import 'package:anymex/models/player/player_adaptor.dart';
-import 'package:anymex/models/ui/ui_adaptor.dart';
+
 import 'package:anymex/screens/anime/home_page.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
 import 'package:anymex/screens/extensions/ExtensionScreen.dart';
@@ -48,7 +47,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
@@ -102,7 +101,7 @@ void main(List<String> args) async {
     }
     await Database().init();
     HttpOverrides.global = MyHttpoverrides();
-    await initializeHive();
+
     _initializeGetxController();
     initDeepLinkListener();
     initializeDateFormatting();
@@ -134,11 +133,6 @@ void main(List<String> args) async {
     );
   }, (error, stackTrace) async {
     Logger.e("CRASH: $error");
-    if (error.toString().contains('PathAccessException: lock failed')) {
-      Hive.deleteFromDisk();
-      await Hive.initFlutter('AnymeX');
-      Hive.deleteFromDisk();
-    }
     Logger.e("STACK: $stackTrace");
   }, zoneSpecification: ZoneSpecification(
     print: (Zone self, ZoneDelegate parent, Zone zone, String line) {
@@ -163,17 +157,7 @@ void initDeepLinkListener() async {
   );
 }
 
-Future<void> initializeHive() async {
-  await Hive.initFlutter('AnymeX');
-  Hive.registerAdapter(UISettingsAdapter());
-  Hive.registerAdapter(PlayerSettingsAdapter());
-  await Hive.openBox('themeData');
-  await Hive.openBox('loginData');
-  await Hive.openBox('auth');
-  await Hive.openBox('preferences');
-  await Hive.openBox<UISettings>("UiSettings");
-  await Hive.openBox<PlayerSettings>("PlayerSettings");
-}
+
 
 void _initializeGetxController() async {
   Get.put(OfflineStorageController());

@@ -81,8 +81,8 @@ class BetterPlayerImpl extends BasePlayer {
     final betterPlayerConfiguration = BetterPlayerConfiguration(
       autoPlay: true,
       autoDetectFullscreenDeviceOrientation: true,
-      subtitlesConfiguration: const BetterPlayerSubtitlesConfiguration(
-        fontSize: 0,
+      subtitlesConfiguration: BetterPlayerSubtitlesConfiguration(
+        fontSize: config.useLibass ? 14 : 0,
       ),
       controlsConfiguration: const BetterPlayerControlsConfiguration(
           showControls: false, enableSubtitles: true),
