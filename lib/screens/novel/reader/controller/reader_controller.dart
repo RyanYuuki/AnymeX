@@ -1,7 +1,7 @@
 import 'package:anymex/utils/logger.dart';
 
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
-import 'package:anymex/controllers/sync/cloud_sync_controller.dart';
+import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
@@ -136,8 +136,8 @@ class NovelReaderController extends GetxController {
   }
 
   Future<void> _resumeFromCloudIfNewer() async {
-    final ctrl = Get.isRegistered<CloudSyncController>()
-        ? Get.find<CloudSyncController>()
+    final ctrl = Get.isRegistered<GistSyncController>()
+        ? Get.find<GistSyncController>()
         : null;
     if (ctrl == null || !ctrl.isSignedIn.value || !ctrl.syncEnabled.value) return;
     try {
