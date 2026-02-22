@@ -58,8 +58,6 @@ class PlayerSettings {
   double subtitleBottomMargin;
   @HiveField(26)
   String subtitleOutlineType;
-  @HiveField(27)
-  String subtitleFont;
 
   PlayerSettings(
       {this.speed = 1.0,
@@ -88,6 +86,5 @@ class PlayerSettings {
       this.subtitleOpacity = 1.0,
       this.subtitleBottomMargin = 10.0,
       this.subtitleOutlineType = "Outline",
-      this.subtitleFont = "Poppins",
       this.autoSkipFiller = false});
 }
