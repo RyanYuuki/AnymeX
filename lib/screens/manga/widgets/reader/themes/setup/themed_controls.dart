@@ -35,3 +35,19 @@ class ThemedReaderBottomControls extends StatelessWidget {
     });
   }
 }
+
+class ThemedReaderCenterControls extends StatelessWidget {
+  const ThemedReaderCenterControls({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final settings = Get.find<Settings>();
+    final controller = Get.find<ReaderController>();
+
+    return Obx(() {
+      final theme = ReaderControlThemeRegistry.resolve(
+          settings.readerControlThemeRx.value);
+      return theme.buildCenterControls(context, controller);
+    });
+  }
+}

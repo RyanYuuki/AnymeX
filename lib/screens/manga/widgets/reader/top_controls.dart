@@ -80,7 +80,7 @@ class ReaderTopControls extends StatelessWidget {
       height: 50,
       decoration: BoxDecoration(
         color: context.colors.surfaceContainer,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(50),
         border: Border.all(color: context.colors.onSurface.opaque(0.2)),
       ),
       child: IconButton(
@@ -136,7 +136,6 @@ class ReaderTopControls extends StatelessWidget {
                             controller.currentChapter.value?.title ??
                                 'Unknown Chapter',
                             style: const TextStyle(
-                              color: Colors.white,
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                             ),
@@ -144,14 +143,13 @@ class ReaderTopControls extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        const Icon(Icons.arrow_drop_down,
-                            color: Colors.white70, size: 16),
+                        const Icon(Icons.arrow_drop_down, size: 16),
                       ],
                     ),
                     Text(
                       'Chapter ${_formatNumber(controller.currentChapter.value?.number)} of ${controller.chapterList.length}',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.7),
+                        color: context.colors.onSurface.withOpacity(0.7),
                         fontSize: 10,
                       ),
                     ),
@@ -192,7 +190,7 @@ class ReaderTopControls extends StatelessWidget {
       height: 50,
       decoration: BoxDecoration(
         color: context.colors.surfaceContainer,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(50),
         border: Border.all(color: context.colors.onSurface.opaque(0.2)),
       ),
       child: IconButton(

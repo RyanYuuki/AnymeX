@@ -37,15 +37,15 @@ class Character {
 
   factory Character.fromJson(Map<String, dynamic> json) {
     return Character(
-      id: json['node']['id']?.toString(),
-      name: json['node']['name']['userPreferred'] ??
-          json['node']['name']['full'],
-      nativeName: json['node']['name']['native'],
-      favourites: json['node']['favourites'] ?? 0,
-      image: json['node']['image']['large'],
+      id: json['node']?['id']?.toString(),
+      name: json['node']?['name']?['userPreferred'] ??
+          json['node']?['name']?['full'],
+      nativeName: json['node']?['name']?['native'],
+      favourites: json['node']?['favourites'] ?? 0,
+      image: json['node']?['image']?['large'],
       role: json['role'],
-      description: json['node']['description'],
-      isFavourite: json['node']['isFavourite'],
+      description: json['node']?['description'],
+      isFavourite: json['node']?['isFavourite'],
       voiceActors: (json['voiceActors'] as List?)
               ?.map((actor) => VoiceActor.fromJson(actor))
               .toList() ??

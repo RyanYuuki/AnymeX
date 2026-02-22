@@ -53,6 +53,8 @@ enum ReaderKeys {
   volumeKeysEnabled,
   invertVolumeKeys,
   dualPageMode,
+  autoScrollEnabled,
+  autoScrollSpeed,
 }
 
 enum LocalSourceKeys {
@@ -81,6 +83,7 @@ enum AuthKeys {
   malAuthToken,
   malRefreshToken,
   simklAuthToken,
+  malSessionId,
 }
 
 enum SearchKeys { novelSearchedQueries }
@@ -118,4 +121,59 @@ enum DynamicKeys {
   void delete(dynamic id) {
     KvHelper.remove('${name}_$id');
   }
+}
+
+enum PlayerSettingsKeys {
+  speed,
+  resizeMode,
+  showSubtitle,
+  subtitleSize,
+  subtitleColor,
+  subtitleFont,
+  subtitleBackgroundColor,
+  subtitleOutlineColor,
+  skipDuration,
+  seekDuration,
+  bottomMargin,
+  transculentControls,
+  defaultPortraitMode,
+  playerStyle,
+  subtitleOutlineWidth,
+  autoSkipOP,
+  autoSkipED,
+  autoSkipOnce,
+  enableSwipeControls,
+  markAsCompleted,
+  transitionSubtitle,
+  autoTranslate,
+  translateTo,
+  autoSkipFiller,
+  enableScreenshot,
+}
+
+enum UISettingsKeys {
+  glowMultiplier,
+  radiusMultiplier,
+  saikouLayout,
+  tabBarHeight,
+  tabBarWidth,
+  tabBarRoundness,
+  compactCards,
+  cardRoundness,
+  blurMultipler,
+  animationDuration,
+  translucentTabBar,
+  glowDensity,
+  homePageCards,
+  enableAnimation,
+  disableGradient,
+  homePageCardsMal,
+  cardStyle,
+  historyCardStyle,
+  liquidMode,
+  liquidBackgroundPath,
+  retainOriginalColor,
+  usePosterColor,
+  enablePosterKenBurns,
+  carouselStyle,
 }

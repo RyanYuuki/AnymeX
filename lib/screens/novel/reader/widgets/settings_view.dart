@@ -48,6 +48,82 @@ class NovelSettingsPanel extends StatelessWidget {
     });
   }
 
+  Widget _buildAutoScrollSettings(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Auto Scroll',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: context.colors.onSurface,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Obx(() => GestureDetector(
+              onTap: () {
+                HapticFeedback.lightImpact();
+                controller.toggleAutoScroll();
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: controller.autoScrollEnabled.value
+                      ? context.colors.primary.opaque(0.1)
+                      : Colors.transparent,
+                  border: Border.all(
+                    color: controller.autoScrollEnabled.value
+                        ? context.colors.primary
+                        : context.colors.outline.opaque(0.3),
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          controller.autoScrollEnabled.value
+                              ? Icons.pause_rounded
+                              : Icons.play_arrow_rounded,
+                          color: controller.autoScrollEnabled.value
+                              ? context.colors.primary
+                              : context.colors.onSurface,
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          controller.autoScrollEnabled.value
+                              ? 'Auto Scroll On'
+                              : 'Auto Scroll Off',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: controller.autoScrollEnabled.value
+                                ? context.colors.primary
+                                : context.colors.onSurface,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            )),
+        const SizedBox(height: 16),
+        _buildSliderSetting(
+          context,
+          title: 'Scroll Speed',
+          value: controller.autoScrollSpeed,
+          min: 1.0,
+          max: 10.0,
+          divisions: 18,
+          label: (value) => '${value.toStringAsFixed(1)}s/screen',
+        ),
+      ],
+    );
+  }
+
   Widget _buildSettingsHeader(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -94,6 +170,8 @@ class NovelSettingsPanel extends StatelessWidget {
           _buildSpacingSettings(context),
           const SizedBox(height: 24),
           _buildAlignmentSettings(context),
+          const SizedBox(height: 24),
+          _buildAutoScrollSettings(context),
           const SizedBox(height: 24),
           _buildResetButton(context),
         ],
