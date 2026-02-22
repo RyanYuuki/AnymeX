@@ -331,7 +331,7 @@ class _GistSyncCard extends StatelessWidget {
   }
 
   Color _statusColor(
-    dynamic colors, {
+    ColorScheme colors, {
     required bool isLogged,
     required bool isSyncing,
     required bool? hasCloudGist,
@@ -396,7 +396,7 @@ class _GistSyncCard extends StatelessWidget {
     return '${hours.toStringAsFixed(1)}h';
   }
 
-  Widget _buildIcon(bool isLogged, bool isSyncing, dynamic colors) {
+  Widget _buildIcon(bool isLogged, bool isSyncing, ColorScheme colors) {
     if (isSyncing) {
       return SizedBox(
         width: 44,
@@ -852,16 +852,12 @@ class _DeleteGistConfirmDialogState extends State<_DeleteGistConfirmDialog> {
         timer.cancel();
         return;
       }
-      if (_secondsLeft <= 1) {
-        setState(() {
-          _secondsLeft = 0;
-        });
-        timer.cancel();
-        return;
-      }
       setState(() {
         _secondsLeft -= 1;
       });
+      if (_secondsLeft == 0) {
+        timer.cancel();
+      }
     });
   }
 

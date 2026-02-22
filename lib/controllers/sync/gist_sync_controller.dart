@@ -52,15 +52,42 @@ class GistSyncController extends GetxController {
   int _activeSyncOps = 0;
 
   String? get _githubRedirectUri {
-    final configured = (dotenv.env['GITHUB_CALLBACK_SCHEME'] ?? '').trim();
-    return configured.isEmpty ? null : configured;
+    final configuredRedirect = _normalizeRedirectUri(
+      (dotenv.env['GITHUB_REDIRECT_URI'] ?? '').trim(),
+    );
+    if (configuredRedirect != null) return configuredRedirect;
+
+    // Backward-compatible fallback: some configs store full redirect URI here.
+    return _normalizeRedirectUri(
+      (dotenv.env['GITHUB_CALLBACK_SCHEME'] ?? '').trim(),
+    );
   }
 
-  String get _githubCallbackScheme {
-    final scheme = Uri.tryParse(_githubRedirectUri ?? '')?.scheme;
-    return (scheme == null || scheme.isEmpty)
-        ? _kDefaultGithubCallbackScheme
-        : scheme;
+  String get _githubCallbackScheme =>
+      _extractScheme((dotenv.env['GITHUB_CALLBACK_SCHEME'] ?? '').trim()) ??
+      _extractScheme(_githubRedirectUri ?? '') ??
+      _kDefaultGithubCallbackScheme;
+
+  String? _normalizeRedirectUri(String raw) {
+    if (raw.isEmpty) return null;
+    final uri = Uri.tryParse(raw);
+    if (uri == null || uri.scheme.isEmpty) return null;
+    return raw;
+  }
+
+  String? _extractScheme(String raw) {
+    if (raw.isEmpty) return null;
+    final uri = Uri.tryParse(raw);
+    if (uri != null && uri.scheme.isNotEmpty) {
+      return uri.scheme;
+    }
+    final idx = raw.indexOf(':');
+    if (idx > 0) {
+      final head = raw.substring(0, idx).trim();
+      return head.isEmpty ? null : head;
+    }
+    // Support plain scheme values like "anymex".
+    return raw.contains('://') ? null : raw;
   }
 
   @override
@@ -271,13 +298,17 @@ class GistSyncController extends GetxController {
     final stopwatch = Stopwatch()..start();
     _beginSyncOp();
     try {
-      await _service.syncNow();
+      final cloudData = await _service.syncNow();
       hasCloudGist.value = true;
       _markSyncSuccess(durationMs: stopwatch.elapsedMilliseconds);
+      final entryCount = cloudData.length;
+      final countLabel = entryCount == 0
+          ? ''
+          : ' · $entryCount ${entryCount == 1 ? 'entry' : 'entries'}';
       successSnackBar(
         isInitializeAction
-            ? 'Cloud gist initialized in ${_formatElapsed(stopwatch.elapsedMilliseconds)}.'
-            : 'Progress synced in ${_formatElapsed(stopwatch.elapsedMilliseconds)}.',
+            ? 'Cloud gist initialized in ${_formatElapsed(stopwatch.elapsedMilliseconds)}$countLabel.'
+            : 'Progress synced in ${_formatElapsed(stopwatch.elapsedMilliseconds)}$countLabel.',
       );
     } catch (e) {
       _markSyncFailure(e, durationMs: stopwatch.elapsedMilliseconds);
@@ -457,12 +488,12 @@ class GistSyncController extends GetxController {
         if (removeResult == GistRemoveResult.removed) {
           _markSyncSuccess(durationMs: elapsedMs);
           _notifyExitSyncSuccess(
-            'Cloud entry removed in ${_formatElapsedSeconds(elapsedMs)}.',
+            'Cloud entry removed in ${_formatElapsed(elapsedMs)}.',
           );
         } else if (removeResult == GistRemoveResult.notFound) {
           _markSyncSuccess(durationMs: elapsedMs);
           _notifyExitSyncInfo(
-            'No cloud entry found to remove (${_formatElapsedSeconds(elapsedMs)}).',
+            'No cloud entry found to remove (${_formatElapsed(elapsedMs)}).',
           );
         } else {
           _markSyncFailure(
@@ -470,7 +501,7 @@ class GistSyncController extends GetxController {
             durationMs: elapsedMs,
           );
           _notifyExitSyncError(
-            'Cloud entry removal failed after ${_formatElapsedSeconds(elapsedMs)}.',
+            'Cloud entry removal failed after ${_formatElapsed(elapsedMs)}.',
           );
         }
         return;
@@ -495,7 +526,7 @@ class GistSyncController extends GetxController {
       if (synced) {
         _markSyncSuccess(durationMs: elapsedMs);
         _notifyExitSyncSuccess(
-          'Cloud sync successful in ${_formatElapsedSeconds(elapsedMs)}.',
+          'Cloud sync successful in ${_formatElapsed(elapsedMs)}.',
         );
       } else {
         _markSyncFailure(
@@ -503,7 +534,7 @@ class GistSyncController extends GetxController {
           durationMs: elapsedMs,
         );
         _notifyExitSyncError(
-          'Cloud sync failed after ${_formatElapsedSeconds(elapsedMs)}.',
+          'Cloud sync failed after ${_formatElapsed(elapsedMs)}.',
         );
       }
     } catch (e) {
@@ -511,11 +542,11 @@ class GistSyncController extends GetxController {
       _markSyncFailure(e, durationMs: elapsedMs);
       if (isCompleted) {
         _notifyExitSyncError(
-          'Cloud entry removal failed after ${_formatElapsedSeconds(elapsedMs)}.',
+          'Cloud entry removal failed after ${_formatElapsed(elapsedMs)}.',
         );
       } else {
         _notifyExitSyncError(
-          'Cloud sync failed after ${_formatElapsedSeconds(elapsedMs)}.',
+          'Cloud sync failed after ${_formatElapsed(elapsedMs)}.',
         );
       }
       Logger.i('[GistSync] syncEpisodeProgressOnExit: $e');
@@ -552,12 +583,12 @@ class GistSyncController extends GetxController {
         if (removeResult == GistRemoveResult.removed) {
           _markSyncSuccess(durationMs: elapsedMs);
           _notifyExitSyncSuccess(
-            'Cloud entry removed in ${_formatElapsedSeconds(elapsedMs)}.',
+            'Cloud entry removed in ${_formatElapsed(elapsedMs)}.',
           );
         } else if (removeResult == GistRemoveResult.notFound) {
           _markSyncSuccess(durationMs: elapsedMs);
           _notifyExitSyncInfo(
-            'No cloud entry found to remove (${_formatElapsedSeconds(elapsedMs)}).',
+            'No cloud entry found to remove (${_formatElapsed(elapsedMs)}).',
           );
         } else {
           _markSyncFailure(
@@ -565,7 +596,7 @@ class GistSyncController extends GetxController {
             durationMs: elapsedMs,
           );
           _notifyExitSyncError(
-            'Cloud entry removal failed after ${_formatElapsedSeconds(elapsedMs)}.',
+            'Cloud entry removal failed after ${_formatElapsed(elapsedMs)}.',
           );
         }
         return;
@@ -592,7 +623,7 @@ class GistSyncController extends GetxController {
       if (synced) {
         _markSyncSuccess(durationMs: elapsedMs);
         _notifyExitSyncSuccess(
-          'Cloud sync successful in ${_formatElapsedSeconds(elapsedMs)}.',
+          'Cloud sync successful in ${_formatElapsed(elapsedMs)}.',
         );
       } else {
         _markSyncFailure(
@@ -600,7 +631,7 @@ class GistSyncController extends GetxController {
           durationMs: elapsedMs,
         );
         _notifyExitSyncError(
-          'Cloud sync failed after ${_formatElapsedSeconds(elapsedMs)}.',
+          'Cloud sync failed after ${_formatElapsed(elapsedMs)}.',
         );
       }
     } catch (e) {
@@ -608,11 +639,11 @@ class GistSyncController extends GetxController {
       _markSyncFailure(e, durationMs: elapsedMs);
       if (isCompleted) {
         _notifyExitSyncError(
-          'Cloud entry removal failed after ${_formatElapsedSeconds(elapsedMs)}.',
+          'Cloud entry removal failed after ${_formatElapsed(elapsedMs)}.',
         );
       } else {
         _notifyExitSyncError(
-          'Cloud sync failed after ${_formatElapsedSeconds(elapsedMs)}.',
+          'Cloud sync failed after ${_formatElapsed(elapsedMs)}.',
         );
       }
       Logger.i('[GistSync] syncChapterProgressOnExit: $e');
@@ -631,25 +662,18 @@ class GistSyncController extends GetxController {
   }) {
     if (!_canSync || mediaId.isEmpty) return;
 
-    if (isCompleted) {
-      unawaited(_doUpload(() async {
-        final result = await _service.remove(mediaId, malId: malId);
+    unawaited(_doUpload(() async {
+      final resolvedMalId =
+          await _resolveMalId(mediaId, malId: malId, isManga: false);
+
+      if (isCompleted) {
+        final result = await _service.remove(mediaId, malId: resolvedMalId);
         if (result == GistRemoveResult.failed) {
           throw Exception('Failed to remove cloud entry.');
         }
-      }));
-      return;
-    }
+        return;
+      }
 
-    unawaited(_doUpload(() async {
-      final resolvedMalId =
-          (malId != null && malId.isNotEmpty && malId != 'null')
-              ? malId
-              : await MediaSyncer.mapMediaId(
-                  mediaId,
-                  type: MappingType.anilist,
-                  isManga: false,
-                );
       final ok = await _service.upsert(GistProgressEntry(
         mediaId: mediaId,
         malId: resolvedMalId,
@@ -677,25 +701,21 @@ class GistSyncController extends GetxController {
   }) {
     if (!_canSync || mediaId.isEmpty) return;
 
-    if (isCompleted) {
-      unawaited(_doUpload(() async {
-        final result = await _service.remove(mediaId, malId: malId);
+    unawaited(_doUpload(() async {
+      final resolvedMalId = await _resolveMalId(
+        mediaId,
+        malId: malId,
+        isManga: mediaType != 'anime',
+      );
+
+      if (isCompleted) {
+        final result = await _service.remove(mediaId, malId: resolvedMalId);
         if (result == GistRemoveResult.failed) {
           throw Exception('Failed to remove cloud entry.');
         }
-      }));
-      return;
-    }
+        return;
+      }
 
-    unawaited(_doUpload(() async {
-      final resolvedMalId =
-          (malId != null && malId.isNotEmpty && malId != 'null')
-              ? malId
-              : await MediaSyncer.mapMediaId(
-                  mediaId,
-                  type: MappingType.anilist,
-                  isManga: mediaType != 'anime',
-                );
       final ok = await _service.upsert(GistProgressEntry(
         mediaId: mediaId,
         malId: resolvedMalId,
@@ -918,9 +938,5 @@ class GistSyncController extends GetxController {
     }
     final hours = minutes / 60;
     return '${hours.toStringAsFixed(1)}h';
-  }
-
-  String _formatElapsedSeconds(int ms) {
-    return '${(ms / 1000).toStringAsFixed(ms < 10000 ? 2 : 1)}s';
   }
 }
