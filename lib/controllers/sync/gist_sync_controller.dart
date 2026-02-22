@@ -1,274 +1,155 @@
-import 'dart:async';
 import 'dart:convert';
 import 'package:anymex/controllers/sync/gist_sync_service.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
 const _kTokenKey = 'gist_sync_github_token';
 const _kUsernameKey = 'gist_sync_github_username';
 
-String get _clientId {
-  try {
-    return const String.fromEnvironment('GITHUB_CLIENT_ID', defaultValue: '');
-  } catch (_) {
-    return '';
-  }
-}
-
-enum _PollStatus { pending, success, expired, denied, error }
-
-class _PollResult {
-  final _PollStatus status;
-  final String? accessToken;
-  _PollResult(this.status, {this.accessToken});
-}
-
-class GistDeviceCodeInfo {
-  final String userCode;
-  final String verificationUri;
-  final int expiresIn;
-
-  const GistDeviceCodeInfo({
-    required this.userCode,
-    required this.verificationUri,
-    required this.expiresIn,
-  });
-}
-
 class GistSyncController extends GetxController {
-  final isConnected = false.obs;
+  final isLoggedIn = false.obs;
   final isAuthenticating = false.obs;
   final isSyncing = false.obs;
   final syncEnabled = true.obs;
   final lastSyncTime = Rx<DateTime?>(null);
-  final authError = RxnString();
   final githubUsername = RxnString();
-  final deviceCodeInfo = Rx<GistDeviceCodeInfo?>(null);
-  RxBool get isSignedIn => isConnected;
+  RxBool get isConnected => isLoggedIn;
   final _service = GistSyncService();
   final _storage = const FlutterSecureStorage();
 
   @override
   void onInit() {
     super.onInit();
-    _restoreToken();
+    _restoreSession();
   }
-
-  Future<void> _restoreToken() async {
+  
+  Future<void> _restoreSession() async {
     try {
       final token = await _storage.read(key: _kTokenKey);
       final username = await _storage.read(key: _kUsernameKey);
       if (token != null && token.isNotEmpty) {
         _service.setToken(token);
-        isConnected.value = true;
+        isLoggedIn.value = true;
         githubUsername.value = username;
         Logger.i('[GistSync] Session restored for $username');
       }
     } catch (e) {
-      Logger.e('[GistSync] _restoreToken: $e');
+      Logger.i('[GistSync] _restoreSession: $e');
     }
   }
   
-  Future<GistDeviceCodeInfo?> startDeviceFlow() async {
-    if (_clientId.isEmpty) {
-      authError.value =
-          'GITHUB_CLIENT_ID is not configured. Add it to your .env file.';
-      return null;
+  @override
+  Future<void> login(BuildContext context) async {
+    final clientId = dotenv.env['GITHUB_CLIENT_ID'] ?? '';
+    final clientSecret = dotenv.env['GITHUB_CLIENT_SECRET'] ?? '';
+
+    if (clientId.isEmpty) {
+      Logger.i('[GistSync] GITHUB_CLIENT_ID not set in .env');
+      errorSnackBar('GitHub client ID not configured.');
+      return;
     }
 
-    isAuthenticating.value = true;
-    authError.value = null;
-    deviceCodeInfo.value = null;
+    final url =
+        'https://github.com/login/oauth/authorize'
+        '?client_id=$clientId'
+        '&scope=gist'
+        '&redirect_uri=anymex://oauth/github';
 
     try {
-      final resp = await http.post(
-        Uri.parse('https://github.com/login/device/code'),
-        headers: {'Accept': 'application/json'},
-        body: {
-          'client_id': _clientId,
-          'scope': 'gist',
-        },
+      final result = await FlutterWebAuth2.authenticate(
+        url: url,
+        callbackUrlScheme: 'anymex',
       );
 
-      if (resp.statusCode != 200) {
-        authError.value = 'Failed to start login (${resp.statusCode})';
-        isAuthenticating.value = false;
-        return null;
+      final code = Uri.parse(result).queryParameters['code'];
+      if (code != null) {
+        Logger.i('[GistSync] Authorization code received');
+        await _exchangeCodeForToken(code, clientId, clientSecret);
       }
-
-      final data = json.decode(resp.body) as Map<String, dynamic>;
-      final deviceCode = data['device_code'] as String;
-      final userCode = data['user_code'] as String;
-      final verificationUri = data['verification_uri'] as String;
-      final expiresIn = data['expires_in'] as int;
-      final interval = (data['interval'] as int?) ?? 5;
-
-      final info = GistDeviceCodeInfo(
-        userCode: userCode,
-        verificationUri: verificationUri,
-        expiresIn: expiresIn,
-      );
-      deviceCodeInfo.value = info;
-
-      _pollForToken(deviceCode, interval, expiresIn);
-
-      return info;
     } catch (e) {
-      authError.value = 'Login error: $e';
-      isAuthenticating.value = false;
-      Logger.e('[GistSync] startDeviceFlow: $e');
-      return null;
+      Logger.i('[GistSync] Error during GitHub login: $e');
     }
   }
 
-  void cancelDeviceFlow() {
-    isAuthenticating.value = false;
-    deviceCodeInfo.value = null;
-    authError.value = null;
-    _pollCancelled = true;
-  }
-
-  bool _pollCancelled = false;
-
-  Future<void> _pollForToken(
-      String deviceCode, int intervalSeconds, int expiresIn) async {
-    _pollCancelled = false;
-    final deadline = DateTime.now().add(Duration(seconds: expiresIn));
-
-    while (DateTime.now().isBefore(deadline) && !_pollCancelled) {
-      await Future.delayed(Duration(seconds: intervalSeconds));
-      if (_pollCancelled) break;
-
-      final result = await _checkToken(deviceCode);
-
-      switch (result.status) {
-        case _PollStatus.pending:
-          continue;
-        case _PollStatus.success:
-          await _onTokenReceived(result.accessToken!);
-          return;
-        case _PollStatus.denied:
-          authError.value = 'Access denied by user.';
-          isAuthenticating.value = false;
-          deviceCodeInfo.value = null;
-          return;
-        case _PollStatus.expired:
-          authError.value = 'Code expired. Please try again.';
-          isAuthenticating.value = false;
-          deviceCodeInfo.value = null;
-          return;
-        case _PollStatus.error:
-          authError.value = 'Authentication error. Please try again.';
-          isAuthenticating.value = false;
-          deviceCodeInfo.value = null;
-          return;
-      }
-    }
-
-    if (!_pollCancelled) {
-      authError.value = 'Code expired. Please try again.';
-      isAuthenticating.value = false;
-      deviceCodeInfo.value = null;
-    }
-  }
-
-  Future<_PollResult> _checkToken(String deviceCode) async {
+  Future<void> _exchangeCodeForToken(
+      String code, String clientId, String clientSecret) async {
     try {
-      final resp = await http.post(
+      final response = await http.post(
         Uri.parse('https://github.com/login/oauth/access_token'),
         headers: {'Accept': 'application/json'},
         body: {
-          'client_id': _clientId,
-          'device_code': deviceCode,
-          'grant_type': 'urn:ietf:params:oauth:grant-type:device_code',
+          'client_id': clientId,
+          'client_secret': clientSecret,
+          'code': code,
+          'redirect_uri': 'anymex://oauth/github',
         },
       );
 
-      if (resp.statusCode != 200) return _PollResult(_PollStatus.error);
-
-      final data = json.decode(resp.body) as Map<String, dynamic>;
-      final error = data['error'] as String?;
-
-      if (error == null) {
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body) as Map<String, dynamic>;
         final token = data['access_token'] as String?;
-        if (token != null && token.isNotEmpty) {
-          return _PollResult(_PollStatus.success, accessToken: token);
+
+        if (token == null || token.isEmpty) {
+          final ghError =
+              data['error_description'] ?? data['error'] ?? 'Unknown error';
+          Logger.i('[GistSync] Token exchange error: $ghError');
+          errorSnackBar('GitHub login failed: $ghError');
+          return;
         }
-        return _PollResult(_PollStatus.error);
-      }
+        
+        final userResp = await http.get(
+          Uri.parse('https://api.github.com/user'),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Accept': 'application/vnd.github+json',
+          },
+        );
+        String? username;
+        if (userResp.statusCode == 200) {
+          username =
+              (json.decode(userResp.body) as Map<String, dynamic>)['login']
+                  as String?;
+        }
 
-      switch (error) {
-        case 'authorization_pending':
-          return _PollResult(_PollStatus.pending);
-        case 'slow_down':
-          await Future.delayed(const Duration(seconds: 5));
-          return _PollResult(_PollStatus.pending);
-        case 'expired_token':
-          return _PollResult(_PollStatus.expired);
-        case 'access_denied':
-          return _PollResult(_PollStatus.denied);
-        default:
-          return _PollResult(_PollStatus.error);
+        _service.setToken(token);
+        await _storage.write(key: _kTokenKey, value: token);
+        if (username != null) {
+          await _storage.write(key: _kUsernameKey, value: username);
+          githubUsername.value = username;
+        }
+
+        isLoggedIn.value = true;
+        Logger.i('[GistSync] Login successful as $username');
+        successSnackBar('Connected as ${username ?? 'GitHub user'}!');
+      } else {
+        throw Exception(
+            'Failed to exchange code for token: ${response.body}, ${response.statusCode}');
       }
     } catch (e) {
-      Logger.e('[GistSync] _checkToken: $e');
-      return _PollResult(_PollStatus.error);
+      Logger.i('[GistSync] _exchangeCodeForToken: $e');
     }
   }
-
-  Future<void> _onTokenReceived(String token) async {
-    try {
-      final userResp = await http.get(
-        Uri.parse('https://api.github.com/user'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Accept': 'application/vnd.github+json',
-        },
-      );
-      String? username;
-      if (userResp.statusCode == 200) {
-        final data = json.decode(userResp.body) as Map<String, dynamic>;
-        username = data['login'] as String?;
-      }
-
-      _service.setToken(token);
-      await _storage.write(key: _kTokenKey, value: token);
-      if (username != null) {
-        await _storage.write(key: _kUsernameKey, value: username);
-        githubUsername.value = username;
-      }
-
-      isConnected.value = true;
-      isAuthenticating.value = false;
-      deviceCodeInfo.value = null;
-      authError.value = null;
-      successSnackBar('Connected as $username!');
-    } catch (e) {
-      authError.value = 'Failed to finalise login: $e';
-      isAuthenticating.value = false;
-      Logger.e('[GistSync] _onTokenReceived: $e');
-    }
-  }
-
-  Future<void> signOut() async {
+  
+  Future<void> logout() async {
     _service.clear();
     await _storage.delete(key: _kTokenKey);
     await _storage.delete(key: _kUsernameKey);
-    isConnected.value = false;
+    isLoggedIn.value = false;
     githubUsername.value = null;
     lastSyncTime.value = null;
-    authError.value = null;
-    deviceCodeInfo.value = null;
   }
-
+  
   bool get _canSync =>
-      isConnected.value && syncEnabled.value && _service.isReady;
-
+      isLoggedIn.value && syncEnabled.value && _service.isReady;
+  
   void pushEpisodeProgress({
     required String mediaId,
     String? malId,
@@ -297,7 +178,7 @@ class GistSyncController extends GetxController {
       ));
     }));
   }
-  
+
   void pushChapterProgress({
     required String mediaId,
     String? malId,
@@ -329,7 +210,7 @@ class GistSyncController extends GetxController {
       ));
     }));
   }
-  
+
   void removeEntry(String mediaId, {String? malId}) {
     if (!_canSync || mediaId.isEmpty) return;
     unawaited(_doUpload(() => _service.remove(mediaId, malId: malId)));
@@ -353,7 +234,7 @@ class GistSyncController extends GetxController {
         return cloud;
       }
     } catch (e) {
-      Logger.e('[GistSync] fetchNewerEpisodeTimestamp: $e');
+      Logger.i('[GistSync] fetchNewerEpisodeTimestamp: $e');
     }
     return null;
   }
@@ -371,23 +252,22 @@ class GistSyncController extends GetxController {
       if (entry == null || entry.mediaType != mediaType) return null;
       if (entry.chapterNumber != chapterNumber) return null;
       if (entry.updatedAt > localUpdatedAt) {
-        Logger.i(
-            '[GistSync] Newer chapter progress for $mediaId ch$chapterNumber');
+        Logger.i('[GistSync] Newer chapter for $mediaId ch$chapterNumber');
         return entry;
       }
     } catch (e) {
-      Logger.e('[GistSync] fetchNewerChapterProgress: $e');
+      Logger.i('[GistSync] fetchNewerChapterProgress: $e');
     }
     return null;
   }
-
+  
   Future<void> _doUpload(Future<void> Function() fn) async {
     isSyncing.value = true;
     try {
       await fn();
       lastSyncTime.value = DateTime.now();
     } catch (e) {
-      Logger.e('[GistSync] _doUpload: $e');
+      Logger.i('[GistSync] _doUpload: $e');
     } finally {
       isSyncing.value = false;
     }
