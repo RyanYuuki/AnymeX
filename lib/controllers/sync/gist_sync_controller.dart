@@ -14,6 +14,7 @@ import 'package:http/http.dart' as http;
 
 const _kTokenKey = 'gist_sync_github_token';
 const _kUsernameKey = 'gist_sync_github_username';
+const _kDefaultGithubCallbackScheme = 'anymex';
 
 class GistSyncController extends GetxController {
   final isLoggedIn = false.obs;
@@ -26,12 +27,24 @@ class GistSyncController extends GetxController {
   final _service = GistSyncService();
   final _storage = const FlutterSecureStorage();
 
+  String? get _githubRedirectUri {
+    final configured = (dotenv.env['GITHUB_CALLBACK_SCHEME'] ?? '').trim();
+    return configured.isEmpty ? null : configured;
+  }
+
+  String get _githubCallbackScheme {
+    final scheme = Uri.tryParse(_githubRedirectUri ?? '')?.scheme;
+    return (scheme == null || scheme.isEmpty)
+        ? _kDefaultGithubCallbackScheme
+        : scheme;
+  }
+
   @override
   void onInit() {
     super.onInit();
     _restoreSession();
   }
-  
+
   Future<void> _restoreSession() async {
     try {
       final token = await _storage.read(key: _kTokenKey);
@@ -46,10 +59,11 @@ class GistSyncController extends GetxController {
       Logger.i('[GistSync] _restoreSession: $e');
     }
   }
-  
+
   Future<void> login(BuildContext context) async {
     final clientId = dotenv.env['GITHUB_CLIENT_ID'] ?? '';
     final clientSecret = dotenv.env['GITHUB_CLIENT_SECRET'] ?? '';
+    final redirectUri = _githubRedirectUri;
 
     if (clientId.isEmpty) {
       Logger.i('[GistSync] GITHUB_CLIENT_ID not set in .env');
@@ -57,30 +71,49 @@ class GistSyncController extends GetxController {
       return;
     }
 
+    final authorizeParams = <String, String>{
+      'client_id': clientId,
+      'scope': 'gist',
+      if (redirectUri != null) 'redirect_uri': redirectUri,
+    };
     final url =
-        'https://github.com/login/oauth/authorize'
-        '?client_id=$clientId'
-        '&scope=gist'
-        '&redirect_uri=anymex://oauth/github';
+        Uri.https('github.com', '/login/oauth/authorize', authorizeParams)
+            .toString();
 
+    isAuthenticating.value = true;
     try {
       final result = await FlutterWebAuth2.authenticate(
         url: url,
-        callbackUrlScheme: 'anymex',
+        callbackUrlScheme: _githubCallbackScheme,
       );
 
       final code = Uri.parse(result).queryParameters['code'];
       if (code != null) {
         Logger.i('[GistSync] Authorization code received');
-        await _exchangeCodeForToken(code, clientId, clientSecret);
+        await _exchangeCodeForToken(
+          code,
+          clientId,
+          clientSecret,
+          redirectUri: redirectUri,
+        );
+      } else {
+        Logger.i('[GistSync] OAuth callback did not include code: $result');
+        errorSnackBar('GitHub login failed: missing authorization code.');
       }
     } catch (e) {
       Logger.i('[GistSync] Error during GitHub login: $e');
+      errorSnackBar('GitHub login was cancelled or failed.');
+    } finally {
+      isAuthenticating.value = false;
     }
   }
 
   Future<void> _exchangeCodeForToken(
-      String code, String clientId, String clientSecret) async {
+    String code,
+    String clientId,
+    String clientSecret, {
+    String? redirectUri,
+  }) async {
     try {
       final response = await http.post(
         Uri.parse('https://github.com/login/oauth/access_token'),
@@ -89,7 +122,7 @@ class GistSyncController extends GetxController {
           'client_id': clientId,
           'client_secret': clientSecret,
           'code': code,
-          'redirect_uri': 'anymex://oauth/github',
+          if (redirectUri != null) 'redirect_uri': redirectUri,
         },
       );
 
@@ -104,7 +137,7 @@ class GistSyncController extends GetxController {
           errorSnackBar('GitHub login failed: $ghError');
           return;
         }
-        
+
         final userResp = await http.get(
           Uri.parse('https://api.github.com/user'),
           headers: {
@@ -114,9 +147,8 @@ class GistSyncController extends GetxController {
         );
         String? username;
         if (userResp.statusCode == 200) {
-          username =
-              (json.decode(userResp.body) as Map<String, dynamic>)['login']
-                  as String?;
+          username = (json.decode(userResp.body)
+              as Map<String, dynamic>)['login'] as String?;
         }
 
         _service.setToken(token);
@@ -137,7 +169,7 @@ class GistSyncController extends GetxController {
       Logger.i('[GistSync] _exchangeCodeForToken: $e');
     }
   }
-  
+
   Future<void> logout() async {
     _service.clear();
     await _storage.delete(key: _kTokenKey);
@@ -146,10 +178,10 @@ class GistSyncController extends GetxController {
     githubUsername.value = null;
     lastSyncTime.value = null;
   }
-  
+
   bool get _canSync =>
       isLoggedIn.value && syncEnabled.value && _service.isReady;
-  
+
   void pushEpisodeProgress({
     required String mediaId,
     String? malId,
@@ -215,7 +247,7 @@ class GistSyncController extends GetxController {
     if (!_canSync || mediaId.isEmpty) return;
     unawaited(_doUpload(() => _service.remove(mediaId, malId: malId)));
   }
-  
+
   Future<int?> fetchNewerEpisodeTimestamp({
     required String mediaId,
     String? malId,
@@ -260,7 +292,7 @@ class GistSyncController extends GetxController {
     }
     return null;
   }
-  
+
   Future<void> _doUpload(Future<void> Function() fn) async {
     isSyncing.value = true;
     try {
