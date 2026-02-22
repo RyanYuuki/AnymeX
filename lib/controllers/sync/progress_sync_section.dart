@@ -326,7 +326,7 @@ class _GistSyncCard extends StatelessWidget {
   }
 
   String _subtitle(bool isLogged, {String username = ''}) {
-    if (!isLogged) return 'Resume progress across all your devices';
+    if (!isLogged) return 'Progress across devices';
     return 'Connected as $username';
   }
 
