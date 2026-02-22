@@ -218,6 +218,7 @@ class GistSyncController extends GetxController {
         }
 
         isLoggedIn.value = true;
+        await refreshCloudGistStatus();
         Logger.i('[GistSync] Login successful as $username');
         successSnackBar('Connected as ${username ?? 'GitHub user'}!');
       } else {
