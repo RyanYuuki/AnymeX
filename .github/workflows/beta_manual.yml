@@ -33,28 +33,6 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: false
       
-      # =================================================================
-      # Install ImageMagick
-      # =================================================================
-      - name: Install ImageMagick (Linux)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y imagemagick
-          
-      - name: Verify ImageMagick Installation
-        shell: bash
-        run: |
-          if command -v magick >/dev/null 2>&1; then
-            echo "✅ ImageMagick installed (magick command)"
-            magick --version
-          elif command -v convert >/dev/null 2>&1; then
-            echo "✅ ImageMagick installed (convert command)"
-            convert --version
-          else
-            echo "❌ ImageMagick not found in PATH"
-            exit 1
-          fi
-
       - name: Apply Beta Configuration
         shell: bash
         run: |
@@ -310,29 +288,6 @@ jobs:
           CALLBACK_SCHEME=$CALLBACK_SCHEME
           GOOGLE_BOOKS_API_KEY=$GOOGLE_BOOKS_API_KEY
           EOF
-      
-      # =================================================================
-      # Apply Beta Assets
-      # =================================================================
-      - name: Apply Beta Assets
-        shell: bash
-        run: |
-          echo "🔵 Applying beta assets..."
-          if [ -f "assets/images/logo_beta.png" ]; then
-            cp assets/images/logo_beta.png assets/images/logo.png
-            echo "✅ Copied logo_beta.png to logo.png"
-          else
-            echo "❌ Error: assets/images/logo_beta.png not found!"
-            exit 1
-          fi
-          if [ -f "assets/images/logo_transparent_beta.png" ]; then
-            cp assets/images/logo_transparent_beta.png assets/images/logo_transparent.png
-            echo "✅ Copied logo_transparent_beta.png to logo_transparent.png"
-          else
-            echo "❌ Error: assets/images/logo_transparent_beta.png not found!"
-            exit 1
-          fi
-          echo "✅ Beta assets applied."
       
       - name: Clean Flutter
         run: flutter clean
