@@ -264,6 +264,69 @@ else
 fi
 
 ###############################################
+# UPDATE CHECKER: Update version in updater.dart
+###############################################
+log_info "Update Checker: Updating version for update checking..."
+
+DART_UPDATER_FILE="lib/utils/updater.dart"
+
+if [ -f "$DART_UPDATER_FILE" ]; then
+  # Extract build number from NEW_VERSION (e.g., "3.0.4+26" -> "26")
+  BUILD_NUMBER=$(echo "$NEW_VERSION" | cut -d'+' -f2)
+
+  # Remove 'v' prefix from DISPLAY_VERSION (e.g., "v3.0.4+1-beta" -> "3.0.4+1-beta")
+  VERSION_WITHOUT_V=$(echo "$DISPLAY_VERSION" | sed 's/^v//')
+
+  # Combine: "3.0.4+1-beta+26"
+  FULL_VERSION="${VERSION_WITHOUT_V}+${BUILD_NUMBER}"
+
+  log_info "Full version with build number: $FULL_VERSION"
+
+  # Update _getCurrentVersion() to return hardcoded version
+  # This replaces the entire function body
+  sed "${SED_INPLACE[@]}" '/Future<String> _getCurrentVersion() async {/,/^}$/c\
+  Future<String> _getCurrentVersion() async {\
+    return "'"$FULL_VERSION"'";\
+  }' "$DART_UPDATER_FILE"
+
+  log_success "Updated _getCurrentVersion() to return $FULL_VERSION"
+
+  # Update _shouldUpdate() to strip build number before comparison
+  # Add build number stripping logic after the function signature
+  sed "${SED_INPLACE[@]}" '/^  bool _shouldUpdate(String currentVersion, String latestVersion) {/a\
+    // Strip build number (last + segment) from current version\
+    // "3.0.7+1-beta+26" -> "3.0.7+1-beta"\
+    final plusCount = currentVersion.split('"'"'+'"'"').length - 1;\
+    if (plusCount > 1) {\
+      final lastPlusIndex = currentVersion.lastIndexOf('"'"'+'"'"');\
+      currentVersion = currentVersion.substring(0, lastPlusIndex);\
+    }\
+' "$DART_UPDATER_FILE"
+
+  log_success "Added build number stripping logic to _shouldUpdate()"
+
+  # Update version parsing to handle iteration numbers
+  # Replace the simple split with iteration-aware parsing
+  sed "${SED_INPLACE[@]}" 's/final currentNums = currentSplit\[0\]\.split('"'"'\.'"'"')\.map(int\.parse)\.toList();/\/\/ Parse current version with iteration\n    final currentParts = currentSplit[0].split('"'"'+'"'"');\n    final currentNums = currentParts[0].split('"'"'\.'"'"').map(int.parse).toList();\n    final currentIteration = currentParts.length > 1 ? int.parse(currentParts[1]) : 0;/g' "$DART_UPDATER_FILE"
+
+  sed "${SED_INPLACE[@]}" 's/final latestNums = latestSplit\[0\]\.split('"'"'\.'"'"')\.map(int\.parse)\.toList();/\/\/ Parse latest version with iteration\n    final latestParts = latestSplit[0].split('"'"'+'"'"');\n    final latestNums = latestParts[0].split('"'"'\.'"'"').map(int.parse).toList();\n    final latestIteration = latestParts.length > 1 ? int.parse(latestParts[1]) : 0;/g' "$DART_UPDATER_FILE"
+
+  log_success "Updated version parsing to handle iteration numbers"
+
+  # Add iteration comparison logic before the final log statement
+  sed "${SED_INPLACE[@]}" '/Logger.i('"'"'Current version/i\
+    // Compare iterations if semver and tag are same\
+    if (latestIteration > currentIteration) return true;\
+    if (latestIteration < currentIteration) return false;\
+\
+' "$DART_UPDATER_FILE"
+
+  log_success "Added iteration comparison logic to _shouldUpdate()"
+else
+  log_warn "Updater file not found at $DART_UPDATER_FILE. Skipping update checker updates."
+fi
+
+###############################################
 # Summary
 ###############################################
 echo ""

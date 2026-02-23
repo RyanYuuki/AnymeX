@@ -3,8 +3,8 @@ name: Build Android APKs (Manual Beta)
 on:
   workflow_dispatch:
     inputs:
-      version:
-        description: 'Version number (e.g., 1.0.0)'
+      tag:
+        description: 'Version tag (e.g., v1.0.0+1-beta)'
         required: true
         type: string
 
@@ -58,25 +58,44 @@ jobs:
       - name: Apply Beta Configuration
         shell: bash
         run: |
+          TAG="${{ inputs.tag }}"
+
           echo "════════════════════════════════════════════"
           echo "  MANUAL BETA BUILD"
           echo "════════════════════════════════════════════"
-          echo "Input version: ${{ inputs.version }}"
+          echo "Input tag: $TAG"
           echo ""
 
-          # Use input version with build number
-          BASE_VERSION="${{ inputs.version }}"
-          BUILD_NUMBER="${GITHUB_RUN_NUMBER}"
-          VERSION="${BASE_VERSION}+${BUILD_NUMBER}"
+          # Extract version part (remove v)
+          # v3.0.4-beta → 3.0.4-beta
+          # v3.0.4+1-beta → 3.0.4+1-beta
+          VERSION_PART=$(echo "$TAG" | sed 's/^v//')
 
-          echo "Final beta version: $VERSION"
+          echo "Display version: v$VERSION_PART"
 
-          # Validate version format
-          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+\+[0-9]+$ ]]; then
-            echo "❌ Version format invalid: $VERSION"
-            echo "   Expected format: X.Y.Z+BUILD (e.g., 1.0.0+123)"
-            exit 1
+          # For pubspec.yaml, we need only semver (before any +)
+          # 3.0.4+1-beta → 3.0.4
+          # 3.0.4-beta → 3.0.4
+          if [[ "$VERSION_PART" == *"+"* ]]; then
+            SEMVER=$(echo "$VERSION_PART" | cut -d'+' -f1 | cut -d'-' -f1)
+          else
+            SEMVER=$(echo "$VERSION_PART" | cut -d'-' -f1)
           fi
+
+          echo "Semver: $SEMVER"
+
+          # GitHub build number
+          BUILD_NUMBER="${GITHUB_RUN_NUMBER}"
+
+          # pubspec.yaml version (valid Flutter format)
+          PUBSPEC_VERSION="${SEMVER}+${BUILD_NUMBER}"
+
+          # Display version is just tag without v (no build number)
+          DISPLAY_VERSION="v${VERSION_PART}"
+
+          echo "Pubspec version: $PUBSPEC_VERSION"
+          echo "Display version: $DISPLAY_VERSION"
+          echo ""
 
           # Check if rename script exists
           if [ ! -f "scripts/rename_app.sh" ]; then
@@ -86,16 +105,16 @@ jobs:
 
           # Make script executable and run
           chmod +x scripts/rename_app.sh
-          echo ""
-          echo "Running rename script with version: $VERSION"
+          echo "Running rename script..."
           echo "════════════════════════════════════════════"
 
-          if ./scripts/rename_app.sh "$VERSION"; then
+          if ./scripts/rename_app.sh "$PUBSPEC_VERSION" "$DISPLAY_VERSION"; then
             echo ""
             echo "✅ Beta rename completed successfully"
             echo "   Package: com.ryan.anymex → com.ryan.anymexbeta"
             echo "   App Name: AnymeX → AnymeX β"
-            echo "   Version: $VERSION"
+            echo "   Pubspec Version: $PUBSPEC_VERSION"
+            echo "   Display Version: $DISPLAY_VERSION"
           else
             echo ""
             echo "❌ Beta rename failed"
@@ -205,10 +224,16 @@ jobs:
           echo "🎯 FLUTTER"
           echo "────────────────────────────────────────────"
 
-          BASE_VERSION="${{ inputs.version }}"
+          TAG="${{ inputs.tag }}"
+          VERSION_PART=$(echo "$TAG" | sed 's/^v//')
+          if [[ "$VERSION_PART" == *"+"* ]]; then
+            SEMVER=$(echo "$VERSION_PART" | cut -d'+' -f1 | cut -d'-' -f1)
+          else
+            SEMVER=$(echo "$VERSION_PART" | cut -d'-' -f1)
+          fi
           BUILD_NUMBER="${GITHUB_RUN_NUMBER}"
-          VERSION="${BASE_VERSION}+${BUILD_NUMBER}"
-          
+          VERSION="${SEMVER}+${BUILD_NUMBER}"
+
           if grep -q "version: $VERSION" pubspec.yaml 2>/dev/null; then
             echo "✅ Version updated in pubspec.yaml: $VERSION"
           else
