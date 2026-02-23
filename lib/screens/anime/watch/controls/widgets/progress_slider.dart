@@ -91,7 +91,7 @@ class _ProgressSliderState extends State<ProgressSlider> {
               .opaque(0.5, iReallyMeanIt: true),
           secondaryActiveTrackColor:
               colorScheme.onSurface.opaque(0.3, iReallyMeanIt: true),
-          thumbColor: colorScheme.surface,
+          thumbColor: Colors.white,
           overlayColor: colorScheme.primary.opaque(0.1, iReallyMeanIt: true),
           overlayShape: const RoundSliderOverlayShape(overlayRadius: 18),
         );

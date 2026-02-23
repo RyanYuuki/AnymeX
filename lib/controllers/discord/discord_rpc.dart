@@ -10,6 +10,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_discord_rpc_fork/flutter_discord_rpc.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -242,8 +243,8 @@ class DiscordRPCController extends GetxController {
       print('Connected to Discord RPC (Desktop)');
 
       await updateBrowsingPresence(
-        activity: 'Browsing Stuff',
-        details: 'Idle',
+        activity: kDebugMode ? 'Working on the App' : 'Browsing Stuff',
+        details: kDebugMode ? "Coding" : 'Idle',
       );
     } catch (e) {
       print('Failed to connect to Discord RPC: $e');
@@ -308,8 +309,8 @@ class DiscordRPCController extends GetxController {
           _isConnected.value = true;
           print('Discord Gateway Ready (Mobile)');
           updateBrowsingPresence(
-            activity: 'Browsing Stuff',
-            details: 'Idle',
+            activity: kDebugMode ? 'Working on the App' : 'Browsing Stuff',
+            details: kDebugMode ? "Coding" : 'Idle',
           );
         }
         break;

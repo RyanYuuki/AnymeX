@@ -4,6 +4,11 @@ import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/al_about_me.dart';
 import 'package:anymex/widgets/common/glow.dart';
+<<<<<<< HEAD
+=======
+import 'package:anymex/widgets/common/reusable_carousel.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+>>>>>>> upstream/main
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:get/get.dart';
@@ -337,13 +342,12 @@ class _ProfilePageState extends State<ProfilePage>
             AnimatedBuilder(
               animation: bannerAnim,
               builder: (context, child) {
-                return CachedNetworkImage(
+                return AnymeXImage(
                   imageUrl: imageUrl,
                   fit: hasBanner ? BoxFit.fitHeight : BoxFit.cover,
                   alignment:
                       hasBanner ? bannerAnim.value : Alignment.center,
-                  errorWidget: (_, __, ___) => Container(
-                      color: context.theme.colorScheme.surfaceContainer),
+                  radius: 0,
                 );
               },
             ),

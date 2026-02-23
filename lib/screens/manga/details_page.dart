@@ -4,14 +4,14 @@ import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
+import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/controllers/settings/methods.dart';
-import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/source/source_mapper.dart';
 import 'package:anymex/database/data_keys/keys.dart';
+import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/screens/anime/widgets/comments/comments_section.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
 import 'package:anymex/screens/anime/widgets/custom_list_dialog.dart';
@@ -203,11 +203,27 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
         Logger.i("Data Loaded for media => ${widget.media.title}");
         _processExtensionData(tempData);
       } else {
+        _fetchSecondaryData(tempData);
         await _mapToService();
       }
     } catch (e, stackTrace) {
       Logger.i(e.toString());
       Logger.i(stackTrace.toString());
+    }
+  }
+
+  Future<void> _fetchSecondaryData(Media tempData) async {
+    try {
+      if (mediaService.service is AnilistData) {
+        final anilistService = mediaService.service as AnilistData;
+        await anilistService.fetchSecondaryDetails(
+            widget.media.id.toString(), tempData);
+        if (mounted) {
+          setState(() {});
+        }
+      }
+    } catch (e) {
+      Logger.i("Secondary Data Fetch Failed => $e");
     }
   }
 
@@ -218,8 +234,8 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
         '${sourceController.activeMangaSource.value?.id}-${anilistData?.id}-${mediaService.index}';
     final savedTitle = DynamicKeys.mappedMediaTitle.get<String?>(key, null);
     final baseMedia = anilistData ?? widget.media;
-    final mappedData =
-        await mapMedia(formatTitles(baseMedia), searchedTitle, savedTitle: savedTitle);
+    final mappedData = await mapMedia(formatTitles(baseMedia), searchedTitle,
+        savedTitle: savedTitle);
     if (_isStaleChapterRequest(activeRequestId) || !mounted) {
       return;
     }
@@ -243,13 +259,11 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
       chapterList?.clear();
       dynamic episodeFuture;
       try {
-        episodeFuture = await sourceController
-            .activeMangaSource.value!.methods
+        episodeFuture = await sourceController.activeMangaSource.value!.methods
             .getDetail(DMedia.withUrl(media.id));
       } catch (e) {
         if (!e.toString().contains("dynamic")) rethrow;
-        episodeFuture = await sourceController
-            .activeMangaSource.value!.methods
+        episodeFuture = await sourceController.activeMangaSource.value!.methods
             .getDetail(DMedia.withUrl(media.id));
       }
       if (_isStaleChapterRequest(activeRequestId) || !mounted) {

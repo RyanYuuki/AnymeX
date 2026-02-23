@@ -48,18 +48,23 @@ class AnymexCard extends StatelessWidget {
   final bool enableAnimation;
   final Color? color;
   final ShapeBorder? shape;
-  const AnymexCard(
-      {super.key,
-      required this.child,
-      this.padding,
-      this.enableAnimation = false,
-      this.color,
-      this.shape});
+  final Clip? clipBehavior;
+
+  const AnymexCard({
+    super.key,
+    required this.child,
+    this.padding,
+    this.enableAnimation = false,
+    this.color,
+    this.shape,
+    this.clipBehavior,
+  });
 
   @override
   Widget build(BuildContext context) {
     final settings = Get.find<Settings>();
     return Card(
+      clipBehavior: clipBehavior,
       color: color ??
           (settings.disableGradient
               ? context.colors.surfaceContainerLow

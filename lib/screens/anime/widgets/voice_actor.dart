@@ -5,6 +5,7 @@ import 'package:anymex/models/Media/staff.dart';
 import 'package:anymex/screens/anime/widgets/character_staff_sheet.dart';
 
 import 'package:anymex/widgets/header.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:iconsax/iconsax.dart';

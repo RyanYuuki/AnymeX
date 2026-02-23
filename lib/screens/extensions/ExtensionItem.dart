@@ -9,10 +9,10 @@ import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/AlertDialogBuilder.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -182,29 +182,46 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
     }
 
     return SizedBox(
-      width: 100,
+      width: updateAvailable ? 150 : 100,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
+          if (updateAvailable) ...[
+            Container(
+              decoration: BoxDecoration(
+                color: theme.tertiaryContainer,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: AnymexOnTap(
+                onTap: _handleUpdate,
+                child: IconButton(
+                  onPressed: _handleUpdate,
+                  icon: Icon(
+                    Icons.update,
+                    size: 18,
+                    color: theme.onTertiaryContainer,
+                  ),
+                  tooltip: "Update",
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+          ],
           Container(
             decoration: BoxDecoration(
-              color: updateAvailable
-                  ? theme.tertiaryContainer
-                  : theme.errorContainer.withAlpha(122),
+              color: theme.errorContainer.withAlpha(122),
               borderRadius: BorderRadius.circular(8),
             ),
             child: AnymexOnTap(
-              onTap: () => _onActionTap(updateAvailable),
+              onTap: () => _onActionTap(false),
               child: IconButton(
-                onPressed: () => _onActionTap(updateAvailable),
+                onPressed: () => _onActionTap(false),
                 icon: Icon(
+                  Iconsax.trash,
                   size: 18,
-                  updateAvailable ? Icons.update : Iconsax.trash,
-                  color: updateAvailable
-                      ? theme.onTertiaryContainer
-                      : theme.onErrorContainer,
+                  color: theme.onErrorContainer,
                 ),
-                tooltip: updateAvailable ? "Update" : "Delete",
+                tooltip: "Delete",
               ),
             ),
           ),
@@ -285,12 +302,13 @@ class _ExtensionIcon extends StatelessWidget {
               right: 1,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(50),
-                child: Image.network(
-                  isMangayomi
-                      ? "https://raw.githubusercontent.com/kodjodevf/mangayomi/main/assets/app_icons/icon-red.png"
+                child: AnymeXImage(
+                  imageUrl: isMangayomi
+                      ? 'https://raw.githubusercontent.com/kodjodevf/mangayomi/main/assets/app_icons/icon-red.png'
                       : 'https://aniyomi.org/img/logo-128px.png',
                   height: 13,
                   width: 13,
+                  radius: 0,
                 ),
               ),
             ),
@@ -306,15 +324,12 @@ class _ExtensionIcon extends StatelessWidget {
       return Icon(Icons.extension_rounded, color: context.colors.primary);
     }
     if (iconUrl.startsWith('http')) {
-      return CachedNetworkImage(
+      return AnymeXImage(
         imageUrl: iconUrl,
         fit: BoxFit.cover,
         width: 42,
         height: 42,
-        placeholder: (context, url) =>
-            Icon(Icons.extension_rounded, color: context.colors.primary),
-        errorWidget: (context, url, error) =>
-            Icon(Icons.extension_rounded, color: context.colors.primary),
+        radius: 0,
       );
     }
     return Image.file(

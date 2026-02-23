@@ -7,6 +7,7 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/header.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
@@ -60,6 +61,7 @@ class RecentlyOpenedAnimeCard extends StatelessWidget {
             mobileSize: MediaQuery.of(context).size.width / 1.5,
             desktopSize: MediaQuery.of(context).size.width / 3),
         child: AnymexCard(
+          clipBehavior: Clip.antiAlias,
           shape: RoundedRectangleBorder(
             side: BorderSide(
               color: colorScheme.primary.opaque(0.2),

@@ -100,6 +100,7 @@ class _ReadingPageState extends State<ReadingPage> {
               ReaderView(controller: controller),
               const ThemedReaderTopControls(),
               const ThemedReaderBottomControls(),
+              const ThemedReaderCenterControls(),
             ],
           ),
         ),

@@ -4,6 +4,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anime/visuals/visuals_popup.dart';
 import 'package:anymex/widgets/header.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:blur/blur.dart';

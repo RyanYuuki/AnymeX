@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
+import 'package:anymex/screens/manga/widgets/reader/auto_scroll_menu.dart';
 import 'package:anymex/screens/manga/widgets/reader/settings_view.dart';
 import 'package:anymex/screens/manga/widgets/reader/themes/setup/reader_control_theme.dart';
 import 'package:anymex/screens/manga/widgets/reader/top_controls.dart';
@@ -26,6 +27,12 @@ class IOSReaderControlTheme extends ReaderControlTheme {
   Widget buildBottomControls(
       BuildContext context, ReaderController controller) {
     return _LiquidBottomBar(controller: controller);
+  }
+
+  @override
+  Widget buildCenterControls(
+      BuildContext context, ReaderController controller) {
+    return const ReaderAutoScrollMenu();
   }
 }
 
