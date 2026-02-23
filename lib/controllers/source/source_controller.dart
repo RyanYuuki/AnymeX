@@ -152,6 +152,9 @@ class SourceController extends GetxController implements BaseService {
         ServicesType.extensions) {
       fetchHomePage();
     }
+    if (Get.context != null) {
+      checkForUpdates(Get.context!);
+    }
   }
 
   void _scheduleRebuild(ItemType type) {
@@ -322,15 +325,11 @@ class SourceController extends GetxController implements BaseService {
       _kAnimeRepo => SourceKeys.activeAnimeRepo.get<String>(""),
       _kMangaRepo => SourceKeys.activeMangaRepo.get<String>(""),
       _kNovelRepo => SourceKeys.activeNovelRepo.get<String>(""),
-      _kAniyomiAnimeRepo =>
-        SourceKeys.activeAniyomiAnimeRepo.get<String>(""),
-      _kAniyomiMangaRepo =>
-        SourceKeys.activeAniyomiMangaRepo.get<String>(""),
+      _kAniyomiAnimeRepo => SourceKeys.activeAniyomiAnimeRepo.get<String>(""),
+      _kAniyomiMangaRepo => SourceKeys.activeAniyomiMangaRepo.get<String>(""),
       'activeSourceId' => SourceKeys.activeSourceId.get<String>(""),
-      'activeMangaSourceId' =>
-        SourceKeys.activeMangaSourceId.get<String>(""),
-      'activeNovelSourceId' =>
-        SourceKeys.activeNovelSourceId.get<String>(""),
+      'activeMangaSourceId' => SourceKeys.activeMangaSourceId.get<String>(""),
+      'activeNovelSourceId' => SourceKeys.activeNovelSourceId.get<String>(""),
       _ => '',
     };
   }
@@ -424,17 +423,17 @@ class SourceController extends GetxController implements BaseService {
         .findAllSync();
 
     _homeSections.value = [
-      Obx(() => buildSection(
-            'Continue Watching',
-            animeLibrary,
-            variant: DataVariant.offline,
-          )),
-      Obx(() => buildSection(
-            'Continue Reading',
-            mangaLibrary,
-            variant: DataVariant.offline,
-            type: ItemType.manga,
-          )),
+      buildSection(
+        'Continue Watching',
+        animeLibrary,
+        variant: DataVariant.offline,
+      ),
+      buildSection(
+        'Continue Reading',
+        mangaLibrary,
+        variant: DataVariant.offline,
+        type: ItemType.manga,
+      ),
     ];
   }
 
@@ -501,5 +500,43 @@ class SourceController extends GetxController implements BaseService {
         .list
         .map((e) => Media.froDMedia(e, type))
         .toList();
+  }
+  Future<void> checkForUpdates(BuildContext context) async {
+    try {
+      await fetchRepos();
+      final updates = <Source>[];
+      for (final source in installedExtensions) {
+        final available =
+            availableExtensions.firstWhereOrNull((s) => s.id == source.id);
+        if (available != null &&
+            (available.version ?? '') != (source.version ?? '')) {
+          updates.add(available);
+        }
+      }
+
+      for (final source in installedMangaExtensions) {
+        final available =
+            availableMangaExtensions.firstWhereOrNull((s) => s.id == source.id);
+        if (available != null &&
+            (available.version ?? '') != (source.version ?? '')) {
+          updates.add(available);
+        }
+      }
+      
+      for (final source in installedNovelExtensions) {
+        final available =
+            availableNovelExtensions.firstWhereOrNull((s) => s.id == source.id);
+        if (available != null &&
+            (available.version ?? '') != (source.version ?? '')) {
+          updates.add(available);
+        }
+      }
+
+      if (updates.isNotEmpty) {
+        snackString("Updates available for ${updates.length} extensions");
+      }
+    } catch (e) {
+      Logger.e('Error checking for updates: $e');
+    }
   }
 }

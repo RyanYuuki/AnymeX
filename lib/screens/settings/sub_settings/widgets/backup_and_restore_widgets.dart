@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:get/get.dart';
 
 class PasswordInputDialog extends StatefulWidget {
@@ -353,10 +354,10 @@ class UserInfoCard extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(14),
                 child: avatar != null && avatar!.isNotEmpty
-                    ? Image.network(
-                        avatar!,
+                    ? AnymeXImage(
+                        imageUrl: avatar!,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => DefaultAvatar(),
+                        radius: 0,
                       )
                     : DefaultAvatar(),
               ),

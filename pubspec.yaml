@@ -32,8 +32,7 @@ dependencies:
     flutter_in_app_pip: ^1.0.4
     get: ^4.6.6
     grouped_list: ^6.0.0
-    hive: ^2.2.3
-    hive_flutter: ^1.1.0
+
     html: any
     http: ^1.2.2
     http_interceptor: ^2.0.0

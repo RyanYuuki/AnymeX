@@ -1,5 +1,5 @@
+import 'dart:async';
 import 'package:anymex/utils/logger.dart';
-
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
@@ -52,6 +52,9 @@ class NovelReaderController extends GetxController {
   // Page Indicatorssss
   RxDouble progress = 0.0.obs;
   RxInt consecutiveReads = 0.obs;
+  RxBool autoScrollEnabled = false.obs;
+  RxDouble autoScrollSpeed = 3.0.obs;
+  Timer? _autoScrollTimer;
 
   Rx<Chapter> savedChapter = Chapter().obs;
 
@@ -68,6 +71,7 @@ class NovelReaderController extends GetxController {
   void onClose() {
     _saveTracking();
     scrollController.removeListener(_scrollListener);
+    _stopAutoScroll();
     super.onClose();
   }
 
@@ -133,6 +137,53 @@ class NovelReaderController extends GetxController {
     }
   }
 
+  void toggleAutoScroll() {
+    autoScrollEnabled.value = !autoScrollEnabled.value;
+    if (autoScrollEnabled.value) {
+      _startAutoScroll();
+    } else {
+      _stopAutoScroll();
+    }
+  }
+
+  void setAutoScrollSpeed(double speed) {
+    autoScrollSpeed.value = speed;
+    if (autoScrollEnabled.value) {
+      _stopAutoScroll();
+      _startAutoScroll();
+    }
+  }
+
+  void _startAutoScroll() {
+    _stopAutoScroll();
+    final pixelsPerSecond = Get.height / autoScrollSpeed.value;
+    const tickMs = 50;
+    _autoScrollTimer = Timer.periodic(
+      const Duration(milliseconds: tickMs),
+      (_) {
+        if (!autoScrollEnabled.value) {
+          _stopAutoScroll();
+          return;
+        }
+        if (!scrollController.hasClients) return;
+        final current = scrollController.offset;
+        final max = scrollController.position.maxScrollExtent;
+        if (current >= max) {
+          _stopAutoScroll();
+          autoScrollEnabled.value = false;
+          return;
+        }
+        final newOffset = (current + pixelsPerSecond * tickMs / 1000).clamp(0.0, max);
+        scrollController.jumpTo(newOffset);
+      },
+    );
+  }
+
+  void _stopAutoScroll() {
+    _autoScrollTimer?.cancel();
+    _autoScrollTimer = null;
+  }
+  
   void _saveTracking() {
     consecutiveReads.value++;
     savedChapter.value = offlineStorageController.getReadChapter(

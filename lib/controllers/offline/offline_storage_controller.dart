@@ -163,6 +163,70 @@ class OfflineStorageController extends GetxController {
   OfflineMedia? getMangaById(String id) => getMediaById(id);
   OfflineMedia? getNovelById(String id) => getMediaById(id);
 
+  Future<bool> clearMediaHistory(
+    String mediaId, {
+    required ItemType mediaType,
+  }) async {
+    if (mediaId.isEmpty) return false;
+
+    final media = getMediaById(mediaId);
+    if (media == null || media.mediaTypeIndex != mediaType.index) {
+      return false;
+    }
+
+    final hadHistory = mediaType == ItemType.anime
+        ? media.currentEpisode != null
+        : media.currentChapter != null;
+    if (!hadHistory) return false;
+
+    await isar.writeTxn(() async {
+      if (mediaType == ItemType.anime) {
+        media.currentEpisode = null;
+      } else {
+        media.currentChapter = null;
+      }
+      await isar.offlineMedias.put(media);
+    });
+
+    return true;
+  }
+
+  Future<int> clearMediaHistoryBulk(
+    Iterable<String> mediaIds, {
+    required ItemType mediaType,
+  }) async {
+    final ids = mediaIds.where((id) => id.isNotEmpty).toSet().toList();
+    if (ids.isEmpty) return 0;
+
+    final mediaItems = ids
+        .map(getMediaById)
+        .whereType<OfflineMedia>()
+        .where((media) => media.mediaTypeIndex == mediaType.index)
+        .toList();
+    if (mediaItems.isEmpty) return 0;
+
+    var clearedCount = 0;
+    await isar.writeTxn(() async {
+      for (final media in mediaItems) {
+        final hasHistory = mediaType == ItemType.anime
+            ? media.currentEpisode != null
+            : media.currentChapter != null;
+        if (!hasHistory) continue;
+
+        if (mediaType == ItemType.anime) {
+          media.currentEpisode = null;
+        } else {
+          media.currentChapter = null;
+        }
+
+        await isar.offlineMedias.put(media);
+        clearedCount++;
+      }
+    });
+
+    return clearedCount;
+  }
+
   Future<List<CustomList>> getCustomListsByType(ItemType type) async {
     return await isar.customLists
         .filter()
@@ -423,11 +487,13 @@ class OfflineStorageController extends GetxController {
       if (index != -1) {
         existingAnime.watchedEpisodes![index] = episode;
         Logger.i(
-            'Overwritten episode: ${episode.number} for anime ID: $animeId');
+            'Overwritten episode: ${episode.number} for anime ID: $animeId with source => ${episode.source}');
       } else {
         existingAnime.watchedEpisodes!.add(episode);
         Logger.i('Added new episode: ${episode.title} for anime ID: $animeId');
       }
+
+      existingAnime.currentEpisode = episode;
 
       await isar.offlineMedias.put(existingAnime);
     });
@@ -475,6 +541,8 @@ class OfflineStorageController extends GetxController {
         Logger.i('Added new chapter: ${chapter.title} for manga ID: $mangaId');
       }
 
+      existingManga.currentChapter = chapter;
+
       await isar.offlineMedias.put(existingManga);
     });
   }
@@ -511,6 +579,8 @@ class OfflineStorageController extends GetxController {
         existingNovel.readChapters!.add(chapter);
         Logger.i('Added new chapter: ${chapter.title} for novel ID: $novelId');
       }
+
+      existingNovel.currentChapter = chapter;
 
       await isar.offlineMedias.put(existingNovel);
     });

@@ -15,10 +15,10 @@ import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_chip.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart' as d;
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
@@ -400,19 +400,14 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
-                  child: CachedNetworkImage(
+                  child: AnymeXImage(
                     imageUrl: widget.anilistData?.cover ??
                         widget.anilistData?.poster ??
                         '',
                     fit: BoxFit.cover,
                     height: double.infinity,
                     width: double.infinity,
-                    memCacheWidth: 200, // Optimize memory usage
-                    memCacheHeight: 100,
-                    errorWidget: (context, url, error) => Container(
-                      color: context.colors.surface,
-                      child: const Icon(Icons.error),
-                    ),
+                    radius: 0,
                   ),
                 ),
                 Positioned(
@@ -462,7 +457,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: CachedNetworkImage(
+                    child: AnymeXImage(
                       imageUrl: episode.thumbnail ??
                           widget.anilistData?.cover ??
                           widget.anilistData?.poster ??
@@ -470,14 +465,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
                       width: 170,
                       height: 100,
                       fit: BoxFit.cover,
-                      memCacheWidth: 170, // Optimize memory
-                      memCacheHeight: 100,
-                      errorWidget: (context, url, error) => Container(
-                        width: 170,
-                        height: 100,
-                        color: context.colors.surface,
-                        child: const Icon(Icons.error),
-                      ),
+                      radius: 0,
                     ),
                   ),
                   Positioned(

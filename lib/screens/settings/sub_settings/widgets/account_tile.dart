@@ -1,10 +1,10 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Service/online_service.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/custom_widgets/custom_icon_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
@@ -56,9 +56,10 @@ class ProfileTile extends StatelessWidget {
                       padding: const EdgeInsets.all(2.0),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(50),
-                        child: CachedNetworkImage(
+                        child: AnymeXImage(
                           imageUrl: userData!.avatar!,
                           fit: BoxFit.cover,
+                          radius: 0,
                         ),
                       ),
                     ),
@@ -165,11 +166,12 @@ class ProfileTile extends StatelessWidget {
                             padding: const EdgeInsets.all(2.0),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(50),
-                              child: CachedNetworkImage(
+                              child: AnymeXImage(
                                 height: 50,
                                 width: 50,
                                 imageUrl: userData?.avatar ?? '',
                                 fit: BoxFit.cover,
+                                radius: 0,
                               ),
                             ),
                           ),

@@ -85,7 +85,7 @@ class LibraryController extends GetxController {
     }
     savePreferences();
 
-    if (index == -1 && type.value.isAnime) {
+    if (index == -1) {
       snackBar('Hold to access history editor');
     }
   }

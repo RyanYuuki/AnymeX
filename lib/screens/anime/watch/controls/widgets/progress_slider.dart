@@ -41,11 +41,13 @@ class _ProgressSliderState extends State<ProgressSlider> {
           child: Slider(
             year2023: false,
             label: PlayerUtils.formatDuration(Duration(milliseconds: position)),
-            divisions: duration <= 0
-                ? 1
-                : fullDuration.inSeconds < 60
-                    ? fullDuration.inSeconds
-                    : Duration(milliseconds: duration).inSeconds ~/ 10,
+            divisions: widget.style == SliderStyle.ios
+                ? null
+                : duration <= 0
+                    ? 1
+                    : fullDuration.inSeconds < 60
+                        ? fullDuration.inSeconds
+                        : Duration(milliseconds: duration).inSeconds ~/ 10,
             focusNode: FocusNode(canRequestFocus: false, skipTraversal: true),
             min: 0,
             value: clampedPosition,
@@ -89,7 +91,7 @@ class _ProgressSliderState extends State<ProgressSlider> {
               .opaque(0.5, iReallyMeanIt: true),
           secondaryActiveTrackColor:
               colorScheme.onSurface.opaque(0.3, iReallyMeanIt: true),
-          thumbColor: colorScheme.surface,
+          thumbColor: Colors.white,
           overlayColor: colorScheme.primary.opaque(0.1, iReallyMeanIt: true),
           overlayShape: const RoundSliderOverlayShape(overlayRadius: 18),
         );

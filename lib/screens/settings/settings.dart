@@ -6,6 +6,7 @@ import 'package:anymex/screens/settings/sub_settings/settings_common.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_experimental.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_extensions.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_storage_manager.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_theme.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_ui.dart';
 import 'package:anymex/utils/function.dart';
@@ -69,6 +70,14 @@ class _SettingsPageState extends State<SettingsPage> {
                     description: "Backup and restore your library",
                     onTap: () {
                       navigate(() => const BackupRestorePage());
+                    }),
+                CustomTile(
+                    icon: Icons.storage_rounded,
+                    title: "Storage Manager",
+                    description:
+                        "Manage cached images, thresholds, and reset app data",
+                    onTap: () {
+                      navigate(() => const SettingsStorageManager());
                     }),
                 CustomTile(
                     icon: HugeIcons.strokeRoundedPaintBoard,

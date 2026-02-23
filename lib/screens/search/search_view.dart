@@ -78,6 +78,11 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       <String>[],
     );
 
+    prefetchFilterMeta(
+      mediaType: widget.isManga ? 'manga' : 'anime',
+      config: _resolvedFilterConfig(),
+    );
+
     if (widget.initialFilters != null) {
       _activeFilters = Map<String, dynamic>.from(widget.initialFilters!);
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -88,6 +93,15 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         _performSearch();
       });
     }
+  }
+
+  FilterConfig _resolvedFilterConfig() {
+    if (_serviceHandler.serviceType.value == ServicesType.mal) {
+      return widget.isManga ? FilterConfig.malManga : FilterConfig.malAnime;
+    }
+    return widget.isManga
+        ? FilterConfig.anilistManga
+        : FilterConfig.anilistAnime;
   }
 
   void _saveHistory() {
@@ -101,12 +115,21 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     String? query,
     Map<String, dynamic>? filters,
   }) async {
+    if (filters != null) {
+      filters = Map<String, dynamic>.from(filters)
+        ..removeWhere((key, value) => value == null);
+    }
+
     final searchQuery = query ?? _searchController.text.trim();
 
-    if (searchQuery.isEmpty && (filters == null || filters.isEmpty)) {
+    Map<String, dynamic> currentFilters = filters ?? _activeFilters;
+    bool hasActiveContent = currentFilters.isNotEmpty;
+
+    if (searchQuery.isEmpty && !isAdult.value && !hasActiveContent) {
       setState(() {
         _searchState = SearchState.initial;
         _searchResults = null;
+        _activeFilters = {};
         _errorMessage = null;
       });
       return;
@@ -115,17 +138,23 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     setState(() {
       _searchState = SearchState.loading;
       _errorMessage = null;
-    });
-
-    try {
       if (filters != null) {
         _activeFilters = Map<String, dynamic>.from(filters);
+      }
+    });
+
+    await Future.delayed(const Duration(milliseconds: 350));
+
+    try {
+      final apiFilters = Map<String, dynamic>.from(_activeFilters);
+      if (apiFilters['sort'] == null && searchQuery.isEmpty) {
+        apiFilters['sort'] = ['POPULARITY_DESC'];
       }
 
       final results = (await _serviceHandler.search(SearchParams(
             query: searchQuery,
             isManga: widget.isManga,
-            filters: _activeFilters.isNotEmpty ? _activeFilters : null,
+            filters: apiFilters.isNotEmpty ? apiFilters : null,
             args: isAdult.value,
           ))) ??
           [];
@@ -246,19 +275,20 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       margin: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         children: [
-          if (!General.hideAdultContent.get(true) &&
-              (serviceHandler.serviceType.value.isAL ||
-                  serviceHandler.serviceType.value.isMal)) ...[
-            Obx(() {
-              return _buildToggleButton(
-                label: 'Adult',
-                isActive: isAdult.value,
-                onTap: () => isAdult.value = !isAdult.value,
-              );
-            }),
-            const SizedBox(width: 12),
-          ],
           if (serviceHandler.serviceType.value == ServicesType.anilist) ...[
+            if (!General.hideAdultContent.get(true)) ...[
+              Obx(() {
+                return _buildToggleButton(
+                  label: 'Adult',
+                  isActive: isAdult.value,
+                  onTap: () {
+                    isAdult.value = !isAdult.value;
+                    _performSearch();
+                  },
+                );
+              }),
+              const SizedBox(width: 12),
+            ],
             _buildActionButton(
               icon: Iconsax.setting_4,
               label: 'Filters',
@@ -448,11 +478,84 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
 
   List<Widget> _buildFilterChips() {
     List<Widget> chips = [];
+    final isManga = widget.isManga;
+
+    final Map<dynamic, String> currentServiceMap = {};
+    if (isManga) {
+      SearchFilterConstants.mangaReadableOnServices.forEach((lang, services) {
+        services.forEach((name, idList) {
+          for (var id in idList) {
+            currentServiceMap[id] = name;
+          }
+        });
+      });
+    } else {
+      SearchFilterConstants.animeStreamingServices.forEach((name, id) {
+        currentServiceMap[id] = name;
+      });
+    }
+
+    final Set<String> skipKeys = {'isLicensed'};
+
+    void addRangeChip(String baseKey, String label) {
+      if (_activeFilters.containsKey('${baseKey}Greater') ||
+          _activeFilters.containsKey('${baseKey}Lesser')) {
+        skipKeys.add('${baseKey}Greater');
+        skipKeys.add('${baseKey}Lesser');
+
+        final greater = _activeFilters['${baseKey}Greater'] ?? 0;
+        final lesser = _activeFilters['${baseKey}Lesser'] ?? 'Any';
+
+        String display;
+        if (baseKey == 'year') {
+          display =
+              '$label: ${greater ~/ 10000} - ${lesser is int ? (lesser ~/ 10000) - 1 : lesser}';
+        } else {
+          display = '$label: $greater - $lesser';
+        }
+
+        chips.add(_buildFilterChip(display, () {
+          setState(() {
+            _activeFilters.remove('${baseKey}Greater');
+            _activeFilters.remove('${baseKey}Lesser');
+          });
+          _performSearch(filters: _activeFilters);
+        }));
+      }
+    }
+
+    addRangeChip('year', 'Year');
+    if (isManga) {
+      addRangeChip('chapter', 'Chapters');
+      addRangeChip('volume', 'Volumes');
+    } else {
+      addRangeChip('episode', 'Episodes');
+      addRangeChip('duration', 'Duration (mins)');
+    }
 
     _activeFilters.forEach((key, value) {
-      if (key == 'genres' && value is List && value.isNotEmpty) {
-        for (var genre in value) {
-          chips.add(_buildFilterChip(genre, () => _removeFilter(key, genre)));
+      if (skipKeys.contains(key)) return;
+      if ((key == 'genres' || key == 'tags' || key == 'licensedBy') &&
+          value is List &&
+          value.isNotEmpty) {
+        if (key == 'licensedBy') {
+          final Map<String, List<int>> groupedPlatforms = {};
+          for (var item in value) {
+            String name = currentServiceMap[item] ?? 'Unknown Service';
+            groupedPlatforms.putIfAbsent(name, () => []).add(item as int);
+          }
+          groupedPlatforms.forEach((name, ids) {
+            chips.add(_buildFilterChip(name, () {
+              for (var id in ids) {
+                _removeFilter(key, id);
+              }
+            }));
+          });
+        } else {
+          for (var item in value) {
+            chips.add(_buildFilterChip(
+                item.toString(), () => _removeFilter(key, item)));
+          }
         }
       } else if (value != null && value.toString().isNotEmpty) {
         String displayText = _formatFilterValue(key, value);
@@ -465,36 +568,36 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   }
 
   Widget _buildFilterChip(String text, VoidCallback onRemove) {
-    return Container(
-      margin: const EdgeInsets.only(right: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: context.colors.primary.opaque(0.1),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: context.colors.primary.opaque(0.3),
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            text,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: context.colors.primary,
-                  fontWeight: FontWeight.w600,
-                ),
+    return GestureDetector(
+      onTap: onRemove,
+      child: Container(
+        margin: const EdgeInsets.only(right: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: context.colors.primary.opaque(0.1),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: context.colors.primary.opaque(0.3),
           ),
-          const SizedBox(width: 4),
-          GestureDetector(
-            onTap: onRemove,
-            child: Icon(
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              text,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: context.colors.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+            ),
+            const SizedBox(width: 4),
+            Icon(
               Icons.close,
               size: 16,
               color: context.colors.primary.opaque(0.7),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -673,7 +776,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       gridDelegate: _currentViewMode == ViewMode.list
           ? const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 1,
-              mainAxisExtent: 130,
+              mainAxisExtent: 120,
             )
           : SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: getResponsiveValue(context,
@@ -815,19 +918,26 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   void _showFilterBottomSheet() {
     showFilterBottomSheet(context, (filters) {
       _performSearch(filters: filters);
-    }, currentFilters: _activeFilters, isManga: widget.isManga);
+    },
+        currentFilters: _activeFilters,
+        mediaType: widget.isManga ? 'manga' : 'anime',
+        config: _resolvedFilterConfig());
   }
 
   void _removeFilter(String key, dynamic value) {
     if (_activeFilters.containsKey(key)) {
       setState(() {
-        if (key == 'genres' && _activeFilters[key] is List) {
-          List<String> genres = List<String>.from(_activeFilters[key]);
-          genres.remove(value);
-          if (genres.isEmpty) {
+        if ((key == 'genres' || key == 'tags' || key == 'licensedBy') &&
+            _activeFilters[key] is List) {
+          List<dynamic> items = List<dynamic>.from(_activeFilters[key]);
+          items.remove(value);
+          if (items.isEmpty) {
             _activeFilters.remove(key);
+            if (key == 'licensedBy') {
+              _activeFilters.remove('isLicensed');
+            }
           } else {
-            _activeFilters[key] = genres;
+            _activeFilters[key] = items;
           }
         } else {
           _activeFilters.remove(key);
@@ -839,62 +949,33 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
 
   String _formatFilterValue(String key, dynamic value) {
     switch (key) {
+      case 'onList':
+        if (widget.isManga) {
+          return value == true ? "My Manga Only" : "Hide My Manga";
+        }
+        return value == true ? "My Anime Only" : "Hide My Anime";
       case 'sort':
-        return "Sort: ${_formatSortBy(value.toString())}";
+        final sortVal =
+            value is List ? value.first.toString() : value.toString();
+        return "Sort: ${SearchFilterConstants.formatSort(sortVal)}";
       case 'season':
         return "Season: ${value.toString().toLowerCase().capitalize}";
       case 'status':
         return value.toString() != 'All'
-            ? "Status: ${_formatStatus(value.toString())}"
+            ? "Status: ${SearchFilterConstants.formatStatus(value.toString(), isManga: widget.isManga)}"
             : "";
       case 'format':
-        return "Format: $value";
+        return "Format: ${SearchFilterConstants.formatFormat(value.toString(), isManga: widget.isManga)}";
+      case 'isAdult':
+        return "18+ Content";
+      case 'source':
+        return "Source: ${value.toString().replaceAll('_', ' ').toLowerCase().split(' ').map((w) => w[0].toUpperCase() + w.substring(1)).join(' ')}";
+      case 'countryOfOrigin':
+        return "Country: ${SearchFilterConstants.formatCountry(value.toString())}";
+      case 'year':
+        return "Year: ${value.toString().replaceAll('%', '')}";
       default:
         return "$key: $value";
-    }
-  }
-
-  String _formatSortBy(String sortBy) {
-    switch (sortBy) {
-      case 'SCORE_DESC':
-        return 'Score ↓';
-      case 'SCORE':
-        return 'Score ↑';
-      case 'POPULARITY_DESC':
-        return 'Popularity ↓';
-      case 'POPULARITY':
-        return 'Popularity ↑';
-      case 'TRENDING_DESC':
-        return 'Trending ↓';
-      case 'TRENDING':
-        return 'Trending ↑';
-      case 'START_DATE_DESC':
-        return 'Newest';
-      case 'START_DATE':
-        return 'Oldest';
-      case 'TITLE_ROMAJI':
-        return 'Title A-Z';
-      case 'TITLE_ROMAJI_DESC':
-        return 'Title Z-A';
-      default:
-        return sortBy;
-    }
-  }
-
-  String _formatStatus(String status) {
-    switch (status) {
-      case 'FINISHED':
-        return 'Finished';
-      case 'NOT_YET_RELEASED':
-        return 'Not Released';
-      case 'RELEASING':
-        return 'Airing';
-      case 'CANCELLED':
-        return 'Cancelled';
-      case 'HIATUS':
-        return 'On Hiatus';
-      default:
-        return status;
     }
   }
 

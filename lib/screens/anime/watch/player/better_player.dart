@@ -26,9 +26,13 @@ class BetterPlayerImpl extends BasePlayer {
   final _completedController = StreamController<bool>.broadcast();
 
   PlayerState _state = PlayerState();
-  Timer? _positionTimer;
-  Timer? _bufferTimer;
   bool _isDisposed = false;
+
+  Duration _lastPosition = Duration.zero;
+  Duration _lastBuffer = Duration.zero;
+  List<String> _lastSubtitleLines = const [];
+
+  final List<SubtitleTrack> _accumulatedSubtitles = [];
 
   BetterPlayerImpl({
     PlayerConfiguration? configuration,
@@ -77,14 +81,15 @@ class BetterPlayerImpl extends BasePlayer {
     final betterPlayerConfiguration = BetterPlayerConfiguration(
       autoPlay: true,
       autoDetectFullscreenDeviceOrientation: true,
-      controlsConfiguration: const BetterPlayerControlsConfiguration(
-        showControls: false,
+      subtitlesConfiguration: BetterPlayerSubtitlesConfiguration(
+        fontSize: config.useLibass ? 14 : 0,
       ),
+      controlsConfiguration: const BetterPlayerControlsConfiguration(
+          showControls: false, enableSubtitles: true),
       eventListener: _handlePlayerEvent,
     );
 
     _controller = BetterPlayerController(betterPlayerConfiguration);
-    _setupPeriodicUpdates();
   }
 
   void _handlePlayerEvent(BetterPlayerEvent event) {
@@ -94,36 +99,84 @@ class BetterPlayerImpl extends BasePlayer {
       case BetterPlayerEventType.initialized:
         _onInitialized();
         break;
+
       case BetterPlayerEventType.play:
         _state = _state.copyWith(isPlaying: true);
         _playingController.add(true);
         break;
+
       case BetterPlayerEventType.pause:
         _state = _state.copyWith(isPlaying: false);
         _playingController.add(false);
         break;
+
       case BetterPlayerEventType.finished:
         _completedController.add(true);
         break;
+
+      case BetterPlayerEventType.progress:
+        _onProgress();
+        break;
+
       case BetterPlayerEventType.bufferingStart:
         _state = _state.copyWith(isBuffering: true);
         _bufferingController.add(true);
         break;
+
       case BetterPlayerEventType.bufferingEnd:
         if (_controller.isVideoInitialized() == true) {
           _state = _state.copyWith(isBuffering: false);
           _bufferingController.add(false);
         }
         break;
+
       case BetterPlayerEventType.exception:
         _errorController.add(event.parameters?.toString() ?? 'Unknown error');
         break;
+
       case BetterPlayerEventType.setupDataSource:
         _onDataSourceSetup();
         break;
+
       default:
         break;
     }
+  }
+
+  void _onProgress() {
+    final videoController = _controller.videoPlayerController;
+    if (videoController == null || !videoController.value.initialized) return;
+
+    final position = videoController.value.position;
+    if (position != _lastPosition) {
+      _lastPosition = position;
+      _state = _state.copyWith(position: position);
+      _positionController.add(position);
+    }
+
+    final buffered = videoController.value.buffered;
+    if (buffered.isNotEmpty) {
+      final bufferEnd = buffered.last.end;
+      if (bufferEnd != _lastBuffer) {
+        _lastBuffer = bufferEnd;
+        _state = _state.copyWith(buffer: bufferEnd);
+        _bufferController.add(bufferEnd);
+      }
+    }
+
+    final lines = _controller.renderedSubtitle?.texts ?? const [];
+    if (!_subtitleLinesEqual(lines, _lastSubtitleLines)) {
+      _lastSubtitleLines = List.unmodifiable(lines);
+      _subtitleController.add(lines);
+    }
+  }
+
+  bool _subtitleLinesEqual(List<String> a, List<String> b) {
+    if (a.length != b.length) return false;
+    for (var i = 0; i < a.length; i++) {
+      if (a[i] != b[i]) return false;
+    }
+    return true;
   }
 
   void _onInitialized() {
@@ -161,35 +214,52 @@ class BetterPlayerImpl extends BasePlayer {
   }
 
   List<AudioTrack> _extractAudioTracks() {
-    final audioTracks = <AudioTrack>[];
-
-    audioTracks.add(AudioTrack.auto());
-
-    return audioTracks;
+    return [AudioTrack.auto()];
   }
 
   List<SubtitleTrack> _extractSubtitleTracks() {
-    final subtitleTracks = <SubtitleTrack>[SubtitleTrack.no()];
+    for (var i = 0; i < _accumulatedSubtitles.length; i++) {
+      final t = _accumulatedSubtitles[i];
+      final title = t.title ?? '';
+      if (title.endsWith(' (Current)')) {
+        _accumulatedSubtitles[i] = SubtitleTrack(
+          id: t.id,
+          title: title.substring(0, title.length - 10),
+          language: t.language,
+          url: t.url,
+        );
+      }
+    }
 
+    final existingUrls = {
+      for (final t in _accumulatedSubtitles)
+        if (t.url != null && t.url!.isNotEmpty) t.url!
+    };
+
+    final newTracks = <SubtitleTrack>[];
     if (_currentDataSource?.subtitles != null) {
       for (var i = 0; i < _currentDataSource!.subtitles!.length; i++) {
         final sub = _currentDataSource!.subtitles![i];
-        subtitleTracks.add(SubtitleTrack(
-          id: 'subtitle_$i',
-          title: sub.name,
+        final url = sub.urls?.first ?? '';
+
+        if (url.isEmpty || existingUrls.contains(url)) continue;
+
+        newTracks.add(SubtitleTrack(
+          id: 'subtitle_${_accumulatedSubtitles.length + newTracks.length}',
+          title: '${sub.name} (Current)',
           language: sub.name,
-          url: sub.urls?.first ?? "",
+          url: url,
         ));
       }
     }
 
-    return subtitleTracks;
+    _accumulatedSubtitles.insertAll(0, newTracks);
+
+    return [SubtitleTrack.no(), ..._accumulatedSubtitles];
   }
 
   List<VideoTrack> _extractVideoTracks() {
-    final videoTracks = <VideoTrack>[];
-
-    videoTracks.add(VideoTrack.auto());
+    final videoTracks = <VideoTrack>[VideoTrack.auto()];
 
     if (_currentDataSource?.resolutions != null) {
       _currentDataSource!.resolutions!.forEach((quality, url) {
@@ -203,33 +273,6 @@ class BetterPlayerImpl extends BasePlayer {
     return videoTracks;
   }
 
-  void _setupPeriodicUpdates() {
-    _positionTimer = Timer.periodic(const Duration(milliseconds: 500), (_) {
-      if (_isDisposed) return;
-
-      final videoController = _controller.videoPlayerController;
-      if (videoController != null && videoController.value.initialized) {
-        final position = videoController.value.position;
-        _state = _state.copyWith(position: position);
-        _positionController.add(position);
-      }
-    });
-
-    _bufferTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (_isDisposed) return;
-
-      final videoController = _controller.videoPlayerController;
-      if (videoController != null && videoController.value.initialized) {
-        final buffered = videoController.value.buffered;
-        if (buffered.isNotEmpty) {
-          final bufferEnd = buffered.last.end;
-          _state = _state.copyWith(buffer: bufferEnd);
-          _bufferController.add(bufferEnd);
-        }
-      }
-    });
-  }
-
   @override
   Future<void> open(
     String url, {
@@ -238,6 +281,10 @@ class BetterPlayerImpl extends BasePlayer {
   }) async {
     _state = _state.copyWith(isBuffering: true);
     _bufferingController.add(true);
+
+    _lastPosition = Duration.zero;
+    _lastBuffer = Duration.zero;
+    _lastSubtitleLines = const [];
 
     _currentDataSource = BetterPlayerDataSource(
       BetterPlayerDataSourceType.network,
@@ -327,30 +374,27 @@ class BetterPlayerImpl extends BasePlayer {
           type: BetterPlayerSubtitlesSourceType.none,
         ),
       );
+      _lastSubtitleLines = const [];
+      _subtitleController.add([]);
       return;
     }
 
-    if (track.url != null) {
-      await _controller.setupDataSource(
-        _currentDataSource!.copyWith(
-          subtitles: [
-            ..._currentDataSource?.subtitles ?? [],
-            BetterPlayerSubtitlesSource(
-              type: BetterPlayerSubtitlesSourceType.network,
-              urls: [track.url!],
-              name: track.title,
-            ),
-          ],
+    if (track.url != null && track.url!.isNotEmpty) {
+      await _controller.setupSubtitleSource(
+        BetterPlayerSubtitlesSource(
+          type: BetterPlayerSubtitlesSourceType.network,
+          urls: [track.url!],
+          name: track.title,
         ),
       );
     } else {
       final index = int.tryParse(track.id.replaceAll('subtitle_', ''));
-      if (index != null && _currentDataSource?.subtitles != null) {
-        if (index < _currentDataSource!.subtitles!.length) {
-          _controller.setupSubtitleSource(
-            _currentDataSource!.subtitles![index],
-          );
-        }
+      if (index != null &&
+          _currentDataSource?.subtitles != null &&
+          index < _currentDataSource!.subtitles!.length) {
+        await _controller.setupSubtitleSource(
+          _currentDataSource!.subtitles![index],
+        );
       }
     }
   }
@@ -372,6 +416,7 @@ class BetterPlayerImpl extends BasePlayer {
     double? width,
     double? height,
   }) {
+    _controller.setOverriddenFit(fit ?? BoxFit.contain);
     return BetterPlayer(
       controller: _controller,
     );
@@ -381,9 +426,6 @@ class BetterPlayerImpl extends BasePlayer {
   Future<void> dispose() async {
     WakelockPlus.disable();
     _isDisposed = true;
-
-    _positionTimer?.cancel();
-    _bufferTimer?.cancel();
 
     await _positionController.close();
     await _durationController.close();
@@ -420,7 +462,6 @@ extension BetterPlayerDataSourceExtension on BetterPlayerDataSource {
       url,
       subtitles: subtitles ?? this.subtitles,
       headers: headers,
-      // : audiosTracks ?? this.audiosTracks,
       resolutions: resolutions,
       bufferingConfiguration: BetterPlayerBufferingConfiguration(
         minBufferMs: finalConfig.bufferSize ~/ 1000,

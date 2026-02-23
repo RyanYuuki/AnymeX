@@ -29,6 +29,7 @@ import 'package:anymex/widgets/non_widgets/anymex_toast.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
 import 'package:dartotsu_extension_bridge/Models/DEpisode.dart' as d;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -254,6 +255,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           .map((e) => AudioTrack.uri(e.file ?? '', title: e.label))
           .toList();
     });
+    if (PlayerKeys.useLibass.get(false)) {
+      snackBar(
+          "if subtitle is not showing up then disable libass in settings and restart",
+          duration: 3000);
+    }
   }
 
   static void initializePlayerControlsIfNeeded(Settings settings) {
@@ -322,7 +328,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.detached ||
         state == AppLifecycleState.inactive) {
-      _trackLocally();
+      if (!kDebugMode) {
+        _trackLocally();
+      }
     }
   }
 
@@ -743,7 +751,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  Future<void> fetchEpisode(Episode episode) async {
+  Future<void> fetchEpisode(Episode episode, {Duration? savedPosition}) async {
     if (isOffline.value) return;
 
     try {
@@ -760,6 +768,13 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         return;
       }
 
+      resetListeners();
+      _basePlayer.open('');
+      setExternalSub(null);
+      currentEpisode.value = episode;
+      _hasTrackedInitialLocal = false;
+      _hasTrackedInitialOnline = false;
+
       episodeTracks.value = data.map((e) => model.Video.fromVideo(e)).toList();
 
       final previousTrack = selectedVideo.value;
@@ -768,7 +783,13 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       selectedVideo.value = matched;
       _extractSubtitles();
 
-      await _switchMedia(matched.url ?? "", matched.headers);
+      final episodeTimestamp = savedEpisode?.timeStampInMilliseconds;
+      final startPosition = episodeTimestamp != null && episodeTimestamp > 0
+          ? Duration(milliseconds: episodeTimestamp)
+          : (savedPosition ?? Duration.zero);
+
+      await _switchMedia(matched.url ?? "", matched.headers,
+          startPosition: startPosition);
     } catch (e) {
       snackBar('Failed to load episode. Check your connection.');
     } finally {
@@ -869,7 +890,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   Future<void> _switchMedia(String url, Map<String, String>? headers,
       {Duration? startPosition}) async {
-    await _basePlayer.open('');
+    if (_basePlayer is MediaKitPlayer) {
+      await _basePlayer.open("");
+    }
     await _basePlayer.open(url, headers: headers, startPosition: startPosition);
   }
 
@@ -1107,7 +1130,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       selectedSubsTrack.value = null;
       _basePlayer.setSubtitleTrack(SubtitleTrack.no());
 
-      subtitleText.clear();
+      subtitleText.value = [];
       translatedSubtitle.value = '';
 
       SubtitlePreTranslator.clearCache();
@@ -1251,22 +1274,13 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void changeEpisode(Episode episode) {
+    _basePlayer.pause();
     _trackLocally();
-
     if (!isOffline.value) {
       _trackOnline(_shouldMarkAsCompleted);
     }
-
     isEpisodePaneOpened.value = false;
-    resetListeners();
-    _basePlayer.open('');
-    setExternalSub(null);
-    currentEpisode.value = episode;
-
-    _hasTrackedInitialLocal = false;
-    _hasTrackedInitialOnline = false;
-
-    fetchEpisode(episode);
+    fetchEpisode(episode, savedPosition: currentPosition.value);
     onUserInteraction();
   }
 
@@ -1309,16 +1323,16 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       if (currentTimestamp == null) return;
       if (episodeDuration.value.inMinutes < 1) return;
 
-      final screenshot = await _basePlayer.screenshot(
-        includeSubtitles: true,
-        format: 'image/png',
-      );
+      Uint8List? screenshot;
+      String? thumbnailBase64;
 
-      final String? thumbnailBase64 =
-          screenshot != null ? base64Encode(screenshot) : null;
+      if (settings.enableScreenshot) {
+        screenshot = await _basePlayer.screenshot(
+          includeSubtitles: true,
+          format: 'image/png',
+        );
 
-      if (screenshot == null) {
-        Logger.w('Screenshot failed — thumbnail will not be saved');
+        thumbnailBase64 = screenshot != null ? base64Encode(screenshot) : null;
       }
 
       final episodeToSave = Episode(
@@ -1338,7 +1352,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         desc: episode.desc,
       );
 
-      offlineStorage.addOrUpdateAnime(
+      await offlineStorage.addOrUpdateAnime(
         anilistData,
         episodeList,
         episodeToSave,

@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:anymex/models/animethemes/anime_theme.dart';
 import 'package:anymex/utils/anime_themes_api.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:media_kit/media_kit.dart';
@@ -145,9 +146,10 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                Image.network(
-                  widget.animeDetails.poster,
+                AnymeXImage(
+                  imageUrl: widget.animeDetails.poster,
                   fit: BoxFit.cover,
+                  radius: 0,
                 ),
                 BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
@@ -202,9 +204,10 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
                                   ),
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(16),
-                                    child: Image.network(
-                                      widget.animeDetails.poster,
+                                    child: AnymeXImage(
+                                      imageUrl: widget.animeDetails.poster,
                                       fit: BoxFit.cover,
+                                      radius: 0,
                                     ),
                                   ),
                                 ),
@@ -529,11 +532,12 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(6),
-                      child: Image.network(
-                        widget.animeDetails.poster,
+                      child: AnymeXImage(
+                        imageUrl: widget.animeDetails.poster,
                         width: 42,
                         height: 42,
                         fit: BoxFit.cover,
+                        radius: 0,
                       ),
                     ),
                     const SizedBox(width: 12),

@@ -6,7 +6,6 @@ import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
@@ -135,6 +134,10 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
   final RxBool volumeKeysEnabled = false.obs;
   final RxBool invertVolumeKeys = false.obs;
+
+  final RxBool autoScrollEnabled = false.obs;
+  final RxDouble autoScrollSpeed = 3.0.obs;
+  Timer? _autoScrollTimer;
 
   final RxBool showControls = true.obs;
 
@@ -287,58 +290,56 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   }
 
   void navigateForward() {
-  final isReversed = readingDirection.value.reversed;
+    final isReversed = readingDirection.value.reversed;
 
-  if (readingLayout.value == MangaPageViewMode.continuous) {
-    final double offset =
-        (Get.height * 0.7) * scrollSpeedMultiplier.value;
+    if (readingLayout.value == MangaPageViewMode.continuous) {
+      final double offset = (Get.height * 0.7) * scrollSpeedMultiplier.value;
 
-    scrollOffsetController?.animateScroll(
-      offset: isReversed ? -offset : offset,
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeOut,
-    );
-  } else {
-    if (isReversed) {
-      pageController?.previousPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
+      scrollOffsetController?.animateScroll(
+        offset: isReversed ? -offset : offset,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOut,
       );
     } else {
-      pageController?.nextPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
+      if (isReversed) {
+        pageController?.previousPage(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      } else {
+        pageController?.nextPage(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
     }
   }
-}
 
   void navigateBackward() {
-  final isReversed = readingDirection.value.reversed;
+    final isReversed = readingDirection.value.reversed;
 
-  if (readingLayout.value == MangaPageViewMode.continuous) {
-    final double offset =
-        (Get.height * 0.7) * scrollSpeedMultiplier.value;
+    if (readingLayout.value == MangaPageViewMode.continuous) {
+      final double offset = (Get.height * 0.7) * scrollSpeedMultiplier.value;
 
-    scrollOffsetController?.animateScroll(
-      offset: isReversed ? offset : -offset,
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeOut,
-    );
-  } else {
-    if (isReversed) {
-      pageController?.nextPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
+      scrollOffsetController?.animateScroll(
+        offset: isReversed ? offset : -offset,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOut,
       );
     } else {
-      pageController?.previousPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
+      if (isReversed) {
+        pageController?.nextPage(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      } else {
+        pageController?.previousPage(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
     }
   }
-}
 
   void toggleVolumeKeys() {
     volumeKeysEnabled.value = !volumeKeysEnabled.value;
@@ -377,6 +378,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     _disableVolumeKeys();
 
     pageController?.dispose();
+    _stopAutoScroll();
     super.onClose();
   }
 
@@ -400,6 +402,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         }
         break;
       case AppLifecycleState.inactive:
+        _performSave(reason: "App inactive");
         Logger.i('App inactive');
         break;
       case AppLifecycleState.hidden:
@@ -453,9 +456,11 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
           chapter.totalPages != null &&
           chapter.number != null &&
           chapter.pageNumber == chapter.totalPages) {
-        
-        final int currentOnlineProgress = int.tryParse(serviceHandler.onlineService.currentMedia.value.episodeCount ?? '0') ?? 0;
-        
+        final int currentOnlineProgress = int.tryParse(
+                serviceHandler.onlineService.currentMedia.value.episodeCount ??
+                    '0') ??
+            0;
+
         final int newProgress = chapter.number!.toInt();
 
         if (newProgress > currentOnlineProgress) {
@@ -490,6 +495,65 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
     offlineStorageController.addOrUpdateManga(media, chapterList, chapter);
     offlineStorageController.addOrUpdateReadChapter(media.id, chapter);
+  }
+
+  void toggleAutoScroll() {
+    autoScrollEnabled.value = !autoScrollEnabled.value;
+    if (autoScrollEnabled.value) {
+      _startAutoScroll();
+    } else {
+      _stopAutoScroll();
+    }
+    savePreferences();
+  }
+
+  void setAutoScrollSpeed(double speed) {
+    autoScrollSpeed.value = speed;
+    if (autoScrollEnabled.value) {
+      _stopAutoScroll();
+      _startAutoScroll();
+    }
+    savePreferences();
+  }
+
+  void _startAutoScroll() {
+    _stopAutoScroll();
+    if (readingLayout.value == MangaPageViewMode.continuous) {
+      final pixelsPerSecond = Get.height / autoScrollSpeed.value;
+      const tickMs = 50;
+      _autoScrollTimer = Timer.periodic(
+        const Duration(milliseconds: tickMs),
+        (_) {
+          if (!autoScrollEnabled.value) {
+            _stopAutoScroll();
+            return;
+          }
+          final offset = pixelsPerSecond * tickMs / 1000;
+          final isReversed = readingDirection.value.reversed;
+          scrollOffsetController?.animateScroll(
+            offset: isReversed ? -offset : offset,
+            duration: const Duration(milliseconds: tickMs),
+            curve: Curves.linear,
+          );
+        },
+      );
+    } else {
+      _autoScrollTimer = Timer.periodic(
+        Duration(milliseconds: (autoScrollSpeed.value * 1000).toInt()),
+        (_) {
+          if (!autoScrollEnabled.value) {
+            _stopAutoScroll();
+            return;
+          }
+          navigateForward();
+        },
+      );
+    }
+  }
+
+  void _stopAutoScroll() {
+    _autoScrollTimer?.cancel();
+    _autoScrollTimer = null;
   }
 
   void navigateToChapter(int index) async {
@@ -549,25 +613,22 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   }
 
   void _getPreferences() {
-    readingLayout.value = MangaPageViewMode.values[
-        ReaderKeys.readingLayout.get<int>(0)];
-    readingDirection.value = MangaPageViewDirection.values[
-        ReaderKeys.readingDirection.get<int>(1)];
+    readingLayout.value =
+        MangaPageViewMode.values[ReaderKeys.readingLayout.get<int>(0)];
+    readingDirection.value =
+        MangaPageViewDirection.values[ReaderKeys.readingDirection.get<int>(1)];
     pageWidthMultiplier.value = ReaderKeys.imageWidth.get<double>(1);
-    scrollSpeedMultiplier.value =
-        ReaderKeys.scrollSpeed.get<double>(1);
+    scrollSpeedMultiplier.value = ReaderKeys.scrollSpeed.get<double>(1);
     spacedPages.value = ReaderKeys.spacedPages.get<bool>(false);
-    overscrollToChapter.value =
-        ReaderKeys.overscrollToChapter.get<bool>(true);
+    overscrollToChapter.value = ReaderKeys.overscrollToChapter.get<bool>(true);
     preloadPages.value = ReaderKeys.preloadPages.get<int>(3);
-    showPageIndicator.value =
-        ReaderKeys.showPageIndicator.get<bool>(false);
+    showPageIndicator.value = ReaderKeys.showPageIndicator.get<bool>(false);
+    autoScrollEnabled.value = ReaderKeys.autoScrollEnabled.get<bool>(false);
+    autoScrollSpeed.value = ReaderKeys.autoScrollSpeed.get<double>(3.0);
     // Both features: crop images AND volume keys
     cropImages.value = ReaderKeys.cropImages.get<bool>(false);
-    volumeKeysEnabled.value =
-        ReaderKeys.volumeKeysEnabled.get<bool>(false);
-    invertVolumeKeys.value =
-        ReaderKeys.invertVolumeKeys.get<bool>(false);
+    volumeKeysEnabled.value = ReaderKeys.volumeKeysEnabled.get<bool>(false);
+    invertVolumeKeys.value = ReaderKeys.invertVolumeKeys.get<bool>(false);
 
     final dualPageVal = ReaderKeys.dualPageMode.get<int?>();
     if (dualPageVal != null) {
@@ -593,6 +654,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     ReaderKeys.overscrollToChapter.set(overscrollToChapter.value);
     ReaderKeys.preloadPages.set(preloadPages.value);
     ReaderKeys.showPageIndicator.set(showPageIndicator.value);
+    ReaderKeys.autoScrollEnabled.set(autoScrollEnabled.value);
+    ReaderKeys.autoScrollSpeed.set(autoScrollSpeed.value);
     // Both features: crop images AND volume keys
     ReaderKeys.cropImages.set(cropImages.value);
     ReaderKeys.volumeKeysEnabled.set(volumeKeysEnabled.value);
@@ -967,8 +1030,11 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
     final chapterNumber = chapter.number?.toInt();
     if (chapterNumber != null) {
-      final int currentOnlineProgress = int.tryParse(serviceHandler.onlineService.currentMedia.value.episodeCount ?? '0') ?? 0;
-      
+      final int currentOnlineProgress = int.tryParse(
+              serviceHandler.onlineService.currentMedia.value.episodeCount ??
+                  '0') ??
+          0;
+
       if (chapterNumber > currentOnlineProgress) {
         serviceHandler.onlineService.updateListEntry(UpdateListEntryParams(
             listId: media.id,
@@ -1041,6 +1107,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   void chapterNavigator(bool next) async {
     final current = currentChapter.value;
     if (current == null || current.number == null) return;
+
+    _performSave(reason: "Saving before chapter is changed");
 
     final index = chapterList.indexWhere(
         (c) => c.number == current.number || c.link == current.link);

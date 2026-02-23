@@ -1,6 +1,6 @@
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/screens/novel/reader/controller/reader_controller.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -107,8 +107,8 @@ class NovelContentWidget extends StatelessWidget {
 
   Widget? _getCustomWidget(dom.Element element, BuildContext context) {
     if (element.localName?.toLowerCase() == 'img') {
-      return CachedNetworkImage(
-          imageUrl: element.attributes['src']!, fit: BoxFit.contain);
+      return AnymeXImage(
+          imageUrl: element.attributes['src']!, fit: BoxFit.contain, radius: 0);
     }
     return null;
   }
