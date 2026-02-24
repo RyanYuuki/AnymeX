@@ -65,19 +65,14 @@ class _HomePageState extends State<HomePage> {
     final TextAlign textAlignment =
         isMobile ? TextAlign.center : TextAlign.left;
 
-    // In lib/screens/home_page.dart
-    // When building ReusableCarousel for recommendations:
     Source? getSourceForMedia(Media media) {
-      // You'll need to implement this based on your data structure
-      // This is a placeholder - adjust based on your actual source mapping
       if (media.serviceType == ServicesType.extensions) {
         return sourceController.activeMangaSource.value;
       }
       return null;
     }
 
-    // Example novel data - replace with actual data from your service
-    final List<dynamic> novelData = []; // Your novel data here
+    final List<dynamic> novelData = [];
 
     // final historyData = Get.find<OfflineStorageController>()
     //     .animeLibrary
@@ -153,19 +148,18 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       const SizedBox(height: 30),
-                      // Example ReusableCarousel for novels
                       if (novelData.isNotEmpty)
                         ReusableCarousel(
                           title: "Recommended Novels",
                           data: novelData,
-                          type: ItemType.novel, // Make sure type is set correctly
+                          type: ItemType.novel,
                           source: sourceController.activeMangaSource.value,
                           onItemTap: (media) {
                             if (media.type == ItemType.novel) {
                               navigate(() => NovelDetailsPage(
                                 media: media,
                                 tag: media.title,
-                                source: getSourceForMedia(media), // You'll need to get the source
+                                source: getSourceForMedia(media),
                               ));
                             }
                           },
