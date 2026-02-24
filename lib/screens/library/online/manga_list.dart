@@ -11,7 +11,8 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
 class AnilistMangaList extends StatefulWidget {
-  const AnilistMangaList({super.key});
+  final String? initialTab;
+  const AnilistMangaList({super.key, this.initialTab});
 
   @override
   State<AnilistMangaList> createState() => _AnilistMangaListState();
@@ -34,10 +35,15 @@ class _AnilistMangaListState extends State<AnilistMangaList> {
   Widget build(BuildContext context) {
     final anilistAuth = Get.find<ServiceHandler>();
     final userName = anilistAuth.profileData.value.name;
-    final mangaList = anilistAuth.mangaList.value;
+    final mangaList = anilistAuth.mangaList;
+    final requestedInitialTab = widget.initialTab;
+    final resolvedInitialIndex = requestedInitialTab == null
+        ? 0
+        : tabs.indexOf(requestedInitialTab).clamp(0, tabs.length - 1);
     return Glow(
       child: DefaultTabController(
         length: tabs.length,
+        initialIndex: resolvedInitialIndex,
         child: Scaffold(
           appBar: AppBar(
             actions: [
@@ -69,9 +75,7 @@ class _AnilistMangaListState extends State<AnilistMangaList> {
                   color: context.colors.primary,
                 )),
             title: Text("$userName's Manga List",
-                style: TextStyle(
-                    fontSize: 16,
-                    color: context.colors.primary)),
+                style: TextStyle(fontSize: 16, color: context.colors.primary)),
             bottom: TabBar(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               unselectedLabelColor: Colors.grey,
@@ -126,10 +130,6 @@ class _AnilistMangaListState extends State<AnilistMangaList> {
   }
 }
 
-int getResponsiveCrossAxisCount(double screenWidth, {int itemWidth = 150}) {
-  return (screenWidth / itemWidth).floor().clamp(1, 10);
-}
-
 class MangaListContent extends StatelessWidget {
   final String tabType;
   final List<TrackedMedia>? mangaData;
@@ -146,9 +146,9 @@ class MangaListContent extends StatelessWidget {
       return const Center(child: AnymexProgressIndicator());
     }
 
-    final filteredAnimeList = _filterMangaByStatus(mangaData!, tabType);
+    final filteredMangaList = _filterMangaByStatus(mangaData!, tabType);
 
-    if (filteredAnimeList.isEmpty) {
+    if (filteredMangaList.isEmpty) {
       return Center(child: Text('No Manga found for $tabType'));
     }
 
@@ -161,9 +161,9 @@ class MangaListContent extends StatelessWidget {
               itemWidth: 108),
           mainAxisExtent: 250,
           crossAxisSpacing: 15),
-      itemCount: filteredAnimeList.length,
+      itemCount: filteredMangaList.length,
       itemBuilder: (context, index) {
-        final item = filteredAnimeList[index] as TrackedMedia;
+        final item = filteredMangaList[index];
         return GridAnimeCard(
           data: item,
           isManga: true,
@@ -172,7 +172,7 @@ class MangaListContent extends StatelessWidget {
     );
   }
 
-  List<dynamic> _filterMangaByStatus(
+  List<TrackedMedia> _filterMangaByStatus(
       List<TrackedMedia> mangaList, String status) {
     switch (status) {
       case 'READING':
@@ -198,7 +198,7 @@ class MangaListContent extends StatelessWidget {
       case 'ALL':
         return mangaList;
       default:
-        return [];
+        return <TrackedMedia>[];
     }
   }
 }
