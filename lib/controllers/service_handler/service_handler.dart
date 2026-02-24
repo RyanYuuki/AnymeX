@@ -119,6 +119,18 @@ class ServiceHandler extends GetxController {
       service.mangaWidgets(context);
   RxList<Widget> homeWidgets(BuildContext context) =>
       service.homeWidgets(context);
+      
+  // Add this method to the ServiceHandler class
+  RxList<Widget> novelWidgets(BuildContext context) {
+    if (serviceType.value == ServicesType.anilist) {
+      return anilistService.mangaWidgets(context);
+    } else if (serviceType.value == ServicesType.mal) {
+      return malService.mangaWidgets(context);
+    } else {
+      // For extensions, we need to create novel widgets
+      return extensionService.novelSections;
+    }
+  }
 
   @override
   void onInit() {
