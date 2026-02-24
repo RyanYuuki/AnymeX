@@ -176,11 +176,9 @@ class ChapterService {
       }
     }
 
-    // Check if this is a novel and route to novel reader
     if (anilistData.type == ItemType.novel) {
-      // For novels, get the source from SourceController
       final sourceController = Get.find<SourceController>();
-      final source = sourceController.activeMangaSource.value; // Use active manga source for novels too
+      final source = sourceController.activeMangaSource.value;
       
       if (source == null) {
         Logger.i("No source available for novel reading");
@@ -199,7 +197,6 @@ class ChapterService {
       return;
     }
 
-    // Existing manga navigation
     if (General.shouldAskForTrack.get(true) == false) {
       await navigate(() => ReadingPage(
             anilistData: anilistData,
@@ -486,7 +483,7 @@ class ChapterListItem extends StatelessWidget {
     final alreadyRead = chapter.number! < (readChapter?.number ?? 1) ||
         ((savedChaps?.pageNumber ?? 1) == (savedChaps?.totalPages ?? 100));
     return AnymexOnTap(
-        onTap: onTap, // This will trigger the navigateToReading method above
+        onTap: onTap,
         child: Opacity(
           opacity: alreadyRead ? 0.5 : 1,
           child: Container(
