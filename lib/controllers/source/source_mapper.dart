@@ -57,6 +57,23 @@ double _calculateMatchScore(
   return score.clamp(0.0, 1.0);
 }
 
+// In lib/controllers/source/source_mapper.dart
+// When creating Media objects from extension data, set the type correctly:
+
+Media createMediaFromExtension(DMedia data, {ItemType? overrideType}) {
+  return Media(
+    id: data.id ?? '',
+    title: data.title ?? '',
+    poster: data.cover ?? '',
+    // ... other fields
+    type: overrideType ?? 
+           (data.isManga == true ? ItemType.manga : 
+            data.isNovel == true ? ItemType.novel : 
+            ItemType.anime),
+    // ...
+  );
+}
+
 Future<Media?> mapMedia(
   List<String> animeId,
   RxString searchedTitle, {
