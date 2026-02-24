@@ -9,6 +9,7 @@ import 'package:anymex/screens/manga/reading_page.dart';
 import 'package:anymex/screens/manga/widgets/chapter_ranges.dart';
 import 'package:anymex/screens/manga/widgets/scanlators_ranges.dart';
 import 'package:anymex/screens/manga/widgets/track_dialog.dart';
+import 'package:anymex/screens/novel/reader/reader_view.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -163,7 +164,7 @@ class ChapterService {
       Chapter currentChapter,
       BuildContext context,
       VoidCallback onReturn) async {
-  
+    
     List<Chapter> optimizedList = chapterList;
     
     if (currentChapter.scanlator != null && currentChapter.scanlator!.isNotEmpty) {
@@ -175,6 +176,30 @@ class ChapterService {
       }
     }
 
+    // Check if this is a novel and route to novel reader
+    if (anilistData.type == ItemType.novel) {
+      // For novels, get the source from SourceController
+      final sourceController = Get.find<SourceController>();
+      final source = sourceController.activeMangaSource.value; // Use active manga source for novels too
+      
+      if (source == null) {
+        Logger.i("No source available for novel reading");
+        return;
+      }
+
+      await navigate(() => NovelReader(
+            chapter: currentChapter,
+            media: anilistData,
+            chapters: optimizedList,
+            source: source,
+          ));
+      Future.delayed(const Duration(seconds: 1), () {
+        onReturn();
+      });
+      return;
+    }
+
+    // Existing manga navigation
     if (General.shouldAskForTrack.get(true) == false) {
       await navigate(() => ReadingPage(
             anilistData: anilistData,
@@ -461,7 +486,7 @@ class ChapterListItem extends StatelessWidget {
     final alreadyRead = chapter.number! < (readChapter?.number ?? 1) ||
         ((savedChaps?.pageNumber ?? 1) == (savedChaps?.totalPages ?? 100));
     return AnymexOnTap(
-        onTap: onTap,
+        onTap: onTap, // This will trigger the navigateToReading method above
         child: Opacity(
           opacity: alreadyRead ? 0.5 : 1,
           child: Container(
