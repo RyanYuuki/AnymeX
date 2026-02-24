@@ -153,6 +153,7 @@
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data android:scheme="anymex" android:host="callback"/>
+                <data android:scheme="anymex" android:host="oauth" android:pathPrefix="/github"/>
             </intent-filter>
         </activity>
 

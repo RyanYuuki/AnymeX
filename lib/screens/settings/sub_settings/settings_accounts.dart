@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:anymex/controllers/services/storage/anymex_cache_manager.dart';
 import 'package:anymex/controllers/discord/discord_login.dart';
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/sync/progress_sync_section.dart';
+import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/models/Service/online_service.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -15,8 +18,25 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
 
-class SettingsAccounts extends StatelessWidget {
+class SettingsAccounts extends StatefulWidget {
   const SettingsAccounts({super.key});
+
+  @override
+  State<SettingsAccounts> createState() => _SettingsAccountsState();
+}
+
+class _SettingsAccountsState extends State<SettingsAccounts> {
+  late final GistSyncController _gistSyncCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _gistSyncCtrl = Get.find<GistSyncController>();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_gistSyncCtrl.isLoggedIn.value) return;
+      unawaited(_gistSyncCtrl.refreshCloudGistStatus());
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +96,8 @@ class SettingsAccounts extends StatelessWidget {
                           brandColor: s['color'] as Color?,
                         ),
                       )),
+                  const SizedBox(height: 24),
+                  const ProgressSyncSection(),
                 ],
               ),
             ),
