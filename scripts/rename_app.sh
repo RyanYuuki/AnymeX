@@ -283,8 +283,8 @@ if [ -f "$DART_UPDATER_FILE" ]; then
   log_info "Full version with build number: $FULL_VERSION"
 
   # Update _getCurrentVersion() to return hardcoded version
-  # This replaces the entire function body
-  sed "${SED_INPLACE[@]}" '/Future<String> _getCurrentVersion() async {/,/^}$/c\
+  # Match the entire function including the closing brace
+  sed "${SED_INPLACE[@]}" '/Future<String> _getCurrentVersion() async {/,/^  }$/c\
   Future<String> _getCurrentVersion() async {\
     return "'"$FULL_VERSION"'";\
   }' "$DART_UPDATER_FILE"
@@ -293,7 +293,7 @@ if [ -f "$DART_UPDATER_FILE" ]; then
 
   # Update _shouldUpdate() to strip build number before comparison
   # Add build number stripping logic after the function signature
-  sed "${SED_INPLACE[@]}" '/^  bool _shouldUpdate(String currentVersion, String latestVersion) {/a\
+  sed "${SED_INPLACE[@]}" '/  bool _shouldUpdate(String currentVersion, String latestVersion) {/a\
     // Strip build number (last + segment) from current version\
     // "3.0.7+1-beta+26" -> "3.0.7+1-beta"\
     final plusCount = currentVersion.split('"'"'+'"'"').length - 1;\
@@ -313,6 +313,9 @@ if [ -f "$DART_UPDATER_FILE" ]; then
 
   log_success "Updated version parsing to handle iteration numbers"
 
+  sed "${SED_INPLACE[@]}" 's/        return latestIndex > currentIndex;/        if (currentIndex != latestIndex) {\n          return latestIndex > currentIndex;\n        }/g' "$DART_UPDATER_FILE"
+  log_success "Fixed tag comparison to check iterations when tags are same"
+
   # Add iteration comparison logic before the final log statement
   sed "${SED_INPLACE[@]}" '/Logger.i('"'"'Current version/i\
     // Compare iterations if semver and tag are same\
@@ -322,6 +325,17 @@ if [ -f "$DART_UPDATER_FILE" ]; then
 ' "$DART_UPDATER_FILE"
 
   log_success "Added iteration comparison logic to _shouldUpdate()"
+
+  # Strip build number from currentVersion before showing in popup
+  sed "${SED_INPLACE[@]}" '/if (_shouldUpdate(currentVersion, latestRelease/i\
+        // Strip build number from currentVersion for display in popup\
+        final displayVersion = currentVersion.split('"'"'+'"'"').length > 2 ? currentVersion.substring(0, currentVersion.lastIndexOf('"'"'+'"'"')) : currentVersion;\
+' "$DART_UPDATER_FILE"
+
+  # Update popup call to use displayVersion instead of currentVersion
+  # Match the pattern with context to be more specific
+  sed "${SED_INPLACE[@]}" '/context,$/ { N; s/\n            currentVersion,/\n            displayVersion,/; }' "$DART_UPDATER_FILE"
+  log_success "Fixed popup to show version without build number"
 else
   log_warn "Updater file not found at $DART_UPDATER_FILE. Skipping update checker updates."
 fi
