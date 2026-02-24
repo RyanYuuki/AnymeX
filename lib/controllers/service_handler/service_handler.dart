@@ -120,23 +120,18 @@ class ServiceHandler extends GetxController {
   RxList<Widget> homeWidgets(BuildContext context) =>
       service.homeWidgets(context);
       
-  // Add this method to the ServiceHandler class
   RxList<Widget> novelWidgets(BuildContext context) {
     if (serviceType.value == ServicesType.anilist) {
       return anilistService.mangaWidgets(context);
     } else if (serviceType.value == ServicesType.mal) {
       return malService.mangaWidgets(context);
     } else {
-      // For extensions, we need to create novel widgets
       return extensionService.novelSections;
     }
   }
-
-  // In lib/controllers/service_handler/service_handler.dart
-
+  
   Source? getSourceForMedia(Media media) {
     if (media.serviceType == ServicesType.extensions) {
-      // Find the source that provided this media
       return extensionService.installedNovelExtensions.firstWhere(
         (source) => source.id == media.sourceId,
         orElse: () => extensionService.installedNovelExtensions.first,
