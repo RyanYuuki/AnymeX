@@ -29,9 +29,10 @@ dependencies:
     flutter_markdown: ^0.7.6
     flutter_native_splash: ^2.4.4
     flutter_web_auth_2: ^4.0.2
+    flutter_tts: ^3.8.5
     get: ^4.6.6
     grouped_list: ^6.0.0
-
+  
     html: any
     http: ^1.2.2
     http_interceptor: ^2.0.0
@@ -67,6 +68,7 @@ dependencies:
     permission_handler: ^11.3.1
     provider: ^6.1.2
     scrollable_positioned_list: ^0.3.8
+    shared_preferences: ^2.2.3
     shimmer: ^3.0.0
     smooth_page_indicator: ^1.2.0+3
     super_sliver_list: ^0.4.1
