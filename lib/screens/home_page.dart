@@ -1,7 +1,12 @@
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
+import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/screens/novel/details/details_view.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
@@ -48,6 +53,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final cacheController = Get.find<CacheController>();
     final serviceHandler = Get.find<ServiceHandler>();
+    final sourceController = Get.find<SourceController>();
     final isDesktop = MediaQuery.of(context).size.width > 600;
     final statusBarHeight = MediaQuery.of(context).padding.top;
     const appBarHeight = kToolbarHeight + 20;
@@ -58,6 +64,20 @@ class _HomePageState extends State<HomePage> {
 
     final TextAlign textAlignment =
         isMobile ? TextAlign.center : TextAlign.left;
+
+    // In lib/screens/home_page.dart
+    // When building ReusableCarousel for recommendations:
+    Source? getSourceForMedia(Media media) {
+      // You'll need to implement this based on your data structure
+      // This is a placeholder - adjust based on your actual source mapping
+      if (media.serviceType == ServicesType.extensions) {
+        return sourceController.activeMangaSource.value;
+      }
+      return null;
+    }
+
+    // Example novel data - replace with actual data from your service
+    final List<dynamic> novelData = []; // Your novel data here
 
     // final historyData = Get.find<OfflineStorageController>()
     //     .animeLibrary
@@ -133,6 +153,23 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       const SizedBox(height: 30),
+                      // Example ReusableCarousel for novels
+                      if (novelData.isNotEmpty)
+                        ReusableCarousel(
+                          title: "Recommended Novels",
+                          data: novelData,
+                          type: ItemType.novel, // Make sure type is set correctly
+                          source: sourceController.activeMangaSource.value,
+                          onItemTap: (media) {
+                            if (media.type == ItemType.novel) {
+                              navigate(() => NovelDetailsPage(
+                                media: media,
+                                tag: media.title,
+                                source: getSourceForMedia(media), // You'll need to get the source
+                              ));
+                            }
+                          },
+                        ),
                       Obx(() {
                         final children = List<Widget>.from(
                             serviceHandler.homeWidgets(context));
