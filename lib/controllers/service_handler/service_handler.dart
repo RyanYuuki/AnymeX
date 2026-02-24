@@ -132,6 +132,19 @@ class ServiceHandler extends GetxController {
     }
   }
 
+  // In lib/controllers/service_handler/service_handler.dart
+
+  Source? getSourceForMedia(Media media) {
+    if (media.serviceType == ServicesType.extensions) {
+      // Find the source that provided this media
+      return extensionService.installedNovelExtensions.firstWhere(
+        (source) => source.id == media.sourceId,
+        orElse: () => extensionService.installedNovelExtensions.first,
+      );
+    }
+    return null;
+  }
+
   @override
   void onInit() {
     super.onInit();
