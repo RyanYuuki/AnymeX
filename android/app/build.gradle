@@ -14,7 +14,7 @@ android {
     // ndkVersion = flutter.ndkVersion
     ndkVersion = "27.0.12077973"
 
-     dependenciesInfo {
+    dependenciesInfo {
         includeInApk = false
         includeInBundle = false
     }
@@ -41,7 +41,7 @@ android {
             useLegacyPackaging true
         }
     }
-    
+
     signingConfigs {
         release {
             def keystoreProperties = new Properties()
@@ -59,6 +59,22 @@ android {
     buildTypes {
         release {
             signingConfig = signingConfigs.release
+
+            // --------------------------------------------------------
+            // R8 code shrinking + resource shrinking
+            // Reduces APK size by removing unused code and resources.
+            // proguard-rules.pro contains keep rules for Flutter,
+            // Firebase, Rust bridge, MPV, Kotlin, etc.
+            // --------------------------------------------------------
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+            // Keep debug builds fast — no shrinking
+            minifyEnabled false
+            shrinkResources false
         }
     }
 }
