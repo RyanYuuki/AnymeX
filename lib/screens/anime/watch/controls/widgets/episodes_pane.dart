@@ -231,7 +231,8 @@ class EpisodesPane extends StatelessWidget {
                     key: ValueKey(settingsController.episodeListLayout),
                     initialScrollIndex:
                         controller.currentEpisode.value.number.toInt() - 1,
-                    separatorBuilder: (context, i) => const SizedBox(height: 8),
+                    separatorBuilder: (context, i) =>
+                        const SizedBox(height: 8),
                     itemCount: controller.episodeList.length,
                     itemBuilder: (context, index) {
                       final layoutType = _resolveEpisodeLayoutType();
