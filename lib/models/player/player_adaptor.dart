@@ -1,4 +1,5 @@
 import 'package:anymex/database/data_keys/keys.dart';
+import 'package:hive/hive.dart';
 
 class PlayerSettings {
   double speed;
@@ -25,6 +26,13 @@ class PlayerSettings {
   bool autoTranslate;
   String translateTo;
   bool autoSkipFiller;
+  @HiveField(24)
+  double subtitleOpacity;
+  @HiveField(25)
+  double subtitleBottomMargin;
+  @HiveField(26)
+  String subtitleOutlineType;
+  @HiveField(27)
   bool enableScreenshot;
 
   PlayerSettings({
@@ -33,7 +41,7 @@ class PlayerSettings {
     this.subtitleSize = 16,
     this.subtitleColor = "White",
     this.subtitleFont = 'Poppins',
-    this.subtitleBackgroundColor = "Black",
+    this.subtitleBackgroundColor = "None",
     this.subtitleOutlineColor = "Black",
     this.showSubtitle = true,
     this.skipDuration = 85,
@@ -51,12 +59,20 @@ class PlayerSettings {
     this.autoTranslate = false,
     this.translateTo = 'en',
     this.transitionSubtitle = true,
+    this.subtitleOpacity = 1.0,
+    this.subtitleBottomMargin = 10.0,
+    this.subtitleOutlineType = "Outline",
     this.autoSkipFiller = false,
     this.enableScreenshot = true,
   });
 
   factory PlayerSettings.fromDB() {
     final defaults = PlayerSettings();
+    final storedSubtitleColor =
+        PlayerSettingsKeys.subtitleColor.get<String>(defaults.subtitleColor);
+    final storedSubtitleBackgroundColor = PlayerSettingsKeys
+        .subtitleBackgroundColor
+        .get<String>(defaults.subtitleBackgroundColor);
 
     return PlayerSettings(
       speed: PlayerSettingsKeys.speed.get<double>(defaults.speed),
@@ -67,11 +83,12 @@ class PlayerSettings {
       subtitleSize:
           PlayerSettingsKeys.subtitleSize.get<int>(defaults.subtitleSize),
       subtitleColor:
-          PlayerSettingsKeys.subtitleColor.get<String>(defaults.subtitleColor),
+          storedSubtitleColor == 'None' ? 'Default' : storedSubtitleColor,
       subtitleFont:
           PlayerSettingsKeys.subtitleFont.get<String>(defaults.subtitleFont),
-      subtitleBackgroundColor: PlayerSettingsKeys.subtitleBackgroundColor
-          .get<String>(defaults.subtitleBackgroundColor),
+      subtitleBackgroundColor: storedSubtitleBackgroundColor == 'Default'
+          ? 'None'
+          : storedSubtitleBackgroundColor,
       subtitleOutlineColor: PlayerSettingsKeys.subtitleOutlineColor
           .get<String>(defaults.subtitleOutlineColor),
       skipDuration:
@@ -102,6 +119,12 @@ class PlayerSettings {
           PlayerSettingsKeys.autoTranslate.get<bool>(defaults.autoTranslate),
       translateTo:
           PlayerSettingsKeys.translateTo.get<String>(defaults.translateTo),
+      subtitleOpacity: PlayerSettingsKeys.subtitleOpacity
+          .get<double>(defaults.subtitleOpacity),
+      subtitleBottomMargin: PlayerSettingsKeys.subtitleBottomMargin
+          .get<double>(defaults.subtitleBottomMargin),
+      subtitleOutlineType: PlayerSettingsKeys.subtitleOutlineType
+          .get<String>(defaults.subtitleOutlineType),
       autoSkipFiller:
           PlayerSettingsKeys.autoSkipFiller.get<bool>(defaults.autoSkipFiller),
       enableScreenshot: PlayerSettingsKeys.enableScreenshot

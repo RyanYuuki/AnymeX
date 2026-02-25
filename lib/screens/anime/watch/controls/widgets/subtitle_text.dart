@@ -19,14 +19,17 @@ class SubtitleText extends StatelessWidget {
     return Obx(() {
       if (controller.subtitleText.isEmpty) return const SizedBox.shrink();
 
+      final htmlRx = RegExp(r'<[^>]*>');
+      final assRx = RegExp(r'\{[^}]*\}');
+      final newlineRx = RegExp(r'\\[nN]');
+
       final bottomPosition = controller.showControls.value
           ? 100
-          : (30 + controller.settings.bottomMargin);
+          : (30 + controller.playerSettings.subtitleBottomMargin);
 
-     
-      final useTranslation = controller.playerSettings.autoTranslate && 
+      final useTranslation = controller.playerSettings.autoTranslate &&
           controller.translatedSubtitle.value.isNotEmpty;
-      
+
       final subtitle = useTranslation
           ? controller.translatedSubtitle.value
           : [
@@ -34,24 +37,126 @@ class SubtitleText extends StatelessWidget {
                 if (line.trim().isNotEmpty) line.trim(),
             ].join('\n');
 
-      final content = OutlinedText(
+      final sanitizedSubtitle = subtitle
+          .replaceAll(htmlRx, '')
+          .replaceAll(assRx, '')
+          .replaceAll(newlineRx, '\n')
+          .trim();
+
+      if (sanitizedSubtitle.isEmpty) return const SizedBox.shrink();
+
+      final String outlineType = controller.playerSettings.subtitleOutlineType;
+      final double outlineWidth =
+          controller.settings.subtitleOutlineWidth.toDouble();
+      final Color outlineColorVal =
+          fontColorOptions[controller.settings.subtitleOutlineColor] ??
+              Colors.black;
+
+      List<OutlinedTextStroke> strokes = [];
+      if (outlineType == "Outline") {
+        strokes = [
+          OutlinedTextStroke(color: outlineColorVal, width: outlineWidth)
+        ];
+      } else if (outlineType == "Drop Shadow") {
+        strokes = [
+          OutlinedTextStroke(color: outlineColorVal, width: outlineWidth)
+        ];
+      }
+
+      Widget content = OutlinedText(
         key: ValueKey(controller.subtitleText.join()),
         text: Text(
-          subtitle,
+          sanitizedSubtitle,
           textAlign: TextAlign.center,
           style: TextStyle(
             color: fontColorOptions[controller.settings.subtitleColor],
             fontSize: controller.settings.subtitleSize.toDouble(),
-            fontFamily: "Poppins-Bold",
+            fontFamily: controller.playerSettings.subtitleFont == 'Default'
+                ? 'Poppins'
+                : controller.playerSettings.subtitleFont == 'Anime Ace 3'
+                    ? 'AnimeAce'
+                    : controller.playerSettings.subtitleFont,
+            fontWeight: FontWeight.bold,
           ),
         ),
-        strokes: [
-          OutlinedTextStroke(
-            color: fontColorOptions[controller.settings.subtitleOutlineColor]!,
-            width: controller.settings.subtitleOutlineWidth.toDouble(),
-          )
-        ],
+        strokes: strokes,
       );
+
+      if (outlineType == "Drop Shadow") {
+        final off = outlineWidth;
+        content = Stack(alignment: Alignment.center, children: [
+          Positioned(
+            top: off,
+            left: off,
+            child: Text(
+              sanitizedSubtitle,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: outlineColorVal,
+                fontSize: controller.settings.subtitleSize.toDouble(),
+                fontFamily: controller.playerSettings.subtitleFont == 'Default'
+                    ? 'Poppins'
+                    : controller.playerSettings.subtitleFont == 'Anime Ace 3'
+                        ? 'AnimeAce'
+                        : controller.playerSettings.subtitleFont,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          Text(
+            sanitizedSubtitle,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: fontColorOptions[controller.settings.subtitleColor],
+              fontSize: controller.settings.subtitleSize.toDouble(),
+              fontFamily: controller.playerSettings.subtitleFont == 'Default'
+                  ? 'Poppins'
+                  : controller.playerSettings.subtitleFont == 'Anime Ace 3'
+                      ? 'AnimeAce'
+                      : controller.playerSettings.subtitleFont,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ]);
+      } else if (outlineType == "Shine") {
+        content = Stack(alignment: Alignment.center, children: [
+          OutlinedText(
+            text: Text(
+              sanitizedSubtitle,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: fontColorOptions[controller.settings.subtitleColor],
+                fontSize: controller.settings.subtitleSize.toDouble(),
+                fontFamily: controller.playerSettings.subtitleFont == 'Default'
+                    ? 'Poppins'
+                    : controller.playerSettings.subtitleFont == 'Anime Ace 3'
+                        ? 'AnimeAce'
+                        : controller.playerSettings.subtitleFont,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            strokes: [
+              OutlinedTextStroke(
+                  color: outlineColorVal.withOpacity(0.5),
+                  width: outlineWidth + 2)
+            ],
+          ),
+          Text(
+            sanitizedSubtitle,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: fontColorOptions[controller.settings.subtitleColor],
+              fontSize: controller.settings.subtitleSize.toDouble(),
+              fontFamily: controller.playerSettings.subtitleFont == 'Default'
+                  ? 'Poppins'
+                  : controller.playerSettings.subtitleFont == 'Anime Ace 3'
+                      ? 'AnimeAce'
+                      : controller.playerSettings.subtitleFont,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ]);
+      }
 
       final subtitleBox = Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -82,15 +187,19 @@ class SubtitleText extends StatelessWidget {
             : content,
       );
 
+      final baseOpacity = controller.subtitleText[0].isEmpty ? 0.0 : 1.0;
+      final finalOpacity =
+          baseOpacity * controller.playerSettings.subtitleOpacity;
+
       final opacityWidget = subtitleAnimation
           ? AnimatedOpacity(
-              opacity: controller.subtitleText[0].isEmpty ? 0.0 : 1.0,
+              opacity: finalOpacity,
               duration: animDuration,
               curve: Curves.easeInOut,
               child: subtitleBox,
             )
           : Opacity(
-              opacity: controller.subtitleText[0].isEmpty ? 0.0 : 1.0,
+              opacity: finalOpacity,
               child: subtitleBox,
             );
 

@@ -644,13 +644,19 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     int subtitleTranslateRequestId = 0;
 
     _subscriptions.add(_basePlayer.subtitleStream.listen((e) async {
-      subtitleText.value = e;
+      final sanitizedLines = e
+          .map((line) => line
+              .replaceAll(_htmlRx, '')
+              .replaceAll(_assRx, '')
+              .replaceAll(_newlineRx, '\n')
+              .trim())
+          .where((line) => line.isNotEmpty)
+          .toList();
+
+      subtitleText.value = sanitizedLines;
       final int currentRequestId = ++subtitleTranslateRequestId;
 
-      final cleanedText = [
-        for (final line in e)
-          if (line.trim().isNotEmpty) line.trim(),
-      ].join('\n');
+      final cleanedText = sanitizedLines.join('\n');
 
       if (!playerSettings.autoTranslate) {
         translatedSubtitle.value = '';
@@ -671,7 +677,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
         final cached = SubtitlePreTranslator.lookup(lookupKey);
         if (cached != null) {
-          translatedSubtitle.value = cached;
+          translatedSubtitle.value = cached
+              .replaceAll(_htmlRx, '')
+              .replaceAll(_assRx, '')
+              .replaceAll(_newlineRx, '\n')
+              .trim();
           return;
         }
 
@@ -681,10 +691,16 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
             playerSettings.translateTo,
           );
 
+          final sanitizedTranslated = translated
+              .replaceAll(_htmlRx, '')
+              .replaceAll(_assRx, '')
+              .replaceAll(_newlineRx, '\n')
+              .trim();
+
           if (currentRequestId == subtitleTranslateRequestId &&
-              translated.isNotEmpty) {
-            translatedSubtitle.value = translated;
-            SubtitlePreTranslator.manualAdd(lookupKey, translated);
+              sanitizedTranslated.isNotEmpty) {
+            translatedSubtitle.value = sanitizedTranslated;
+            SubtitlePreTranslator.manualAdd(lookupKey, sanitizedTranslated);
           }
         } catch (_) {}
       }
