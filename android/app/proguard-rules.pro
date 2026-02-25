@@ -2,23 +2,34 @@
 # AnymeX ProGuard/R8 Rules
 # ============================================================
 
-# Flutter wrapper - keep all Flutter internals
--keep class io.flutter.app.** { *; }
--keep class io.flutter.plugin.** { *; }
--keep class io.flutter.util.** { *; }
--keep class io.flutter.view.** { *; }
+-verbose
+-optimizationpasses 5
+-dontpreverify
+-dontnote
+-ignorewarnings
+
+# ============================================================
+# Flutter
+# ============================================================
 -keep class io.flutter.** { *; }
 -keep class io.flutter.plugins.** { *; }
--keep class io.flutter.plugin.editing.** { *; }
 
-# Keep your app's package
+# ============================================================
+# Your app package
+# ============================================================
 -keep class com.ryan.anymex.** { *; }
+-keepclassmembers class com.ryan.anymex.** { *; }
 
 # ============================================================
-# Firebase / Google Services
+# Google Play Core — Flutter references these for deferred
+# components but they are absent in sideloaded APKs.
+# We keep them to avoid R8 "Missing class" hard errors.
 # ============================================================
--keep class com.google.firebase.** { *; }
--keep class com.google.android.gms.** { *; }
+-keep class com.google.android.play.core.** { *; }
+
+# ============================================================
+# Firebase / Gson
+# ============================================================
 -keep class com.google.gson.** { *; }
 -dontwarn com.google.firebase.**
 -dontwarn com.google.android.gms.**
@@ -26,25 +37,25 @@
 # ============================================================
 # Kotlin
 # ============================================================
--keep class kotlin.** { *; }
--keep class kotlin.Metadata { *; }
+-keep class ** implements kotlin.Metadata
+-keep class ** extends kotlin.Metadata
+-keepclassmembers class kotlin.Metadata {
+    public <methods>;
+}
 -dontwarn kotlin.**
 -keepclassmembers class **$WhenMappings {
     <fields>;
-}
--keepclassmembers class kotlin.Metadata {
-    public <methods>;
 }
 
 # Kotlin Coroutines
 -keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
 -keepnames class kotlinx.coroutines.CoroutineExceptionHandler {}
--keepnames class kotlinx.coroutines.android.AndroidExceptionPreHandler {}
--keepnames class kotlinx.coroutines.android.AndroidDispatcherFactory {}
--keepclassmembernames class kotlinx.** {
-    volatile <fields>;
-}
 -dontwarn kotlinx.coroutines.**
+
+# ============================================================
+# Isar (local database)
+# ============================================================
+-keep class isar.** { *; }
 
 # ============================================================
 # Rust Bridge / JNI (flutter_rust_bridge)
@@ -52,7 +63,14 @@
 -keepclasseswithmembernames,includedescriptorclasses class * {
     native <methods>;
 }
--keep class com.ryan.anymex.generated.** { *; }
+
+# ============================================================
+# OkHttp / Retrofit / Networking
+# ============================================================
+-keep class okhttp3.** { *; }
+-keep class retrofit2.** { *; }
+-dontwarn okhttp3.**
+-dontwarn okio.**
 
 # ============================================================
 # MPV (libmpv)
@@ -61,44 +79,22 @@
 -dontwarn is.xyz.mpv.**
 
 # ============================================================
-# JavaScript Interface (WebView)
+# WebView JavaScript Interface
 # ============================================================
 -keepclassmembers class * {
     @android.webkit.JavascriptInterface <methods>;
 }
 
 # ============================================================
-# Serialization / Reflection
+# Keep annotations and signatures (needed for reflection)
 # ============================================================
-# Keep classes that use @Keep annotation
--keep @androidx.annotation.Keep class * { *; }
--keepclassmembers class * {
-    @androidx.annotation.Keep *;
-}
-
-# Prevent R8 from stripping interface information
--keepattributes Signature
 -keepattributes *Annotation*
+-keepattributes Signature
 -keepattributes SourceFile,LineNumberTable
 -keepattributes Exceptions,InnerClasses
 
 # ============================================================
-# OkHttp / Networking
-# ============================================================
--dontwarn okhttp3.**
--dontwarn okio.**
--keep class okhttp3.** { *; }
--keep interface okhttp3.** { *; }
-
-# ============================================================
-# AndroidX
-# ============================================================
--keep class androidx.** { *; }
--keep interface androidx.** { *; }
--dontwarn androidx.**
-
-# ============================================================
-# Suppress common warnings
+# Suppress remaining misc warnings
 # ============================================================
 -dontwarn sun.misc.**
 -dontwarn java.lang.invoke.**
