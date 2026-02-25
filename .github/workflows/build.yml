@@ -634,13 +634,23 @@ jobs:
       - name: Clean Flutter for Beta Build
         if: env.IS_BETA_BUILD == 'true'
         run: flutter clean
-        
+
+      # =================================================================
+      # MODIFIED: Fixed multiline flags syntax + added --obfuscate and
+      # --split-debug-info for Dart symbol obfuscation and size reduction.
+      # R8/ProGuard shrinking is configured in android/app/build.gradle
+      # and android/app/proguard-rules.pro.
+      # =================================================================
       - name: Build Android
         if: matrix.platform == 'android'
         run: |
           flutter pub get
-          flutter build apk --split-per-abi \ --obfuscate \ --split-debug-info=build/debug-info
-          flutter build apk --release \ --obfuscate \ --split-debug-info=build/debug-info
+          flutter build apk --split-per-abi \
+            --obfuscate \
+            --split-debug-info=build/debug-info
+          flutter build apk --release \
+            --obfuscate \
+            --split-debug-info=build/debug-info
           cd build/app/outputs/flutter-apk
           mv app-armeabi-v7a-release.apk AnymeX-Android-armeabi-v7a.apk
           mv app-arm64-v8a-release.apk AnymeX-Android-arm64-v8a.apk
@@ -850,7 +860,12 @@ jobs:
         with:
           name: android-all
           path: build/app/outputs/flutter-apk/AnymeX-Android-*.apk
-          
+
+      # =================================================================
+      # Upload Dart debug symbols privately — needed to symbolicate
+      # crash stack traces when --obfuscate is active.
+      # Use: flutter symbolize -i <stack_trace> -d debug-info/
+      # =================================================================
       - uses: actions/upload-artifact@v4
         if: matrix.platform == 'android'
         with:
@@ -893,7 +908,8 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           path: artifacts
-          
+      
+      # Exclude debug symbols from public release
       - uses: ncipollo/release-action@v1
         with:
           artifacts: "artifacts/**/*,!artifacts/android-debug-symbols/**"
