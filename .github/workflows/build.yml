@@ -588,8 +588,8 @@ jobs:
           MAL_CLIENT_SECRET: ${{ secrets.MAL_CLIENT_SECRET }}
           CALLBACK_SCHEME: ${{ secrets.CALLBACK_SCHEME }}
           GOOGLE_BOOKS_API_KEY: ${{ secrets.GOOGLE_BOOKS_API_KEY }}
-          GITHUB_CLIENT_ID: ${{ secrets.GITHUB_CLIENT_ID }}
-          GITHUB_CLIENT_SECRET: ${{ secrets.GITHUB_CLIENT_SECRET }}
+          GIT_CLIENT_ID: ${{ secrets.GIT_CLIENT_ID }}
+          GIT_CLIENT_SECRET: ${{ secrets.GIT_CLIENT_SECRET }}
         run: |
           cat > .env << EOF
           AL_CLIENT_ID=$AL_CLIENT_ID
@@ -600,8 +600,8 @@ jobs:
           MAL_CLIENT_SECRET=$MAL_CLIENT_SECRET
           CALLBACK_SCHEME=$CALLBACK_SCHEME
           GOOGLE_BOOKS_API_KEY=$GOOGLE_BOOKS_API_KEY
-          GITHUB_CLIENT_ID=$GITHUB_CLIENT_ID
-          GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET
+          GIT_CLIENT_ID=$GIT_CLIENT_ID
+          GIT_CLIENT_SECRET=$GIT_CLIENT_SECRET
           EOF
       
       # =================================================================
