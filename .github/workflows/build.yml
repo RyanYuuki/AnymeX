@@ -854,12 +854,6 @@ jobs:
         with:
           name: android-all
           path: build/app/outputs/flutter-apk/AnymeX-Android-*.apk
-
-      - uses: actions/upload-artifact@v4
-        if: matrix.platform == 'android'
-        with:
-          name: android-debug-symbols
-          path: build/debug-info/
       
       - uses: actions/upload-artifact@v4
         if: matrix.platform == 'ios'
@@ -900,7 +894,7 @@ jobs:
       
       - uses: ncipollo/release-action@v1
         with:
-          artifacts: "artifacts/**/*,!artifacts/android-debug-symbols/**"
+          artifacts: "artifacts/**/*,"
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           tag: ${{ github.ref_name }}
