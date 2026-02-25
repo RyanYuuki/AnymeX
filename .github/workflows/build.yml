@@ -634,23 +634,13 @@ jobs:
       - name: Clean Flutter for Beta Build
         if: env.IS_BETA_BUILD == 'true'
         run: flutter clean
-      
-      # =================================================================
-      # MODIFIED: Added --obfuscate and --split-debug-info flags
-      # for both stable and beta Android builds to reduce APK size
-      # and obfuscate Dart symbols.
-      # Debug symbols are saved as an artifact for crash symbolication.
-      # =================================================================
+        
       - name: Build Android
         if: matrix.platform == 'android'
         run: |
           flutter pub get
-          flutter build apk --split-per-abi \
-            --obfuscate \
-            --split-debug-info=build/debug-info
-          flutter build apk --release \
-            --obfuscate \
-            --split-debug-info=build/debug-info
+          flutter build apk --split-per-abi \ --obfuscate \ --split-debug-info=build/debug-info
+          flutter build apk --release \ --obfuscate \ --split-debug-info=build/debug-info
           cd build/app/outputs/flutter-apk
           mv app-armeabi-v7a-release.apk AnymeX-Android-armeabi-v7a.apk
           mv app-arm64-v8a-release.apk AnymeX-Android-arm64-v8a.apk
@@ -860,12 +850,7 @@ jobs:
         with:
           name: android-all
           path: build/app/outputs/flutter-apk/AnymeX-Android-*.apk
-
-      # =================================================================
-      # NEW: Upload Dart debug symbols so crashes can be symbolicated
-      # even after --obfuscate scrambles the stack traces.
-      # Keep these private — do NOT include in the public release.
-      # =================================================================
+          
       - uses: actions/upload-artifact@v4
         if: matrix.platform == 'android'
         with:
@@ -908,11 +893,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           path: artifacts
-      
-      # =================================================================
-      # Exclude debug symbols from the public release — they are only
-      # needed internally for crash symbolication via flutter symbolize.
-      # =================================================================
+          
       - uses: ncipollo/release-action@v1
         with:
           artifacts: "artifacts/**/*,!artifacts/android-debug-symbols/**"
