@@ -898,7 +898,6 @@ jobs:
         with:
           path: artifacts
       
-      # Exclude debug symbols from public release
       - uses: ncipollo/release-action@v1
         with:
           artifacts: "artifacts/**/*,!artifacts/android-debug-symbols/**"
