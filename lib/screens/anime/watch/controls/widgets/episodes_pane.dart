@@ -224,40 +224,39 @@ class EpisodesPane extends StatelessWidget {
                   ],
                 ),
               ),
-              if (controller.currentEpisode.value.number != "Offline")
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: ScrollablePositionedList.separated(
-                      key: ValueKey(settingsController.episodeListLayout),
-                      initialScrollIndex:
-                          controller.currentEpisode.value.number.toInt() - 1,
-                      separatorBuilder: (context, i) => const SizedBox(height: 8),
-                      itemCount: controller.episodeList.length,
-                      itemBuilder: (context, index) {
-                        final layoutType = _resolveEpisodeLayoutType();
-                        final episode = controller.episodeList[index];
-                        final isSelected =
-                            episode == controller.currentEpisode.value;
-                        final offlineEpisode = controller.offlineStorage
-                            .getAnimeById(controller.anilistData.id)
-                            ?.episodes;
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: ScrollablePositionedList.separated(
+                    key: ValueKey(settingsController.episodeListLayout),
+                    initialScrollIndex:
+                        controller.currentEpisode.value.number.toInt() - 1,
+                    separatorBuilder: (context, i) => const SizedBox(height: 8),
+                    itemCount: controller.episodeList.length,
+                    itemBuilder: (context, index) {
+                      final layoutType = _resolveEpisodeLayoutType();
+                      final episode = controller.episodeList[index];
+                      final isSelected =
+                          episode == controller.currentEpisode.value;
+                      final offlineEpisode = controller.offlineStorage
+                          .getAnimeById(controller.anilistData.id)
+                          ?.episodes;
 
-                        return BetterEpisode(
-                          episode: episode,
-                          isSelected: isSelected,
-                          onTap: () => controller.changeEpisode(episode),
-                          layoutType: layoutType,
-                          showTitleInBlockLayout:
-                              layoutType == EpisodeLayoutType.blocks,
-                          offlineEpisodes: offlineEpisode,
-                          fallbackImageUrl: controller.anilistData.cover ??
-                              controller.anilistData.poster,
-                        );
-                      },
-                    ),
+                      return BetterEpisode(
+                        episode: episode,
+                        isSelected: isSelected,
+                        onTap: () => controller.changeEpisode(episode),
+                        layoutType: layoutType,
+                        showTitleInBlockLayout:
+                            layoutType == EpisodeLayoutType.blocks,
+                        offlineEpisodes: offlineEpisode,
+                        fallbackImageUrl: controller.anilistData.cover ??
+                            controller.anilistData.poster,
+                      );
+                    },
                   ),
                 ),
+              ),
             ],
           ),
         ));
