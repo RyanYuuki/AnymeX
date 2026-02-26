@@ -175,7 +175,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
     final mediaType = params.isManga ? 'manga' : 'anime';
     final response = await http.get(
       Uri.parse(
-          'https://api.jikan.moe/v4/$mediaType?q=${Uri.encodeComponent(params.query)}&limit=25&sfw=${!params.args}'),
+          'https://api.jikan.moe/v4/$mediaType?q=${Uri.encodeComponent(params.query)}&limit=25&page=${params.page}&sfw=${!params.args}'),
     );
 
     if (response.statusCode == 200) {

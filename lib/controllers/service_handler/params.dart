@@ -3,12 +3,14 @@ class SearchParams {
   bool isManga;
   Map<String, dynamic>? filters;
   dynamic args;
+  int page;
 
   SearchParams({
     required this.query,
     this.isManga = false,
     this.filters,
     this.args,
+    this.page = 1,
   });
 }
 
@@ -21,8 +23,6 @@ class FetchDetailsParams {
     this.isManga = false,
   });
 }
-
-
 
 class UpdateListEntryParams {
   String listId;

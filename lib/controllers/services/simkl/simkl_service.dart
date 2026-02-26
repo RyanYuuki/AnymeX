@@ -93,9 +93,9 @@ class SimklService extends GetxController
   Future<void> fetchHomePage() async =>
       Future.wait([fetchMovies(), fetchSeries()]);
 
-  Future<List<Media>> searchMovies(String query) async {
+  Future<List<Media>> searchMovies(String query, {int page = 1}) async {
     final movieUrl = Uri.parse(
-        'https://api.simkl.com/search/movie?q=$query&extended=full&client_id=${dotenv.env['SIMKL_CLIENT_ID']}');
+        'https://api.simkl.com/search/movie?q=$query&extended=full&page=$page&limit=25&client_id=${dotenv.env['SIMKL_CLIENT_ID']}');
     final resp = await get(movieUrl);
     if (resp.statusCode == 200) {
       final data = jsonDecode(resp.body) as List<dynamic>;
@@ -105,9 +105,9 @@ class SimklService extends GetxController
     return [];
   }
 
-  Future<List<Media>> searchSeries(String query) async {
+  Future<List<Media>> searchSeries(String query, {int page = 1}) async {
     final movieUrl = Uri.parse(
-        'https://api.simkl.com/search/tv?q=$query&extended=full&client_id=${dotenv.env['SIMKL_CLIENT_ID']}');
+        'https://api.simkl.com/search/tv?q=$query&extended=full&page=$page&limit=25&client_id=${dotenv.env['SIMKL_CLIENT_ID']}');
     final resp = await get(movieUrl);
     if (resp.statusCode == 200) {
       final data = jsonDecode(resp.body) as List<dynamic>;
@@ -119,8 +119,8 @@ class SimklService extends GetxController
 
   @override
   Future<List<Media>> search(SearchParams params) async {
-    final movieData = await searchMovies(params.query);
-    final seriesData = await searchSeries(params.query);
+    final movieData = await searchMovies(params.query, page: params.page);
+    final seriesData = await searchSeries(params.query, page: params.page);
     return [...movieData, ...seriesData];
   }
 
@@ -317,27 +317,31 @@ class SimklService extends GetxController
         },
         body: jsonEncode(body),
       );
-      
+
       if (progress != null && progress > 0 && status != 'PLANNING') {
-         final historyUrl = Uri.parse('https://api.simkl.com/sync/history');
-         final historyBody = isMovie ? null : {
-           'shows': [
-             {
-               'ids': {'simkl': id},
-               'episodes': [
-                 for (int i = 1; i <= progress; i++) {'number': i}
-               ]
-             }
-           ]
-         };
-         
-         if(historyBody != null) {
-            await post(historyUrl, headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer $token',
-              'simkl-api-key': apiKey,
-            }, body: jsonEncode(historyBody));
-         }
+        final historyUrl = Uri.parse('https://api.simkl.com/sync/history');
+        final historyBody = isMovie
+            ? null
+            : {
+                'shows': [
+                  {
+                    'ids': {'simkl': id},
+                    'episodes': [
+                      for (int i = 1; i <= progress; i++) {'number': i}
+                    ]
+                  }
+                ]
+              };
+
+        if (historyBody != null) {
+          await post(historyUrl,
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer $token',
+                'simkl-api-key': apiKey,
+              },
+              body: jsonEncode(historyBody));
+        }
       }
 
       Logger.i(response.body);
