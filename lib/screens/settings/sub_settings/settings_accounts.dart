@@ -44,30 +44,30 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
     final services = [
       {
         'service': serviceHandler.anilistService,
-        'icon': 'assets/icons/anilist-icon.png',
+        'icon': 'https://files.catbox.moe/kgolmz.png',
         'title': "Anilist",
         'color': const Color(0xFF02A9FF),
         'note': null,
       },
       {
         'service': serviceHandler.malService,
-        'icon': 'assets/icons/mal-icon.png',
+        'icon': 'https://files.catbox.moe/8t8ccs.jpg',
         'title': "MyAnimeList",
         'color': const Color(0xFF2E51A2),
         'note': null,
       },
       {
         'service': serviceHandler.simklService,
-        'icon': 'assets/icons/simkl-icon.png',
+        'icon': 'https://files.catbox.moe/jypzc6.png',
         'title': "Simkl",
         'color': const Color(0xFF000000),
         'note': null,
       },
       {
         'service': serviceHandler.kitsuService,
-        'icon': 'assets/icons/kitsu-icon.png', // Make sure to add this icon
+        'icon': 'https://files.catbox.moe/vohi1u.png',
         'title': "Kitsu",
-        'color': const Color(0xFF332532), // Kitsu purple/brown color
+        'color': const Color(0xFFF4C430),
         'note': 'One-way sync only (App → Kitsu)',
       },
     ];
@@ -467,8 +467,7 @@ class TrackingServiceCard extends StatelessWidget {
         ),
       );
     }
-
-    // Add note indicator if present and not logged in
+    
     if (note != null && !isLogged) {
       return Stack(
         children: [
@@ -524,7 +523,6 @@ class TrackingServiceCard extends StatelessWidget {
                 onTap: () {
                   Navigator.pop(context);
                   if (service is KitsuService) {
-                    // If it's Kitsu itself, maybe show sync options
                     (service as KitsuService).syncToKitsuFromCurrentService();
                   }
                 },
