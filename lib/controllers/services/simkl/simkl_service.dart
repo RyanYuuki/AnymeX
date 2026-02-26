@@ -94,8 +94,13 @@ class SimklService extends GetxController
       Future.wait([fetchMovies(), fetchSeries()]);
 
   Future<List<Media>> searchMovies(String query, {int page = 1}) async {
-    final movieUrl = Uri.parse(
-        'https://api.simkl.com/search/movie?q=$query&extended=full&page=$page&limit=25&client_id=${dotenv.env['SIMKL_CLIENT_ID']}');
+    final movieUrl = Uri.https('api.simkl.com', '/search/movie', {
+      'q': query,
+      'extended': 'full',
+      'page': '$page',
+      'limit': '25',
+      'client_id': '${dotenv.env['SIMKL_CLIENT_ID']}',
+    });
     final resp = await get(movieUrl);
     if (resp.statusCode == 200) {
       final data = jsonDecode(resp.body) as List<dynamic>;
@@ -106,9 +111,14 @@ class SimklService extends GetxController
   }
 
   Future<List<Media>> searchSeries(String query, {int page = 1}) async {
-    final movieUrl = Uri.parse(
-        'https://api.simkl.com/search/tv?q=$query&extended=full&page=$page&limit=25&client_id=${dotenv.env['SIMKL_CLIENT_ID']}');
-    final resp = await get(movieUrl);
+    final seriesUrl = Uri.https('api.simkl.com', '/search/tv', {
+      'q': query,
+      'extended': 'full',
+      'page': '$page',
+      'limit': '25',
+      'client_id': '${dotenv.env['SIMKL_CLIENT_ID']}',
+    });
+    final resp = await get(seriesUrl);
     if (resp.statusCode == 200) {
       final data = jsonDecode(resp.body) as List<dynamic>;
       List<Media> list = data.map((e) => Media.fromSimkl(e, true)).toList();
