@@ -1,3 +1,4 @@
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/widgets/common/slider_semantics.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
@@ -569,6 +570,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
 
   Widget _buildActionButtons(BuildContext context) {
     final colorScheme = context.colors;
+    final serviceHandler = Get.find<ServiceHandler>();
 
     return Row(
       children: [
@@ -612,14 +614,29 @@ class _ListEditorModalState extends State<ListEditorModal> {
             child: AnymexButton(
               borderRadius: const BorderRadius.horizontal(
                   right: Radius.circular(100), left: Radius.circular(10)),
-              onTap: () {
+              onTap: () async {
                 Get.back();
+                
+                // Call the original update function
                 widget.onUpdate(
                   widget.media.id,
                   _localScore,
                   _localStatus,
                   _localProgress,
                 );
+
+                // Trigger Kitsu sync if logged in
+                if (serviceHandler.kitsuService.isLoggedIn.value) {
+                  final malId = widget.media.idMal?.toString();
+                  serviceHandler.kitsuService.syncEntryToKitsu(
+                    listId: widget.media.id,
+                    isAnime: !widget.isManga,
+                    score: _localScore.toString(),
+                    status: _localStatus,
+                    progress: _localProgress,
+                    malId: malId,
+                  );
+                }
               },
               color: colorScheme.primary,
               border: BorderSide.none,
