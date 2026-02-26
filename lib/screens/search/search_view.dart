@@ -136,10 +136,8 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
 
   String _mediaKey(Media media) {
     final rawId = media.id.toString();
-    final normalizedTitle = media.title.trim().toLowerCase();
-    return '${media.serviceType.name}|$rawId|$normalizedTitle';
+    return '${media.serviceType.name}|$rawId';
   }
-
   Map<String, dynamic> _buildApiFilters(String searchQuery) {
     final apiFilters = Map<String, dynamic>.from(_activeFilters);
     if (apiFilters['sort'] == null && searchQuery.isEmpty) {
