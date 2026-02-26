@@ -21,7 +21,122 @@ class KitsuService extends GetxController implements BaseService {
 
   @override
   Future<void> login(BuildContext context) async {
-    await kitsuAuth.login();
+    _showLoginMethodDialog(context);
+  }
+
+  void _showLoginMethodDialog(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: colors.surfaceContainer,
+        title: const Text('Login to Kitsu'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: Icon(Icons.email, color: colors.primary),
+              title: const Text('Login with Email/Password'),
+              subtitle: const Text('Use your Kitsu account credentials'),
+              onTap: () {
+                Navigator.pop(context);
+                _showEmailPasswordDialog(context);
+              },
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              tileColor: colors.surfaceContainerHigh,
+            ),
+            const SizedBox(height: 8),
+            ListTile(
+              leading: Icon(Icons.oauth, color: colors.primary),
+              title: const Text('Login with OAuth'),
+              subtitle: const Text('Use browser authentication'),
+              onTap: () {
+                Navigator.pop(context);
+                _loginWithOAuth();
+              },
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              tileColor: colors.surfaceContainerHigh,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showEmailPasswordDialog(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final emailController = TextEditingController();
+    final passwordController = TextEditingController();
+    final isLoading = false.obs;
+
+    showDialog(
+      context: context,
+      builder: (context) => Obx(() => AlertDialog(
+        backgroundColor: colors.surfaceContainer,
+        title: const Text('Kitsu Login'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: emailController,
+              decoration: const InputDecoration(
+                labelText: 'Email',
+                hintText: 'Enter your email',
+              ),
+              keyboardType: TextInputType.emailAddress,
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: passwordController,
+              decoration: const InputDecoration(
+                labelText: 'Password',
+                hintText: 'Enter your password',
+              ),
+              obscureText: true,
+            ),
+            if (isLoading.value)
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: CircularProgressIndicator(),
+              ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: isLoading.value
+                ? null
+                : () async {
+                    isLoading.value = true;
+                    try {
+                      await kitsuAuth.loginWithEmailPassword(
+                        emailController.text,
+                        passwordController.text,
+                      );
+                      isLoggedIn.value = kitsuAuth.isLoggedIn.value;
+                      profileData.value = kitsuAuth.profileData.value;
+                      Navigator.pop(context);
+                    } finally {
+                      isLoading.value = false;
+                    }
+                  },
+            child: const Text('Login'),
+          ),
+        ],
+      )),
+    );
+  }
+
+  Future<void> _loginWithOAuth() async {
+    await kitsuAuth.loginWithOAuth();
     isLoggedIn.value = kitsuAuth.isLoggedIn.value;
     profileData.value = kitsuAuth.profileData.value;
   }
@@ -52,7 +167,7 @@ class KitsuService extends GetxController implements BaseService {
   RxList<Widget> homeWidgets(BuildContext context) {
     return <Widget>[].obs;
   }
-  
+
   Future<void> syncToKitsuFromCurrentService() async {
     if (!isLoggedIn.value) {
       snackBar('Please login to Kitsu first');
