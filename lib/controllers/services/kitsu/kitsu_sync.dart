@@ -47,12 +47,28 @@ class KitsuSync extends GetxController {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        if (data['data'].isNotEmpty && data['included'].isNotEmpty) {
+        
+        if (data['data'] == null || data['data'].isEmpty) {
+          return null;
+        }
+
+        final firstMapping = data['data'][0];
+        
+        final mediaId = firstMapping['relationships']?['item']?['data']?['id']?.toString();
+        
+        if (mediaId != null) {
+          Logger.i('Found Kitsu ID $mediaId for MAL ID $malId');
+          return mediaId;
+        }
+        
+        if (data['included'] != null && data['included'].isNotEmpty) {
           final mediaItem = data['included'].firstWhere(
             (item) => item['type'] == (isAnime ? 'anime' : 'manga'),
             orElse: () => null,
           );
-          return mediaItem?['id']?.toString();
+          if (mediaItem != null) {
+            return mediaItem['id']?.toString();
+          }
         }
       }
     } catch (e) {
