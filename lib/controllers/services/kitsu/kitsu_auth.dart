@@ -4,6 +4,7 @@ import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
@@ -14,17 +15,19 @@ class KitsuAuth extends GetxController {
 
   final RxBool isLoggedIn = false.obs;
   final Rx<Profile> profileData = Profile().obs;
-  static const String CLIENT_ID = "dd031b32d2f56c990b1425efe6c42ad847e7fe3ab46bf1299f05ecd856bdb7dd";
-  static const String CLIENT_SECRET = "54d7307928f63414defd96399fc31ba847961ceaecef3a5fd93144e960c0e151";
+  
+  String get clientId => dotenv.env['KITSU_CLIENT_ID'];
+  String get clientSecret => dotenv.env['KITSU_CLIENT_SECRET'];
+  
   static const String AUTH_URL = "https://kitsu.app/api/oauth/authorize";
   static const String TOKEN_URL = "https://kitsu.app/api/oauth/token";
 
-  Future<void> login() async {
+  Future<void> loginWithOAuth() async {
     try {
       final state = _generateRandomString(32);
       
       final authUrl = Uri.parse(AUTH_URL).replace(queryParameters: {
-        'client_id': CLIENT_ID,
+        'client_id': clientId,
         'redirect_uri': '${dotenv.env['CALLBACK_SCHEME']}://callback',
         'response_type': 'code',
         'state': state,
@@ -49,8 +52,35 @@ class KitsuAuth extends GetxController {
       
       await _exchangeCodeForToken(code);
     } catch (e, stack) {
-      Logger.i('Kitsu login error: $e\n$stack');
+      Logger.i('Kitsu OAuth login error: $e\n$stack');
       snackBar('Failed to login to Kitsu: $e');
+    }
+  }
+
+  Future<void> loginWithEmailPassword(String email, String password) async {
+    try {
+      final response = await http.post(
+        Uri.parse(TOKEN_URL),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'grant_type': 'password',
+          'username': email,
+          'password': password,
+          'client_id': clientId,
+          'client_secret': clientSecret,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        await _handleTokenResponse(data);
+      } else {
+        throw Exception('Failed to login: ${response.body}');
+      }
+    } catch (e, stack) {
+      Logger.i('Kitsu email login error: $e\n$stack');
+      snackBar('Failed to login to Kitsu: $e');
+      rethrow;
     }
   }
 
@@ -63,26 +93,14 @@ class KitsuAuth extends GetxController {
           'grant_type': 'authorization_code',
           'code': code,
           'redirect_uri': '${dotenv.env['CALLBACK_SCHEME']}://callback',
-          'client_id': CLIENT_ID,
-          'client_secret': CLIENT_SECRET,
+          'client_id': clientId,
+          'client_secret': clientSecret,
         }),
       );
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        final accessToken = data['access_token'];
-        final refreshToken = data['refresh_token'];
-        final createdAt = data['created_at'];
-        final expiresIn = data['expires_in'];
-        
-        AuthKeys.kitsuAuthToken.set(accessToken);
-        AuthKeys.kitsuRefreshToken.set(refreshToken);
-        AuthKeys.kitsuTokenCreatedAt.set(createdAt.toString());
-        AuthKeys.kitsuTokenExpiresIn.set(expiresIn.toString());
-
-        isLoggedIn.value = true;
-        await fetchUserProfile();
-        snackBar('Successfully logged in to Kitsu!');
+        await _handleTokenResponse(data);
       } else {
         throw Exception('Failed to exchange code: ${response.body}');
       }
@@ -90,6 +108,22 @@ class KitsuAuth extends GetxController {
       Logger.i('Token exchange error: $e');
       rethrow;
     }
+  }
+
+  Future<void> _handleTokenResponse(Map<String, dynamic> data) async {
+    final accessToken = data['access_token'];
+    final refreshToken = data['refresh_token'];
+    final createdAt = data['created_at'];
+    final expiresIn = data['expires_in'];
+    
+    AuthKeys.kitsuAuthToken.set(accessToken);
+    AuthKeys.kitsuRefreshToken.set(refreshToken);
+    AuthKeys.kitsuTokenCreatedAt.set(createdAt.toString());
+    AuthKeys.kitsuTokenExpiresIn.set(expiresIn.toString());
+
+    isLoggedIn.value = true;
+    await fetchUserProfile();
+    snackBar('Successfully logged in to Kitsu!');
   }
 
   Future<void> refreshToken() async {
@@ -103,8 +137,8 @@ class KitsuAuth extends GetxController {
         body: jsonEncode({
           'grant_type': 'refresh_token',
           'refresh_token': refreshToken,
-          'client_id': CLIENT_ID,
-          'client_secret': CLIENT_SECRET,
+          'client_id': clientId,
+          'client_secret': clientSecret,
         }),
       );
 
