@@ -16,8 +16,8 @@ class KitsuAuth extends GetxController {
   final RxBool isLoggedIn = false.obs;
   final Rx<Profile> profileData = Profile().obs;
   
-  String get clientId => dotenv.env['KITSU_CLIENT_ID'];
-  String get clientSecret => dotenv.env['KITSU_CLIENT_SECRET'];
+  String get clientId => dotenv.env['KITSU_CLIENT_ID'] ?? "dd031b32d2f56c990b1425efe6c42ad847e7fe3ab46bf1299f05ecd856bdb7dd";
+  String get clientSecret => dotenv.env['KITSU_CLIENT_SECRET'] ?? "54d7307928f63414defd96399fc31ba847961ceaecef3a5fd93144e960c0e151";
   
   static const String AUTH_URL = "https://kitsu.app/api/oauth/authorize";
   static const String TOKEN_URL = "https://kitsu.app/api/oauth/token";
