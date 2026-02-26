@@ -1,15 +1,18 @@
 import 'dart:convert';
+
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/kitsu/kitsu_auth.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
 class KitsuSync extends GetxController {
   static KitsuSync get instance => Get.find<KitsuSync>();
+  
   final kitsuAuth = Get.find<KitsuAuth>();
 
   static const Map<String, String> _animeStatusMap = {
@@ -29,7 +32,7 @@ class KitsuSync extends GetxController {
     'PLANNING': 'planned',
     'REPEATING': 'current',
   };
-  
+
   Future<String?> getKitsuIdFromMalId(String malId, {bool isAnime = true}) async {
     try {
       final response = await http.get(
@@ -45,7 +48,6 @@ class KitsuSync extends GetxController {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['data'].isNotEmpty && data['included'].isNotEmpty) {
-          // Get the media ID from included
           final mediaItem = data['included'].firstWhere(
             (item) => item['type'] == (isAnime ? 'anime' : 'manga'),
             orElse: () => null,
@@ -58,7 +60,7 @@ class KitsuSync extends GetxController {
     }
     return null;
   }
-  
+
   Future<void> syncToKitsu({
     required String listId,
     required bool isAnime,
@@ -68,10 +70,9 @@ class KitsuSync extends GetxController {
     String? malId,
   }) async {
     if (!kitsuAuth.isLoggedIn.value) {
-      Logger.i('Kitsu not logged in, skipping sync');
       return;
     }
-    
+
     String? effectiveMalId = malId;
     if (effectiveMalId == null) {
       final currentService = serviceHandler.serviceType.value;
@@ -85,16 +86,14 @@ class KitsuSync extends GetxController {
     }
 
     if (effectiveMalId == null) {
-      Logger.i('No MAL ID available for Kitsu sync');
       return;
     }
-    
+
     final kitsuMediaId = await getKitsuIdFromMalId(effectiveMalId, isAnime: isAnime);
     if (kitsuMediaId == null) {
-      Logger.i('No Kitsu mapping found for MAL ID: $effectiveMalId');
       return;
     }
-    
+
     final existingEntry = await _findLibraryEntry(kitsuMediaId, isAnime);
     
     if (existingEntry != null) {
@@ -166,6 +165,7 @@ class KitsuSync extends GetxController {
       if (userResponse.statusCode != 200) return null;
       final userData = jsonDecode(userResponse.body);
       final userId = userData['data'][0]['id'];
+
       final entryResponse = await http.get(
         Uri.parse(
           'https://kitsu.app/api/edge/library-entries'
@@ -212,6 +212,7 @@ class KitsuSync extends GetxController {
       if (userResponse.statusCode != 200) return;
       final userData = jsonDecode(userResponse.body);
       final userId = userData['data'][0]['id'];
+
       final Map<String, dynamic> attributes = {};
       
       if (status != null && status.isNotEmpty) {
@@ -233,7 +234,7 @@ class KitsuSync extends GetxController {
           attributes['ratingTwenty'] = (doubleScore * 2).round();
         }
       }
-      
+
       final body = {
         'data': {
           'type': 'libraryEntries',
@@ -282,6 +283,7 @@ class KitsuSync extends GetxController {
 
     try {
       final entryId = existingEntry['id'];
+      
       final Map<String, dynamic> attributes = {};
       
       if (status != null && status.isNotEmpty) {
@@ -303,7 +305,7 @@ class KitsuSync extends GetxController {
           attributes['ratingTwenty'] = (doubleScore * 2).round();
         }
       }
-      
+
       final body = {
         'data': {
           'type': 'libraryEntries',
@@ -331,7 +333,7 @@ class KitsuSync extends GetxController {
       Logger.i('Error updating library entry: $e');
     }
   }
-  
+
   Future<void> batchSyncToKitsu() async {
     if (!kitsuAuth.isLoggedIn.value) return;
 
@@ -348,7 +350,7 @@ class KitsuSync extends GetxController {
       );
       await Future.delayed(const Duration(milliseconds: 500));
     }
-    
+
     for (final manga in service.mangaList) {
       await syncToKitsu(
         listId: manga.id ?? '',
