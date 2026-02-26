@@ -44,21 +44,31 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
     final services = [
       {
         'service': serviceHandler.anilistService,
-        'icon': 'assets/icons/anilist-icon.png',
+        'icon': 'https://files.catbox.moe/kgolmz.png',
         'title': "Anilist",
         'color': const Color(0xFF02A9FF),
+        'note': null,
       },
       {
         'service': serviceHandler.malService,
-        'icon': 'assets/icons/mal-icon.png',
+        'icon': 'https://files.catbox.moe/8t8ccs.jpg',
         'title': "MyAnimeList",
         'color': const Color(0xFF2E51A2),
+        'note': null,
       },
       {
         'service': serviceHandler.simklService,
-        'icon': 'assets/icons/simkl-icon.png',
+        'icon': 'https://files.catbox.moe/jypzc6.png',
         'title': "Simkl",
         'color': const Color(0xFF000000),
+        'note': null,
+      },
+      {
+        'service': serviceHandler.kitsuService,
+        'icon': 'https://files.catbox.moe/vohi1u.png',
+        'title': "Kitsu",
+        'color': const Color(0xFFF4C430),
+        'note': 'One-way sync only (App → Kitsu)',
       },
     ];
 
@@ -94,6 +104,7 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
                           service: s['service'] as OnlineService,
                           title: s['title'] as String,
                           brandColor: s['color'] as Color?,
+                          note: s['note'] as String?,
                         ),
                       )),
                   const SizedBox(height: 24),
@@ -291,6 +302,7 @@ class TrackingServiceCard extends StatelessWidget {
   final OnlineService service;
   final String title;
   final Color? brandColor;
+  final String? note;
 
   const TrackingServiceCard({
     super.key,
@@ -298,6 +310,7 @@ class TrackingServiceCard extends StatelessWidget {
     required this.service,
     required this.title,
     this.brandColor,
+    this.note,
   });
 
   @override
@@ -337,16 +350,39 @@ class TrackingServiceCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               child: Row(
                 children: [
-                  _buildServiceIcon(avatar, isLogged),
+                  _buildServiceIcon(avatar, isLogged, note),
                   const SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        AnymexText(
-                          text: title,
-                          variant: TextVariant.semiBold,
-                          size: 16,
+                        Row(
+                          children: [
+                            AnymexText(
+                              text: title,
+                              variant: TextVariant.semiBold,
+                              size: 16,
+                            ),
+                            if (note != null && !isLogged) ...[
+                              const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.orange.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: AnymexText(
+                                  text: '1-way',
+                                  size: 10,
+                                  color: Colors.orange,
+                                  variant: TextVariant.bold,
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                         const SizedBox(height: 2),
                         AnymexText(
@@ -359,6 +395,15 @@ class TrackingServiceCard extends StatelessWidget {
                               : colors.onSurfaceVariant,
                           maxLines: 1,
                         ),
+                        if (note != null && !isLogged) ...[
+                          const SizedBox(height: 2),
+                          AnymexText(
+                            text: note!,
+                            size: 10,
+                            color: colors.onSurfaceVariant.withOpacity(0.7),
+                            maxLines: 1,
+                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -389,59 +434,122 @@ class TrackingServiceCard extends StatelessWidget {
     });
   }
 
-  Widget _buildServiceIcon(String? avatarUrl, bool isLogged) {
+  Widget _buildServiceIcon(String? avatarUrl, bool isLogged, String? note) {
+    Widget iconWidget;
+
     if (isLogged && avatarUrl != null && avatarUrl.isNotEmpty) {
-      return Container(
+      iconWidget = Container(
         width: 44,
         height: 44,
         decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            image: DecorationImage(
-                image: CachedNetworkImageProvider(
-                  avatarUrl,
-                  cacheManager: AnymeXCacheManager.instance,
-                ),
-                fit: BoxFit.cover)),
+          shape: BoxShape.circle,
+          image: DecorationImage(
+            image: CachedNetworkImageProvider(
+              avatarUrl,
+              cacheManager: AnymeXCacheManager.instance,
+            ),
+            fit: BoxFit.cover,
+          ),
+        ),
+      );
+    } else {
+      iconWidget = Container(
+        width: 44,
+        height: 44,
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Image.asset(
+          serviceIcon,
+          errorBuilder: (c, o, s) => const Icon(IconlyBold.danger),
+        ),
+      );
+    }
+    
+    if (note != null && !isLogged) {
+      return Stack(
+        children: [
+          iconWidget,
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: Container(
+              padding: const EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                color: Colors.orange,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.sync_problem_rounded,
+                color: Colors.white,
+                size: 12,
+              ),
+            ),
+          ),
+        ],
       );
     }
 
-    return Container(
-      width: 44,
-      height: 44,
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Image.asset(
-        'assets/icons/$serviceIcon',
-        errorBuilder: (c, o, s) => const Icon(IconlyBold.danger),
-      ),
-    );
+    return iconWidget;
   }
 
   void _showServiceOptions(BuildContext context) {
+    final colors = context.colors;
+
     showModalBottomSheet(
       context: context,
-      backgroundColor: context.colors.surface,
+      backgroundColor: colors.surface,
       builder: (context) => Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             AnymexText(
-                text: "Manage $title", variant: TextVariant.bold, size: 18),
+              text: "Manage $title",
+              variant: TextVariant.bold,
+              size: 18,
+            ),
             const SizedBox(height: 20),
+            if (note != null && service.isLoggedIn.value) ...[
+              ListTile(
+                leading: Icon(
+                  Icons.sync_rounded,
+                  color: colors.primary,
+                ),
+                title: const Text("Sync to Kitsu"),
+                subtitle: const Text("One-way sync from current service"),
+                onTap: () {
+                  Navigator.pop(context);
+                  if (service is KitsuService) {
+                    (service as KitsuService).syncToKitsuFromCurrentService();
+                  }
+                },
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                tileColor: colors.surfaceContainer,
+              ),
+              const SizedBox(height: 8),
+            ],
             ListTile(
-              leading: const Icon(IconlyLight.logout),
-              title: const Text("Log Out"),
+              leading: Icon(
+                IconlyLight.logout,
+                color: colors.error,
+              ),
+              title: Text(
+                "Log Out",
+                style: TextStyle(color: colors.error),
+              ),
               onTap: () {
                 service.logout();
                 Navigator.pop(context);
               },
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-              tileColor: context.colors.surfaceContainer,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              tileColor: colors.surfaceContainer,
             )
           ],
         ),
