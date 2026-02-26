@@ -617,15 +617,13 @@ class _ListEditorModalState extends State<ListEditorModal> {
               onTap: () async {
                 Get.back();
                 
-                // Call the original update function
                 widget.onUpdate(
                   widget.media.id,
                   _localScore,
                   _localStatus,
                   _localProgress,
                 );
-
-                // Trigger Kitsu sync if logged in
+                
                 if (serviceHandler.kitsuService.isLoggedIn.value) {
                   final malId = widget.media.idMal?.toString();
                   serviceHandler.kitsuService.syncEntryToKitsu(
