@@ -138,6 +138,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     final rawId = media.id.toString();
     return '${media.serviceType.name}|$rawId';
   }
+
   Map<String, dynamic> _buildApiFilters(String searchQuery) {
     final apiFilters = Map<String, dynamic>.from(_activeFilters);
     if (apiFilters['sort'] == null && searchQuery.isEmpty) {
@@ -187,6 +188,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     });
 
     await Future.delayed(const Duration(milliseconds: 350));
+    if (!mounted) return;
 
     try {
       final apiFilters = _buildApiFilters(searchQuery);
@@ -199,6 +201,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
             page: 1,
           ))) ??
           [];
+      if (!mounted) return;
 
       final uniqueResults = <Media>[];
       final seen = <String>{};
@@ -228,6 +231,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         _resultsScrollController.jumpTo(0);
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _searchState = SearchState.error;
         _errorMessage = _getErrorMessage(e);
@@ -263,6 +267,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
             page: nextPage,
           ))) ??
           [];
+      if (!mounted) return;
 
       if (results.isEmpty) {
         setState(() {
@@ -291,6 +296,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       });
     } catch (e) {
       Logger.i('Failed to load more search results: $e');
+      if (!mounted) return;
       setState(() {
         _hasMoreResults = false;
       });
