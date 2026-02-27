@@ -461,7 +461,7 @@ class TrackingServiceCard extends StatelessWidget {
           color: Colors.white.withOpacity(0.1),
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Image.asset(
+        child: Image.network(
           serviceIcon,
           errorBuilder: (c, o, s) => const Icon(IconlyBold.danger),
         ),
@@ -522,9 +522,7 @@ class TrackingServiceCard extends StatelessWidget {
                 subtitle: const Text("One-way sync from current service"),
                 onTap: () {
                   Navigator.pop(context);
-                  if (service is KitsuService) {
-                    (service as KitsuService).syncToKitsuFromCurrentService();
-                  }
+                  service.syncToKitsuFromCurrentService?.call();
                 },
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
