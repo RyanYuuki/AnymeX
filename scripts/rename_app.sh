@@ -59,10 +59,17 @@ WINDOWS_CMAKE="windows/CMakeLists.txt"
 # Validate Arguments
 ###############################################
 if [ -z "$1" ]; then
-  log_error "Usage: $0 <new_version> (e.g., 1.0.0+1)"
+  log_error "Usage: $0 <pubspec_version> [display_version]"
 fi
 
-NEW_VERSION="$1"
+NEW_VERSION="$1"      # For pubspec.yaml (e.g., 3.0.4+26)
+DISPLAY_VERSION="$2"  # For settings_about.dart (e.g., v3.0.4-beta or v3.0.4+1-beta)
+
+# If no display version provided, use pubspec version's semver
+if [ -z "$DISPLAY_VERSION" ]; then
+  SEMVER=$(echo "$NEW_VERSION" | cut -d'+' -f1)
+  DISPLAY_VERSION="v${SEMVER}"
+fi
 
 echo "════════════════════════════════════════════"
 echo "  Cross-Platform Beta Rename"
@@ -71,7 +78,8 @@ echo "  Old Package: $OLD_PKG"
 echo "  New Package: $NEW_PKG"
 echo "  Old Name:    $OLD_APP_NAME"
 echo "  New Name:    $NEW_APP_NAME"
-echo "  Version:     $NEW_VERSION"
+echo "  Pubspec Version: $NEW_VERSION"
+echo "  Display Version: $DISPLAY_VERSION"
 echo "════════════════════════════════════════════"
 echo ""
 
@@ -233,155 +241,104 @@ else
 fi
 
 ###############################################
-# 🔥 APPLY BETA LOGOS HERE
-###############################################
-log_info "Applying Beta Logos..."
-
-BETA_LOGO="assets/images/logo_beta.png"
-MAIN_LOGO="assets/images/logo.png"
-
-BETA_LOGO_TRANSPARENT="assets/images/logo_transparent_beta.png"
-MAIN_LOGO_TRANSPARENT="assets/images/logo_transparent.png"
-
-# Override logo.png
-if [ -f "$BETA_LOGO" ]; then
-  cp "$BETA_LOGO" "$MAIN_LOGO"
-  log_success "Beta logo applied → logo.png"
-else
-  log_warn "Missing beta logo: $BETA_LOGO"
-fi
-
-# Override logo_transparent.png
-if [ -f "$BETA_LOGO_TRANSPARENT" ]; then
-  cp "$BETA_LOGO_TRANSPARENT" "$MAIN_LOGO_TRANSPARENT"
-  log_success "Beta transparent logo applied → logo_transparent.png"
-else
-  log_warn "Missing beta transparent logo: $BETA_LOGO_TRANSPARENT"
-fi
-
-###############################################
-# Auto-generate Beta Icons for ALL Platforms
-###############################################
-log_info "Generating beta icons for Android / iOS / macOS / Windows..."
-
-# Detect ImageMagick and set command variables
-CONVERT_CMD=""
-IDENTIFY_CMD=""
-
-if command -v magick >/dev/null 2>&1; then
-  # Prefer modern ImageMagick CLI (avoids Windows convert.exe conflict)
-  CONVERT_CMD="magick convert"
-  IDENTIFY_CMD="magick identify"
-elif command -v convert >/dev/null 2>&1 && convert -version 2>/dev/null | grep -qi "ImageMagick"; then
-  # Fallback to legacy 'convert' / 'identify' if they are actually ImageMagick
-  CONVERT_CMD="convert"
-  IDENTIFY_CMD="identify"
-fi
-
-# We require ImageMagick (convert + identify)
-if [ -z "$CONVERT_CMD" ] || [ -z "$IDENTIFY_CMD" ]; then
-  log_warn "ImageMagick (magick/convert) not found or not ImageMagick. Skipping icon generation."
-else
-  ########################
-  # ANDROID (mipmap-* + TV)
-  ########################
-  BASE_ICON="$BETA_LOGO"
-  TRANSPARENT_ICON="$BETA_LOGO_TRANSPARENT"
-
-  # Use arrays compatible with Bash 3.2+
-  DPI_FOLDERS=("mipmap-mdpi" "mipmap-hdpi" "mipmap-xhdpi" "mipmap-xxhdpi" "mipmap-xxxhdpi")
-  DPI_SIZES=(48 72 96 144 192)
-  BANNER_SIZES=("320x180" "480x270" "640x360" "960x540" "1280x720")
-
-  for i in "${!DPI_FOLDERS[@]}"; do
-    folder="${DPI_FOLDERS[$i]}"
-    SIZE="${DPI_SIZES[$i]}"
-    BANNER="${BANNER_SIZES[$i]}"
-    DIR="android/app/src/main/res/$folder"
-
-    if [ -d "$DIR" ]; then
-      log_info "Android: $folder ($SIZE px)"
-
-      $CONVERT_CMD "$BASE_ICON" -resize "${SIZE}x${SIZE}" "$DIR/ic_launcher.png" 2>/dev/null || log_warn "Failed to create ic_launcher.png"
-      $CONVERT_CMD "$BASE_ICON" -resize "${SIZE}x${SIZE}" "$DIR/ic_rounded_launcher.png" 2>/dev/null || log_warn "Failed to create ic_rounded_launcher.png"
-      $CONVERT_CMD "$TRANSPARENT_ICON" -resize "${SIZE}x${SIZE}" "$DIR/ic_launcher_foreground.png" 2>/dev/null || log_warn "Failed to create ic_launcher_foreground.png"
-      $CONVERT_CMD "$TRANSPARENT_ICON" -resize "${SIZE}x${SIZE}" -monochrome "$DIR/ic_launcher_monochrome.png" 2>/dev/null || log_warn "Failed to create ic_launcher_monochrome.png"
-      $CONVERT_CMD -size "${SIZE}x${SIZE}" canvas:black "$DIR/ic_launcher_background.png" 2>/dev/null || log_warn "Failed to create ic_launcher_background.png"
-
-      $CONVERT_CMD "$BASE_ICON" -resize "$BANNER" "$DIR/tv_banner.png" 2>/dev/null || log_warn "Failed to create tv_banner.png"
-      $CONVERT_CMD "$BASE_ICON" -resize "$BANNER" "$DIR/tv_banner_adaptive_fore.png" 2>/dev/null || log_warn "Failed to create tv_banner_adaptive_fore.png"
-      $CONVERT_CMD -size "$BANNER" canvas:black "$DIR/tv_banner_adaptive_back.png" 2>/dev/null || log_warn "Failed to create tv_banner_adaptive_back.png"
-
-      log_success "Android icons updated in $DIR"
-    fi
-  done
-
-  ########################
-  # iOS (AppIcon.appiconset)
-  ########################
-  IOS_ICONSET="ios/Runner/Assets.xcassets/AppIcon.appiconset"
-  if [ -d "$IOS_ICONSET" ]; then
-    log_info "iOS: Updating $IOS_ICONSET"
-    for ICON in "$IOS_ICONSET"/*.png; do
-      if [ -f "$ICON" ]; then
-        SIZE=$($IDENTIFY_CMD -format "%wx%h" "$ICON" 2>/dev/null || echo "")
-        if [ -n "$SIZE" ]; then
-          $CONVERT_CMD "$BETA_LOGO_TRANSPARENT" -resize "$SIZE" "$ICON" 2>/dev/null || log_warn "Failed to update $ICON"
-        fi
-      fi
-    done
-    log_success "iOS AppIcon.appiconset updated from beta logo"
-  else
-    log_warn "iOS iconset not found at $IOS_ICONSET (skipping)"
-  fi
-
-  ########################
-  # macOS (AppIcon.appiconset)
-  ########################
-  MACOS_ICONSET="macos/Runner/Assets.xcassets/AppIcon.appiconset"
-  if [ -d "$MACOS_ICONSET" ]; then
-    log_info "macOS: Updating $MACOS_ICONSET"
-    for ICON in "$MACOS_ICONSET"/*.png; do
-      if [ -f "$ICON" ]; then
-        SIZE=$($IDENTIFY_CMD -format "%wx%h" "$ICON" 2>/dev/null || echo "")
-        if [ -n "$SIZE" ]; then
-          $CONVERT_CMD "$BETA_LOGO_TRANSPARENT" -resize "$SIZE" "$ICON" 2>/dev/null || log_warn "Failed to update $ICON"
-        fi
-      fi
-    done
-    log_success "macOS AppIcon.appiconset updated from beta logo"
-  else
-    log_warn "macOS iconset not found at $MACOS_ICONSET (skipping)"
-  fi
-
-  ########################
-  # Windows (.ico)
-  ########################
-  WIN_ICO="windows/runner/resources/app_icon.ico"
-  if [ -f "$WIN_ICO" ]; then
-    log_info "Windows: Updating $WIN_ICO"
-    # multi-size ICO from one PNG
-    $CONVERT_CMD "$BETA_LOGO" -resize 256x256 -define icon:auto-resize=16,24,32,48,64,128,256 "$WIN_ICO" 2>/dev/null || log_warn "Failed to update Windows icon"
-    log_success "Windows app_icon.ico updated from beta logo"
-  else
-    log_warn "Windows ICO not found at $WIN_ICO (skipping)"
-  fi
-
-  ########################
-  # Linux
-  ########################
-  # Linux already uses assets/images/logo.png in your packaging,
-  # and we've already overwritten that with beta, so nothing extra needed.
-  log_info "Linux: using updated assets/images/logo.png for icons."
-fi
-
-###############################################
 # Clean Flutter build cache
 ###############################################
 log_info "Cleaning Flutter build cache..."
 flutter clean > /dev/null 2>&1 || true
 rm -rf .dart_tool/
 log_success "Build cache cleaned"
+
+###############################################
+# BETA: Update version display in settings_about.dart
+###############################################
+log_info "Beta: Updating version display in settings_about.dart..."
+
+DART_ABOUT_FILE="lib/screens/settings/sub_settings/settings_about.dart"
+
+if [ -f "$DART_ABOUT_FILE" ]; then
+  # Replace version display with the tag version (no build number)
+  sed "${SED_INPLACE[@]}" 's/version: "v\$version"/version: "'"$DISPLAY_VERSION"'"/g' "$DART_ABOUT_FILE"
+  log_success "Updated version display to $DISPLAY_VERSION"
+else
+  log_warn "Settings about file not found at $DART_ABOUT_FILE. Skipping."
+fi
+
+###############################################
+# UPDATE CHECKER: Update version in updater.dart
+###############################################
+log_info "Update Checker: Updating version for update checking..."
+
+DART_UPDATER_FILE="lib/utils/updater.dart"
+
+if [ -f "$DART_UPDATER_FILE" ]; then
+  # Extract build number from NEW_VERSION (e.g., "3.0.4+26" -> "26")
+  BUILD_NUMBER=$(echo "$NEW_VERSION" | cut -d'+' -f2)
+
+  # Remove 'v' prefix from DISPLAY_VERSION (e.g., "v3.0.4+1-beta" -> "3.0.4+1-beta")
+  VERSION_WITHOUT_V=$(echo "$DISPLAY_VERSION" | sed 's/^v//')
+
+  # Combine: "3.0.4+1-beta+26"
+  FULL_VERSION="${VERSION_WITHOUT_V}+${BUILD_NUMBER}"
+
+  log_info "Full version with build number: $FULL_VERSION"
+
+  # Update _getCurrentVersion() to return hardcoded version
+  # Match the entire function including the closing brace
+  sed "${SED_INPLACE[@]}" '/Future<String> _getCurrentVersion() async {/,/^  }$/c\
+  Future<String> _getCurrentVersion() async {\
+    return "'"$FULL_VERSION"'";\
+  }' "$DART_UPDATER_FILE"
+
+  log_success "Updated _getCurrentVersion() to return $FULL_VERSION"
+
+  # Update _shouldUpdate() to strip build number before comparison
+  # Add build number stripping logic after the function signature
+  sed "${SED_INPLACE[@]}" '/  bool _shouldUpdate(String currentVersion, String latestVersion) {/a\
+    // Strip build number (last + segment) from current version\
+    // "3.0.7+1-beta+26" -> "3.0.7+1-beta"\
+    final plusCount = currentVersion.split('"'"'+'"'"').length - 1;\
+    if (plusCount > 1) {\
+      final lastPlusIndex = currentVersion.lastIndexOf('"'"'+'"'"');\
+      currentVersion = currentVersion.substring(0, lastPlusIndex);\
+    }\
+' "$DART_UPDATER_FILE"
+
+  log_success "Added build number stripping logic to _shouldUpdate()"
+
+  # Update version parsing to handle iteration numbers
+  # Replace the simple split with iteration-aware parsing
+  sed "${SED_INPLACE[@]}" 's/final currentNums = currentSplit\[0\]\.split('"'"'\.'"'"')\.map(int\.parse)\.toList();/\/\/ Parse current version with iteration\n    final currentParts = currentSplit[0].split('"'"'+'"'"');\n    final currentNums = currentParts[0].split('"'"'\.'"'"').map(int.parse).toList();\n    final currentIteration = currentParts.length > 1 ? int.parse(currentParts[1]) : 0;/g' "$DART_UPDATER_FILE"
+
+  sed "${SED_INPLACE[@]}" 's/final latestNums = latestSplit\[0\]\.split('"'"'\.'"'"')\.map(int\.parse)\.toList();/\/\/ Parse latest version with iteration\n    final latestParts = latestSplit[0].split('"'"'+'"'"');\n    final latestNums = latestParts[0].split('"'"'\.'"'"').map(int.parse).toList();\n    final latestIteration = latestParts.length > 1 ? int.parse(latestParts[1]) : 0;/g' "$DART_UPDATER_FILE"
+
+  log_success "Updated version parsing to handle iteration numbers"
+
+  sed "${SED_INPLACE[@]}" 's/        return latestIndex > currentIndex;/        if (currentIndex != latestIndex) {\n          return latestIndex > currentIndex;\n        }/g' "$DART_UPDATER_FILE"
+  log_success "Fixed tag comparison to check iterations when tags are same"
+
+  # Add iteration comparison logic before the final log statement
+  sed "${SED_INPLACE[@]}" '/Logger.i('"'"'Current version/i\
+    // Compare iterations if semver and tag are same\
+    if (latestIteration > currentIteration) return true;\
+    if (latestIteration < currentIteration) return false;\
+\
+' "$DART_UPDATER_FILE"
+
+  log_success "Added iteration comparison logic to _shouldUpdate()"
+
+  # Strip build number from currentVersion before showing in popup
+  sed "${SED_INPLACE[@]}" '/if (_shouldUpdate(currentVersion, latestRelease/i\
+        // Strip build number from currentVersion for display in popup\
+        final displayVersion = currentVersion.split('"'"'+'"'"').length > 2 ? currentVersion.substring(0, currentVersion.lastIndexOf('"'"'+'"'"')) : currentVersion;\
+' "$DART_UPDATER_FILE"
+
+  # Update popup call to use displayVersion instead of currentVersion
+  # Match the pattern with context to be more specific
+  sed "${SED_INPLACE[@]}" '/context,$/ { N; s/\n            currentVersion,/\n            displayVersion,/; }' "$DART_UPDATER_FILE"
+  log_success "Fixed popup to show version without build number"
+else
+  log_warn "Updater file not found at $DART_UPDATER_FILE. Skipping update checker updates."
+fi
 
 ###############################################
 # Summary
