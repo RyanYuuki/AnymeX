@@ -362,7 +362,7 @@ class KitsuSync extends GetxController {
         score: anime.score?.toString(),
         status: anime.watchingStatus,
         progress: int.tryParse(anime.episodeCount ?? '0'),
-        malId: anime.malId?.toString(),
+        malId: null,
       );
       await Future.delayed(const Duration(milliseconds: 500));
     }
@@ -374,7 +374,7 @@ class KitsuSync extends GetxController {
         score: manga.score?.toString(),
         status: manga.watchingStatus,
         progress: int.tryParse(manga.chapterCount ?? '0'),
-        malId: manga.malId?.toString(),
+        malId: null,
       );
       await Future.delayed(const Duration(milliseconds: 500));
     }
