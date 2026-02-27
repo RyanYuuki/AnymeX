@@ -1,7 +1,9 @@
+import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/services/kitsu/kitsu_auth.dart';
 import 'package:anymex/controllers/services/kitsu/kitsu_sync.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Service/base_service.dart';
 import 'package:anymex/models/Service/online_service.dart';
 import 'package:anymex/utils/logger.dart';
@@ -18,6 +20,36 @@ class KitsuService extends GetxController implements BaseService {
 
   @override
   Rx<Profile> profileData = Profile().obs;
+
+  @override
+  RxList<Widget> animeWidgets(BuildContext context) {
+    return <Widget>[].obs;
+  }
+
+  @override
+  RxList<Widget> mangaWidgets(BuildContext context) {
+    return <Widget>[].obs;
+  }
+
+  @override
+  RxList<Widget> homeWidgets(BuildContext context) {
+    return <Widget>[].obs;
+  }
+
+  @override
+  Future<Media> fetchDetails(FetchDetailsParams params) async {
+    throw UnimplementedError('Kitsu service does not support fetching details');
+  }
+
+  @override
+  Future<void> fetchHomePage() async {
+    // Kitsu doesn't have a homepage
+  }
+
+  @override
+  Future<List<Media>> search(SearchParams params) async {
+    return [];
+  }
 
   @override
   Future<void> login(BuildContext context) async {
@@ -50,7 +82,7 @@ class KitsuService extends GetxController implements BaseService {
             ),
             const SizedBox(height: 8),
             ListTile(
-              leading: Icon(Icons.oauth, color: colors.primary),
+              leading: Icon(Icons.language, color: colors.primary),
               title: const Text('Login with OAuth'),
               subtitle: const Text('Use browser authentication'),
               onTap: () {
@@ -161,11 +193,6 @@ class KitsuService extends GetxController implements BaseService {
       await kitsuAuth.fetchUserProfile();
       profileData.value = kitsuAuth.profileData.value;
     }
-  }
-
-  @override
-  RxList<Widget> homeWidgets(BuildContext context) {
-    return <Widget>[].obs;
   }
 
   Future<void> syncToKitsuFromCurrentService() async {
