@@ -144,7 +144,7 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
 
         final currentScale = _photoViewController.scale ?? 1.0;
 
-        if (currentScale == _doubleTapScales) {
+        if (currentScale == _doubleTapScales[0]) {
           _scalePosition = _computeAlignmentByTapOffset(tapPosition);
 
           if (_scaleAnimationController.isCompleted) {
@@ -152,7 +152,7 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
           }
 
           _animation =
-              Tween(begin: _doubleTapScales, end: _doubleTapScales)
+              Tween(begin: _doubleTapScales[0], end: _doubleTapScales[1])
                   .animate(
             CurvedAnimation(
                 curve: Curves.ease, parent: _scaleAnimationController),
@@ -164,9 +164,9 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
           return;
         }
 
-        if (currentScale >= _doubleTapScales) {
+        if (currentScale >= _doubleTapScales[1]) {
           _animation =
-              Tween(begin: currentScale, end: _doubleTapScales).animate(
+              Tween(begin: currentScale, end: _doubleTapScales[0]).animate(
             CurvedAnimation(
                 curve: Curves.ease, parent: _scaleAnimationController),
           );
