@@ -1,33 +1,38 @@
 import 'dart:io';
 import 'dart:typed_data';
-import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 
-Future<void> showReaderPageActionsDialog({
-  required BuildContext context,
-  required String pageUrl,
-  required Map<String, String>? headers,
-}) {
+Future<void> showReaderPageActionsDialog(
+  BuildContext context,
+  ReaderController controller,
+) {
+  final pageIndex = (controller.currentPageIndex.value - 1)
+      .clamp(0, controller.pageList.length - 1);
+  final page = controller.pageList.isNotEmpty
+      ? controller.pageList[pageIndex]
+      : null;
+
+  if (page == null) return Future.value();
+
   return showModalBottomSheet(
     context: context,
     backgroundColor: Colors.transparent,
-    builder: (_) => ReaderPageActionsSheet(
-      pageUrl: pageUrl,
-      headers: headers,
+    builder: (_) => _ReaderPageActionsSheet(
+      pageUrl: page.url,
+      headers: page.headers,
     ),
   );
 }
 
-class ReaderPageActionsSheet extends StatelessWidget {
-  const ReaderPageActionsSheet({
-    super.key,
+class _ReaderPageActionsSheet extends StatelessWidget {
+  const _ReaderPageActionsSheet({
     required this.pageUrl,
     required this.headers,
   });
@@ -46,7 +51,6 @@ class ReaderPageActionsSheet extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Handle bar
           Container(
             width: 40,
             height: 4,
@@ -78,7 +82,7 @@ class ReaderPageActionsSheet extends StatelessWidget {
               ),
               _ActionButton(
                 icon: Icons.content_copy_rounded,
-                label: 'Copy',
+                label: 'Copy URL',
                 onTap: () => _copyPage(context),
               ),
             ],
@@ -107,7 +111,6 @@ class ReaderPageActionsSheet extends StatelessWidget {
     try {
       final bytes = await _fetchImageBytes();
       if (bytes == null) throw Exception('Failed to fetch image');
-
       final dir = await getApplicationDocumentsDirectory();
       final file = File(
           '${dir.path}/page_${DateTime.now().millisecondsSinceEpoch}.jpg');
@@ -123,11 +126,10 @@ class ReaderPageActionsSheet extends StatelessWidget {
     try {
       final bytes = await _fetchImageBytes();
       if (bytes == null) throw Exception('Failed to fetch image');
-
       final dir = await getTemporaryDirectory();
-      final file = File('${dir.path}/share_page_${DateTime.now().millisecondsSinceEpoch}.jpg');
+      final file = File(
+          '${dir.path}/share_page_${DateTime.now().millisecondsSinceEpoch}.jpg');
       await file.writeAsBytes(bytes);
-
       await Share.shareXFiles([XFile(file.path)], text: 'Manga page');
     } catch (e) {
       snackBar('Failed to share page: $e', duration: 2500);
@@ -140,7 +142,7 @@ class ReaderPageActionsSheet extends StatelessWidget {
       await Clipboard.setData(ClipboardData(text: pageUrl));
       snackBar('Page URL copied to clipboard', duration: 1500);
     } catch (e) {
-      snackBar('Failed to copy page: $e', duration: 2500);
+      snackBar('Failed to copy: $e', duration: 2500);
     }
   }
 }
@@ -167,21 +169,15 @@ class _ActionButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: context.colors.surfaceContainerHighest.withOpacity(0.5),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-              color: context.colors.outline.withOpacity(0.2)),
+          border: Border.all(color: context.colors.outline.withOpacity(0.2)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(icon, size: 28, color: context.colors.primary),
             const SizedBox(height: 6),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 12,
-                color: context.colors.onSurface,
-              ),
-            ),
+            Text(label,
+                style: TextStyle(fontSize: 12, color: context.colors.onSurface)),
           ],
         ),
       ),
