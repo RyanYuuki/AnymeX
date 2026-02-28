@@ -4,7 +4,7 @@ import 'dart:ui';
 import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/screens/manga/widgets/reader/auto_scroll_menu.dart';
-import 'package:anymex/screens/manga/widgets/reader/settings_view.dart';
+import 'package:anymex/screens/manga/widgets/reader/tabbed_reader_settings.dart';
 import 'package:anymex/screens/manga/widgets/reader/themes/setup/reader_control_theme.dart';
 import 'package:anymex/screens/manga/widgets/reader/top_controls.dart';
 import 'package:flutter/cupertino.dart';
