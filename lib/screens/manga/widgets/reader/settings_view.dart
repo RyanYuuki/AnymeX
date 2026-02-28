@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/screens/manga/widgets/reader/themes/setup/reader_control_theme_registry.dart';
@@ -12,10 +11,6 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:anymex/widgets/non_widgets/reusable_checkmark.dart';
 
-// ─────────────────────────────────────────────
-//  Original flat sheet (kept for reference /
-//  fallback – not used when tabbed is active)
-// ─────────────────────────────────────────────
 class ReaderSettings {
   final ReaderController controller;
   ReaderSettings({required this.controller});
@@ -414,10 +409,6 @@ class ReaderSettings {
   }
 }
 
-// ─────────────────────────────────────────────
-//  NEW: Tabbed reader settings (3 tabs)
-// ─────────────────────────────────────────────
-
 class TabbedReaderSettings {
   final ReaderController controller;
   TabbedReaderSettings({required this.controller});
@@ -479,7 +470,6 @@ class _TabbedSettingsSheetState extends State<_TabbedSettingsSheet>
           color: colors.surface,
           child: Column(
             children: [
-              // handle
               Padding(
                 padding: const EdgeInsets.only(top: 12, bottom: 4),
                 child: Container(
@@ -525,8 +515,6 @@ class _TabbedSettingsSheetState extends State<_TabbedSettingsSheet>
   }
 }
 
-// ── Tab 0: Reading Mode ──────────────────────
-
 class _ReadingModeTab extends StatelessWidget {
   final ReaderController controller;
   final ScrollController scrollController;
@@ -540,7 +528,6 @@ class _ReadingModeTab extends StatelessWidget {
       controller: scrollController,
       padding: const EdgeInsets.symmetric(vertical: 8),
       children: [
-        // Layout
         Obx(() {
           final currentLayout = c.readingLayout.value;
           return CustomTile(
@@ -582,7 +569,6 @@ class _ReadingModeTab extends StatelessWidget {
             ),
           );
         }),
-        // Direction
         Obx(() {
           final currentDirection = c.readingDirection.value;
           return CustomTile(
@@ -636,7 +622,6 @@ class _ReadingModeTab extends StatelessWidget {
             ),
           );
         }),
-        // Dual Page Mode
         Obx(() {
           final currentMode = c.dualPageMode.value;
           return CustomTile(
@@ -673,7 +658,6 @@ class _ReadingModeTab extends StatelessWidget {
             ),
           );
         }),
-        // Tap Zones
         if (Platform.isAndroid || Platform.isIOS)
           CustomTile(
             title: 'Tap Zones',
@@ -684,7 +668,6 @@ class _ReadingModeTab extends StatelessWidget {
               navigate(() => const TapZoneSettingsScreen());
             },
           ),
-        // Spaced Pages
         Obx(() => CustomSwitchTile(
               icon: Iconsax.pharagraphspacing,
               title: "Spaced Pages",
@@ -692,7 +675,6 @@ class _ReadingModeTab extends StatelessWidget {
               switchValue: c.spacedPages.value,
               onChanged: (val) => c.toggleSpacedPages(),
             )),
-        // Overscroll
         Obx(() => CustomSwitchTile(
               icon: Iconsax.arrow,
               title: "Overscroll",
@@ -700,7 +682,6 @@ class _ReadingModeTab extends StatelessWidget {
               switchValue: c.overscrollToChapter.value,
               onChanged: (val) => c.toggleOverscrollToChapter(),
             )),
-        // Auto Webtoon Mode
         Obx(() => CustomSwitchTile(
               icon: Icons.auto_fix_high_rounded,
               title: "Auto Webtoon Mode",
@@ -713,8 +694,6 @@ class _ReadingModeTab extends StatelessWidget {
     );
   }
 }
-
-// ── Tab 1: General ───────────────────────────
 
 class _GeneralTab extends StatelessWidget {
   final ReaderController controller;
@@ -730,7 +709,6 @@ class _GeneralTab extends StatelessWidget {
       controller: scrollController,
       padding: const EdgeInsets.symmetric(vertical: 8),
       children: [
-        // Control Theme
         Obx(() {
           final themeId = settings.readerControlThemeRx.value;
           return CustomTile(
@@ -748,7 +726,6 @@ class _GeneralTab extends StatelessWidget {
             ),
           );
         }),
-        // Reader Background Theme
         Obx(() {
           final theme = c.readerTheme.value;
           final labels = ['White', 'Black', 'Gray', 'System'];
@@ -786,7 +763,6 @@ class _GeneralTab extends StatelessWidget {
             ),
           );
         }),
-        // Page Indicator
         Obx(() => CustomSwitchTile(
               icon: Iconsax.eye,
               title: "Persistent Page Indicator",
@@ -794,7 +770,6 @@ class _GeneralTab extends StatelessWidget {
               switchValue: c.showPageIndicator.value,
               onChanged: (val) => c.togglePageIndicator(),
             )),
-        // Crop Borders
         Obx(() => CustomSwitchTile(
               icon: Icons.crop_rounded,
               title: "Crop Borders",
@@ -802,7 +777,6 @@ class _GeneralTab extends StatelessWidget {
               switchValue: c.cropImages.value,
               onChanged: (val) => c.toggleCropImages(),
             )),
-        // Keep Screen On
         Obx(() => CustomSwitchTile(
               icon: Icons.screen_lock_portrait_rounded,
               title: "Keep Screen On",
@@ -810,7 +784,6 @@ class _GeneralTab extends StatelessWidget {
               switchValue: c.keepScreenOn.value,
               onChanged: (val) => c.toggleKeepScreenOn(),
             )),
-        // Always Show Chapter Transition
         Obx(() => CustomSwitchTile(
               icon: Icons.swap_horiz_rounded,
               title: "Always Show Chapter Transition",
@@ -818,7 +791,6 @@ class _GeneralTab extends StatelessWidget {
               switchValue: c.alwaysShowChapterTransition.value,
               onChanged: (val) => c.toggleAlwaysShowChapterTransition(),
             )),
-        // Long Press Page Actions
         Obx(() => CustomSwitchTile(
               icon: Icons.touch_app_rounded,
               title: "Long Press Page Actions",
@@ -826,7 +798,6 @@ class _GeneralTab extends StatelessWidget {
               switchValue: c.longPressPageActionsEnabled.value,
               onChanged: (val) => c.toggleLongPressPageActions(),
             )),
-        // Volume Keys
         if (Platform.isAndroid)
           Obx(() => CustomSwitchTile(
                 icon: Iconsax.volume_high,
@@ -846,7 +817,6 @@ class _GeneralTab extends StatelessWidget {
                   c.savePreferences();
                 },
               )),
-        // E-ink Display Refresh
         Obx(() => CustomSwitchTile(
               icon: Icons.refresh_rounded,
               title: "E-ink Display Refresh",
@@ -890,7 +860,6 @@ class _GeneralTab extends StatelessWidget {
             ),
           );
         }),
-        // Auto Scroll
         Obx(() => CustomSwitchTile(
               icon: Icons.play_arrow_rounded,
               title: "Auto Scroll",
@@ -918,7 +887,6 @@ class _GeneralTab extends StatelessWidget {
             ),
           );
         }),
-        // Preload
         Obx(() => Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: CustomSliderTile(
@@ -935,7 +903,6 @@ class _GeneralTab extends StatelessWidget {
                 divisions: 15,
               ),
             )),
-        // Desktop-only sliders
         if (!Platform.isAndroid && !Platform.isIOS)
           Obx(() => Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
@@ -972,8 +939,6 @@ class _GeneralTab extends StatelessWidget {
   }
 }
 
-// ── Tab 2: Color Filter ──────────────────────
-
 class _ColorFilterTab extends StatelessWidget {
   final ReaderController controller;
   final ScrollController scrollController;
@@ -987,7 +952,6 @@ class _ColorFilterTab extends StatelessWidget {
       controller: scrollController,
       padding: const EdgeInsets.symmetric(vertical: 8),
       children: [
-        // Brightness
         Obx(() => CustomSwitchTile(
               icon: Icons.brightness_6_rounded,
               title: "Custom Brightness",
@@ -1014,7 +978,6 @@ class _ColorFilterTab extends StatelessWidget {
             ),
           );
         }),
-        // Color Filter
         Obx(() => CustomSwitchTile(
               icon: Icons.color_lens_rounded,
               title: "Color Filter",
@@ -1095,7 +1058,6 @@ class _ColorFilterTab extends StatelessWidget {
                   divisions: 255,
                 ),
               ),
-              // Blend Mode chips
               Obx(() {
                 final blendModes = BlendMode.values;
                 final currentMode = c.colorFilterMode.value;
@@ -1147,7 +1109,6 @@ class _ColorFilterTab extends StatelessWidget {
             ],
           );
         }),
-        // Grayscale
         Obx(() => CustomSwitchTile(
               icon: Icons.gradient_rounded,
               title: "Grayscale",
@@ -1155,7 +1116,6 @@ class _ColorFilterTab extends StatelessWidget {
               switchValue: c.grayscaleEnabled.value,
               onChanged: (val) => c.toggleGrayscale(),
             )),
-        // Invert Colors
         Obx(() => CustomSwitchTile(
               icon: Icons.invert_colors_rounded,
               title: "Invert Colors",
