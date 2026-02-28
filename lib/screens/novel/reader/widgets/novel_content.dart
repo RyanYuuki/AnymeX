@@ -20,7 +20,7 @@ class NovelContentWidget extends StatelessWidget {
   void _handleSelection(BuildContext context, SelectionChangedEvent? selection) {
     if (selection != null) {
       final selectedText = selection.plainText;
-      if (selectedText.isNotEmpty && selectedText.length < 50) { // Limit to reasonable word length
+      if (selectedText.isNotEmpty && selectedText.length < 50) {
         final renderBox = context.findRenderObject() as RenderBox;
         final position = renderBox.localToGlobal(Offset.zero);
         
@@ -130,9 +130,7 @@ class NovelContentWidget extends StatelessWidget {
   Widget _buildContent(BuildContext context) {
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
-        // Update progress on scroll
         if (notification is ScrollUpdateNotification) {
-          // Progress is handled by controller's scroll listener
         }
         return false;
       },
