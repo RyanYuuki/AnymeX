@@ -807,6 +807,13 @@ class NovelReaderController extends GetxController {
     _saveSettings();
   }
 
+  // Dictionary feature - get selected text
+  String? getSelectedText() {
+    // This method is kept for compatibility but we're handling selection
+    // directly through SelectionArea in the UI
+    return null;
+  }
+
   TextAlign get textAlignment {
     switch (textAlign.value) {
       case 1:
