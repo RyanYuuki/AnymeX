@@ -1,4 +1,5 @@
 import 'package:anymex/screens/novel/reader/controller/reader_controller.dart';
+import 'package:anymex/screens/novel/reader/widgets/dictionary_popup.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,35 @@ class NovelContentWidget extends StatelessWidget {
     super.key,
     required this.controller,
   });
+
+  void _handleSelection(BuildContext context, SelectionChangedEvent? selection) {
+    if (selection != null) {
+      final selectedText = selection.plainText;
+      if (selectedText.isNotEmpty && selectedText.length < 50) { // Limit to reasonable word length
+        final renderBox = context.findRenderObject() as RenderBox;
+        final position = renderBox.localToGlobal(Offset.zero);
+        
+        showDialog(
+          context: context,
+          barrierColor: Colors.transparent,
+          builder: (context) => Stack(
+            children: [
+              Positioned.fill(
+                child: GestureDetector(
+                  onTap: () => Get.back(),
+                  child: Container(color: Colors.transparent),
+                ),
+              ),
+              DictionaryPopup(
+                selectedText: selectedText.trim(),
+                tapPosition: position,
+              ),
+            ],
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -106,35 +136,38 @@ class NovelContentWidget extends StatelessWidget {
         }
         return false;
       },
-      child: CustomScrollView(
-        controller: controller.scrollController,
-        physics: const AlwaysScrollableScrollPhysics(),
-        slivers: [
-          Obx(() {
-            return HtmlWidget(
-              controller.novelContent.value,
-              rebuildTriggers: [
-                controller.showControls.value,
-                controller.fontSize.value,
-                controller.lineHeight.value,
-                controller.letterSpacing.value,
-                controller.wordSpacing.value,
-                controller.paragraphSpacing.value,
-                controller.fontFamily.value,
-                controller.textAlign.value,
-                controller.removeExtraSpacing.value,
-                controller.bionicReading.value,
-              ],
-              renderMode: RenderMode.sliverList,
-              textStyle: _getBaseTextStyle(context),
-              customWidgetBuilder: (element) => _getCustomWidget(element, context),
-              enableCaching: true,
-              customStylesBuilder: (element) => _getCustomStyles(element, context),
-              onLoadingBuilder: (context, element, loadingProgress) =>
-                  const SizedBox.shrink(),
-            );
-          }),
-        ],
+      child: SelectionArea(
+        onSelectionChanged: (selection) => _handleSelection(context, selection),
+        child: CustomScrollView(
+          controller: controller.scrollController,
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            Obx(() {
+              return HtmlWidget(
+                controller.novelContent.value,
+                rebuildTriggers: [
+                  controller.showControls.value,
+                  controller.fontSize.value,
+                  controller.lineHeight.value,
+                  controller.letterSpacing.value,
+                  controller.wordSpacing.value,
+                  controller.paragraphSpacing.value,
+                  controller.fontFamily.value,
+                  controller.textAlign.value,
+                  controller.removeExtraSpacing.value,
+                  controller.bionicReading.value,
+                ],
+                renderMode: RenderMode.sliverList,
+                textStyle: _getBaseTextStyle(context),
+                customWidgetBuilder: (element) => _getCustomWidget(element, context),
+                enableCaching: true,
+                customStylesBuilder: (element) => _getCustomStyles(element, context),
+                onLoadingBuilder: (context, element, loadingProgress) =>
+                    const SizedBox.shrink(),
+              );
+            }),
+          ],
+        ),
       ),
     );
   }
