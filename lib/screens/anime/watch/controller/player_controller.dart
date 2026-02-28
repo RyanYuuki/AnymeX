@@ -7,6 +7,7 @@ import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/database/isar_models/video.dart' as model;
@@ -469,17 +470,43 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           startPosition: Duration(milliseconds: stamp ?? 0),
         );
       } else {
-        _basePlayer.open(
-          selectedVideo.value!.url ?? "",
-          headers: selectedVideo.value!.headers,
-          startPosition: Duration(
-              milliseconds: savedEpisode?.timeStampInMilliseconds ?? 0),
-        );
+        _openWithCloudFallback();
       }
 
       _performInitialTracking();
       applySavedProfile();
     });
+  }
+
+  Future<void> _openWithCloudFallback() async {
+    final localStamp = savedEpisode?.timeStampInMilliseconds ?? 0;
+    final url = selectedVideo.value?.url ?? '';
+    final headers = selectedVideo.value?.headers;
+    final episodeNum = currentEpisode.value.number;
+
+    Duration startPosition = Duration(milliseconds: localStamp);
+
+    try {
+      final ctrl = Get.isRegistered<GistSyncController>()
+          ? Get.find<GistSyncController>()
+          : null;
+      if (ctrl != null && ctrl.isConnected.value && ctrl.syncEnabled.value) {
+        final cloudMs = await ctrl
+            .fetchNewerEpisodeTimestamp(
+              mediaId: anilistData.id,
+              malId: anilistData.idMal,
+              episodeNumber: episodeNum,
+              localTimestampMs: localStamp,
+            )
+            .timeout(const Duration(seconds: 4), onTimeout: () => null);
+
+        if (cloudMs != null && cloudMs > localStamp) {
+          startPosition = Duration(milliseconds: cloudMs);
+        }
+      }
+    } catch (_) {}
+
+    await _basePlayer.open(url, headers: headers, startPosition: startPosition);
   }
 
   void _initializeAniSkip() {
@@ -617,13 +644,19 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     int subtitleTranslateRequestId = 0;
 
     _subscriptions.add(_basePlayer.subtitleStream.listen((e) async {
-      subtitleText.value = e;
+      final sanitizedLines = e
+          .map((line) => line
+              .replaceAll(_htmlRx, '')
+              .replaceAll(_assRx, '')
+              .replaceAll(_newlineRx, '\n')
+              .trim())
+          .where((line) => line.isNotEmpty)
+          .toList();
+
+      subtitleText.value = sanitizedLines;
       final int currentRequestId = ++subtitleTranslateRequestId;
 
-      final cleanedText = [
-        for (final line in e)
-          if (line.trim().isNotEmpty) line.trim(),
-      ].join('\n');
+      final cleanedText = sanitizedLines.join('\n');
 
       if (!playerSettings.autoTranslate) {
         translatedSubtitle.value = '';
@@ -644,7 +677,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
         final cached = SubtitlePreTranslator.lookup(lookupKey);
         if (cached != null) {
-          translatedSubtitle.value = cached;
+          translatedSubtitle.value = cached
+              .replaceAll(_htmlRx, '')
+              .replaceAll(_assRx, '')
+              .replaceAll(_newlineRx, '\n')
+              .trim();
           return;
         }
 
@@ -654,10 +691,16 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
             playerSettings.translateTo,
           );
 
+          final sanitizedTranslated = translated
+              .replaceAll(_htmlRx, '')
+              .replaceAll(_assRx, '')
+              .replaceAll(_newlineRx, '\n')
+              .trim();
+
           if (currentRequestId == subtitleTranslateRequestId &&
-              translated.isNotEmpty) {
-            translatedSubtitle.value = translated;
-            SubtitlePreTranslator.manualAdd(lookupKey, translated);
+              sanitizedTranslated.isNotEmpty) {
+            translatedSubtitle.value = sanitizedTranslated;
+            SubtitlePreTranslator.manualAdd(lookupKey, sanitizedTranslated);
           }
         } catch (_) {}
       }
@@ -894,7 +937,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   Future<void> dispose() async {
     super.dispose();
     try {
-      await _trackLocally();
+      await _trackLocally(syncToCloud: false);
       if (!isOffline.value) {
         final durationMs = episodeDuration.value.inMilliseconds;
         final hasCrossedLimit = durationMs > 0
@@ -902,6 +945,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
                 settings.markAsCompleted)
             : false;
         await _trackOnline(hasCrossedLimit);
+        await _syncCloudProgressOnExit();
       }
     } catch (e) {
       Logger.e('Error saving during dispose: $e');
@@ -1288,7 +1332,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         duration: const Duration(milliseconds: 700));
   }
 
-  Future<void> _trackLocally() async {
+  Future<void> _trackLocally({bool syncToCloud = true}) async {
     if (isOffline.value) {
       DynamicKeys.offlineVideoProgress
           .set(offlineVideoPath, currentPosition.value.inMilliseconds);
@@ -1341,6 +1385,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       offlineStorage.addOrUpdateWatchedEpisode(
         anilistData.id,
         episodeToSave,
+        syncToCloud: syncToCloud,
       );
       Logger.i(
         'Saved episode ${episodeToSave.number} | '
@@ -1366,7 +1411,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     try {
       final service = anilistData.serviceType.onlineService;
-      final currEpisodeNum = (currentEpisode.value.number ?? "1").toInt();
+      final currEpisodeNum = currentEpisode.value.number.toInt();
 
       final int newProgress =
           hasCrossedLimit ? currEpisodeNum : currEpisodeNum - 1;
@@ -1395,5 +1440,25 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     } catch (e) {
       Logger.i('Failed to track online: $e');
     }
+  }
+
+  Future<void> _syncCloudProgressOnExit() async {
+    final syncCtrl = Get.isRegistered<GistSyncController>()
+        ? Get.find<GistSyncController>()
+        : null;
+    if (syncCtrl == null) {
+      return;
+    }
+
+    final shouldRemove = syncCtrl.autoDeleteCompletedOnExit.value &&
+        _shouldMarkAsCompleted &&
+        !hasNextEpisode;
+
+    await syncCtrl.syncEpisodeProgressOnExit(
+      mediaId: anilistData.id,
+      malId: anilistData.idMal,
+      episode: currentEpisode.value,
+      isCompleted: shouldRemove,
+    );
   }
 }

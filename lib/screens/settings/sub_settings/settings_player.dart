@@ -25,6 +25,12 @@ import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:outlined_text/outlined_text.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 
+const Map<String, List<String>> fontGroups = {
+  'Default': ['Default'],
+  'Latin': ['Trebuchet', 'Bahnschrift', 'Tahoma', 'Anime Ace 3', 'Poppins'],
+  'Japanese': ['Cinecaption'],
+};
+
 class SettingsPlayer extends StatefulWidget {
   final bool isModal;
   const SettingsPlayer({super.key, this.isModal = false});
@@ -329,8 +335,8 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
     );
   }
 
-  void _showColorSelectionDialog(
-      String title, Color currentColor, Function(String) onColorSelected) {
+    void _showColorSelectionDialog(String title, Color currentColor,
+      Function(String) onColorSelected, Map<String, Color> options) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -347,7 +353,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
             width: double.maxFinite,
             child: SuperListView(
               physics: const BouncingScrollPhysics(),
-              children: colorOptions.entries.map((entry) {
+              children: options.entries.map((entry) {
                 return RadioListTile<Color>(
                   title: Text(entry.key),
                   value: entry.value,
@@ -377,6 +383,66 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
         settings.playerSettings.update((s) => s?.translateTo = code);
         PlayerSettingsKeys.translateTo.set(code);
         setState(() {});
+      },
+    );
+  }
+
+  void _showFontSelectionDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Select Subtitle Font"),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView(
+            shrinkWrap: true,
+            children: fontGroups.entries.map((group) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Text(group.key,
+                        style: TextStyle(
+                            color: context.colors.primary,
+                            fontWeight: FontWeight.bold)),
+                  ),
+                  ...group.value.map((font) => ListTile(
+                        title: Text(font),
+                        onTap: () {
+                          final current = settings.playerSettings.value;
+                          current.subtitleFont = font;
+                          PlayerSettingsKeys.subtitleFont.set(font);
+                          settings.playerSettings.refresh();
+                          Navigator.pop(context);
+                        },
+                        trailing: settings.playerSettings.value.subtitleFont ==
+                                font
+                            ? Icon(Icons.check, color: context.colors.primary)
+                            : null,
+                      )),
+                  const Divider(),
+                ],
+              );
+            }).toList(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showOutlineTypeDialog() {
+    final types = ["Outline", "Shine", "Drop Shadow", "None"];
+    showSelectionDialog<String>(
+      title: "Outline Type",
+      items: types,
+      selectedItem: settings.playerSettings.value.subtitleOutlineType.obs,
+      getTitle: (v) => v,
+      onItemSelected: (v) {
+        final current = settings.playerSettings.value;
+        current.subtitleOutlineType = v;
+        PlayerSettingsKeys.subtitleOutlineType.set(v);
+        settings.playerSettings.refresh();
       },
     );
   }
@@ -632,12 +698,14 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                 switchValue:
                                     settings.playerSettings.value.autoTranslate,
                                 onChanged: (val) {
-                                  settings.playerSettings.update((s) => s?.autoTranslate = val);
+                                  settings.playerSettings
+                                      .update((s) => s?.autoTranslate = val);
                                   PlayerSettingsKeys.autoTranslate.set(val);
                                   setState(() {});
                                 },
                               ),
-                              if (!widget.isModal)
+                              if (!widget.isModal &&
+                                  settings.playerSettings.value.autoTranslate)
                                 CustomTile(
                                   padding: 10.0,
                                   icon: Icons.language,
@@ -650,7 +718,55 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                     _showTranslationLanguageDialog();
                                   },
                                 ),
-
+                              CustomTile(
+                                padding: 10,
+                                icon: Icons.font_download_rounded,
+                                title: 'Subtitle Font',
+                                description:
+                                    settings.playerSettings.value.subtitleFont,
+                                onTap: _showFontSelectionDialog,
+                              ),
+                              CustomTile(
+                                padding: 10,
+                                icon: Icons.format_paint_rounded,
+                                title: 'Outline Type',
+                                description: settings
+                                    .playerSettings.value.subtitleOutlineType,
+                                onTap: _showOutlineTypeDialog,
+                              ),
+                              CustomSliderTile(
+                                sliderValue: settings
+                                    .playerSettings.value.subtitleOpacity,
+                                min: 0.1,
+                                max: 1.0,
+                                divisions: 10,
+                                onChanged: (val) {
+                                  final current = settings.playerSettings.value;
+                                  current.subtitleOpacity = val;
+                                  PlayerSettingsKeys.subtitleOpacity.set(val);
+                                  settings.playerSettings.refresh();
+                                },
+                                title: 'Subtitle Transparency',
+                                description: 'Adjust text visibility',
+                                icon: Icons.opacity,
+                              ),
+                              CustomSliderTile(
+                                sliderValue: settings
+                                    .playerSettings.value.subtitleBottomMargin,
+                                min: 0.0,
+                                max: 100.0,
+                                divisions: 20,
+                                onChanged: (val) {
+                                  final current = settings.playerSettings.value;
+                                  current.subtitleBottomMargin = val;
+                                  PlayerSettingsKeys.subtitleBottomMargin
+                                      .set(val);
+                                  settings.playerSettings.refresh();
+                                },
+                                title: 'Bottom Margin',
+                                description: 'Distance from bottom of screen',
+                                icon: Icons.vertical_align_bottom,
+                              ),
                               CustomTile(
                                 padding: 10,
                                 description: 'Change subtitle colors',
@@ -659,10 +775,11 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                 onTap: () {
                                   _showColorSelectionDialog(
                                       'Select Subtitle Color',
-                                      fontColorOptions[settings.subtitleColor]!,
+                                      fontColorOptions[settings.subtitleColor] ??
+                                          fontColorOptions['Default']!,
                                       (color) {
                                     settings.subtitleColor = color;
-                                  });
+                                  }, fontColorOptions);
                                 },
                               ),
                               // Subtitle Outline Color
@@ -675,9 +792,11 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                   _showColorSelectionDialog(
                                       'Select Subtitle Outline Color',
                                       colorOptions[settings
-                                          .subtitleOutlineColor]!, (color) {
+                                              .subtitleOutlineColor] ??
+                                          colorOptions['None']!,
+                                      (color) {
                                     settings.subtitleOutlineColor = color;
-                                  });
+                                  }, colorOptions);
                                 },
                               ),
 
@@ -690,9 +809,11 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                   _showColorSelectionDialog(
                                       'Select Subtitle Background Color',
                                       colorOptions[settings
-                                          .subtitleBackgroundColor]!, (color) {
+                                              .subtitleBackgroundColor] ??
+                                          colorOptions['None']!,
+                                      (color) {
                                     settings.subtitleBackgroundColor = color;
-                                  });
+                                  }, colorOptions);
                                 },
                               ),
                               // Subtitle Preview
@@ -747,16 +868,18 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                           text: Text(
                                             'Subtitle Preview Text',
                                             style: TextStyle(
-                                              color: colorOptions[
-                                                  settings.subtitleColor],
+                                              color: fontColorOptions[
+                                                  settings.subtitleColor] ??
+                                                fontColorOptions['Default'],
                                               fontSize: settings.subtitleSize
                                                   .toDouble(),
                                             ),
                                           ),
                                           strokes: [
                                             OutlinedTextStroke(
-                                                color: fontColorOptions[settings
-                                                    .subtitleOutlineColor]!,
+                                              color: colorOptions[settings
+                                                  .subtitleOutlineColor] ??
+                                                colorOptions['Black']!,
                                                 width: settings
                                                     .subtitleOutlineWidth
                                                     .toDouble())

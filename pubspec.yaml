@@ -33,6 +33,12 @@ dependencies:
     get: ^4.6.6
     grouped_list: ^6.0.0
   
+    flutter_secure_storage: ^9.2.2
+    get: ^4.6.6
+    grouped_list: ^6.0.0
+    google_fonts: ^6.2.1
+    hive: ^2.2.3
+    hive_flutter: ^1.1.0
     html: any
     http: ^1.2.2
     http_interceptor: ^2.0.0
@@ -161,6 +167,35 @@ flutter:
         - family: Poppins-Bold
           fonts:
               - asset: assets/fonts/Poppins/Poppins-Bold.ttf
+              
+        - family: Bahnschrift
+          fonts:
+            - asset: assets/fonts/bahnschrift.ttf
+            
+        - family: Trebuchet
+          fonts:
+            - asset: assets/fonts/trebuchet.ttf
+            
+        - family: Tahoma
+          fonts:
+            - asset: assets/fonts/tahoma.ttf
+            
+        - family: AnimeAce
+          fonts:
+            - asset: assets/fonts/AnimeAce3BB_Regular.otf
+              weight: 400
+            - asset: assets/fonts/AnimeAce3BB_Bold.otf
+              weight: 700
+            - asset: assets/fonts/AnimeAce3BB_Italic.otf
+              style: italic
+              weight: 400
+            - asset: assets/fonts/AnimeAce3BB_BoldItalic.otf
+              style: italic
+              weight: 700
+          
+        - family: Cinecaption
+          fonts:
+            - asset: assets/fonts/cinecaption.ttf
 
 inno_bundle:
     id: 8fbd47cb-d6e1-5343-a9f6-61661647c94c

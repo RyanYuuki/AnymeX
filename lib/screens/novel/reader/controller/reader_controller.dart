@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
+import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -117,6 +117,9 @@ class NovelReaderController extends GetxController {
 
   // Saved chapter for tracking
   Rx<Chapter> savedChapter = Chapter().obs;
+  
+  // Additional tracking for sync
+  RxInt consecutiveReads = 0.obs;
 
   @override
   void onInit() {
@@ -131,7 +134,8 @@ class NovelReaderController extends GetxController {
 
   @override
   void onClose() {
-    _saveTracking();
+    _saveTracking(syncToCloud: false);
+    unawaited(_syncCloudProgressOnExit());
     scrollController.removeListener(_scrollListener);
     _stopAutoScroll();
     _hideTimer?.cancel();
@@ -292,6 +296,7 @@ class NovelReaderController extends GetxController {
       
       loadingState.value = LoadingState.loaded;
       await _waitForScrollAndJump();
+      _resumeFromCloudIfNewer();
     } catch (e) {
       Logger.i(e.toString());
       loadingState.value = LoadingState.error;
@@ -413,6 +418,44 @@ class NovelReaderController extends GetxController {
     }
   }
 
+  Future<void> _resumeFromCloudIfNewer() async {
+    final ctrl = Get.isRegistered<GistSyncController>()
+        ? Get.find<GistSyncController>()
+        : null;
+    if (ctrl == null || !ctrl.isLoggedIn.value || !ctrl.syncEnabled.value) {
+      return;
+    }
+    try {
+      final chapter = currentChapter.value;
+      if (chapter.number == null) return;
+      final localUpdated = chapter.lastReadTime ?? 0;
+
+      final entry = await ctrl
+          .fetchNewerChapterProgress(
+            mediaId: media.id,
+            mediaType: 'novel',
+            chapterNumber: chapter.number!,
+            localUpdatedAt: localUpdated,
+          )
+          .timeout(const Duration(seconds: 4), onTimeout: () => null);
+
+      if (entry?.scrollOffset != null) {
+        final offset = entry!.scrollOffset!;
+        await Future.delayed(const Duration(milliseconds: 200));
+        if (scrollController.hasClients &&
+            offset <= scrollController.position.maxScrollExtent) {
+          scrollController.animateTo(
+            offset,
+            duration: const Duration(milliseconds: 400),
+            curve: Curves.easeInOut,
+          );
+        }
+      }
+    } catch (e) {
+      Logger.i('[GistSync] _resumeFromCloudIfNewer: $e');
+    }
+  }
+
   void toggleAutoScroll() {
     autoScrollEnabled.value = !autoScrollEnabled.value;
     if (autoScrollEnabled.value) {
@@ -453,7 +496,7 @@ class NovelReaderController extends GetxController {
           return;
         }
         
-        final newOffset = (current + pixelsPerSecond * tickMs / 1000).clamp(0.0, max);
+        final newOffset = (current + pixelsPerSecond * tickMs / 1000).clamp(0.0, max); 
         scrollController.jumpTo(newOffset);
       },
     );
@@ -514,26 +557,71 @@ class NovelReaderController extends GetxController {
     }
   }
 
-  void _saveTracking() {
+  void _saveTracking({bool syncToCloud = true}) {
+    consecutiveReads.value++;
     savedChapter.value = offlineStorageController.getReadChapter(
           media.id,
           currentChapter.value.number!,
         ) ??
         currentChapter.value;
 
-    Future.microtask(() {
-      offlineStorageController.addOrUpdateNovel(
-        media,
-        chapters,
-        currentChapter.value,
-        source,
-      );
-      offlineStorageController.addOrUpdateReadChapter(
-        media.id,
-        currentChapter.value,
-        source: source,
-      );
-    });
+    if (consecutiveReads.value > 1) {
+      Future.microtask(() {
+        offlineStorageController.addOrUpdateNovel(
+            media, chapters, currentChapter.value, source);
+        offlineStorageController.addOrUpdateReadChapter(
+            media.id, currentChapter.value,
+            source: source, syncToCloud: syncToCloud);
+      });
+    }
+  }
+
+  Future<void> _syncCloudProgressOnExit() async {
+    final syncCtrl = Get.isRegistered<GistSyncController>()
+        ? Get.find<GistSyncController>()
+        : null;
+    if (syncCtrl == null) {
+      return;
+    }
+
+    final shouldRemove =
+        syncCtrl.autoDeleteCompletedOnExit.value && _hasFinishedCurrentMedia();
+
+    await syncCtrl.syncChapterProgressOnExit(
+      mediaId: media.id,
+      malId: media.idMal,
+      mediaType: 'novel',
+      chapter: currentChapter.value,
+      isCompleted: shouldRemove,
+    );
+  }
+
+  bool _hasFinishedCurrentMedia() {
+    final chapter = currentChapter.value;
+    final chapterNumber = chapter.number;
+    final pageNumber = chapter.pageNumber;
+    final totalPages = chapter.totalPages;
+
+    if (chapterNumber == null ||
+        pageNumber == null ||
+        totalPages == null ||
+        totalPages <= 0 ||
+        pageNumber < totalPages) {
+      return false;
+    }
+
+    final totalChapters = double.tryParse(media.totalChapters ?? '');
+    if (totalChapters != null && totalChapters > 0) {
+      return chapterNumber >= totalChapters;
+    }
+
+    for (final item in chapters) {
+      final itemNumber = item.number;
+      if (itemNumber != null && itemNumber > chapterNumber) {
+        return false;
+      }
+    }
+    return chapters.isNotEmpty;
   }
 
   String _buildHtml(String input) {
