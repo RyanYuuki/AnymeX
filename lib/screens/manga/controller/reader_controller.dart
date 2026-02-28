@@ -86,7 +86,11 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   final RxList<ReaderPage> spreads = RxList();
   late ServicesType serviceHandler;
   final bool shouldTrack;
-  ReaderController({ required this.shouldTrack, });
+
+  ReaderController({
+    required this.shouldTrack,
+  });
+
   final SourceController sourceController = Get.find<SourceController>();
   final OfflineStorageController offlineStorageController = Get.find<OfflineStorageController>();
   final RxInt currentPageIndex = 1.obs;
@@ -750,10 +754,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     ReaderKeys.invertColorsEnabled.set(invertColorsEnabled.value);
     ReaderKeys.readerTheme.set(readerTheme.value);
     ReaderKeys.keepScreenOn.set(keepScreenOn.value);
-    ReaderKeys.alwaysShowChapterTransition
-        .set(alwaysShowChapterTransition.value);
-    ReaderKeys.longPressPageActionsEnabled
-        .set(longPressPageActionsEnabled.value);
+    ReaderKeys.alwaysShowChapterTransition.set(alwaysShowChapterTransition.value);
+    ReaderKeys.longPressPageActionsEnabled.set(longPressPageActionsEnabled.value);
     ReaderKeys.autoWebtoonMode.set(autoWebtoonMode.value);
     ReaderKeys.displayRefreshEnabled.set(displayRefreshEnabled.value);
     ReaderKeys.displayRefreshDurationMs.set(displayRefreshDurationMs.value);
@@ -1267,7 +1269,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     displayRefreshEnabled.value = !displayRefreshEnabled.value;
     savePreferences();
   }
-
+  
   void maybeShowChapterTransition(bool next) {
     final current = currentChapter.value;
     if (current == null) return;
@@ -1298,7 +1300,6 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       chapterNavigator(next);
     }
   }
-
   void dismissTransition() {
     showingTransition.value = false;
     chapterNavigator(transitionIsNext.value);
