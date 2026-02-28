@@ -285,10 +285,8 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
   Widget _buildContentView(BuildContext context) {
     return Stack(
       children: [
-        // Background color driven by readerTheme
         Container(color: widget.controller.readerTheme.value.backgroundColor),
 
-        // Main page viewer
         PhotoViewGallery.builder(
           itemCount: 1,
           builder: (_, e) => PhotoViewGalleryPageOptions.customChild(
@@ -325,11 +323,9 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
           backgroundDecoration:
               const BoxDecoration(color: Colors.transparent),
         ),
-
-        // Brightness / color tint overlay
+        
         ReaderContentOverlay(controller: widget.controller),
-
-        // Grayscale / invert overlay
+        
         Obx(() {
           final isGrayscale = widget.controller.grayscale.value;
           final isInverted = widget.controller.inverted.value;
@@ -354,14 +350,9 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
             ),
           );
         }),
-
-        // E-ink display refresh flash overlay
+        
         DisplayRefreshOverlay(host: _displayRefreshHost),
-
-        // ── Chapter transition overlay ─────────────────────────────────────
-        // Shown when the controller signals a transition should be displayed.
-        // The controller sets showingTransition = true before navigating, and
-        // the user taps/swipes the overlay to proceed (controller resets it).
+        
         Obx(() {
           final c = widget.controller;
           if (!c.showingTransition.value) return const SizedBox.shrink();
@@ -371,7 +362,6 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
           return Material(
             color: Theme.of(context).colorScheme.surface.withOpacity(0.96),
             child: GestureDetector(
-              // Tapping the transition card dismisses it and proceeds
               onTap: c.dismissTransition,
               child: ReaderChapterTransition(
                 isNext: c.transitionIsNext.value,
