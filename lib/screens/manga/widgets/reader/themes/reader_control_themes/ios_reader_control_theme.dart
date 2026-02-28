@@ -4,7 +4,7 @@ import 'dart:ui';
 import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/screens/manga/widgets/reader/auto_scroll_menu.dart';
-import 'package:anymex/screens/manga/widgets/reader/settings_view.dart';
+import 'package:anymex/screens/manga/widgets/reader/tabbed_reader_settings.dart';
 import 'package:anymex/screens/manga/widgets/reader/themes/setup/reader_control_theme.dart';
 import 'package:anymex/screens/manga/widgets/reader/top_controls.dart';
 import 'package:flutter/cupertino.dart';
@@ -81,7 +81,7 @@ class _LiquidTopBar extends StatelessWidget {
                 const SizedBox(width: 10),
                 _LiquidBubble(
                   size: 44,
-                  onTap: () => ReaderSettings(controller: controller)
+                  onTap: () => TabbedReaderSettings(controller: controller)
                       .showSettings(context),
                   child: const Icon(
                     CupertinoIcons.slider_horizontal_3,
@@ -431,10 +431,12 @@ class _OverscrollBubble extends StatelessWidget {
                 final progress = controller.overscrollProgress.value;
                 final isNext = controller.isOverscrollingNext.value;
                 final list = controller.chapterList;
-                final curIdx = list.indexOf(controller.currentChapter.value!);
+                final curIdx =
+                    list.indexOf(controller.currentChapter.value!);
                 final targetIdx = isNext ? curIdx + 1 : curIdx - 1;
 
-                final atEdge = targetIdx < 0 || targetIdx >= list.length;
+                final atEdge =
+                    targetIdx < 0 || targetIdx >= list.length;
                 final target = atEdge ? null : list[targetIdx];
 
                 final heading = atEdge
@@ -450,8 +452,8 @@ class _OverscrollBubble extends StatelessWidget {
                 return _LiquidSurface(
                   width: w > 900 ? w * 0.46 : double.infinity,
                   radius: 22,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16, vertical: 14),
                   child: Row(
                     children: [
                       SizedBox(
@@ -523,9 +525,11 @@ class _OverscrollBubble extends StatelessWidget {
 
   Color _ringColor(double p) {
     if (p < 0.6) {
-      return Color.lerp(Colors.white.withOpacity(0.4), Colors.white, p / 0.6)!;
+      return Color.lerp(
+          Colors.white.withOpacity(0.4), Colors.white, p / 0.6)!;
     }
-    return Color.lerp(Colors.white, const Color(0xFF5AC8FA), (p - 0.6) / 0.4)!;
+    return Color.lerp(
+        Colors.white, const Color(0xFF5AC8FA), (p - 0.6) / 0.4)!;
   }
 
   IconData _arrowIcon(bool isNext) {

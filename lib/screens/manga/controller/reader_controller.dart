@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math' as math;
-
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
@@ -22,7 +21,6 @@ import 'package:preload_page_view/preload_page_view.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:vibration/vibration.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
-
 import '../../../models/reader/tap_zones.dart';
 import '../../../repositories/tap_zone_repository.dart';
 
@@ -94,59 +92,61 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   });
 
   final SourceController sourceController = Get.find<SourceController>();
-  final OfflineStorageController offlineStorageController =
-      Get.find<OfflineStorageController>();
-
+  final OfflineStorageController offlineStorageController = Get.find<OfflineStorageController>();
   final RxInt currentPageIndex = 1.obs;
   final RxDouble pageWidthMultiplier = 1.0.obs;
   final RxDouble scrollSpeedMultiplier = 1.0.obs;
-
   ItemScrollController? itemScrollController;
   ScrollOffsetController? scrollOffsetController;
   ItemPositionsListener? itemPositionsListener;
-
-  // Tap Zones
   final TapZoneRepository _tapRepo = TapZoneRepository();
   final Rx<TapZoneLayout> pagedProfile = TapZoneLayout.defaultPaged.obs;
-  final Rx<TapZoneLayout> pagedVerticalProfile =
-      TapZoneLayout.defaultPagedVertical.obs;
-  final Rx<TapZoneLayout> webtoonHorizontalProfile =
-      TapZoneLayout.defaultWebtoonHorizontal.obs;
-
+  final Rx<TapZoneLayout> pagedVerticalProfile = TapZoneLayout.defaultPagedVertical.obs;
+  final Rx<TapZoneLayout> webtoonHorizontalProfile = TapZoneLayout.defaultWebtoonHorizontal.obs;
   final Rx<TapZoneLayout> webtoonProfile = TapZoneLayout.defaultWebtoon.obs;
   final RxBool tapZonesEnabled = true.obs;
   ScrollOffsetListener? scrollOffsetListener;
   PhotoViewController? photoViewController;
-
   PreloadPageController? pageController;
   final RxBool spacedPages = false.obs;
   final RxBool overscrollToChapter = true.obs;
-
   final defaultWidth = 400.obs;
   final defaultSpeed = 300.obs;
   RxInt preloadPages = 5.obs;
   RxBool showPageIndicator = false.obs;
   final Rx<MangaPageViewMode> readingLayout = MangaPageViewMode.continuous.obs;
-  final Rx<MangaPageViewDirection> readingDirection =
-      MangaPageViewDirection.down.obs;
+  final Rx<MangaPageViewDirection> readingDirection = MangaPageViewDirection.down.obs;
   final Rx<DualPageMode> dualPageMode = DualPageMode.off.obs;
-
   final RxBool cropImages = false.obs;
-
   final RxBool volumeKeysEnabled = false.obs;
   final RxBool invertVolumeKeys = false.obs;
-
   final RxBool autoScrollEnabled = false.obs;
   final RxDouble autoScrollSpeed = 3.0.obs;
   Timer? _autoScrollTimer;
-
   final RxBool showControls = true.obs;
-
   final Rx<LoadingState> loadingState = LoadingState.loading.obs;
   final RxString errorMessage = ''.obs;
-
   final Map<int, double> imageHeights = {};
   final totalOffset = 0.0.obs;
+  final RxBool customBrightnessEnabled = false.obs;
+  final RxInt customBrightnessValue = 0.obs;
+  final RxBool colorFilterEnabled = false.obs;
+  final RxInt colorFilterValue = 0x00000000.obs;
+  final RxInt colorFilterMode = 0.obs;
+  final RxBool grayscaleEnabled = false.obs;
+  final RxBool invertColorsEnabled = false.obs;
+  final RxInt readerTheme = 1.obs;
+  final RxBool keepScreenOn = true.obs;
+  final RxBool alwaysShowChapterTransition = false.obs;
+  final RxBool longPressPageActionsEnabled = true.obs;
+  final RxBool autoWebtoonMode = false.obs;
+  final RxBool displayRefreshEnabled = false.obs;
+  final RxInt displayRefreshDurationMs = 200.obs;
+  final RxInt displayRefreshInterval = 1.obs;
+  final RxString displayRefreshColor = 'black'.obs;
+  final RxBool showingTransition = false.obs;
+  final RxBool transitionIsNext = true.obs;
+  final Rx<Chapter?> transitionTargetChapter = Rx<Chapter?>(null);
 
   bool get isDualPage {
     switch (dualPageMode.value) {
@@ -156,7 +156,6 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         return true;
       case DualPageMode.auto:
         if (readingLayout.value == MangaPageViewMode.continuous) return false;
-
         return Get.width > 600;
     }
   }
@@ -684,7 +683,6 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     showPageIndicator.value = ReaderKeys.showPageIndicator.get<bool>(false);
     autoScrollEnabled.value = ReaderKeys.autoScrollEnabled.get<bool>(false);
     autoScrollSpeed.value = ReaderKeys.autoScrollSpeed.get<double>(3.0);
-    // Both features: crop images AND volume keys
     cropImages.value = ReaderKeys.cropImages.get<bool>(false);
     volumeKeysEnabled.value = ReaderKeys.volumeKeysEnabled.get<bool>(false);
     invertVolumeKeys.value = ReaderKeys.invertVolumeKeys.get<bool>(false);
@@ -698,6 +696,34 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     if (modeIndex != null) {
       readingLayout.value = MangaPageViewMode.values[modeIndex];
     }
+
+    customBrightnessEnabled.value =
+        ReaderKeys.customBrightnessEnabled.get<bool>(false);
+    customBrightnessValue.value =
+        ReaderKeys.customBrightnessValue.get<int>(0);
+    colorFilterEnabled.value =
+        ReaderKeys.colorFilterEnabled.get<bool>(false);
+    colorFilterValue.value = ReaderKeys.colorFilterValue.get<int>(0);
+    colorFilterMode.value = ReaderKeys.colorFilterMode.get<int>(0);
+    grayscaleEnabled.value = ReaderKeys.grayscaleEnabled.get<bool>(false);
+    invertColorsEnabled.value = ReaderKeys.invertColorsEnabled.get<bool>(false);
+    readerTheme.value = ReaderKeys.readerTheme.get<int>(1);
+    keepScreenOn.value = ReaderKeys.keepScreenOn.get<bool>(true);
+    alwaysShowChapterTransition.value =
+        ReaderKeys.alwaysShowChapterTransition.get<bool>(false);
+    longPressPageActionsEnabled.value =
+        ReaderKeys.longPressPageActionsEnabled.get<bool>(true);
+    autoWebtoonMode.value = ReaderKeys.autoWebtoonMode.get<bool>(false);
+    displayRefreshEnabled.value =
+        ReaderKeys.displayRefreshEnabled.get<bool>(false);
+    displayRefreshDurationMs.value =
+        ReaderKeys.displayRefreshDurationMs.get<int>(200);
+    displayRefreshInterval.value =
+        ReaderKeys.displayRefreshInterval.get<int>(1);
+    displayRefreshColor.value =
+        ReaderKeys.displayRefreshColor.get<String>('black');
+
+    if (!keepScreenOn.value) WakelockPlus.disable();
 
     if (volumeKeysEnabled.value) {
       _enableVolumeKeys();
@@ -715,11 +741,26 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     ReaderKeys.showPageIndicator.set(showPageIndicator.value);
     ReaderKeys.autoScrollEnabled.set(autoScrollEnabled.value);
     ReaderKeys.autoScrollSpeed.set(autoScrollSpeed.value);
-    // Both features: crop images AND volume keys
     ReaderKeys.cropImages.set(cropImages.value);
     ReaderKeys.volumeKeysEnabled.set(volumeKeysEnabled.value);
     ReaderKeys.invertVolumeKeys.set(invertVolumeKeys.value);
     ReaderKeys.dualPageMode.set(dualPageMode.value.index);
+    ReaderKeys.customBrightnessEnabled.set(customBrightnessEnabled.value);
+    ReaderKeys.customBrightnessValue.set(customBrightnessValue.value);
+    ReaderKeys.colorFilterEnabled.set(colorFilterEnabled.value);
+    ReaderKeys.colorFilterValue.set(colorFilterValue.value);
+    ReaderKeys.colorFilterMode.set(colorFilterMode.value);
+    ReaderKeys.grayscaleEnabled.set(grayscaleEnabled.value);
+    ReaderKeys.invertColorsEnabled.set(invertColorsEnabled.value);
+    ReaderKeys.readerTheme.set(readerTheme.value);
+    ReaderKeys.keepScreenOn.set(keepScreenOn.value);
+    ReaderKeys.alwaysShowChapterTransition.set(alwaysShowChapterTransition.value);
+    ReaderKeys.longPressPageActionsEnabled.set(longPressPageActionsEnabled.value);
+    ReaderKeys.autoWebtoonMode.set(autoWebtoonMode.value);
+    ReaderKeys.displayRefreshEnabled.set(displayRefreshEnabled.value);
+    ReaderKeys.displayRefreshDurationMs.set(displayRefreshDurationMs.value);
+    ReaderKeys.displayRefreshInterval.set(displayRefreshInterval.value);
+    ReaderKeys.displayRefreshColor.set(displayRefreshColor.value);
   }
 
   void _setupPositionListener() {
@@ -758,13 +799,11 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     final metrics = notification.metrics;
 
     if (metrics.pixels > metrics.maxScrollExtent) {
-      // Bo
       final delta = metrics.pixels - metrics.maxScrollExtent;
       _virtualOverscrollPixels = delta * _dragRate;
       _updateOverscrollProgress(true);
       return false;
     } else if (metrics.pixels < metrics.minScrollExtent) {
-      // Top
       final delta = (metrics.pixels - metrics.minScrollExtent).abs();
       _virtualOverscrollPixels = delta * _dragRate;
       _updateOverscrollProgress(false);
@@ -1060,7 +1099,6 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     pagedProfile.value = _tapRepo.getPagedLayout();
     pagedVerticalProfile.value = _tapRepo.getPagedVerticalLayout();
     webtoonHorizontalProfile.value = _tapRepo.getWebtoonHorizontalLayout();
-
     webtoonProfile.value = _tapRepo.getWebtoonLayout();
     tapZonesEnabled.value = _tapRepo.getTapZonesEnabled();
 
@@ -1169,6 +1207,102 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   void toggleCropImages() {
     cropImages.value = !cropImages.value;
     savePreferences();
+  }
+
+  void toggleCustomBrightness() {
+    customBrightnessEnabled.value = !customBrightnessEnabled.value;
+    savePreferences();
+  }
+
+  void toggleColorFilter() {
+    colorFilterEnabled.value = !colorFilterEnabled.value;
+    savePreferences();
+  }
+
+  void setColorFilterChannel(String channel, int value) {
+    final cur = colorFilterValue.value;
+    colorFilterValue.value = switch (channel) {
+      'r' => (cur & 0xFF00FFFF) | ((value & 0xFF) << 16),
+      'g' => (cur & 0xFFFF00FF) | ((value & 0xFF) << 8),
+      'b' => (cur & 0xFFFFFF00) | (value & 0xFF),
+      'a' => (cur & 0x00FFFFFF) | ((value & 0xFF) << 24),
+      _ => cur,
+    };
+  }
+
+  void toggleGrayscale() {
+    grayscaleEnabled.value = !grayscaleEnabled.value;
+    savePreferences();
+  }
+
+  void toggleInvertColors() {
+    invertColorsEnabled.value = !invertColorsEnabled.value;
+    savePreferences();
+  }
+
+  void toggleKeepScreenOn() {
+    keepScreenOn.value = !keepScreenOn.value;
+    if (keepScreenOn.value) {
+      WakelockPlus.enable();
+    } else {
+      WakelockPlus.disable();
+    }
+    savePreferences();
+  }
+
+  void toggleAlwaysShowChapterTransition() {
+    alwaysShowChapterTransition.value = !alwaysShowChapterTransition.value;
+    savePreferences();
+  }
+
+  void toggleLongPressPageActions() {
+    longPressPageActionsEnabled.value = !longPressPageActionsEnabled.value;
+    savePreferences();
+  }
+
+  void toggleAutoWebtoonMode() {
+    autoWebtoonMode.value = !autoWebtoonMode.value;
+    savePreferences();
+  }
+
+  void toggleDisplayRefresh() {
+    displayRefreshEnabled.value = !displayRefreshEnabled.value;
+    savePreferences();
+  }
+  
+  void maybeShowChapterTransition(bool next) {
+    final current = currentChapter.value;
+    if (current == null) return;
+
+    final curIdx = chapterList.indexWhere(
+        (c) => c.number == current.number || c.link == current.link);
+    if (curIdx == -1) return;
+
+    final targetIdx = next ? curIdx + 1 : curIdx - 1;
+    final target = (targetIdx >= 0 && targetIdx < chapterList.length)
+        ? chapterList[targetIdx]
+        : null;
+
+    final gap = (target?.number != null && current.number != null)
+        ? (next
+                ? (target!.number! - current.number! - 1)
+                : (current.number! - target!.number! - 1))
+            .toInt()
+        : 0;
+
+    final shouldShow = alwaysShowChapterTransition.value || gap > 0;
+
+    if (shouldShow) {
+      transitionIsNext.value = next;
+      transitionTargetChapter.value = target;
+      showingTransition.value = true;
+    } else {
+      chapterNavigator(next);
+    }
+  }
+  void dismissTransition() {
+    showingTransition.value = false;
+    chapterNavigator(transitionIsNext.value);
   }
 
   void navigateToPage(int index) async {
@@ -1291,7 +1425,6 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
             navigateToPage(saved.pageNumber! - 1);
           }
         }
-        print("INTIAL CHAPTER ${currentChapter.value?.toJson()}");
       } else {
         throw Exception('No pages found for this chapter');
       }
@@ -1412,39 +1545,24 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  void _navNextChapter() {
-    chapterNavigator(true);
-  }
-
-  void _navPrevChapter() {
-    chapterNavigator(false);
-  }
-
-  void _navNextPage() {
-    navigateToPage(currentPageIndex.value);
-  }
-
-  void _navPrevPage() {
-    navigateToPage(currentPageIndex.value - 2);
-  }
+  void _navNextChapter() => chapterNavigator(true);
+  void _navPrevChapter() => chapterNavigator(false);
+  void _navNextPage() => navigateToPage(currentPageIndex.value);
+  void _navPrevPage() => navigateToPage(currentPageIndex.value - 2);
 
   void _scrollUp() {
-    if (scrollOffsetController != null) {
-      scrollOffsetController!.animateScroll(
-        offset: -Get.height * 0.75,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOutCubic,
-      );
-    }
+    scrollOffsetController?.animateScroll(
+      offset: -Get.height * 0.75,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOutCubic,
+    );
   }
 
   void _scrollDown() {
-    if (scrollOffsetController != null) {
-      scrollOffsetController!.animateScroll(
-        offset: Get.height * 0.75,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOutCubic,
-      );
-    }
+    scrollOffsetController?.animateScroll(
+      offset: Get.height * 0.75,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOutCubic,
+    );
   }
 }
