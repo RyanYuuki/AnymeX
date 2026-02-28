@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/screens/manga/widgets/reader/color_filter_settings_page.dart';
@@ -346,7 +345,6 @@ class _GeneralPage extends StatelessWidget {
               switchValue: controller.longPressPageActionsEnabled.value,
               onChanged: (_) => controller.toggleLongPressPageActions(),
             ),
-            // E-ink display refresh
             CustomSwitchTile(
               icon: Icons.monitor_rounded,
               title: 'E-ink Display Refresh',
@@ -390,7 +388,6 @@ class _GeneralPage extends StatelessWidget {
                   onChangedEnd: (_) => controller.savePreferences(),
                 ),
               ),
-              // Flash color
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 child: Row(
