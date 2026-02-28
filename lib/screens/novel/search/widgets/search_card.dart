@@ -34,10 +34,15 @@ class GridNovelCard extends StatelessWidget {
                 AnymexOnTap(
                   margin: 0,
                   onTap: () {
-                    navigate(() {
-                      NovelDetailsPage(
-                          media: media, tag: media.title, source: source!);
-                    });
+                    if (media.type == ItemType.novel) {
+                      navigate(() => NovelDetailsPage(
+                        media: media,
+                        tag: media.title,
+                        source: source!,
+                      ));
+                    } else {
+                      // Existing navigation for manga/anime
+                    }
                   },
                   child: Hero(
                     tag: media.title,

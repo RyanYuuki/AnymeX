@@ -169,6 +169,26 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
     final ItemType mediaType = isMediaManga ? ItemType.manga : ItemType.anime;
     final media = Media.fromCarouselData(itemData, mediaType);
 
+    void onTapHandler() {
+      if (widget.type == ItemType.novel) {
+        navigate(() => NovelDetailsPage(
+          media: media,
+          tag: media.title,
+          source: widget.source,
+        ));
+      } else if (widget.type == ItemType.manga) {
+        navigate(() => MangaDetailsPage(
+          media: media,
+          tag: media.title,
+        ));
+      } else {
+        navigate(() => AnimeDetailsPage(
+          media: media,
+          tag: media.title,
+        ));
+      }
+    }
+
     final Widget page = isMediaManga
         ? MangaDetailsPage(
             media: media,
@@ -181,7 +201,7 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
               )
             : NovelDetailsPage(media: media, tag: tag, source: widget.source!);
     _setActiveSource(controller, itemData);
-    navigate(() => page);
+    onTapHandler();
   }
 
   bool _determineIfManga(CarouselData itemData) {

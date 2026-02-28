@@ -57,6 +57,18 @@ double _calculateMatchScore(
   return score.clamp(0.0, 1.0);
 }
 
+Media createMediaFromExtension(DMedia data, {ItemType? overrideType}) {
+  return Media(
+    id: data.id ?? '',
+    title: data.title ?? '',
+    poster: data.cover ?? '',
+    type: overrideType ?? 
+           (data.isManga == true ? ItemType.manga : 
+            data.isNovel == true ? ItemType.novel : 
+            ItemType.anime),
+  );
+}
+
 Future<Media?> mapMedia(
   List<String> animeId,
   RxString searchedTitle, {

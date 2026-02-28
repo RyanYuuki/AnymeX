@@ -119,6 +119,26 @@ class ServiceHandler extends GetxController {
       service.mangaWidgets(context);
   RxList<Widget> homeWidgets(BuildContext context) =>
       service.homeWidgets(context);
+      
+  RxList<Widget> novelWidgets(BuildContext context) {
+    if (serviceType.value == ServicesType.anilist) {
+      return anilistService.mangaWidgets(context);
+    } else if (serviceType.value == ServicesType.mal) {
+      return malService.mangaWidgets(context);
+    } else {
+      return extensionService.novelSections;
+    }
+  }
+  
+  Source? getSourceForMedia(Media media) {
+    if (media.serviceType == ServicesType.extensions) {
+      return extensionService.installedNovelExtensions.firstWhere(
+        (source) => source.id == media.sourceId,
+        orElse: () => extensionService.installedNovelExtensions.first,
+      );
+    }
+    return null;
+  }
 
   @override
   void onInit() {
