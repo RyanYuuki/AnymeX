@@ -34,7 +34,6 @@ class GridNovelCard extends StatelessWidget {
                 AnymexOnTap(
                   margin: 0,
                   onTap: () {
-                    // In your media card widget, update the onTap:
                     if (media.type == ItemType.novel) {
                       navigate(() => NovelDetailsPage(
                         media: media,
