@@ -3,6 +3,7 @@ import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/screens/manga/widgets/reader/display_refresh_host.dart';
+import 'package:anymex/screens/manga/widgets/reader/reader_chapter_transition.dart';
 import 'package:anymex/screens/manga/widgets/reader/reader_color_overlay.dart';
 import 'package:anymex/screens/manga/widgets/reader/reader_page_actions_dialog.dart';
 import 'package:anymex/utils/image_cropper.dart';
@@ -284,7 +285,10 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
   Widget _buildContentView(BuildContext context) {
     return Stack(
       children: [
+        // Background color driven by readerTheme
         Container(color: widget.controller.readerTheme.value.backgroundColor),
+
+        // Main page viewer
         PhotoViewGallery.builder(
           itemCount: 1,
           builder: (_, e) => PhotoViewGalleryPageOptions.customChild(
@@ -296,7 +300,8 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
             onScaleEnd: _onScaleEnd,
             gestureDetectorBehavior: HitTestBehavior.translucent,
             child: GestureDetector(
-              onTapDown: (details) => _lastTapPosition = details.globalPosition,
+              onTapDown: (details) =>
+                  _lastTapPosition = details.globalPosition,
               onTap: () {
                 if (_lastTapPosition != null) {
                   widget.controller.handleTap(_lastTapPosition!);
@@ -317,9 +322,14 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
           ),
           scrollPhysics: const NeverScrollableScrollPhysics(),
           enableRotation: false,
-          backgroundDecoration: const BoxDecoration(color: Colors.transparent),
+          backgroundDecoration:
+              const BoxDecoration(color: Colors.transparent),
         ),
+
+        // Brightness / color tint overlay
         ReaderContentOverlay(controller: widget.controller),
+
+        // Grayscale / invert overlay
         Obx(() {
           final isGrayscale = widget.controller.grayscale.value;
           final isInverted = widget.controller.inverted.value;
@@ -332,19 +342,45 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                   0.2126, 0.7152, 0.0722, 0, 0,
                   0.2126, 0.7152, 0.0722, 0, 0,
                   0.2126, 0.7152, 0.0722, 0, 0,
-                  0, 0, 0, 1, 0,
+                  0,      0,      0,      1, 0,
                 ] else if (isInverted) ...[
-                  -1, 0, 0, 0, 255,
-                  0, -1, 0, 0, 255,
-                  0, 0, -1, 0, 255,
-                  0, 0, 0, 1, 0,
+                  -1, 0,  0,  0, 255,
+                  0,  -1, 0,  0, 255,
+                  0,  0,  -1, 0, 255,
+                  0,  0,  0,  1, 0,
                 ]
               ]),
               child: Container(color: Colors.transparent),
             ),
           );
         }),
+
+        // E-ink display refresh flash overlay
         DisplayRefreshOverlay(host: _displayRefreshHost),
+
+        // ── Chapter transition overlay ─────────────────────────────────────
+        // Shown when the controller signals a transition should be displayed.
+        // The controller sets showingTransition = true before navigating, and
+        // the user taps/swipes the overlay to proceed (controller resets it).
+        Obx(() {
+          final c = widget.controller;
+          if (!c.showingTransition.value) return const SizedBox.shrink();
+          final current = c.currentChapter.value;
+          if (current == null) return const SizedBox.shrink();
+
+          return Material(
+            color: Theme.of(context).colorScheme.surface.withOpacity(0.96),
+            child: GestureDetector(
+              // Tapping the transition card dismisses it and proceeds
+              onTap: c.dismissTransition,
+              child: ReaderChapterTransition(
+                isNext: c.transitionIsNext.value,
+                currentChapter: current,
+                targetChapter: c.transitionTargetChapter.value,
+              ),
+            ),
+          );
+        }),
       ],
     );
   }
@@ -440,8 +476,8 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                   fit: BoxFit.contain,
                   constraints: isContinuous
                       ? BoxConstraints(
-                          maxWidth:
-                              500 * widget.controller.pageWidthMultiplier.value)
+                          maxWidth: 500 *
+                              widget.controller.pageWidthMultiplier.value)
                       : null,
                   cache: true,
                   alignment: Alignment.center,
@@ -485,7 +521,8 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                                 const SizedBox(height: 8),
                                 Text(
                                   'Failed to load page ${index + 1}',
-                                  style: const TextStyle(color: Colors.grey),
+                                  style:
+                                      const TextStyle(color: Colors.grey),
                                 ),
                                 const SizedBox(height: 8),
                                 ElevatedButton.icon(
@@ -497,7 +534,8 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                                   style: ElevatedButton.styleFrom(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 12, vertical: 6),
-                                    textStyle: const TextStyle(fontSize: 12),
+                                    textStyle:
+                                        const TextStyle(fontSize: 12),
                                   ),
                                 ),
                               ],
