@@ -31,9 +31,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
-      # =================================================================
-      # NEW STEP: Determine if this is a beta build and set an env var
-      # =================================================================
       - name: Set Build Type Environment Variable
         shell: bash
         run: |
@@ -50,9 +47,6 @@ jobs:
         with:
           toolchain: stable
       
-      # =================================================================
-      # MODIFIED: Only run this step for stable builds
-      # =================================================================
       - name: Cache Rust
         if: env.IS_BETA_BUILD != 'true'
         uses: actions/cache@v3
@@ -73,60 +67,10 @@ jobs:
           distribution: "adopt"
           java-version: "17"
       
-      # =================================================================
-      # MODIFIED: Disable Flutter cache only for beta builds
-      # =================================================================
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: ${{ env.IS_BETA_BUILD != 'true' }}
-      
-      # =================================================================
-      # Install ImageMagick depending on runner OS
-      # =================================================================
-      - name: Install ImageMagick (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y imagemagick
-
-      - name: Install ImageMagick (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          brew install imagemagick
-
-      - name: Install ImageMagick (Windows)
-        if: runner.os == 'Windows'
-        shell: powershell
-        run: |
-          choco install imagemagick --force -y
-          
-      - name: Add ImageMagick to PATH (Windows)
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          $magickPath = "C:\Program Files\ImageMagick-7.1.1-Q16-HDRI"
-          if (-not (Test-Path $magickPath)) {
-            $magickPath = Get-ChildItem "C:\Program Files" -Filter "ImageMagick*" -Directory | Select-Object -First 1 -ExpandProperty FullName
-          }
-          if ($magickPath) {
-            echo "$magickPath" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-            Write-Host "Added ImageMagick to PATH: $magickPath"
-          }
-          
-      - name: Verify ImageMagick Installation
-        shell: bash
-        run: |
-          if command -v magick >/dev/null 2>&1; then
-            echo "✅ ImageMagick installed (magick command)"
-            magick --version
-          elif command -v convert >/dev/null 2>&1; then
-            echo "✅ ImageMagick installed (convert command)"
-            convert --version
-          else
-            echo "❌ ImageMagick not found in PATH"
-            exit 1
-          fi
 
       - name: Fix line endings (Windows)
         if: runner.os == 'Windows'
@@ -149,22 +93,36 @@ jobs:
             echo "🔵 Beta build detected"
             echo "────────────────────────────────────────────"
 
-            # Extract base version (remove v and -beta)
-            BASE_VERSION=$(echo "$TAG" | sed 's/^v//' | sed 's/-beta$//')
+            # Extract version part (remove v)
+            # v3.0.4-beta → 3.0.4-beta
+            # v3.0.4+1-beta → 3.0.4+1-beta
+            VERSION_PART=$(echo "$TAG" | sed 's/^v//')
 
-            echo "Base version: $BASE_VERSION"
+            echo "Display version: v$VERSION_PART"
 
-            # Append build number for beta builds
-            BUILD_NUMBER="${GITHUB_RUN_NUMBER}"
-            VERSION="${BASE_VERSION}+${BUILD_NUMBER}"
-
-            echo "Final beta version: $VERSION"
-
-            # Validate final version
-            if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+\+[0-9]+$ ]]; then
-              echo "❌ Version format invalid after adding build number: $VERSION"
-              exit 1
+            # For pubspec.yaml, we need only semver (before any +)
+            # 3.0.4+1-beta → 3.0.4
+            # 3.0.4-beta → 3.0.4
+            if [[ "$VERSION_PART" == *"+"* ]]; then
+              SEMVER=$(echo "$VERSION_PART" | cut -d'+' -f1 | cut -d'-' -f1)
+            else
+              SEMVER=$(echo "$VERSION_PART" | cut -d'-' -f1)
             fi
+
+            echo "Semver: $SEMVER"
+
+            # GitHub build number
+            BUILD_NUMBER="${GITHUB_RUN_NUMBER}"
+
+            # pubspec.yaml version (valid Flutter format)
+            PUBSPEC_VERSION="${SEMVER}+${BUILD_NUMBER}"
+
+            # Display version is just tag without v (no build number)
+            DISPLAY_VERSION="v${VERSION_PART}"
+
+            echo "Pubspec version: $PUBSPEC_VERSION"
+            echo "Display version: $DISPLAY_VERSION"
+            echo ""
 
             # Check if rename script exists
             if [ ! -f "scripts/rename_app.sh" ]; then
@@ -175,16 +133,16 @@ jobs:
 
             # Make script executable and run
             chmod +x scripts/rename_app.sh
-            echo ""
-            echo "Running rename script with version: $VERSION"
+            echo "Running rename script..."
             echo "════════════════════════════════════════════"
 
-            if ./scripts/rename_app.sh "$VERSION"; then
+            if ./scripts/rename_app.sh "$PUBSPEC_VERSION" "$DISPLAY_VERSION"; then
               echo ""
               echo "✅ Beta rename completed successfully"
               echo "   Package: com.ryan.anymex → com.ryan.anymexbeta"
               echo "   App Name: AnymeX → AnymeX β"
-              echo "   Version: $VERSION"
+              echo "   Pubspec Version: $PUBSPEC_VERSION"
+              echo "   Display Version: $DISPLAY_VERSION"
             else
               echo ""
               echo "❌ Beta rename failed"
@@ -198,14 +156,12 @@ jobs:
             echo ""
             echo "Tag formats:"
             echo "  • Beta:   v0.0.0-beta (triggers rename)"
+            echo "  • Beta with iteration:   v0.0.0+1-beta (triggers rename)"
             echo "  • Stable: v0.0.0 (no rename)"
           fi
 
           echo "════════════════════════════════════════════"
 
-      # =================================================================
-      # Conditionally disable Google Services for beta builds
-      # =================================================================
       - name: Configure Google Services for Beta
         if: matrix.platform == 'android' && contains(github.ref_name, '-beta')
         shell: bash
@@ -452,10 +408,16 @@ jobs:
           echo "🎯 FLUTTER"
           echo "────────────────────────────────────────────"
 
-          BASE_VERSION=$(echo "${GITHUB_REF_NAME}" | sed 's/^v//' | sed 's/-beta$//')
+          TAG="${GITHUB_REF_NAME}"
+          VERSION_PART=$(echo "$TAG" | sed 's/^v//')
+          if [[ "$VERSION_PART" == *"+"* ]]; then
+            SEMVER=$(echo "$VERSION_PART" | cut -d'+' -f1 | cut -d'-' -f1)
+          else
+            SEMVER=$(echo "$VERSION_PART" | cut -d'-' -f1)
+          fi
           BUILD_NUMBER="${GITHUB_RUN_NUMBER}"
-          VERSION="${BASE_VERSION}+${BUILD_NUMBER}"
-          
+          VERSION="${SEMVER}+${BUILD_NUMBER}"
+
           if grep -q "version: $VERSION" pubspec.yaml 2>/dev/null; then
             echo "✅ Version updated in pubspec.yaml: $VERSION"
           else
@@ -481,9 +443,6 @@ jobs:
             exit 1
           fi
       
-      # =================================================================
-      # MODIFIED: Only run this step for stable builds
-      # =================================================================
       - name: Cache Gradle
         if: matrix.platform == 'android' && env.IS_BETA_BUILD != 'true'
         uses: actions/cache@v3
@@ -590,6 +549,7 @@ jobs:
           GOOGLE_BOOKS_API_KEY: ${{ secrets.GOOGLE_BOOKS_API_KEY }}
           GIT_CLIENT_ID: ${{ secrets.GIT_CLIENT_ID }}
           GIT_CLIENT_SECRET: ${{ secrets.GIT_CLIENT_SECRET }}
+          GIT_CALLBACK_SCHEME: ${{ secrets.GIT_CALLBACK_SCHEME }}
         run: |
           cat > .env << EOF
           AL_CLIENT_ID=$AL_CLIENT_ID
@@ -602,34 +562,8 @@ jobs:
           GOOGLE_BOOKS_API_KEY=$GOOGLE_BOOKS_API_KEY
           GIT_CLIENT_ID=$GIT_CLIENT_ID
           GIT_CLIENT_SECRET=$GIT_CLIENT_SECRET
+          GIT_CALLBACK_SCHEME=$GIT_CALLBACK_SCHEME
           EOF
-      
-      # =================================================================
-      # NEW STEP: Prepare Assets for Build
-      # =================================================================
-      - name: Prepare Assets for Build
-        shell: bash
-        run: |
-          if [[ "${{ github.ref_name }}" == *"-beta" ]]; then
-            echo "🔵 Beta build detected. Applying beta assets..."
-            if [ -f "assets/images/logo_beta.png" ]; then
-              cp assets/images/logo_beta.png assets/images/logo.png
-              echo "✅ Copied logo_beta.png to logo.png"
-            else
-              echo "❌ Error: assets/images/logo_beta.png not found!"
-              exit 1
-            fi
-            if [ -f "assets/images/logo_transparent_beta.png" ]; then
-              cp assets/images/logo_transparent_beta.png assets/images/logo_transparent.png
-              echo "✅ Copied logo_transparent_beta.png to logo_transparent.png"
-            else
-              echo "❌ Error: assets/images/logo_transparent_beta.png not found!"
-              exit 1
-            fi
-            echo "✅ Beta assets applied."
-          else
-            echo "🟢 Stable build detected. Using default assets."
-          fi
           
       - name: Clean Flutter for Beta Build
         if: env.IS_BETA_BUILD == 'true'
@@ -894,12 +828,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           tag: ${{ github.ref_name }}
-
-  # =================================================================
-  # AUR update is MANDATORY for the official repo on stable releases.
-  # This is a standalone job (not part of the optional matrix below)
-  # so its failure will fail the overall workflow run.
-  # =================================================================
+          
   post-release-aur:
     if: github.repository == 'RyanYuuki/AnymeX' && !contains(github.ref_name, '-beta')
     needs: [build-all-platforms, release]
@@ -1104,12 +1033,7 @@ jobs:
             git push origin master
             echo "Successfully pushed to AUR!"
           fi
-
-  # =================================================================
-  # Scoop and Chocolatey updates are OPTIONAL (continue-on-error).
-  # They run in parallel and their failure does not fail the workflow.
-  # Skipped entirely on forks and beta releases.
-  # =================================================================
+          
   post-release-optional:
     if: github.repository == 'RyanYuuki/AnymeX' && !contains(github.ref_name, '-beta')
     needs: [build-all-platforms, release]

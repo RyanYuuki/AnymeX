@@ -53,17 +53,17 @@ class GistSyncController extends GetxController {
 
   String? get _githubRedirectUri {
     final configuredRedirect = _normalizeRedirectUri(
-      (dotenv.env['GITHUB_REDIRECT_URI'] ?? '').trim(),
+      (dotenv.env['GIT_REDIRECT_URI'] ?? '').trim(),
     );
     if (configuredRedirect != null) return configuredRedirect;
 
     return _normalizeRedirectUri(
-      (dotenv.env['GITHUB_CALLBACK_SCHEME'] ?? '').trim(),
+      (dotenv.env['GIT_CALLBACK_SCHEME'] ?? '').trim(),
     );
   }
 
   String get _githubCallbackScheme =>
-      _extractScheme((dotenv.env['GITHUB_CALLBACK_SCHEME'] ?? '').trim()) ??
+      _extractScheme((dotenv.env['GIT_CALLBACK_SCHEME'] ?? '').trim()) ??
       _extractScheme(_githubRedirectUri ?? '') ??
       _kDefaultGithubCallbackScheme;
 
@@ -120,12 +120,12 @@ class GistSyncController extends GetxController {
   }
 
   Future<void> login(BuildContext context) async {
-    final clientId = dotenv.env['GITHUB_CLIENT_ID'] ?? '';
-    final clientSecret = dotenv.env['GITHUB_CLIENT_SECRET'] ?? '';
+    final clientId = dotenv.env['GIT_CLIENT_ID'] ?? '';
+    final clientSecret = dotenv.env['GIT_CLIENT_SECRET'] ?? '';
     final redirectUri = _githubRedirectUri;
 
     if (clientId.isEmpty) {
-      Logger.i('[GistSync] GITHUB_CLIENT_ID not set in .env');
+      Logger.i('[GistSync] GIT_CLIENT_ID not set in .env');
       errorSnackBar('GitHub client ID not configured.');
       return;
     }
