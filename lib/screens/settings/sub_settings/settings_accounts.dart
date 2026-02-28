@@ -7,6 +7,7 @@ import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/sync/progress_sync_section.dart';
 import 'package:anymex/controllers/sync/gist_sync_controller.dart';
+import 'package:anymex/controllers/services/kitsu/kitsu_service.dart';
 import 'package:anymex/models/Service/online_service.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -522,7 +523,9 @@ class TrackingServiceCard extends StatelessWidget {
                 subtitle: const Text("One-way sync from current service"),
                 onTap: () {
                   Navigator.pop(context);
-                  service.syncToKitsuFromCurrentService?.call();
+                  if (service is KitsuService) {
+                    (service as KitsuService).syncToKitsuFromCurrentService();
+                  }
                 },
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
