@@ -169,16 +169,12 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
     final ItemType mediaType = isMediaManga ? ItemType.manga : ItemType.anime;
     final media = Media.fromCarouselData(itemData, mediaType);
 
-    // In lib/widgets/common/reusable_carousel.dart
-    // Find where the grid items are built (around where GridNovelCard might be used)
-
-    // Update the onTap logic in the grid item builder:
     void onTapHandler() {
       if (widget.type == ItemType.novel) {
         navigate(() => NovelDetailsPage(
           media: media,
           tag: media.title,
-          source: widget.source, // Pass the source if available
+          source: widget.source,
         ));
       } else if (widget.type == ItemType.manga) {
         navigate(() => MangaDetailsPage(
