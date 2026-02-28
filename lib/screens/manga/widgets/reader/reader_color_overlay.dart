@@ -1,12 +1,8 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 
-/// Draws a brightness-dimming layer and/or a color-tint canvas on top of the
-/// reader content, matching Komikku's `ReaderContentOverlay`.
 class ReaderContentOverlay extends StatelessWidget {
   const ReaderContentOverlay({super.key, required this.controller});
 
@@ -22,7 +18,6 @@ class ReaderContentOverlay extends StatelessWidget {
 
       return Stack(
         children: [
-          // Brightness dimmer (negative values only → black overlay)
           if (brightness < 0)
             IgnorePointer(
               child: Opacity(
@@ -30,8 +25,7 @@ class ReaderContentOverlay extends StatelessWidget {
                 child: Container(color: Colors.black),
               ),
             ),
-
-          // Color tint overlay
+          
           if (colorEnabled)
             IgnorePointer(
               child: CustomPaint(
