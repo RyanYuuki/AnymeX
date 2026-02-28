@@ -283,10 +283,18 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
   }
 
   Widget _buildContentView(BuildContext context) {
+    return Obx(() {
+      final Color bgColor = switch (widget.controller.readerTheme.value) {
+        0 => Colors.white,
+        2 => const Color(0xFF303030),
+        3 => Theme.of(context).scaffoldBackgroundColor,
+        _ => Colors.black,
+      };
+
     return Stack(
       children: [
-        Container(color: widget.controller.readerTheme.value.backgroundColor),
-
+        Container(color: bgColor),
+        
         PhotoViewGallery.builder(
           itemCount: 1,
           builder: (_, e) => PhotoViewGalleryPageOptions.customChild(
@@ -306,7 +314,9 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                 }
               },
               onLongPressStart: (details) {
-                showReaderPageActionsDialog(context, widget.controller);
+                if (widget.controller.longPressPageActionsEnabled.value) {
+                  showReaderPageActionsDialog(context, widget.controller);
+                }
               },
               onDoubleTapDown: (details) {
                 _toggleScale(details.globalPosition);
@@ -326,31 +336,26 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
         
         ReaderContentOverlay(controller: widget.controller),
         
-        Obx(() {
-          final isGrayscale = widget.controller.grayscale.value;
-          final isInverted = widget.controller.inverted.value;
-          if (!isGrayscale && !isInverted) return const SizedBox.shrink();
-
-          return IgnorePointer(
+          if (widget.controller.grayscaleEnabled.value || widget.controller.invertColorsEnabled.value)
+          IgnorePointer(
             child: ColorFiltered(
-              colorFilter: ColorFilter.matrix([
-                if (isGrayscale) ...[
+              colorFilter: ColorFilter.matrix(
+                widget.controller.grayscaleEnabled.value ? [
                   0.2126, 0.7152, 0.0722, 0, 0,
                   0.2126, 0.7152, 0.0722, 0, 0,
                   0.2126, 0.7152, 0.0722, 0, 0,
                   0,      0,      0,      1, 0,
-                ] else if (isInverted) ...[
+                ] : [
                   -1, 0,  0,  0, 255,
                   0,  -1, 0,  0, 255,
                   0,  0,  -1, 0, 255,
                   0,  0,  0,  1, 0,
-                ]
-              ]),
+                ],
+              ),
               child: Container(color: Colors.transparent),
             ),
-          );
-        }),
-        
+          ),
+
         DisplayRefreshOverlay(host: _displayRefreshHost),
         
         Obx(() {
@@ -373,6 +378,7 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
         }),
       ],
     );
+    });
   }
 
   Widget _buildContinuousView() {
