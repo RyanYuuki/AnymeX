@@ -1,5 +1,4 @@
 import 'package:anymex/database/kv_helper.dart';
-
 export 'package:anymex/database/kv_helper.dart';
 
 enum General {
@@ -55,6 +54,25 @@ enum ReaderKeys {
   dualPageMode,
   autoScrollEnabled,
   autoScrollSpeed,
+  // Color filter & brightness
+  customBrightnessEnabled,
+  customBrightnessValue,
+  colorFilterEnabled,
+  colorFilterValue,
+  colorFilterMode,
+  grayscaleEnabled,
+  invertColorsEnabled,
+  // Reader theme / general
+  readerTheme,
+  keepScreenOn,
+  alwaysShowChapterTransition,
+  longPressPageActionsEnabled,
+  autoWebtoonMode,
+  // E-ink display refresh
+  displayRefreshEnabled,
+  displayRefreshDurationMs,
+  displayRefreshInterval,
+  displayRefreshColor,
 }
 
 enum LocalSourceKeys {
