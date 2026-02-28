@@ -629,7 +629,8 @@ averageScore
         isManga: params.isManga,
         query: params.query,
         filters: filters,
-        isAdult: params.args);
+        isAdult: params.args,
+        page: params.page);
     return data;
   }
 
@@ -637,7 +638,8 @@ averageScore
       {required bool isManga,
       String? query,
       Map<String, dynamic>? filters,
-      required bool isAdult}) async {
+      required bool isAdult,
+      int page = 1}) async {
     const url = 'https://graphql.anilist.co/';
     final token = AuthKeys.authToken.get<String?>();
     final headers = {
@@ -764,8 +766,8 @@ averageScore
   ''';
 
     final String queryStr = '''
-  query (\$page: Int${queryArgsDef.isNotEmpty ? ', $queryArgsDef' : ''}) {
-    Page (page: \$page) {
+  query (\$page: Int, \$perPage: Int${queryArgsDef.isNotEmpty ? ', $queryArgsDef' : ''}) {
+    Page (page: \$page, perPage: \$perPage) {
       media (
         type: ${isManga ? "MANGA" : "ANIME"},
         $queryArgsPass
@@ -780,7 +782,7 @@ averageScore
 
     final Map<String, dynamic> body = {
       'query': queryStr,
-      'variables': {'page': 1, ...variables},
+      'variables': {'page': page, 'perPage': 50, ...variables},
     };
 
     try {
