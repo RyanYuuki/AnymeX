@@ -25,7 +25,7 @@ class ReaderContentOverlay extends StatelessWidget {
                 child: Container(color: Colors.black),
               ),
             ),
-          
+
           if (colorEnabled)
             IgnorePointer(
               child: CustomPaint(
@@ -43,7 +43,7 @@ class ReaderContentOverlay extends StatelessWidget {
 
   static BlendMode _blendModeFromIndex(int index) {
     const modes = [
-      BlendMode.srcOver, 
+      BlendMode.srcOver,
       BlendMode.multiply,
       BlendMode.screen,
       BlendMode.overlay,
