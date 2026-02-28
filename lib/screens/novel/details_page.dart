@@ -60,30 +60,18 @@ class NovelDetailsPage extends StatefulWidget {
 }
 
 class _NovelDetailsPageState extends State<NovelDetailsPage> {
-  // AnilistData
   Media? anilistData;
   Rx<TrackedMedia?> currentNovel = TrackedMedia().obs;
   final anilist = Get.find<AnilistAuth>();
   late ServicesType mediaService;
-  // Tracker for Avail Novel
   RxBool isListedNovel = false.obs;
-
-  // Offline Storage
   final offlineStorage = Get.find<OfflineStorageController>();
-
-  // Extension Data
   RxString searchedTitle = ''.obs;
   RxList<Chapter>? chapterList = <Chapter>[].obs;
-
-  // Page View Tracker
   RxInt selectedPage = 0.obs;
-
-  // Current Novel
   RxDouble novelScore = 0.0.obs;
   RxInt novelProgress = 0.obs;
   RxString novelStatus = "".obs;
-
-  // Tracker's Controller
   late final PageController controller;
 
   void _onPageSelected(int index) {
@@ -97,7 +85,7 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
       context: context,
       baseMedia: widget.media,
       hydratedMedia: anilistData,
-      isManga: true, // Using manga share for now
+      isManga: true,
     );
   }
 
