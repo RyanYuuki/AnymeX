@@ -54,7 +54,6 @@ enum ReaderKeys {
   dualPageMode,
   autoScrollEnabled,
   autoScrollSpeed,
-  // Color filter & brightness
   customBrightnessEnabled,
   customBrightnessValue,
   colorFilterEnabled,
@@ -62,13 +61,11 @@ enum ReaderKeys {
   colorFilterMode,
   grayscaleEnabled,
   invertColorsEnabled,
-  // Reader theme / general
   readerTheme,
   keepScreenOn,
   alwaysShowChapterTransition,
   longPressPageActionsEnabled,
   autoWebtoonMode,
-  // E-ink display refresh
   displayRefreshEnabled,
   displayRefreshDurationMs,
   displayRefreshInterval,
