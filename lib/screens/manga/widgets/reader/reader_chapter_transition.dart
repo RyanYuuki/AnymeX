@@ -40,12 +40,12 @@ class ReaderChapterTransition extends StatelessWidget {
                 _NoChapterCard(text: fallback),
 
               const SizedBox(height: 24),
-              
+
               if (gap > 0) ...[
                 _GapWarningCard(gap: gap),
                 const SizedBox(height: 24),
               ],
-              
+
               if (bottomChapter != null)
                 _ChapterEntry(label: bottomLabel, chapter: bottomChapter)
               else
@@ -56,7 +56,7 @@ class ReaderChapterTransition extends StatelessWidget {
       ),
     );
   }
-  
+
   static int _calculateGap(
       Chapter from, Chapter? to, bool isNext) {
     if (to == null) return 0;
