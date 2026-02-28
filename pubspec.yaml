@@ -30,8 +30,6 @@ dependencies:
     flutter_native_splash: ^2.4.4
     flutter_web_auth_2: ^4.0.2
     flutter_tts: ^3.8.5
-    get: ^4.6.6
-    grouped_list: ^6.0.0
   
     flutter_secure_storage: ^9.2.2
     get: ^4.6.6
