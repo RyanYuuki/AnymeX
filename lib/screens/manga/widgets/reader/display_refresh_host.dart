@@ -23,7 +23,7 @@ class DisplayRefreshHost {
     ReaderKeys.displayRefreshDurationMs.set(flashDurationMs.value);
     ReaderKeys.displayRefreshInterval.set(flashInterval.value);
   }
-  
+
   void flash() {
     _callCount++;
     if (_callCount % flashInterval.value != 0) return;
