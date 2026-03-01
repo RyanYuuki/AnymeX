@@ -4,9 +4,12 @@ class Profile {
   String? userName;
   String? avatar;
   String? cover;
+  String? about;
   ProfileStatistics? stats;
   int? followers;
   int? following;
+  DateTime? tokenExpiry;
+  ProfileFavourites? favourites;
 
   Profile({
     this.id,
@@ -14,9 +17,12 @@ class Profile {
     this.userName,
     this.avatar,
     this.cover,
+    this.about,
     this.stats,
     this.followers,
     this.following,
+    this.tokenExpiry,
+    this.favourites,
   });
 
   factory Profile.fromJson(Map<String, dynamic> json) {
@@ -25,11 +31,15 @@ class Profile {
       name: json['name'],
       avatar: json['avatar']?['large'],
       cover: json['bannerImage'],
+      about: json['about'],
       stats: json['statistics'] != null
           ? ProfileStatistics.fromJson(json['statistics'])
           : null,
       followers: json['followers']?['pageInfo']?['total'] as int?,
       following: json['following']?['pageInfo']?['total'] as int?,
+      favourites: json['favourites'] != null
+          ? ProfileFavourites.fromJson(json['favourites'])
+          : null,
     );
   }
 
@@ -43,6 +53,106 @@ class Profile {
       stats: ProfileStatistics.fromKitsu(json['data']?['statistics']),
       followers: null,
       following: null,
+    );
+  }
+}
+
+class ProfileFavourites {
+  List<FavouriteMedia> anime;
+  List<FavouriteMedia> manga;
+  List<FavouriteCharacter> characters;
+  List<FavouriteStaff> staff;
+  List<FavouriteStudio> studios;
+
+  ProfileFavourites({
+    this.anime = const [],
+    this.manga = const [],
+    this.characters = const [],
+    this.staff = const [],
+    this.studios = const [],
+  });
+
+  factory ProfileFavourites.fromJson(Map<String, dynamic> json) {
+    List<T> parseNodes<T>(
+        dynamic data, T Function(Map<String, dynamic>) fromJson) {
+      if (data == null) return [];
+      final nodes = data['nodes'] as List<dynamic>?;
+      if (nodes == null) return [];
+      return nodes
+          .map((e) => fromJson(e as Map<String, dynamic>))
+          .toList();
+    }
+
+    return ProfileFavourites(
+      anime: parseNodes(json['anime'], FavouriteMedia.fromJson),
+      manga: parseNodes(json['manga'], FavouriteMedia.fromJson),
+      characters: parseNodes(json['characters'], FavouriteCharacter.fromJson),
+      staff: parseNodes(json['staff'], FavouriteStaff.fromJson),
+      studios: parseNodes(json['studios'], FavouriteStudio.fromJson),
+    );
+  }
+}
+
+class FavouriteMedia {
+  String? id;
+  String? title;
+  String? cover;
+
+  FavouriteMedia({this.id, this.title, this.cover});
+
+  factory FavouriteMedia.fromJson(Map<String, dynamic> json) {
+    return FavouriteMedia(
+      id: json['id']?.toString(),
+      title: json['title']?['english'] ??
+          json['title']?['romaji'] ??
+          json['title']?['userPreferred'],
+      cover: json['coverImage']?['large'],
+    );
+  }
+}
+
+class FavouriteCharacter {
+  String? id;
+  String? name;
+  String? image;
+
+  FavouriteCharacter({this.id, this.name, this.image});
+
+  factory FavouriteCharacter.fromJson(Map<String, dynamic> json) {
+    return FavouriteCharacter(
+      id: json['id']?.toString(),
+      name: json['name']?['full'] ?? json['name']?['userPreferred'],
+      image: json['image']?['large'],
+    );
+  }
+}
+
+class FavouriteStaff {
+  String? id;
+  String? name;
+  String? image;
+
+  FavouriteStaff({this.id, this.name, this.image});
+
+  factory FavouriteStaff.fromJson(Map<String, dynamic> json) {
+    return FavouriteStaff(
+      id: json['id']?.toString(),
+      name: json['name']?['full'] ?? json['name']?['userPreferred'],
+      image: json['image']?['large'],
+    );
+  }
+}
+
+class FavouriteStudio {
+  String? id;
+  String? name;
+
+  FavouriteStudio({this.id, this.name});
+
+  factory FavouriteStudio.fromJson(Map<String, dynamic> json) {
+    return FavouriteStudio(
+      id: json['id']?.toString(),
+      name: json['name'],
     );
   }
 }

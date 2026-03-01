@@ -13,7 +13,8 @@ import 'package:iconsax/iconsax.dart';
 class AnimeList extends StatefulWidget {
   final List<TrackedMedia>? data;
   final String? title;
-  const AnimeList({super.key, this.data, this.title});
+  final String? initialTab;
+  const AnimeList({super.key, this.data, this.title, this.initialTab});
 
   @override
   State<AnimeList> createState() => _AnimeListState();
@@ -48,11 +49,16 @@ class _AnimeListState extends State<AnimeList> {
 
   @override
   Widget build(BuildContext context) {
-    final animeList = widget.data ?? anilistAuth.animeList.value;
+    final animeList = widget.data ?? anilistAuth.animeList;
     final userName = anilistAuth.profileData.value.name;
+    final requestedInitialTab = widget.initialTab;
+    final resolvedInitialIndex = requestedInitialTab == null
+        ? 0
+        : tabs.indexOf(requestedInitialTab).clamp(0, tabs.length - 1);
     return Glow(
       child: DefaultTabController(
         length: tabs.length,
+        initialIndex: resolvedInitialIndex,
         child: Scaffold(
           appBar: AppBar(
             actions: [
@@ -84,9 +90,7 @@ class _AnimeListState extends State<AnimeList> {
                   color: context.colors.primary,
                 )),
             title: Text("$userName's ${widget.title ?? 'Anime'} List",
-                style: TextStyle(
-                    fontSize: 16,
-                    color: context.colors.primary)),
+                style: TextStyle(fontSize: 16, color: context.colors.primary)),
             bottom: TabBar(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               physics: const BouncingScrollPhysics(),
@@ -150,10 +154,6 @@ class AnimeListContent extends StatelessWidget {
     required this.tabType,
     required this.animeData,
   });
-
-  int getResponsiveCrossAxisCount(double screenWidth, {int itemWidth = 150}) {
-    return (screenWidth / itemWidth).floor().clamp(1, 10);
-  }
 
   @override
   Widget build(BuildContext context) {
