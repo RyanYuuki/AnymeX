@@ -27,16 +27,51 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
     try {
       final result = await _controller.evaluateJavascript(source: '''
         (function() {
-          return window.LOCAL_STORAGE.getItem('token');
+          try {
+            var token = null;
+
+            try {
+              token = localStorage.getItem('token');
+              if (token) return token;
+            } catch(e) {}
+
+            try {
+              token = window.LOCAL_STORAGE && window.LOCAL_STORAGE.getItem('token');
+              if (token) return token;
+            } catch(e) {}
+
+            try {
+              var iframe = document.querySelector('iframe');
+              if (iframe && iframe.contentWindow) {
+                token = iframe.contentWindow.localStorage.getItem('token');
+                if (token) return token;
+              }
+            } catch(e) {}
+
+            try {
+              for (var key in Object.keys(localStorage)) {
+                if (key === 'token') {
+                  token = localStorage[key];
+                  if (token) return token;
+                }
+              }
+            } catch(e) {}
+
+            return null;
+          } catch(e) {
+            return null;
+          }
         })()
       ''');
 
-      if (result != null && result != 'null') {
+      if (result != null && result != 'null' && result.toString().isNotEmpty) {
         _tokenExtracted = true;
-        final token = result.trim().replaceAll('"', '');
-        widget.onTokenExtracted(token);
-        if (mounted) {
-          Navigator.of(context).pop();
+        final token = result.toString().trim().replaceAll('"', '');
+        if (token.isNotEmpty && token != 'null') {
+          widget.onTokenExtracted(token);
+          if (mounted) {
+            Navigator.of(context).pop();
+          }
         }
       }
     } catch (e) {
@@ -47,8 +82,9 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
   Future<void> _clearDiscordData() async {
     await _controller.evaluateJavascript(source: '''
       if (window.location.hostname === 'discord.com') {
-        window.LOCAL_STORAGE.clear();
-        window.sessionStorage.clear();
+        try { localStorage.clear(); } catch(e) {}
+        try { window.LOCAL_STORAGE && window.LOCAL_STORAGE.clear(); } catch(e) {}
+        try { window.sessionStorage.clear(); } catch(e) {}
       }
     ''');
   }
@@ -80,7 +116,6 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
                     tooltip: 'Close',
                   ),
                   const SizedBox(width: 8),
-                  // Discord logo icon
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
@@ -130,7 +165,6 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
                 ],
               ),
             ),
-            // Loading progress bar
             if (_isLoading && _progress > 0 && _progress < 1)
               LinearProgressIndicator(
                 value: _progress,
@@ -140,7 +174,6 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
                 ),
                 minHeight: 3,
               ),
-            // WebView
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
@@ -160,6 +193,8 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
                     supportZoom: false,
                     useWideViewPort: true,
                     loadWithOverviewMode: true,
+                    allowUniversalAccessFromFileURLs: true,
+                    allowFileAccessFromFileURLs: true,
                   ),
                   onLoadStart: (controller, url) async {
                     await controller.evaluateJavascript(source: '''
@@ -173,12 +208,18 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
                       });
                     }
                   },
-                  onLoadStop: (controller, url) {
+                  onLoadStop: (controller, url) async {
                     if (mounted) {
                       setState(() {
                         _isLoading = false;
                         _progress = 1.0;
                       });
+                    }
+                    final urlStr = url?.toString() ?? '';
+                    if (urlStr.isNotEmpty &&
+                        urlStr != 'https://discord.com/login' &&
+                        urlStr != 'about:blank') {
+                      await _extractToken();
                     }
                   },
                   onProgressChanged: (controller, progress) {
