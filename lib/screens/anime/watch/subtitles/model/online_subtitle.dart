@@ -6,9 +6,16 @@ class OnlineSubtitle {
   final String encoding;
   final String label;
   final String language;
+  final String languageCode;
   final String media;
   final bool isHearingImpaired;
   final String source;
+  final String provider;
+  final int downloads;
+  final double rating;
+  final bool isSeasonPack;
+  final String? uploadDate;
+  final String? uploader;
 
   OnlineSubtitle({
     required this.id,
@@ -18,9 +25,16 @@ class OnlineSubtitle {
     required this.encoding,
     required this.label,
     required this.language,
+    required this.languageCode,
     required this.media,
     required this.isHearingImpaired,
     required this.source,
+    required this.provider,
+    this.downloads = 0,
+    this.rating = 0.0,
+    this.isSeasonPack = false,
+    this.uploadDate,
+    this.uploader,
   });
 
   factory OnlineSubtitle.fromJson(Map<String, dynamic> json) {
@@ -30,11 +44,18 @@ class OnlineSubtitle {
       flagUrl: json['flagUrl'] ?? '',
       format: json['format'] ?? '',
       encoding: json['encoding'] ?? '',
-      label: json['display'] ?? '',
+      label: json['display'] ?? json['label'] ?? '',
       language: json['language'] ?? '',
+      languageCode: json['languageCode'] ?? json['lang'] ?? '',
       media: json['media'] ?? '',
-      isHearingImpaired: json['isHearingImpaired'] ?? false,
+      isHearingImpaired: json['isHearingImpaired'] ?? json['hearingImpaired'] ?? false,
       source: json['source'] ?? '',
+      provider: json['provider'] ?? '',
+      downloads: json['downloads'] ?? 0,
+      rating: (json['rating'] ?? 0).toDouble(),
+      isSeasonPack: json['isSeasonPack'] ?? false,
+      uploadDate: json['uploadDate'],
+      uploader: json['uploader'],
     );
   }
 
@@ -47,9 +68,16 @@ class OnlineSubtitle {
       'encoding': encoding,
       'label': label,
       'language': language,
+      'languageCode': languageCode,
       'media': media,
       'isHearingImpaired': isHearingImpaired,
       'source': source,
+      'provider': provider,
+      'downloads': downloads,
+      'rating': rating,
+      'isSeasonPack': isSeasonPack,
+      'uploadDate': uploadDate,
+      'uploader': uploader,
     };
   }
 }
