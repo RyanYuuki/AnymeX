@@ -7,12 +7,14 @@ class EpisodeChunkSelector extends StatelessWidget {
   final RxInt selectedChunkIndex;
   final ValueChanged<int> onChunkSelected;
   final List<List<Episode>> chunks;
+  final bool showAllLabel;
 
   const EpisodeChunkSelector({
     super.key,
     required this.selectedChunkIndex,
     required this.onChunkSelected,
     required this.chunks,
+    this.showAllLabel = true,
   });
 
   @override
@@ -57,7 +59,7 @@ class EpisodeChunkSelector extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      index == 0
+                      showAllLabel && index == 0
                           ? "All"
                           : '${chunks[index].first.number} - ${chunks[index].last.number}',
                       style: TextStyle(

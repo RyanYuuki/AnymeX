@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/episode.dart';
@@ -47,6 +48,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   final selectedChunkIndex = 1.obs;
   final RxList<hive.Video> streamList = <hive.Video>[].obs;
   final sourceController = Get.find<SourceController>();
+  final settings = Get.find<Settings>();
   final auth = Get.find<ServiceHandler>();
   final offlineStorage = Get.find<OfflineStorageController>();
 
@@ -56,10 +58,10 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   final Rx<Episode> continueEpisode = Episode(number: "1").obs;
   final Rx<Episode> savedEpisode = Episode(number: "1").obs;
   List<Episode> offlineEpisodes = [];
-  bool _initializedChunk = false;
   Worker? _authLoginWorker;
   Worker? _userProgressWorker;
   Worker? _currentMediaWorker;
+  Worker? _uiSettingsWorker;
   VoidCallback? _offlineStorageListener;
   bool _isUpdatingChunk = false;
 
@@ -77,6 +79,12 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     _currentMediaWorker = ever(auth.currentMedia, (_) {
       _initUserProgress();
       _initEpisodes();
+    });
+    _uiSettingsWorker = ever(settings.uiSettings, (_) {
+      _updateChunkIndex();
+      if (mounted) {
+        setState(() {});
+      }
     });
 
     _offlineStorageListener = () {
@@ -109,7 +117,6 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
         oldLen != newLen || oldFirst != newFirst || oldLast != newLast;
 
     if (contentChanged) {
-      _initializedChunk = false;
       _initEpisodes();
       _updateChunkIndex();
     }
@@ -120,6 +127,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     _authLoginWorker?.dispose();
     _userProgressWorker?.dispose();
     _currentMediaWorker?.dispose();
+    _uiSettingsWorker?.dispose();
     if (_offlineStorageListener != null) {
       offlineStorage.removeListener(_offlineStorageListener!);
     }
@@ -131,23 +139,23 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       if (!mounted || _isUpdatingChunk) return;
       _isUpdatingChunk = true;
       try {
-        final chunkedEpisodes = chunkEpisodes(
-            widget.episodeList, calculateChunkSize(widget.episodeList));
+        final layoutType = _getEpisodeLayoutType();
+        final chunkedEpisodes = _getChunkedEpisodes(layoutType);
 
         if (chunkedEpisodes.length > 1) {
           final progress =
               double.tryParse(continueEpisode.value.number)?.toInt() ?? 0;
 
-          final chunkIndex = findChunkIndexFromProgress(
-            progress,
-            chunkedEpisodes,
-          );
+          final chunkIndex = layoutType == EpisodeLayoutType.blocks
+              ? _findBlockChunkIndexFromProgress(progress, chunkedEpisodes)
+              : findChunkIndexFromProgress(progress, chunkedEpisodes);
           final maxIndex = chunkedEpisodes.length - 1;
-          final nextIndex = maxIndex < 1 ? 0 : chunkIndex.clamp(1, maxIndex);
+          final nextIndex = layoutType == EpisodeLayoutType.blocks
+              ? chunkIndex.clamp(0, maxIndex)
+              : (maxIndex < 1 ? 0 : chunkIndex.clamp(1, maxIndex));
           if (selectedChunkIndex.value != nextIndex) {
             selectedChunkIndex.value = nextIndex;
           }
-          _initializedChunk = true;
         } else {
           if (selectedChunkIndex.value != 0) {
             selectedChunkIndex.value = 0;
@@ -159,6 +167,112 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     } catch (e) {
       Logger.e(e.toString(), stackTrace: StackTrace.current);
     }
+  }
+
+  EpisodeLayoutType _getEpisodeLayoutType() {
+    return switch (settings.episodeListLayout) {
+      1 => EpisodeLayoutType.compact,
+      2 => EpisodeLayoutType.blocks,
+      _ => EpisodeLayoutType.detailed,
+    };
+  }
+
+  List<List<Episode>> _getChunkedEpisodes(EpisodeLayoutType layoutType) {
+    if (layoutType == EpisodeLayoutType.blocks) {
+      return _buildBlockChunks(widget.episodeList);
+    }
+    return chunkEpisodes(
+        widget.episodeList, calculateChunkSize(widget.episodeList));
+  }
+
+  List<List<Episode>> _buildBlockChunks(List<Episode> episodes) {
+    if (episodes.isEmpty) return [];
+    // 50 episodes per page for blocks layout (matches preview in settings)
+    const pageSize = 50;
+    return List.generate(
+      (episodes.length / pageSize).ceil(),
+      (index) => episodes.sublist(
+        index * pageSize,
+        (index + 1) * pageSize > episodes.length
+            ? episodes.length
+            : (index + 1) * pageSize,
+      ),
+    );
+  }
+
+  int _findBlockChunkIndexFromProgress(
+    int userProgress,
+    List<List<Episode>> chunks,
+  ) {
+    if (chunks.isEmpty) return 0;
+    if (userProgress <= 0) return 0;
+
+    for (int i = 0; i < chunks.length; i++) {
+      final chunk = chunks[i];
+      if (chunk.isEmpty) continue;
+
+      final firstEp =
+          double.tryParse(chunk.first.number.toString())?.toInt() ?? 0;
+      final lastEp =
+          double.tryParse(chunk.last.number.toString())?.toInt() ?? 0;
+
+      final minEp = firstEp < lastEp ? firstEp : lastEp;
+      final maxEp = firstEp > lastEp ? firstEp : lastEp;
+      if (userProgress >= minEp && userProgress <= maxEp) {
+        return i;
+      }
+    }
+
+    return chunks.length - 1;
+  }
+
+  int _getCrossAxisCount(BuildContext context, EpisodeLayoutType layoutType) {
+    if (layoutType == EpisodeLayoutType.blocks) {
+      return getResponsiveCrossAxisCount(
+        context,
+        baseColumns: 5,
+        maxColumns: 12,
+        mobileItemWidth: 70,
+        tabletItemWidth: 76,
+        desktopItemWidth: 82,
+      );
+    }
+
+    return getResponsiveCrossAxisCount(
+      context,
+      baseColumns: 1,
+      maxColumns: 3,
+      mobileItemWidth: 400,
+      tabletItemWidth: 400,
+      desktopItemWidth: 200,
+    );
+  }
+
+  double _getMainAxisExtent(
+    BuildContext context,
+    EpisodeLayoutType layoutType,
+    bool hasAnifyThumbs,
+  ) {
+    return switch (layoutType) {
+      EpisodeLayoutType.detailed => hasAnifyThumbs
+          ? 200
+          : getResponsiveSize(context, mobileSize: 165, desktopSize: 190),
+      EpisodeLayoutType.compact =>
+        getResponsiveSize(context, mobileSize: 92, desktopSize: 104),
+      EpisodeLayoutType.blocks =>
+        getResponsiveSize(context, mobileSize: 46, desktopSize: 52),
+    };
+  }
+
+  double _getMainAxisSpacing(
+      BuildContext context, EpisodeLayoutType layoutType) {
+    if (layoutType == EpisodeLayoutType.blocks) return 8;
+    return getResponsiveSize(context, mobileSize: 15, desktopSize: 10);
+  }
+
+  double _getCrossAxisSpacing(EpisodeLayoutType layoutType) {
+    if (layoutType == EpisodeLayoutType.blocks) return 8;
+    return 15;
   }
 
   void _initUserProgress() {
@@ -254,8 +368,6 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       );
     }
 
-    final chunkedEpisodes = chunkEpisodes(
-        widget.episodeList, calculateChunkSize(widget.episodeList));
     final hasAnifyThumbs = widget.episodeList.isNotEmpty &&
         (widget.episodeList[0].thumbnail?.isNotEmpty ?? false);
 
@@ -266,75 +378,71 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
           padding: const EdgeInsets.symmetric(vertical: 10.0),
           child: Obx(() => _buildContinueButton()),
         ),
-        if (chunkedEpisodes.isNotEmpty)
-          EpisodeChunkSelector(
-            chunks: chunkedEpisodes,
-            selectedChunkIndex: selectedChunkIndex,
-            onChunkSelected: (index) {
-              if (index != selectedChunkIndex.value) {
-                selectedChunkIndex.value = index;
-              }
-            },
-          ),
         Obx(() {
+          final layoutType = _getEpisodeLayoutType();
+          final chunkedEpisodes = _getChunkedEpisodes(layoutType);
           final safeChunkIndex = chunkedEpisodes.isEmpty
               ? 0
               : selectedChunkIndex.value.clamp(0, chunkedEpisodes.length - 1);
           final selectedEpisodes =
               chunkedEpisodes.isNotEmpty ? chunkedEpisodes[safeChunkIndex] : [];
 
-          return GridView.builder(
-            padding: const EdgeInsets.only(top: 15),
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: getResponsiveCrossAxisCount(
-                context,
-                baseColumns: 1,
-                maxColumns: 3,
-                mobileItemWidth: 400,
-                tabletItemWidth: 400,
-                desktopItemWidth: 200,
-              ),
-              mainAxisSpacing:
-                  getResponsiveSize(context, mobileSize: 15, desktopSize: 10),
-              crossAxisSpacing: 15,
-              mainAxisExtent: hasAnifyThumbs
-                  ? 200
-                  : getResponsiveSize(context,
-                      mobileSize: 100, desktopSize: 130),
-            ),
-            itemCount: selectedEpisodes.length,
-            itemBuilder: (context, index) {
-              final episode = selectedEpisodes[index] as Episode;
-              return Obx(() {
-                final currentEpisode =
-                    episode.number.toInt() + 1 == userProgress.value;
-                final completedEpisode =
-                    episode.number.toInt() <= userProgress.value;
-                final isSelected =
-                    selectedEpisode.value.number == episode.number;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (chunkedEpisodes.isNotEmpty)
+                EpisodeChunkSelector(
+                  chunks: chunkedEpisodes,
+                  showAllLabel: layoutType != EpisodeLayoutType.blocks,
+                  selectedChunkIndex: selectedChunkIndex,
+                  onChunkSelected: (index) {
+                    if (index != selectedChunkIndex.value) {
+                      selectedChunkIndex.value = index;
+                    }
+                  },
+                ),
+              GridView.builder(
+                padding: const EdgeInsets.only(top: 15),
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: _getCrossAxisCount(context, layoutType),
+                  mainAxisSpacing: _getMainAxisSpacing(context, layoutType),
+                  crossAxisSpacing: _getCrossAxisSpacing(layoutType),
+                  mainAxisExtent:
+                      _getMainAxisExtent(context, layoutType, hasAnifyThumbs),
+                ),
+                itemCount: selectedEpisodes.length,
+                itemBuilder: (context, index) {
+                  final episode = selectedEpisodes[index] as Episode;
+                  return Obx(() {
+                    final currentEpisode =
+                        episode.number.toInt() + 1 == userProgress.value;
+                    final completedEpisode =
+                        episode.number.toInt() <= userProgress.value;
+                    final isSelected =
+                        selectedEpisode.value.number == episode.number;
 
-                return Opacity(
-                  opacity: completedEpisode
-                      ? 0.5
-                      : currentEpisode
-                          ? 0.8
-                          : 1,
-                  child: BetterEpisode(
-                    episode: episode,
-                    isSelected: isSelected,
-                    layoutType: hasAnifyThumbs
-                        ? EpisodeLayoutType.detailed
-                        : EpisodeLayoutType.compact,
-                    fallbackImageUrl:
-                        episode.thumbnail ?? widget.anilistData!.poster,
-                    offlineEpisodes: offlineEpisodes,
-                    onTap: () => _handleEpisodeSelection(episode),
-                  ),
-                );
-              });
-            },
+                    return Opacity(
+                      opacity: completedEpisode
+                          ? 0.5
+                          : currentEpisode
+                              ? 0.8
+                              : 1,
+                      child: BetterEpisode(
+                        episode: episode,
+                        isSelected: isSelected,
+                        layoutType: layoutType,
+                        fallbackImageUrl:
+                            episode.thumbnail ?? widget.anilistData!.poster,
+                        offlineEpisodes: offlineEpisodes,
+                        onTap: () => _handleEpisodeSelection(episode),
+                      ),
+                    );
+                  });
+                },
+              ),
+            ],
           );
         }),
       ],
