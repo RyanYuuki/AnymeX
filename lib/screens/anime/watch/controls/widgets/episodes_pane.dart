@@ -1,5 +1,6 @@
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/widgets/episode/normal_episode.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:dartotsu_extension_bridge/Mangayomi/string_extensions.dart';
@@ -168,6 +169,14 @@ class EpisodesPane extends StatelessWidget {
     controller.isEpisodePaneOpened.value = false;
   }
 
+  EpisodeLayoutType _resolveEpisodeLayoutType() {
+    return switch (settingsController.episodeListLayout) {
+      1 => EpisodeLayoutType.compact,
+      2 => EpisodeLayoutType.blocks,
+      _ => EpisodeLayoutType.detailed,
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     return Obx(() => EpisodeSidePane(
@@ -220,12 +229,14 @@ class EpisodesPane extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: ScrollablePositionedList.separated(
+                      key: ValueKey(settingsController.episodeListLayout),
                       initialScrollIndex:
                           controller.currentEpisode.value.number.toInt() - 1,
                       separatorBuilder: (context, i) =>
                           const SizedBox(height: 8),
                       itemCount: controller.episodeList.length,
                       itemBuilder: (context, index) {
+                        final layoutType = _resolveEpisodeLayoutType();
                         final episode = controller.episodeList[index];
                         final isSelected =
                             episode == controller.currentEpisode.value;
@@ -237,7 +248,9 @@ class EpisodesPane extends StatelessWidget {
                           episode: episode,
                           isSelected: isSelected,
                           onTap: () => controller.changeEpisode(episode),
-                          layoutType: EpisodeLayoutType.detailed,
+                          layoutType: layoutType,
+                          showTitleInBlockLayout:
+                              layoutType == EpisodeLayoutType.blocks,
                           offlineEpisodes: offlineEpisode,
                           fallbackImageUrl: controller.anilistData.cover ??
                               controller.anilistData.poster,

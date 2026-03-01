@@ -194,4 +194,5 @@ enum UISettingsKeys {
   usePosterColor,
   enablePosterKenBurns,
   carouselStyle,
+  episodeListLayout,
 }

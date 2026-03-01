@@ -1,4 +1,5 @@
 import 'package:anymex/database/isar_models/track.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/player/base_player.dart';
 import 'package:anymex/screens/anime/widgets/episode/normal_episode.dart';
@@ -450,6 +451,14 @@ class BottomSheetItem {
 }
 
 class PlayerBottomSheets {
+  static EpisodeLayoutType _resolveEpisodeLayoutType() {
+    return switch (settingsController.episodeListLayout) {
+      1 => EpisodeLayoutType.compact,
+      2 => EpisodeLayoutType.blocks,
+      _ => EpisodeLayoutType.detailed,
+    };
+  }
+
   static Future<T?> show<T>(
       {required BuildContext context,
       required String title,
@@ -665,6 +674,7 @@ class PlayerBottomSheets {
       BuildContext context, PlayerController controller) {
     final episodes = controller.episodeList;
     final selectedEpisode = controller.currentEpisode;
+    final layoutType = _resolveEpisodeLayoutType();
     final offlineEpisode = controller.offlineStorage
         .getAnimeById(controller.anilistData.id)
         ?.episodes;
@@ -674,7 +684,7 @@ class PlayerBottomSheets {
       title: 'Episodes',
       isExpanded: true,
       content: ScrollablePositionedList.separated(
-        initialScrollIndex: selectedEpisode.value.number!.toInt() - 1,
+        initialScrollIndex: selectedEpisode.value.number.toInt() - 1,
         separatorBuilder: (context, i) => const SizedBox(height: 8),
         itemCount: episodes.length,
         itemBuilder: (context, index) {
@@ -685,7 +695,8 @@ class PlayerBottomSheets {
             episode: episode,
             isSelected: isSelected,
             onTap: () => controller.changeEpisode(episode),
-            layoutType: EpisodeLayoutType.compact,
+            layoutType: layoutType,
+            showTitleInBlockLayout: layoutType == EpisodeLayoutType.blocks,
             offlineEpisodes: offlineEpisode,
             fallbackImageUrl:
                 controller.anilistData.cover ?? controller.anilistData.poster,
