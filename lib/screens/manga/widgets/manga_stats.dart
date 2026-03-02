@@ -39,13 +39,29 @@ class _MangaStatsState extends State<MangaStats> {
   late final Future<AnimeAdaptation> _animeAdaptationFuture;
   late final Future<NextRelease> _nextReleaseFuture;
   late final Future<List<NewsItem>> _newsFuture;
+  String? _latestChapterCount;
 
   @override
   void initState() {
     super.initState();
 
     _animeAdaptationFuture = MangaAnimeUtil.getAnimeAdaptation(widget.data);
-    _nextReleaseFuture = MangaAnimeUtil.getNextChapterPrediction(widget.data);
+    _nextReleaseFuture = MangaAnimeUtil.getNextChapterPrediction(widget.data).then((value) {
+      // Extract current chapter from nextChapter and store it
+      if (value.nextChapter != null && value.nextChapter!.contains('Chapter')) {
+        final chapterMatch = RegExp(r'Chapter\s+(\d+(?:\.\d+)?)').firstMatch(value.nextChapter!);
+        if (chapterMatch != null) {
+          final chapterNum = double.parse(chapterMatch.group(1)!);
+          final prevChapterNum = chapterNum - (value.averageIntervalDays != null ? 1 : 1);
+          if (prevChapterNum % 1 == 0) {
+            _latestChapterCount = prevChapterNum.toInt().toString();
+          } else {
+            _latestChapterCount = prevChapterNum.toStringAsFixed(1);
+          }
+        }
+      }
+      return value;
+    });
     _newsFuture = MangaAnimeUtil.getMangaNovelNews(widget.data);
   }
 
@@ -414,6 +430,14 @@ class _MangaStatsState extends State<MangaStats> {
 
   Widget _buildStatsGrid(BuildContext context) {
     final colorScheme = context.colors;
+    
+    // Determine chapters value to display
+    String chaptersValue = widget.data.totalChapters ?? '??';
+    // If it's '??' and we have a latest chapter count from MangaUpdates, use that
+    if (chaptersValue == '??' && _latestChapterCount != null) {
+      chaptersValue = _latestChapterCount!;
+    }
+
     final stats = [
       {
         'label': 'Type',
@@ -442,7 +466,7 @@ class _MangaStatsState extends State<MangaStats> {
       },
       {
         'label': 'Chapters',
-        'value': widget.data.totalChapters ?? '??',
+        'value': chaptersValue,
         'icon': Icons.menu_book_outlined
       },
     ];
@@ -519,6 +543,21 @@ class _MangaStatsState extends State<MangaStats> {
           final dateStr =
               DateFormat('d MMMM yyyy').format(pred.nextReleaseDate!);
 
+          // Extract current chapter number from nextChapter
+          String currentChapter = '';
+          if (pred.nextChapter != null && pred.nextChapter!.contains('Chapter')) {
+            final chapterMatch = RegExp(r'Chapter\s+(\d+(?:\.\d+)?)').firstMatch(pred.nextChapter!);
+            if (chapterMatch != null) {
+              final chapterNum = double.parse(chapterMatch.group(1)!);
+              final prevChapterNum = chapterNum - (pred.averageIntervalDays != null ? 1 : 1);
+              if (prevChapterNum % 1 == 0) {
+                currentChapter = 'Chapter ${prevChapterNum.toInt()}';
+              } else {
+                currentChapter = 'Chapter ${prevChapterNum.toStringAsFixed(1)}';
+              }
+            }
+          }
+
           return Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -542,6 +581,26 @@ class _MangaStatsState extends State<MangaStats> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      if (currentChapter.isNotEmpty) ...[
+                        Row(
+                          children: [
+                            AnymexText(
+                              text: "Current • ",
+                              variant: TextVariant.regular,
+                              size: 11,
+                              color: colorScheme.onSurface
+                                  .opaque(0.6, iReallyMeanIt: true),
+                            ),
+                            AnymexText(
+                              text: currentChapter,
+                              variant: TextVariant.bold,
+                              size: 11,
+                              color: colorScheme.primary,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                      ],
                       AnymexText(
                         text: "Next Release",
                         variant: TextVariant.regular,
