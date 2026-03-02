@@ -6,7 +6,6 @@ import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -52,7 +51,7 @@ class _SettingsReaderState extends State<SettingsReader> {
     if (_prefs == null) return defaultValue;
     final val = _prefs!.get(key);
     if (val == null) return defaultValue;
-    if (val is T) return val;
+    if (val is T) return val as T;
     if (T == double && val is int) return val.toDouble() as T;
     if (T == int && val is double) return val.toInt() as T;
     return defaultValue;
@@ -624,7 +623,7 @@ class _SettingsReaderState extends State<SettingsReader> {
                           ),
                           CustomSwitchTile(
                             padding: const EdgeInsets.all(10),
-                            icon: HugeIcons.strokeRoundedBold,
+                            icon: Icons.format_bold_rounded,
                             title: 'Bionic Reading',
                             description: 'Bold the first part of words to guide your eyes',
                             switchValue: _getNP<bool>('novel_bionic_reading', false),
@@ -640,7 +639,7 @@ class _SettingsReaderState extends State<SettingsReader> {
                               onChanged: (val) => _setNP('novel_bionic_intensity', val),
                               title: 'Bionic Intensity',
                               description: 'Adjust how much of each word is bolded',
-                              icon: HugeIcons.strokeRoundedBold,
+                              icon: Icons.format_bold_rounded,
                             ),
                           CustomSwitchTile(
                             padding: const EdgeInsets.all(10),
