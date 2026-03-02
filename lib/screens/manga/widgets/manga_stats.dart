@@ -49,7 +49,6 @@ class _MangaStatsState extends State<MangaStats> {
     _nextReleaseFuture = MangaAnimeUtil.getNextChapterPrediction(widget.data).then((value) {
       if (value.nextChapter != null && mounted) {
         setState(() {
-          // Extract chapter number from "Next Chapter X" and subtract 1
           final chapterMatch = RegExp(r'Chapter\s+(\d+(?:\.\d+)?)').firstMatch(value.nextChapter!);
           if (chapterMatch != null) {
             final chapterNum = double.parse(chapterMatch.group(1)!);
