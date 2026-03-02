@@ -2,9 +2,6 @@ import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/screens/novel/details/details_view.dart';
-import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
@@ -16,6 +13,7 @@ import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/history/tap_history_cards.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -65,11 +63,15 @@ class _HomePageState extends State<HomePage> {
     final TextAlign textAlignment =
         isMobile ? TextAlign.center : TextAlign.left;
 
-    Source? getSourceForMedia(Media media) {
-      if (media.serviceType == ServicesType.extensions) {
-        return sourceController.activeMangaSource.value;
+    Source getSourceForMedia(ItemType type) {
+      switch (type) {
+        case ItemType.anime:
+          return sourceController.installedExtensions.first;
+        case ItemType.manga:
+          return sourceController.installedMangaExtensions.first;
+        case ItemType.novel:
+          return sourceController.installedNovelExtensions.first;
       }
-      return null;
     }
 
     final List<dynamic> novelData = [];
@@ -153,16 +155,7 @@ class _HomePageState extends State<HomePage> {
                           title: "Recommended Novels",
                           data: novelData,
                           type: ItemType.novel,
-                          source: sourceController.activeMangaSource.value,
-                          onItemTap: (media) {
-                            if (media.type == ItemType.novel) {
-                              navigate(() => NovelDetailsPage(
-                                media: media,
-                                tag: media.title,
-                                source: getSourceForMedia(media),
-                              ));
-                            }
-                          },
+                          source: sourceController.activeNovelSource.value,
                         ),
                       Obx(() {
                         final children = List<Widget>.from(

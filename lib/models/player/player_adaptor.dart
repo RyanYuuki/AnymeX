@@ -1,5 +1,4 @@
 import 'package:anymex/database/data_keys/keys.dart';
-import 'package:hive/hive.dart';
 
 class PlayerSettings {
   double speed;
@@ -26,13 +25,9 @@ class PlayerSettings {
   bool autoTranslate;
   String translateTo;
   bool autoSkipFiller;
-  @HiveField(24)
   double subtitleOpacity;
-  @HiveField(25)
   double subtitleBottomMargin;
-  @HiveField(26)
   String subtitleOutlineType;
-  @HiveField(27)
   bool enableScreenshot;
 
   PlayerSettings({

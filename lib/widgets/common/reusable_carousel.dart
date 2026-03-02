@@ -171,21 +171,23 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
 
     void onTapHandler() {
       if (widget.type == ItemType.novel) {
+        final source =
+            widget.source ?? sourceController.installedNovelExtensions.first;
         navigate(() => NovelDetailsPage(
-          media: media,
-          tag: media.title,
-          source: widget.source,
-        ));
+              media: media,
+              tag: media.title,
+              source: source,
+            ));
       } else if (widget.type == ItemType.manga) {
         navigate(() => MangaDetailsPage(
-          media: media,
-          tag: media.title,
-        ));
+              media: media,
+              tag: media.title,
+            ));
       } else {
         navigate(() => AnimeDetailsPage(
-          media: media,
-          tag: media.title,
-        ));
+              media: media,
+              tag: media.title,
+            ));
       }
     }
 

@@ -9,21 +9,20 @@ import 'package:anymex/screens/manga/reading_page.dart';
 import 'package:anymex/screens/manga/widgets/chapter_ranges.dart';
 import 'package:anymex/screens/manga/widgets/scanlators_ranges.dart';
 import 'package:anymex/screens/manga/widgets/track_dialog.dart';
-import 'package:anymex/screens/novel/reader/reader_view.dart';
+import 'package:anymex/screens/novel/reader/novel_reader.dart';
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/utils/string_extensions.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/header.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
+import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:anymex/utils/logger.dart';
 
 class ChapterState {
   final int? userProgress;
@@ -164,22 +163,27 @@ class ChapterService {
       Chapter currentChapter,
       BuildContext context,
       VoidCallback onReturn) async {
-    
     List<Chapter> optimizedList = chapterList;
-    
-    if (currentChapter.scanlator != null && currentChapter.scanlator!.isNotEmpty) {
-      final hasScanlatorDuplicates = chapterList.where((e) => e.number == currentChapter.number).length > 1;
-      
+
+    if (currentChapter.scanlator != null &&
+        currentChapter.scanlator!.isNotEmpty) {
+      final hasScanlatorDuplicates =
+          chapterList.where((e) => e.number == currentChapter.number).length >
+              1;
+
       if (hasScanlatorDuplicates) {
-        optimizedList = chapterList.where((e) => e.scanlator == currentChapter.scanlator).toList();
-        Logger.i("Filtered reading list to scanlator: ${currentChapter.scanlator}");
+        optimizedList = chapterList
+            .where((e) => e.scanlator == currentChapter.scanlator)
+            .toList();
+        Logger.i(
+            "Filtered reading list to scanlator: ${currentChapter.scanlator}");
       }
     }
 
-    if (anilistData.type == ItemType.novel) {
+    if (anilistData.mediaType == ItemType.novel) {
       final sourceController = Get.find<SourceController>();
       final source = sourceController.activeMangaSource.value;
-      
+
       if (source == null) {
         Logger.i("No source available for novel reading");
         return;

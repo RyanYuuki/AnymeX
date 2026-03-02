@@ -1,9 +1,10 @@
+import 'dart:ui';
+
 import 'package:anymex/screens/novel/reader/controller/reader_controller.dart';
-import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'dart:ui';
 import 'package:intl/intl.dart';
 
 class NovelBottomControls extends StatelessWidget {
@@ -199,10 +200,8 @@ class NovelBottomControls extends StatelessWidget {
                     Text(
                       '${(controller.progress.value * 100).toInt()}%',
                       style: TextStyle(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .opaque(0.6),
+                        color:
+                            Theme.of(context).colorScheme.onSurface.opaque(0.6),
                         fontSize: isDesktop ? 13 : 11,
                         fontWeight: FontWeight.w500,
                       ),
@@ -211,21 +210,19 @@ class NovelBottomControls extends StatelessWidget {
               ),
               if (controller.showReadingProgress.value) ...[
                 SizedBox(height: isDesktop ? 12 : 8),
-                if (controller.verticalSeekbar.value)
-                  _buildVerticalSeekbar(context, isDesktop)
-                else
-                  Slider(
-                    value: controller.progress.value.clamp(0.0, 1.0),
-                    onChanged: (value) {
-                      if (controller.scrollController.hasClients) {
-                        double maxScroll = controller
-                            .scrollController.position.maxScrollExtent;
-                        controller.scrollController.jumpTo(value * maxScroll);
-                      }
-                    },
-                    onChangeStart: (_) => HapticFeedback.lightImpact(),
-                    onChangeEnd: (_) => HapticFeedback.lightImpact(),
-                  ),
+                Slider(
+                  year2023: false,
+                  value: controller.progress.value.clamp(0.0, 1.0),
+                  onChanged: (value) {
+                    if (controller.scrollController.hasClients) {
+                      double maxScroll =
+                          controller.scrollController.position.maxScrollExtent;
+                      controller.scrollController.jumpTo(value * maxScroll);
+                    }
+                  },
+                  onChangeStart: (_) => HapticFeedback.lightImpact(),
+                  onChangeEnd: (_) => HapticFeedback.lightImpact(),
+                ),
               ],
             ],
           ),
@@ -287,10 +284,8 @@ class NovelBottomControls extends StatelessWidget {
                     Text(
                       '${controller.currentPage.value}/${controller.totalPages.value}',
                       style: TextStyle(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .opaque(0.6),
+                        color:
+                            Theme.of(context).colorScheme.onSurface.opaque(0.6),
                         fontSize: isDesktop ? 13 : 11,
                         fontWeight: FontWeight.w500,
                       ),
@@ -300,58 +295,6 @@ class NovelBottomControls extends StatelessWidget {
             ],
           ),
         ));
-  }
-
-  Widget _buildVerticalSeekbar(BuildContext context, bool isDesktop) {
-    return Container(
-      height: 40,
-      child: Obx(() {
-        return GestureDetector(
-          onVerticalDragUpdate: (details) {
-            if (!controller.scrollController.hasClients) return;
-            
-            double delta = details.primaryDelta ?? 0;
-            double maxScroll =
-                controller.scrollController.position.maxScrollExtent;
-            double currentOffset = controller.scrollController.offset;
-            
-            double newOffset = currentOffset - delta * 2;
-            newOffset = newOffset.clamp(0.0, maxScroll);
-            
-            controller.scrollController.jumpTo(newOffset);
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              color: context.colors.surfaceContainerHighest.opaque(0.5),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Stack(
-              children: [
-                Container(
-                  width: double.infinity,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: context.colors.surfaceContainerHighest.opaque(0.3),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                FractionallySizedBox(
-                  widthFactor: controller.progress.value,
-                  alignment: Alignment.centerLeft,
-                  child: Container(
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: context.colors.primary,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      }),
-    );
   }
 
   Widget _buildControlsRow(BuildContext context, bool isDesktop) {
