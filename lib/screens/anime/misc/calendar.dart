@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/calendar_data.dart';
+import 'package:anymex/controllers/services/simkl/calendar_data.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
@@ -52,13 +53,26 @@ class _CalendarState extends State<Calendar>
   void initState() {
     super.initState();
     final ids = serviceHandler.animeList.map((e) => e.id).toSet().toList();
-    fetchCalendarData(calendarData).then((_) {
-      setState(() {
-        rawData.value = calendarData.map((e) => e).toList();
-        listData.value = calendarData.where((e) => ids.contains(e.id)).toList();
-        isLoading = false;
+    
+    if (serviceHandler.serviceType.value == ServicesType.simkl) {
+      fetchSimklCalendarData(calendarData, isMovies: true).then((_) {
+        fetchSimklCalendarData(calendarData, isMovies: false).then((_) {
+          setState(() {
+            rawData.value = calendarData.map((e) => e).toList();
+            listData.value = calendarData.where((e) => ids.contains(e.id)).toList();
+            isLoading = false;
+          });
+        });
       });
-    });
+    } else {
+      fetchCalendarData(calendarData).then((_) {
+        setState(() {
+          rawData.value = calendarData.map((e) => e).toList();
+          listData.value = calendarData.where((e) => ids.contains(e.id)).toList();
+          isLoading = false;
+        });
+      });
+    }
 
     dateTabs =
         List.generate(7, (index) => DateTime.now().add(Duration(days: index)));
@@ -186,11 +200,16 @@ class _CalendarState extends State<Calendar>
             tabs: dateTabs.map((date) {
               return Obx(() {
                 var list = (includeList ? listData : rawData)
-                    .where((media) =>
-                        DateTime.fromMillisecondsSinceEpoch(
+                    .where((media) {
+                      if (media.nextAiringEpisode != null) {
+                        return DateTime.fromMillisecondsSinceEpoch(
                                 media.nextAiringEpisode!.airingAt * 1000)
                             .day ==
-                        date.day)
+                        date.day;
+                      } else {
+                        return DateTime.parse(media.aired).day == date.day;
+                      }
+                    })
                     .toList();
 
                 if (isDubMode.value && !isFetching.value) {
@@ -217,11 +236,20 @@ class _CalendarState extends State<Calendar>
               }
 
               var filteredList = (includeList ? listData : rawData)
-                  .where((media) =>
-                      DateTime.fromMillisecondsSinceEpoch(
+                  .where((media) {
+                    if (media.nextAiringEpisode != null) {
+                      return DateTime.fromMillisecondsSinceEpoch(
                               media.nextAiringEpisode!.airingAt * 1000)
                           .day ==
-                      date.day)
+                      date.day;
+                    } else {
+                      try {
+                        return DateTime.parse(media.aired).day == date.day;
+                      } catch (e) {
+                        return false;
+                      }
+                    }
+                  })
                   .toList();
 
               if (isDubMode.value) {
