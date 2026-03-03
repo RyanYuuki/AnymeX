@@ -45,7 +45,6 @@ class _CalendarState extends State<Calendar>
   bool isLoading = true;
   bool includeList = false;
 
-  // Dub mode only for AniList
   RxBool isDubMode = false.obs;
   RxBool isFetching = false.obs;
   List<DubAnimeInfo> dubCache = [];
@@ -85,7 +84,7 @@ class _CalendarState extends State<Calendar>
   }
 
   Future<void> _toggleDub() async {
-    if (!isAnilist) return; // Only available for AniList
+    if (!isAnilist) return;
     
     isDubMode.value = !isDubMode.value;
     if (isDubMode.value && dubCache.isEmpty) {
@@ -140,7 +139,6 @@ class _CalendarState extends State<Calendar>
                 color: context.colors.primary,
               )),
           actions: [
-            // Only show dub mode button for AniList
             if (isAnilist)
               Obx(() => IconButton(
                     onPressed: _toggleDub,
