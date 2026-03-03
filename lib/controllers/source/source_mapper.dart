@@ -1,7 +1,7 @@
-import 'package:anymex/utils/logger.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:fuzzywuzzy/fuzzywuzzy.dart';
 import 'package:get/get.dart';
@@ -57,15 +57,13 @@ double _calculateMatchScore(
   return score.clamp(0.0, 1.0);
 }
 
-Media createMediaFromExtension(DMedia data, {ItemType? overrideType}) {
+Media createMediaFromExtension(DMedia data, ItemType type) {
   return Media(
-    id: data.id ?? '',
+    id: data.url ?? '',
     title: data.title ?? '',
     poster: data.cover ?? '',
-    type: overrideType ?? 
-           (data.isManga == true ? ItemType.manga : 
-            data.isNovel == true ? ItemType.novel : 
-            ItemType.anime),
+    mediaType: type,
+    serviceType: ServicesType.extensions,
   );
 }
 

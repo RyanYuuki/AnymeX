@@ -1,9 +1,8 @@
 import 'package:anymex/screens/novel/reader/controller/reader_controller.dart';
-import 'package:anymex/screens/novel/reader/widgets/dictionary_popup.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
@@ -17,42 +16,29 @@ class NovelContentWidget extends StatelessWidget {
     required this.controller,
   });
 
-  void _handleSelection(BuildContext context, SelectionChangedEvent? selection) {
-    if (selection != null) {
-      final selectedText = selection.plainText;
-      if (selectedText.isNotEmpty && selectedText.length < 50) {
-        final renderBox = context.findRenderObject() as RenderBox;
-        final position = renderBox.localToGlobal(Offset.zero);
-        
-        showDialog(
-          context: context,
-          barrierColor: Colors.transparent,
-          builder: (context) => Stack(
-            children: [
-              Positioned.fill(
-                child: GestureDetector(
-                  onTap: () => Get.back(),
-                  child: Container(color: Colors.transparent),
-                ),
-              ),
-              DictionaryPopup(
-                selectedText: selectedText.trim(),
-                tapPosition: position,
-              ),
-            ],
-          ),
-        );
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: (details) {
+      behavior: HitTestBehavior.opaque,
+      onTapUp: (details) {
         HapticFeedback.lightImpact();
         if (controller.tapToScroll.value) {
-          controller.handleTap(details.localPosition);
+          final box = context.findRenderObject() as RenderBox?;
+          final viewportHeight =
+              box?.size.height ?? MediaQuery.of(context).size.height;
+          final y = details.localPosition.dy.clamp(0.0, viewportHeight);
+          final topZone = viewportHeight * 0.25;
+          final bottomZone = viewportHeight * 0.75;
+          final isCenterTap = y >= topZone && y <= bottomZone;
+
+          if (isCenterTap) {
+            controller.toggleControls();
+          } else {
+            controller.handleTap(
+              details.localPosition,
+              viewportHeight: viewportHeight,
+            );
+          }
         } else {
           controller.toggleControls();
         }
@@ -130,18 +116,20 @@ class NovelContentWidget extends StatelessWidget {
   Widget _buildContent(BuildContext context) {
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
-        if (notification is ScrollUpdateNotification) {
-        }
+        if (notification is ScrollUpdateNotification) {}
         return false;
       },
-      child: SelectionArea(
-        onSelectionChanged: (selection) => _handleSelection(context, selection),
-        child: CustomScrollView(
-          controller: controller.scrollController,
-          physics: const AlwaysScrollableScrollPhysics(),
-          slivers: [
-            Obx(() {
-              return HtmlWidget(
+      child: CustomScrollView(
+        controller: controller.scrollController,
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: [
+          Obx(() {
+            return SliverPadding(
+              padding: EdgeInsets.symmetric(
+                horizontal: controller.paddingHorizontal.value,
+                vertical: controller.paddingVertical.value,
+              ),
+              sliver: HtmlWidget(
                 controller.novelContent.value,
                 rebuildTriggers: [
                   controller.showControls.value,
@@ -152,20 +140,24 @@ class NovelContentWidget extends StatelessWidget {
                   controller.paragraphSpacing.value,
                   controller.fontFamily.value,
                   controller.textAlign.value,
-                  controller.removeExtraSpacing.value,
-                  controller.bionicReading.value,
+                  controller.themeMode.value,
+                  controller.backgroundOpacity.value,
+                  controller.paddingHorizontal.value,
+                  controller.paddingVertical.value,
                 ],
                 renderMode: RenderMode.sliverList,
                 textStyle: _getBaseTextStyle(context),
-                customWidgetBuilder: (element) => _getCustomWidget(element, context),
+                customWidgetBuilder: (element) =>
+                    _getCustomWidget(element, context),
                 enableCaching: true,
-                customStylesBuilder: (element) => _getCustomStyles(element, context),
+                customStylesBuilder: (element) =>
+                    _getCustomStyles(element, context),
                 onLoadingBuilder: (context, element, loadingProgress) =>
                     const SizedBox.shrink(),
-              );
-            }),
-          ],
-        ),
+              ),
+            );
+          }),
+        ],
       ),
     );
   }
@@ -188,14 +180,18 @@ class NovelContentWidget extends StatelessWidget {
     return TextStyle(
       fontSize: controller.fontSize.value,
       height: controller.lineHeight.value,
-      color: Theme.of(context).textTheme.bodyLarge?.color,
-      fontFamily: controller.fontFamilyName.isEmpty ? null : controller.fontFamilyName,
+      color: controller.useSystemReaderTheme
+          ? Theme.of(context).textTheme.bodyLarge?.color
+          : controller.readerTextColor,
+      fontFamily:
+          controller.fontFamilyName.isEmpty ? null : controller.fontFamilyName,
       letterSpacing: controller.letterSpacing.value,
       wordSpacing: controller.wordSpacing.value,
     );
   }
 
-  Map<String, String>? _getCustomStyles(dom.Element element, BuildContext context) {
+  Map<String, String>? _getCustomStyles(
+      dom.Element element, BuildContext context) {
     final Map<String, String> styles = {};
 
     switch (element.localName?.toLowerCase()) {
@@ -203,7 +199,7 @@ class NovelContentWidget extends StatelessWidget {
         styles['margin'] = '0';
         styles['padding'] = '0';
         break;
-        
+
       case 'p':
         styles['margin-bottom'] = '${controller.paragraphSpacing.value}px';
         styles['margin-top'] = '0';
@@ -212,14 +208,14 @@ class NovelContentWidget extends StatelessWidget {
         styles['padding'] = '0';
         styles['text-align'] = _getTextAlignmentString();
         break;
-        
+
       case 'div':
         styles['margin-bottom'] = '${controller.paragraphSpacing.value / 2}px';
         styles['margin-top'] = '0';
         styles['padding'] = '0';
         styles['text-align'] = _getTextAlignmentString();
         break;
-        
+
       case 'h1':
       case 'h2':
       case 'h3':
@@ -231,42 +227,49 @@ class NovelContentWidget extends StatelessWidget {
         styles['font-weight'] = 'bold';
         styles['text-align'] = _getTextAlignmentString();
         break;
-        
+
       case 'br':
         styles['display'] = 'block';
         styles['content'] = '""';
         styles['margin'] = '${controller.paragraphSpacing.value / 4}px 0';
         break;
-        
+
       case 'span':
         styles['margin'] = '0';
         styles['padding'] = '0';
         break;
-        
+
       case 'ul':
       case 'ol':
         styles['margin-bottom'] = '${controller.paragraphSpacing.value}px';
         styles['padding-left'] = '24px';
         break;
-        
+
       case 'li':
         styles['margin-bottom'] = '${controller.paragraphSpacing.value / 3}px';
         styles['text-align'] = _getTextAlignmentString();
         break;
-        
+
       case 'blockquote':
         styles['margin'] = '${controller.paragraphSpacing.value}px 24px';
         styles['padding'] = '8px 16px';
-        styles['border-left'] = '4px solid ${context.colors.primary.value.toRadixString(16)}';
-        styles['background'] = context.colors.surfaceContainerHighest.opaque(0.3).value.toRadixString(16);
+        styles['border-left'] =
+            '4px solid ${context.colors.primary.value.toRadixString(16)}';
+        styles['background'] = context.colors.surfaceContainerHighest
+            .opaque(0.3)
+            .value
+            .toRadixString(16);
         styles['font-style'] = 'italic';
         break;
-        
+
       case 'pre':
       case 'code':
         styles['margin'] = '${controller.paragraphSpacing.value}px 0';
         styles['padding'] = '16px';
-        styles['background'] = context.colors.surfaceContainerHighest.opaque(0.5).value.toRadixString(16);
+        styles['background'] = context.colors.surfaceContainerHighest
+            .opaque(0.5)
+            .value
+            .toRadixString(16);
         styles['border-radius'] = '8px';
         styles['font-family'] = 'monospace';
         styles['overflow-x'] = 'auto';

@@ -5,6 +5,7 @@ import 'package:anymex/controllers/ui/greeting.dart';
 import 'package:anymex/screens/manga/widgets/search_selector.dart';
 import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
@@ -14,13 +15,12 @@ import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 
-enum PageType { manga, anime, home }
+enum PageType { manga, anime, home, novel }
 
 class Header extends StatelessWidget {
   final PageType type;
@@ -56,12 +56,10 @@ class Header extends StatelessWidget {
                 AnymexOnTap(
                     child: CircleAvatar(
                   radius: 24,
-                  backgroundColor:
-                      context.colors.secondaryContainer,
+                  backgroundColor: context.colors.secondaryContainer,
                   child: IconButton(
                       style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              context.colors.secondaryContainer),
+                          backgroundColor: context.colors.secondaryContainer),
                       onPressed: () {
                         Provider.of<ThemeProvider>(context, listen: false)
                             .toggleTheme();
@@ -191,8 +189,7 @@ class Header extends StatelessWidget {
       },
       child: CircleAvatar(
         radius: 24,
-        backgroundColor:
-            context.colors.secondaryContainer.opaque(0.50),
+        backgroundColor: context.colors.secondaryContainer.opaque(0.50),
         child: profileData.isLoggedIn.value
             ? ClipRRect(
                 borderRadius: BorderRadius.circular(50),
@@ -202,8 +199,7 @@ class Header extends StatelessWidget {
                   fit: BoxFit.cover,
                   radius: 0,
                   errorImage: '',
-                  imageUrl:
-                      profileData.profileData.value.avatar ?? '',
+                  imageUrl: profileData.profileData.value.avatar ?? '',
                 ),
               )
             : Icon(IconlyBold.profile,

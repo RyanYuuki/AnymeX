@@ -186,8 +186,7 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
       });
       DiscordRPCController.instance
           .updateMediaPresence(media: anilistData ?? widget.media);
-      CommentPreloader.to
-          .removePreloadedController(widget.media.id.toString());
+      CommentPreloader.to.removePreloadedController(widget.media.id.toString());
       CommentPreloader.to.preloadComments(anilistData!);
       if (isExtensions) {
         Logger.i("Data Loaded for media => ${widget.media.title}");
@@ -579,8 +578,6 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
               const SizedBox(height: 20),
               NovelStats(
                 data: anilistData!,
-                friendsReading: anilistData?.friendsWatching,
-                totalChapters: anilistData?.totalChapters,
               ),
               const SizedBox(height: 20),
             ],

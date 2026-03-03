@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:anymex/controllers/sync/gist_sync_service.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/utils/logger.dart';
@@ -8,15 +9,10 @@ import 'package:anymex/utils/media_syncer.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
-const _kTokenKey = 'gist_sync_github_token';
-const _kUsernameKey = 'gist_sync_github_username';
-const _kAutoDeleteCompletedKey = 'gist_sync_auto_delete_completed';
-const _kExitSyncNotificationsKey = 'gist_sync_exit_sync_notifications';
 const _kDefaultGithubCallbackScheme = 'anymex';
 
 class GistImportResult {
@@ -48,7 +44,6 @@ class GistSyncController extends GetxController {
   final githubUsername = RxnString();
   RxBool get isConnected => isLoggedIn;
   final _service = GistSyncService();
-  final _storage = const FlutterSecureStorage();
   int _activeSyncOps = 0;
 
   String? get _githubRedirectUri {
@@ -97,21 +92,18 @@ class GistSyncController extends GetxController {
 
   Future<void> _restoreSession() async {
     try {
-      final token = await _storage.read(key: _kTokenKey);
-      final username = await _storage.read(key: _kUsernameKey);
-      final autoDeleteRaw = await _storage.read(key: _kAutoDeleteCompletedKey);
-      final exitNotifyRaw =
-          await _storage.read(key: _kExitSyncNotificationsKey);
-      if (autoDeleteRaw != null) {
-        autoDeleteCompletedOnExit.value = autoDeleteRaw == 'true';
-      }
-      if (exitNotifyRaw != null) {
-        showExitSyncNotifications.value = exitNotifyRaw == 'true';
-      }
-      if (token != null && token.isNotEmpty) {
+      final token = SyncKeys.gistGithubToken.get<String>('');
+      final username = SyncKeys.gistGithubUsername.get<String>('');
+      autoDeleteCompletedOnExit.value =
+          SyncKeys.gistAutoDeleteCompleted
+              .get<bool>(autoDeleteCompletedOnExit.value);
+      showExitSyncNotifications.value =
+          SyncKeys.gistExitSyncNotifications
+              .get<bool>(showExitSyncNotifications.value);
+      if (token.isNotEmpty) {
         _service.setToken(token);
         isLoggedIn.value = true;
-        githubUsername.value = username;
+        githubUsername.value = username.isEmpty ? null : username;
         Logger.i('[GistSync] Session restored for $username');
       }
     } catch (e) {
@@ -211,9 +203,9 @@ class GistSyncController extends GetxController {
         }
 
         _service.setToken(token);
-        await _storage.write(key: _kTokenKey, value: token);
+        SyncKeys.gistGithubToken.set(token);
         if (username != null) {
-          await _storage.write(key: _kUsernameKey, value: username);
+          SyncKeys.gistGithubUsername.set(username);
           githubUsername.value = username;
         }
 
@@ -232,8 +224,8 @@ class GistSyncController extends GetxController {
 
   Future<void> logout() async {
     _service.clear();
-    await _storage.delete(key: _kTokenKey);
-    await _storage.delete(key: _kUsernameKey);
+    SyncKeys.gistGithubToken.delete();
+    SyncKeys.gistGithubUsername.delete();
     isLoggedIn.value = false;
     hasCloudGist.value = null;
     githubUsername.value = null;
@@ -246,10 +238,7 @@ class GistSyncController extends GetxController {
   Future<void> setAutoDeleteCompletedOnExit(bool enabled) async {
     autoDeleteCompletedOnExit.value = enabled;
     try {
-      await _storage.write(
-        key: _kAutoDeleteCompletedKey,
-        value: enabled ? 'true' : 'false',
-      );
+      SyncKeys.gistAutoDeleteCompleted.set(enabled);
     } catch (e) {
       Logger.i('[GistSync] setAutoDeleteCompletedOnExit: $e');
     }
@@ -258,10 +247,7 @@ class GistSyncController extends GetxController {
   Future<void> setExitSyncNotifications(bool enabled) async {
     showExitSyncNotifications.value = enabled;
     try {
-      await _storage.write(
-        key: _kExitSyncNotificationsKey,
-        value: enabled ? 'true' : 'false',
-      );
+      SyncKeys.gistExitSyncNotifications.set(enabled);
     } catch (e) {
       Logger.i('[GistSync] setExitSyncNotifications: $e');
     }
