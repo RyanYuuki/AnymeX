@@ -45,16 +45,20 @@ class _CalendarState extends State<Calendar>
   bool isLoading = true;
   bool includeList = false;
 
+  // Dub mode only for AniList
   RxBool isDubMode = false.obs;
   RxBool isFetching = false.obs;
   List<DubAnimeInfo> dubCache = [];
+
+  bool get isAnilist => serviceHandler.serviceType.value == ServicesType.anilist;
+  bool get isSimkl => serviceHandler.serviceType.value == ServicesType.simkl;
 
   @override
   void initState() {
     super.initState();
     final ids = serviceHandler.animeList.map((e) => e.id).toSet().toList();
     
-    if (serviceHandler.serviceType.value == ServicesType.simkl) {
+    if (isSimkl) {
       fetchSimklCalendarData(calendarData, isMovies: true).then((_) {
         fetchSimklCalendarData(calendarData, isMovies: false).then((_) {
           setState(() {
@@ -81,6 +85,8 @@ class _CalendarState extends State<Calendar>
   }
 
   Future<void> _toggleDub() async {
+    if (!isAnilist) return; // Only available for AniList
+    
     isDubMode.value = !isDubMode.value;
     if (isDubMode.value && dubCache.isEmpty) {
       isFetching.value = true;
@@ -93,6 +99,8 @@ class _CalendarState extends State<Calendar>
       t.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
 
   DubAnimeInfo? _getDubInfo(Media m) {
+    if (!isAnilist) return null;
+    
     String normalized = _norm(m.title);
     for (var dub in dubCache) {
       if (_norm(dub.title) == normalized) {
@@ -132,19 +140,21 @@ class _CalendarState extends State<Calendar>
                 color: context.colors.primary,
               )),
           actions: [
-            Obx(() => IconButton(
-                  onPressed: _toggleDub,
-                  tooltip: isDubMode.value ? "Show All" : "Show Dubs Only",
-                  icon: Icon(
-                    isDubMode.value
-                        ? HugeIcons.strokeRoundedMicOff01
-                        : HugeIcons.strokeRoundedMic01,
-                    color: isDubMode.value
-                        ? context.colors.primary
-                        : null,
-                  ),
-                )),
-            const SizedBox(width: 10),
+            // Only show dub mode button for AniList
+            if (isAnilist)
+              Obx(() => IconButton(
+                    onPressed: _toggleDub,
+                    tooltip: isDubMode.value ? "Show All" : "Show Dubs Only",
+                    icon: Icon(
+                      isDubMode.value
+                          ? HugeIcons.strokeRoundedMicOff01
+                          : HugeIcons.strokeRoundedMic01,
+                      color: isDubMode.value
+                          ? context.colors.primary
+                          : null,
+                    ),
+                  )),
+            if (isAnilist) const SizedBox(width: 10),
             if (serviceHandler.isLoggedIn.value) ...[
               IconButton(
                   style: ElevatedButton.styleFrom(
@@ -181,7 +191,7 @@ class _CalendarState extends State<Calendar>
                 size: 16,
               ),
               Obx(() {
-                if (isDubMode.value) {
+                if (isDubMode.value && isAnilist) {
                   return AnymexText(
                     text: isFetching.value ? "Fetching..." : "Dubbed Only",
                     variant: TextVariant.regular,
@@ -207,12 +217,16 @@ class _CalendarState extends State<Calendar>
                             .day ==
                         date.day;
                       } else {
-                        return DateTime.parse(media.aired).day == date.day;
+                        try {
+                          return DateTime.parse(media.aired).day == date.day;
+                        } catch (e) {
+                          return false;
+                        }
                       }
                     })
                     .toList();
 
-                if (isDubMode.value && !isFetching.value) {
+                if (isDubMode.value && isAnilist && !isFetching.value) {
                   list = list.where((m) => _getDubInfo(m) != null).toList();
                 }
 
@@ -231,7 +245,7 @@ class _CalendarState extends State<Calendar>
           controller: _tabController,
           children: dateTabs.map((date) {
             return Obx(() {
-              if (isFetching.value) {
+              if (isFetching.value && isAnilist) {
                 return const Center(child: AnymexProgressIndicator());
               }
 
@@ -252,7 +266,7 @@ class _CalendarState extends State<Calendar>
                   })
                   .toList();
 
-              if (isDubMode.value) {
+              if (isDubMode.value && isAnilist) {
                 filteredList =
                     filteredList.where((m) => _getDubInfo(m) != null).toList();
               }
@@ -278,12 +292,12 @@ class _CalendarState extends State<Calendar>
                     mainAxisSpacing: 25),
                 itemBuilder: (context, index) {
                   final data = filteredList[index];
-                  final dubInfo = isDubMode.value ? _getDubInfo(data) : null;
+                  final dubInfo = isDubMode.value && isAnilist ? _getDubInfo(data) : null;
                   return isGrid
                       ? GridAnimeCard(
                           data: data,
                           dubInfo: dubInfo,
-                          isDubMode: isDubMode.value)
+                          isDubMode: isDubMode.value && isAnilist)
                       : BlurAnimeCard(data: data);
                 },
               );
