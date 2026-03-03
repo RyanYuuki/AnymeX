@@ -74,7 +74,6 @@ class _BigCarouselV2State extends State<BigCarouselV2> {
           padding: const EdgeInsets.symmetric(vertical: 20),
           child: Column(
             children: [
-
               Stack(
                 children: [
                   ScrollConfiguration(
@@ -112,6 +111,8 @@ class _BigCarouselV2State extends State<BigCarouselV2> {
                             const Duration(milliseconds: 800),
                         autoPlayCurve: Curves.fastOutSlowIn,
                         scrollDirection: Axis.horizontal,
+                        disableGesture: false,
+                        enableMouseCursor: true,
                         onPageChanged: (index, reason) {
                           setState(() {
                             activeIndex = index;
