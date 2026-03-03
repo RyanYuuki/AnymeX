@@ -792,51 +792,61 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> fetchEpisode(Episode episode, {Duration? savedPosition}) async {
-    if (isOffline.value) return;
+  if (isOffline.value) return;
 
-    try {
-      PlayerBottomSheets.showLoader();
+  try {
+    PlayerBottomSheets.showLoader();
 
-      final data = await sourceController.activeSource.value!.methods
-          .getVideoList(d.DEpisode(
-              episodeNumber: episode.number.toString(), url: episode.link));
+    final data = await sourceController.activeSource.value!.methods
+        .getVideoList(d.DEpisode(
+            episodeNumber: episode.number.toString(), url: episode.link));
 
-      if (data.isEmpty) {
-        PlayerBottomSheets.hideLoader();
-        snackBar('No servers found for this episode.');
-        isEpisodePaneOpened.value = true;
-        return;
-      }
-
-      resetListeners();
-      _basePlayer.open('');
-      setExternalSub(null);
-      currentEpisode.value = episode;
-      _hasTrackedInitialLocal = false;
-      _hasTrackedInitialOnline = false;
-
-      episodeTracks.value = data.map((e) => model.Video.fromVideo(e)).toList();
-
-      final previousTrack = selectedVideo.value;
-      final matched = _findBestMatchingTrack(episodeTracks, previousTrack);
-
-      selectedVideo.value = matched;
-      _extractSubtitles();
-
-      final episodeTimestamp = savedEpisode?.timeStampInMilliseconds;
-      final startPosition = episodeTimestamp != null && episodeTimestamp > 0
-          ? Duration(milliseconds: episodeTimestamp)
-          : (savedPosition ?? Duration.zero);
-
-      await _switchMedia(matched.url ?? "", matched.headers,
-          startPosition: startPosition);
-    } catch (e) {
-      snackBar('Failed to load episode. Check your connection.');
-    } finally {
+    if (data.isEmpty) {
       PlayerBottomSheets.hideLoader();
-      updateNavigatorState();
+      snackBar('No servers found for this episode.');
+      isEpisodePaneOpened.value = true;
+      return;
     }
+
+    resetListeners();
+    _basePlayer.open('');
+    setExternalSub(null);
+    currentEpisode.value = episode;
+    _hasTrackedInitialLocal = false;
+    _hasTrackedInitialOnline = false;
+
+    episodeTracks.value = data.map((e) => model.Video.fromVideo(e)).toList();
+
+    final previousTrack = selectedVideo.value;
+    final matched = _findBestMatchingTrack(episodeTracks, previousTrack);
+
+    selectedVideo.value = matched;
+    _extractSubtitles();
+
+    final savedEpisodeData = savedEpisode;
+    Duration startPosition = Duration.zero;
+    
+    if (savedEpisodeData != null) {
+      final savedTimestamp = savedEpisodeData.timeStampInMilliseconds ?? 0;
+      final episodeTotalDuration = savedEpisodeData.durationInMilliseconds ?? 0;
+      
+      final bool wasCompleted = episodeTotalDuration > 0 && 
+          (savedTimestamp / episodeTotalDuration) >= 0.99;
+      
+      if (!wasCompleted && savedTimestamp > 0) {
+        startPosition = Duration(milliseconds: savedTimestamp);
+      }
+    }
+
+    await _switchMedia(matched.url ?? "", matched.headers,
+        startPosition: startPosition);
+  } catch (e) {
+    snackBar('Failed to load episode. Check your connection.');
+  } finally {
+    PlayerBottomSheets.hideLoader();
+    updateNavigatorState();
   }
+}
 
   model.Video _findBestMatchingTrack(
     List<model.Video> tracks,
