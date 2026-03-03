@@ -263,18 +263,36 @@ class Media {
 
   factory Media.fromSmallSimkl(Map<String?, dynamic> json, bool isMovie) {
     ItemType type = ItemType.anime;
+    String posterUrl = '';
+    if (json['poster'] != null) {
+      if (json['poster'].toString().startsWith('http')) {
+        posterUrl = json['poster'];
+      } else {
+        posterUrl = 'https://simkl.in/posters/${json['poster']}_m.jpg';
+      }
+    }
+    
+    String releaseDate = json['release_date'] ?? json['date'] ?? '';
+    
     return Media(
-        id:
-            '${json['ids']?['simkl']?.toString()}*${isMovie ? "MOVIE" : "SERIES"}',
-        title: json['title'] ?? 'Unknown Title',
-        poster: json['poster'] != null
-            ? 'https://simkl.in/posters/${json['poster']}_m.jpg'
-            : '',
-        type: isMovie ? 'MOVIE' : 'SERIES',
-        rating: '0.0',
-        mediaType: type,
-        serviceType: ServicesType.simkl,
-        aired: json['year']?.toString() ?? 'Unknown air date');
+      id: '${json['ids']?['simkl_id']?.toString() ?? json['ids']?['simkl']?.toString() ?? DateTime.now().millisecondsSinceEpoch.toString()}*${isMovie ? "MOVIE" : "SERIES"}',
+      title: json['title'] ?? 'Unknown Title',
+      romajiTitle: json['title'] ?? 'Unknown Title',
+      description: json['overview'] ?? json['plot'] ?? 'No description available.',
+      poster: posterUrl,
+      largePoster: posterUrl,
+      cover: json['fanart'] != null 
+          ? 'https://simkl.in/fanart/${json['fanart']}_medium.jpg' 
+          : posterUrl,
+      totalEpisodes: json['total_episodes']?.toString() ?? '1',
+      type: isMovie ? 'MOVIE' : 'TV',
+      rating: json['ratings']?['simkl']?['rating']?.toString() ?? '0.0',
+      popularity: json['rank']?.toString() ?? '0',
+      mediaType: type,
+      serviceType: ServicesType.simkl,
+      aired: releaseDate,
+      genres: [],
+    );
   }
 
   factory Media.froDMedia(DMedia manga, ItemType type) {
