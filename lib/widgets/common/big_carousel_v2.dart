@@ -86,6 +86,7 @@ class _BigCarouselV2State extends State<BigCarouselV2> {
                     ),
                     child: CarouselSlider.builder(
                       itemCount: newData.length,
+                      disableGesture: false,
                       itemBuilder: (context, index, realIndex) {
                         final item = newData[index];
                         final isActive = index == activeIndex;
@@ -111,8 +112,6 @@ class _BigCarouselV2State extends State<BigCarouselV2> {
                             const Duration(milliseconds: 800),
                         autoPlayCurve: Curves.fastOutSlowIn,
                         scrollDirection: Axis.horizontal,
-                        disableGesture: false,
-                        enableMouseCursor: true,
                         onPageChanged: (index, reason) {
                           setState(() {
                             activeIndex = index;
