@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:anymex/controllers/sync/gist_sync_service.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
@@ -94,12 +95,10 @@ class GistSyncController extends GetxController {
     try {
       final token = SyncKeys.gistGithubToken.get<String>('');
       final username = SyncKeys.gistGithubUsername.get<String>('');
-      autoDeleteCompletedOnExit.value =
-          SyncKeys.gistAutoDeleteCompleted
-              .get<bool>(autoDeleteCompletedOnExit.value);
-      showExitSyncNotifications.value =
-          SyncKeys.gistExitSyncNotifications
-              .get<bool>(showExitSyncNotifications.value);
+      autoDeleteCompletedOnExit.value = SyncKeys.gistAutoDeleteCompleted
+          .get<bool>(autoDeleteCompletedOnExit.value);
+      showExitSyncNotifications.value = SyncKeys.gistExitSyncNotifications
+          .get<bool>(showExitSyncNotifications.value);
       if (token.isNotEmpty) {
         _service.setToken(token);
         isLoggedIn.value = true;

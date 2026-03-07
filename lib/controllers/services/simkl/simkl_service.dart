@@ -13,9 +13,9 @@ import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Service/base_service.dart';
 import 'package:anymex/models/Service/online_service.dart';
+import 'package:anymex/screens/anime/misc/calendar.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
-import 'package:anymex/screens/anime/misc/calendar.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/common/big_carousel.dart';
@@ -23,7 +23,6 @@ import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
@@ -193,9 +192,8 @@ class SimklService extends GetxController
           height: !isDesktop ? 70 : 90,
           buttonText: "CALENDAR",
           borderRadius: 16.multiplyRadius(),
-          backgroundImage: trendingMovies.isNotEmpty
-              ? trendingMovies[0].cover ?? ''
-              : '',
+          backgroundImage:
+              trendingMovies.isNotEmpty ? trendingMovies[0].cover ?? '' : '',
           onPressed: () {
             navigate(() => const Calendar());
           },
@@ -447,10 +445,9 @@ class SimklService extends GetxController
   @override
   Future<void> login(BuildContext context) async {
     final clientId = dotenv.env['SIMKL_CLIENT_ID'];
-    final redirectUri = dotenv.env['CALLBACK_SCHEME'];
 
     final url =
-        'https://simkl.com/oauth/authorize?response_type=code&client_id=$clientId&redirect_uri=$redirectUri';
+        'https://simkl.com/oauth/authorize?response_type=code&client_id=$clientId&redirect_uri=anymex://callback';
     try {
       final result = await FlutterWebAuth2.authenticate(
         url: url,
@@ -468,7 +465,6 @@ class SimklService extends GetxController
 
   Future<void> _exchangeCodeForToken(String code) async {
     final clientId = dotenv.env['SIMKL_CLIENT_ID'];
-    final redirectUri = dotenv.env['CALLBACK_SCHEME'];
     final clientSecret = dotenv.env['SIMKL_CLIENT_SECRET'];
 
     final url = Uri.parse('https://api.simkl.com/oauth/token');
@@ -481,7 +477,7 @@ class SimklService extends GetxController
         "code": code,
         "client_id": clientId,
         "client_secret": clientSecret,
-        "redirect_uri": redirectUri,
+        "redirect_uri": "anymex://callback",
         "grant_type": "authorization_code"
       }),
     );
