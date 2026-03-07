@@ -15,6 +15,7 @@ import 'package:anymex/models/Service/base_service.dart';
 import 'package:anymex/models/Service/online_service.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
+import 'package:anymex/screens/anime/misc/calendar.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/common/big_carousel.dart';
@@ -185,11 +186,28 @@ class SimklService extends GetxController
             ),
           ],
         ),
+      const SizedBox(height: 15),
+      Center(
+        child: ImageButton(
+          width: isDesktop ? 615 : Get.width - 40,
+          height: !isDesktop ? 70 : 90,
+          buttonText: "CALENDAR",
+          borderRadius: 16.multiplyRadius(),
+          backgroundImage: trendingMovies.isNotEmpty
+              ? trendingMovies[0].cover ?? ''
+              : '',
+          onPressed: () {
+            navigate(() => const Calendar());
+          },
+        ),
+      ),
       const SizedBox(height: 25),
-      buildSection("Planned Movies", continueWatchingMovies.value,
-          variant: DataVariant.anilist),
-      buildSection("Continue Watching (SHOWS)", continueWatchingSeries.value,
-          variant: DataVariant.anilist),
+      if (isLoggedIn.value) ...[
+        buildSection("Planned Movies", continueWatchingMovies.value,
+            variant: DataVariant.anilist),
+        buildSection("Continue Watching (SHOWS)", continueWatchingSeries.value,
+            variant: DataVariant.anilist),
+      ],
       if (trendingMovies.value.isNotEmpty)
         ReusableCarousel(
             data: trendingMovies.value.sublist(0, 10),

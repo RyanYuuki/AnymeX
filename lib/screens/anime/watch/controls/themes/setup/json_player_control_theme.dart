@@ -274,7 +274,17 @@ class ThemeRenderer {
       if (zone.showProgress && !alreadyHasProgress) {
         kids.add(Padding(
           padding: zone.progressPadding,
-          child: ProgressSlider(style: zone.progressStyle),
+          child: ProgressSlider(
+            style: zone.progressStyle,
+            activeTrackColor:
+                _resolveNullableColor(zone.progressActiveTrackColor),
+            inactiveTrackColor:
+                _resolveNullableColor(zone.progressInactiveTrackColor),
+            secondaryActiveTrackColor:
+                _resolveNullableColor(zone.progressSecondaryActiveTrackColor),
+            thumbColor: _resolveNullableColor(zone.progressThumbColor),
+            overlayColor: _resolveNullableColor(zone.progressOverlayColor),
+          ),
         ));
         kids.add(SizedBox(height: zone.vibes.progressBottomSpacing));
       }
@@ -507,9 +517,26 @@ class ThemeRenderer {
             flex: item.grabInt('flex', 1), child: const SizedBox.shrink());
 
       case 'progress_slider':
+        final activeTrackColor = item.grabString('activeTrackColor') ??
+            item.grabString('progressActiveTrackColor');
+        final inactiveTrackColor = item.grabString('inactiveTrackColor') ??
+            item.grabString('progressInactiveTrackColor');
+        final secondaryActiveTrackColor =
+            item.grabString('secondaryActiveTrackColor') ??
+                item.grabString('progressSecondaryActiveTrackColor');
+        final thumbColor =
+            item.grabString('thumbColor') ?? item.grabString('progressThumbColor');
+        final overlayColor = item.grabString('overlayColor') ??
+            item.grabString('progressOverlayColor');
         return ProgressSlider(
           style: _toSliderStyle(item.grabString('progressStyle'),
               fallback: SliderStyle.capsule),
+          activeTrackColor: _resolveNullableColor(activeTrackColor),
+          inactiveTrackColor: _resolveNullableColor(inactiveTrackColor),
+          secondaryActiveTrackColor:
+              _resolveNullableColor(secondaryActiveTrackColor),
+          thumbColor: _resolveNullableColor(thumbColor),
+          overlayColor: _resolveNullableColor(overlayColor),
         );
 
       case 'time_current':
@@ -1190,6 +1217,13 @@ class ThemeRenderer {
       default:
         return fallback;
     }
+  }
+
+  Color? _resolveNullableColor(String? raw) {
+    if (raw == null || raw.trim().isEmpty) return null;
+    const sentinel = Color(0x01020304);
+    final parsed = _resolveColor(raw, fallback: sentinel);
+    return parsed == sentinel ? null : parsed;
   }
 
   Color? _getDynamicColor(String key) {
@@ -2021,6 +2055,11 @@ class BottomZone {
     required this.showProgress,
     required this.progressStyle,
     required this.progressPadding,
+    this.progressActiveTrackColor,
+    this.progressInactiveTrackColor,
+    this.progressSecondaryActiveTrackColor,
+    this.progressThumbColor,
+    this.progressOverlayColor,
     required this.outsidePadding,
     required this.vibes,
   });
@@ -2030,6 +2069,11 @@ class BottomZone {
   final bool showProgress;
   final SliderStyle progressStyle;
   final EdgeInsets progressPadding;
+  final String? progressActiveTrackColor;
+  final String? progressInactiveTrackColor;
+  final String? progressSecondaryActiveTrackColor;
+  final String? progressThumbColor;
+  final String? progressOverlayColor;
 
   final EdgeInsets outsidePadding;
   final ZoneVibes vibes;
@@ -2071,6 +2115,14 @@ class BottomZone {
           fallback: SliderStyle.ios),
       progressPadding: _readEdgeInsets(
           json['progressPadding'], const EdgeInsets.symmetric(horizontal: 4)),
+      progressActiveTrackColor:
+          _readString(json['progressActiveTrackColor']),
+      progressInactiveTrackColor:
+          _readString(json['progressInactiveTrackColor']),
+      progressSecondaryActiveTrackColor:
+          _readString(json['progressSecondaryActiveTrackColor']),
+      progressThumbColor: _readString(json['progressThumbColor']),
+      progressOverlayColor: _readString(json['progressOverlayColor']),
       outsidePadding: _readEdgeInsets(
           json['outsidePadding'], const EdgeInsets.only(bottom: 6)),
       vibes: vibes,

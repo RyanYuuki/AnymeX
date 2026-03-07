@@ -8,10 +8,20 @@ enum SliderStyle { capsule, ios }
 
 class ProgressSlider extends StatefulWidget {
   final SliderStyle style;
+  final Color? activeTrackColor;
+  final Color? inactiveTrackColor;
+  final Color? secondaryActiveTrackColor;
+  final Color? thumbColor;
+  final Color? overlayColor;
 
   const ProgressSlider({
     super.key,
     this.style = SliderStyle.capsule,
+    this.activeTrackColor,
+    this.inactiveTrackColor,
+    this.secondaryActiveTrackColor,
+    this.thumbColor,
+    this.overlayColor,
   });
 
   @override
@@ -72,10 +82,13 @@ class _ProgressSliderState extends State<ProgressSlider> {
           trackHeight: 5,
           thumbShape: SliderComponentShape.noThumb,
           trackShape: const IOSSliderTrackShape(),
-          activeTrackColor: Colors.white,
-          inactiveTrackColor: Colors.white.withOpacity(0.2),
-          secondaryActiveTrackColor: Colors.white.withOpacity(0.4),
-          overlayColor: Colors.transparent,
+          activeTrackColor: widget.activeTrackColor ?? Colors.white,
+          inactiveTrackColor:
+              widget.inactiveTrackColor ?? Colors.white.withOpacity(0.2),
+          secondaryActiveTrackColor: widget.secondaryActiveTrackColor ??
+              Colors.white.withOpacity(0.4),
+          thumbColor: widget.thumbColor,
+          overlayColor: widget.overlayColor ?? Colors.transparent,
         );
       case SliderStyle.capsule:
         return SliderThemeData(
@@ -86,13 +99,15 @@ class _ProgressSliderState extends State<ProgressSlider> {
             pressedHeight: 28,
           ),
           trackShape: CapsuleSliderTrack(),
-          activeTrackColor: colorScheme.primary,
-          inactiveTrackColor: colorScheme.surfaceContainerHighest
+          activeTrackColor: widget.activeTrackColor ?? colorScheme.primary,
+          inactiveTrackColor: widget.inactiveTrackColor ??
+              colorScheme.surfaceContainerHighest
               .opaque(0.5, iReallyMeanIt: true),
-          secondaryActiveTrackColor:
+          secondaryActiveTrackColor: widget.secondaryActiveTrackColor ??
               colorScheme.onSurface.opaque(0.3, iReallyMeanIt: true),
-          thumbColor: Colors.white,
-          overlayColor: colorScheme.primary.opaque(0.1, iReallyMeanIt: true),
+          thumbColor: widget.thumbColor ?? Colors.white,
+          overlayColor: widget.overlayColor ??
+              colorScheme.primary.opaque(0.1, iReallyMeanIt: true),
           overlayShape: const RoundSliderOverlayShape(overlayRadius: 18),
         );
     }
