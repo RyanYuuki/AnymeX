@@ -24,6 +24,38 @@ Future<void> launchUrlHelper(String link) async {
   }
 }
 
+class _EndorsedFork {
+  final String name;
+  final String description;
+  final String repoUrl;
+  final String devName;
+  final String devAvatarUrl;
+  final String devProfileUrl;
+  final String? discordUrl;
+
+  const _EndorsedFork({
+    required this.name,
+    required this.description,
+    required this.repoUrl,
+    required this.devName,
+    required this.devAvatarUrl,
+    required this.devProfileUrl,
+    this.discordUrl,
+  });
+}
+
+const List<_EndorsedFork> _endorsedForks = [
+  _EndorsedFork(
+    name: 'NyanTV',
+    description: 'AnymeX fork optimised for TV',
+    repoUrl: 'https://github.com/NyanTV/NyanTV',
+    devName: 'hoemotion',
+    devAvatarUrl: 'https://avatars.githubusercontent.com/u/86238378?v=4',
+    devProfileUrl: 'https://github.com/hoemotion',
+    discordUrl: 'https://discord.gg/WWCdh2NpUv',
+  ),
+];
+
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
 
@@ -237,6 +269,23 @@ class AboutPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: CustomSection(
+                      icon: Iconsax.copy,
+                      title: "Endorsed Forks",
+                      subtitle: "Community forks officially endorsed by AnymeX",
+                      items: [
+                        for (final fork in _endorsedForks)
+                          _EndorsedForkTile(fork: fork),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surfaceContainer.opaque(0.5),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: CustomSection(
                       icon: Iconsax.info_circle,
                       title: "Others",
                       subtitle: "Other Stuffs",
@@ -265,17 +314,18 @@ class AboutPage extends StatelessWidget {
                           leading: const Icon(Icons.system_update),
                           title: "Check for Updates",
                         ),
-
-                        // Enable Beta Updates (Toggle)
                         CustomListTile(
                           leading: const Icon(Iconsax.toggle_on),
                           title: "Enable Beta Updates",
                           subtitle: "Check updates from beta channel",
                           trailing: Obx(
                             () => Switch(
-                              value: Get.find<Settings>().enableBetaUpdates.value,
+                              value: Get.find<Settings>()
+                                  .enableBetaUpdates
+                                  .value,
                               onChanged: (value) {
-                                Get.find<Settings>().saveBetaUpdateToggle(value);
+                                Get.find<Settings>()
+                                    .saveBetaUpdateToggle(value);
                               },
                             ),
                           ),
@@ -289,6 +339,61 @@ class AboutPage extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _EndorsedForkTile extends StatelessWidget {
+  const _EndorsedForkTile({required this.fork});
+
+  final _EndorsedFork fork;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return ListTile(
+      onTap: () async => launchUrlHelper(fork.repoUrl),
+      leading: CircleAvatar(
+        backgroundImage: NetworkImage(fork.devAvatarUrl),
+        backgroundColor: Colors.transparent,
+      ),
+      title: Text(
+        fork.name,
+        style: const TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w600),
+      ),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            fork.description,
+            style: const TextStyle(fontFamily: 'Poppins', fontSize: 12),
+          ),
+          Text(
+            'by ${fork.devName}',
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 11,
+              color: theme.colorScheme.primary,
+            ),
+          ),
+        ],
+      ),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            tooltip: 'GitHub',
+            icon: const Icon(HugeIcons.strokeRoundedGithub),
+            onPressed: () async => launchUrlHelper(fork.repoUrl),
+          ),
+          if (fork.discordUrl != null)
+            IconButton(
+              tooltip: 'Discord',
+              icon: const Icon(HugeIcons.strokeRoundedDiscord),
+              onPressed: () async => launchUrlHelper(fork.discordUrl!),
+            ),
+        ],
       ),
     );
   }
