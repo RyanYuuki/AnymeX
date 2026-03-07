@@ -1,6 +1,8 @@
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/other_features.dart';
+import 'package:anymex/screens/settings/sub_settings/contributors/contributors.dart';
 import 'package:anymex/screens/settings/sub_settings/widgets/about_deps.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/policy_sheet.dart';
@@ -193,6 +195,14 @@ class AboutPage extends StatelessWidget {
                           subtitle: 'View Source code on github.',
                         ),
                         CustomListTile(
+                          onTap: () {
+                            navigate(() => const ContributorsPage());
+                          },
+                          leading: const Icon(Icons.group_rounded),
+                          title: "Contributors",
+                          subtitle: "See people who contributed to AnymeX",
+                        ),
+                        CustomListTile(
                           onTap: () async {
                             await launchUrlHelper(
                                 'https://ko-fi.com/ryanyuuki7');
@@ -259,9 +269,11 @@ class AboutPage extends StatelessWidget {
                           subtitle: "Check updates from beta channel",
                           trailing: Obx(
                             () => Switch(
-                              value: Get.find<Settings>().enableBetaUpdates.value,
+                              value:
+                                  Get.find<Settings>().enableBetaUpdates.value,
                               onChanged: (value) {
-                                Get.find<Settings>().saveBetaUpdateToggle(value);
+                                Get.find<Settings>()
+                                    .saveBetaUpdateToggle(value);
                               },
                             ),
                           ),
