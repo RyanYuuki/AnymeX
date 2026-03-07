@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:collection';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
@@ -15,100 +17,65 @@ class DiscordLoginPage extends StatefulWidget {
 }
 
 class _DiscordLoginPageState extends State<DiscordLoginPage> {
-  late InAppWebViewController _controller;
+  InAppWebViewController? _controller;
   bool _tokenExtracted = false;
   bool _isLoading = true;
   double _progress = 0.0;
-  Timer? _pollingTimer;
+
+  static const String _interceptorScript = """
+    (function() {
+      function sendToken(token) {
+        if (token && token.length > 20 && !token.includes(' ')) {
+          window.flutter_inappwebview.callHandler('onTokenFound', token);
+        }
+      }
+
+      function extractFromAuth(value) {
+        if (!value) return;
+        var t = value.replace(/^Bot\\s+|^Bearer\\s+/i, '').trim();
+        if (t.length > 20) sendToken(t);
+      }
+
+      var _fetch = window.fetch;
+      window.fetch = function(input, init) {
+        try {
+          var headers = (init && init.headers) ? init.headers : {};
+          if (headers instanceof Headers) {
+            var auth = headers.get('Authorization');
+            if (auth) extractFromAuth(auth);
+          } else if (typeof headers === 'object') {
+            Object.keys(headers).forEach(function(k) {
+              if (k.toLowerCase() === 'authorization') extractFromAuth(headers[k]);
+            });
+          }
+        } catch(e) {}
+        return _fetch.apply(this, arguments);
+      };
+
+      var _open = XMLHttpRequest.prototype.open;
+      var _setHeader = XMLHttpRequest.prototype.setRequestHeader;
+      XMLHttpRequest.prototype.setRequestHeader = function(name, value) {
+        try {
+          if (name.toLowerCase() === 'authorization') extractFromAuth(value);
+        } catch(e) {}
+        return _setHeader.apply(this, arguments);
+      };
+    })();
+  """;
 
   @override
   void dispose() {
-    _pollingTimer?.cancel();
+    _controller?.removeJavaScriptHandler(handlerName: 'onTokenFound');
     super.dispose();
   }
 
-  void _startPolling() {
-    _pollingTimer?.cancel();
-    int attempts = 0;
-    _pollingTimer = Timer.periodic(const Duration(seconds: 2), (timer) async {
-      attempts++;
-      if (_tokenExtracted || attempts > 20) {
-        timer.cancel();
-        return;
-      }
-      await _extractToken();
-    });
-  }
-
-  Future<void> _extractToken() async {
-    if (!mounted || _tokenExtracted) return;
-
-    try {
-      final result = await _controller.callAsyncJavaScript(functionBody: '''
-        return new Promise((resolve) => {
-          try {
-            var token = localStorage.getItem('token');
-            if (token && token.length > 10) { resolve(token); return; }
-          } catch(e) {}
-
-          try {
-            var request = indexedDB.open('localforage');
-            request.onsuccess = function(event) {
-              try {
-                var db = event.target.result;
-                var storeNames = Array.from(db.objectStoreNames);
-                if (storeNames.length === 0) { resolve(null); return; }
-
-                var tx = db.transaction(storeNames[0], 'readonly');
-                var store = tx.objectStore(storeNames[0]);
-                var getReq = store.get('token');
-                getReq.onsuccess = function() {
-                  if (getReq.result && getReq.result.length > 10) {
-                    resolve(getReq.result);
-                  } else {
-                    var cursorReq = store.openCursor();
-                    cursorReq.onsuccess = function(e) {
-                      var cursor = e.target.result;
-                      if (cursor) {
-                        if (cursor.key === 'token' ||
-                            (typeof cursor.value === 'string' && cursor.value.length > 50)) {
-                          resolve(cursor.value);
-                          return;
-                        }
-                        cursor.continue();
-                      } else {
-                        resolve(null);
-                      }
-                    };
-                    cursorReq.onerror = function() { resolve(null); };
-                  }
-                };
-                getReq.onerror = function() { resolve(null); };
-              } catch(e) { resolve(null); }
-            };
-            request.onerror = function() { resolve(null); };
-          } catch(e) {
-            resolve(null);
-          }
-        });
-      ''');
-
-      final value = result?.value;
-
-      if (value != null && value.toString() != 'null' && value.toString().isNotEmpty) {
-        final token = value.toString().trim().replaceAll('"', '');
-        if (token.isNotEmpty && token != 'null' && token.length > 10) {
-          _tokenExtracted = true;
-          _pollingTimer?.cancel();
-          widget.onTokenExtracted(token);
-          if (mounted) {
-            Navigator.of(context).pop();
-          }
-        }
-      }
-    } catch (e) {
-      print('Error extracting token: $e');
-    }
+  void _handleToken(String token) {
+    if (_tokenExtracted) return;
+    final clean = token.trim().replaceAll('"', '');
+    if (clean.isEmpty || clean == 'null' || clean.length < 20) return;
+    _tokenExtracted = true;
+    widget.onTokenExtracted(clean);
+    if (mounted) Navigator.of(context).pop();
   }
 
   @override
@@ -208,6 +175,12 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
                   initialUrlRequest: URLRequest(
                     url: WebUri('https://discord.com/login'),
                   ),
+                  initialUserScripts: UnmodifiableListView<UserScript>([
+                    UserScript(
+                      source: _interceptorScript,
+                      injectionTime: UserScriptInjectionTime.AT_DOCUMENT_START,
+                    ),
+                  ]),
                   initialSettings: InAppWebViewSettings(
                     javaScriptEnabled: true,
                     domStorageEnabled: true,
@@ -220,12 +193,22 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
                     sharedCookiesEnabled: true,
                     thirdPartyCookiesEnabled: true,
                     limitsNavigationsToAppBoundDomains: false,
+                    useShouldInterceptFetchRequest: Platform.isIOS,
                   ),
+                  onWebViewCreated: (controller) {
+                    _controller = controller;
+                    controller.addJavaScriptHandler(
+                      handlerName: 'onTokenFound',
+                      callback: (args) {
+                        if (args.isNotEmpty) {
+                          _handleToken(args[0].toString());
+                        }
+                      },
+                    );
+                  },
                   onLoadStart: (controller, url) {
                     if (mounted) {
-                      setState(() {
-                        _isLoading = true;
-                      });
+                      setState(() => _isLoading = true);
                     }
                   },
                   onLoadStop: (controller, url) async {
@@ -235,20 +218,12 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
                         _progress = 1.0;
                       });
                     }
-                    _startPolling();
+                    await controller.evaluateJavascript(source: _interceptorScript);
                   },
                   onProgressChanged: (controller, progress) {
                     if (mounted) {
-                      setState(() {
-                        _progress = progress / 100;
-                      });
+                      setState(() => _progress = progress / 100);
                     }
-                  },
-                  onWebViewCreated: (controller) {
-                    _controller = controller;
-                  },
-                  onUpdateVisitedHistory: (controller, url, isReload) async {
-                    await _extractToken();
                   },
                   shouldOverrideUrlLoading: (controller, navigationAction) async {
                     return NavigationActionPolicy.ALLOW;
