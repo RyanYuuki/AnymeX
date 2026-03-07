@@ -38,6 +38,8 @@ import 'package:rxdart/rxdart.dart' show ThrottleExtensions;
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:volume_controller/volume_controller.dart';
+import 'package:flutter_in_app_pip/flutter_in_app_pip.dart';
+import '../controls/widgets/pip_ui.dart';
 
 import '../../../../database/isar_models/track.dart' as model;
 
@@ -87,6 +89,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final String? itemName;
   final String? offlineVideoPath;
   final bool shouldTrack;
+  final RxBool isPipMode = false.obs;
 
   PlayerController(model.Video video, Episode episode, this.episodeList,
       this.anilistData, List<model.Video> episodes,
@@ -312,6 +315,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   @override
   void onClose() {
+    if (isPipMode.value) {
+      PictureInPictureController.instance.stop();
+    }
     WidgetsBinding.instance.removeObserver(this);
     super.onClose();
   }
@@ -1054,6 +1060,20 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void setAudioTrack(AudioTrack track) {
     _basePlayer.setAudioTrack(track);
+  }
+
+  void togglePip() async {
+    if (isPipMode.value) {
+      PictureInPictureController.instance.stop();
+      isPipMode.value = false;
+    } else {
+      isPipMode.value = true;
+      PictureInPictureController.instance.start(
+        widget: PipUi(controller: this),
+        parentContext: Get.context!,
+        aspectRatio: 16 / 9,
+      );
+    }
   }
 
   void setSubtitleTrack(SubtitleTrack track) {
