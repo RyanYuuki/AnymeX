@@ -25,7 +25,7 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
     await Future.delayed(const Duration(seconds: 2));
 
     try {
-      final result = await _controller.callAsyncJavaScript(source: '''
+      final result = await _controller.callAsyncJavaScript(functionBody: '''
         return new Promise((resolve) => {
           try {
             var token = localStorage.getItem('token');
