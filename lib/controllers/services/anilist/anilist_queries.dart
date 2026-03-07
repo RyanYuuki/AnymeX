@@ -45,6 +45,7 @@ const detailsPrimaryQuery = '''
         characters(sort: [ROLE, FAVOURITES_DESC], perPage: 25, page: 1) {
           edges {
             node {
+              id
               name {
                 full
               }
@@ -54,6 +55,8 @@ const detailsPrimaryQuery = '''
               }
             }
             voiceActors(language: JAPANESE) {
+              id
+              languageV2
               name {
                 full
               }
