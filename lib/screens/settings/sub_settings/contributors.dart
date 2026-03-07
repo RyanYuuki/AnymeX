@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 
@@ -184,11 +183,37 @@ class _ContributorCard extends StatefulWidget {
   State<_ContributorCard> createState() => _ContributorCardState();
 }
 
-class _ContributorCardState extends State<_ContributorCard> {
+class _ContributorCardState extends State<_ContributorCard>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _opacity;
+  late final Animation<Offset> _slide;
+
   final List<TapGestureRecognizer> _recognizers = [];
 
   @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
+
+    _opacity = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
+
+    _slide = Tween<Offset>(
+      begin: const Offset(0, 0.1),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+
+    Future.delayed(Duration(milliseconds: widget.index * 50), () {
+      if (mounted) _controller.forward();
+    });
+  }
+
+  @override
   void dispose() {
+    _controller.dispose();
     for (final r in _recognizers) {
       r.dispose();
     }
@@ -235,13 +260,14 @@ class _ContributorCardState extends State<_ContributorCard> {
         spans.add(TextSpan(text: remaining, style: baseStyle));
         break;
       }
+
       if (earliestIdx > 0) {
         spans.add(TextSpan(
           text: remaining.substring(0, earliestIdx),
           style: baseStyle,
         ));
       }
-      
+
       final url = roleLinks[matchedKey]!;
       final recognizer = TapGestureRecognizer()
         ..onTap = () async {
@@ -274,110 +300,113 @@ class _ContributorCardState extends State<_ContributorCard> {
   Widget build(BuildContext context) {
     final dev = widget.dev;
 
-    final card = InkWell(
-      onTap: () async {
-        final url = Uri.parse(dev.uri);
-        if (await canLaunchUrl(url)) {
-          await launchUrl(url, mode: LaunchMode.externalApplication);
-        }
-      },
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Stack(
-          clipBehavior: Clip.antiAlias,
-          children: [
-            if (dev.banner != null)
-              Image.network(
-                dev.banner!,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: 86,
-                errorBuilder: (_, __, ___) => const SizedBox(
+    return FadeTransition(
+      opacity: _opacity,
+      child: SlideTransition(
+        position: _slide,
+        child: InkWell(
+          onTap: () async {
+            final url = Uri.parse(dev.uri);
+            if (await canLaunchUrl(url)) {
+              await launchUrl(url, mode: LaunchMode.externalApplication);
+            }
+          },
+          child: Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: Stack(
+              clipBehavior: Clip.antiAlias,
+              children: [
+                if (dev.banner != null)
+                  Image.network(
+                    dev.banner!,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: 86,
+                    errorBuilder: (_, __, ___) => const SizedBox(
+                      height: 86,
+                      width: double.infinity,
+                    ),
+                  ),
+                Container(
+                  width: double.infinity,
+                  height: 86,
+                  color: Colors.black.withOpacity(0.5),
+                ),
+                SizedBox(
                   height: 86,
                   width: double.infinity,
-                ),
-              ),
-            Container(
-              width: double.infinity,
-              height: 86,
-              color: Colors.black.withOpacity(0.5),
-            ),
-            SizedBox(
-              height: 86,
-              width: double.infinity,
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      CircleAvatar(
-                        radius: 28,
-                        backgroundImage: dev.pfp.isNotEmpty
-                            ? CachedNetworkImageProvider(dev.pfp)
-                            : null,
-                        backgroundColor: Colors.transparent,
-                        child: dev.pfp.isEmpty
-                            ? Icon(
-                                Icons.person,
-                                size: 28,
-                                color: Theme.of(context).colorScheme.onSurface,
-                              )
-                            : null,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              dev.name,
-                              style: const TextStyle(
-                                fontFamily: 'Poppins',
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            Text.rich(
-                              _buildRoleTextSpan(dev.role, dev.roleLinks),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            if (dev.contributions > 0)
-                              Text(
-                                '${dev.contributions} contribution${dev.contributions == 1 ? '' : 's'}',
-                                style: const TextStyle(
-                                  fontFamily: 'Poppins',
-                                  fontSize: 12,
-                                  color: Colors.white60,
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          CircleAvatar(
+                            radius: 28,
+                            backgroundImage: dev.pfp.isNotEmpty
+                                ? CachedNetworkImageProvider(dev.pfp)
+                                : null,
+                            backgroundColor: Colors.transparent,
+                            child: dev.pfp.isEmpty
+                                ? Icon(
+                                    Icons.person,
+                                    size: 28,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface,
+                                  )
+                                : null,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  dev.name,
+                                  style: const TextStyle(
+                                    fontFamily: 'Poppins',
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                          ],
-                        ),
+                                Text.rich(
+                                  _buildRoleTextSpan(dev.role, dev.roleLinks),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                if (dev.contributions > 0)
+                                  Text(
+                                    '${dev.contributions} contribution${dev.contributions == 1 ? '' : 's'}',
+                                    style: const TextStyle(
+                                      fontFamily: 'Poppins',
+                                      fontSize: 12,
+                                      color: Colors.white60,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
-
-    return card
-        .animate()
-        .fadeIn(duration: 400.ms, delay: (widget.index * 50).ms)
-        .slide(begin: const Offset(0, 0.1));
   }
 }
 
