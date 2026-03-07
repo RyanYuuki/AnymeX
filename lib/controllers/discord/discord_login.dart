@@ -25,48 +25,60 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
     await Future.delayed(const Duration(seconds: 2));
 
     try {
-      final result = await _controller.evaluateJavascript(source: '''
-        (function() {
+      final result = await _controller.callAsyncJavaScript(source: '''
+        return new Promise((resolve) => {
           try {
-            var token = null;
+            var token = localStorage.getItem('token');
+            if (token) { resolve(token); return; }
+          } catch(e) {}
 
-            try {
-              token = localStorage.getItem('token');
-              if (token) return token;
-            } catch(e) {}
+          try {
+            var request = indexedDB.open('localforage');
+            request.onsuccess = function(event) {
+              try {
+                var db = event.target.result;
+                var storeNames = Array.from(db.objectStoreNames);
+                if (storeNames.length === 0) { resolve(null); return; }
 
-            try {
-              token = window.LOCAL_STORAGE && window.LOCAL_STORAGE.getItem('token');
-              if (token) return token;
-            } catch(e) {}
-
-            try {
-              var iframe = document.querySelector('iframe');
-              if (iframe && iframe.contentWindow) {
-                token = iframe.contentWindow.localStorage.getItem('token');
-                if (token) return token;
-              }
-            } catch(e) {}
-
-            try {
-              for (var key in Object.keys(localStorage)) {
-                if (key === 'token') {
-                  token = localStorage[key];
-                  if (token) return token;
-                }
-              }
-            } catch(e) {}
-
-            return null;
+                var tx = db.transaction(storeNames[0], 'readonly');
+                var store = tx.objectStore(storeNames[0]);
+                var getReq = store.get('token');
+                getReq.onsuccess = function() {
+                  if (getReq.result) {
+                    resolve(getReq.result);
+                  } else {
+                    var cursorReq = store.openCursor();
+                    cursorReq.onsuccess = function(e) {
+                      var cursor = e.target.result;
+                      if (cursor) {
+                        if (cursor.key === 'token' ||
+                            (typeof cursor.value === 'string' && cursor.value.length > 50)) {
+                          resolve(cursor.value);
+                          return;
+                        }
+                        cursor.continue();
+                      } else {
+                        resolve(null);
+                      }
+                    };
+                    cursorReq.onerror = function() { resolve(null); };
+                  }
+                };
+                getReq.onerror = function() { resolve(null); };
+              } catch(e) { resolve(null); }
+            };
+            request.onerror = function() { resolve(null); };
           } catch(e) {
-            return null;
+            resolve(null);
           }
-        })()
+        });
       ''');
 
-      if (result != null && result != 'null' && result.toString().isNotEmpty) {
+      final value = result?.value;
+
+      if (value != null && value.toString() != 'null' && value.toString().isNotEmpty) {
         _tokenExtracted = true;
-        final token = result.toString().trim().replaceAll('"', '');
+        final token = value.toString().trim().replaceAll('"', '');
         if (token.isNotEmpty && token != 'null') {
           widget.onTokenExtracted(token);
           if (mounted) {
@@ -83,8 +95,18 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
     await _controller.evaluateJavascript(source: '''
       if (window.location.hostname === 'discord.com') {
         try { localStorage.clear(); } catch(e) {}
-        try { window.LOCAL_STORAGE && window.LOCAL_STORAGE.clear(); } catch(e) {}
         try { window.sessionStorage.clear(); } catch(e) {}
+        try {
+          var req = indexedDB.open('localforage');
+          req.onsuccess = function(e) {
+            var db = e.target.result;
+            var names = Array.from(db.objectStoreNames);
+            if (names.length > 0) {
+              var tx = db.transaction(names[0], 'readwrite');
+              tx.objectStore(names[0]).clear();
+            }
+          };
+        } catch(e) {}
       }
     ''');
   }
@@ -195,13 +217,11 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
                     loadWithOverviewMode: true,
                     allowUniversalAccessFromFileURLs: true,
                     allowFileAccessFromFileURLs: true,
+                    sharedCookiesEnabled: true,
+                    thirdPartyCookiesEnabled: true,
+                    limitsNavigationsToAppBoundDomains: false,
                   ),
                   onLoadStart: (controller, url) async {
-                    await controller.evaluateJavascript(source: '''
-                      try {
-                        window.LOCAL_STORAGE = localStorage;
-                      } catch (e) {}
-                    ''');
                     if (mounted) {
                       setState(() {
                         _isLoading = true;
@@ -239,8 +259,7 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
                       await _extractToken();
                     }
                   },
-                  shouldOverrideUrlLoading:
-                      (controller, navigationAction) async {
+                  shouldOverrideUrlLoading: (controller, navigationAction) async {
                     return NavigationActionPolicy.ALLOW;
                   },
                 ),
