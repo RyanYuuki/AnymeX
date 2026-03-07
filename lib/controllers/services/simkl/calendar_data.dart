@@ -17,9 +17,20 @@ Future<void> fetchSimklCalendarData(RxList<Media> callbackData, {bool isMovies =
   if (response.statusCode == 200) {
     final List<dynamic> schedules = json.decode(response.body);
     final isMAL = serviceHandler.serviceType.value == ServicesType.mal;
-
+    final Set<String> seenIds = {};
+    
     List<Media> newMediaList = schedules
         .map<Media?>((schedule) {
+          final id = schedule['ids']?['simkl_id']?.toString() ?? 
+                     schedule['ids']?['simkl']?.toString() ?? 
+                     schedule['url']?.toString();
+          if (id != null && seenIds.contains(id)) {
+            return null;
+          }
+          if (id != null) {
+            seenIds.add(id);
+          }
+          
           final media = Media.fromSmallSimkl(schedule, !isMovies);
           return media;
         })
@@ -29,7 +40,7 @@ Future<void> fetchSimklCalendarData(RxList<Media> callbackData, {bool isMovies =
 
     callbackData.addAll(newMediaList);
 
-    Logger.i('Fetched ${callbackData.length} total Simkl calendar items so far.');
+    Logger.i('Fetched ${callbackData.length} total Simkl calendar items (${seenIds.length} unique) so far.');
   } else {
     Logger.i('Error: ${response.body}');
     throw Exception('Failed to load Simkl calendar data: ${response.statusCode}');
