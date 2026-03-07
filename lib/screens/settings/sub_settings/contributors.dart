@@ -8,10 +8,9 @@ import 'package:url_launcher/url_launcher.dart';
 
 class Contributors {
   static const List<String> excludedContributorIds = [
-    '198982749',
-    '15368',
-    '41898282',
-    '65916846',
+    '198982749', // copilot-pull-request-reviewer
+    '41898282', // github-actions
+    '65916846', // actions-user
   ];
 
   static const List<String> defaultBanners = [
