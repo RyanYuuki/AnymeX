@@ -6,6 +6,7 @@ import 'package:anymex/screens/settings/sub_settings/settings_common.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_experimental.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_extensions.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_reader.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_storage_manager.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_theme.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_ui.dart';
@@ -92,6 +93,13 @@ class _SettingsPageState extends State<SettingsPage> {
                     description: "Play around with the video player",
                     onTap: () {
                       navigate(() => const SettingsPlayer());
+                    }),
+                CustomTile(
+                    icon: Icons.menu_book_rounded,
+                    title: "Reader",
+                    description: "Configure manga and novel reader defaults",
+                    onTap: () {
+                      navigate(() => const SettingsReader());
                     }),
                 CustomTile(
                     icon: HugeIcons.strokeRoundedPaintBrush01,

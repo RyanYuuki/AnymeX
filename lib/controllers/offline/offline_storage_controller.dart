@@ -1,5 +1,6 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/database/isar_models/custom_list.dart';
 import 'package:anymex/database/isar_models/episode.dart';
@@ -18,6 +19,10 @@ enum MediaLibraryType {
 }
 
 class OfflineStorageController extends GetxController {
+  GistSyncController? get _syncCtrl => Get.isRegistered<GistSyncController>()
+      ? Get.find<GistSyncController>()
+      : null;
+
   Stream<List<OfflineMedia>> watchAnimeLibrary() {
     return isar.offlineMedias
         .filter()
@@ -466,7 +471,10 @@ class OfflineStorageController extends GetxController {
   }
 
   Future<void> addOrUpdateWatchedEpisode(
-      String animeId, Episode episode) async {
+    String animeId,
+    Episode episode, {
+    bool syncToCloud = true,
+  }) async {
     final existingAnime = getAnimeById(animeId);
     if (existingAnime == null) {
       Logger.i(
@@ -497,6 +505,13 @@ class OfflineStorageController extends GetxController {
 
       await isar.offlineMedias.put(existingAnime);
     });
+
+    if (syncToCloud) {
+      _syncCtrl?.pushEpisodeProgress(
+        mediaId: animeId,
+        episode: episode,
+      );
+    }
   }
 
   Episode? getWatchedEpisode(String anilistId, String episodeNumber) {
@@ -511,6 +526,7 @@ class OfflineStorageController extends GetxController {
     String mangaId,
     Chapter chapter, {
     Source? source,
+    bool syncToCloud = true,
   }) async {
     print(chapter.toJson());
     OfflineMedia? existingManga = getMangaById(mangaId);
@@ -545,6 +561,14 @@ class OfflineStorageController extends GetxController {
 
       await isar.offlineMedias.put(existingManga);
     });
+
+    if (syncToCloud) {
+      _syncCtrl?.pushChapterProgress(
+        mediaId: mangaId,
+        mediaType: existingManga.mediaTypeIndex == 2 ? 'novel' : 'manga',
+        chapter: chapter,
+      );
+    }
   }
 
   Chapter? getReadChapter(String anilistId, double number) {

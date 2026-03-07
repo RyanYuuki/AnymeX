@@ -209,8 +209,13 @@ class ReaderSettings {
                               isSelected: mode == currentMode,
                               style: IconButton.styleFrom(
                                 backgroundColor: mode == currentMode
-                                    ? Theme.of(context).colorScheme.primary.withOpacity(0.2)
-                                    : Theme.of(context).colorScheme.surfaceContainer,
+                                    ? Theme.of(context)
+                                        .colorScheme
+                                        .primary
+                                        .withOpacity(0.2)
+                                    : Theme.of(context)
+                                        .colorScheme
+                                        .surfaceContainer,
                                 foregroundColor: mode == currentMode
                                     ? Theme.of(context).colorScheme.primary
                                     : Theme.of(context).iconTheme.color,
@@ -221,7 +226,8 @@ class ReaderSettings {
                                 DualPageMode.auto => Icons.devices,
                                 DualPageMode.force => Icons.menu_book_rounded,
                               }),
-                              onPressed: () => controller.toggleDualPageMode(mode),
+                              onPressed: () =>
+                                  controller.toggleDualPageMode(mode),
                             )
                         ],
                       ),
@@ -312,13 +318,16 @@ class ReaderSettings {
                           controller.setAutoScrollSpeed(value);
                         },
                         onChangedEnd: (e) => controller.savePreferences(),
-                        description: controller.readingLayout.value == MangaPageViewMode.continuous
-                            ? 'Seconds to scroll one screen height'
-                            : 'Seconds per page turn',
+                        description:
+                            controller.readingLayout.value ==
+                                    MangaPageViewMode.continuous
+                                ? 'Seconds to scroll one screen height'
+                                : 'Seconds per page turn',
                         icon: Icons.speed,
                         min: 1.0,
                         max: 10.0,
-                        label: '${controller.autoScrollSpeed.value.toStringAsFixed(1)}s',
+                        label:
+                            '${controller.autoScrollSpeed.value.toStringAsFixed(1)}s',
                         divisions: 18,
                       ),
                     );
@@ -328,7 +337,8 @@ class ReaderSettings {
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),
                       child: CustomSliderTile(
                         title: 'Preload Page',
-                        sliderValue: controller.preloadPages.value.toDouble(),
+                        sliderValue:
+                            controller.preloadPages.value.toDouble(),
                         onChanged: (double value) {
                           controller.preloadPages.value = value.toInt();
                         },
@@ -346,7 +356,8 @@ class ReaderSettings {
                   if (!Platform.isAndroid && !Platform.isIOS)
                     Obx(() {
                       return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        padding:
+                            const EdgeInsets.symmetric(horizontal: 10.0),
                         child: CustomSliderTile(
                           title: 'Image Width',
                           sliderValue: controller.pageWidthMultiplier.value,
@@ -365,16 +376,17 @@ class ReaderSettings {
                   if (!Platform.isAndroid && !Platform.isIOS)
                     Obx(() {
                       return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        padding:
+                            const EdgeInsets.symmetric(horizontal: 10.0),
                         child: CustomSliderTile(
                           title: 'Scroll Multiplier',
-                          sliderValue: controller.scrollSpeedMultiplier.value,
+                          sliderValue:
+                              controller.scrollSpeedMultiplier.value,
                           onChanged: (double value) {
                             controller.scrollSpeedMultiplier.value = value;
                           },
                           onChangedEnd: (e) => controller.savePreferences(),
-                          description:
-                              'Adjust Key & Volume Scrolling Speed',
+                          description: 'Adjust Key & Volume Scrolling Speed',
                           icon: Icons.speed,
                           min: 1.0,
                           max: 5.0,
@@ -390,7 +402,6 @@ class ReaderSettings {
         );
       },
     ).then((_) {
-     
       if (wasVolumeEnabled) {
         controller.resumeVolumeKeys();
       }

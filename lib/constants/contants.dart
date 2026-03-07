@@ -51,7 +51,7 @@ String capitalize(String word) {
 const maxMobileWidth = 600;
 
 final Map<String, Color> colorOptions = {
-  'Default': Colors.transparent,
+  'None': Colors.transparent,
   'White': Colors.white,
   'Black': Colors.black,
   'Red': Colors.red,
