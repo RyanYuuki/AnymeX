@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
@@ -18,18 +19,36 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
   bool _tokenExtracted = false;
   bool _isLoading = true;
   double _progress = 0.0;
+  Timer? _pollingTimer;
+
+  @override
+  void dispose() {
+    _pollingTimer?.cancel();
+    super.dispose();
+  }
+
+  void _startPolling() {
+    _pollingTimer?.cancel();
+    int attempts = 0;
+    _pollingTimer = Timer.periodic(const Duration(seconds: 2), (timer) async {
+      attempts++;
+      if (_tokenExtracted || attempts > 20) {
+        timer.cancel();
+        return;
+      }
+      await _extractToken();
+    });
+  }
 
   Future<void> _extractToken() async {
     if (!mounted || _tokenExtracted) return;
-
-    await Future.delayed(const Duration(seconds: 2));
 
     try {
       final result = await _controller.callAsyncJavaScript(functionBody: '''
         return new Promise((resolve) => {
           try {
             var token = localStorage.getItem('token');
-            if (token) { resolve(token); return; }
+            if (token && token.length > 10) { resolve(token); return; }
           } catch(e) {}
 
           try {
@@ -44,7 +63,7 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
                 var store = tx.objectStore(storeNames[0]);
                 var getReq = store.get('token');
                 getReq.onsuccess = function() {
-                  if (getReq.result) {
+                  if (getReq.result && getReq.result.length > 10) {
                     resolve(getReq.result);
                   } else {
                     var cursorReq = store.openCursor();
@@ -77,9 +96,10 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
       final value = result?.value;
 
       if (value != null && value.toString() != 'null' && value.toString().isNotEmpty) {
-        _tokenExtracted = true;
         final token = value.toString().trim().replaceAll('"', '');
-        if (token.isNotEmpty && token != 'null') {
+        if (token.isNotEmpty && token != 'null' && token.length > 10) {
+          _tokenExtracted = true;
+          _pollingTimer?.cancel();
           widget.onTokenExtracted(token);
           if (mounted) {
             Navigator.of(context).pop();
@@ -89,26 +109,6 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
     } catch (e) {
       print('Error extracting token: $e');
     }
-  }
-
-  Future<void> _clearDiscordData() async {
-    await _controller.evaluateJavascript(source: '''
-      if (window.location.hostname === 'discord.com') {
-        try { localStorage.clear(); } catch(e) {}
-        try { window.sessionStorage.clear(); } catch(e) {}
-        try {
-          var req = indexedDB.open('localforage');
-          req.onsuccess = function(e) {
-            var db = e.target.result;
-            var names = Array.from(db.objectStoreNames);
-            if (names.length > 0) {
-              var tx = db.transaction(names[0], 'readwrite');
-              tx.objectStore(names[0]).clear();
-            }
-          };
-        } catch(e) {}
-      }
-    ''');
   }
 
   @override
@@ -221,7 +221,7 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
                     thirdPartyCookiesEnabled: true,
                     limitsNavigationsToAppBoundDomains: false,
                   ),
-                  onLoadStart: (controller, url) async {
+                  onLoadStart: (controller, url) {
                     if (mounted) {
                       setState(() {
                         _isLoading = true;
@@ -235,12 +235,7 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
                         _progress = 1.0;
                       });
                     }
-                    final urlStr = url?.toString() ?? '';
-                    if (urlStr.isNotEmpty &&
-                        urlStr != 'https://discord.com/login' &&
-                        urlStr != 'about:blank') {
-                      await _extractToken();
-                    }
+                    _startPolling();
                   },
                   onProgressChanged: (controller, progress) {
                     if (mounted) {
@@ -251,13 +246,9 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
                   },
                   onWebViewCreated: (controller) {
                     _controller = controller;
-                    _clearDiscordData();
                   },
                   onUpdateVisitedHistory: (controller, url, isReload) async {
-                    if (url.toString() != 'https://discord.com/login' &&
-                        url.toString() != 'about:blank') {
-                      await _extractToken();
-                    }
+                    await _extractToken();
                   },
                   shouldOverrideUrlLoading: (controller, navigationAction) async {
                     return NavigationActionPolicy.ALLOW;
