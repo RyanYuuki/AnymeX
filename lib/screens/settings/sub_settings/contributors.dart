@@ -25,23 +25,10 @@ class Contributors {
         name: 'RyanYuuki',
         githubId: '108048963',
         pfp: 'https://avatars.githubusercontent.com/u/108048963?s=400&u=7f67531c27c5ebbbcde943f9576a0bfdb98909c8&v=4',
-        banner: 'https://files.catbox.moe/mdn05t.png',
+        banner: 'https://files.catbox.moe/asy3xu.jpg',
         uri: 'https://github.com/RyanYuuki',
         role: 'Lead Developer',
         contributions: 0,
-      ),
-      Contributor(
-        name: 'aayush262',
-        githubId: '99584765',
-        pfp: 'https://s4.anilist.co/file/anilistcdn/user/avatar/large/b5144645-vGCFGixZUVSY.png',
-        banner: 'https://s4.anilist.co/file/anilistcdn/user/banner/b5144645-aRu1A0QFBin4.jpg',
-        uri: 'https://github.com/aayush2622',
-        role: 'Lead Dev of Dartotsu & DartotsuExtension Bridge',
-        contributions: 0,
-        roleLinks: {
-          'DartotsuExtension Bridge': 'https://github.com/aayush2622/DartotsuExtensionBridge',
-          'Dartotsu': 'https://github.com/aayush2622/Dartotsu',
-        },
       ),
       Contributor(
         name: 'itsmechinmoy',
@@ -69,6 +56,19 @@ class Contributors {
         uri: 'https://sxenon.carrd.co/',
         role: 'Designer',
         contributions: 0,
+      ),
+      Contributor(
+        name: 'aayush262',
+        githubId: '99584765',
+        pfp: 'https://s4.anilist.co/file/anilistcdn/user/avatar/large/b5144645-vGCFGixZUVSY.png',
+        banner: 'https://s4.anilist.co/file/anilistcdn/user/banner/b5144645-aRu1A0QFBin4.jpg',
+        uri: 'https://github.com/aayush2622',
+        role: 'Lead Dev of Dartotsu & DartotsuExtension Bridge',
+        contributions: 0,
+        roleLinks: {
+          'DartotsuExtension Bridge': 'https://github.com/aayush2622/DartotsuExtensionBridge',
+          'Dartotsu': 'https://github.com/aayush2622/Dartotsu',
+        },
       ),
     ];
 
