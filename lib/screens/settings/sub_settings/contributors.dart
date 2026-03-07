@@ -8,9 +8,10 @@ import 'package:url_launcher/url_launcher.dart';
 
 class Contributors {
   static const List<String> excludedContributorIds = [
-    '198982749', // copilot-pull-request-reviewer
-    '41898282', // github-actions
-    '65916846', // actions-user
+    '198982749',
+    '15368',
+    '41898282',
+    '65916846',
   ];
 
   static const List<String> defaultBanners = [
@@ -66,7 +67,8 @@ class Contributors {
         role: 'Lead Dev of Dartotsu & DartotsuExtension Bridge',
         contributions: 0,
         roleLinks: {
-          'DartotsuExtension Bridge': 'https://github.com/aayush2622/DartotsuExtensionBridge',
+          'DartotsuExtension Bridge':
+              'https://github.com/aayush2622/DartotsuExtensionBridge',
           'Dartotsu': 'https://github.com/aayush2622/Dartotsu',
         },
       ),
@@ -280,13 +282,7 @@ class _ContributorCardState extends State<_ContributorCard>
 
       spans.add(TextSpan(
         text: matchedKey,
-        style: const TextStyle(
-          fontFamily: 'Poppins',
-          fontSize: 14,
-          color: Colors.lightBlueAccent,
-          decoration: TextDecoration.underline,
-          decorationColor: Colors.lightBlueAccent,
-        ),
+        style: baseStyle,
         recognizer: recognizer,
       ));
 
@@ -299,6 +295,8 @@ class _ContributorCardState extends State<_ContributorCard>
   @override
   Widget build(BuildContext context) {
     final dev = widget.dev;
+
+    final bool hasContributions = dev.contributions > 0;
 
     return FadeTransition(
       opacity: _opacity,
@@ -324,19 +322,19 @@ class _ContributorCardState extends State<_ContributorCard>
                     dev.banner!,
                     fit: BoxFit.cover,
                     width: double.infinity,
-                    height: 86,
-                    errorBuilder: (_, __, ___) => const SizedBox(
-                      height: 86,
+                    height: hasContributions ? 100 : 86,
+                    errorBuilder: (_, __, ___) => SizedBox(
+                      height: hasContributions ? 100 : 86,
                       width: double.infinity,
                     ),
                   ),
                 Container(
                   width: double.infinity,
-                  height: 86,
+                  height: hasContributions ? 100 : 86,
                   color: Colors.black.withOpacity(0.5),
                 ),
                 SizedBox(
-                  height: 86,
+                  height: hasContributions ? 100 : 86,
                   width: double.infinity,
                   child: Center(
                     child: Padding(
@@ -379,10 +377,10 @@ class _ContributorCardState extends State<_ContributorCard>
                                 ),
                                 Text.rich(
                                   _buildRoleTextSpan(dev.role, dev.roleLinks),
-                                  maxLines: 1,
+                                  maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                 ),
-                                if (dev.contributions > 0)
+                                if (hasContributions)
                                   Text(
                                     '${dev.contributions} contribution${dev.contributions == 1 ? '' : 's'}',
                                     style: const TextStyle(
