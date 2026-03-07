@@ -322,7 +322,8 @@ class AboutPage extends StatelessWidget {
                           trailing: Obx(
                             () => Switch(
                               value: Get.find<Settings>().enableBetaUpdates.value,
-                              onChanged: (value) {Get.find<Settings>().saveBetaUpdateToggle(value);
+                              onChanged: (value) {
+                                Get.find<Settings>().saveBetaUpdateToggle(value);
                               },
                             ),
                           ),
