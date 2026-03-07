@@ -1,6 +1,7 @@
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/screens/settings/sub_settings/widgets/about_deps.dart';
+import 'package:anymex/screens/settings/sub_settings/contributors.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/policy_sheet.dart';
@@ -212,6 +213,19 @@ class AboutPage extends StatelessWidget {
                           subtitle:
                               'if you have an issue or any suggestion please make an issue at github.',
                         ),
+                        CustomListTile(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const ContributorsPage(),
+                              ),
+                            );
+                          },
+                          leading: const Icon(Icons.group),
+                          title: "Contributors",
+                          subtitle: 'Meet the people who helped build AnymeX.',
+                        ),
                       ],
                     ),
                   ),
@@ -274,6 +288,28 @@ class AboutPage extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class ContributorsPage extends StatelessWidget {
+  const ContributorsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Glow(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            'Contributors',
+            style: TextStyle(fontFamily: 'Poppins'),
+          ),
+        ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(12),
+          child: Contributors.getContributorsWidget(context),
         ),
       ),
     );
