@@ -326,6 +326,11 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
   static const double cardWidth = 108;
   static const double cardHeight = 280;
 
+  final serviceHandler = Get.find<ServiceHandler>();
+  
+  bool get isAnilist => serviceHandler.serviceType.value == ServicesType.anilist;
+  bool get isSimkl => serviceHandler.serviceType.value == ServicesType.simkl;
+
   Future<void> _launchUrl(String? url) async {
     if (url != null && url.isNotEmpty) {
       await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
@@ -535,13 +540,16 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
               ),
             ),
             const SizedBox(height: 5),
-          ] else ...[
+          ] else {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.movie_filter_rounded,
-                    color: Colors.grey, size: 16),
-                if (widget.data.nextAiringEpisode?.episode != null) ...[
+                Icon(
+                  isSimkl ? Icons.movie_filter_rounded : Icons.movie_filter_rounded,
+                  color: Colors.grey, 
+                  size: 16
+                ),
+                if (isAnilist && widget.data.nextAiringEpisode?.episode != null) ...[
                   const SizedBox(width: 5),
                   AnymexText(
                     text: 'EPISODE ${widget.data.nextAiringEpisode!.episode}',
@@ -554,7 +562,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
                 ]
               ],
             ),
-          ],
+          },
           const SizedBox(height: 5),
           SizedBox(
             width: cardWidth,
@@ -565,7 +573,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
               textAlign: TextAlign.center,
             ),
           ),
-          if (!widget.isDubMode &&
+          if (isAnilist && !widget.isDubMode &&
               widget.data.nextAiringEpisode?.episode != null)
             SizedBox(
               width: cardWidth,
@@ -624,6 +632,9 @@ class BlurAnimeCard extends StatefulWidget {
 
 class _BlurAnimeCardState extends State<BlurAnimeCard> {
   RxInt timeLeft = 0.obs;
+  final serviceHandler = Get.find<ServiceHandler>();
+  
+  bool get isAnilist => serviceHandler.serviceType.value == ServicesType.anilist;
 
   @override
   void initState() {
@@ -736,16 +747,17 @@ class _BlurAnimeCardState extends State<BlurAnimeCard> {
                         SizedBox(
                             height: getResponsiveSize(context,
                                 mobileSize: 10, desktopSize: 30)),
-                        AnymexText(
-                          text:
-                              "Episode ${widget.data.nextAiringEpisode!.episode}",
-                          size: 14,
-                          maxLines: 2,
-                          color: context.colors.primary,
-                          variant: TextVariant.bold,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 10),
+                        if (isAnilist && widget.data.nextAiringEpisode != null) ...[
+                          AnymexText(
+                            text: "Episode ${widget.data.nextAiringEpisode!.episode}",
+                            size: 14,
+                            maxLines: 2,
+                            color: context.colors.primary,
+                            variant: TextVariant.bold,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 10),
+                        ],
                         AnymexText(
                           text: widget.data.title,
                           size: 14,
