@@ -1,15 +1,14 @@
-import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/novel/reader/controller/reader_controller.dart';
 import 'package:anymex/screens/novel/reader/widgets/bottom_controls.dart';
 import 'package:anymex/screens/novel/reader/widgets/novel_content.dart';
 import 'package:anymex/screens/novel/reader/widgets/settings_view.dart';
 import 'package:anymex/screens/novel/reader/widgets/top_controls.dart';
 import 'package:anymex/widgets/common/glow.dart';
-import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
-import 'package:get/get.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class NovelReader extends StatefulWidget {
   final Chapter chapter;
@@ -52,24 +51,34 @@ class _NovelReaderState extends State<NovelReader>
 
   @override
   Widget build(BuildContext context) {
-    return Glow(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
+    return Obx(() {
+      Widget content = Scaffold(
+        backgroundColor: controller.useSystemReaderTheme
+            ? Colors.transparent
+            : controller.readerBackgroundColor,
         body: Stack(
           children: [
             NovelContentWidget(controller: controller),
-            NovelTopControls(
-              controller: controller,
-            ),
-            NovelBottomControls(
-              controller: controller,
-            ),
-            NovelSettingsPanel(
-              controller: controller,
-            ),
+            NovelTopControls(controller: controller),
+            NovelBottomControls(controller: controller),
+            NovelSettingsPanel(controller: controller),
           ],
         ),
-      ),
-    );
+      );
+      if (!controller.useSystemReaderTheme) {
+        final baseTheme = Theme.of(context);
+        content = Theme(
+          data: baseTheme.copyWith(
+            colorScheme: controller.readerColorScheme,
+            scaffoldBackgroundColor: controller.readerBackgroundColor,
+          ),
+          child: content,
+        );
+      }
+      if (controller.useSystemReaderTheme) {
+        return Glow(child: content);
+      }
+      return content;
+    });
   }
 }

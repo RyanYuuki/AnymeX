@@ -1,5 +1,4 @@
 import 'package:anymex/database/kv_helper.dart';
-
 export 'package:anymex/database/kv_helper.dart';
 
 enum General {
@@ -55,6 +54,51 @@ enum ReaderKeys {
   dualPageMode,
   autoScrollEnabled,
   autoScrollSpeed,
+  customBrightnessEnabled,
+  customBrightnessValue,
+  colorFilterEnabled,
+  colorFilterValue,
+  colorFilterMode,
+  grayscaleEnabled,
+  invertColorsEnabled,
+  readerTheme,
+  keepScreenOn,
+  alwaysShowChapterTransition,
+  longPressPageActionsEnabled,
+  autoWebtoonMode,
+  displayRefreshEnabled,
+  displayRefreshDurationMs,
+  displayRefreshInterval,
+  displayRefreshColor,
+}
+
+enum NovelReaderKeys {
+  themeMode,
+  backgroundOpacity,
+  fontSize,
+  lineHeight,
+  letterSpacing,
+  wordSpacing,
+  paragraphSpacing,
+  fontFamily,
+  textAlign,
+  paddingHorizontal,
+  paddingVertical,
+  autoScroll,
+  autoScrollSpeed,
+  volumeScrolling,
+  tapToScroll,
+  keepScreenOn,
+  verticalSeekbar,
+  swipeGestures,
+  pageReader,
+  showReadingProgress,
+  showBatteryTime,
+  ttsSpeed,
+  ttsPitch,
+  ttsVoice,
+  ttsAutoAdvance,
+  ttsEnabled,
 }
 
 enum LocalSourceKeys {
@@ -65,6 +109,13 @@ enum LocalSourceKeys {
 }
 
 enum ServiceKeys { serviceType }
+
+enum SyncKeys {
+  gistGithubToken,
+  gistGithubUsername,
+  gistAutoDeleteCompleted,
+  gistExitSyncNotifications,
+}
 
 enum SourceKeys {
   activeAnimeRepo,

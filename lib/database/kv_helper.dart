@@ -45,9 +45,11 @@ class KvHelper {
     }
 
     if (val is! T) {
-      throw Exception(
+      print(
         'Key $key expected type $T but got ${val.runtimeType}',
       );
+      if (defaultVal != null) return defaultVal;
+      return null as T;
     }
 
     return val;

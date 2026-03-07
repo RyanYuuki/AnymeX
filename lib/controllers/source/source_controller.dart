@@ -496,11 +496,12 @@ class SourceController extends GetxController implements BaseService {
     final source =
         params.isManga ? activeMangaSource.value : activeSource.value;
     final type = params.isManga ? ItemType.manga : ItemType.anime;
-    return (await source!.methods.search(params.query, 1, []))
+    return (await source!.methods.search(params.query, params.page, []))
         .list
         .map((e) => Media.froDMedia(e, type))
         .toList();
   }
+
   Future<void> checkForUpdates(BuildContext context) async {
     try {
       await fetchRepos();
@@ -522,7 +523,7 @@ class SourceController extends GetxController implements BaseService {
           updates.add(available);
         }
       }
-      
+
       for (final source in installedNovelExtensions) {
         final available =
             availableNovelExtensions.firstWhereOrNull((s) => s.id == source.id);

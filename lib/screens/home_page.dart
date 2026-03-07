@@ -1,7 +1,9 @@
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
+import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
@@ -11,6 +13,7 @@ import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/history/tap_history_cards.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -48,6 +51,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final cacheController = Get.find<CacheController>();
     final serviceHandler = Get.find<ServiceHandler>();
+    final sourceController = Get.find<SourceController>();
     final isDesktop = MediaQuery.of(context).size.width > 600;
     final statusBarHeight = MediaQuery.of(context).padding.top;
     const appBarHeight = kToolbarHeight + 20;
@@ -58,6 +62,19 @@ class _HomePageState extends State<HomePage> {
 
     final TextAlign textAlignment =
         isMobile ? TextAlign.center : TextAlign.left;
+
+    Source getSourceForMedia(ItemType type) {
+      switch (type) {
+        case ItemType.anime:
+          return sourceController.installedExtensions.first;
+        case ItemType.manga:
+          return sourceController.installedMangaExtensions.first;
+        case ItemType.novel:
+          return sourceController.installedNovelExtensions.first;
+      }
+    }
+
+    final List<dynamic> novelData = [];
 
     // final historyData = Get.find<OfflineStorageController>()
     //     .animeLibrary
@@ -133,6 +150,13 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       const SizedBox(height: 30),
+                      if (novelData.isNotEmpty)
+                        ReusableCarousel(
+                          title: "Recommended Novels",
+                          data: novelData,
+                          type: ItemType.novel,
+                          source: sourceController.activeNovelSource.value,
+                        ),
                       Obx(() {
                         final children = List<Widget>.from(
                             serviceHandler.homeWidgets(context));

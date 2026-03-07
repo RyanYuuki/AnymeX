@@ -15,6 +15,7 @@ import 'package:anymex/models/Service/base_service.dart';
 import 'package:anymex/models/Service/online_service.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
+import 'package:anymex/screens/anime/misc/calendar.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/common/big_carousel.dart';
@@ -93,9 +94,14 @@ class SimklService extends GetxController
   Future<void> fetchHomePage() async =>
       Future.wait([fetchMovies(), fetchSeries()]);
 
-  Future<List<Media>> searchMovies(String query) async {
-    final movieUrl = Uri.parse(
-        'https://api.simkl.com/search/movie?q=$query&extended=full&client_id=${dotenv.env['SIMKL_CLIENT_ID']}');
+  Future<List<Media>> searchMovies(String query, {int page = 1}) async {
+    final movieUrl = Uri.https('api.simkl.com', '/search/movie', {
+      'q': query,
+      'extended': 'full',
+      'page': '$page',
+      'limit': '25',
+      'client_id': '${dotenv.env['SIMKL_CLIENT_ID']}',
+    });
     final resp = await get(movieUrl);
     if (resp.statusCode == 200) {
       final data = jsonDecode(resp.body) as List<dynamic>;
@@ -105,10 +111,15 @@ class SimklService extends GetxController
     return [];
   }
 
-  Future<List<Media>> searchSeries(String query) async {
-    final movieUrl = Uri.parse(
-        'https://api.simkl.com/search/tv?q=$query&extended=full&client_id=${dotenv.env['SIMKL_CLIENT_ID']}');
-    final resp = await get(movieUrl);
+  Future<List<Media>> searchSeries(String query, {int page = 1}) async {
+    final seriesUrl = Uri.https('api.simkl.com', '/search/tv', {
+      'q': query,
+      'extended': 'full',
+      'page': '$page',
+      'limit': '25',
+      'client_id': '${dotenv.env['SIMKL_CLIENT_ID']}',
+    });
+    final resp = await get(seriesUrl);
     if (resp.statusCode == 200) {
       final data = jsonDecode(resp.body) as List<dynamic>;
       List<Media> list = data.map((e) => Media.fromSimkl(e, true)).toList();
@@ -119,8 +130,8 @@ class SimklService extends GetxController
 
   @override
   Future<List<Media>> search(SearchParams params) async {
-    final movieData = await searchMovies(params.query);
-    final seriesData = await searchSeries(params.query);
+    final movieData = await searchMovies(params.query, page: params.page);
+    final seriesData = await searchSeries(params.query, page: params.page);
     return [...movieData, ...seriesData];
   }
 
@@ -175,11 +186,28 @@ class SimklService extends GetxController
             ),
           ],
         ),
+      const SizedBox(height: 15),
+      Center(
+        child: ImageButton(
+          width: isDesktop ? 615 : Get.width - 40,
+          height: !isDesktop ? 70 : 90,
+          buttonText: "CALENDAR",
+          borderRadius: 16.multiplyRadius(),
+          backgroundImage: trendingMovies.isNotEmpty
+              ? trendingMovies[0].cover ?? ''
+              : '',
+          onPressed: () {
+            navigate(() => const Calendar());
+          },
+        ),
+      ),
       const SizedBox(height: 25),
-      buildSection("Planned Movies", continueWatchingMovies.value,
-          variant: DataVariant.anilist),
-      buildSection("Continue Watching (SHOWS)", continueWatchingSeries.value,
-          variant: DataVariant.anilist),
+      if (isLoggedIn.value) ...[
+        buildSection("Planned Movies", continueWatchingMovies.value,
+            variant: DataVariant.anilist),
+        buildSection("Continue Watching (SHOWS)", continueWatchingSeries.value,
+            variant: DataVariant.anilist),
+      ],
       if (trendingMovies.value.isNotEmpty)
         ReusableCarousel(
             data: trendingMovies.value.sublist(0, 10),
@@ -317,27 +345,31 @@ class SimklService extends GetxController
         },
         body: jsonEncode(body),
       );
-      
+
       if (progress != null && progress > 0 && status != 'PLANNING') {
-         final historyUrl = Uri.parse('https://api.simkl.com/sync/history');
-         final historyBody = isMovie ? null : {
-           'shows': [
-             {
-               'ids': {'simkl': id},
-               'episodes': [
-                 for (int i = 1; i <= progress; i++) {'number': i}
-               ]
-             }
-           ]
-         };
-         
-         if(historyBody != null) {
-            await post(historyUrl, headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer $token',
-              'simkl-api-key': apiKey,
-            }, body: jsonEncode(historyBody));
-         }
+        final historyUrl = Uri.parse('https://api.simkl.com/sync/history');
+        final historyBody = isMovie
+            ? null
+            : {
+                'shows': [
+                  {
+                    'ids': {'simkl': id},
+                    'episodes': [
+                      for (int i = 1; i <= progress; i++) {'number': i}
+                    ]
+                  }
+                ]
+              };
+
+        if (historyBody != null) {
+          await post(historyUrl,
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer $token',
+                'simkl-api-key': apiKey,
+              },
+              body: jsonEncode(historyBody));
+        }
       }
 
       Logger.i(response.body);

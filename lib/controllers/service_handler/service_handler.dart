@@ -12,8 +12,8 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Service/base_service.dart';
 import 'package:anymex/models/Service/online_service.dart';
 import 'package:anymex/utils/logger.dart';
+import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 enum ServicesType {
@@ -123,6 +123,26 @@ class ServiceHandler extends GetxController {
   RxList<Widget> homeWidgets(BuildContext context) =>
       service.homeWidgets(context);
 
+  RxList<Widget> novelWidgets(BuildContext context) {
+    if (serviceType.value == ServicesType.anilist) {
+      return anilistService.mangaWidgets(context);
+    } else if (serviceType.value == ServicesType.mal) {
+      return malService.mangaWidgets(context);
+    } else {
+      return extensionService.novelSections;
+    }
+  }
+
+  Source? getSourceForMedia(Media media) {
+    if (media.serviceType == ServicesType.extensions) {
+      return extensionService.installedNovelExtensions.firstWhere(
+        (source) => source.name == media.sourceName,
+        orElse: () => extensionService.installedNovelExtensions.first,
+      );
+    }
+    return null;
+  }
+
   @override
   void onInit() {
     super.onInit();
@@ -130,8 +150,8 @@ class ServiceHandler extends GetxController {
   }
 
   Future<void> _initServices() async {
-    serviceType.value = ServicesType.values[
-        ServiceKeys.serviceType.get<int>(0)];
+    serviceType.value =
+        ServicesType.values[ServiceKeys.serviceType.get<int>(0)];
     await fetchHomePage();
     await autoLogin();
   }

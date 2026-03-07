@@ -48,6 +48,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
   final ServiceHandler _serviceHandler = Get.find<ServiceHandler>();
   final RxList<String> _searchedTerms = <String>[].obs;
+  final ScrollController _resultsScrollController = ScrollController();
 
   List<Media>? _searchResults;
   ViewMode _currentViewMode = ViewMode.grid;
@@ -55,6 +56,11 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   String? _errorMessage;
   Map<String, dynamic> _activeFilters = {};
   RxBool isAdult = false.obs;
+  int _currentPage = 1;
+  bool _isLoadingMore = false;
+  bool _hasMoreResults = false;
+  String _lastSearchQuery = '';
+  Map<String, dynamic> _lastApiFilters = {};
 
   final FocusNode _searchFocusNode = FocusNode();
 
@@ -69,6 +75,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     _searchFocusNode.addListener(() {
       setState(() {});
     });
+    _resultsScrollController.addListener(_onResultsScroll);
   }
 
   void _initializeData() {
@@ -111,6 +118,35 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     );
   }
 
+  void _onResultsScroll() {
+    if (!_resultsScrollController.hasClients ||
+        _searchState != SearchState.success ||
+        _searchResults == null ||
+        _searchResults!.isEmpty ||
+        _isLoadingMore ||
+        !_hasMoreResults) {
+      return;
+    }
+
+    final position = _resultsScrollController.position;
+    if (position.pixels >= position.maxScrollExtent - 250) {
+      _loadMoreResults();
+    }
+  }
+
+  String _mediaKey(Media media) {
+    final rawId = media.id.toString();
+    return '${media.serviceType.name}|$rawId';
+  }
+
+  Map<String, dynamic> _buildApiFilters(String searchQuery) {
+    final apiFilters = Map<String, dynamic>.from(_activeFilters);
+    if (apiFilters['sort'] == null && searchQuery.isEmpty) {
+      apiFilters['sort'] = ['POPULARITY_DESC'];
+    }
+    return apiFilters;
+  }
+
   Future<void> _performSearch({
     String? query,
     Map<String, dynamic>? filters,
@@ -131,6 +167,11 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         _searchResults = null;
         _activeFilters = {};
         _errorMessage = null;
+        _currentPage = 1;
+        _isLoadingMore = false;
+        _hasMoreResults = false;
+        _lastSearchQuery = '';
+        _lastApiFilters = {};
       });
       return;
     }
@@ -138,26 +179,38 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     setState(() {
       _searchState = SearchState.loading;
       _errorMessage = null;
+      _currentPage = 1;
+      _isLoadingMore = false;
+      _hasMoreResults = true;
       if (filters != null) {
         _activeFilters = Map<String, dynamic>.from(filters);
       }
     });
 
     await Future.delayed(const Duration(milliseconds: 350));
+    if (!mounted) return;
 
     try {
-      final apiFilters = Map<String, dynamic>.from(_activeFilters);
-      if (apiFilters['sort'] == null && searchQuery.isEmpty) {
-        apiFilters['sort'] = ['POPULARITY_DESC'];
-      }
+      final apiFilters = _buildApiFilters(searchQuery);
 
       final results = (await _serviceHandler.search(SearchParams(
             query: searchQuery,
             isManga: widget.isManga,
             filters: apiFilters.isNotEmpty ? apiFilters : null,
             args: isAdult.value,
+            page: 1,
           ))) ??
           [];
+      if (!mounted) return;
+
+      final uniqueResults = <Media>[];
+      final seen = <String>{};
+      for (final item in results) {
+        final key = _mediaKey(item);
+        if (seen.add(key)) {
+          uniqueResults.add(item);
+        }
+      }
 
       if (searchQuery.isNotEmpty && !_searchedTerms.contains(searchQuery)) {
         _searchedTerms.add(searchQuery);
@@ -165,16 +218,94 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       }
 
       setState(() {
-        _searchResults = results;
+        _searchResults = uniqueResults;
+        _currentPage = 1;
+        _hasMoreResults = uniqueResults.isNotEmpty;
+        _lastSearchQuery = searchQuery;
+        _lastApiFilters = Map<String, dynamic>.from(apiFilters);
         _searchState =
-            results.isEmpty ? SearchState.empty : SearchState.success;
+            uniqueResults.isEmpty ? SearchState.empty : SearchState.success;
       });
+
+      if (_resultsScrollController.hasClients) {
+        _resultsScrollController.jumpTo(0);
+      }
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _searchState = SearchState.error;
         _errorMessage = _getErrorMessage(e);
+        _isLoadingMore = false;
+        _hasMoreResults = false;
       });
       Logger.i('Search failed: $e');
+    }
+  }
+
+  Future<void> _loadMoreResults() async {
+    if (_isLoadingMore ||
+        !_hasMoreResults ||
+        _searchResults == null ||
+        _searchResults!.isEmpty) {
+      return;
+    }
+
+    setState(() {
+      _isLoadingMore = true;
+    });
+
+    final nextPage = _currentPage + 1;
+
+    try {
+      final results = (await _serviceHandler.search(SearchParams(
+            query: _lastSearchQuery,
+            isManga: widget.isManga,
+            filters: _lastApiFilters.isNotEmpty
+                ? Map<String, dynamic>.from(_lastApiFilters)
+                : null,
+            args: isAdult.value,
+            page: nextPage,
+          ))) ??
+          [];
+      if (!mounted) return;
+
+      if (results.isEmpty) {
+        setState(() {
+          _hasMoreResults = false;
+        });
+        return;
+      }
+
+      final existingKeys = _searchResults!.map(_mediaKey).toSet();
+      final newItems = <Media>[];
+
+      for (final item in results) {
+        final key = _mediaKey(item);
+        if (existingKeys.add(key)) {
+          newItems.add(item);
+        }
+      }
+
+      setState(() {
+        if (newItems.isEmpty) {
+          _hasMoreResults = false;
+        } else {
+          _searchResults!.addAll(newItems);
+          _currentPage = nextPage;
+        }
+      });
+    } catch (e) {
+      Logger.i('Failed to load more search results: $e');
+      if (!mounted) return;
+      setState(() {
+        _hasMoreResults = false;
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoadingMore = false;
+        });
+      }
     }
   }
 
@@ -193,6 +324,9 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
 
   @override
   void dispose() {
+    _resultsScrollController
+      ..removeListener(_onResultsScroll)
+      ..dispose();
     _searchController.dispose();
     _searchFocusNode.dispose();
     super.dispose();
@@ -240,6 +374,11 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                     setState(() {
                       _searchState = SearchState.initial;
                       _searchResults = null;
+                      _currentPage = 1;
+                      _isLoadingMore = false;
+                      _hasMoreResults = false;
+                      _lastSearchQuery = '';
+                      _lastApiFilters = {};
                     });
                   },
                   icon: Icon(
@@ -770,7 +909,10 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       return const SizedBox.shrink();
     }
 
+    final itemCount = _searchResults!.length + (_isLoadingMore ? 1 : 0);
+
     return GridView.builder(
+      controller: _resultsScrollController,
       padding: const EdgeInsets.all(20),
       physics: const BouncingScrollPhysics(),
       gridDelegate: _currentViewMode == ViewMode.list
@@ -788,8 +930,12 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
               mainAxisSpacing: 12.0,
               mainAxisExtent: 240,
             ),
-      itemCount: _searchResults!.length,
+      itemCount: itemCount,
       itemBuilder: (context, index) {
+        if (_isLoadingMore && index == _searchResults!.length) {
+          return const Center(child: ExpressiveLoadingIndicator());
+        }
+
         final media = _searchResults![index];
         return AnimationConfiguration.staggeredGrid(
           position: index,
