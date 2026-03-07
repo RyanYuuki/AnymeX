@@ -135,6 +135,10 @@ enum AuthKeys {
   malRefreshToken,
   simklAuthToken,
   malSessionId,
+  kitsuAuthToken,
+  kitsuRefreshToken,
+  kitsuTokenCreatedAt,
+  kitsuTokenExpiresIn,
 }
 
 enum SearchKeys { novelSearchedQueries }
