@@ -541,7 +541,6 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
             ),
             const SizedBox(height: 5),
           ] else {
-            // For non-dub mode, show appropriate icon based on service
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -550,7 +549,6 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
                   color: Colors.grey, 
                   size: 16
                 ),
-                // Only show episode number for Anilist (anime)
                 if (isAnilist && widget.data.nextAiringEpisode?.episode != null) ...[
                   const SizedBox(width: 5),
                   AnymexText(
@@ -575,7 +573,6 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
               textAlign: TextAlign.center,
             ),
           ),
-          // Only show the "~ | X-1 | ~" line for Anilist
           if (isAnilist && !widget.isDubMode &&
               widget.data.nextAiringEpisode?.episode != null)
             SizedBox(
@@ -750,7 +747,6 @@ class _BlurAnimeCardState extends State<BlurAnimeCard> {
                         SizedBox(
                             height: getResponsiveSize(context,
                                 mobileSize: 10, desktopSize: 30)),
-                        // Only show episode for Anilist
                         if (isAnilist && widget.data.nextAiringEpisode != null) ...[
                           AnymexText(
                             text: "Episode ${widget.data.nextAiringEpisode!.episode}",
