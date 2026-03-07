@@ -336,11 +336,44 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     seekDuration.value = settings.seekDuration;
     skipDuration.value = settings.skipDuration;
     playbackSpeed.value = settings.speed;
+    final savedProfile =
+        PlayerUiKeys.currentVisualProfile.get<String>('natural').toLowerCase();
     currentVisualProfile.value =
-        PlayerUiKeys.currentVisualProfile.get<String>('natural');
-    customSettings.value = (PlayerUiKeys.currentVisualSettings
-            .get<Map<String, dynamic>>({}) as Map)
-        .cast<String, int>();
+        ColorProfileManager.profiles.containsKey(savedProfile)
+            ? savedProfile
+            : 'natural';
+    customSettings.value = _loadVisualSettings();
+  }
+
+  Map<String, int> _loadVisualSettings() {
+    try {
+      final raw =
+          PlayerUiKeys.currentVisualSettings.get<Map<String, dynamic>>({});
+      if (raw is! Map) return <String, int>{};
+
+      final out = <String, int>{};
+      for (final entry in raw.entries) {
+        final key = entry.key.toString();
+        final value = entry.value;
+        if (value is int) {
+          out[key] = value;
+          continue;
+        }
+        if (value is num) {
+          out[key] = value.round();
+          continue;
+        }
+        if (value is String) {
+          final parsed = int.tryParse(value);
+          if (parsed != null) out[key] = parsed;
+        }
+      }
+      return out;
+    } catch (e, stack) {
+      Logger.e('Failed to load visual settings: $e');
+      Logger.e('STACK: $stack');
+      return <String, int>{};
+    }
   }
 
   Future<void> _initOrientations() async {
