@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:anymex/controllers/services/storage/anymex_cache_manager.dart';
 import 'package:anymex/controllers/discord/discord_login.dart';
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/controllers/sync/progress_sync_section.dart';
+import 'package:anymex/controllers/services/storage/anymex_cache_manager.dart';
 import 'package:anymex/controllers/sync/gist_sync_controller.dart';
+import 'package:anymex/controllers/sync/progress_sync_section.dart';
 import 'package:anymex/models/Service/online_service.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/theme_extensions.dart';

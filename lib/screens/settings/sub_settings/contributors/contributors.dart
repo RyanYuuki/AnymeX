@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/screens/settings/sub_settings/contributors/models/contributor_model.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/animation/contributor_staggered_animations.dart';
+import 'package:anymex/widgets/animation/staggered_animations.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
