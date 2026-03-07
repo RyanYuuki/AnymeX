@@ -67,8 +67,7 @@ class Contributors {
         role: 'Lead Dev of Dartotsu & DartotsuExtension Bridge',
         contributions: 0,
         roleLinks: {
-          'DartotsuExtension Bridge':
-              'https://github.com/aayush2622/DartotsuExtensionBridge',
+          'DartotsuExtension Bridge': 'https://github.com/aayush2622/DartotsuExtensionBridge',
           'Dartotsu': 'https://github.com/aayush2622/Dartotsu',
         },
       ),
@@ -296,8 +295,6 @@ class _ContributorCardState extends State<_ContributorCard>
   Widget build(BuildContext context) {
     final dev = widget.dev;
 
-    final bool hasContributions = dev.contributions > 0;
-
     return FadeTransition(
       opacity: _opacity,
       child: SlideTransition(
@@ -322,19 +319,19 @@ class _ContributorCardState extends State<_ContributorCard>
                     dev.banner!,
                     fit: BoxFit.cover,
                     width: double.infinity,
-                    height: hasContributions ? 100 : 86,
-                    errorBuilder: (_, __, ___) => SizedBox(
-                      height: hasContributions ? 100 : 86,
+                    height: 86,
+                    errorBuilder: (_, __, ___) => const SizedBox(
+                      height: 86,
                       width: double.infinity,
                     ),
                   ),
                 Container(
                   width: double.infinity,
-                  height: hasContributions ? 100 : 86,
+                  height: 86,
                   color: Colors.black.withOpacity(0.5),
                 ),
                 SizedBox(
-                  height: hasContributions ? 100 : 86,
+                  height: 86,
                   width: double.infinity,
                   child: Center(
                     child: Padding(
@@ -380,7 +377,7 @@ class _ContributorCardState extends State<_ContributorCard>
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                 ),
-                                if (hasContributions)
+                                if (dev.contributions > 0)
                                   Text(
                                     '${dev.contributions} contribution${dev.contributions == 1 ? '' : 's'}',
                                     style: const TextStyle(
