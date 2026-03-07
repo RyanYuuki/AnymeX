@@ -4,6 +4,7 @@ import 'package:anymex/screens/anime/watch/subtitles/model/imdb_item.dart';
 import 'package:anymex/screens/anime/watch/subtitles/model/online_subtitle.dart';
 import 'package:anymex/screens/anime/watch/subtitles/repository/imdb_repo.dart';
 import 'package:anymex/screens/anime/watch/subtitles/repository/subtitle_repo.dart';
+import 'package:anymex/screens/anime/watch/subtitles/utils/language_utils.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_chip.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
@@ -43,6 +44,9 @@ class _SubtitleSearchBottomSheetState extends State<SubtitleSearchBottomSheet> {
   final RxInt _selectedSeason = 0.obs;
   final Rx<ImdbEpisode?> _selectedEpisode = Rx<ImdbEpisode?>(null);
   final RxString _selectedFilter = 'All'.obs;
+  final Rx<SubtitleProvider?> _selectedProvider = Rx<SubtitleProvider?>(null);
+  final RxMap<SubtitleProvider, List<OnlineSubtitle>> _providerResults = 
+      RxMap<SubtitleProvider, List<OnlineSubtitle>>({});
 
   final Rx<SubtitleSearchView> _currentView = SubtitleSearchView.search.obs;
 
@@ -50,9 +54,11 @@ class _SubtitleSearchBottomSheetState extends State<SubtitleSearchBottomSheet> {
     'All',
     'English',
     'Spanish',
+    'Portuguese',
     'French',
     'German',
-    'Italian',
+    'Japanese',
+    'Assamese',
     'SRT',
     'VTT',
     'ASS'
@@ -112,10 +118,25 @@ class _SubtitleSearchBottomSheetState extends State<SubtitleSearchBottomSheet> {
   Future<void> _searchSubtitles(String imdbId) async {
     _isLoadingSubtitles.value = true;
     _subtitles.clear();
+    _providerResults.clear();
 
     try {
-      final data = await SubtitleRepo.searchById(imdbId);
-      _subtitles.assignAll(data);
+      final params = SubtitleSearchParams(
+        imdbId: imdbId,
+        title: _selectedItem.value?.title ?? '',
+        type: _episodes.isEmpty ? 'movie' : 'episode',
+        season: _selectedSeason.value,
+        episode: _selectedEpisode.value?.episodeNumber,
+        languages: ['eng', 'spa', 'por', 'fre', 'ger', 'jpn', 'asm'],
+        excludeHearingImpaired: false,
+      );
+
+      final results = await SubtitleRepository().searchAll(params);
+      _providerResults.value = results;
+      
+      // Combine all results
+      final allSubs = results.values.expand((e) => e).toList();
+      _subtitles.assignAll(allSubs);
     } catch (e) {
       Logger.e('Subtitle search error: ${e.toString()}');
       _showError('Failed to load subtitles: ${e.toString()}');
@@ -128,14 +149,24 @@ class _SubtitleSearchBottomSheetState extends State<SubtitleSearchBottomSheet> {
       String imdbId, int season, int episode) async {
     _isLoadingSubtitles.value = true;
     _subtitles.clear();
+    _providerResults.clear();
 
     try {
-      final data = await SubtitleRepo.searchByEpisode(
-        imdbId,
+      final params = SubtitleSearchParams(
+        imdbId: imdbId,
+        title: _selectedItem.value?.title ?? '',
+        type: 'episode',
         season: season,
         episode: episode,
+        languages: ['eng', 'spa', 'por', 'fre', 'ger', 'jpn', 'asm'],
+        excludeHearingImpaired: false,
       );
-      _subtitles.assignAll(data);
+
+      final results = await SubtitleRepository().searchAll(params);
+      _providerResults.value = results;
+      
+      final allSubs = results.values.expand((e) => e).toList();
+      _subtitles.assignAll(allSubs);
       _currentView.value = SubtitleSearchView.subtitles;
     } catch (e) {
       Logger.e('Episode subtitle search error: ${e.toString()}');
@@ -159,31 +190,44 @@ class _SubtitleSearchBottomSheetState extends State<SubtitleSearchBottomSheet> {
   List<OnlineSubtitle> get _filteredSubtitles {
     final links =
         widget.controller.externalSubs.value.map((e) => e.file).toList();
+    
     var subs = _subtitles.where((e) => !links.contains(e.url)).toList();
-
-    if (_selectedFilter.value == 'All') return subs;
-
-    return subs.where((subtitle) {
-      final filter = _selectedFilter.value.toLowerCase();
-      switch (filter) {
-        case 'english':
-          return subtitle.language == 'en';
-        case 'spanish':
-          return subtitle.language == 'es';
-        case 'french':
-          return subtitle.language == 'fr';
-        case 'german':
-          return subtitle.language == 'de';
-        case 'italian':
-          return subtitle.language == 'it';
-        case 'srt':
-        case 'vtt':
-        case 'ass':
-          return subtitle.format.toLowerCase() == filter;
-        default:
-          return true;
-      }
-    }).toList();
+    
+    // Filter by provider if selected
+    if (_selectedProvider.value != null) {
+      subs = subs.where((e) => e.provider == _selectedProvider.value!.name).toList();
+    }
+    
+    // Filter by language/format
+    if (_selectedFilter.value != 'All') {
+      subs = subs.where((subtitle) {
+        final filter = _selectedFilter.value.toLowerCase();
+        switch (filter) {
+          case 'english':
+            return subtitle.languageCode == 'eng';
+          case 'spanish':
+            return subtitle.languageCode == 'spa';
+          case 'portuguese':
+            return subtitle.languageCode == 'por' || subtitle.languageCode == 'pob';
+          case 'french':
+            return subtitle.languageCode == 'fre';
+          case 'german':
+            return subtitle.languageCode == 'ger';
+          case 'japanese':
+            return subtitle.languageCode == 'jpn';
+          case 'assamese':
+            return subtitle.languageCode == 'asm';
+          case 'srt':
+          case 'vtt':
+          case 'ass':
+            return subtitle.format.toLowerCase() == filter;
+          default:
+            return true;
+        }
+      }).toList();
+    }
+    
+    return subs;
   }
 
   void _closeSheet() {
@@ -207,12 +251,16 @@ class _SubtitleSearchBottomSheetState extends State<SubtitleSearchBottomSheet> {
           _currentView.value = SubtitleSearchView.episodes;
           _selectedEpisode.value = null;
           _subtitles.clear();
+          _providerResults.clear();
           _selectedFilter.value = 'All';
+          _selectedProvider.value = null;
         } else {
           _currentView.value = SubtitleSearchView.search;
           _selectedItem.value = null;
           _subtitles.clear();
+          _providerResults.clear();
           _selectedFilter.value = 'All';
+          _selectedProvider.value = null;
         }
         break;
       case SubtitleSearchView.search:
@@ -387,6 +435,8 @@ class _SubtitleSearchBottomSheetState extends State<SubtitleSearchBottomSheet> {
           if (_currentView.value == SubtitleSearchView.subtitles &&
               _subtitles.isNotEmpty) ...[
             const SizedBox(height: 12),
+            _buildProviderChips(),
+            const SizedBox(height: 8),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
@@ -405,6 +455,36 @@ class _SubtitleSearchBottomSheetState extends State<SubtitleSearchBottomSheet> {
               ),
             ),
           ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProviderChips() {
+    if (_providerResults.isEmpty) return const SizedBox.shrink();
+    
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [
+          Obx(() => AnymexChip(
+            label: 'All Providers',
+            isSelected: _selectedProvider.value == null,
+            onSelected: (_) => _selectedProvider.value = null,
+          )),
+          ..._providerResults.keys.map((provider) {
+            final count = _providerResults[provider]?.length ?? 0;
+            if (count == 0) return const SizedBox.shrink();
+            
+            return Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: Obx(() => AnymexChip(
+                label: '${provider.displayName} ($count)',
+                isSelected: _selectedProvider.value == provider,
+                onSelected: (_) => _selectedProvider.value = provider,
+              )),
+            );
+          }),
         ],
       ),
     );
@@ -784,6 +864,41 @@ class _SubtitleSearchBottomSheetState extends State<SubtitleSearchBottomSheet> {
     );
   }
 
+  Widget _buildProviderBadge(String providerName, ThemeData theme, ColorScheme colorScheme) {
+    Color getProviderColor() {
+      switch (providerName) {
+        case 'wyzie':
+          return Colors.purple;
+        case 'opensubtitles':
+          return Colors.green;
+        case 'subdl':
+          return Colors.blue;
+        case 'jimaku':
+          return Colors.orange;
+        default:
+          return Colors.grey;
+      }
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      margin: const EdgeInsets.only(right: 8),
+      decoration: BoxDecoration(
+        color: getProviderColor().withOpacity(0.2),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: getProviderColor().withOpacity(0.5)),
+      ),
+      child: Text(
+        providerName,
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: getProviderColor(),
+          fontSize: 10,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
   Widget _buildSubtitleCard(
       OnlineSubtitle subtitle, ThemeData theme, ColorScheme colorScheme) {
     return Container(
@@ -827,8 +942,11 @@ class _SubtitleSearchBottomSheetState extends State<SubtitleSearchBottomSheet> {
                         color: colorScheme.onSurface,
                         fontWeight: FontWeight.w600,
                       ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
+                  _buildProviderBadge(subtitle.provider, theme, colorScheme),
                   Container(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -837,7 +955,7 @@ class _SubtitleSearchBottomSheetState extends State<SubtitleSearchBottomSheet> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      subtitle.format,
+                      subtitle.format.toUpperCase(),
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: colorScheme.onPrimaryContainer,
                         fontSize: 10,
@@ -853,12 +971,54 @@ class _SubtitleSearchBottomSheetState extends State<SubtitleSearchBottomSheet> {
                   Icon(Icons.source,
                       size: 14, color: colorScheme.onSurfaceVariant),
                   const SizedBox(width: 4),
-                  Text(
-                    subtitle.source,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
+                  Expanded(
+                    child: Text(
+                      subtitle.source,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ),
+                  if (subtitle.downloads > 0) ...[
+                    const SizedBox(width: 8),
+                    Icon(Icons.download, size: 14, color: colorScheme.onSurfaceVariant),
+                    const SizedBox(width: 4),
+                    Text(
+                      subtitle.downloads.toString(),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                  if (subtitle.rating > 0) ...[
+                    const SizedBox(width: 8),
+                    Icon(Icons.star, size: 14, color: Colors.amber),
+                    const SizedBox(width: 4),
+                    Text(
+                      subtitle.rating.toStringAsFixed(1),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                  if (subtitle.isHearingImpaired) ...[
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: colorScheme.secondaryContainer,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        'HI',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSecondaryContainer,
+                          fontSize: 8,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ],
