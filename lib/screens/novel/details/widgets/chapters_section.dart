@@ -100,75 +100,52 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
 
   @override
   Widget build(BuildContext context) {
-    return SliverMainAxisGroup(
-      slivers: [
-        SliverToBoxAdapter(
-          child: 20.height(),
-        ),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Row(
-              children: [
-                const AnymexText(
-                  text: "Chapters",
-                  variant: TextVariant.bold,
-                  size: 18,
-                ),
-                const Spacer(),
-                IconButton(
-                    onPressed: sortToggle, icon: const Icon(Icons.sort_rounded))
-              ],
-            ),
+    return Column(
+      children: [
+        20.height(),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Row(
+            children: [
+              const AnymexText(
+                text: "Chapters",
+                variant: TextVariant.bold,
+                size: 18,
+              ),
+              const Spacer(),
+              IconButton(
+                  onPressed: sortToggle, icon: const Icon(Icons.sort_rounded))
+            ],
           ),
         ),
-        SliverToBoxAdapter(
-          child: 5.height(),
-        ),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.only(left: 20.0),
-            child: Obx(() {
-              selectedChunkIndex.value;
-              if (chunkedChapters.isEmpty) return const SizedBox.shrink();
+        5.height(),
+        Padding(
+          padding: const EdgeInsets.only(left: 20.0),
+          child: Obx(() {
+            selectedChunkIndex.value;
+            if (chunkedChapters.isEmpty) return const SizedBox.shrink();
 
-              return ChapterRanges(
-                selectedChunkIndex: selectedChunkIndex,
-                onChunkSelected: (v) {
-                  selectedChunkIndex.value = v;
-                },
-                chunks: chunkedChapters.value,
-              );
-            }),
-          ),
+            return ChapterRanges(
+              selectedChunkIndex: selectedChunkIndex,
+              onChunkSelected: (v) {
+                selectedChunkIndex.value = v;
+              },
+              chunks: chunkedChapters.value,
+            );
+          }),
         ),
-        SliverToBoxAdapter(
-          child: 20.height(),
-        ),
-        SliverPadding(
+        20.height(),
+        Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10.0),
-          sliver: Obx(() {
+          child: Obx(() {
             if (filteredChapters.isEmpty) {
-              return const SliverToBoxAdapter(child: SizedBox.shrink());
+              return const SizedBox.shrink();
             }
 
-            return SliverGrid(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  final chapter = filteredChapters[index];
-                  return AnimatedItemWrapper(
-                    child: ChapterListItem(
-                      controller: widget.controller,
-                      onTap: () {
-                        widget.controller.goToReader(chapter,
-                            filteredChapters: filteredChapters);
-                      },
-                      chapter: chapter,
-                    ),
-                  );
-                },
-                childCount: filteredChapters.length,
-              ),
+            return GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: filteredChapters.length,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: getResponsiveCrossAxisCount(
                   context,
@@ -182,6 +159,19 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
                 crossAxisSpacing: 15,
                 mainAxisSpacing: 15,
               ),
+              itemBuilder: (context, index) {
+                final chapter = filteredChapters[index];
+                return AnimatedItemWrapper(
+                  child: ChapterListItem(
+                    controller: widget.controller,
+                    onTap: () {
+                      widget.controller.goToReader(chapter,
+                          filteredChapters: filteredChapters);
+                    },
+                    chapter: chapter,
+                  ),
+                );
+              },
             );
           }),
         ),
