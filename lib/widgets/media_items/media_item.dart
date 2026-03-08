@@ -204,6 +204,7 @@ class GridAnimeCard extends StatelessWidget {
             ),
         ],
       ),
+      ),
     );
   }
 
