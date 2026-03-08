@@ -1,6 +1,7 @@
 // ignore_for_file: invalid_use_of_protected_member
 
 import 'dart:convert';
+import 'dart:math' as math;
 
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
@@ -49,6 +50,8 @@ class SimklService extends GetxController
         "https://api.simkl.com/${isSeries ? 'tv' : 'movies'}/$newId?extended=full&client_id=${dotenv.env['SIMKL_CLIENT_ID']}"));
     if (resp.statusCode == 200) {
       final data = jsonDecode(resp.body);
+      data['id'] = '$newId*${isSeries ? "SERIES" : "MOVIE"}';
+      data['__isMovie'] = !isSeries;
       cacheController.addCache(data);
       detailsData.value = Media.fromSimkl(data, !isSeries);
       return detailsData.value;
@@ -136,68 +139,84 @@ class SimklService extends GetxController
 
   @override
   RxList<Widget> homeWidgets(BuildContext context) {
-    final isDesktop = Get.width > 600;
     return [
       if (isLoggedIn.value)
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ImageButton(
-              width: isDesktop ? 300 : Get.width / 2 - 40,
-              height: !isDesktop ? 70 : 90,
-              buttonText: "MOVIES LIST",
-              backgroundImage: trendingMovies
-                      .firstWhere(
-                        (e) => e.cover != null,
-                        orElse: () =>
-                            Media(cover: '', serviceType: ServicesType.simkl),
-                      )
-                      .cover ??
-                  '',
-              borderRadius: 16.multiplyRadius(),
-              onPressed: () {
-                navigate(() => AnimeList(
-                      title: "Movies",
-                      data: animeList.value,
-                    ));
-              },
-            ),
-            const SizedBox(width: 15),
-            ImageButton(
-              width: isDesktop ? 300 : Get.width / 2 - 40,
-              height: !isDesktop ? 70 : 90,
-              buttonText: "SERIES LIST",
-              borderRadius: 16.multiplyRadius(),
-              backgroundImage: trendingSeries
-                      .firstWhere(
-                        (e) => e.cover != null,
-                        orElse: () =>
-                            Media(cover: '', serviceType: ServicesType.simkl),
-                      )
-                      .cover ??
-                  '',
-              onPressed: () {
-                navigate(() => AnimeList(
-                      title: "Shows",
-                      data: mangaList.value,
-                    ));
-              },
-            ),
-          ],
-        ),
-      const SizedBox(height: 15),
-      Center(
-        child: ImageButton(
-          width: isDesktop ? 615 : Get.width - 40,
-          height: !isDesktop ? 70 : 90,
-          buttonText: "CALENDAR",
-          borderRadius: 16.multiplyRadius(),
-          backgroundImage:
-              trendingMovies.isNotEmpty ? trendingMovies[0].cover ?? '' : '',
-          onPressed: () {
-            navigate(() => const Calendar());
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final isDesktop = constraints.maxWidth > 600;
+            final buttonHeight = !isDesktop ? 70.0 : 90.0;
+            final itemWidth = isDesktop
+                ? math.min(300.0, (constraints.maxWidth - 15) / 2)
+                : (constraints.maxWidth / 2) - 20;
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ImageButton(
+                  width: itemWidth,
+                  height: buttonHeight,
+                  buttonText: "MOVIES LIST",
+                  backgroundImage: trendingMovies
+                          .firstWhere(
+                            (e) => e.cover != null,
+                            orElse: () => Media(
+                                cover: '', serviceType: ServicesType.simkl),
+                          )
+                          .cover ??
+                      '',
+                  borderRadius: 16.multiplyRadius(),
+                  onPressed: () {
+                    navigate(() => AnimeList(
+                          title: "Movies",
+                          data: animeList.value,
+                        ));
+                  },
+                ),
+                const SizedBox(width: 15),
+                ImageButton(
+                  width: itemWidth,
+                  height: buttonHeight,
+                  buttonText: "SERIES LIST",
+                  borderRadius: 16.multiplyRadius(),
+                  backgroundImage: trendingSeries
+                          .firstWhere(
+                            (e) => e.cover != null,
+                            orElse: () => Media(
+                                cover: '', serviceType: ServicesType.simkl),
+                          )
+                          .cover ??
+                      '',
+                  onPressed: () {
+                    navigate(() => AnimeList(
+                          title: "Shows",
+                          data: mangaList.value,
+                        ));
+                  },
+                ),
+              ],
+            );
           },
         ),
+      const SizedBox(height: 15),
+      LayoutBuilder(
+        builder: (context, constraints) {
+          final isDesktop = constraints.maxWidth > 600;
+          final buttonHeight = !isDesktop ? 70.0 : 90.0;
+          final buttonWidth =
+              isDesktop ? 300.0 : math.max(120.0, constraints.maxWidth - 40);
+          return Center(
+            child: ImageButton(
+              width: buttonWidth,
+              height: buttonHeight,
+              buttonText: "CALENDAR",
+              borderRadius: 16.multiplyRadius(),
+              backgroundImage:
+                  trendingMovies.isNotEmpty ? trendingMovies[0].cover ?? '' : '',
+              onPressed: () {
+                navigate(() => const Calendar());
+              },
+            ),
+          );
+        },
       ),
       const SizedBox(height: 25),
       if (isLoggedIn.value) ...[
