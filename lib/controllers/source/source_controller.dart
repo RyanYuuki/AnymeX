@@ -142,7 +142,28 @@ class SourceController extends GetxController implements BaseService {
     _extensionOrders[type] = List.from(orderedIds);
     final key = _orderKeyFor(type);
     KvHelper.set(key.name, orderedIds);
+    _applyOrderToInstalledList(type, orderedIds);
     _rebuildSectionsOrder(type, orderedIds);
+  }
+
+  void _applyOrderToInstalledList(ItemType type, List<String> orderedIds) {
+    final list = _installedFor(type);
+    final current = list.toList();
+    if (current.isEmpty) return;
+
+    final orderMap = <String, int>{};
+    for (var i = 0; i < orderedIds.length; i++) {
+      orderMap[orderedIds[i]] = i;
+    }
+
+    final sorted = List<Source>.from(current)
+      ..sort((a, b) {
+        final aIdx = orderMap[a.id?.toString() ?? ''] ?? orderedIds.length;
+        final bIdx = orderMap[b.id?.toString() ?? ''] ?? orderedIds.length;
+        return aIdx.compareTo(bIdx);
+      });
+
+    list.value = sorted;
   }
 
   void _rebuildSectionsOrder(ItemType type, List<String> orderedIds) {
