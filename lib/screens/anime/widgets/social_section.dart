@@ -34,10 +34,9 @@ class SocialSection extends StatelessWidget {
 
   Widget _buildFriendItem(TrackedMedia user, dynamic theme) {
     String status = (user.watchingStatus ?? '').toLowerCase();
-    status = status.isNotEmpty 
-        ? status[0].toUpperCase() + status.substring(1) 
-        : '';
-    
+    status =
+        status.isNotEmpty ? status[0].toUpperCase() + status.substring(1) : '';
+
     return SizedBox(
       width: 100,
       child: Column(
@@ -58,39 +57,40 @@ class SocialSection extends StatelessWidget {
                     ),
                   ],
                 ),
-              child: CircleAvatar(
-                radius: 40,
-                backgroundColor: Colors.transparent,
-                  backgroundImage: (user.userAvatar != null && user.userAvatar!.isNotEmpty)
+                child: CircleAvatar(
+                  radius: 40,
+                  backgroundColor: Colors.transparent,
+                  backgroundImage: (user.userAvatar != null &&
+                          user.userAvatar!.isNotEmpty)
                       ? NetworkImage(user.userAvatar!)
                       : const NetworkImage(
                           'https://s4.anilist.co/file/anilistcdn/user/avatar/large/default.png'),
                 ),
               ),
-              
               if (user.userScore != null && user.userScore! > 0)
                 Positioned(
                   bottom: 0,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
-                      color: theme.primary,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
-                        )
-                      ]
-                    ),
+                        color: theme.primary,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          )
+                        ]),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.star_rounded, size: 12, color: theme.onPrimary),
+                        Icon(Icons.star_rounded,
+                            size: 12, color: theme.onPrimary),
                         const SizedBox(width: 4),
                         AnymexText(
-                          text: (user.userScore!).toStringAsFixed(1),
+                          text: ((user.userScore ?? 1) / 10).toStringAsFixed(1),
                           size: 11,
                           color: theme.onPrimary,
                           variant: TextVariant.bold,
@@ -122,7 +122,7 @@ class SocialSection extends StatelessWidget {
           ),
           const SizedBox(height: 2),
           if (user.userProgress != null)
-             Text.rich(
+            Text.rich(
               TextSpan(
                 style: const TextStyle(
                   fontSize: 12,
