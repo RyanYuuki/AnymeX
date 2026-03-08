@@ -1,8 +1,13 @@
 import 'package:anymex/controllers/cacher/cache_controller.dart';
+import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/database/isar_models/offline_media.dart';
+import 'package:anymex/screens/library/widgets/history_model.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/anime/continue_watching_cards.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
@@ -32,6 +37,112 @@ class _HomePageState extends State<HomePage> {
   final ValueNotifier<bool> _isAppBarVisibleExternally =
       ValueNotifier<bool>(true);
 
+  Widget _buildRecentlyOpenedSection(CacheController cacheController) {
+    final data = cacheController.getStoredAnime();
+    if (data.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: SizedBox(
+        height: 100,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: data.length,
+          itemBuilder: (context, i) => RecentlyOpenedAnimeCard(media: data[i]),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContinueWatchingSection(
+      OfflineStorageController offlineStorageController) {
+    return StreamBuilder<List<OfflineMedia>>(
+      stream: offlineStorageController.watchAnimeLibrary(),
+      builder: (context, snapshot) {
+        final historyData = (snapshot.data ?? const <OfflineMedia>[])
+            .where((e) => e.currentEpisode?.currentTrack != null)
+            .toList()
+          ..sort((a, b) => (b.currentEpisode?.lastWatchedTime ?? 0)
+              .compareTo(a.currentEpisode?.lastWatchedTime ?? 0));
+        final visibleHistory = historyData.take(20).toList(growable: false);
+
+        if (visibleHistory.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 20.0),
+              child: Text(
+                "Continue Watching",
+                style: TextStyle(
+                  fontFamily: "Poppins-SemiBold",
+                  fontSize: 17,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 228,
+              child: GridView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                scrollDirection: Axis.horizontal,
+                itemCount: visibleHistory.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 1,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 0,
+                  mainAxisExtent: 300,
+                ),
+                itemBuilder: (context, i) => ContinueWatchingCard(
+                  media: HistoryModel.fromOfflineMedia(
+                      visibleHistory[i], ItemType.anime),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  List<Widget> _buildHomeWidgets({
+    required BuildContext context,
+    required ServiceHandler serviceHandler,
+    required CacheController cacheController,
+    required OfflineStorageController offlineStorageController,
+    required Settings settings,
+  }) {
+    final baseWidgets = serviceHandler.homeWidgets(context);
+    final hasRecentSection = cacheController.getStoredAnime().isNotEmpty;
+    final shouldShowContinueSection = settings.showContinueWatchingCard;
+
+    if (!hasRecentSection && !shouldShowContinueSection) {
+      return List<Widget>.from(baseWidgets);
+    }
+    final localSections = <Widget>[
+      if (shouldShowContinueSection)
+        _buildContinueWatchingSection(offlineStorageController),
+      if (hasRecentSection) _buildRecentlyOpenedSection(cacheController),
+    ];
+
+    final insertionIndex = !serviceHandler.isLoggedIn.value ||
+            serviceHandler.serviceType.value == ServicesType.extensions
+        ? 0
+        : 2;
+
+    return [
+      ...baseWidgets.take(insertionIndex),
+      ...localSections,
+      ...baseWidgets.skip(insertionIndex),
+    ];
+  }
+
   @override
   void initState() {
     super.initState();
@@ -50,7 +161,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final cacheController = Get.find<CacheController>();
+    final offlineStorageController = Get.find<OfflineStorageController>();
     final serviceHandler = Get.find<ServiceHandler>();
+    final settings = Get.find<Settings>();
     final sourceController = Get.find<SourceController>();
     final isDesktop = MediaQuery.of(context).size.width > 600;
     final statusBarHeight = MediaQuery.of(context).padding.top;
@@ -63,23 +176,7 @@ class _HomePageState extends State<HomePage> {
     final TextAlign textAlignment =
         isMobile ? TextAlign.center : TextAlign.left;
 
-    Source getSourceForMedia(ItemType type) {
-      switch (type) {
-        case ItemType.anime:
-          return sourceController.installedExtensions.first;
-        case ItemType.manga:
-          return sourceController.installedMangaExtensions.first;
-        case ItemType.novel:
-          return sourceController.installedNovelExtensions.first;
-      }
-    }
-
     final List<dynamic> novelData = [];
-
-    // final historyData = Get.find<OfflineStorageController>()
-    //     .animeLibrary
-    //     .where((e) => e.currentEpisode?.currentTrack != null)
-    //     .toList();
 
     return RefreshIndicator(
       onRefresh: () {
@@ -150,6 +247,16 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       const SizedBox(height: 30),
+                      Obx(() {
+                        final children = _buildHomeWidgets(
+                          context: context,
+                          serviceHandler: serviceHandler,
+                          cacheController: cacheController,
+                          offlineStorageController: offlineStorageController,
+                          settings: settings,
+                        );
+                        return Column(children: children);
+                      }),
                       if (novelData.isNotEmpty)
                         ReusableCarousel(
                           title: "Recommended Novels",
@@ -157,164 +264,6 @@ class _HomePageState extends State<HomePage> {
                           type: ItemType.novel,
                           source: sourceController.activeNovelSource.value,
                         ),
-                      Obx(() {
-                        final children = List<Widget>.from(
-                            serviceHandler.homeWidgets(context));
-                        final data = cacheController.getStoredAnime();
-                        if (serviceHandler.isLoggedIn.value) {
-                          children.insert(
-                            serviceHandler.serviceType.value ==
-                                    ServicesType.extensions
-                                ? 0
-                                : 2,
-                            Column(
-                              children: [
-                                if (data.isNotEmpty)
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 8.0),
-                                    child: SizedBox(
-                                      height: 100,
-                                      child: ListView.builder(
-                                        scrollDirection: Axis.horizontal,
-                                        itemCount: cacheController
-                                            .getStoredAnime()
-                                            .length,
-                                        itemBuilder: (context, i) {
-                                          final media = cacheController
-                                              .getStoredAnime()[i];
-                                          return RecentlyOpenedAnimeCard(
-                                              media: media);
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                // if (historyData.isNotEmpty) ...[
-                                //   10.height(),
-                                //   Column(
-                                //     crossAxisAlignment:
-                                //         CrossAxisAlignment.start,
-                                //     children: [
-                                //       Padding(
-                                //         padding:
-                                //             const EdgeInsets.only(left: 20.0),
-                                //         child: Text(
-                                //           "Continue Watching (Literally)",
-                                //           style: TextStyle(
-                                //             fontFamily: "Poppins-SemiBold",
-                                //             fontSize: 17,
-                                //             color: Theme.of(context)
-                                //                 .colorScheme
-                                //                 .primary,
-                                //           ),
-                                //         ),
-                                //       ),
-                                //       10.height(),
-                                //       SizedBox(
-                                //         height: 228,
-                                //         child: GridView.builder(
-                                //           padding: const EdgeInsets.symmetric(
-                                //               horizontal: 15),
-                                //           scrollDirection: Axis.horizontal,
-                                //           itemCount: historyData.length,
-                                //           gridDelegate:
-                                //               const SliverGridDelegateWithFixedCrossAxisCount(
-                                //                   crossAxisCount: 1,
-                                //                   crossAxisSpacing: 10,
-                                //                   mainAxisSpacing: 0,
-                                //                   mainAxisExtent: 300),
-                                //           itemBuilder: (context, i) {
-                                //             final historyModel =
-                                //                 HistoryModel.fromOfflineMedia(
-                                //                     historyData[i],
-                                //                     ItemType.anime);
-                                //             return ContinueWatchingCard(
-                                //                 media: historyModel);
-                                //           },
-                                //         ),
-                                //       )
-                                //     ],
-                                //   ),
-                                // ],
-                              ],
-                            ),
-                          );
-                        } else {
-                          children.insert(
-                            0,
-                            Column(
-                              children: [
-                                if (data.isNotEmpty)
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 8.0),
-                                    child: SizedBox(
-                                      height: 100,
-                                      child: ListView.builder(
-                                        scrollDirection: Axis.horizontal,
-                                        itemCount: cacheController
-                                            .getStoredAnime()
-                                            .length,
-                                        itemBuilder: (context, i) {
-                                          final media = cacheController
-                                              .getStoredAnime()[i];
-                                          return RecentlyOpenedAnimeCard(
-                                              media: media);
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                // if (historyData.isNotEmpty) ...[
-                                //   10.height(),
-                                //   Column(
-                                //     crossAxisAlignment:
-                                //         CrossAxisAlignment.start,
-                                //     children: [
-                                //       Padding(
-                                //         padding:
-                                //             const EdgeInsets.only(left: 20.0),
-                                //         child: Text(
-                                //           "Continue Watching (Literally)",
-                                //           style: TextStyle(
-                                //             fontFamily: "Poppins-SemiBold",
-                                //             fontSize: 17,
-                                //             color: Theme.of(context)
-                                //                 .colorScheme
-                                //                 .primary,
-                                //           ),
-                                //         ),
-                                //       ),
-                                //       10.height(),
-                                //       SizedBox(
-                                //         height: 228,
-                                //         child: GridView.builder(
-                                //           padding: const EdgeInsets.symmetric(
-                                //               horizontal: 15),
-                                //           scrollDirection: Axis.horizontal,
-                                //           itemCount: historyData.length,
-                                //           gridDelegate:
-                                //               const SliverGridDelegateWithFixedCrossAxisCount(
-                                //                   crossAxisCount: 1,
-                                //                   crossAxisSpacing: 10,
-                                //                   mainAxisSpacing: 0,
-                                //                   mainAxisExtent: 300),
-                                //           itemBuilder: (context, i) {
-                                //             final historyModel =
-                                //                 HistoryModel.fromOfflineMedia(
-                                //                     historyData[i],
-                                //                     ItemType.anime);
-                                //             return ContinueWatchingCard(
-                                //                 media: historyModel);
-                                //           },
-                                //         ),
-                                //       )
-                                //     ],
-                                //   ),
-                                // ],
-                              ],
-                            ),
-                          );
-                        }
-                        return Column(children: children);
-                      }),
                     ],
                   ),
                   if (!isDesktop)
