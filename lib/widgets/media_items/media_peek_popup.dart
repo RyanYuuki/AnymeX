@@ -387,15 +387,56 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
       const gap = 8.0;
       const iconBtnWidth = 50.0;
 
-      final numIconBtns = _isLoggedIn ? 2 : 1;
-      final fixedUsed = (numIconBtns * iconBtnWidth) + (numIconBtns * gap);
-      final wideW = (available - fixedUsed).clamp(0.0, available);
+      // Library icon is always shown (fixed 50px)
+      // List editor wide button only shown when logged in
+      // Watch/Read takes remaining space
+      // Layout: [List Editor wide (logged in)] [Watch/Read wide] [Library icon]
+      // When not logged in: [Watch/Read wide] [Library icon]
+      final fixedUsed = iconBtnWidth + gap; // library icon always
+      final remainingForWide = available - fixedUsed;
+      // Split remaining between list editor + watch/read when logged in
+      final listEditorW = _isLoggedIn
+          ? ((remainingForWide - gap) / 2).clamp(0.0, available)
+          : 0.0;
+      final watchW = _isLoggedIn
+          ? ((remainingForWide - gap) / 2).clamp(0.0, available)
+          : remainingForWide.clamp(0.0, available);
 
       return Row(
         mainAxisSize: MainAxisSize.max,
         children: [
+          // List Editor — wide with icon + label, logged in only
+          if (_isLoggedIn) ...[
+            SizedBox(
+              width: listEditorW,
+              child: _DetailsStyleButton(
+                onTap: _openListEditor,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.edit_note_rounded,
+                        color: colors.onSurface, size: 20),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        'List Editor',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: colors.onSurface,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: gap),
+          ],
+          // Watch / Read — wide with icon + label
           SizedBox(
-            width: wideW,
+            width: watchW,
             child: _DetailsStyleButton(
               onTap: _openFullView,
               child: Row(
@@ -424,18 +465,8 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
               ),
             ),
           ),
-          if (_isLoggedIn) ...[
-            const SizedBox(width: gap),
-            SizedBox(
-              width: iconBtnWidth,
-              child: _DetailsStyleButton(
-                onTap: _openListEditor,
-                child: Icon(Icons.edit_note_rounded,
-                    color: colors.onSurface, size: 22),
-              ),
-            ),
-          ],
           const SizedBox(width: gap),
+          // Add to Library — icon only, always shown
           SizedBox(
             width: iconBtnWidth,
             child: _DetailsStyleButton(
