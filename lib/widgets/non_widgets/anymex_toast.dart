@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
@@ -6,14 +8,24 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 class AnymexToast {
+  static SnackbarController? _activeSnackbar;
+
   static void show({
     required String message,
     Duration duration = const Duration(seconds: 2),
   }) {
-    final context = Get.context!;
+    final context = Get.context;
+    if (context == null) return;
+
+    final activeSnackbar = _activeSnackbar;
+    if (activeSnackbar != null) {
+      unawaited(activeSnackbar.close(withAnimations: false));
+      _activeSnackbar = null;
+    }
+
     final colorScheme = context.colors;
 
-    Get.showSnackbar(
+    final controller = Get.showSnackbar(
       GetSnackBar(
         snackPosition:
             context.isPortrait ? SnackPosition.BOTTOM : SnackPosition.TOP,
@@ -71,6 +83,15 @@ class AnymexToast {
           ],
         ),
       ),
+    );
+
+    _activeSnackbar = controller;
+    unawaited(
+      controller.future.whenComplete(() {
+        if (identical(_activeSnackbar, controller)) {
+          _activeSnackbar = null;
+        }
+      }),
     );
   }
 }

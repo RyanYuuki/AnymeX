@@ -413,7 +413,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     return DeviceOrientation.landscapeLeft;
   }
-  
+
   void toggleOrientation() {
     if (isLeftLandscaped) {
       SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeRight]);
@@ -871,7 +871,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     if (savedEpisodeData != null) {
       final savedTimestamp = savedEpisodeData.timeStampInMilliseconds ?? 0;
       final episodeTotalDuration = savedEpisodeData.durationInMilliseconds ?? 0;
-      
+
       final bool wasCompleted = episodeTotalDuration > 0 && 
           (savedTimestamp / episodeTotalDuration) >= 0.99;
       
@@ -888,7 +888,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     PlayerBottomSheets.hideLoader();
     updateNavigatorState();
   }
-}
+  }
 
   model.Video _findBestMatchingTrack(
     List<model.Video> tracks,
@@ -1383,8 +1383,20 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     videoFit.value =
         BoxFit.values[(videoFit.value.index + 1) % BoxFit.values.length];
     _basePlayer.toggleVideoFit(videoFit.value);
+    _showVideoFitToast(videoFit.value);
+  }
+
+  void resetVideoFit() {
+    if (videoFit.value != BoxFit.contain) {
+      videoFit.value = BoxFit.contain;
+      _basePlayer.toggleVideoFit(videoFit.value);
+    }
+    _showVideoFitToast(videoFit.value);
+  }
+
+  void _showVideoFitToast(BoxFit fit) {
     AnymexToast.show(
-        message: videoFit.value.name.capitalizeFirst ?? '',
+        message: fit.name.capitalizeFirst ?? '',
         duration: const Duration(milliseconds: 700));
   }
 

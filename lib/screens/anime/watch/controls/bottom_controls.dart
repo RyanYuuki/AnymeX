@@ -108,7 +108,8 @@ class BottomControls extends StatelessWidget {
     final theme = context.theme;
     final isDark = theme.brightness == Brightness.dark;
 
-    final String jsonString = PlayerUiKeys.bottomControlsSettings.get<String>('{}');
+    final String jsonString =
+        PlayerUiKeys.bottomControlsSettings.get<String>('{}');
     final Map<String, dynamic> decodedConfig = json.decode(jsonString);
 
     final List<String> leftButtonIds =
@@ -194,6 +195,7 @@ class BottomControls extends StatelessWidget {
       'aspect_ratio': ControlButton(
         icon: Symbols.fit_screen,
         onPressed: () => controller.toggleVideoFit(),
+        onLongPress: controller.resetVideoFit,
         tooltip: 'Aspect Ratio',
         compact: true,
       ),

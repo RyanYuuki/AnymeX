@@ -524,8 +524,8 @@ class ThemeRenderer {
         final secondaryActiveTrackColor =
             item.grabString('secondaryActiveTrackColor') ??
                 item.grabString('progressSecondaryActiveTrackColor');
-        final thumbColor =
-            item.grabString('thumbColor') ?? item.grabString('progressThumbColor');
+        final thumbColor = item.grabString('thumbColor') ??
+            item.grabString('progressThumbColor');
         final overlayColor = item.grabString('overlayColor') ??
             item.grabString('progressOverlayColor');
         return ProgressSlider(
@@ -726,6 +726,8 @@ class ThemeRenderer {
       tooltip: item.grabString('tooltip') ?? _tooltipForId(id),
       enabled: enabled,
       onTap: enabled ? () => _doAction(id, item) : null,
+      onLongPress:
+          enabled && id == 'aspect_ratio' ? controller.resetVideoFit : null,
       guts: Icon(icon,
           size: style.iconSize, color: enabled ? iconColor : disabledColor),
     );
@@ -767,6 +769,7 @@ class ThemeRenderer {
     required Widget guts,
     required bool enabled,
     required VoidCallback? onTap,
+    VoidCallback? onLongPress,
     String? tooltip,
   }) {
     final buttonColor = _resolveColor(style.color,
@@ -785,6 +788,7 @@ class ThemeRenderer {
         child: InkWell(
           borderRadius: BorderRadius.circular(style.radius),
           onTap: onTap,
+          onLongPress: onLongPress,
           child: SizedBox(
             width: style.size,
             height: style.size,
@@ -2115,8 +2119,7 @@ class BottomZone {
           fallback: SliderStyle.ios),
       progressPadding: _readEdgeInsets(
           json['progressPadding'], const EdgeInsets.symmetric(horizontal: 4)),
-      progressActiveTrackColor:
-          _readString(json['progressActiveTrackColor']),
+      progressActiveTrackColor: _readString(json['progressActiveTrackColor']),
       progressInactiveTrackColor:
           _readString(json['progressInactiveTrackColor']),
       progressSecondaryActiveTrackColor:

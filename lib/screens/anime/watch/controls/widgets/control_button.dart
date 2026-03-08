@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 class ControlButton extends StatefulWidget {
   final IconData icon;
   final VoidCallback? onPressed;
+  final VoidCallback? onLongPress;
   final String? tooltip;
   final bool compact;
   final bool isPrimary;
@@ -14,6 +15,7 @@ class ControlButton extends StatefulWidget {
     super.key,
     required this.icon,
     required this.onPressed,
+    this.onLongPress,
     this.tooltip,
     this.compact = false,
     this.isPrimary = false,
@@ -78,6 +80,7 @@ class _ControlButtonState extends State<ControlButton>
       onTapUp: (_) => _handleTapUp(),
       onTapCancel: _handleTapCancel,
       onTap: widget.onPressed,
+      onLongPress: widget.onLongPress,
       child: MouseRegion(
         onEnter: (_) => setState(() => _isHovered = true),
         onExit: (_) => setState(() => _isHovered = false),
@@ -96,18 +99,15 @@ class _ControlButtonState extends State<ControlButton>
                   color: widget.isPrimary
                       ? (isDark
                           ? (_isHovered
-                              ? context.theme.colorScheme.primary
-                                  .opaque(0.15)
-                              : context.theme.colorScheme.primary
-                                  .opaque(0.08))
+                              ? context.theme.colorScheme.primary.opaque(0.15)
+                              : context.theme.colorScheme.primary.opaque(0.08))
                           : (_isHovered
                               ? context.theme.colorScheme.primaryContainer
                               : context
                                   .theme.colorScheme.surfaceContainerHighest))
                       : (isDark
                           ? (_isHovered
-                              ? context.theme.colorScheme.primary
-                                  .opaque(0.1)
+                              ? context.theme.colorScheme.primary.opaque(0.1)
                               : context.theme.colorScheme.surfaceVariant
                                   .opaque(0.05))
                           : (_isHovered
@@ -120,24 +120,18 @@ class _ControlButtonState extends State<ControlButton>
                     color: widget.isPrimary
                         ? (isDark
                             ? (_isHovered
-                                ? context.theme.colorScheme.primary
-                                    .opaque(0.4)
-                                : context.theme.colorScheme.primary
-                                    .opaque(0.2))
+                                ? context.theme.colorScheme.primary.opaque(0.4)
+                                : context.theme.colorScheme.primary.opaque(0.2))
                             : (_isHovered
-                                ? context.theme.colorScheme.primary
-                                    .opaque(0.5)
+                                ? context.theme.colorScheme.primary.opaque(0.5)
                                 : context.theme.colorScheme.outline
                                     .opaque(0.3)))
                         : (isDark
                             ? (_isHovered
-                                ? context.theme.colorScheme.primary
-                                    .opaque(0.3)
-                                : context.theme.colorScheme.outline
-                                    .opaque(0.1))
+                                ? context.theme.colorScheme.primary.opaque(0.3)
+                                : context.theme.colorScheme.outline.opaque(0.1))
                             : (_isHovered
-                                ? context.theme.colorScheme.outline
-                                    .opaque(0.4)
+                                ? context.theme.colorScheme.outline.opaque(0.4)
                                 : context.theme.colorScheme.outline
                                     .opaque(0.3))),
                     width: _isHovered ? 1.0 : 0.5,
@@ -173,8 +167,7 @@ class _ControlButtonState extends State<ControlButton>
                                       ? context.theme.colorScheme.primary
                                       : context.theme.colorScheme.onSurface)
                                   : context.theme.colorScheme.onSurface))
-                          : context.theme.colorScheme.onSurface
-                              .opaque(0.5),
+                          : context.theme.colorScheme.onSurface.opaque(0.5),
                     ),
                   ),
                 ),
