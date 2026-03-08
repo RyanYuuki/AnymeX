@@ -39,9 +39,10 @@ class MediaPeekPopup extends StatefulWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      barrierColor: Colors.black54,
-      showDragHandle: false,
+      backgroundColor: context.colors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
       builder: (_) => MediaPeekPopup(media: media, type: type, tag: tag),
     );
   }
@@ -54,7 +55,6 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
   _PeekData? _data;
   bool _loading = true;
   bool _synopsisExpanded = false;
-
   static const int _synopsisMaxLines = 4;
 
   late final RxString _animeStatus;
@@ -77,10 +77,9 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
     _currentMedia = service.currentMedia;
     _animeStatus = (tracked.watchingStatus ?? '').obs;
     _animeScore = (double.tryParse(tracked.score ?? '') ?? 0.0).obs;
-    _animeProgress = (int.tryParse(
-                isManga
-                    ? (tracked.chapterCount ?? '')
-                    : (tracked.episodeCount ?? '')) ??
+    _animeProgress = (int.tryParse(isManga
+                ? (tracked.chapterCount ?? '')
+                : (tracked.episodeCount ?? '')) ??
             0)
         .obs;
   }
@@ -121,8 +120,8 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
     final response = await http.post(
       Uri.parse('https://graphql.anilist.co/'),
       headers: headers,
-      body:
-          jsonEncode({'query': query, 'variables': {'id': int.tryParse(id)}}),
+      body: jsonEncode(
+          {'query': query, 'variables': {'id': int.tryParse(id)}}),
     );
 
     if (response.statusCode == 200) {
@@ -136,67 +135,61 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
           .map((t) => t['name'] as String)
           .toList();
       return _PeekData(
-        description: description,
-        synonyms: synonyms,
-        genres: genres,
-        tags: tags,
-      );
+          description: description,
+          synonyms: synonyms,
+          genres: genres,
+          tags: tags);
     }
     return _PeekData(description: '', synonyms: [], genres: [], tags: []);
   }
 
-  void _openLibraryDialog() {
-    showCustomListDialog(context, widget.media);
-  }
+  void _openLibraryDialog() => showCustomListDialog(context, widget.media);
 
   void _openListEditor() {
     final isManga = widget.type == ItemType.manga;
     final fetcher = widget.media.serviceType;
-
     showModalBottomSheet(
       backgroundColor: context.colors.surfaceContainer,
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
-      builder: (BuildContext ctx) {
-        return ListEditorModal(
-          animeStatus: _animeStatus,
-          isManga: isManga,
-          animeScore: _animeScore,
-          animeProgress: _animeProgress,
-          currentAnime: _currentMedia,
-          media: widget.media,
-          onUpdate: (id, score, status, progress) async {
-            final listId = fetcher.onlineService.currentMedia.value.id ??
-                widget.media.id;
-            fetcher.onlineService.updateListEntry(UpdateListEntryParams(
-              listId: listId,
-              isAnime: !isManga,
-              score: score,
-              status: status,
-              progress: progress,
-            ));
-            _currentMedia.value?.score = score.toString();
-            _currentMedia.value?.watchingStatus = status;
-            if (isManga) {
-              _currentMedia.value?.chapterCount = progress.toString();
-            } else {
-              _currentMedia.value?.episodeCount = progress.toString();
-            }
-            _animeStatus.value = status;
-            _animeScore.value = score;
-            _animeProgress.value = progress;
-          },
-          onDelete: (s) async {
-            final listId =
-                fetcher.onlineService.currentMedia.value.mediaListId ??
-                    widget.media.id;
-            await fetcher.onlineService
-                .deleteListEntry(listId, isAnime: !isManga);
-            _animeStatus.value = '';
-          },
-        );
-      },
+      builder: (ctx) => ListEditorModal(
+        animeStatus: _animeStatus,
+        isManga: isManga,
+        animeScore: _animeScore,
+        animeProgress: _animeProgress,
+        currentAnime: _currentMedia,
+        media: widget.media,
+        onUpdate: (id, score, status, progress) async {
+          final listId =
+              fetcher.onlineService.currentMedia.value.id ?? widget.media.id;
+          fetcher.onlineService.updateListEntry(UpdateListEntryParams(
+            listId: listId,
+            isAnime: !isManga,
+            score: score,
+            status: status,
+            progress: progress,
+          ));
+          _currentMedia.value?.score = score.toString();
+          _currentMedia.value?.watchingStatus = status;
+          if (isManga) {
+            _currentMedia.value?.chapterCount = progress.toString();
+          } else {
+            _currentMedia.value?.episodeCount = progress.toString();
+          }
+          _animeStatus.value = status;
+          _animeScore.value = score;
+          _animeProgress.value = progress;
+        },
+        onDelete: (s) async {
+          final listId =
+              fetcher.onlineService.currentMedia.value.mediaListId ??
+                  widget.media.id;
+          await fetcher.onlineService
+              .deleteListEntry(listId, isAnime: !isManga);
+          _animeStatus.value = '';
+        },
+      ),
     );
   }
 
@@ -211,8 +204,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
 
   bool get _isLoggedIn {
     try {
-      final anilist = Get.find<AnilistData>();
-      return anilist.isLoggedIn.value;
+      return Get.find<AnilistData>().isLoggedIn.value;
     } catch (_) {
       return false;
     }
@@ -226,18 +218,22 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
       initialChildSize: 0.72,
       minChildSize: 0.4,
       maxChildSize: 0.92,
+      expand: false,
       builder: (context, scrollController) {
-        return Material(
-          color: colors.surface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-          clipBehavior: Clip.antiAlias,
+        return Container(
+          decoration: BoxDecoration(
+            color: colors.surface,
+            borderRadius:
+                const BorderRadius.vertical(top: Radius.circular(24)),
+          ),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               _buildDragHandle(colors),
               Expanded(
                 child: SingleChildScrollView(
                   controller: scrollController,
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -245,7 +241,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                       const SizedBox(height: 16),
                       _buildActionButtons(colors),
                       const SizedBox(height: 20),
-                      _loading ? _buildSkeleton() : _buildContent(colors),
+                      _loading ? _buildSkeleton(colors) : _buildContent(colors),
                     ],
                   ),
                 ),
@@ -286,13 +282,12 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ClipRRect(
-          borderRadius: BorderRadius.circular(12.multiplyRoundness()),
+          borderRadius: BorderRadius.circular(12.multiplyRadius()),
           child: AnymeXImage(
             imageUrl: widget.media.poster,
             width: 90,
             height: 130,
             radius: 12,
-            fit: BoxFit.cover,
           ),
         ),
         const SizedBox(width: 14),
@@ -308,7 +303,8 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                 overflow: TextOverflow.ellipsis,
               ),
               if (widget.media.romajiTitle.isNotEmpty &&
-                  widget.media.romajiTitle != widget.media.title) ...[
+                  widget.media.romajiTitle != widget.media.title &&
+                  widget.media.romajiTitle != '?') ...[
                 const SizedBox(height: 4),
                 AnymexText(
                   text: widget.media.romajiTitle,
@@ -331,43 +327,39 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
   Widget _buildMetaRow(ColorScheme colors) {
     final items = <Widget>[];
 
-    if (widget.media.rating.isNotEmpty &&
-        widget.media.rating != '?' &&
-        widget.media.rating != '0.0') {
+    final rating = widget.media.rating;
+    if (rating.isNotEmpty && rating != '?' && rating != '0' && rating != '0.0') {
       items.add(_buildMetaBadge(
-        icon: Icons.star_rounded,
-        label: widget.media.rating,
-        color: Colors.amber,
-      ));
+          icon: Icons.star_rounded, label: rating, color: Colors.amber));
     }
 
-    if (widget.media.format.isNotEmpty && widget.media.format != '?') {
+    final format = widget.media.format;
+    if (format.isNotEmpty && format != '?') {
       items.add(_buildMetaBadge(
-        icon: Icons.category_rounded,
-        label: widget.media.format.replaceAll('_', ' '),
-        color: colors.primary,
-      ));
+          icon: Icons.category_rounded,
+          label: format.replaceAll('_', ' '),
+          color: colors.primary));
     }
 
-    if (widget.media.status.isNotEmpty && widget.media.status != '?') {
+    final status = widget.media.status;
+    if (status.isNotEmpty && status != '?') {
+      final isAiring = status.contains('RELEASING') ||
+          status.contains('ONGOING') ||
+          status.contains('AIRING');
       items.add(_buildMetaBadge(
-        icon: Icons.circle,
-        label: widget.media.status,
-        color: widget.media.status.contains('RELEASING') ||
-                widget.media.status.contains('ONGOING')
-            ? Colors.green
-            : colors.secondary,
-      ));
+          icon: Icons.circle,
+          label: status.replaceAll('_', ' '),
+          color: isAiring ? Colors.green : colors.secondary));
     }
 
+    if (items.isEmpty) return const SizedBox.shrink();
     return Wrap(spacing: 6, runSpacing: 6, children: items);
   }
 
-  Widget _buildMetaBadge({
-    required IconData icon,
-    required String label,
-    required Color color,
-  }) {
+  Widget _buildMetaBadge(
+      {required IconData icon,
+      required String label,
+      required Color color}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -380,104 +372,87 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
           Icon(icon, size: 11, color: color),
           const SizedBox(width: 4),
           AnymexText(
-            text: label,
-            size: 11,
-            color: color,
-            variant: TextVariant.semiBold,
-          ),
+              text: label,
+              size: 11,
+              color: color,
+              variant: TextVariant.semiBold),
         ],
       ),
     );
   }
 
   Widget _buildActionButtons(ColorScheme colors) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final available = constraints.maxWidth;
-        const gap = 8.0;
-        const iconBtnWidth = 50.0;
+    return LayoutBuilder(builder: (context, constraints) {
+      final available = constraints.maxWidth;
+      const gap = 8.0;
+      const iconBtnWidth = 50.0;
 
-        final fixedUsed = _isLoggedIn ? (iconBtnWidth + gap) : 0.0;
-        final expandedTotal = available - fixedUsed - gap;
-        final halfW = (expandedTotal / 2).clamp(0.0, available);
+      final numIconBtns = _isLoggedIn ? 2 : 1;
+      final fixedUsed = (numIconBtns * iconBtnWidth) + (numIconBtns * gap);
+      final wideW = (available - fixedUsed).clamp(0.0, available);
 
-        return Row(
-          children: [
-            SizedBox(
-              width: halfW,
-              child: _DetailsStyleButton(
-                onTap: _openFullView,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.open_in_new_rounded,
-                        color: colors.onSurface, size: 18),
-                    const SizedBox(width: 8),
-                    Flexible(
-                      child: Text(
-                        widget.type == ItemType.anime ? 'Watch' : 'Read',
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: colors.onSurface,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
+      return Row(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          SizedBox(
+            width: wideW,
+            child: _DetailsStyleButton(
+              onTap: _openFullView,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    widget.type == ItemType.anime
+                        ? Icons.play_arrow_rounded
+                        : Icons.menu_book_rounded,
+                    color: colors.onSurface,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      widget.type == ItemType.anime ? 'Watch' : 'Read',
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: colors.onSurface,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
+          ),
+          if (_isLoggedIn) ...[
             const SizedBox(width: gap),
             SizedBox(
-              width: halfW,
+              width: iconBtnWidth,
               child: _DetailsStyleButton(
-                onTap: _openLibraryDialog,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(HugeIcons.strokeRoundedLibrary,
-                        color: colors.onSurface, size: 18),
-                    const SizedBox(width: 8),
-                    Flexible(
-                      child: Text(
-                        'Add to Library',
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: colors.onSurface,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                onTap: _openListEditor,
+                child: Icon(Icons.edit_note_rounded,
+                    color: colors.onSurface, size: 22),
               ),
             ),
-            if (_isLoggedIn) ...[
-              const SizedBox(width: gap),
-              SizedBox(
-                width: iconBtnWidth,
-                child: _DetailsStyleButton(
-                  onTap: _openListEditor,
-                  child: Icon(Icons.edit_note_rounded,
-                      color: colors.primary, size: 22),
-                ),
-              ),
-            ],
           ],
-        );
-      },
-    );
+          const SizedBox(width: gap),
+          SizedBox(
+            width: iconBtnWidth,
+            child: _DetailsStyleButton(
+              onTap: _openLibraryDialog,
+              child: Icon(HugeIcons.strokeRoundedLibrary,
+                  color: colors.onSurface, size: 20),
+            ),
+          ),
+        ],
+      );
+    });
   }
-
-  Widget _buildSkeleton() {
-    final colors = context.colors;
+  Widget _buildSkeleton(ColorScheme colors) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: List.generate(
-        4,
-        (i) => Padding(
+      children: List.generate(4, (i) {
+        return Padding(
           padding: const EdgeInsets.only(bottom: 10),
           child: Container(
             height: 14,
@@ -487,8 +462,8 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
               borderRadius: BorderRadius.circular(8),
             ),
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 
@@ -500,46 +475,46 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (data.description.isNotEmpty) ...[
-          _buildSectionLabel('Synopsis', colors),
+          _sectionLabel('Synopsis', colors),
           const SizedBox(height: 8),
           _buildSynopsis(data.description, colors),
           const SizedBox(height: 20),
         ],
         if (data.synonyms.isNotEmpty) ...[
-          _buildSectionLabel('Synonyms', colors),
+          _sectionLabel('Synonyms', colors),
           const SizedBox(height: 8),
           Wrap(
             spacing: 6,
             runSpacing: 6,
             children: data.synonyms
-                .map((s) => _buildTag(
-                    s, colors.surfaceContainerHigh, colors.onSurface))
+                .map((s) =>
+                    _chip(s, colors.surfaceContainerHigh, colors.onSurface))
                 .toList(),
           ),
           const SizedBox(height: 20),
         ],
         if (data.genres.isNotEmpty) ...[
-          _buildSectionLabel('Genres', colors),
+          _sectionLabel('Genres', colors),
           const SizedBox(height: 8),
           Wrap(
             spacing: 6,
             runSpacing: 6,
             children: data.genres
-                .map((g) => _buildTag(
+                .map((g) => _chip(
                     g, colors.primaryContainer, colors.onPrimaryContainer))
                 .toList(),
           ),
           const SizedBox(height: 20),
         ],
         if (data.tags.isNotEmpty) ...[
-          _buildSectionLabel('Tags', colors),
+          _sectionLabel('Tags', colors),
           const SizedBox(height: 8),
           Wrap(
             spacing: 6,
             runSpacing: 6,
             children: data.tags
                 .take(20)
-                .map((t) => _buildTag(t, colors.secondaryContainer,
+                .map((t) => _chip(t, colors.secondaryContainer,
                     colors.onSecondaryContainer))
                 .toList(),
           ),
@@ -548,23 +523,20 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
     );
   }
 
-  Widget _buildSectionLabel(String label, ColorScheme colors) {
+  Widget _sectionLabel(String label, ColorScheme colors) {
     return AnymexText(
-      text: label,
-      variant: TextVariant.bold,
-      size: 13,
-      color: colors.primary,
-    );
+        text: label,
+        variant: TextVariant.bold,
+        size: 13,
+        color: colors.primary);
   }
 
   Widget _buildSynopsis(String text, ColorScheme colors) {
-    return LayoutBuilder(builder: (context, constraints) {
-      final span = TextSpan(
-        text: text,
-        style: TextStyle(fontSize: 13, color: colors.onSurface, height: 1.5),
-      );
+    return LayoutBuilder(builder: (ctx, constraints) {
       final tp = TextPainter(
-        text: span,
+        text: TextSpan(
+            text: text,
+            style: const TextStyle(fontSize: 13, height: 1.5)),
         maxLines: _synopsisMaxLines,
         textDirection: TextDirection.ltr,
       )..layout(maxWidth: constraints.maxWidth);
@@ -600,35 +572,38 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
     });
   }
 
-  Widget _buildTag(String label, Color bg, Color fg) {
+  Widget _chip(String label, Color bg, Color fg) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(20),
-      ),
+      decoration:
+          BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)),
       child: AnymexText(
           text: label, size: 12, color: fg, variant: TextVariant.semiBold),
     );
   }
 }
 
-class _DetailsStyleButton extends StatelessWidget {
+class _ActionButton extends StatelessWidget {
   final VoidCallback? onTap;
-  final Widget child;
+  final IconData? icon;
+  final Widget? iconWidget;
+  final String? label;
+  final ColorScheme colors;
 
-  const _DetailsStyleButton({
+  const _ActionButton({
     required this.onTap,
-    required this.child,
+    this.icon,
+    this.iconWidget,
+    this.label,
+    required this.colors,
   });
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     return SizedBox(
       height: 50,
       child: Material(
-        color: scheme.surfaceContainer,
+        color: colors.surfaceContainer,
         borderRadius: BorderRadius.circular(16),
         child: InkWell(
           onTap: onTap,
@@ -636,12 +611,34 @@ class _DetailsStyleButton extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: scheme.outline.withOpacity(0.2),
-              ),
+              border: Border.all(color: colors.outline.withOpacity(0.2)),
             ),
             alignment: Alignment.center,
-            child: child,
+            child: label != null
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (icon != null)
+                        Icon(icon, color: colors.onSurface, size: 18),
+                      if (iconWidget != null) iconWidget!,
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          label!,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: colors.onSurface,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                : (iconWidget ?? (icon != null
+                    ? Icon(icon, color: colors.onSurface, size: 22)
+                    : const SizedBox.shrink())),
           ),
         ),
       ),
@@ -655,10 +652,9 @@ class _PeekData {
   final List<String> genres;
   final List<String> tags;
 
-  _PeekData({
-    required this.description,
-    required this.synonyms,
-    required this.genres,
-    required this.tags,
-  });
+  _PeekData(
+      {required this.description,
+      required this.synonyms,
+      required this.genres,
+      required this.tags});
 }
