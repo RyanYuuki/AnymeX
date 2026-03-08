@@ -5,14 +5,11 @@ import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:anymex/database/data_keys/keys.dart';
-import 'package:anymex/utils/logger.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 
@@ -27,224 +24,181 @@ class ListExporterPage extends StatefulWidget {
 class _ListExporterPageState extends State<ListExporterPage> {
   final serviceHandler = Get.find<ServiceHandler>();
   bool _isLoading = false;
+  bool _updateOnImport = true;
+  bool _roundUp = true;
 
-  Future<String?> _getMalCsrfToken() async {
-    try {
-      final sessionId = AuthKeys.malSessionId.get<String?>();
-      if (sessionId == null) {
-        if (mounted) {
-          showDialog(
-            context: context,
-            builder: (ctx) => AlertDialog(
-              title: const Text('Session Expired'),
-              content: const Text('Your MAL session has expired. Please login again to export your list.'),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(ctx),
-                  child: const Text('Cancel'),
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    Navigator.pop(ctx);
-                    await serviceHandler.malService.login(context);
-                  },
-                  child: const Text('Login'),
-                ),
-              ],
-            ),
-          );
-        }
-        return null;
-      }
-
-      final response = await http.get(
-        Uri.parse('https://myanimelist.net/'),
-        headers: {
-          'Cookie': 'MALHLOGSESSID=$sessionId',
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final RegExp csrfRegex = RegExp(r'<meta[^>]*name="csrf_token"[^>]*content="([^"]+)"');
-        final match = csrfRegex.firstMatch(response.body);
-        return match?.group(1);
-      }
-    } catch (e) {
-      Logger.i('Error fetching MAL CSRF token: $e');
-    }
-    return null;
-  }
-
-  Future<void> _exportMalList() async {
+  Future<String?> _exportMalList() async {
     final token = AuthKeys.malAuthToken.get<String?>();
-    final sessionId = AuthKeys.malSessionId.get<String?>();
-    
-    if (token == null || sessionId == null) {
-      throw Exception('Not properly logged into MyAnimeList. Please login again.');
+    if (token == null || token.isEmpty) {
+      throw Exception('Not logged into MyAnimeList. Please login again.');
     }
 
-    final csrfToken = await _getMalCsrfToken();
-    if (csrfToken == null) {
-      throw Exception('Failed to get CSRF token. Please try logging in again.');
-    }
-
-    final response = await http.post(
-      Uri.parse('https://myanimelist.net/panel.php?go=export2'),
-      headers: {
-        'Cookie': 'MALHLOGSESSID=$sessionId',
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-      },
-      body: {
-        'type': widget.isManga ? '2' : '1',
-        'subexport': 'Export My List',
-        'csrf_token': csrfToken,
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final tempDir = await getTemporaryDirectory();
-      final fileName = '${serviceHandler.profileData.value.name}_${widget.isManga ? 'manga' : 'anime'}_list.xml';
-      final file = File('${tempDir.path}/$fileName');
-      await file.writeAsString(response.body, flush: true);
-      
-      await Share.shareXFiles(
-        [XFile(file.path)], 
-        text: 'Here is your exported ${widget.isManga ? "Manga" : "Anime"} list from MyAnimeList.',
-      );
-    } else if (response.statusCode == 403) {
-      final body = response.body;
-      if (body.contains('badresult')) {
-        if (body.contains('Your username or password is incorrect')) {
-          throw Exception('Invalid credentials. Please login again.');
-        } else if (body.contains('Too many failed login attempts')) {
-          throw Exception('Too many failed attempts. Please try again later.');
-        }
-      }
-      throw Exception('Failed to export MAL list. Please try again.');
+    if (widget.isManga) {
+      await serviceHandler.malService.fetchUserMangaList();
     } else {
-      throw Exception('Failed to export MAL list: ${response.statusCode}');
+      await serviceHandler.malService.fetchUserAnimeList();
     }
+
+    final trackedList = widget.isManga
+        ? serviceHandler.malService.mangaList
+        : serviceHandler.malService.animeList;
+
+    if (trackedList.isEmpty) {
+      throw Exception(
+          'No ${widget.isManga ? 'manga' : 'anime'} found in your list');
+    }
+
+    final xml = _convertTrackedListToMalXml(trackedList, widget.isManga);
+    return _saveExportXmlWithPicker(xml);
   }
 
-  Future<void> _exportAnilistList() async {
+  Future<String?> _exportAnilistList() async {
     final token = AuthKeys.authToken.get<String?>();
-    
+
     if (token == null) {
       throw Exception('Not logged into AniList');
     }
 
     final anilistAuth = Get.find<AnilistAuth>();
-    
+
     if (widget.isManga) {
       await anilistAuth.fetchUserMangaList();
     } else {
       await anilistAuth.fetchUserAnimeList();
     }
 
-    final trackedList = widget.isManga 
-        ? anilistAuth.mangaList 
-        : anilistAuth.animeList;
+    final trackedList =
+        widget.isManga ? anilistAuth.mangaList : anilistAuth.animeList;
 
     if (trackedList.isEmpty) {
-      throw Exception('No ${widget.isManga ? 'manga' : 'anime'} found in your list');
+      throw Exception(
+          'No ${widget.isManga ? 'manga' : 'anime'} found in your list');
     }
 
-    final xml = _convertAnilistToMalXml(trackedList, widget.isManga);
-    
-    final tempDir = await getTemporaryDirectory();
-    final fileName = '${serviceHandler.profileData.value.name}_${widget.isManga ? 'manga' : 'anime'}_list.xml';
-    final file = File('${tempDir.path}/$fileName');
-    await file.writeAsString(xml, flush: true);
-    
-    await Share.shareXFiles(
-      [XFile(file.path)], 
-      text: 'Here is your exported ${widget.isManga ? "Manga" : "Anime"} list from AniList.',
-    );
+    final xml = _convertTrackedListToMalXml(trackedList, widget.isManga);
+    return _saveExportXmlWithPicker(xml);
   }
 
-  String _convertAnilistToMalXml(RxList<TrackedMedia> trackedList, bool isManga) {
+  String _convertTrackedListToMalXml(
+      Iterable<TrackedMedia> trackedList, bool isManga) {
     final buffer = StringBuffer();
     buffer.writeln('<?xml version="1.0" encoding="UTF-8"?>');
     buffer.writeln('<!DOCTYPE myanimelist SYSTEM "myanimelist.dtd">');
     buffer.writeln('<myanimelist>');
-    
+
     for (final entry in trackedList) {
       if (entry.id == null || entry.id!.isEmpty) continue;
 
-      String malStatus;
-      switch (entry.watchingStatus?.toUpperCase()) {
-        case 'CURRENT':
-          malStatus = isManga ? 'Reading' : 'Watching';
-          break;
-        case 'COMPLETED':
-          malStatus = 'Completed';
-          break;
-        case 'PAUSED':
-          malStatus = 'On-Hold';
-          break;
-        case 'DROPPED':
-          malStatus = 'Dropped';
-          break;
-        case 'PLANNING':
-        case 'PLAN_TO_WATCH':
-        case 'PLAN_TO_READ':
-          malStatus = isManga ? 'Plan to Read' : 'Plan to Watch';
-          break;
-        default:
-          malStatus = isManga ? 'Reading' : 'Watching';
+      final malStatus =
+          _mapStatusToMalExport(entry.watchingStatus, isManga: isManga);
+      final malScore = _normalizeScore(entry);
+      final progress = _resolveProgress(entry, isManga: isManga);
+      final totalCount = _parseInt(entry.totalEpisodes) ?? 0;
+      final updateOnImportValue = _updateOnImport ? '1' : '0';
+
+      if (isManga) {
+        buffer.writeln('  <manga>');
+        buffer.writeln(
+            '    <manga_mangadb_id>${_escapeXml(entry.id)}</manga_mangadb_id>');
+        buffer.writeln(
+            '    <manga_title>${_escapeXml(entry.title ?? 'Unknown')}</manga_title>');
+        buffer.writeln('    <manga_chapters>$totalCount</manga_chapters>');
+        buffer.writeln('    <my_read_chapters>$progress</my_read_chapters>');
+        buffer.writeln('    <my_score>$malScore</my_score>');
+        buffer.writeln('    <my_status>${_escapeXml(malStatus)}</my_status>');
+        buffer.writeln(
+            '    <update_on_import>$updateOnImportValue</update_on_import>');
+        buffer.writeln('  </manga>');
+        continue;
       }
-
-      int malScore = 0;
-      if (entry.userScore != null) {
-        if (entry.userScore! <= 10) {
-          malScore = entry.userScore!.round();
-        } else {
-          malScore = (entry.userScore! / 10).round();
-        }
-      } else if (entry.score != null) {
-        final score = double.tryParse(entry.score!);
-        if (score != null) {
-          if (score <= 10) {
-            malScore = score.round();
-          } else {
-            malScore = (score / 10).round();
-          }
-        }
-      }
-
-      malScore = malScore.clamp(0, 10);
-
-      final totalEpisodes = isManga 
-          ? (entry.chapterCount?.isNotEmpty == true ? entry.chapterCount : entry.totalEpisodes)
-          : (entry.episodeCount?.isNotEmpty == true ? entry.episodeCount : entry.totalEpisodes);
 
       buffer.writeln('  <anime>');
-      buffer.writeln('    <series_animedb_id>${_escapeXml(entry.id)}</series_animedb_id>');
-      buffer.writeln('    <series_title>${_escapeXml(entry.title ?? 'Unknown')}</series_title>');
-    
+      buffer.writeln(
+          '    <series_animedb_id>${_escapeXml(entry.id)}</series_animedb_id>');
+      buffer.writeln(
+          '    <series_title>${_escapeXml(entry.title ?? 'Unknown')}</series_title>');
+
       if (entry.format != null && entry.format!.isNotEmpty) {
-        buffer.writeln('    <series_type>${_escapeXml(_getMalFormat(entry.format!))}</series_type>');
+        buffer.writeln(
+            '    <series_type>${_escapeXml(_getMalFormat(entry.format!))}</series_type>');
       }
-      
-      buffer.writeln('    <series_episodes>${_escapeXml(totalEpisodes ?? '0')}</series_episodes>');
-      buffer.writeln('    <my_watched_episodes>${entry.userProgress ?? 0}</my_watched_episodes>');
+
+      buffer.writeln('    <series_episodes>$totalCount</series_episodes>');
+      buffer
+          .writeln('    <my_watched_episodes>$progress</my_watched_episodes>');
       buffer.writeln('    <my_score>$malScore</my_score>');
       buffer.writeln('    <my_status>${_escapeXml(malStatus)}</my_status>');
-      
+
       if (entry.mediaListId != null) {
         buffer.writeln('    <my_id>${_escapeXml(entry.mediaListId)}</my_id>');
       }
-      
+
       buffer.writeln('    <my_rewatching>0</my_rewatching>');
       buffer.writeln('    <my_rewatching_ep>0</my_rewatching_ep>');
-      buffer.writeln('    <update_on_import>1</update_on_import>');
+      buffer.writeln(
+          '    <update_on_import>$updateOnImportValue</update_on_import>');
       buffer.writeln('  </anime>');
     }
-    
+
     buffer.writeln('</myanimelist>');
     return buffer.toString();
+  }
+
+  String _mapStatusToMalExport(String? status, {required bool isManga}) {
+    switch (status?.toUpperCase().trim()) {
+      case 'CURRENT':
+        return isManga ? 'Reading' : 'Watching';
+      case 'COMPLETED':
+        return 'Completed';
+      case 'PAUSED':
+        return 'On-Hold';
+      case 'DROPPED':
+        return 'Dropped';
+      case 'PLANNING':
+      case 'PLAN_TO_WATCH':
+      case 'PLAN_TO_READ':
+        return isManga ? 'Plan to Read' : 'Plan to Watch';
+      default:
+        return isManga ? 'Reading' : 'Watching';
+    }
+  }
+
+  int _normalizeScore(TrackedMedia entry) {
+    final isAnilist = serviceHandler.serviceType.value != ServicesType.mal;
+
+    if (entry.userScore != null) {
+      final score = entry.userScore!;
+      final normalized = score <= 10 ? score.toDouble() : score / 10;
+      return isAnilist
+          ? (_roundUp ? normalized.ceil() : normalized.floor()).clamp(0, 10)
+          : normalized.round().clamp(0, 10);
+    }
+
+    final parsed = double.tryParse(entry.score ?? '');
+    if (parsed == null) return 0;
+    final normalized = parsed <= 10 ? parsed : parsed / 10;
+    return isAnilist
+        ? (_roundUp ? normalized.ceil() : normalized.floor()).clamp(0, 10)
+        : normalized.round().clamp(0, 10);
+  }
+
+  int _resolveProgress(TrackedMedia entry, {required bool isManga}) {
+    if (entry.userProgress != null && entry.userProgress! >= 0) {
+      return entry.userProgress!;
+    }
+
+    if (isManga) {
+      return _parseInt(entry.chapterCount) ??
+          _parseInt(entry.episodeCount) ??
+          0;
+    }
+
+    return _parseInt(entry.episodeCount) ?? 0;
+  }
+
+  int? _parseInt(String? value) {
+    if (value == null) return null;
+    return int.tryParse(value.trim());
   }
 
   String _getMalFormat(String format) {
@@ -284,158 +238,298 @@ class _ListExporterPageState extends State<ListExporterPage> {
         .replaceAll("'", '&apos;');
   }
 
+  Future<String?> _saveExportXmlWithPicker(String xml) async {
+    final userName = _sanitizeFileName(serviceHandler.profileData.value.name);
+    final fileName =
+        '${userName}_${widget.isManga ? 'manga' : 'anime'}_list.xml';
+
+    if (Platform.isAndroid || Platform.isIOS) {
+      return await FilePicker.platform.saveFile(
+        dialogTitle: 'Save Export XML',
+        fileName: fileName,
+        bytes: utf8.encode(xml),
+        type: FileType.custom,
+        allowedExtensions: ['xml'],
+      );
+    }
+
+    final outputPath = await FilePicker.platform.saveFile(
+      dialogTitle: 'Save Export XML',
+      fileName: fileName,
+      type: FileType.custom,
+      allowedExtensions: ['xml'],
+    );
+
+    if (outputPath == null || outputPath.isEmpty) {
+      return null;
+    }
+
+    final finalPath = outputPath.toLowerCase().endsWith('.xml')
+        ? outputPath
+        : '$outputPath.xml';
+    final output = File(finalPath);
+    await output.writeAsString(xml, flush: true);
+
+    return output.path;
+  }
+
+  String _sanitizeFileName(String? raw) {
+    final value = (raw ?? '').trim();
+    if (value.isEmpty) return 'user';
+
+    final cleaned = value
+        .replaceAll(RegExp(r'[<>:"/\\|?*\x00-\x1F]'), '_')
+        .replaceAll(RegExp(r'\s+'), '_');
+    return cleaned.isEmpty ? 'user' : cleaned;
+  }
+
   Future<void> _exportList() async {
     if (!serviceHandler.isLoggedIn.value) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please login first to export your list")),
-      );
+      errorSnackBar('Please login first to export your list.');
       return;
     }
 
     setState(() => _isLoading = true);
 
     try {
-      if (serviceHandler.serviceType.value == ServicesType.mal) {
-        await _exportMalList();
-      } else {
-        await _exportAnilistList();
+      final savedPath = serviceHandler.serviceType.value == ServicesType.mal
+          ? await _exportMalList()
+          : await _exportAnilistList();
+      if (savedPath == null || savedPath.isEmpty) {
+        infoSnackBar('Export cancelled.');
+        return;
       }
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Export ready! Choose where to save it.")),
-        );
+      if (serviceHandler.serviceType.value == ServicesType.mal) {
+        successSnackBar('MAL list exported to:\n$savedPath', duration: 5000);
+      } else {
+        successSnackBar('AniList XML exported to:\n$savedPath', duration: 5000);
       }
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Export Failed: ${e.toString()}")),
-        );
-      }
+      errorSnackBar("Export failed: ${e.toString()}");
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildSettingsTile({
+    required String title,
+    required String subtitle,
+    required bool value,
+    required ValueChanged<bool> onChanged,
+  }) {
     final colorScheme = Theme.of(context).colorScheme;
-    final isLoggedIn = serviceHandler.isLoggedIn.value;
-    final serviceType = serviceHandler.serviceType.value;
-    final serviceName = serviceType == ServicesType.mal ? 'MyAnimeList' : 'AniList';
-
-    return Glow(
-      child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            onPressed: () => Get.back(),
-            icon: const Icon(Icons.arrow_back_ios_new),
-          ),
-          title: AnymexText(
-            text: "${widget.isManga ? "Manga" : "Anime"} List Exporter",
-            variant: TextVariant.bold,
-            size: 18,
-            color: colorScheme.primary,
-          ),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+    return Row(
+      children: [
+        Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 20),
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainer.withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: colorScheme.outlineVariant.withOpacity(0.2),
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AnymexText(
-                      text: isLoggedIn 
-                          ? "Ready to export your $serviceName ${widget.isManga ? 'Manga' : 'Anime'} list?"
-                          : "Please login to export your list",
-                      variant: TextVariant.bold,
-                      size: 18,
-                      color: isLoggedIn ? colorScheme.primary : Colors.red,
-                    ),
-                    const SizedBox(height: 20),
-                    if (isLoggedIn) ...[
-                      Row(
-                        children: [
-                          CircleAvatar(
-                            backgroundImage: serviceHandler.profileData.value.avatar != null
-                                ? NetworkImage(serviceHandler.profileData.value.avatar!)
-                                : null,
-                            radius: 25,
-                            child: serviceHandler.profileData.value.avatar == null
-                                ? Text(serviceHandler.profileData.value.name?[0].toUpperCase() ?? '?')
-                                : null,
-                          ),
-                          const SizedBox(width: 15),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                AnymexText(
-                                  text: serviceHandler.profileData.value.name ?? 'User',
-                                  variant: TextVariant.bold,
-                                  size: 16,
-                                ),
-                                const SizedBox(height: 5),
-                                AnymexText(
-                                  text: "Exporting your ${widget.isManga ? 'manga' : 'anime'} list...",
-                                  size: 14,
-                                  color: Colors.grey,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ],
-                ),
+              AnymexText(
+                text: title,
+                variant: TextVariant.semiBold,
+                size: 15,
               ),
-              const Spacer(),
-              SizedBox(
-                width: double.infinity,
-                child: AnymexButton(
-                  onTap: isLoggedIn ? _exportList : null,
-                  radius: 100,
-                  height: 55,
-                  color: isLoggedIn ? null : Colors.grey,
-                  child: _isLoading
-                      ? const SizedBox(
-                          height: 25,
-                          width: 25,
-                          child: CircularProgressIndicator(color: Colors.white),
-                        )
-                      : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                             const Icon(HugeIcons.strokeRoundedDownload01, color: Colors.white),
-                             const SizedBox(width: 10),
-                             AnymexText(
-                               text: "Export ${serviceType == ServicesType.mal ? 'MAL' : 'AniList'} XML",
-                               variant: TextVariant.bold,
-                               color: Colors.white,
-                               size: 16,
-                             ),
-                          ],
-                        ),
-                ),
+              const SizedBox(height: 3),
+              AnymexText(
+                text: subtitle,
+                size: 12,
+                color: Colors.grey,
               ),
-              const SizedBox(height: 30),
             ],
           ),
         ),
-      ),
+        Switch(
+          value: value,
+          onChanged: onChanged,
+          activeColor: colorScheme.primary,
+        ),
+      ],
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      final colorScheme = Theme.of(context).colorScheme;
+      final isLoggedIn = serviceHandler.isLoggedIn.value;
+      final serviceType = serviceHandler.serviceType.value;
+      final serviceName =
+          serviceType == ServicesType.mal ? 'MyAnimeList' : 'AniList';
+      final isAnilist = serviceType != ServicesType.mal;
+
+      return Glow(
+        child: Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+              onPressed: () => Get.back(),
+              icon: const Icon(Icons.arrow_back_ios_new),
+            ),
+            title: AnymexText(
+              text: "${widget.isManga ? "Manga" : "Anime"} List Exporter",
+              variant: TextVariant.bold,
+              size: 18,
+              color: colorScheme.primary,
+            ),
+          ),
+          body: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 20),
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: colorScheme.surfaceContainer.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: colorScheme.outlineVariant.withOpacity(0.2),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AnymexText(
+                        text: isLoggedIn
+                            ? "Ready to export your $serviceName ${widget.isManga ? 'Manga' : 'Anime'} list?"
+                            : "Please login to export your list",
+                        variant: TextVariant.bold,
+                        size: 18,
+                        color: isLoggedIn ? colorScheme.primary : Colors.red,
+                      ),
+                      const SizedBox(height: 20),
+                      if (isLoggedIn) ...[
+                        Row(
+                          children: [
+                            CircleAvatar(
+                              backgroundImage: serviceHandler
+                                          .profileData.value.avatar !=
+                                      null
+                                  ? NetworkImage(
+                                      serviceHandler.profileData.value.avatar!)
+                                  : null,
+                              radius: 25,
+                              child: serviceHandler.profileData.value.avatar ==
+                                      null
+                                  ? Text(serviceHandler
+                                              .profileData.value.name?[0]
+                                              .toUpperCase() ??
+                                          '?')
+                                  : null,
+                            ),
+                            const SizedBox(width: 15),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  AnymexText(
+                                    text: serviceHandler
+                                            .profileData.value.name ??
+                                        'User',
+                                    variant: TextVariant.bold,
+                                    size: 16,
+                                  ),
+                                  const SizedBox(height: 5),
+                                  AnymexText(
+                                    text:
+                                        "Exporting your ${widget.isManga ? 'manga' : 'anime'} list...",
+                                    size: 14,
+                                    color: Colors.grey,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: colorScheme.surfaceContainer.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: colorScheme.outlineVariant.withOpacity(0.2),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AnymexText(
+                        text: "Export Settings",
+                        variant: TextVariant.bold,
+                        size: 16,
+                        color: colorScheme.primary,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildSettingsTile(
+                        title: "Update on Import",
+                        subtitle:
+                            "Automatically update entries when importing the XML",
+                        value: _updateOnImport,
+                        onChanged: (val) =>
+                            setState(() => _updateOnImport = val),
+                      ),
+                      if (isAnilist) ...[
+                        const SizedBox(height: 12),
+                        Divider(
+                          color: colorScheme.outlineVariant.withOpacity(0.2),
+                        ),
+                        const SizedBox(height: 12),
+                        _buildSettingsTile(
+                          title: "Round Up Scores",
+                          subtitle: _roundUp
+                              ? "Scores will be rounded up (e.g. 7.5 → 8)"
+                              : "Scores will be rounded down (e.g. 7.5 → 7)",
+                          value: _roundUp,
+                          onChanged: (val) => setState(() => _roundUp = val),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                const Spacer(),
+                SizedBox(
+                  width: double.infinity,
+                  child: AnymexButton(
+                    onTap: isLoggedIn ? _exportList : null,
+                    radius: 100,
+                    height: 55,
+                    color: isLoggedIn ? null : Colors.grey,
+                    child: _isLoading
+                        ? const SizedBox(
+                            height: 25,
+                            width: 25,
+                            child:
+                                CircularProgressIndicator(color: Colors.white),
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(HugeIcons.strokeRoundedDownload01,
+                                  color: Colors.white),
+                              const SizedBox(width: 10),
+                              AnymexText(
+                                text:
+                                    "Export ${serviceType == ServicesType.mal ? 'MAL' : 'AniList'} XML",
+                                variant: TextVariant.bold,
+                                color: Colors.white,
+                                size: 16,
+                              ),
+                            ],
+                          ),
+                  ),
+                ),
+                const SizedBox(height: 30),
+              ],
+            ),
+          ),
+        ),
+      );
+    });
   }
 }
