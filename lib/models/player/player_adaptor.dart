@@ -53,7 +53,7 @@ class PlayerSettings {
     this.markAsCompleted = 90,
     this.autoTranslate = false,
     this.translateTo = 'en',
-    this.transitionSubtitle = true,
+    this.transitionSubtitle = false,
     this.subtitleOpacity = 1.0,
     this.subtitleBottomMargin = 10.0,
     this.subtitleOutlineType = "Outline",
