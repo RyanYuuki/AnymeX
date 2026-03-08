@@ -8,6 +8,7 @@ import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/policy_sheet.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -24,6 +25,38 @@ Future<void> launchUrlHelper(String link) async {
     throw 'Could not launch $link';
   }
 }
+
+class _ForkInfo {
+  final String name;
+  final String description;
+  final String repoUrl;
+  final String devName;
+  final String devAvatarUrl;
+  final String devProfileUrl;
+  final String? discordUrl;
+
+  const _ForkInfo({
+    required this.name,
+    required this.description,
+    required this.repoUrl,
+    required this.devName,
+    required this.devAvatarUrl,
+    required this.devProfileUrl,
+    this.discordUrl,
+  });
+}
+
+const List<_ForkInfo> _forks = [
+  _ForkInfo(
+    name: 'NyanTV',
+    description: 'AnymeX fork optimised for TV',
+    repoUrl: 'https://github.com/NyanTV/NyanTV',
+    devName: 'hoemotion',
+    devAvatarUrl: 'https://avatars.githubusercontent.com/u/86238378?v=4',
+    devProfileUrl: 'https://github.com/hoemotion',
+    discordUrl: 'https://discord.gg/WWCdh2NpUv',
+  ),
+];
 
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
@@ -222,6 +255,14 @@ class AboutPage extends StatelessWidget {
                           subtitle:
                               'if you have an issue or any suggestion please make an issue at github.',
                         ),
+                        CustomListTile(
+                          onTap: () {
+                            navigate(() => const _ForksPage());
+                          },
+                          leading: const Icon(Icons.call_split_rounded),
+                          title: "Forks",
+                          subtitle: "Community forks of AnymeX",
+                        ),
                       ],
                     ),
                   ),
@@ -261,8 +302,6 @@ class AboutPage extends StatelessWidget {
                           leading: const Icon(Icons.system_update),
                           title: "Check for Updates",
                         ),
-
-                        // Enable Beta Updates (Toggle)
                         CustomListTile(
                           leading: const Icon(Iconsax.toggle_on),
                           title: "Enable Beta Updates",
@@ -283,6 +322,95 @@ class AboutPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                 ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ForksPage extends StatelessWidget {
+  const _ForksPage();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = context.colors;
+    return Glow(
+      child: Scaffold(
+        body: Column(
+          children: [
+            const NestedHeader(title: 'Forks'),
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: _forks.length,
+                itemBuilder: (context, index) {
+                  final fork = _forks[index];
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surfaceContainer.opaque(0.5),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: colors.outlineVariant.withOpacity(0.35),
+                        width: 1,
+                      ),
+                    ),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      onTap: () async => launchUrlHelper(fork.repoUrl),
+                      leading: CircleAvatar(
+                        backgroundImage:
+                            CachedNetworkImageProvider(fork.devAvatarUrl),
+                        backgroundColor: colors.primaryContainer,
+                      ),
+                      title: Text(
+                        fork.name,
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            fork.description,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: colors.onSurface.withOpacity(0.6),
+                            ),
+                          ),
+                          Text(
+                            'by ${fork.devName}',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: colors.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(HugeIcons.strokeRoundedGithub),
+                            onPressed: () async =>
+                                launchUrlHelper(fork.repoUrl),
+                          ),
+                          if (fork.discordUrl != null)
+                            IconButton(
+                              icon:
+                                  const Icon(HugeIcons.strokeRoundedDiscord),
+                              onPressed: () async =>
+                                  launchUrlHelper(fork.discordUrl!),
+                            ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           ],
