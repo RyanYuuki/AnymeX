@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/utils/language.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/custom_button.dart';
 import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
@@ -52,7 +53,6 @@ class _ExtensionListState extends State<ExtensionList>
   }
 
   void _setupReactiveListeners() {
-    // Listen to both installed and available lists for this item type
     _workers = [
       ever(_getInstalledList(), (_) => _computeAllData()),
       ever(_getAvailableList(), (_) => _computeAllData()),
@@ -169,6 +169,17 @@ class _ExtensionListState extends State<ExtensionList>
     }).toList();
   }
 
+  void _onReorder(int oldIndex, int newIndex) {
+    final current = _installedEntries.toList();
+    if (newIndex > oldIndex) newIndex -= 1;
+    final item = current.removeAt(oldIndex);
+    current.insert(newIndex, item);
+    _installedEntries.value = current;
+
+    final orderedIds = current.map((s) => s.id?.toString() ?? '').toList();
+    sourceController.saveExtensionOrder(widget.itemType, orderedIds);
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -190,34 +201,131 @@ class _ExtensionListState extends State<ExtensionList>
 
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: CustomScrollView(
-              controller: _controller,
-              slivers: [
-                if (widget.showRecommended && recommended.isNotEmpty)
-                  _buildSection('Recommended', recommended),
-                if (widget.installed && updates.isNotEmpty)
-                  _buildUpdateSection(updates),
-                if (widget.installed && installed.isNotEmpty)
-                  _buildSection(null, installed),
-                if (!widget.installed && notInstalled.isNotEmpty)
-                  _buildGroupedSection(notInstalled),
-                if (isEmpty)
-                  const SliverToBoxAdapter(
-                    child: Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(20.0),
-                        child: Text(
-                          'No extensions found',
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
+            child: widget.installed
+                ? _buildInstalledView(installed, updates)
+                : CustomScrollView(
+                    controller: _controller,
+                    slivers: [
+                      if (widget.showRecommended && recommended.isNotEmpty)
+                        _buildSection('Recommended', recommended),
+                      if (!widget.installed && notInstalled.isNotEmpty)
+                        _buildGroupedSection(notInstalled),
+                      if (isEmpty)
+                        const SliverToBoxAdapter(
+                          child: Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(20.0),
+                              child: Text(
+                                'No extensions found',
+                                style: TextStyle(
+                                    fontSize: 16, color: Colors.grey),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
+                    ],
                   ),
-              ],
-            ),
           );
         }),
       ),
+    );
+  }
+
+  Widget _buildInstalledView(List<Source> installed, List<Source> updates) {
+    final hasUpdates = updates.isNotEmpty;
+    final hasInstalled = installed.isNotEmpty;
+
+    if (!hasUpdates && !hasInstalled) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Text(
+            'No extensions found',
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+          ),
+        ),
+      );
+    }
+
+    return CustomScrollView(
+      controller: _controller,
+      slivers: [
+        if (hasUpdates) _buildUpdateSection(updates),
+        if (hasInstalled)
+          SliverToBoxAdapter(
+            child: _buildDraggableInstalledList(installed),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildDraggableInstalledList(List<Source> entries) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Row(
+            children: [
+              const Text(
+                'Installed',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+              ),
+              const SizedBox(width: 8),
+              Icon(
+                Icons.drag_indicator_rounded,
+                size: 14,
+                color: Colors.grey.withOpacity(0.7),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                'Hold to reorder',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: Colors.grey.withOpacity(0.7),
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ],
+          ),
+        ),
+        ReorderableListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          onReorder: _onReorder,
+          proxyDecorator: _proxyDecorator,
+          itemCount: entries.length,
+          itemBuilder: (context, index) {
+            final source = entries[index];
+            return _DraggableExtensionTile(
+              key: ValueKey(source.id),
+              index: index,
+              source: source,
+              mediaType: widget.itemType,
+              onUpdate: _computeAllData,
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _proxyDecorator(Widget child, int index, Animation<double> animation) {
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (context, child) {
+        final scale = 1.02 + animation.value * 0.01;
+        return Transform.scale(
+          scale: scale,
+          child: Material(
+            elevation: 8 * animation.value,
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+            child: child,
+          ),
+        );
+      },
+      child: child,
     );
   }
 
@@ -293,7 +401,6 @@ class _ExtensionListState extends State<ExtensionList>
   }
 
   Widget _buildGroupedSection(List<Source> entries) {
-    // Pre-group by language
     final grouped = <String, List<Source>>{};
     for (final source in entries) {
       final lang = completeLanguageName(source.lang?.toLowerCase() ?? '');
@@ -302,7 +409,6 @@ class _ExtensionListState extends State<ExtensionList>
 
     final sortedKeys = grouped.keys.toList()..sort();
 
-    // Flatten into a single list with headers
     final items = <_ListItem>[];
     for (final key in sortedKeys) {
       items.add(_ListItem.header(key));
@@ -354,7 +460,47 @@ class _ExtensionListState extends State<ExtensionList>
   }
 }
 
-/// Helper for flattened grouped list
+class _DraggableExtensionTile extends StatelessWidget {
+  final int index;
+  final Source source;
+  final ItemType mediaType;
+  final VoidCallback? onUpdate;
+
+  const _DraggableExtensionTile({
+    super.key,
+    required this.index,
+    required this.source,
+    required this.mediaType,
+    this.onUpdate,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        ReorderableDragStartListener(
+          index: index,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4.0),
+            child: Icon(
+              Icons.drag_indicator_rounded,
+              color: context.colors.onSurface.withOpacity(0.35),
+              size: 20,
+            ),
+          ),
+        ),
+        Expanded(
+          child: ExtensionListTileWidget(
+            source: source,
+            mediaType: mediaType,
+            onUpdate: onUpdate,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _ListItem {
   final bool isHeader;
   final String? headerTitle;
