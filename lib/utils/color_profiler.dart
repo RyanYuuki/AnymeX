@@ -1,16 +1,19 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/utils/logger.dart';
-import 'package:anymex/database/data_keys/keys.dart';
-
-import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/utils/player_core_visual_settings.dart';
 import 'package:anymex/utils/shaders.dart';
+import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/slider_semantics.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
+import 'package:anymex/widgets/non_widgets/reusable_checkmark.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -269,11 +272,12 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
     "gamma": 0,
     "hue": 0,
   };
+  late Map<String, dynamic> _visualSettings;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     _selectedProfile = widget.currentProfile;
     _selectedShader = settingsController.selectedShader.isEmpty
         ? "Default"
@@ -283,6 +287,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
     } else {
       _customSettings = Map.from(ColorProfileManager.profiles['natural']!);
     }
+    _visualSettings = PlayerCoreVisualSettings.getMpvVisualSettings();
   }
 
   @override
@@ -360,6 +365,33 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Custom settings reset to default'),
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.all(16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+      );
+    }
+  }
+
+  Future<void> _applyVisualSettings() async {
+    PlayerUiKeys.mpvVisualSettings.set(_visualSettings);
+    await PlayerCoreVisualSettings.applyMpvVisualSettings(widget.player);
+  }
+
+  Future<void> _resetVisualToDefault() async {
+    setState(() {
+      _visualSettings = Map<String, dynamic>.from(
+        PlayerCoreVisualSettings.mpvVisualDefaults,
+      );
+    });
+    await _applyVisualSettings();
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Visual settings reset to defaults'),
           backgroundColor: Theme.of(context).colorScheme.primary,
           behavior: SnackBarBehavior.floating,
           margin: const EdgeInsets.all(16),
@@ -449,7 +481,17 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                     children: [
                       Icon(Iconsax.eye, size: 20),
                       SizedBox(width: 8),
-                      Text('Shaders'),
+                      AnymexText.semiBold(text: 'Shaders'),
+                    ],
+                  ),
+                ),
+                Tab(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.movie_filter_rounded, size: 20),
+                      SizedBox(width: 8),
+                      AnymexText.semiBold(text: 'Visual'),
                     ],
                   ),
                 ),
@@ -459,7 +501,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                     children: [
                       Icon(Icons.dashboard_customize, size: 20),
                       SizedBox(width: 8),
-                      Text('Presets'),
+                      AnymexText.semiBold(text: 'Presets'),
                     ],
                   ),
                 ),
@@ -469,7 +511,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                     children: [
                       Icon(Icons.tune, size: 20),
                       SizedBox(width: 8),
-                      Text('Custom'),
+                      AnymexText.semiBold(text: 'Custom'),
                     ],
                   ),
                 ),
@@ -497,6 +539,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
               controller: _tabController,
               children: [
                 _buildShadersTab(theme),
+                _buildVisualTab(theme),
                 _buildPresetsTab(theme),
                 _buildCustomTab(theme),
               ],
@@ -577,8 +620,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                                   gradient: isSelected
                                       ? LinearGradient(
                                           colors: [
-                                            theme
-                                                .colorScheme.primaryContainer,
+                                            theme.colorScheme.primaryContainer,
                                             theme.colorScheme.primaryContainer
                                                 .opaque(0.8),
                                           ],
@@ -621,8 +663,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                                         children: [
                                           Text(
                                             shader,
-                                            style: theme
-                                                .textTheme.titleSmall
+                                            style: theme.textTheme.titleSmall
                                                 ?.copyWith(
                                               fontWeight: FontWeight.w700,
                                               color: isSelected
@@ -833,8 +874,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                                       boxShadow: isSelected
                                           ? [
                                               BoxShadow(
-                                                color: theme
-                                                    .colorScheme.primary
+                                                color: theme.colorScheme.primary
                                                     .opaque(0.3),
                                                 blurRadius: 8,
                                                 offset: const Offset(0, 2),
@@ -861,8 +901,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                                           profileKey
                                               .replaceAll('_', ' ')
                                               .toUpperCase(),
-                                          style: theme
-                                              .textTheme.titleSmall
+                                          style: theme.textTheme.titleSmall
                                               ?.copyWith(
                                             fontWeight: FontWeight.w700,
                                             color: isSelected
@@ -874,11 +913,10 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                                         const SizedBox(height: 4),
                                         Text(
                                           ColorProfileManager
-                                                  .profileDescriptions[
-                                              profileKey] ??
+                                                      .profileDescriptions[
+                                                  profileKey] ??
                                               '',
-                                          style: theme
-                                              .textTheme.bodySmall
+                                          style: theme.textTheme.bodySmall
                                               ?.copyWith(
                                             color: isSelected
                                                 ? theme.colorScheme
@@ -942,6 +980,238 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildVisualTab(ThemeData theme) {
+    return Column(
+      children: [
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.all(24),
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      theme.colorScheme.primaryContainer.opaque(0.3),
+                      theme.colorScheme.secondaryContainer.opaque(0.3),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.tune_rounded,
+                        color: theme.colorScheme.primary, size: 20),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'These controls directly affect mpv rendering quality & picture output',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              _buildVisualSwitchTile(
+                keyName: 'deband',
+                title: 'Deband',
+                description: 'Reduce color banding in gradients',
+                icon: Icons.gradient_rounded,
+              ),
+              _buildVisualSwitchTile(
+                keyName: 'correctDownscaling',
+                title: 'Correct Downscaling',
+                description: 'Improve quality when scaling down video',
+                icon: Icons.fit_screen_rounded,
+              ),
+              _buildVisualSwitchTile(
+                keyName: 'sigmoidUpscaling',
+                title: 'Sigmoid Upscaling',
+                description: 'Reduce haloing while upscaling',
+                icon: Icons.auto_fix_high_rounded,
+              ),
+              _buildVisualSwitchTile(
+                keyName: 'temporalDither',
+                title: 'Temporal Dither',
+                description: 'Smoother gradients with slight temporal noise',
+                icon: Icons.grain_rounded,
+              ),
+              _buildVisualSelectionTile(
+                keyName: 'scale',
+                title: 'Luma Upscaler',
+                icon: Icons.zoom_in_map_rounded,
+                items: const [
+                  'bilinear',
+                  'bicubic',
+                  'spline36',
+                  'ewa_lanczossharp',
+                ],
+              ),
+              _buildVisualSelectionTile(
+                keyName: 'cscale',
+                title: 'Chroma Upscaler',
+                icon: Icons.color_lens_rounded,
+                items: const [
+                  'bilinear',
+                  'bicubic',
+                  'spline36',
+                  'ewa_lanczossharp',
+                ],
+              ),
+              _buildVisualSelectionTile(
+                keyName: 'dscale',
+                title: 'Downscaler',
+                icon: Icons.zoom_out_map_rounded,
+                items: const ['bilinear', 'bicubic', 'mitchell', 'spline36'],
+              ),
+              _buildVisualSelectionTile(
+                keyName: 'ditherDepth',
+                title: 'Dither Depth',
+                icon: Icons.blur_linear_rounded,
+                items: const ['auto', '8', '10', '12'],
+              ),
+              _buildVisualSelectionTile(
+                keyName: 'toneMapping',
+                title: 'Tone Mapping',
+                icon: Icons.hdr_auto_rounded,
+                items: const ['auto', 'mobius', 'reinhard', 'hable', 'bt.2390'],
+              ),
+              _buildVisualSliderTile(
+                keyName: 'debandIterations',
+                title: 'Deband Iterations',
+                description: 'More iterations = stronger debanding',
+                icon: Icons.layers_rounded,
+                min: 1,
+                max: 4,
+                divisions: 3,
+              ),
+              _buildVisualSliderTile(
+                keyName: 'debandThreshold',
+                title: 'Deband Threshold',
+                description: 'Higher value increases debanding strength',
+                icon: Icons.tune_rounded,
+                min: 16,
+                max: 128,
+                divisions: 28,
+              ),
+              _buildVisualSliderTile(
+                keyName: 'targetPeak',
+                title: 'Target Peak',
+                description: 'HDR tone mapping target peak',
+                icon: Icons.brightness_6_rounded,
+                min: 50,
+                max: 1000,
+                divisions: 38,
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(24),
+          child: SizedBox(
+            width: double.infinity,
+            child: FilledButton.tonal(
+              onPressed: _resetVisualToDefault,
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.refresh, size: 20),
+                  SizedBox(width: 8),
+                  Text('Reset Visual Settings'),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildVisualSwitchTile({
+    required String keyName,
+    required String title,
+    required String description,
+    required IconData icon,
+  }) {
+    return CustomSwitchTile(
+      icon: icon,
+      title: title,
+      description: description,
+      switchValue: (_visualSettings[keyName] as bool?) ?? false,
+      onChanged: (value) {
+        setState(() => _visualSettings[keyName] = value);
+        _applyVisualSettings();
+      },
+    );
+  }
+
+  Widget _buildVisualSelectionTile({
+    required String keyName,
+    required String title,
+    required IconData icon,
+    required List<String> items,
+  }) {
+    final current = (_visualSettings[keyName] as String?) ?? items.first;
+    return CustomTile(
+      icon: icon,
+      title: title,
+      description: current,
+      isDescBold: true,
+      descColor: Theme.of(context).colorScheme.primary,
+      onTap: () {
+        showSelectionDialog<String>(
+          title: title,
+          items: items,
+          selectedItem: current.obs,
+          getTitle: (v) => v,
+          onItemSelected: (v) {
+            setState(() => _visualSettings[keyName] = v);
+            _applyVisualSettings();
+          },
+          leadingIcon: icon,
+        );
+      },
+    );
+  }
+
+  Widget _buildVisualSliderTile({
+    required String keyName,
+    required String title,
+    required String description,
+    required IconData icon,
+    required double min,
+    required double max,
+    required int divisions,
+  }) {
+    final value = ((_visualSettings[keyName] as num?) ?? min).toDouble();
+    return CustomSliderTile(
+      icon: icon,
+      title: title,
+      description: description,
+      sliderValue: value.clamp(min, max),
+      min: min,
+      max: max,
+      divisions: divisions.toDouble(),
+      label: value.round().toString(),
+      onChanged: (newValue) {
+        setState(() => _visualSettings[keyName] = newValue.round());
+        _applyVisualSettings();
+      },
     );
   }
 
