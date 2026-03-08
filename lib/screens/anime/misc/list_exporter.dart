@@ -87,19 +87,28 @@ class _ListExporterPageState extends State<ListExporterPage> {
     buffer.writeln('<myanimelist>');
 
     for (final entry in trackedList) {
-      if (entry.id == null || entry.id!.isEmpty) continue;
+      final exportId = entry.servicesType == ServicesType.anilist
+          ? entry.idMal
+          : (entry.idMal ?? entry.id);
+      if (exportId == null || exportId.isEmpty) continue;
 
       final malStatus =
           _mapStatusToMalExport(entry.watchingStatus, isManga: isManga);
       final malScore = _normalizeScore(entry);
       final progress = _resolveProgress(entry, isManga: isManga);
-      final totalCount = _parseInt(entry.totalEpisodes) ?? 0;
+      final totalCount = isManga
+          ? (_parseInt(entry.totalEpisodes) ??
+              (entry.servicesType == ServicesType.anilist
+                  ? _parseInt(entry.chapterCount)
+                  : null) ??
+              0)
+          : (_parseInt(entry.totalEpisodes) ?? 0);
       final updateOnImportValue = _updateOnImport ? '1' : '0';
 
       if (isManga) {
         buffer.writeln('  <manga>');
         buffer.writeln(
-            '    <manga_mangadb_id>${_escapeXml(entry.id)}</manga_mangadb_id>');
+            '    <manga_mangadb_id>${_escapeXml(exportId)}</manga_mangadb_id>');
         buffer.writeln(
             '    <manga_title>${_escapeXml(entry.title ?? 'Unknown')}</manga_title>');
         buffer.writeln('    <manga_chapters>$totalCount</manga_chapters>');
@@ -114,7 +123,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
 
       buffer.writeln('  <anime>');
       buffer.writeln(
-          '    <series_animedb_id>${_escapeXml(entry.id)}</series_animedb_id>');
+          '    <series_animedb_id>${_escapeXml(exportId)}</series_animedb_id>');
       buffer.writeln(
           '    <series_title>${_escapeXml(entry.title ?? 'Unknown')}</series_title>');
 
@@ -188,8 +197,8 @@ class _ListExporterPageState extends State<ListExporterPage> {
     }
 
     if (isManga) {
-      return _parseInt(entry.chapterCount) ??
-          _parseInt(entry.episodeCount) ??
+      return _parseInt(entry.episodeCount) ??
+          _parseInt(entry.chapterCount) ??
           0;
     }
 
@@ -413,9 +422,9 @@ class _ListExporterPageState extends State<ListExporterPage> {
                               child: serviceHandler.profileData.value.avatar ==
                                       null
                                   ? Text(serviceHandler
-                                              .profileData.value.name?[0]
-                                              .toUpperCase() ??
-                                          '?')
+                                          .profileData.value.name?[0]
+                                          .toUpperCase() ??
+                                      '?')
                                   : null,
                             ),
                             const SizedBox(width: 15),
@@ -424,9 +433,9 @@ class _ListExporterPageState extends State<ListExporterPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   AnymexText(
-                                    text: serviceHandler
-                                            .profileData.value.name ??
-                                        'User',
+                                    text:
+                                        serviceHandler.profileData.value.name ??
+                                            'User',
                                     variant: TextVariant.bold,
                                     size: 16,
                                   ),

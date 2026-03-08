@@ -2,6 +2,7 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 
 class TrackedMedia {
   String? id;
+  String? idMal;
   String? title;
   String? poster;
   String? episodeCount;
@@ -23,6 +24,7 @@ class TrackedMedia {
 
   TrackedMedia({
     this.id,
+    this.idMal,
     this.title,
     this.poster,
     this.episodeCount,
@@ -46,6 +48,7 @@ class TrackedMedia {
   factory TrackedMedia.fromJson(Map<String, dynamic> json) {
     return TrackedMedia(
         id: json['media']['id']?.toString(),
+        idMal: json['media']['idMal']?.toString(),
         title: json['media']['title']['english'] ??
             json['media']['title']['romaji'] ??
             json['media']['title']['native'],
@@ -134,6 +137,7 @@ class TrackedMedia {
   factory TrackedMedia.fromMAL(Map<String, dynamic> json) {
     return TrackedMedia(
       id: json['node']['id']?.toString(),
+      idMal: json['node']['id']?.toString(),
       title: json['node']['title'],
       servicesType: ServicesType.mal,
       poster: json['node']['main_picture']['large'],

@@ -80,7 +80,7 @@ class _ControlButtonState extends State<ControlButton>
       onTapUp: (_) => _handleTapUp(),
       onTapCancel: _handleTapCancel,
       onTap: widget.onPressed,
-      onLongPress: widget.onLongPress,
+      onLongPress: enabled ? widget.onLongPress : null,
       child: MouseRegion(
         onEnter: (_) => setState(() => _isHovered = true),
         onExit: (_) => setState(() => _isHovered = false),
