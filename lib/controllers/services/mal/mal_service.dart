@@ -240,7 +240,9 @@ class MalService extends GetxController implements BaseService, OnlineService {
               Padding(
                 padding: EdgeInsets.only(top: overflow ? 8.0 : 0),
                 child: ImageButton(
-                  width: width,
+                  width: constraints.maxWidth > (width * 3)
+                      ? width
+                      : width * 2 + 15,
                   height: !isDesktop ? 70 : 90,
                   buttonText: "OTHER",
                   borderRadius: 16.multiplyRadius(),
