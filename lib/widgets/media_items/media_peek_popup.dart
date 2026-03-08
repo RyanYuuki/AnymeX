@@ -75,11 +75,10 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
     final tracked = service.currentMedia.value;
     _currentMedia = service.currentMedia;
     _animeStatus = (tracked.watchingStatus ?? '').obs;
-    _animeScore = (tracked.score?.toDouble() ?? 0.0).obs;
-    _animeProgress = (isManga
-            ? (tracked.chapterCount?.toInt() ?? 0)
-            : (tracked.episodeCount?.toInt() ?? 0))
-        .obs;
+    _animeScore = (double.tryParse(tracked.score ?? '') ?? 0.0).obs;
+    _animeProgress = (int.tryParse(
+            isManga ? (tracked.chapterCount ?? '') : (tracked.episodeCount ?? '')) ??
+        0).obs;
   }
 
   Future<void> _fetchPeekData() async {
