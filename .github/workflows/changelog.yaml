@@ -164,6 +164,9 @@ jobs:
             echo "$response" | jq -r '.author.login // "ghost"'
           }
 
+          # Enable case-insensitive matching for [[ =~ ]] comparisons
+          shopt -s nocasematch
+
           # Process each commit
           while read -r HASH MESSAGE; do
             [ -z "$HASH" ] && continue
@@ -173,28 +176,31 @@ jobs:
             
             echo "Processing commit: $HASH - $MESSAGE by $AUTHOR_USERNAME"
 
-            # Categorize and format the entry
+            # Categorize and format the entry (case-insensitive prefix matching)
             if [[ "$MESSAGE" =~ ^feat: ]]; then
-              DESCR=$(echo "$MESSAGE" | sed 's/^feat: //')
+              DESCR=$(echo "$MESSAGE" | sed -E 's/^feat: //I')
               FEATURES+="- [֍]($REPO_URL/commit/$HASH) $DESCR by @${AUTHOR_USERNAME}"$'\n'
             elif [[ "$MESSAGE" =~ ^(fix|bug|improvement|patch): ]]; then
-              DESCR=$(echo "$MESSAGE" | sed -E 's/^(fix|bug|improvement|patch): //')
+              DESCR=$(echo "$MESSAGE" | sed -E 's/^(fix|bug|improvement|patch): //I')
               BUG_FIXES+="- [֍]($REPO_URL/commit/$HASH) $DESCR by @${AUTHOR_USERNAME}"$'\n'
             elif [[ "$MESSAGE" =~ ^refactor: ]]; then
-              DESCR=$(echo "$MESSAGE" | sed 's/^refactor: //')
+              DESCR=$(echo "$MESSAGE" | sed -E 's/^refactor: //I')
               REFACTORS+="- [֍]($REPO_URL/commit/$HASH) $DESCR by @${AUTHOR_USERNAME}"$'\n'
             elif [[ "$MESSAGE" =~ ^style: ]]; then
-              DESCR=$(echo "$MESSAGE" | sed 's/^style: //')
+              DESCR=$(echo "$MESSAGE" | sed -E 's/^style: //I')
               STYLE_CHANGES+="- [֍]($REPO_URL/commit/$HASH) $DESCR by @${AUTHOR_USERNAME}"$'\n'
             elif [[ "$MESSAGE" =~ ^perf: ]]; then
-              DESCR=$(echo "$MESSAGE" | sed 's/^perf: //')
+              DESCR=$(echo "$MESSAGE" | sed -E 's/^perf: //I')
               PERFORMANCE+="- [֍]($REPO_URL/commit/$HASH) $DESCR by @${AUTHOR_USERNAME}"$'\n'
             elif [[ "$MESSAGE" =~ ^(chore|docs|build|ci): ]]; then
-              DESCR=$(echo "$MESSAGE" | sed -E 's/^(chore|docs|build|ci): //')
+              DESCR=$(echo "$MESSAGE" | sed -E 's/^(chore|docs|build|ci): //I')
               CHORES+="- [֍]($REPO_URL/commit/$HASH) $DESCR by @${AUTHOR_USERNAME}"$'\n'
             fi
           # The git log command fetches the hash and the full subject line
           done < <(git log ${{ env.prev_tag }}..${{ env.current_tag }} --pretty=format:'%h %s')
+
+          # Restore case-sensitive matching
+          shopt -u nocasematch
 
           # Write the final changelog
           echo "### 🆕 Changelog" > CHANGELOG.md
