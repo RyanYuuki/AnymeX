@@ -607,7 +607,9 @@ class _ContributorsPageState extends State<ContributorsPage> {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          '${contributor.commitCount} commits • ${contributor.prCount} PRs',
+                          contributor.commitCount == 1
+                              ? '1 commit • ${contributor.prCount} PRs'
+                              : '${contributor.commitCount} commits • ${contributor.prCount} PRs',
                           style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w600,
@@ -723,7 +725,9 @@ class _ContributorsPageState extends State<ContributorsPage> {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      '${contributor.commitCount} commits',
+                      contributor.commitCount == 1
+                          ? '1 commit'
+                          : '${contributor.commitCount} commits',
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
@@ -905,7 +909,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
                 _buildStaffSection(context),
                 const SliverToBoxAdapter(child: SizedBox(height: 48)),
               ],
-            ],
+            ),
           ),
         ),
       ),
