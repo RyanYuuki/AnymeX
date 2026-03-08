@@ -343,17 +343,40 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
 
     final status = widget.media.status;
     if (status.isNotEmpty && status != '?') {
-      final isAiring = status.contains('RELEASING') ||
-          status.contains('ONGOING') ||
-          status.contains('AIRING');
+      final upper = status.toUpperCase().replaceAll(' ', '_');
+      final isAiring = upper.contains('RELEASING') ||
+          upper.contains('ONGOING') ||
+          upper.contains('AIRING');
+      final label = _convertMediaStatus(upper);
       items.add(_buildMetaBadge(
           icon: Icons.circle,
-          label: status.replaceAll('_', ' '),
+          label: label,
           color: isAiring ? Colors.green : colors.secondary));
     }
 
     if (items.isEmpty) return const SizedBox.shrink();
     return Wrap(spacing: 6, runSpacing: 6, children: items);
+  }
+
+  String _convertMediaStatus(String status) {
+    switch (status) {
+      case 'RELEASING':
+      case 'ONGOING':
+      case 'AIRING':
+        return 'Airing';
+      case 'FINISHED':
+      case 'FINISHED_AIRING':
+        return 'Finished';
+      case 'NOT_YET_RELEASED':
+      case 'NOT_YET_AIRED':
+        return 'Upcoming';
+      case 'HIATUS':
+        return 'On Hiatus';
+      case 'CANCELLED':
+        return 'Cancelled';
+      default:
+        return status.replaceAll('_', ' ');
+    }
   }
 
   Widget _buildMetaBadge(
@@ -520,41 +543,19 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
         if (data.synonyms.isNotEmpty) ...[
           _sectionLabel('Synonyms', colors),
           const SizedBox(height: 8),
-          Wrap(
-            spacing: 6,
-            runSpacing: 6,
-            children: data.synonyms
-                .map((s) =>
-                    _chip(s, colors.surfaceContainerHigh, colors.onSurface))
-                .toList(),
-          ),
+          _chipRow(data.synonyms, colors.surfaceContainerHigh, colors.onSurface),
           const SizedBox(height: 20),
         ],
         if (data.genres.isNotEmpty) ...[
           _sectionLabel('Genres', colors),
           const SizedBox(height: 8),
-          Wrap(
-            spacing: 6,
-            runSpacing: 6,
-            children: data.genres
-                .map((g) => _chip(
-                    g, colors.primaryContainer, colors.onPrimaryContainer))
-                .toList(),
-          ),
+          _chipRow(data.genres, colors.primaryContainer, colors.onPrimaryContainer),
           const SizedBox(height: 20),
         ],
         if (data.tags.isNotEmpty) ...[
           _sectionLabel('Tags', colors),
           const SizedBox(height: 8),
-          Wrap(
-            spacing: 6,
-            runSpacing: 6,
-            children: data.tags
-                .take(20)
-                .map((t) => _chip(t, colors.secondaryContainer,
-                    colors.onSecondaryContainer))
-                .toList(),
-          ),
+          _chipRow(data.tags.take(20).toList(), colors.secondaryContainer, colors.onSecondaryContainer),
         ],
       ],
     );
@@ -607,6 +608,20 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
         ],
       );
     });
+  }
+
+  Widget _chipRow(List<String> items, Color bg, Color fg) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: items.asMap().entries.map((e) {
+          return Padding(
+            padding: EdgeInsets.only(right: e.key < items.length - 1 ? 6 : 0),
+            child: _chip(e.value, bg, fg),
+          );
+        }).toList(),
+      ),
+    );
   }
 
   Widget _chip(String label, Color bg, Color fg) {
