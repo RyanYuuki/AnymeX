@@ -387,84 +387,90 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
       const gap = 8.0;
       const iconBtnWidth = 50.0;
 
-      // Library icon is always shown (fixed 50px)
-      // List editor wide button only shown when logged in
-      // Watch/Read takes remaining space
-      // Layout: [List Editor wide (logged in)] [Watch/Read wide] [Library icon]
+      // Layout: [Watch icon] [List Editor wide] [Library icon]
       // When not logged in: [Watch/Read wide] [Library icon]
-      final fixedUsed = iconBtnWidth + gap; // library icon always
-      final remainingForWide = available - fixedUsed;
-      // Split remaining between list editor + watch/read when logged in
+      final fixedUsed = iconBtnWidth * 2 + gap * 2; // watch icon + library icon
       final listEditorW = _isLoggedIn
-          ? ((remainingForWide - gap) / 2).clamp(0.0, available)
+          ? (available - fixedUsed - gap).clamp(0.0, available)
           : 0.0;
       final watchW = _isLoggedIn
-          ? ((remainingForWide - gap) / 2).clamp(0.0, available)
-          : remainingForWide.clamp(0.0, available);
+          ? iconBtnWidth
+          : (available - iconBtnWidth - gap).clamp(0.0, available);
 
       return Row(
         mainAxisSize: MainAxisSize.max,
         children: [
-          // List Editor — wide with icon + label, logged in only
+          // Watch/Read — icon-only when logged in, wide with label when not
+          SizedBox(
+            width: watchW,
+            child: _DetailsStyleButton(
+              onTap: _openFullView,
+              child: _isLoggedIn
+                  ? Icon(
+                      widget.type == ItemType.anime
+                          ? Icons.play_arrow_rounded
+                          : Icons.menu_book_rounded,
+                      color: colors.onSurface,
+                      size: 22,
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          widget.type == ItemType.anime
+                              ? Icons.play_arrow_rounded
+                              : Icons.menu_book_rounded,
+                          color: colors.onSurface,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Text(
+                            widget.type == ItemType.anime ? 'Watch' : 'Read',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: colors.onSurface,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+            ),
+          ),
+          // List Editor — wide with status label, logged in only
           if (_isLoggedIn) ...[
+            const SizedBox(width: gap),
             SizedBox(
               width: listEditorW,
               child: _DetailsStyleButton(
                 onTap: _openListEditor,
-                child: Row(
+                child: Obx(() => Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.edit_note_rounded,
-                        color: colors.onSurface, size: 20),
+                        color: colors.primary, size: 20),
                     const SizedBox(width: 8),
                     Flexible(
                       child: Text(
-                        'List Editor',
+                        convertAniListStatus(
+                          _animeStatus.value,
+                          isManga: widget.type == ItemType.manga,
+                        ),
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          color: colors.onSurface,
-                          fontSize: 14,
+                          color: colors.primary,
+                          fontSize: 13,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
                   ],
-                ),
+                )),
               ),
             ),
-            const SizedBox(width: gap),
           ],
-          // Watch / Read — wide with icon + label
-          SizedBox(
-            width: watchW,
-            child: _DetailsStyleButton(
-              onTap: _openFullView,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    widget.type == ItemType.anime
-                        ? Icons.play_arrow_rounded
-                        : Icons.menu_book_rounded,
-                    color: colors.onSurface,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 8),
-                  Flexible(
-                    child: Text(
-                      widget.type == ItemType.anime ? 'Watch' : 'Read',
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: colors.onSurface,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
           const SizedBox(width: gap),
           // Add to Library — icon only, always shown
           SizedBox(
@@ -479,7 +485,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
       );
     });
   }
-  Widget _buildSkeleton(ColorScheme colors) {
+    Widget _buildSkeleton(ColorScheme colors) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: List.generate(4, (i) {
