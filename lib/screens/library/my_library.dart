@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
@@ -201,24 +203,26 @@ class _LibraryContent extends StatelessWidget {
   SliverGridDelegateWithFixedCrossAxisCount _getSliverDelegate(
       BuildContext context) {
     if (controller.gridCount.value == 0) {
-      if (getPlatform(context)) {
-        return SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: getResponsiveCrossAxisVal(
-            MediaQuery.of(context).size.width - 120,
-            itemWidth: 170,
-          ),
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 20,
-          mainAxisExtent: _getCardHeight(
-            context,
-            CardStyle.values[settingsController.cardStyle],
-          ),
-        );
-      }
+      final width = MediaQuery.of(context).size.width;
+      final itemWidth = getPlatform(context) ? 170.0 : 140.0;
+      final crossAxisCount = math.max(
+        1,
+        getResponsiveCrossAxisVal(width - 120, itemWidth: itemWidth.toInt()),
+      );
+
+      return SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: crossAxisCount,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 20,
+        mainAxisExtent: _getCardHeight(
+          context,
+          CardStyle.values[settingsController.cardStyle],
+        ),
+      );
     }
 
     return SliverGridDelegateWithFixedCrossAxisCount(
-      crossAxisCount: controller.gridCount.value,
+      crossAxisCount: math.max(1, controller.gridCount.value),
       crossAxisSpacing: 0,
       mainAxisSpacing: 10,
       childAspectRatio: 2 / 3,
