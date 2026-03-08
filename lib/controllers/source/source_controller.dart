@@ -141,7 +141,7 @@ class SourceController extends GetxController implements BaseService {
   void saveExtensionOrder(ItemType type, List<String> orderedIds) {
     _extensionOrders[type] = List.from(orderedIds);
     final key = _orderKeyFor(type);
-    KvHelper.set(key, orderedIds);
+    KvHelper.set(key.name, orderedIds);
   }
 
   SourceKeys _orderKeyFor(ItemType type) => switch (type) {
