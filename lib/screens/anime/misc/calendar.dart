@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'dart:ui';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -482,7 +481,6 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
                                               .toLowerCase()
                                               .contains('apple')
                                           ? AnymeXImage(
-                                              // color: Colors.white,
                                               imageUrl:
                                                   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVCJpAHzn91VMfwirwAbAmV-ONO02UjmCj2w&s",
                                               height: 20,
@@ -540,7 +538,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
               ),
             ),
             const SizedBox(height: 5),
-          ] else {
+          ] else ...[
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -562,7 +560,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
                 ]
               ],
             ),
-          },
+          ],
           const SizedBox(height: 5),
           SizedBox(
             width: cardWidth,
