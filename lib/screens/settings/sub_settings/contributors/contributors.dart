@@ -225,8 +225,8 @@ Future<List<ContributorModel>> fetchContributors() async {
     final profileContributor = profilesByLogin[normalizedLogin];
 
     final commitCount = profileContributor?.commitCount ?? 0;
-    if (!( curatedContributor?.isPinnedCoreTeam == true ||
-        curatedContributor?.isSpecialThanks == true) &&
+    if (!(curatedContributor?.isPinnedCoreTeam == true ||
+            curatedContributor?.isSpecialThanks == true) &&
         commitCount == 0) {
       continue;
     }
@@ -909,7 +909,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
                 _buildStaffSection(context),
                 const SliverToBoxAdapter(child: SizedBox(height: 48)),
               ],
-            ),
+            ],
           ),
         ),
       ),
