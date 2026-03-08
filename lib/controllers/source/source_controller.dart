@@ -82,6 +82,12 @@ class SourceController extends GetxController implements BaseService {
   Timer? _rebuildTimer;
   bool _homeReady = false;
 
+  final _extensionOrders = <ItemType, List<String>>{
+    ItemType.anime: [],
+    ItemType.manga: [],
+    ItemType.novel: [],
+  };
+
   String get activeAnimeRepo => _repos[_kAnimeRepo] ?? '';
   set activeAnimeRepo(String v) => _persistRepo(_kAnimeRepo, v);
 
@@ -128,6 +134,47 @@ class SourceController extends GetxController implements BaseService {
 
   String getMangaRepo(ExtensionType type) =>
       type == ExtensionType.aniyomi ? activeAniyomiMangaRepo : activeMangaRepo;
+
+  List<String> getExtensionOrder(ItemType type) =>
+      List.unmodifiable(_extensionOrders[type] ?? []);
+
+  void saveExtensionOrder(ItemType type, List<String> orderedIds) {
+    _extensionOrders[type] = List.from(orderedIds);
+    final key = _orderKeyFor(type);
+    KvHelper.set(key, orderedIds);
+  }
+
+  SourceKeys _orderKeyFor(ItemType type) => switch (type) {
+        ItemType.anime => SourceKeys.animeExtensionOrder,
+        ItemType.manga => SourceKeys.mangaExtensionOrder,
+        ItemType.novel => SourceKeys.novelExtensionOrder,
+      };
+
+  void _loadExtensionOrders() {
+    for (final type in ItemType.values) {
+      final key = _orderKeyFor(type);
+      final stored = KvHelper.get<List<dynamic>>(key.name, defaultVal: []);
+      _extensionOrders[type] = stored.map((e) => e.toString()).toList();
+    }
+  }
+
+  List<Source> applyCustomOrder(ItemType type, List<Source> sources) {
+    final order = _extensionOrders[type] ?? [];
+    if (order.isEmpty) return sources;
+
+    final orderMap = <String, int>{};
+    for (var i = 0; i < order.length; i++) {
+      orderMap[order[i]] = i;
+    }
+
+    final sorted = List<Source>.from(sources);
+    sorted.sort((a, b) {
+      final aIdx = orderMap[a.id?.toString() ?? ''] ?? order.length;
+      final bIdx = orderMap[b.id?.toString() ?? ''] ?? order.length;
+      return aIdx.compareTo(bIdx);
+    });
+    return sorted;
+  }
 
   @override
   void onInit() {
@@ -196,7 +243,9 @@ class SourceController extends GetxController implements BaseService {
       }
     }
 
-    _applyDiff(_installedFor(type), installed);
+    final orderedInstalled = applyCustomOrder(type, installed);
+
+    _applyDiff(_installedFor(type), orderedInstalled);
     _applyDiff(_availableFor(type), available);
 
     if (type == ItemType.anime) {
@@ -239,6 +288,7 @@ class SourceController extends GetxController implements BaseService {
 
   Future<void> initExtensions({bool refresh = true}) async {
     try {
+      _loadExtensionOrders();
       await sortAllExtensions();
       _loadRepos();
       _restoreActiveSources();
