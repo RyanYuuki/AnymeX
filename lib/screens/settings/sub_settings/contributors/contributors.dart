@@ -78,6 +78,18 @@ final Map<String, ContributorModel> _curatedContributors = {
       'Dartotsu': 'https://github.com/aayush2622/Dartotsu',
     },
   ),
+  'Xerus': const ContributorModel(
+    githubLogin: 'PandaTech-SX',
+    githubId: '74928953',
+    displayName: 'Xerus',
+    avatarUrl: 'https://i.ibb.co/gF6HSFqZ/20250517-100044.png',
+    profileUrl: 'https://sxenon.carrd.co/',
+    roleTitle: 'UI/UX Designer',
+    prCount: 0,
+    commitCount: 0,
+    bannerUrl: 'https://i.ibb.co/zhy5G1Tv/Walpaper-1.png',
+    isSpecialThanks: true,
+  ),
 };
 
 Future<void> _openExternalLink(String url) async {
