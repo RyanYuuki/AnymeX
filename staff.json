@@ -1,0 +1,25 @@
+{
+  "staff": [
+    {
+      "displayName": "entityJY",
+      "role": "Discord Moderator",
+      "avatarUrl": "",
+      "profileUrl": "",
+      "platforms": ["discord"]
+    },
+    {
+      "displayName": "Sap",
+      "role": "Discord Moderator",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/186505562?v=4",
+      "profileUrl": "https://github.com/NotSap",
+      "platforms": ["discord"]
+    },
+    {
+      "displayName": "Kusokohei",
+      "role": "Comment Moderator",
+      "avatarUrl": "https://s4.anilist.co/file/anilistcdn/user/avatar/large/b6375615-VjReLjCoIffT.png",
+      "profileUrl": "https://anilist.co/user/Kusokohei/",
+      "platforms": ["discord"]
+    }
+  ]
+}
