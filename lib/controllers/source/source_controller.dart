@@ -142,6 +142,34 @@ class SourceController extends GetxController implements BaseService {
     _extensionOrders[type] = List.from(orderedIds);
     final key = _orderKeyFor(type);
     KvHelper.set(key.name, orderedIds);
+    _rebuildSectionsOrder(type, orderedIds);
+  }
+
+  void _rebuildSectionsOrder(ItemType type, List<String> orderedIds) {
+    final cache = _widgetCache[type]!;
+    if (cache.isEmpty) return;
+
+    final sections = _sectionsFor(type);
+    final orderMap = <String, int>{};
+    for (var i = 0; i < orderedIds.length; i++) {
+      orderMap[orderedIds[i]] = i;
+    }
+
+    final sortedEntries = cache.entries.toList()
+      ..sort((a, b) {
+        final aIdx = orderMap[a.key.toString()] ?? orderedIds.length;
+        final bIdx = orderMap[b.key.toString()] ?? orderedIds.length;
+        return aIdx.compareTo(bIdx);
+      });
+
+    sections.value = [
+      if (cache.isNotEmpty && type != ItemType.novel)
+        CustomSearchBar(
+          disableIcons: true,
+          onSubmitted: (v) => SourceSearchPage(initialTerm: v, type: type).go(),
+        ),
+      ...sortedEntries.map((e) => e.value),
+    ];
   }
 
   SourceKeys _orderKeyFor(ItemType type) => switch (type) {
