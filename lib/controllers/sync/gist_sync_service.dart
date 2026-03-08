@@ -153,8 +153,7 @@ class GistSyncService {
   Future<String?> _findExistingGistId() async {
     if (_gistId != null) return _gistId;
     try {
-      Uri? nextPage =
-          Uri.parse('$_apiBase/gists?per_page=100');
+      Uri? nextPage = Uri.parse('$_apiBase/gists?per_page=100');
       int pageLimit = 10; // safety cap
 
       while (nextPage != null && pageLimit-- > 0) {
@@ -274,6 +273,39 @@ class GistSyncService {
       Logger.e('[GistSync] hasSyncGist: $e');
       return false;
     }
+  }
+
+  Future<String?> syncGistHtmlUrl({bool createIfMissing = false}) async {
+    if (!isReady) throw StateError('Sync service is not ready.');
+    try {
+      final gistId =
+          createIfMissing ? await _ensureGistId() : await _findExistingGistId();
+      if (gistId == null) return null;
+
+      final resp = await _resilientGet(
+        Uri.parse('$_apiBase/gists/$gistId'),
+        _headers,
+      );
+      if (resp.statusCode != 200) {
+        Logger.e('[GistSync] Fetch gist URL failed: ${resp.statusCode}');
+        return null;
+      }
+
+      final raw = json.decode(resp.body);
+      if (raw is! Map<String, dynamic>) return null;
+
+      final htmlUrl = (raw['html_url'] as String?)?.trim();
+      if (htmlUrl != null && htmlUrl.isNotEmpty) return htmlUrl;
+
+      final owner =
+          (raw['owner'] as Map<String, dynamic>?)?['login'] as String?;
+      if (owner != null && owner.isNotEmpty) {
+        return 'https://gist.github.com/$owner/$gistId';
+      }
+    } catch (e) {
+      Logger.e('[GistSync] syncGistHtmlUrl: $e');
+    }
+    return null;
   }
 
   Future<void> _upload(Map<String, dynamic> data) async {

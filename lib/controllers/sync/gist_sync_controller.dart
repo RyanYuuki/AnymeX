@@ -43,23 +43,40 @@ class GistSyncController extends GetxController {
   final lastSyncSuccessful = RxnBool();
   final lastSyncError = RxnString();
   final githubUsername = RxnString();
+  final githubDisplayName = RxnString();
+  final githubAvatarUrl = RxnString();
+  final githubProfileUrl = RxnString();
   RxBool get isConnected => isLoggedIn;
   final _service = GistSyncService();
   int _activeSyncOps = 0;
 
+  String _envValue(String primary, [List<String> fallbacks = const []]) {
+    for (final key in [primary, ...fallbacks]) {
+      final value = (dotenv.env[key] ?? '').trim();
+      if (value.isNotEmpty) return value;
+    }
+    return '';
+  }
+
   String? get _githubRedirectUri {
     final configuredRedirect = _normalizeRedirectUri(
-      (dotenv.env['GIT_REDIRECT_URI'] ?? '').trim(),
+      _envValue('GIT_REDIRECT_URI', ['GITHUB_REDIRECT_URI']),
     );
     if (configuredRedirect != null) return configuredRedirect;
 
     return _normalizeRedirectUri(
-      (dotenv.env['GIT_CALLBACK_SCHEME'] ?? '').trim(),
+      _envValue('GIT_CALLBACK_SCHEME', [
+        'GITHUB_CALLBACK_SCHEME',
+        'CALLBACK_SCHEME',
+      ]),
     );
   }
 
   String get _githubCallbackScheme =>
-      _extractScheme((dotenv.env['GIT_CALLBACK_SCHEME'] ?? '').trim()) ??
+      _extractScheme(_envValue('GIT_CALLBACK_SCHEME', [
+        'GITHUB_CALLBACK_SCHEME',
+        'CALLBACK_SCHEME',
+      ])) ??
       _extractScheme(_githubRedirectUri ?? '') ??
       _kDefaultGithubCallbackScheme;
 
@@ -104,6 +121,7 @@ class GistSyncController extends GetxController {
         isLoggedIn.value = true;
         githubUsername.value = username.isEmpty ? null : username;
         Logger.i('[GistSync] Session restored for $username');
+        unawaited(_fetchGithubProfile(token));
       }
     } catch (e) {
       Logger.i('[GistSync] _restoreSession: $e');
@@ -111,12 +129,15 @@ class GistSyncController extends GetxController {
   }
 
   Future<void> login(BuildContext context) async {
-    final clientId = dotenv.env['GIT_CLIENT_ID'] ?? '';
-    final clientSecret = dotenv.env['GIT_CLIENT_SECRET'] ?? '';
+    final clientId = _envValue('GIT_CLIENT_ID', ['GITHUB_CLIENT_ID']);
+    final clientSecret =
+        _envValue('GIT_CLIENT_SECRET', ['GITHUB_CLIENT_SECRET']);
     final redirectUri = _githubRedirectUri;
 
     if (clientId.isEmpty) {
-      Logger.i('[GistSync] GIT_CLIENT_ID not set in .env');
+      Logger.i(
+        '[GistSync] GitHub client ID not set in .env (expected GIT_CLIENT_ID or GITHUB_CLIENT_ID)',
+      );
       errorSnackBar('GitHub client ID not configured.');
       return;
     }
@@ -188,27 +209,18 @@ class GistSyncController extends GetxController {
           return;
         }
 
-        final userResp = await http.get(
-          Uri.parse('https://api.github.com/user'),
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Accept': 'application/vnd.github+json',
-          },
-        );
-        String? username;
-        if (userResp.statusCode == 200) {
-          username = (json.decode(userResp.body)
-              as Map<String, dynamic>)['login'] as String?;
-        }
-
         _service.setToken(token);
         SyncKeys.gistGithubToken.set(token);
-        if (username != null) {
-          SyncKeys.gistGithubUsername.set(username);
-          githubUsername.value = username;
-        }
-
         isLoggedIn.value = true;
+
+        final username = await _fetchGithubProfile(token) ??
+            (() {
+              final cached = SyncKeys.gistGithubUsername.get<String>('');
+              if (cached.isEmpty) return null;
+              githubUsername.value = cached;
+              return cached;
+            })();
+
         await refreshCloudGistStatus();
         Logger.i('[GistSync] Login successful as $username');
         successSnackBar('Connected as ${username ?? 'GitHub user'}!');
@@ -228,6 +240,9 @@ class GistSyncController extends GetxController {
     isLoggedIn.value = false;
     hasCloudGist.value = null;
     githubUsername.value = null;
+    githubDisplayName.value = null;
+    githubAvatarUrl.value = null;
+    githubProfileUrl.value = null;
     lastSyncTime.value = null;
     lastSyncDurationMs.value = null;
     lastSyncSuccessful.value = null;
@@ -254,6 +269,62 @@ class GistSyncController extends GetxController {
 
   bool get _canSync =>
       isLoggedIn.value && syncEnabled.value && _service.isReady;
+
+  Future<void> refreshGithubProfile() async {
+    if (!isLoggedIn.value) return;
+    final token = SyncKeys.gistGithubToken.get<String>('');
+    if (token.isEmpty) return;
+    await _fetchGithubProfile(token);
+  }
+
+  Future<String?> _fetchGithubProfile(String token) async {
+    try {
+      final response = await http.get(
+        Uri.parse('https://api.github.com/user'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/vnd.github+json',
+        },
+      );
+
+      if (response.statusCode != 200) {
+        Logger.i(
+          '[GistSync] Failed to fetch GitHub profile: ${response.statusCode}',
+        );
+        return null;
+      }
+
+      final raw = json.decode(response.body);
+      if (raw is! Map<String, dynamic>) {
+        Logger.i('[GistSync] Unexpected GitHub profile response shape.');
+        return null;
+      }
+
+      final username = _readString(raw['login']);
+      final displayName = _readString(raw['name']);
+      final avatarUrl = _readString(raw['avatar_url']);
+      final profileUrl = _readString(raw['html_url']);
+
+      if (username != null) {
+        githubUsername.value = username;
+        SyncKeys.gistGithubUsername.set(username);
+      }
+      githubDisplayName.value = displayName;
+      githubAvatarUrl.value = avatarUrl;
+      githubProfileUrl.value = profileUrl;
+
+      return username;
+    } catch (e) {
+      Logger.i('[GistSync] _fetchGithubProfile: $e');
+      return null;
+    }
+  }
+
+  String? _readString(Object? raw) {
+    final value = raw?.toString().trim();
+    if (value == null || value.isEmpty || value == 'null') return null;
+    return value;
+  }
 
   Future<void> refreshCloudGistStatus() async {
     if (!isLoggedIn.value || !_service.isReady) {
@@ -379,6 +450,32 @@ class GistSyncController extends GetxController {
     } finally {
       stopwatch.stop();
       _endSyncOp();
+    }
+  }
+
+  Future<String?> fetchRemoteSyncGistUrl() async {
+    if (!isLoggedIn.value || !_service.isReady) {
+      errorSnackBar('Connect GitHub first to view sync gist.');
+      return null;
+    }
+    if (isSyncing.value) {
+      infoSnackBar('Another sync action is already in progress.');
+      return null;
+    }
+
+    try {
+      final url = await _service.syncGistHtmlUrl(createIfMissing: false);
+      if (url == null || url.isEmpty) {
+        hasCloudGist.value = false;
+        infoSnackBar('No AnymeX sync gist found. Initialize first.');
+        return null;
+      }
+      hasCloudGist.value = true;
+      return url;
+    } catch (e) {
+      Logger.i('[GistSync] fetchRemoteSyncGistUrl: $e');
+      errorSnackBar('Failed to get cloud gist link.');
+      return null;
     }
   }
 
