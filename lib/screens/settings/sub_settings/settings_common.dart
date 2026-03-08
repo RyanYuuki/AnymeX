@@ -82,6 +82,17 @@ class _SettingsCommonState extends State<SettingsCommon> {
                                     General.hideAdultContent.set(e);
                                   });
                                 }),
+                            Obx(
+                              () => CustomSwitchTile(
+                                icon: Icons.play_circle_fill_rounded,
+                                title: 'Show Continue Watching Card',
+                                description:
+                                    'Display Continue Watching cards on home page from offline progress.',
+                                switchValue: settings.showContinueWatchingCard,
+                                onChanged: (e) =>
+                                    settings.showContinueWatchingCard = e,
+                              ),
+                            ),
                           ],
                         ),
                       ),

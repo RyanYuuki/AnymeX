@@ -10,6 +10,7 @@ enum General {
   universalScrapper,
   enableBetaUpdates,
   imageCacheThresholdGb,
+  libraryGridAutoMigrated,
 }
 
 enum ThemeKeys {
@@ -233,4 +234,5 @@ enum UISettingsKeys {
   usePosterColor,
   enablePosterKenBurns,
   carouselStyle,
+  showContinueWatchingCard,
 }

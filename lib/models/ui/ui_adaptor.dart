@@ -27,6 +27,7 @@ class UISettings {
   bool usePosterColor;
   bool enablePosterKenBurns;
   int carouselStyle;
+  bool showContinueWatchingCard;
 
   UISettings({
     this.glowMultiplier = 1.0,
@@ -53,6 +54,7 @@ class UISettings {
     this.usePosterColor = false,
     this.enablePosterKenBurns = true,
     this.carouselStyle = 0,
+    this.showContinueWatchingCard = true,
   })  : homePageCards = homePageCards ??
             {
               "Continue Watching": true,
@@ -145,6 +147,8 @@ class UISettings {
           .get<bool>(uiDefaults.enablePosterKenBurns),
       carouselStyle:
           UISettingsKeys.carouselStyle.get<int>(uiDefaults.carouselStyle),
+      showContinueWatchingCard: UISettingsKeys.showContinueWatchingCard
+          .get<bool>(uiDefaults.showContinueWatchingCard),
     );
   }
 }

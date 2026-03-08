@@ -233,6 +233,13 @@ class Settings extends GetxController {
     UISettingsKeys.animationDuration.set(value);
   }
 
+  bool get showContinueWatchingCard =>
+      _getUISetting((s) => s.showContinueWatchingCard);
+  set showContinueWatchingCard(bool value) {
+    uiSettings.update((s) => s?.showContinueWatchingCard = value);
+    UISettingsKeys.showContinueWatchingCard.set(value);
+  }
+
   bool get defaultPortraitMode =>
       _getPlayerSetting((s) => s.defaultPortraitMode);
   set defaultPortraitMode(bool value) {
