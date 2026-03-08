@@ -1,10 +1,9 @@
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/screens/library/widgets/history_model.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/header.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
 
@@ -25,6 +24,7 @@ class ContinueWatchingCard extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(12.multiplyRadius()),
       ),
+      clipBehavior: Clip.antiAlias,
       color: colorScheme.surfaceContainer.opaque(0.4),
       child: AnymexOnTap(
         onTap: media.onTap,
