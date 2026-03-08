@@ -20,6 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:http/http.dart' as http;
+import 'package:hugeicons/hugeicons.dart';
 
 class MediaPeekPopup extends StatefulWidget {
   final Media media;
@@ -55,10 +56,30 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
 
   static const int _synopsisMaxLines = 4;
 
+  late final RxString _animeStatus;
+  late final RxDouble _animeScore;
+  late final RxInt _animeProgress;
+  late final Rx<TrackedMedia?> _currentMedia;
+
   @override
   void initState() {
     super.initState();
     _fetchPeekData();
+    _initTrackingState();
+  }
+
+  void _initTrackingState() {
+    final isManga = widget.type == ItemType.manga;
+    final service = widget.media.serviceType.onlineService;
+    service.setCurrentMedia(widget.media.id.toString(), isManga: isManga);
+    final tracked = service.currentMedia.value;
+    _currentMedia = service.currentMedia;
+    _animeStatus = (tracked.watchingStatus ?? '').obs;
+    _animeScore = (tracked.score?.toDouble() ?? 0.0).obs;
+    _animeProgress = (isManga
+            ? (tracked.chapterCount?.toInt() ?? 0)
+            : (tracked.episodeCount?.toInt() ?? 0))
+        .obs;
   }
 
   Future<void> _fetchPeekData() async {
@@ -125,11 +146,8 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
   }
 
   void _openListEditor() {
-    final animeStatus = ''.obs;
-    final animeScore = 0.0.obs;
-    final animeProgress = 0.obs;
-    final currentAnime = Rx<TrackedMedia?>(TrackedMedia());
     final isManga = widget.type == ItemType.manga;
+    final fetcher = widget.media.serviceType;
 
     showModalBottomSheet(
       backgroundColor: context.colors.surfaceContainer,
@@ -138,25 +156,38 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
       showDragHandle: true,
       builder: (BuildContext ctx) {
         return ListEditorModal(
-          animeStatus: animeStatus,
+          animeStatus: _animeStatus,
           isManga: isManga,
-          animeScore: animeScore,
-          animeProgress: animeProgress,
-          currentAnime: currentAnime,
+          animeScore: _animeScore,
+          animeProgress: _animeProgress,
+          currentAnime: _currentMedia,
           media: widget.media,
           onUpdate: (id, score, status, progress) async {
-            await serviceHandler.serviceType.value.onlineService
-                .updateListEntry(UpdateListEntryParams(
-              listId: widget.media.id,
+            final listId = fetcher.onlineService.currentMedia.value.id
+                ?? widget.media.id;
+            fetcher.onlineService.updateListEntry(UpdateListEntryParams(
+              listId: listId,
               isAnime: !isManga,
               score: score,
               status: status,
               progress: progress,
             ));
+            _currentMedia.value?.score = score.toString();
+            _currentMedia.value?.watchingStatus = status;
+            if (isManga) {
+              _currentMedia.value?.chapterCount = progress.toString();
+            } else {
+              _currentMedia.value?.episodeCount = progress.toString();
+            }
+            _animeStatus.value = status;
+            _animeScore.value = score;
+            _animeProgress.value = progress;
           },
           onDelete: (s) async {
-            await serviceHandler.serviceType.value.onlineService
-                .deleteListEntry(widget.media.id, isAnime: !isManga);
+            final listId = fetcher.onlineService.currentMedia.value.mediaListId
+                ?? widget.media.id;
+            await fetcher.onlineService.deleteListEntry(listId, isAnime: !isManga);
+            _animeStatus.value = '';
           },
         );
       },
@@ -355,35 +386,83 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
   }
 
   Widget _buildActionButtons(ColorScheme colors) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _ActionButton(
-          onTap: _openFullView,
-          color: colors.secondaryContainer,
-          icon: Icon(Icons.open_in_new_rounded, color: colors.onSecondaryContainer, size: 16),
-          label: widget.type == ItemType.anime ? 'Watch' : 'Read',
-          textColor: colors.onSecondaryContainer,
-        ),
-        const SizedBox(width: 10),
-        _ActionButton(
-          onTap: _openLibraryDialog,
-          color: colors.surfaceContainerHigh,
-          icon: Icon(Icons.library_add_rounded, color: colors.onSurface, size: 16),
-          label: 'Add to Library',
-          textColor: colors.onSurface,
-        ),
-        if (_isLoggedIn) ...[
-          const SizedBox(width: 10),
-          _ActionButton(
-            onTap: _openListEditor,
-            color: colors.primary,
-            icon: Icon(Icons.edit_note_rounded, color: colors.onPrimary, size: 16),
-            label: 'List Editor',
-            textColor: colors.onPrimary,
-          ),
-        ],
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final available = constraints.maxWidth;
+        final gap = 8.0;
+        final iconBtnWidth = 50.0;
+        final numIconBtns = _isLoggedIn ? 1 : 0;
+        final numIconBtnGaps = numIconBtns > 0 ? numIconBtns : 0;
+        final expandedWidth = (available
+                - (numIconBtns * iconBtnWidth)
+                - (numIconBtnGaps * gap)
+                - gap)
+            .clamp(0.0, available);
+
+        return Row(
+          children: [
+            SizedBox(
+              width: expandedWidth / 2,
+              child: _DetailsStyleButton(
+                onTap: _openFullView,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.open_in_new_rounded, color: colors.onSurface, size: 18),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        widget.type == ItemType.anime ? 'Watch' : 'Read',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: colors.onSurface,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(width: gap),
+            SizedBox(
+              width: expandedWidth / 2,
+              child: _DetailsStyleButton(
+                onTap: _openLibraryDialog,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(HugeIcons.strokeRoundedLibrary, color: colors.onSurface, size: 18),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        'Add to Library',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: colors.onSurface,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            if (_isLoggedIn) ...[
+              SizedBox(width: gap),
+              Obx(() => SizedBox(
+                width: iconBtnWidth,
+                child: _DetailsStyleButton(
+                  onTap: _openListEditor,
+                  child: Icon(Icons.edit_note_rounded, color: colors.primary, size: 22),
+                ),
+              )),
+            ],
+          ],
+        );
+      },
     );
   }
 
@@ -521,47 +600,32 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
   }
 }
 
-class _ActionButton extends StatelessWidget {
+class _DetailsStyleButton extends StatelessWidget {
   final VoidCallback? onTap;
-  final Color color;
-  final Widget icon;
-  final String label;
-  final Color textColor;
+  final Widget child;
 
-  const _ActionButton({
+  const _DetailsStyleButton({
     required this.onTap,
-    required this.color,
-    required this.icon,
-    required this.label,
-    required this.textColor,
+    required this.child,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedOpacity(
-        opacity: onTap == null ? 0.5 : 1.0,
-        duration: const Duration(milliseconds: 150),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 16),
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(12.multiplyRoundness()),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              icon,
-              const SizedBox(width: 6),
-              AnymexText(
-                text: label,
-                size: 13,
-                color: textColor,
-                variant: TextVariant.semiBold,
-              ),
-            ],
-          ),
+    return Container(
+      height: 50,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.opaque(0.2),
+        ),
+        color: Theme.of(context).colorScheme.surfaceContainer.opaque(0.5),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: child,
         ),
       ),
     );
