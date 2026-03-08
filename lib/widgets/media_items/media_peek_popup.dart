@@ -5,8 +5,11 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/database/data_keys/keys.dart';
+import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
+import 'package:anymex/screens/anime/widgets/custom_list_dialog.dart';
+import 'package:anymex/screens/anime/widgets/list_editor.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -49,7 +52,6 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
   _PeekData? _data;
   bool _loading = true;
   bool _synopsisExpanded = false;
-  bool _addingToList = false;
 
   static const int _synopsisMaxLines = 4;
 
@@ -118,27 +120,47 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
     return _PeekData(description: '', synonyms: [], genres: [], tags: []);
   }
 
-  Future<void> _addToList() async {
-    setState(() => _addingToList = true);
-    try {
-      final service = serviceHandler.serviceType.value.onlineService;
-      await service.updateListEntry(UpdateListEntryParams(
-        listId: widget.media.id,
-        isAnime: widget.type == ItemType.anime,
-        status: 'PLANNING',
-        score: 0,
-        progress: 0,
-      ));
-      if (mounted) {
-        Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Added "${widget.media.title}" to Planning'),
-          behavior: SnackBarBehavior.floating,
-        ));
-      }
-    } catch (_) {
-      if (mounted) setState(() => _addingToList = false);
-    }
+  void _openLibraryDialog() {
+    showCustomListDialog(context, widget.media);
+  }
+
+  void _openListEditor() {
+    final animeStatus = ''.obs;
+    final animeScore = 0.0.obs;
+    final animeProgress = 0.obs;
+    final currentAnime = Rx<TrackedMedia?>(TrackedMedia());
+    final isManga = widget.type == ItemType.manga;
+
+    showModalBottomSheet(
+      backgroundColor: context.colors.surfaceContainer,
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (BuildContext ctx) {
+        return ListEditorModal(
+          animeStatus: animeStatus,
+          isManga: isManga,
+          animeScore: animeScore,
+          animeProgress: animeProgress,
+          currentAnime: currentAnime,
+          media: widget.media,
+          onUpdate: (id, score, status, progress) async {
+            await serviceHandler.serviceType.value.onlineService
+                .updateListEntry(UpdateListEntryParams(
+              listId: widget.media.id,
+              isAnime: !isManga,
+              score: score,
+              status: status,
+              progress: progress,
+            ));
+          },
+          onDelete: (s) async {
+            await serviceHandler.serviceType.value.onlineService
+                .deleteListEntry(widget.media.id, isAnime: !isManga);
+          },
+        );
+      },
+    );
   }
 
   void _openFullView() {
@@ -334,37 +356,33 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
 
   Widget _buildActionButtons(ColorScheme colors) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        if (_isLoggedIn) ...[
-          Expanded(
-            child: _ActionButton(
-              onTap: _addingToList ? null : _addToList,
-              color: colors.primary,
-              icon: _addingToList
-                  ? SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: colors.onPrimary,
-                      ),
-                    )
-                  : Icon(Icons.add_rounded, color: colors.onPrimary, size: 18),
-              label: 'Add to List',
-              textColor: colors.onPrimary,
-            ),
-          ),
-          const SizedBox(width: 10),
-        ],
-        Expanded(
-          child: _ActionButton(
-            onTap: _openFullView,
-            color: colors.secondaryContainer,
-            icon: Icon(Icons.open_in_new_rounded, color: colors.onSecondaryContainer, size: 18),
-            label: widget.type == ItemType.anime ? 'Watch' : 'Read',
-            textColor: colors.onSecondaryContainer,
-          ),
+        _ActionButton(
+          onTap: _openFullView,
+          color: colors.secondaryContainer,
+          icon: Icon(Icons.open_in_new_rounded, color: colors.onSecondaryContainer, size: 16),
+          label: widget.type == ItemType.anime ? 'Watch' : 'Read',
+          textColor: colors.onSecondaryContainer,
         ),
+        const SizedBox(width: 10),
+        _ActionButton(
+          onTap: _openLibraryDialog,
+          color: colors.surfaceContainerHigh,
+          icon: Icon(Icons.library_add_rounded, color: colors.onSurface, size: 16),
+          label: 'Add to Library',
+          textColor: colors.onSurface,
+        ),
+        if (_isLoggedIn) ...[
+          const SizedBox(width: 10),
+          _ActionButton(
+            onTap: _openListEditor,
+            color: colors.primary,
+            icon: Icon(Icons.edit_note_rounded, color: colors.onPrimary, size: 16),
+            label: 'List Editor',
+            textColor: colors.onPrimary,
+          ),
+        ],
       ],
     );
   }
@@ -526,16 +544,16 @@ class _ActionButton extends StatelessWidget {
         opacity: onTap == null ? 0.5 : 1.0,
         duration: const Duration(milliseconds: 150),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
+          padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 16),
           decoration: BoxDecoration(
             color: color,
             borderRadius: BorderRadius.circular(12.multiplyRoundness()),
           ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
               icon,
-              const SizedBox(width: 8),
+              const SizedBox(width: 6),
               AnymexText(
                 text: label,
                 size: 13,
