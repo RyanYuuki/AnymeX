@@ -18,7 +18,7 @@ const Set<String> _excludedGithubIds = {
   '49699333',
 };
 
-const int _coreTeamCommitThreshold = 50;
+const int _coreTeamCommitThreshold = 20;
 
 final Map<String, ContributorModel> _curatedContributors = {
   'ryanyuuki': const ContributorModel(
