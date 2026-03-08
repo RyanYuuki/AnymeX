@@ -502,7 +502,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
               child: Column(
                 children: [
                   Obx(() {
-                    widget.media.serviceType.onlineService.animeList;
+                    widget.media.serviceType.onlineService.animeList.value;
                     return Row(
                       children: [
                         if (widget.media.serviceType !=

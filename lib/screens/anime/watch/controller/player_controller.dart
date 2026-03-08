@@ -22,6 +22,7 @@ import 'package:anymex/screens/anime/watch/subtitles/model/online_subtitle.dart'
 import 'package:anymex/utils/aniskip.dart' as aniskip;
 import 'package:anymex/utils/color_profiler.dart';
 import 'package:anymex/utils/logger.dart';
+import 'package:anymex/utils/player_core_visual_settings.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/subtitle_pre_translator.dart';
 import 'package:anymex/utils/subtitle_translator.dart';
@@ -481,12 +482,20 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void _initializePlayer() {
     final useMediaKit = _shouldUseMediaKit();
+    final mpvCore = PlayerCoreVisualSettings.getMpvCoreSettings();
+    final betterCore = PlayerCoreVisualSettings.getBetterPlayerCoreSettings();
+    final bufferSizeMb = (useMediaKit
+            ? (mpvCore['demuxerMaxBytesMb'] as num? ?? 64)
+            : (betterCore['bufferSizeMb'] as num? ?? 32))
+        .toInt();
 
     final config = PlayerConfiguration(
-      bufferSize: 1024 * 1024 * 32,
+      bufferSize: bufferSizeMb * 1024 * 1024,
       useLibass: PlayerKeys.useLibass.get<bool>(false),
-      hwdec: 'no',
+      hwdec: (mpvCore['hwdec'] as String?) ?? 'auto-safe',
       playerType: useMediaKit ? PlayerType.mediaKit : PlayerType.betterPlayer,
+      autoPlay: (betterCore['autoPlay'] as bool?) ?? true,
+      useBuffering: (betterCore['useBuffering'] as bool?) ?? true,
     );
 
     if (useMediaKit) {

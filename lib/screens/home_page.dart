@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -126,15 +128,23 @@ class _HomePageState extends State<HomePage> {
       return List<Widget>.from(baseWidgets);
     }
     final localSections = <Widget>[
+      const SizedBox(height: 12),
+      if (hasRecentSection) _buildRecentlyOpenedSection(cacheController),
+      const SizedBox(height: 12),
       if (shouldShowContinueSection)
         _buildContinueWatchingSection(offlineStorageController),
-      if (hasRecentSection) _buildRecentlyOpenedSection(cacheController),
     ];
 
-    final insertionIndex = !serviceHandler.isLoggedIn.value ||
-            serviceHandler.serviceType.value == ServicesType.extensions
-        ? 0
-        : 2;
+    int insertionIndex;
+    if (serviceHandler.serviceType.value == ServicesType.simkl) {
+      insertionIndex = serviceHandler.isLoggedIn.value ? 3 : 2;
+    } else if (!serviceHandler.isLoggedIn.value ||
+        serviceHandler.serviceType.value == ServicesType.extensions) {
+      insertionIndex = 0;
+    } else {
+      insertionIndex = 2;
+    }
+    insertionIndex = math.min(insertionIndex, baseWidgets.length);
 
     return [
       ...baseWidgets.take(insertionIndex),
@@ -248,6 +258,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       const SizedBox(height: 30),
                       Obx(() {
+                        cacheController.currentPool.length;
                         final children = _buildHomeWidgets(
                           context: context,
                           serviceHandler: serviceHandler,

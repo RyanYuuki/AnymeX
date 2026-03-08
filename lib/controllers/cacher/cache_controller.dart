@@ -77,7 +77,9 @@ class CacheController extends GetxController {
       case ServicesType.mal:
         return Media.fromFullMAL(parsedMap);
       case ServicesType.simkl:
-        return Media.fromSimkl(parsedMap, true);
+        final dynamic marker = parsedMap['__isMovie'];
+        final bool isMovie = marker is bool ? marker : true;
+        return Media.fromSimkl(parsedMap, isMovie);
       default:
         parsedMap['status'] = parseStatusToInt(parsedMap['status']);
         return Media.froDMedia(

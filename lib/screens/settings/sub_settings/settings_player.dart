@@ -8,6 +8,7 @@ import 'package:anymex/screens/anime/watch/controls/themes/setup/media_indicator
 import 'package:anymex/screens/anime/watch/controls/themes/setup/player_control_theme_registry.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/screens/settings/sub_settings/widgets/settings_json_shared.dart';
+import 'package:anymex/utils/player_core_visual_settings.dart';
 import 'package:anymex/utils/subtitle_translator.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/checkmark_tile.dart';
@@ -335,7 +336,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
     );
   }
 
-    void _showColorSelectionDialog(String title, Color currentColor,
+  void _showColorSelectionDialog(String title, Color currentColor,
       Function(String) onColorSelected, Map<String, Color> options) {
     showDialog(
       context: context,
@@ -447,13 +448,35 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
     );
   }
 
+  bool _isUsingMpvEngine() {
+    if (!Platform.isAndroid && !Platform.isIOS) return true;
+    return PlayerKeys.useMediaKit.get<bool>(false);
+  }
+
+  void _showMpvCoreSelectionDialog({
+    required String title,
+    required List<String> items,
+    required String selected,
+    required String Function(String) getTitle,
+    required String key,
+  }) {
+    showSelectionDialog<String>(
+      title: title,
+      items: items,
+      selectedItem: selected.obs,
+      getTitle: getTitle,
+      onItemSelected: (value) {
+        PlayerCoreVisualSettings.setMpvCoreSetting(key, value);
+        setState(() {});
+      },
+      leadingIcon: Icons.tune_rounded,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Glow(
         child: Scaffold(
-            //	backgroundColor: widget.isModal
-            //  ? context.colors.surfaceContainer
-            //  : Colors.transparent,
             body: Column(children: [
       if (!widget.isModal) const NestedHeader(title: 'Player Settings'),
       Expanded(
@@ -475,6 +498,263 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
               Obx(() => Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      AnymexExpansionTile(
+                          title: 'Core',
+                          initialExpanded: false,
+                          content: Builder(builder: (context) {
+                            final usingMpv = _isUsingMpvEngine();
+                            final mpvCore =
+                                PlayerCoreVisualSettings.getMpvCoreSettings();
+                            final betterCore = PlayerCoreVisualSettings
+                                .getBetterPlayerCoreSettings();
+
+                            if (usingMpv) {
+                              return Column(
+                                children: [
+                                  CustomTile(
+                                    padding: 10,
+                                    icon: Icons.memory_rounded,
+                                    title: 'Decoder (HWDec)',
+                                    isDescBold: true,
+                                    descColor:
+                                        Theme.of(context).colorScheme.primary,
+                                    description:
+                                        (mpvCore['hwdec'] as String?) ??
+                                            'auto-safe',
+                                    onTap: () => _showMpvCoreSelectionDialog(
+                                      title: 'Mpv Decoder (HWDec)',
+                                      items: const [
+                                        'no',
+                                        'auto-safe',
+                                        'auto',
+                                        'mediacodec-copy',
+                                        'vaapi',
+                                        'videotoolbox',
+                                        'd3d11va',
+                                      ],
+                                      selected: (mpvCore['hwdec'] as String?) ??
+                                          'auto-safe',
+                                      getTitle: (item) => item,
+                                      key: 'hwdec',
+                                    ),
+                                  ),
+                                  CustomTile(
+                                    padding: 10,
+                                    icon: Icons.sync_rounded,
+                                    title: 'Video Sync',
+                                    isDescBold: true,
+                                    descColor:
+                                        Theme.of(context).colorScheme.primary,
+                                    description:
+                                        (mpvCore['videoSync'] as String?) ??
+                                            'audio',
+                                    onTap: () => _showMpvCoreSelectionDialog(
+                                      title: 'Video Sync',
+                                      items: const [
+                                        'audio',
+                                        'display-resample',
+                                        'display-vdrop',
+                                        'display-adrop',
+                                      ],
+                                      selected:
+                                          (mpvCore['videoSync'] as String?) ??
+                                              'audio',
+                                      getTitle: (item) => item,
+                                      key: 'videoSync',
+                                    ),
+                                  ),
+                                  CustomSwitchTile(
+                                    padding: const EdgeInsets.all(10),
+                                    icon: Icons.movie_filter_rounded,
+                                    title: 'Frame Interpolation',
+                                    description:
+                                        'Smoother motion, can increase GPU usage',
+                                    switchValue:
+                                        (mpvCore['interpolation'] as bool?) ??
+                                            false,
+                                    onChanged: (val) {
+                                      PlayerCoreVisualSettings
+                                          .setMpvCoreSetting(
+                                              'interpolation', val);
+                                      setState(() {});
+                                    },
+                                  ),
+                                  CustomSwitchTile(
+                                    padding: const EdgeInsets.all(10),
+                                    icon: Icons.graphic_eq_rounded,
+                                    title: 'Audio Pitch Correction',
+                                    description:
+                                        'Keep voice pitch stable at higher speeds',
+                                    switchValue:
+                                        (mpvCore['audioPitchCorrection']
+                                                as bool?) ??
+                                            true,
+                                    onChanged: (val) {
+                                      PlayerCoreVisualSettings
+                                          .setMpvCoreSetting(
+                                              'audioPitchCorrection', val);
+                                      setState(() {});
+                                    },
+                                  ),
+                                  CustomSliderTile(
+                                    icon: Icons.timer_outlined,
+                                    title: 'Cache Seconds',
+                                    description:
+                                        'Read-ahead duration in seconds',
+                                    sliderValue:
+                                        ((mpvCore['cacheSeconds'] as num?) ??
+                                                30)
+                                            .toDouble(),
+                                    min: 0,
+                                    max: 120,
+                                    divisions: 24,
+                                    label: ((mpvCore['cacheSeconds'] as num?) ??
+                                            30)
+                                        .toInt()
+                                        .toString(),
+                                    onChanged: (value) {
+                                      PlayerCoreVisualSettings
+                                          .setMpvCoreSetting(
+                                              'cacheSeconds', value.round());
+                                      setState(() {});
+                                    },
+                                  ),
+                                  CustomSliderTile(
+                                    icon: Icons.downloading_rounded,
+                                    title: 'Demuxer Readahead',
+                                    description: 'Readahead seconds',
+                                    sliderValue:
+                                        ((mpvCore['demuxerReadaheadSeconds']
+                                                    as num?) ??
+                                                20)
+                                            .toDouble(),
+                                    min: 0,
+                                    max: 120,
+                                    divisions: 24,
+                                    label: ((mpvCore['demuxerReadaheadSeconds']
+                                                as num?) ??
+                                            20)
+                                        .toInt()
+                                        .toString(),
+                                    onChanged: (value) {
+                                      PlayerCoreVisualSettings
+                                          .setMpvCoreSetting(
+                                              'demuxerReadaheadSeconds',
+                                              value.round());
+                                      setState(() {});
+                                    },
+                                  ),
+                                  CustomSliderTile(
+                                    icon: Icons.storage_rounded,
+                                    title: 'Demuxer Max Buffer',
+                                    description: 'Maximum demuxer buffer (MB)',
+                                    sliderValue: ((mpvCore['demuxerMaxBytesMb']
+                                                as num?) ??
+                                            64)
+                                        .toDouble(),
+                                    min: 16,
+                                    max: 512,
+                                    divisions: 62,
+                                    label: ((mpvCore['demuxerMaxBytesMb']
+                                                as num?) ??
+                                            64)
+                                        .toInt()
+                                        .toString(),
+                                    onChanged: (value) {
+                                      PlayerCoreVisualSettings
+                                          .setMpvCoreSetting(
+                                              'demuxerMaxBytesMb',
+                                              value.round());
+                                      setState(() {});
+                                    },
+                                  ),
+                                  CustomSliderTile(
+                                    icon: Icons.developer_board_rounded,
+                                    title: 'Decoder Threads',
+                                    description:
+                                        '0 means automatic thread count',
+                                    sliderValue:
+                                        ((mpvCore['vdLavcThreads'] as num?) ??
+                                                0)
+                                            .toDouble(),
+                                    min: 0,
+                                    max: 16,
+                                    divisions: 16,
+                                    label:
+                                        ((mpvCore['vdLavcThreads'] as num?) ??
+                                                0)
+                                            .toInt()
+                                            .toString(),
+                                    onChanged: (value) {
+                                      PlayerCoreVisualSettings
+                                          .setMpvCoreSetting(
+                                              'vdLavcThreads', value.round());
+                                      setState(() {});
+                                    },
+                                  ),
+                                ],
+                              );
+                            }
+
+                            return Column(
+                              children: [
+                                CustomSliderTile(
+                                  icon: Icons.storage_rounded,
+                                  title: 'Buffer Size',
+                                  description: 'Network buffer size in MB',
+                                  sliderValue:
+                                      ((betterCore['bufferSizeMb'] as num?) ??
+                                              32)
+                                          .toDouble(),
+                                  min: 8,
+                                  max: 256,
+                                  divisions: 31,
+                                  label:
+                                      ((betterCore['bufferSizeMb'] as num?) ??
+                                              32)
+                                          .toInt()
+                                          .toString(),
+                                  onChanged: (value) {
+                                    PlayerCoreVisualSettings
+                                        .setBetterPlayerCoreSetting(
+                                            'bufferSizeMb', value.round());
+                                    setState(() {});
+                                  },
+                                ),
+                                CustomSwitchTile(
+                                  padding: const EdgeInsets.all(10),
+                                  icon: Icons.play_arrow_rounded,
+                                  title: 'Auto Play',
+                                  description:
+                                      'Start playback automatically after load',
+                                  switchValue:
+                                      (betterCore['autoPlay'] as bool?) ?? true,
+                                  onChanged: (val) {
+                                    PlayerCoreVisualSettings
+                                        .setBetterPlayerCoreSetting(
+                                            'autoPlay', val);
+                                    setState(() {});
+                                  },
+                                ),
+                                CustomSwitchTile(
+                                  padding: const EdgeInsets.all(10),
+                                  icon: Icons.network_check_rounded,
+                                  title: 'Use Buffering',
+                                  description:
+                                      'Enable buffering strategy for unstable networks',
+                                  switchValue:
+                                      (betterCore['useBuffering'] as bool?) ??
+                                          true,
+                                  onChanged: (val) {
+                                    PlayerCoreVisualSettings
+                                        .setBetterPlayerCoreSetting(
+                                            'useBuffering', val);
+                                    setState(() {});
+                                  },
+                                ),
+                              ],
+                            );
+                          })),
                       AnymexExpansionTile(
                           initialExpanded: true,
                           title: 'Common',
@@ -562,7 +842,6 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                 description:
                                     '${settings.speed.toStringAsFixed(1)}x',
                               ),
-                              // Resize Mode
                               CustomTile(
                                 padding: 10,
                                 icon: Icons.aspect_ratio,
@@ -674,7 +953,6 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                               ),
                             ],
                           )),
-                      // Subtitle Color
                       AnymexExpansionTile(
                           title: 'Subtitles',
                           content: Column(
@@ -775,14 +1053,14 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                 onTap: () {
                                   _showColorSelectionDialog(
                                       'Select Subtitle Color',
-                                      fontColorOptions[settings.subtitleColor] ??
+                                      fontColorOptions[
+                                              settings.subtitleColor] ??
                                           fontColorOptions['Default']!,
                                       (color) {
                                     settings.subtitleColor = color;
                                   }, fontColorOptions);
                                 },
                               ),
-                              // Subtitle Outline Color
                               CustomTile(
                                 padding: 10,
                                 icon: Icons.palette,
@@ -791,15 +1069,13 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                 onTap: () {
                                   _showColorSelectionDialog(
                                       'Select Subtitle Outline Color',
-                                      colorOptions[settings
-                                              .subtitleOutlineColor] ??
-                                          colorOptions['None']!,
-                                      (color) {
+                                      colorOptions[
+                                              settings.subtitleOutlineColor] ??
+                                          colorOptions['None']!, (color) {
                                     settings.subtitleOutlineColor = color;
                                   }, colorOptions);
                                 },
                               ),
-
                               CustomTile(
                                 padding: 10,
                                 description: 'Change subtitle background color',
@@ -810,13 +1086,11 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                       'Select Subtitle Background Color',
                                       colorOptions[settings
                                               .subtitleBackgroundColor] ??
-                                          colorOptions['None']!,
-                                      (color) {
+                                          colorOptions['None']!, (color) {
                                     settings.subtitleBackgroundColor = color;
                                   }, colorOptions);
                                 },
                               ),
-                              // Subtitle Preview
                               CustomSliderTile(
                                 sliderValue: settings.subtitleSize.toDouble(),
                                 min: 12.0,
@@ -869,17 +1143,17 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                             'Subtitle Preview Text',
                                             style: TextStyle(
                                               color: fontColorOptions[
-                                                  settings.subtitleColor] ??
-                                                fontColorOptions['Default'],
+                                                      settings.subtitleColor] ??
+                                                  fontColorOptions['Default'],
                                               fontSize: settings.subtitleSize
                                                   .toDouble(),
                                             ),
                                           ),
                                           strokes: [
                                             OutlinedTextStroke(
-                                              color: colorOptions[settings
-                                                  .subtitleOutlineColor] ??
-                                                colorOptions['Black']!,
+                                                color: colorOptions[settings
+                                                        .subtitleOutlineColor] ??
+                                                    colorOptions['Black']!,
                                                 width: settings
                                                     .subtitleOutlineWidth
                                                     .toDouble())

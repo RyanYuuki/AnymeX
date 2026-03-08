@@ -78,17 +78,17 @@ final Map<String, ContributorModel> _curatedContributors = {
       'Dartotsu': 'https://github.com/aayush2622/Dartotsu',
     },
   ),
-  'Xerus': const ContributorModel(
+  'pandatech-sx': const ContributorModel(
     githubLogin: 'PandaTech-SX',
     githubId: '74928953',
     displayName: 'Xerus',
     avatarUrl: 'https://i.ibb.co/gF6HSFqZ/20250517-100044.png',
     profileUrl: 'https://sxenon.carrd.co/',
-    roleTitle: 'UI/UX Designer',
+    roleTitle: 'Helped out with some UI designs',
     prCount: 0,
     commitCount: 0,
     bannerUrl: 'https://i.ibb.co/zhy5G1Tv/Walpaper-1.png',
-    isSpecialThanks: true,
+    isSpecialThanks: false,
   ),
 };
 
@@ -103,6 +103,7 @@ bool _isBotAccount(dynamic rawContributor) {
   final login = ((rawContributor['login'] as String?) ?? '').toLowerCase();
   final accountType = (rawContributor['type'] as String?) ?? '';
   final id = rawContributor['id']?.toString() ?? '';
+  if (login == 'openai') return true;
   if (_excludedGithubIds.contains(id)) return true;
   if (accountType == 'Bot') return true;
   return login.endsWith('[bot]') || login.endsWith('-bot');
@@ -201,8 +202,8 @@ Future<List<StaffModel>> _fetchStaff() async {
               role: (e['role'] as String?) ?? '',
               avatarUrl: (e['avatarUrl'] as String?) ?? '',
               profileUrl: (e['profileUrl'] as String?) ?? '',
-              platforms: List<String>.from(
-                  (e['platforms'] as List<dynamic>?) ?? []),
+              platforms:
+                  List<String>.from((e['platforms'] as List<dynamic>?) ?? []),
             ))
         .where((s) => s.displayName.isNotEmpty)
         .toList();
@@ -225,7 +226,8 @@ Future<List<ContributorModel>> fetchContributors() async {
     final profileContributor = profilesByLogin[normalizedLogin];
 
     final commitCount = profileContributor?.commitCount ?? 0;
-    if (!(curatedContributor?.isPinnedCoreTeam == true ||
+    if (curatedContributor == null &&
+        !(curatedContributor?.isPinnedCoreTeam == true ||
             curatedContributor?.isSpecialThanks == true) &&
         commitCount == 0) {
       continue;
@@ -354,6 +356,16 @@ class _ContributorsPageState extends State<ContributorsPage> {
                 c.commitCount < _coreTeamCommitThreshold,
           )
           .toList();
+      final xerusIndex = communityList.indexWhere(
+        (c) =>
+            c.githubLogin.toLowerCase() == 'pandatech-sx' ||
+            c.displayName.toLowerCase() == 'xerus',
+      );
+      if (xerusIndex != -1) {
+        final xerus = communityList.removeAt(xerusIndex);
+        final insertAt = communityList.length < 3 ? communityList.length : 3;
+        communityList.insert(insertAt, xerus);
+      }
 
       coreTeam.assignAll(coreTeamList);
       specialThanks.assignAll(specialThanksList);
@@ -771,7 +783,8 @@ class _ContributorsPageState extends State<ContributorsPage> {
 
   Widget _buildStaffSection(BuildContext context) {
     final colors = context.colors;
-    if (staff.isEmpty) return const SliverToBoxAdapter(child: SizedBox.shrink());
+    if (staff.isEmpty)
+      return const SliverToBoxAdapter(child: SizedBox.shrink());
 
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -809,8 +822,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
                             backgroundColor: colors.primaryContainer,
                             child: member.avatarUrl.isEmpty
                                 ? Icon(Icons.person_rounded,
-                                    size: 18,
-                                    color: colors.onPrimaryContainer)
+                                    size: 18, color: colors.onPrimaryContainer)
                                 : null,
                           ),
                           const SizedBox(width: 12),
