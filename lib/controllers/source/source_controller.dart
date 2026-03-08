@@ -82,6 +82,12 @@ class SourceController extends GetxController implements BaseService {
   Timer? _rebuildTimer;
   bool _homeReady = false;
 
+  final _extensionOrders = <ItemType, List<String>>{
+    ItemType.anime: [],
+    ItemType.manga: [],
+    ItemType.novel: [],
+  };
+
   String get activeAnimeRepo => _repos[_kAnimeRepo] ?? '';
   set activeAnimeRepo(String v) => _persistRepo(_kAnimeRepo, v);
 
@@ -128,6 +134,96 @@ class SourceController extends GetxController implements BaseService {
 
   String getMangaRepo(ExtensionType type) =>
       type == ExtensionType.aniyomi ? activeAniyomiMangaRepo : activeMangaRepo;
+
+  List<String> getExtensionOrder(ItemType type) =>
+      List.unmodifiable(_extensionOrders[type] ?? []);
+
+  void saveExtensionOrder(ItemType type, List<String> orderedIds) {
+    _extensionOrders[type] = List.from(orderedIds);
+    final key = _orderKeyFor(type);
+    KvHelper.set(key.name, orderedIds);
+    _applyOrderToInstalledList(type, orderedIds);
+    _rebuildSectionsOrder(type, orderedIds);
+  }
+
+  void _applyOrderToInstalledList(ItemType type, List<String> orderedIds) {
+    final list = _installedFor(type);
+    final current = list.toList();
+    if (current.isEmpty) return;
+
+    final orderMap = <String, int>{};
+    for (var i = 0; i < orderedIds.length; i++) {
+      orderMap[orderedIds[i]] = i;
+    }
+
+    final sorted = List<Source>.from(current)
+      ..sort((a, b) {
+        final aIdx = orderMap[a.id?.toString() ?? ''] ?? orderedIds.length;
+        final bIdx = orderMap[b.id?.toString() ?? ''] ?? orderedIds.length;
+        return aIdx.compareTo(bIdx);
+      });
+
+    list.value = sorted;
+  }
+
+  void _rebuildSectionsOrder(ItemType type, List<String> orderedIds) {
+    final cache = _widgetCache[type]!;
+    if (cache.isEmpty) return;
+
+    final sections = _sectionsFor(type);
+    final orderMap = <String, int>{};
+    for (var i = 0; i < orderedIds.length; i++) {
+      orderMap[orderedIds[i]] = i;
+    }
+
+    final sortedEntries = cache.entries.toList()
+      ..sort((a, b) {
+        final aIdx = orderMap[a.key.toString()] ?? orderedIds.length;
+        final bIdx = orderMap[b.key.toString()] ?? orderedIds.length;
+        return aIdx.compareTo(bIdx);
+      });
+
+    sections.value = [
+      if (cache.isNotEmpty && type != ItemType.novel)
+        CustomSearchBar(
+          disableIcons: true,
+          onSubmitted: (v) => SourceSearchPage(initialTerm: v, type: type).go(),
+        ),
+      ...sortedEntries.map((e) => e.value),
+    ];
+  }
+
+  SourceKeys _orderKeyFor(ItemType type) => switch (type) {
+        ItemType.anime => SourceKeys.animeExtensionOrder,
+        ItemType.manga => SourceKeys.mangaExtensionOrder,
+        ItemType.novel => SourceKeys.novelExtensionOrder,
+      };
+
+  void _loadExtensionOrders() {
+    for (final type in ItemType.values) {
+      final key = _orderKeyFor(type);
+      final stored = KvHelper.get<List<dynamic>>(key.name, defaultVal: []);
+      _extensionOrders[type] = stored.map((e) => e.toString()).toList();
+    }
+  }
+
+  List<Source> applyCustomOrder(ItemType type, List<Source> sources) {
+    final order = _extensionOrders[type] ?? [];
+    if (order.isEmpty) return sources;
+
+    final orderMap = <String, int>{};
+    for (var i = 0; i < order.length; i++) {
+      orderMap[order[i]] = i;
+    }
+
+    final sorted = List<Source>.from(sources);
+    sorted.sort((a, b) {
+      final aIdx = orderMap[a.id?.toString() ?? ''] ?? order.length;
+      final bIdx = orderMap[b.id?.toString() ?? ''] ?? order.length;
+      return aIdx.compareTo(bIdx);
+    });
+    return sorted;
+  }
 
   @override
   void onInit() {
@@ -196,7 +292,9 @@ class SourceController extends GetxController implements BaseService {
       }
     }
 
-    _applyDiff(_installedFor(type), installed);
+    final orderedInstalled = applyCustomOrder(type, installed);
+
+    _applyDiff(_installedFor(type), orderedInstalled);
     _applyDiff(_availableFor(type), available);
 
     if (type == ItemType.anime) {
@@ -239,6 +337,7 @@ class SourceController extends GetxController implements BaseService {
 
   Future<void> initExtensions({bool refresh = true}) async {
     try {
+      _loadExtensionOrders();
       await sortAllExtensions();
       _loadRepos();
       _restoreActiveSources();
