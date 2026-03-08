@@ -127,6 +127,9 @@ enum SourceKeys {
   activeSourceId,
   activeMangaSourceId,
   activeNovelSourceId,
+  animeExtensionOrder,
+  mangaExtensionOrder,
+  novelExtensionOrder,
 }
 
 enum AuthKeys {
