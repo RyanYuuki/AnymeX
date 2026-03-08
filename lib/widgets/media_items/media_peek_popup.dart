@@ -583,27 +583,22 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
   }
 }
 
-class _ActionButton extends StatelessWidget {
+class _DetailsStyleButton extends StatelessWidget {
   final VoidCallback? onTap;
-  final IconData? icon;
-  final Widget? iconWidget;
-  final String? label;
-  final ColorScheme colors;
+  final Widget child;
 
-  const _ActionButton({
+  const _DetailsStyleButton({
     required this.onTap,
-    this.icon,
-    this.iconWidget,
-    this.label,
-    required this.colors,
+    required this.child,
   });
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return SizedBox(
       height: 50,
       child: Material(
-        color: colors.surfaceContainer,
+        color: scheme.surfaceContainer,
         borderRadius: BorderRadius.circular(16),
         child: InkWell(
           onTap: onTap,
@@ -611,34 +606,10 @@ class _ActionButton extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: colors.outline.withOpacity(0.2)),
+              border: Border.all(color: scheme.outline.withOpacity(0.2)),
             ),
             alignment: Alignment.center,
-            child: label != null
-                ? Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (icon != null)
-                        Icon(icon, color: colors.onSurface, size: 18),
-                      if (iconWidget != null) iconWidget!,
-                      const SizedBox(width: 8),
-                      Flexible(
-                        child: Text(
-                          label!,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: colors.onSurface,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
-                : (iconWidget ?? (icon != null
-                    ? Icon(icon, color: colors.onSurface, size: 22)
-                    : const SizedBox.shrink())),
+            child: child,
           ),
         ),
       ),
