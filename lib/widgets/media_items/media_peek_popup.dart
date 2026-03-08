@@ -86,61 +86,74 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
 
   Future<void> _fetchPeekData() async {
     try {
-      final result = await _fetchFromAnilist(widget.media.id);
+      // Use the same fetchDetails the info page uses — works for all services
+      final service = widget.media.serviceType.service;
+      final details = await service.fetchDetails(
+          FetchDetailsParams(id: widget.media.id.toString()));
+
+      // Fetch synonyms + tags via AniList only (they live in AniList's schema)
+      List<String> synonyms = [];
+      List<String> tags = [];
+      final isAniList = widget.media.serviceType == ServicesType.anilist ||
+          widget.media.serviceType == ServicesType.extensions;
+      if (isAniList) {
+        final extra = await _fetchAnilistExtras(widget.media.id);
+        synonyms = extra['synonyms'] ?? [];
+        tags = extra['tags'] ?? [];
+      }
+
+      final rawDesc = details.description;
+      final description =
+          rawDesc == '?' || rawDesc.isEmpty ? '' : parse(rawDesc).body?.text ?? rawDesc;
+
       if (mounted) {
         setState(() {
-          _data = result;
+          _data = _PeekData(
+            description: description,
+            synonyms: synonyms,
+            genres: details.genres,
+            tags: tags,
+            status: details.status,
+          );
           _loading = false;
         });
       }
-    } catch (_) {
+    } catch (e) {
       if (mounted) setState(() => _loading = false);
     }
   }
 
-  Future<_PeekData> _fetchFromAnilist(String id) async {
+  Future<Map<String, List<String>>> _fetchAnilistExtras(String id) async {
     const query = r'''
       query($id: Int) {
         Media(id: $id) {
-          description
           synonyms
-          genres
           tags { name }
         }
       }
     ''';
-
     final token = AuthKeys.authToken.get<String?>();
     final headers = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       if (token != null) 'Authorization': 'Bearer $token',
     };
-
-    final response = await http.post(
-      Uri.parse('https://graphql.anilist.co/'),
-      headers: headers,
-      body: jsonEncode(
-          {'query': query, 'variables': {'id': int.tryParse(id)}}),
-    );
-
-    if (response.statusCode == 200) {
-      final body = jsonDecode(response.body);
-      final m = body['data']['Media'] as Map<String, dynamic>;
-      final rawDesc = (m['description'] as String?) ?? '';
-      final description = parse(rawDesc).body?.text ?? rawDesc;
-      final synonyms = (m['synonyms'] as List?)?.cast<String>() ?? [];
-      final genres = (m['genres'] as List?)?.cast<String>() ?? [];
-      final tags = ((m['tags'] as List?) ?? [])
-          .map((t) => t['name'] as String)
-          .toList();
-      return _PeekData(
-          description: description,
-          synonyms: synonyms,
-          genres: genres,
-          tags: tags);
-    }
-    return _PeekData(description: '', synonyms: [], genres: [], tags: []);
+    try {
+      final response = await http.post(
+        Uri.parse('https://graphql.anilist.co/'),
+        headers: headers,
+        body: jsonEncode({'query': query, 'variables': {'id': int.tryParse(id)}}),
+      );
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+        final m = body['data']['Media'] as Map<String, dynamic>;
+        return {
+          'synonyms': (m['synonyms'] as List?)?.cast<String>() ?? [],
+          'tags': ((m['tags'] as List?) ?? []).map((t) => t['name'] as String).toList(),
+        };
+      }
+    } catch (_) {}
+    return {'synonyms': [], 'tags': []};
   }
 
   void _openLibraryDialog() => showCustomListDialog(context, widget.media);
@@ -341,7 +354,12 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
           color: colors.primary));
     }
 
-    final status = widget.media.status;
+    // Prefer the fetched status (accurate, service-specific),
+    // fall back to widget.media.status while loading
+    final rawStatus = (_data?.status.isNotEmpty == true)
+        ? _data!.status
+        : widget.media.status;
+    final status = rawStatus;
     if (status.isNotEmpty && status != '?') {
       final upper = status.toUpperCase().replaceAll(' ', '_');
       final isAiring = upper.contains('RELEASING') ||
@@ -674,10 +692,13 @@ class _PeekData {
   final List<String> synonyms;
   final List<String> genres;
   final List<String> tags;
+  final String status;
 
-  _PeekData(
-      {required this.description,
-      required this.synonyms,
-      required this.genres,
-      required this.tags});
+  _PeekData({
+    required this.description,
+    required this.synonyms,
+    required this.genres,
+    required this.tags,
+    this.status = '',
+  });
 }
