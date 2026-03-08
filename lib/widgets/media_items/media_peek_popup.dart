@@ -34,7 +34,8 @@ class MediaPeekPopup extends StatefulWidget {
     required this.tag,
   });
 
-  static void show(BuildContext context, Media media, ItemType type, String tag) {
+  static void show(
+      BuildContext context, Media media, ItemType type, String tag) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -77,8 +78,11 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
     _animeStatus = (tracked.watchingStatus ?? '').obs;
     _animeScore = (double.tryParse(tracked.score ?? '') ?? 0.0).obs;
     _animeProgress = (int.tryParse(
-            isManga ? (tracked.chapterCount ?? '') : (tracked.episodeCount ?? '')) ??
-        0).obs;
+                isManga
+                    ? (tracked.chapterCount ?? '')
+                    : (tracked.episodeCount ?? '')) ??
+            0)
+        .obs;
   }
 
   Future<void> _fetchPeekData() async {
@@ -117,7 +121,8 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
     final response = await http.post(
       Uri.parse('https://graphql.anilist.co/'),
       headers: headers,
-      body: jsonEncode({'query': query, 'variables': {'id': int.tryParse(id)}}),
+      body:
+          jsonEncode({'query': query, 'variables': {'id': int.tryParse(id)}}),
     );
 
     if (response.statusCode == 200) {
@@ -162,8 +167,8 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
           currentAnime: _currentMedia,
           media: widget.media,
           onUpdate: (id, score, status, progress) async {
-            final listId = fetcher.onlineService.currentMedia.value.id
-                ?? widget.media.id;
+            final listId = fetcher.onlineService.currentMedia.value.id ??
+                widget.media.id;
             fetcher.onlineService.updateListEntry(UpdateListEntryParams(
               listId: listId,
               isAnime: !isManga,
@@ -183,9 +188,11 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
             _animeProgress.value = progress;
           },
           onDelete: (s) async {
-            final listId = fetcher.onlineService.currentMedia.value.mediaListId
-                ?? widget.media.id;
-            await fetcher.onlineService.deleteListEntry(listId, isAnime: !isManga);
+            final listId =
+                fetcher.onlineService.currentMedia.value.mediaListId ??
+                    widget.media.id;
+            await fetcher.onlineService
+                .deleteListEntry(listId, isAnime: !isManga);
             _animeStatus.value = '';
           },
         );
@@ -214,18 +221,16 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final screenHeight = MediaQuery.of(context).size.height;
 
     return DraggableScrollableSheet(
       initialChildSize: 0.72,
       minChildSize: 0.4,
       maxChildSize: 0.92,
       builder: (context, scrollController) {
-        return Container(
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-          ),
+        return Material(
+          color: colors.surface,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          clipBehavior: Clip.antiAlias,
           child: Column(
             children: [
               _buildDragHandle(colors),
@@ -280,17 +285,14 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Hero(
-          tag: widget.tag,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(12.multiplyRoundness()),
-            child: AnymeXImage(
-              imageUrl: widget.media.poster,
-              width: 90,
-              height: 130,
-              radius: 12,
-              fit: BoxFit.cover,
-            ),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(12.multiplyRoundness()),
+          child: AnymeXImage(
+            imageUrl: widget.media.poster,
+            width: 90,
+            height: 130,
+            radius: 12,
+            fit: BoxFit.cover,
           ),
         ),
         const SizedBox(width: 14),
@@ -329,32 +331,32 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
   Widget _buildMetaRow(ColorScheme colors) {
     final items = <Widget>[];
 
-    if (widget.media.rating.isNotEmpty && widget.media.rating != '?' && widget.media.rating != '0.0') {
+    if (widget.media.rating.isNotEmpty &&
+        widget.media.rating != '?' &&
+        widget.media.rating != '0.0') {
       items.add(_buildMetaBadge(
-        icons: Icons.star_rounded,
+        icon: Icons.star_rounded,
         label: widget.media.rating,
         color: Colors.amber,
-        colors: colors,
       ));
     }
 
     if (widget.media.format.isNotEmpty && widget.media.format != '?') {
       items.add(_buildMetaBadge(
-        icons: Icons.category_rounded,
+        icon: Icons.category_rounded,
         label: widget.media.format.replaceAll('_', ' '),
         color: colors.primary,
-        colors: colors,
       ));
     }
 
     if (widget.media.status.isNotEmpty && widget.media.status != '?') {
       items.add(_buildMetaBadge(
-        icons: Icons.circle,
+        icon: Icons.circle,
         label: widget.media.status,
-        color: widget.media.status.contains('RELEASING') || widget.media.status.contains('ONGOING')
+        color: widget.media.status.contains('RELEASING') ||
+                widget.media.status.contains('ONGOING')
             ? Colors.green
             : colors.secondary,
-        colors: colors,
       ));
     }
 
@@ -362,10 +364,9 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
   }
 
   Widget _buildMetaBadge({
-    required IconData icons,
+    required IconData icon,
     required String label,
     required Color color,
-    required ColorScheme colors,
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -376,9 +377,14 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icons, size: 11, color: color),
+          Icon(icon, size: 11, color: color),
           const SizedBox(width: 4),
-          AnymexText(text: label, size: 11, color: color, variant: TextVariant.semiBold),
+          AnymexText(
+            text: label,
+            size: 11,
+            color: color,
+            variant: TextVariant.semiBold,
+          ),
         ],
       ),
     );
@@ -388,26 +394,24 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final available = constraints.maxWidth;
-        final gap = 8.0;
-        final iconBtnWidth = 50.0;
-        final numIconBtns = _isLoggedIn ? 1 : 0;
-        final numIconBtnGaps = numIconBtns > 0 ? numIconBtns : 0;
-        final expandedWidth = (available
-                - (numIconBtns * iconBtnWidth)
-                - (numIconBtnGaps * gap)
-                - gap)
-            .clamp(0.0, available);
+        const gap = 8.0;
+        const iconBtnWidth = 50.0;
+
+        final fixedUsed = _isLoggedIn ? (iconBtnWidth + gap) : 0.0;
+        final expandedTotal = available - fixedUsed - gap;
+        final halfW = (expandedTotal / 2).clamp(0.0, available);
 
         return Row(
           children: [
             SizedBox(
-              width: expandedWidth / 2,
+              width: halfW,
               child: _DetailsStyleButton(
                 onTap: _openFullView,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.open_in_new_rounded, color: colors.onSurface, size: 18),
+                    Icon(Icons.open_in_new_rounded,
+                        color: colors.onSurface, size: 18),
                     const SizedBox(width: 8),
                     Flexible(
                       child: Text(
@@ -424,15 +428,16 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                 ),
               ),
             ),
-            SizedBox(width: gap),
+            const SizedBox(width: gap),
             SizedBox(
-              width: expandedWidth / 2,
+              width: halfW,
               child: _DetailsStyleButton(
                 onTap: _openLibraryDialog,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(HugeIcons.strokeRoundedLibrary, color: colors.onSurface, size: 18),
+                    Icon(HugeIcons.strokeRoundedLibrary,
+                        color: colors.onSurface, size: 18),
                     const SizedBox(width: 8),
                     Flexible(
                       child: Text(
@@ -450,14 +455,15 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
               ),
             ),
             if (_isLoggedIn) ...[
-              SizedBox(width: gap),
-              Obx(() => SizedBox(
+              const SizedBox(width: gap),
+              SizedBox(
                 width: iconBtnWidth,
                 child: _DetailsStyleButton(
                   onTap: _openListEditor,
-                  child: Icon(Icons.edit_note_rounded, color: colors.primary, size: 22),
+                  child: Icon(Icons.edit_note_rounded,
+                      color: colors.primary, size: 22),
                 ),
-              )),
+              ),
             ],
           ],
         );
@@ -466,6 +472,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
   }
 
   Widget _buildSkeleton() {
+    final colors = context.colors;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: List.generate(
@@ -476,7 +483,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
             height: 14,
             width: i == 3 ? 120 : double.infinity,
             decoration: BoxDecoration(
-              color: context.colors.surfaceContainerHigh,
+              color: colors.surfaceContainerHigh,
               borderRadius: BorderRadius.circular(8),
             ),
           ),
@@ -505,7 +512,8 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
             spacing: 6,
             runSpacing: 6,
             children: data.synonyms
-                .map((s) => _buildTag(s, colors.surfaceContainerHigh, colors.onSurface, colors))
+                .map((s) => _buildTag(
+                    s, colors.surfaceContainerHigh, colors.onSurface))
                 .toList(),
           ),
           const SizedBox(height: 20),
@@ -517,7 +525,8 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
             spacing: 6,
             runSpacing: 6,
             children: data.genres
-                .map((g) => _buildTag(g, colors.primaryContainer, colors.onPrimaryContainer, colors))
+                .map((g) => _buildTag(
+                    g, colors.primaryContainer, colors.onPrimaryContainer))
                 .toList(),
           ),
           const SizedBox(height: 20),
@@ -530,7 +539,8 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
             runSpacing: 6,
             children: data.tags
                 .take(20)
-                .map((t) => _buildTag(t, colors.secondaryContainer, colors.onSecondaryContainer, colors))
+                .map((t) => _buildTag(t, colors.secondaryContainer,
+                    colors.onSecondaryContainer))
                 .toList(),
           ),
         ],
@@ -567,13 +577,16 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
             text: text,
             size: 13,
             maxLines: _synopsisExpanded ? null : _synopsisMaxLines,
-            overflow: _synopsisExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
+            overflow: _synopsisExpanded
+                ? TextOverflow.visible
+                : TextOverflow.ellipsis,
             color: colors.onSurface,
           ),
           if (overflows || _synopsisExpanded) ...[
             const SizedBox(height: 6),
             GestureDetector(
-              onTap: () => setState(() => _synopsisExpanded = !_synopsisExpanded),
+              onTap: () =>
+                  setState(() => _synopsisExpanded = !_synopsisExpanded),
               child: AnymexText(
                 text: _synopsisExpanded ? 'Show Less' : 'Read More',
                 size: 12,
@@ -587,14 +600,15 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
     });
   }
 
-  Widget _buildTag(String label, Color bg, Color fg, ColorScheme colors) {
+  Widget _buildTag(String label, Color bg, Color fg) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(20),
       ),
-      child: AnymexText(text: label, size: 12, color: fg, variant: TextVariant.semiBold),
+      child: AnymexText(
+          text: label, size: 12, color: fg, variant: TextVariant.semiBold),
     );
   }
 }
@@ -610,21 +624,25 @@ class _DetailsStyleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final scheme = Theme.of(context).colorScheme;
+    return SizedBox(
       height: 50,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.outline.opaque(0.2),
-        ),
-        color: Theme.of(context).colorScheme.surfaceContainer.opaque(0.5),
-      ),
       child: Material(
-        color: Colors.transparent,
+        color: scheme.surfaceContainer,
+        borderRadius: BorderRadius.circular(16),
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(16),
-          child: child,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: scheme.outline.withOpacity(0.2),
+              ),
+            ),
+            alignment: Alignment.center,
+            child: child,
+          ),
         ),
       ),
     );
