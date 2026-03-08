@@ -102,7 +102,17 @@ class _ExtensionListState extends State<ExtensionList>
     final available = _getAvailableList().toList();
 
     if (widget.installed) {
-      _installedEntries.value = _filterData(installed);
+      final filtered = _filterData(installed);
+      final currentIds = _installedEntries.map((s) => s.id).toSet();
+      final newIds = filtered.map((s) => s.id).toSet();
+      if (currentIds.length == newIds.length && currentIds.containsAll(newIds)) {
+        final updatedEntries = _installedEntries
+            .where((s) => newIds.contains(s.id))
+            .toList();
+        _installedEntries.value = updatedEntries;
+      } else {
+        _installedEntries.value = filtered;
+      }
       _updateEntries.value =
           _filterData(installed.where((s) => s.hasUpdate == true).toList());
       _notInstalledEntries.clear();
