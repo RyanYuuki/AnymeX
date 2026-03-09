@@ -31,6 +31,8 @@ class UpdateListEntryParams {
   String? status;
   int? progress;
   bool isAnime;
+  DateTime? startedAt;
+  DateTime? completedAt;
 
   UpdateListEntryParams({
     required this.listId,
@@ -39,5 +41,7 @@ class UpdateListEntryParams {
     this.status,
     this.progress,
     this.isAnime = true,
+    this.startedAt,
+    this.completedAt,
   });
 }
