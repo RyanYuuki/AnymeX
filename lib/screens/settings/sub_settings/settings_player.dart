@@ -879,6 +879,14 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                       settings.autoSkipED = val),
                               CustomSwitchTile(
                                   padding: const EdgeInsets.all(10),
+                                  icon: Icons.fast_forward_outlined,
+                                  title: "Auto Skip Recap",
+                                  description: "Auto skip the recap section",
+                                  switchValue: settings.autoSkipRecap,
+                                  onChanged: (val) =>
+                                      settings.autoSkipRecap = val),
+                              CustomSwitchTile(
+                                  padding: const EdgeInsets.all(10),
                                   icon: Icons.all_inclusive,
                                   title: "Auto Skip Once Only",
                                   description: "Auto skip only once per watch",
