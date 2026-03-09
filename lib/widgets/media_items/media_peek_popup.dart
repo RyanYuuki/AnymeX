@@ -11,6 +11,7 @@ import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/anime/widgets/custom_list_dialog.dart';
 import 'package:anymex/screens/anime/widgets/list_editor.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
@@ -88,8 +89,8 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
     try {
       // Use the same fetchDetails the info page uses — works for all services
       final service = widget.media.serviceType.service;
-      final details = await service.fetchDetails(
-          FetchDetailsParams(id: widget.media.id.toString()));
+      final details = await service
+          .fetchDetails(FetchDetailsParams(id: widget.media.id.toString()));
 
       // Fetch synonyms + tags via AniList only (they live in AniList's schema)
       List<String> synonyms = [];
@@ -103,8 +104,9 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
       }
 
       final rawDesc = details.description;
-      final description =
-          rawDesc == '?' || rawDesc.isEmpty ? '' : parse(rawDesc).body?.text ?? rawDesc;
+      final description = rawDesc == '?' || rawDesc.isEmpty
+          ? ''
+          : parse(rawDesc).body?.text ?? rawDesc;
 
       if (mounted) {
         setState(() {
@@ -142,14 +144,19 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
       final response = await http.post(
         Uri.parse('https://graphql.anilist.co/'),
         headers: headers,
-        body: jsonEncode({'query': query, 'variables': {'id': int.tryParse(id)}}),
+        body: jsonEncode({
+          'query': query,
+          'variables': {'id': int.tryParse(id)}
+        }),
       );
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
         final m = body['data']['Media'] as Map<String, dynamic>;
         return {
           'synonyms': (m['synonyms'] as List?)?.cast<String>() ?? [],
-          'tags': ((m['tags'] as List?) ?? []).map((t) => t['name'] as String).toList(),
+          'tags': ((m['tags'] as List?) ?? [])
+              .map((t) => t['name'] as String)
+              .toList(),
         };
       }
     } catch (_) {}
@@ -195,9 +202,8 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
           _animeProgress.value = progress;
         },
         onDelete: (s) async {
-          final listId =
-              fetcher.onlineService.currentMedia.value.mediaListId ??
-                  widget.media.id;
+          final listId = fetcher.onlineService.currentMedia.value.mediaListId ??
+              widget.media.id;
           await fetcher.onlineService
               .deleteListEntry(listId, isAnime: !isManga);
           _animeStatus.value = '';
@@ -213,6 +219,20 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
     } else {
       navigate(() => AnimeDetailsPage(media: widget.media, tag: widget.tag));
     }
+  }
+
+  void _openSearchWithFilter({
+    required String filterKey,
+    required String value,
+  }) {
+    Navigator.of(context).pop();
+    navigate(() => SearchPage(
+          searchTerm: '',
+          isManga: widget.type == ItemType.manga,
+          initialFilters: {
+            filterKey: [value]
+          },
+        ));
   }
 
   bool get _isLoggedIn {
@@ -236,8 +256,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
         return Container(
           decoration: BoxDecoration(
             color: colors.surface,
-            borderRadius:
-                const BorderRadius.vertical(top: Radius.circular(24)),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -341,7 +360,10 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
     final items = <Widget>[];
 
     final rating = widget.media.rating;
-    if (rating.isNotEmpty && rating != '?' && rating != '0' && rating != '0.0') {
+    if (rating.isNotEmpty &&
+        rating != '?' &&
+        rating != '0' &&
+        rating != '0.0') {
       items.add(_buildMetaBadge(
           icon: Icons.star_rounded, label: rating, color: Colors.amber));
     }
@@ -398,9 +420,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
   }
 
   Widget _buildMetaBadge(
-      {required IconData icon,
-      required String label,
-      required Color color}) {
+      {required IconData icon, required String label, required Color color}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -430,10 +450,9 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
 
       // Layout: [Watch icon] [List Editor wide] [Library icon]
       // When not logged in: [Watch/Read wide] [Library icon]
-      final fixedUsed = iconBtnWidth * 2 + gap * 2; // watch icon + library icon
-      final listEditorW = _isLoggedIn
-          ? (available - fixedUsed - gap).clamp(0.0, available)
-          : 0.0;
+      const fixedUsed = iconBtnWidth * 2 + gap * 2; // watch icon + library icon
+      final listEditorW =
+          _isLoggedIn ? (available - fixedUsed).clamp(0.0, available) : 0.0;
       final watchW = _isLoggedIn
           ? iconBtnWidth
           : (available - iconBtnWidth - gap).clamp(0.0, available);
@@ -488,27 +507,27 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
               child: _DetailsStyleButton(
                 onTap: _openListEditor,
                 child: Obx(() => Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.edit_note_rounded,
-                        color: colors.primary, size: 20),
-                    const SizedBox(width: 8),
-                    Flexible(
-                      child: Text(
-                        convertAniListStatus(
-                          _animeStatus.value,
-                          isManga: widget.type == ItemType.manga,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.edit_note_rounded,
+                            color: colors.primary, size: 20),
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Text(
+                            convertAniListStatus(
+                              _animeStatus.value,
+                              isManga: widget.type == ItemType.manga,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: colors.primary,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ),
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: colors.primary,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                )),
+                      ],
+                    )),
               ),
             ),
           ],
@@ -526,7 +545,8 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
       );
     });
   }
-    Widget _buildSkeleton(ColorScheme colors) {
+
+  Widget _buildSkeleton(ColorScheme colors) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: List.generate(4, (i) {
@@ -561,19 +581,32 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
         if (data.synonyms.isNotEmpty) ...[
           _sectionLabel('Synonyms', colors),
           const SizedBox(height: 8),
-          _chipRow(data.synonyms, colors.surfaceContainerHigh, colors.onSurface),
+          _chipRow(
+              data.synonyms, colors.surfaceContainerHigh, colors.onSurface),
           const SizedBox(height: 20),
         ],
         if (data.genres.isNotEmpty) ...[
           _sectionLabel('Genres', colors),
           const SizedBox(height: 8),
-          _chipRow(data.genres, colors.primaryContainer, colors.onPrimaryContainer),
+          _chipRow(
+            data.genres,
+            colors.primaryContainer,
+            colors.onPrimaryContainer,
+            onTap: (genre) =>
+                _openSearchWithFilter(filterKey: 'genres', value: genre),
+          ),
           const SizedBox(height: 20),
         ],
         if (data.tags.isNotEmpty) ...[
           _sectionLabel('Tags', colors),
           const SizedBox(height: 8),
-          _chipRow(data.tags.take(20).toList(), colors.secondaryContainer, colors.onSecondaryContainer),
+          _chipRow(
+            data.tags.take(20).toList(),
+            colors.secondaryContainer,
+            colors.onSecondaryContainer,
+            onTap: (tag) =>
+                _openSearchWithFilter(filterKey: 'tags', value: tag),
+          ),
         ],
       ],
     );
@@ -591,8 +624,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
     return LayoutBuilder(builder: (ctx, constraints) {
       final tp = TextPainter(
         text: TextSpan(
-            text: text,
-            style: const TextStyle(fontSize: 13, height: 1.5)),
+            text: text, style: const TextStyle(fontSize: 13, height: 1.5)),
         maxLines: _synopsisMaxLines,
         textDirection: TextDirection.ltr,
       )..layout(maxWidth: constraints.maxWidth);
@@ -628,27 +660,48 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
     });
   }
 
-  Widget _chipRow(List<String> items, Color bg, Color fg) {
+  Widget _chipRow(
+    List<String> items,
+    Color bg,
+    Color fg, {
+    void Function(String value)? onTap,
+  }) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
         children: items.asMap().entries.map((e) {
           return Padding(
             padding: EdgeInsets.only(right: e.key < items.length - 1 ? 6 : 0),
-            child: _chip(e.value, bg, fg),
+            child: _chip(
+              e.value,
+              bg,
+              fg,
+              onTap: onTap == null ? null : () => onTap(e.value),
+            ),
           );
         }).toList(),
       ),
     );
   }
 
-  Widget _chip(String label, Color bg, Color fg) {
-    return Container(
+  Widget _chip(String label, Color bg, Color fg, {VoidCallback? onTap}) {
+    final chip = Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration:
           BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)),
       child: AnymexText(
           text: label, size: 12, color: fg, variant: TextVariant.semiBold),
+    );
+
+    if (onTap == null) return chip;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: chip,
+      ),
     );
   }
 }
