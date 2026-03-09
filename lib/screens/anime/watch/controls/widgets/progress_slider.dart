@@ -52,7 +52,6 @@ class _ProgressSliderState extends State<ProgressSlider> {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            // ── Slider ───────────────────────────────────────────
             SliderTheme(
               data: _getSliderTheme(colorScheme, widget.style),
               child: Slider(
@@ -74,7 +73,6 @@ class _ProgressSliderState extends State<ProgressSlider> {
                 },
               ),
             ),
-            // ── AniSkip v2: timeline highlight markers ────────────
             if (skipTimes != null && totalDuration.inMilliseconds > 0)
               Positioned.fill(
                 child: IgnorePointer(
@@ -131,12 +129,9 @@ class _ProgressSliderState extends State<ProgressSlider> {
   }
 }
 
-// ── AniSkip v2: timeline highlight painter ────────────────────────────────────
 class SkipTimelinePainter extends CustomPainter {
   final aniskip.EpisodeSkipTimes skipTimes;
   final Duration totalDuration;
-
-  // OP and ED use the same gold colour; recap uses green to stand out
   static const Color _opColor = Color(0xFFEBC125);
   static const Color _edColor = Color(0xFFEBC125);
   static const Color _recapColor = Color(0xFF4CAF50);
@@ -168,8 +163,7 @@ class SkipTimelinePainter extends CustomPainter {
         paint,
       );
     }
-
-    // Draw recap first so OP/ED render on top if they overlap
+    
     drawInterval(skipTimes.recap, _recapColor);
     drawInterval(skipTimes.op, _opColor);
     drawInterval(skipTimes.ed, _edColor);
@@ -181,8 +175,6 @@ class SkipTimelinePainter extends CustomPainter {
         oldDelegate.totalDuration != totalDuration;
   }
 }
-
-// ── Existing custom shapes (unchanged) ───────────────────────────────────────
 
 class CapsuleThumb extends SliderComponentShape {
   const CapsuleThumb({
