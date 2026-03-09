@@ -44,8 +44,6 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 
-// Import the common widgets from anime details page or create a shared file
-// For now, we'll redefine them here to avoid import issues
 class _ActionButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
@@ -290,8 +288,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
     mangaScore.value = currentManga.value?.score?.toDouble() ?? 0.0;
     mangaStatus.value = currentManga.value?.watchingStatus ?? "";
   }
-
-  // Extracted method for the logged-in user row
+  
   Widget _buildLoggedInUserRow(BuildContext context) {
     return Expanded(
       child: Container(
@@ -329,8 +326,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
       ),
     );
   }
-
-  // Extracted method for the non-logged in user row
+  
   Widget _buildNonLoggedInUserRow(BuildContext context) {
     return Expanded(
       child: AnymexButton2(
