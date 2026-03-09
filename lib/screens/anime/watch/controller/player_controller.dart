@@ -429,50 +429,37 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
   
   void _handleAutoSkip() {
+    final currentSec = currentPosition.value.inSeconds;
+
     if (skipTimes?.op != null && playerSettings.autoSkipOP) {
       if (!(playerSettings.autoSkipOnce && isOPSkippedOnce.value)) {
-        if (currentPosition.value.inSeconds > skipTimes!.op!.start &&
-            currentPosition.value.inSeconds < skipTimes!.op!.end) {
-          final skipNeeded =
-              skipTimes!.op!.end - currentPosition.value.inSeconds;
-          final duration =
-              Duration(seconds: currentPosition.value.inSeconds + skipNeeded);
+        if (currentSec > skipTimes!.op!.start && currentSec < skipTimes!.op!.end) {
+          final duration = Duration(seconds: skipTimes!.op!.end);
           currentPosition.value = duration;
           _basePlayer.seek(duration);
           isOPSkippedOnce.value = true;
-          snackBar('Skipped Opening', duration: 2000);
         }
       }
     }
 
     if (skipTimes?.ed != null && playerSettings.autoSkipED) {
       if (!(playerSettings.autoSkipOnce && isEDSkippedOnce.value)) {
-        if (currentPosition.value.inSeconds > skipTimes!.ed!.start &&
-            currentPosition.value.inSeconds < skipTimes!.ed!.end) {
-          final skipNeeded =
-              skipTimes!.ed!.end - currentPosition.value.inSeconds;
-          final duration =
-              Duration(seconds: currentPosition.value.inSeconds + skipNeeded);
+        if (currentSec > skipTimes!.ed!.start && currentSec < skipTimes!.ed!.end) {
+          final duration = Duration(seconds: skipTimes!.ed!.end);
           currentPosition.value = duration;
           _basePlayer.seek(duration);
           isEDSkippedOnce.value = true;
-          snackBar('Skipped Ending', duration: 2000);
         }
       }
     }
 
     if (skipTimes?.recap != null && playerSettings.autoSkipRecap) {
       if (!(playerSettings.autoSkipOnce && isRecapSkippedOnce.value)) {
-        if (currentPosition.value.inSeconds > skipTimes!.recap!.start &&
-            currentPosition.value.inSeconds < skipTimes!.recap!.end) {
-          final skipNeeded =
-              skipTimes!.recap!.end - currentPosition.value.inSeconds;
-          final duration =
-              Duration(seconds: currentPosition.value.inSeconds + skipNeeded);
+        if (currentSec > skipTimes!.recap!.start && currentSec < skipTimes!.recap!.end) {
+          final duration = Duration(seconds: skipTimes!.recap!.end);
           currentPosition.value = duration;
           _basePlayer.seek(duration);
           isRecapSkippedOnce.value = true;
-          snackBar('Skipped Recap', duration: 2000);
         }
       }
     }
