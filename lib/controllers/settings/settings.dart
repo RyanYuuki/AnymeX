@@ -370,6 +370,12 @@ class Settings extends GetxController {
     PlayerSettingsKeys.autoSkipOnce.set(value);
   }
 
+  bool get autoSkipRecap => _getPlayerSetting((s) => s.autoSkipRecap);
+  set autoSkipRecap(bool value) {
+    playerSettings.update((s) => s?.autoSkipRecap = value);
+    PlayerSettingsKeys.autoSkipRecap.set(value);
+  }
+
   bool get autoSkipFiller => _getPlayerSetting((s) => s.autoSkipFiller);
   set autoSkipFiller(bool value) {
     playerSettings.update((s) => s?.autoSkipFiller = value);
