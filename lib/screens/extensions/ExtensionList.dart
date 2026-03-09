@@ -285,14 +285,14 @@ class _ExtensionListState extends State<ExtensionList>
               Icon(
                 Icons.drag_indicator_rounded,
                 size: 14,
-                color: Colors.grey.withOpacity(0.7),
+                color: Colors.grey.withValues(alpha: 0.7),
               ),
               const SizedBox(width: 4),
               Text(
                 'Hold to reorder',
                 style: TextStyle(
                   fontSize: 11,
-                  color: Colors.grey.withOpacity(0.7),
+                  color: Colors.grey.withValues(alpha: 0.7),
                   fontStyle: FontStyle.italic,
                 ),
               ),
@@ -304,6 +304,9 @@ class _ExtensionListState extends State<ExtensionList>
           physics: const NeverScrollableScrollPhysics(),
           onReorder: _onReorder,
           proxyDecorator: _proxyDecorator,
+          // Pass the parent ScrollController so ReorderableListView can
+          // auto-scroll when the dragged item reaches the edges.
+          scrollController: _controller,
           itemCount: entries.length,
           itemBuilder: (context, index) {
             final source = entries[index];
@@ -494,7 +497,7 @@ class _DraggableExtensionTile extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 4.0),
             child: Icon(
               Icons.drag_indicator_rounded,
-              color: context.colors.onSurface.withOpacity(0.35),
+              color: context.colors.onSurface.withValues(alpha: 0.35),
               size: 20,
             ),
           ),
