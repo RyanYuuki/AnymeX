@@ -9,7 +9,6 @@ import 'package:anymex/screens/anime/widgets/social_section.dart';
 import 'package:anymex/utils/anime_adaptation_util.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-// Import the common widgets from anime_stats
 import 'package:anymex/screens/anime/widgets/anime_stats.dart' show CollapsibleBox;
 import 'package:get/get.dart';
 import 'package:anymex/utils/function.dart';
@@ -21,7 +20,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
 
-// Extracted widget for section headers (matching anime_stats.dart)
 class _SectionHeader extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -64,7 +62,6 @@ class _SectionHeader extends StatelessWidget {
   }
 }
 
-// Extracted widget for action cards
 class _ActionCard extends StatelessWidget {
   final IconData icon;
   final String title;
