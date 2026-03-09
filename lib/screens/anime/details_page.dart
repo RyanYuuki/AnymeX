@@ -741,6 +741,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                   countdown: formatTime(timeLeft.value),
                   friendsWatching: anilistData?.friendsWatching,
                   totalEpisodes: anilistData?.totalEpisodes,
+                  serviceType: widget.media.serviceType,
                 ),
               ),
               const SizedBox(height: 20),

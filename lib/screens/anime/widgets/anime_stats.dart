@@ -25,6 +25,7 @@ class AnimeStats extends StatelessWidget {
   final String countdown;
   final List<TrackedMedia>? friendsWatching;
   final String? totalEpisodes;
+  final ServicesType? serviceType;
 
   const AnimeStats({
     super.key,
@@ -32,6 +33,7 @@ class AnimeStats extends StatelessWidget {
     required this.countdown,
     this.friendsWatching,
     this.totalEpisodes,
+    this.serviceType,
   });
 
   @override
@@ -157,9 +159,12 @@ class AnimeStats extends StatelessWidget {
           const SizedBox(height: 16),
           _buildSeasons(context),
           const SizedBox(height: 16),
-
-          _buildOthersSection(context),
-          const SizedBox(height: 16),
+          if (serviceType != null &&
+              (serviceType != ServicesType.simkl))
+            _buildOthersSection(context),
+          if (serviceType != null &&
+              (serviceType != ServicesType.simkl))
+            const SizedBox(height: 16),
         ],
       ),
     );
