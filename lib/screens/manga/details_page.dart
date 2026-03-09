@@ -725,14 +725,16 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
           currentAnime: currentManga,
           isManga: true,
           media: anilistData ?? widget.media,
-          onUpdate: (id, score, status, progress) async {
+          onUpdate: (id, score, status, progress, startedAt, completedAt) async {
             await mediaService.onlineService.updateListEntry(
                 UpdateListEntryParams(
                     listId: id,
                     isAnime: false,
                     score: score,
                     status: status,
-                    progress: progress));
+                    progress: progress,
+                    startedAt: startedAt,
+                    completedAt: completedAt));
             setState(() {});
           },
           onDelete: (s) async {
