@@ -19,7 +19,6 @@ import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-// Extracted common widget for collapsible sections
 class CollapsibleBox extends StatefulWidget {
   final Widget header;
   final Widget content;
@@ -121,7 +120,6 @@ class _CollapsibleBoxState extends State<CollapsibleBox> with SingleTickerProvid
   }
 }
 
-// Extracted widget for action cards (like Watch Order, Openings, News)
 class _ActionCard extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -197,7 +195,6 @@ class _ActionCard extends StatelessWidget {
   }
 }
 
-// Extracted widget for section headers
 class _SectionHeader extends StatelessWidget {
   final IconData icon;
   final String title;
