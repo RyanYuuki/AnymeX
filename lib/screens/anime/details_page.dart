@@ -218,7 +218,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     service.setCurrentMedia(widget.media.id.toString());
     var data = service.currentMedia;
 
-    if (data.value.id != null || data.value.id != '') {
+    if (data.value.id != null && data.value.id != '') {
       isListedAnime.value = true;
       currentAnime = data;
     } else {
@@ -875,17 +875,14 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                 score: score,
                 status: status,
                 progress: progress));
-            currentAnime.value?.score = score.toString();
-            currentAnime.value?.watchingStatus = status;
-            currentAnime.value?.episodeCount = progress.toString();
-            setState(() {});
+            _checkAnimePresence();
           },
           onDelete: (s) async {
             final fetcher = widget.media.serviceType;
             final id = fetcher.onlineService.currentMedia.value.mediaListId ??
                 widget.media.id;
             await fetcher.onlineService.deleteListEntry(id, isAnime: true);
-            setState(() {});
+            _checkAnimePresence();
           },
         );
       },
