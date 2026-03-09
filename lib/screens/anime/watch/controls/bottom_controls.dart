@@ -253,83 +253,81 @@ class BottomControls extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Obx(() {
-          final interval = controller.currentSkipInterval.value;
-          final label = controller.currentSkipLabel.value;
-          if (interval == null || controller.isLocked.value) {
-            return const SizedBox.shrink();
-          }
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 6.0),
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: AnymexButton(
-                onTap: () {
-                  controller.seekTo(Duration(seconds: interval.end));
-                },
-                color: Colors.black.withValues(alpha: 0.55),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                radius: 12,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    AnymexText(
-                      text: label,
-                      variant: TextVariant.bold,
-                      color: Colors.white,
-                      size: 14,
-                    ),
-                    const SizedBox(width: 6),
-                    const Icon(
-                      Icons.skip_next_rounded,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        }),
         Padding(
-          padding: const EdgeInsets.fromLTRB(0, 0, 20, 5),
+          padding: const EdgeInsets.fromLTRB(0, 0, 20, 10),
           child: Align(
             alignment: Alignment.centerRight,
-            child: Material(
-              borderRadius: BorderRadius.circular(16),
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: controller.isLocked.value
-                    ? null
-                    : () => controller
-                        .megaSeek(controller.playerSettings.skipDuration),
-                child: Container(
+            child: Obx(() {
+              final interval = controller.currentSkipInterval.value;
+              final label = controller.currentSkipLabel.value;
+              final isLocked = controller.isLocked.value;
+
+              if (interval != null && !isLocked) {
+                return AnymexButton(
+                  onTap: () =>
+                      controller.seekTo(Duration(seconds: interval.end)),
+                  color: Colors.black.withValues(alpha: 0.6),
                   padding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  decoration: BoxDecoration(
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  radius: 16,
+                  borderSide: BorderSide(
                     color: isDark
-                        ? theme.colorScheme.surfaceContainer
-                            .withValues(alpha: 0.6)
-                        : theme.colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
+                        ? theme.colorScheme.outline
+                        : theme.colorScheme.outline.opaque(0.5),
+                    width: 0.5,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      AnymexText(
+                        text: label,
+                        variant: TextVariant.bold,
+                        color: Colors.white,
+                        size: 15,
+                      ),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.skip_next_rounded,
+                          color: Colors.white, size: 22),
+                    ],
+                  ),
+                );
+              }
+
+              return Material(
+                borderRadius: BorderRadius.circular(16),
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: isLocked
+                      ? null
+                      : () => controller
+                          .megaSeek(controller.playerSettings.skipDuration),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 20),
+                    decoration: BoxDecoration(
                       color: isDark
-                          ? theme.colorScheme.outline
-                          : theme.colorScheme.outline.opaque(0.5),
-                      width: 0.5,
+                          ? theme.colorScheme.surfaceContainer
+                              .withValues(alpha: 0.6)
+                          : theme.colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: isDark
+                            ? theme.colorScheme.outline
+                            : theme.colorScheme.outline.opaque(0.5),
+                        width: 0.5,
+                      ),
+                    ),
+                    child: AnymexText(
+                      text: '+${controller.playerSettings.skipDuration}',
+                      variant: TextVariant.semiBold,
+                      color: isLocked
+                          ? theme.colorScheme.onSurface.opaque(0.4)
+                          : null,
                     ),
                   ),
-                  child: AnymexText(
-                    text: '+${controller.playerSettings.skipDuration}',
-                    variant: TextVariant.semiBold,
-                    color: controller.isLocked.value
-                        ? theme.colorScheme.onSurface.opaque(0.4)
-                        : null,
-                  ),
                 ),
-              ),
-            ),
+              );
+            }),
           ),
         ),
         Container(
