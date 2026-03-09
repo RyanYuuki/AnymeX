@@ -1,7 +1,9 @@
+import 'dart:async';
+
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/widgets/common/slider_semantics.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_dropdown.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/services.dart';
@@ -13,7 +15,7 @@ class ListEditorModal extends StatefulWidget {
   final RxInt animeProgress;
   final Rx<dynamic> currentAnime;
   final Media media;
-  final Function(String, double, String, int) onUpdate;
+  final Function(String, double, String, int, DateTime?, DateTime?) onUpdate;
   final Function(String) onDelete;
   final bool isManga;
 
@@ -33,152 +35,526 @@ class ListEditorModal extends StatefulWidget {
   State<ListEditorModal> createState() => _ListEditorModalState();
 }
 
-class _ListEditorModalState extends State<ListEditorModal> {
-  late TextEditingController _progressController;
-
+class _ListEditorModalState extends State<ListEditorModal>
+    with SingleTickerProviderStateMixin {
   late String _localStatus;
   late double _localScore;
   late int _localProgress;
+  DateTime? _startedAt;
+  DateTime? _completedAt;
+
+  late AnimationController _fadeCtrl;
+  late Animation<double> _fadeAnim;
+
+  Timer? _repeatTimer;
+  Timer? _accelTimer;
+  int _repeatMs = 150;
+
+  // (value, label, icon)
+  static const _statuses = [
+    ('CURRENT',   'Watching',  Icons.play_circle_rounded),
+    ('PLANNING',  'Planning',  Icons.bookmark_add_rounded),
+    ('COMPLETED', 'Completed', Icons.check_circle_rounded),
+    ('PAUSED',    'Paused',    Icons.pause_circle_rounded),
+    ('DROPPED',   'Dropped',   Icons.cancel_rounded),
+    ('REPEATING', 'Repeating', Icons.repeat_rounded),
+  ];
+
+  // Status accent colours — subtle tints so they read on any theme
+  static const _statusColors = {
+    'CURRENT':   Color(0xFF4CAF50),
+    'PLANNING':  Color(0xFF2196F3),
+    'COMPLETED': Color(0xFF9C27B0),
+    'PAUSED':    Color(0xFFFF9800),
+    'DROPPED':   Color(0xFFF44336),
+    'REPEATING': Color(0xFF00BCD4),
+  };
 
   @override
   void initState() {
     super.initState();
-
-    _localStatus =
-        widget.animeStatus.value.isEmpty ? "CURRENT" : widget.animeStatus.value;
-    _localScore = widget.animeScore.value;
+    _localStatus   = widget.animeStatus.value.isEmpty ? 'CURRENT' : widget.animeStatus.value;
+    _localScore    = widget.animeScore.value;
     _localProgress = widget.animeProgress.value;
 
-    _progressController = TextEditingController(
-      text: _localProgress.toString(),
-    );
+    final tracked = widget.currentAnime.value;
+    if (tracked != null) {
+      _startedAt   = tracked.startedAt;
+      _completedAt = tracked.completedAt;
+    }
+
+    _fadeCtrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 220));
+    _fadeAnim = CurvedAnimation(parent: _fadeCtrl, curve: Curves.easeOut);
+    _fadeCtrl.forward();
   }
 
   @override
   void dispose() {
-    _progressController.dispose();
+    _stopRepeat();
+    _fadeCtrl.dispose();
     super.dispose();
   }
 
+  // ── computed ─────────────────────────────────────────────────────────────────
+
+  int? get _maxTotal {
+    final raw = widget.isManga ? widget.media.totalChapters : widget.media.totalEpisodes;
+    if (raw == null || raw == '?' || raw == '??' || raw.isEmpty) return null;
+    return int.tryParse(raw);
+  }
+
+  String get _displayTotal {
+    final t = widget.isManga ? widget.media.totalChapters : widget.media.totalEpisodes;
+    return (t == null || t.isEmpty) ? '?' : t;
+  }
+
+  double get _progressPct {
+    final max = _maxTotal;
+    if (max == null || max == 0) return 0;
+    return (_localProgress / max).clamp(0.0, 1.0);
+  }
+
+  Color get _statusAccent =>
+      _statusColors[_localStatus] ?? const Color(0xFF4CAF50);
+
+  String _statusLabel(String v) {
+    if (v == 'CURRENT') return widget.isManga ? 'Reading' : 'Watching';
+    return _statuses.firstWhere((s) => s.$1 == v,
+        orElse: () => (v, v, Icons.circle)).$2;
+  }
+
+  String _fmtDate(DateTime? d) {
+    if (d == null) return 'Not set';
+    return '${d.day.toString().padLeft(2, '0')} / '
+        '${d.month.toString().padLeft(2, '0')} / ${d.year}';
+  }
+
+  // ── interactions ─────────────────────────────────────────────────────────────
+
+  void _setStatus(String next) {
+    final prev = _localStatus;
+    setState(() {
+      _localStatus = next;
+      if (next == 'CURRENT'   && _startedAt == null) _startedAt = DateTime.now();
+      if (next == 'COMPLETED') {
+        _startedAt   ??= DateTime.now();
+        _completedAt ??= DateTime.now();
+      }
+      if (prev == 'COMPLETED' && next != 'COMPLETED') _completedAt = null;
+    });
+    HapticFeedback.selectionClick();
+  }
+
+  void _step(bool up) {
+    final max = _maxTotal;
+    if (up  && (max == null || _localProgress < max)) {
+      setState(() => _localProgress++);
+      HapticFeedback.selectionClick();
+    } else if (!up && _localProgress > 0) {
+      setState(() => _localProgress--);
+      HapticFeedback.selectionClick();
+    }
+  }
+
+  void _startRepeat(bool up) {
+    _repeatMs = 150;
+    _stopRepeat();
+    _scheduleStep(up);
+    _accelTimer = Timer.periodic(const Duration(milliseconds: 500), (_) {
+      _repeatMs = (_repeatMs * 0.6).clamp(30, 150).toInt();
+    });
+  }
+
+  void _scheduleStep(bool up) {
+    _repeatTimer = Timer(Duration(milliseconds: _repeatMs), () {
+      if (!mounted) return;
+      _step(up);
+      _scheduleStep(up);
+    });
+  }
+
+  void _stopRepeat() {
+    _repeatTimer?.cancel();
+    _accelTimer?.cancel();
+    _repeatTimer = _accelTimer = null;
+    _repeatMs = 150;
+  }
+
+  void _typeProgress() {
+    final ctrl = TextEditingController(text: '$_localProgress')
+      ..selection = TextSelection(baseOffset: 0, extentOffset: '$_localProgress'.length);
+    final c = context.colors;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: c.surfaceContainer,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        titlePadding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+        contentPadding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+        actionsPadding: const EdgeInsets.all(16),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: c.primaryContainer,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
+                widget.isManga ? Icons.menu_book_rounded : Icons.play_circle_rounded,
+                color: c.primary,
+                size: 18,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              'Set ${widget.isManga ? 'Chapter' : 'Episode'}',
+              style: TextStyle(
+                  color: c.onSurface, fontWeight: FontWeight.w700, fontSize: 18),
+            ),
+          ],
+        ),
+        content: TextField(
+          controller: ctrl,
+          autofocus: true,
+          keyboardType: TextInputType.number,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          textAlign: TextAlign.center,
+          style: TextStyle(
+              color: c.onSurface, fontSize: 28, fontWeight: FontWeight.w800),
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: c.surfaceContainerHighest,
+            hintText: '0',
+            hintStyle: TextStyle(color: c.onSurfaceVariant),
+            suffixText: '/ $_displayTotal',
+            suffixStyle: TextStyle(
+                color: c.onSurfaceVariant,
+                fontWeight: FontWeight.w500,
+                fontSize: 14),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide.none,
+            ),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            style: TextButton.styleFrom(
+              foregroundColor: c.onSurfaceVariant,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+            ),
+            child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.w600)),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: c.primary,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            ),
+            onPressed: () {
+              final val = int.tryParse(ctrl.text);
+              if (val != null && val >= 0) {
+                final max = _maxTotal;
+                setState(() =>
+                    _localProgress = max != null ? val.clamp(0, max) : val);
+              }
+              Navigator.pop(ctx);
+            },
+            child: Text('Confirm',
+                style: TextStyle(
+                    fontWeight: FontWeight.w700, color: c.onPrimary)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _pickDate({required bool isStart}) async {
+    final initial = isStart
+        ? (_startedAt  ?? DateTime.now())
+        : (_completedAt ?? DateTime.now());
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: initial,
+      firstDate: DateTime(1990),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+      builder: (ctx, child) =>
+          Theme(data: Theme.of(ctx).copyWith(colorScheme: ctx.colors), child: child!),
+    );
+    if (picked != null) {
+      setState(() => isStart ? _startedAt = picked : _completedAt = picked);
+    }
+  }
+
+  // ── root ─────────────────────────────────────────────────────────────────────
+
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: EdgeInsets.only(
-          left: 24.0,
-          right: 24.0,
-          bottom: MediaQuery.of(context).viewInsets.bottom + 24.0,
-          top: 24.0,
+    final c = context.colors;
+
+    return FadeTransition(
+      opacity: _fadeAnim,
+      child: Container(
+        decoration: BoxDecoration(
+          color: c.surface,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(context),
-            const SizedBox(height: 32),
-            _buildStatusSection(context),
-            const SizedBox(height: 24),
-            _buildProgressSection(context),
-            const SizedBox(height: 24),
-            _buildScoreSection(context),
-            const SizedBox(height: 32),
-            _buildActionButtons(context),
-          ],
+        child: SingleChildScrollView(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom + 32,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _handle(c),
+              _header(context, c),
+              _divider(c),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _statusSection(context, c),
+                    const SizedBox(height: 20),
+                    _progressSection(context, c),
+                    const SizedBox(height: 20),
+                    _scoreSection(context, c),
+                    const SizedBox(height: 20),
+                    _datesSection(context, c),
+                    const SizedBox(height: 28),
+                    _actions(context, c),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
-    final colorScheme = context.colors;
+  // ── drag handle ──────────────────────────────────────────────────────────────
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Edit ${widget.isManga ? 'Manga' : 'Anime'}',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: colorScheme.onSurface,
-                  ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Update your progress and rating',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-            ),
-          ],
+  Widget _handle(ColorScheme c) => Container(
+        margin: const EdgeInsets.only(top: 12, bottom: 8),
+        width: 36,
+        height: 4,
+        decoration: BoxDecoration(
+          color: c.outlineVariant,
+          borderRadius: BorderRadius.circular(2),
         ),
-        Container(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: colorScheme.surfaceContainerHighest,
+      );
+
+  // ── header ───────────────────────────────────────────────────────────────────
+
+  Widget _header(BuildContext context, ColorScheme c) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 4, 16, 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Poster
+          Hero(
+            tag: 'editor_poster_${widget.media.id}',
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: c.shadow.opaque(0.15, iReallyMeanIt: true),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: AnymeXImage(
+                  imageUrl: widget.media.poster,
+                  width: 56,
+                  height: 78,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
           ),
-          padding: const EdgeInsets.all(8),
-          child: IconButton(
-              color: colorScheme.onSurface,
-              onPressed: () => Get.back(),
-              icon: const Icon(Icons.close_rounded)),
-        )
-      ],
+          const SizedBox(width: 14),
+          // Title block
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.media.title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: c.onSurface,
+                        height: 1.3,
+                      ),
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    // Live status badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: _statusAccent.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 6,
+                            height: 6,
+                            decoration: BoxDecoration(
+                              color: _statusAccent,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 5),
+                          Text(
+                            _statusLabel(_localStatus),
+                            style: TextStyle(
+                              color: _statusAccent,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      widget.isManga ? 'Manga' : 'Anime',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: c.onSurfaceVariant,
+                          ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          // Close
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => Get.back(),
+              borderRadius: BorderRadius.circular(20),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: c.surfaceContainerHighest,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.close_rounded,
+                    size: 18, color: c.onSurfaceVariant),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildStatusSection(BuildContext context) {
-    final colorScheme = context.colors;
+  Widget _divider(ColorScheme c) => Divider(
+        height: 1,
+        thickness: 1,
+        color: c.outlineVariant.opaque(0.5, iReallyMeanIt: true),
+      );
 
+  // ── section label ─────────────────────────────────────────────────────────────
+
+  Widget _label(BuildContext context, ColorScheme c, String text) => Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: Text(
+          text.toUpperCase(),
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: c.onSurfaceVariant,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.2,
+              ),
+        ),
+      );
+
+  // ── status chips ──────────────────────────────────────────────────────────────
+
+  Widget _statusSection(BuildContext context, ColorScheme c) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 12),
-          child: Text(
-            'Status',
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  color: colorScheme.onSurface,
-                  fontWeight: FontWeight.w600,
+        _label(context, c, 'Status'),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: _statuses.map((s) {
+              final val      = s.$1;
+              final label    = val == 'CURRENT'
+                  ? (widget.isManga ? 'Reading' : 'Watching')
+                  : s.$2;
+              final icon     = s.$3;
+              final selected = _localStatus == val;
+              final accent   = _statusColors[val] ?? c.primary;
+
+              return Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: GestureDetector(
+                  onTap: () => _setStatus(val),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeOutCubic,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: selected
+                          ? accent.withValues(alpha: 0.15)
+                          : c.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: selected
+                            ? accent.withValues(alpha: 0.6)
+                            : c.outlineVariant.opaque(0.5, iReallyMeanIt: true),
+                        width: selected ? 1.5 : 1,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          icon,
+                          size: 15,
+                          color: selected ? accent : c.onSurfaceVariant,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          label,
+                          style: Theme.of(context)
+                              .textTheme
+                              .labelMedium
+                              ?.copyWith(
+                                color: selected ? accent : c.onSurfaceVariant,
+                                fontWeight: selected
+                                    ? FontWeight.w700
+                                    : FontWeight.w500,
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-          ),
-        ),
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: colorScheme.outline.opaque(0.5),
-            ),
-          ),
-          child: AnymexDropdown(
-            label: 'Status',
-            icon: Icons.info_rounded,
-            onChanged: (e) {
-              setState(() {
-                _localStatus = e.value;
-              });
-            },
-            selectedItem: DropdownItem(
-              value: _localStatus,
-              text: _getStatusDisplayText(_localStatus),
-            ),
-            items: [
-              ('PLANNING', 'Planning', Icons.schedule_rounded),
-              (
-                'CURRENT',
-                widget.isManga ? 'Reading' : 'Watching',
-                Icons.play_circle_rounded
-              ),
-              ('COMPLETED', 'Completed', Icons.check_circle_rounded),
-              ('REPEATING', 'Repeating', Icons.repeat_rounded),
-              ('PAUSED', 'Paused', Icons.pause_circle_rounded),
-              ('DROPPED', 'Dropped', Icons.cancel_rounded),
-            ].map((item) {
-              return DropdownItem(
-                value: item.$1,
-                text: item.$2,
               );
             }).toList(),
           ),
@@ -187,164 +563,149 @@ class _ListEditorModalState extends State<ListEditorModal> {
     );
   }
 
-  String _getStatusDisplayText(String status) {
-    switch (status) {
-      case 'PLANNING':
-        return 'Planning';
-      case 'CURRENT':
-        return widget.isManga ? 'Reading' : 'Watching';
-      case 'COMPLETED':
-        return 'Completed';
-      case 'REPEATING':
-        return 'Repeating';
-      case 'PAUSED':
-        return 'Paused';
-      case 'DROPPED':
-        return 'Dropped';
-      default:
-        return status;
-    }
-  }
+  // ── progress ──────────────────────────────────────────────────────────────────
 
-  Widget _buildProgressSection(BuildContext context) {
-    final colorScheme = context.colors;
-    final bool isForManga = widget.isManga;
-
-    bool isUnknownTotal() {
-      final String? total =
-          isForManga ? widget.media.totalChapters : widget.media.totalEpisodes;
-      return total == '?' || total == '??' || total == null || total.isEmpty;
-    }
-
-    int? getMaxTotal() {
-      if (isUnknownTotal()) return null;
-      final String total =
-          isForManga ? widget.media.totalChapters! : widget.media.totalEpisodes;
-      return int.tryParse(total);
-    }
-
-    final int? maxTotal = getMaxTotal();
-    final bool hasKnownLimit = maxTotal != null;
-
-    String getDisplayTotal() {
-      if (isForManga) {
-        return widget.media.totalChapters ?? '??';
-      }
-      return widget.media.totalEpisodes;
-    }
+  Widget _progressSection(BuildContext context, ColorScheme c) {
+    final max    = _maxTotal;
+    final hasMax = max != null;
+    final pct    = _progressPct;
+    final unit   = widget.isManga ? 'Chapter' : 'Episode';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 12),
-          child: Text(
-            'Progress',
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  color: colorScheme.onSurface,
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-        ),
+        _label(context, c, unit),
         Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            color: colorScheme.surfaceContainerHighest.opaque(0.3),
+            color: c.surfaceContainer.opaque(0.5),
+            borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: colorScheme.outline.opaque(0.5),
+              color: c.outlineVariant.opaque(0.5, iReallyMeanIt: true),
             ),
           ),
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
               Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildDecrementButton(context),
-                  const SizedBox(width: 8),
+                  // Decrement
+                  _stepBtn(
+                    context, c,
+                    icon: Icons.remove_rounded,
+                    enabled: _localProgress > 0,
+                    filled: false,
+                    onTap: () => _step(false),
+                    onLongStart: (_) => _startRepeat(false),
+                    onLongEnd:   (_) => _stopRepeat(),
+                  ),
+                  // Counter — tap to type
                   Expanded(
-                    child: SizedBox(
-                      height: 50,
-                      child: TextFormField(
-                        controller: _progressController,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          LengthLimitingTextInputFormatter(6),
+                    child: GestureDetector(
+                      onTap: _typeProgress,
+                      child: Column(
+                        children: [
+                          RichText(
+                            textAlign: TextAlign.center,
+                            text: TextSpan(children: [
+                              TextSpan(
+                                text: '$_localProgress',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .displaySmall
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.w800,
+                                      color: c.onSurface,
+                                    ),
+                              ),
+                              TextSpan(
+                                text: ' / $_displayTotal',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge
+                                    ?.copyWith(
+                                      color: c.onSurfaceVariant,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                              ),
+                            ]),
+                          ),
+                          const SizedBox(height: 4),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.touch_app_rounded,
+                                  size: 11,
+                                  color: c.onSurfaceVariant
+                                      .opaque(0.4, iReallyMeanIt: true)),
+                              const SizedBox(width: 3),
+                              Text(
+                                'tap to enter',
+                                style: TextStyle(
+                                  color: c.onSurfaceVariant
+                                      .opaque(0.4, iReallyMeanIt: true),
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                          if (hasMax) ...[
+                            const SizedBox(height: 3),
+                            Text(
+                              '${(pct * 100).toStringAsFixed(0)}%',
+                              style: TextStyle(
+                                color: c.primary,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
                         ],
-                        style: Theme.of(context).textTheme.bodyLarge,
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(
-                            isForManga
-                                ? Icons.menu_book_rounded
-                                : Icons.play_circle_rounded,
-                            color: colorScheme.primary,
-                          ),
-                          filled: true,
-                          fillColor: colorScheme.surface,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: colorScheme.outline.opaque(0.5),
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: colorScheme.outline.opaque(0.5),
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: colorScheme.primary,
-                              width: 2,
-                            ),
-                          ),
-                          labelText:
-                              isForManga ? 'Chapters Read' : 'Episodes Watched',
-                          labelStyle: TextStyle(
-                            color: colorScheme.onSurfaceVariant,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 16,
-                          ),
-                        ),
-                        onChanged: (String value) {
-                          final int? newProgress = int.tryParse(value);
-
-                          if (newProgress == null || newProgress < 0) {
-                            return;
-                          }
-
-                          setState(() {
-                            if (hasKnownLimit) {
-                              _localProgress = newProgress <= maxTotal
-                                  ? newProgress
-                                  : maxTotal;
-                            } else {
-                              _localProgress = newProgress;
-                            }
-                          });
-                        },
-                        onEditingComplete: () {
-                          setState(() {
-                            _progressController.text =
-                                _localProgress.toString();
-                          });
-                        },
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  _buildIncrementButton(context, hasKnownLimit, maxTotal),
+                  // Increment
+                  _stepBtn(
+                    context, c,
+                    icon: Icons.add_rounded,
+                    enabled: !hasMax || _localProgress < max,
+                    filled: true,
+                    onTap: () => _step(true),
+                    onLongStart: (_) => _startRepeat(true),
+                    onLongEnd:   (_) => _stopRepeat(),
+                  ),
                 ],
               ),
-              const SizedBox(height: 16),
-              _buildProgressIndicator(
-                  context, hasKnownLimit, maxTotal, getDisplayTotal()),
+              if (hasMax) ...[
+                const SizedBox(height: 14),
+                Stack(
+                  children: [
+                    Container(
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: c.outlineVariant
+                            .opaque(0.3, iReallyMeanIt: true),
+                        borderRadius: BorderRadius.circular(3),
+                      ),
+                    ),
+                    FractionallySizedBox(
+                      widthFactor: pct,
+                      child: Container(
+                        height: 6,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              c.primary,
+                              c.primaryContainer,
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ],
           ),
         ),
@@ -352,213 +713,141 @@ class _ListEditorModalState extends State<ListEditorModal> {
     );
   }
 
-  Widget _buildDecrementButton(BuildContext context) {
-    final colorScheme = context.colors;
-    final bool canDecrement = _localProgress > 0;
-
-    return Material(
-      color: canDecrement
-          ? colorScheme.secondaryContainer
-          : colorScheme.surfaceContainerHighest,
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: canDecrement
-            ? () {
-                setState(() {
-                  _localProgress--;
-                  _progressController.text = _localProgress.toString();
-                });
-              }
-            : null,
-        child: Container(
-          width: 50,
-          height: 50,
-          alignment: Alignment.center,
-          child: Icon(
-            Icons.remove_rounded,
-            color: canDecrement
-                ? colorScheme.onSecondaryContainer
-                : colorScheme.onSurfaceVariant.opaque(0.5),
-            size: 24,
-          ),
+  Widget _stepBtn(
+    BuildContext context,
+    ColorScheme c, {
+    required IconData icon,
+    required bool enabled,
+    required bool filled,
+    required VoidCallback onTap,
+    required void Function(LongPressStartDetails) onLongStart,
+    required void Function(LongPressEndDetails) onLongEnd,
+  }) {
+    return GestureDetector(
+      onTap: enabled ? onTap : null,
+      onLongPressStart: enabled ? onLongStart : null,
+      onLongPressEnd:   enabled ? onLongEnd   : null,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        width: 46,
+        height: 46,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: !enabled
+              ? c.surfaceContainerHighest.opaque(0.4, iReallyMeanIt: true)
+              : filled
+                  ? c.primary
+                  : c.primaryContainer.opaque(0.7, iReallyMeanIt: true),
+        ),
+        child: Icon(
+          icon,
+          size: 22,
+          color: !enabled
+              ? c.onSurfaceVariant.opaque(0.3, iReallyMeanIt: true)
+              : filled
+                  ? c.onPrimary
+                  : c.primary,
         ),
       ),
     );
   }
 
-  Widget _buildIncrementButton(
-      BuildContext context, bool hasKnownLimit, int? maxTotal) {
-    final colorScheme = context.colors;
-    final bool canIncrement =
-        !hasKnownLimit || (hasKnownLimit && _localProgress < maxTotal!);
+  // ── score ─────────────────────────────────────────────────────────────────────
 
-    return Material(
-      color: canIncrement
-          ? colorScheme.primary
-          : colorScheme.surfaceContainerHighest,
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: canIncrement
-            ? () {
-                setState(() {
-                  _localProgress++;
-                  _progressController.text = _localProgress.toString();
-                });
-              }
-            : null,
-        child: Container(
-          width: 50,
-          height: 50,
-          alignment: Alignment.center,
-          child: Icon(
-            Icons.add_rounded,
-            color: canIncrement
-                ? colorScheme.onPrimary
-                : colorScheme.onSurfaceVariant.opaque(0.5),
-            size: 24,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildProgressIndicator(BuildContext context, bool hasKnownLimit,
-      int? maxTotal, String displayTotal) {
-    final colorScheme = context.colors;
-    final double progressPercentage =
-        hasKnownLimit ? (_localProgress / maxTotal!).clamp(0.0, 1.0) : 0.0;
-
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              '$_localProgress / $displayTotal',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w500,
-                  ),
-            ),
-            if (hasKnownLimit)
-              Text(
-                '${(progressPercentage * 100).toStringAsFixed(0)}%',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.primary,
-                      fontWeight: FontWeight.w600,
-                    ),
-              ),
-          ],
-        ),
-        if (hasKnownLimit) ...[
-          const SizedBox(height: 8),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(
-              value: progressPercentage,
-              backgroundColor: colorScheme.surfaceContainerHighest,
-              valueColor: AlwaysStoppedAnimation<Color>(colorScheme.primary),
-              minHeight: 6,
-            ),
-          ),
-        ],
-        if (!hasKnownLimit)
-          Padding(
-            padding: const EdgeInsets.only(top: 4),
-            child: Text(
-              'Total ${widget.isManga ? 'chapters' : 'episodes'} unknown',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                    fontStyle: FontStyle.italic,
-                  ),
-            ),
-          ),
-      ],
-    );
-  }
-
-  Widget _buildScoreSection(BuildContext context) {
-    final colorScheme = context.colors;
+  Widget _scoreSection(BuildContext context, ColorScheme c) {
+    // Map 0–10 to a colour: red → yellow → green
+    Color scoreColor() {
+      if (_localScore < 4)  return const Color(0xFFF44336);
+      if (_localScore < 6)  return const Color(0xFFFF9800);
+      if (_localScore < 8)  return const Color(0xFFFFEB3B);
+      return const Color(0xFF4CAF50);
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 12),
-          child: Text(
-            'Rating',
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  color: colorScheme.onSurface,
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-        ),
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            color: colorScheme.surfaceContainerHighest.opaque(0.3),
-            border: Border.all(
-              color: colorScheme.outline.opaque(0.5),
-            ),
-          ),
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        Row(
+          children: [
+            Expanded(child: _label(context, c, 'Score')),
+            // Live pill
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+              decoration: BoxDecoration(
+                color: scoreColor().withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                    color: scoreColor().withValues(alpha: 0.4), width: 1.5),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.star_rounded,
-                        color: colorScheme.primary,
-                        size: 24,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Score',
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: colorScheme.onSurface,
-                              fontWeight: FontWeight.w500,
-                            ),
-                      ),
-                    ],
+                  Icon(Icons.star_rounded,
+                      size: 14, color: scoreColor()),
+                  const SizedBox(width: 4),
+                  Text(
+                    _localScore.toStringAsFixed(1),
+                    style: TextStyle(
+                      color: scoreColor(),
+                      fontWeight: FontWeight.w800,
+                      fontSize: 14,
+                    ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: colorScheme.primary,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      '${_localScore.toStringAsFixed(1)}/10',
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                            color: colorScheme.onPrimary,
-                            fontWeight: FontWeight.w600,
-                          ),
+                  Text(
+                    ' / 10',
+                    style: TextStyle(
+                      color: scoreColor().withValues(alpha: 0.7),
+                      fontWeight: FontWeight.w500,
+                      fontSize: 12,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+            ),
+          ],
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: c.surfaceContainer.opaque(0.5),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: c.outlineVariant.opaque(0.5, iReallyMeanIt: true),
+            ),
+          ),
+          padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
+          child: Column(
+            children: [
               CustomSlider(
                 value: _localScore,
                 min: 0.0,
                 max: 10.0,
                 divisions: 100,
                 label: _localScore.toStringAsFixed(1),
-                activeColor: colorScheme.primary,
-                inactiveColor: colorScheme.surfaceContainerHighest,
-                onChanged: (double newValue) {
-                  setState(() {
-                    _localScore = newValue;
-                  });
-                },
+                activeColor: scoreColor(),
+                inactiveColor:
+                    c.outlineVariant.opaque(0.3, iReallyMeanIt: true),
+                onChanged: (v) => setState(() => _localScore = v),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Awful',
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: c.onSurfaceVariant
+                                .opaque(0.5, iReallyMeanIt: true))),
+                    Text('Average',
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: c.onSurfaceVariant
+                                .opaque(0.5, iReallyMeanIt: true))),
+                    Text('Masterpiece',
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: c.onSurfaceVariant
+                                .opaque(0.5, iReallyMeanIt: true))),
+                  ],
+                ),
               ),
             ],
           ),
@@ -567,76 +856,191 @@ class _ListEditorModalState extends State<ListEditorModal> {
     );
   }
 
-  Widget _buildActionButtons(BuildContext context) {
-    final colorScheme = context.colors;
+  // ── dates ─────────────────────────────────────────────────────────────────────
 
-    return Row(
+  Widget _datesSection(BuildContext context, ColorScheme c) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: SizedBox(
-            height: 56,
-            child: AnymexButton(
-              onTap: () {
-                Navigator.pop(context);
-                widget.onDelete(widget.media.id);
-              },
-              color: colorScheme.tertiary,
-              border: BorderSide.none,
-              borderRadius: const BorderRadius.horizontal(
-                  left: Radius.circular(100), right: Radius.circular(10)),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+        _label(context, c, 'Dates'),
+        Row(
+          children: [
+            Expanded(
+              child: _dateTile(context, c,
+                  label: 'Started',
+                  icon: Icons.play_arrow_rounded,
+                  date: _startedAt,
+                  onTap: () => _pickDate(isStart: true),
+                  onClear: _startedAt != null
+                      ? () => setState(() => _startedAt = null)
+                      : null),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: _dateTile(context, c,
+                  label: 'Finished',
+                  icon: Icons.flag_rounded,
+                  date: _completedAt,
+                  onTap: () => _pickDate(isStart: false),
+                  onClear: _completedAt != null
+                      ? () => setState(() => _completedAt = null)
+                      : null),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _dateTile(
+    BuildContext context,
+    ColorScheme c, {
+    required String label,
+    required IconData icon,
+    required DateTime? date,
+    required VoidCallback onTap,
+    VoidCallback? onClear,
+  }) {
+    final has = date != null;
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+        decoration: BoxDecoration(
+          color: has
+              ? c.primaryContainer.opaque(0.5, iReallyMeanIt: true)
+              : c.surfaceContainer.opaque(0.5),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: has
+                ? c.primary.withValues(alpha: 0.4)
+                : c.outlineVariant.opaque(0.5, iReallyMeanIt: true),
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(icon,
+                size: 16,
+                color: has ? c.primary : c.onSurfaceVariant),
+            const SizedBox(width: 9),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(
-                    Icons.delete_rounded,
-                    color: colorScheme.onTertiary,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 8),
+                  Text(label,
+                      style: TextStyle(
+                        color: c.onSurfaceVariant,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.5,
+                      )),
+                  const SizedBox(height: 3),
                   Text(
-                    'Delete',
+                    _fmtDate(date),
                     style: TextStyle(
-                      color: colorScheme.onTertiary,
-                      fontWeight: FontWeight.w600,
+                      color: has
+                          ? c.onSurface
+                          : c.onSurfaceVariant
+                              .opaque(0.4, iReallyMeanIt: true),
+                      fontSize: 12,
+                      fontWeight: has ? FontWeight.w600 : FontWeight.w400,
                     ),
                   ),
                 ],
               ),
             ),
+            if (onClear != null)
+              GestureDetector(
+                onTap: onClear,
+                behavior: HitTestBehavior.opaque,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 4),
+                  child: Icon(Icons.close_rounded,
+                      size: 14,
+                      color: c.onSurfaceVariant
+                          .opaque(0.5, iReallyMeanIt: true)),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── action buttons ────────────────────────────────────────────────────────────
+
+  Widget _actions(BuildContext context, ColorScheme c) {
+    return Column(
+      children: [
+        // Save
+        AnymexButton(
+          onTap: () {
+            Get.back();
+            widget.onUpdate(
+              widget.media.id,
+              _localScore,
+              _localStatus,
+              _localProgress,
+              _startedAt,
+              _completedAt,
+            );
+          },
+          height: 54,
+          width: double.infinity,
+          radius: 16,
+          color: c.primary,
+          border: BorderSide.none,
+          enableGlow: true,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.check_rounded, color: c.onPrimary, size: 20),
+              const SizedBox(width: 8),
+              Text(
+                'Save Changes',
+                style: TextStyle(
+                  color: c.onPrimary,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                ),
+              ),
+            ],
           ),
         ),
-        const SizedBox(width: 5),
-        Expanded(
-          child: SizedBox(
-            height: 56,
-            child: AnymexButton(
-              borderRadius: const BorderRadius.horizontal(
-                  right: Radius.circular(100), left: Radius.circular(10)),
-              onTap: () {
-                Get.back();
-                widget.onUpdate(
-                  widget.media.id,
-                  _localScore,
-                  _localStatus,
-                  _localProgress,
-                );
-              },
-              color: colorScheme.primary,
-              border: BorderSide.none,
+        const SizedBox(height: 10),
+        // Delete — subtle so it doesn't compete with Save
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              Navigator.pop(context);
+              widget.onDelete(widget.media.id);
+            },
+            borderRadius: BorderRadius.circular(14),
+            child: Container(
+              height: 46,
+              width: double.infinity,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: c.error.withValues(alpha: 0.35),
+                ),
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.save_rounded,
-                    color: colorScheme.onPrimary,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 8),
+                  Icon(Icons.delete_outline_rounded,
+                      color: c.error.opaque(0.8, iReallyMeanIt: true),
+                      size: 18),
+                  const SizedBox(width: 6),
                   Text(
-                    'Save Changes',
+                    'Remove from List',
                     style: TextStyle(
-                      color: colorScheme.onPrimary,
+                      color: c.error.opaque(0.8, iReallyMeanIt: true),
                       fontWeight: FontWeight.w600,
+                      fontSize: 14,
                     ),
                   ),
                 ],
