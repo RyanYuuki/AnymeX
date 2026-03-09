@@ -47,15 +47,159 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 
+// Extracted common widgets and functions
+class _ActionButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _ActionButton({required this.icon, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 50,
+      width: 60,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+        ),
+        color: Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.5),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Icon(icon),
+        ),
+      ),
+    );
+  }
+}
+
+class _DesktopNav extends StatelessWidget {
+  final RxInt selectedPage;
+  final Function(int) onPageSelected;
+
+  const _DesktopNav({
+    required this.selectedPage,
+    required this.onPageSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(20),
+      width: 85,
+      height: 300,
+      child: Column(
+        children: [
+          Container(
+            width: 70,
+            height: 65,
+            padding: const EdgeInsets.all(0),
+            margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 0),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              border: Border.all(
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2),
+                width: 1,
+              ),
+              borderRadius: BorderRadius.circular(20.multiplyRadius()),
+            ),
+            child: NavBarItem(
+              isSelected: false,
+              isVertical: true,
+              onTap: () => Get.back(),
+              selectedIcon: Iconsax.back_square,
+              unselectedIcon: IconlyBold.arrow_left,
+              label: "Back",
+            ),
+          ),
+          const SizedBox(height: 10),
+          Obx(() => ResponsiveNavBar(
+                isDesktop: true,
+                currentIndex: selectedPage.value,
+                borderRadius: BorderRadius.circular(20),
+                items: [
+                  NavItem(
+                    onTap: onPageSelected,
+                    selectedIcon: Iconsax.info_circle5,
+                    unselectedIcon: Iconsax.info_circle,
+                    label: "Info",
+                  ),
+                  NavItem(
+                    onTap: onPageSelected,
+                    selectedIcon: Iconsax.play5,
+                    unselectedIcon: Iconsax.play,
+                    label: "Watch",
+                  ),
+                  NavItem(
+                    onTap: onPageSelected,
+                    selectedIcon: HugeIcons.strokeRoundedComment01,
+                    unselectedIcon: HugeIcons.strokeRoundedComment02,
+                    label: "Comments",
+                  ),
+                ],
+              )),
+        ],
+      ),
+    );
+  }
+}
+
+class _MobileNav extends StatelessWidget {
+  final RxInt selectedPage;
+  final Function(int) onPageSelected;
+
+  const _MobileNav({
+    required this.selectedPage,
+    required this.onPageSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() => ResponsiveNavBar(
+          isDesktop: false,
+          currentIndex: selectedPage.value,
+          margin: const EdgeInsets.symmetric(horizontal: 80, vertical: 40),
+          items: [
+            NavItem(
+              onTap: onPageSelected,
+              selectedIcon: Iconsax.info_circle5,
+              unselectedIcon: Iconsax.info_circle,
+              label: "Info",
+            ),
+            NavItem(
+              onTap: onPageSelected,
+              selectedIcon: Iconsax.play5,
+              unselectedIcon: Iconsax.play,
+              label: "Watch",
+            ),
+            NavItem(
+              onTap: onPageSelected,
+              selectedIcon: HugeIcons.strokeRoundedComment01,
+              unselectedIcon: HugeIcons.strokeRoundedComment02,
+              label: "Comments",
+            ),
+          ],
+        ));
+  }
+}
+
+// Main widget continues below
 class AnimeDetailsPage extends StatefulWidget {
   final Media media;
   final String tag;
   final int initialTabIndex;
-  const AnimeDetailsPage(
-      {super.key,
-      required this.media,
-      required this.tag,
-      this.initialTabIndex = 0});
+  const AnimeDetailsPage({
+    super.key,
+    required this.media,
+    required this.tag,
+    this.initialTabIndex = 0
+  });
 
   @override
   State<AnimeDetailsPage> createState() => _AnimeDetailsPageState();
@@ -114,32 +258,6 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       baseMedia: widget.media,
       hydratedMedia: anilistData,
       isManga: false,
-    );
-  }
-
-  Widget _buildActionIconButton({
-    required BuildContext context,
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
-    return Container(
-      height: 50,
-      width: 60,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.outline.opaque(0.2),
-        ),
-        color: Theme.of(context).colorScheme.surfaceContainer.opaque(0.5),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
-          child: Icon(icon),
-        ),
-      ),
     );
   }
 
@@ -463,7 +581,10 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       child: Scaffold(
           extendBody: true,
           bottomNavigationBar: sourceController.shouldShowExtensions.value
-              ? _buildMobiledNav()
+              ? _MobileNav(
+                  selectedPage: selectedPage,
+                  onPageSelected: _onPageSelected,
+                )
               : null,
           body: _commonSaikouLayout(context)),
     );
@@ -476,12 +597,67 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         body: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildDesktopNav(),
+            _DesktopNav(
+              selectedPage: selectedPage,
+              onPageSelected: _onPageSelected,
+            ),
             Expanded(
               child: _commonSaikouLayout(context),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  // Extracted method for the logged-in user row
+  Widget _buildLoggedInUserRow(BuildContext context) {
+    return Expanded(
+      child: Container(
+        height: 50,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+          ),
+          color: Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.5),
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              if (widget.media.serviceType.onlineService.isLoggedIn.value) {
+                showListEditorModal(context);
+              } else {
+                snackBar("You aren't logged in Genius.", duration: 1000);
+              }
+            },
+            borderRadius: BorderRadius.circular(16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AnymexText(
+                  text: convertAniListStatus(animeStatus.value),
+                  variant: TextVariant.bold,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Extracted method for the non-logged in user row
+  Widget _buildNonLoggedInUserRow(BuildContext context) {
+    return Expanded(
+      child: AnymexButton2(
+        onTap: () {
+          showCustomListDialog(context, anilistData!);
+        },
+        label: 'Add to Library',
+        icon: HugeIcons.strokeRoundedLibrary,
       ),
     );
   }
@@ -503,88 +679,30 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                 children: [
                   Obx(() {
                     widget.media.serviceType.onlineService.animeList.value;
+                    final isLoggedIn = widget.media.serviceType != ServicesType.extensions &&
+                        widget.media.serviceType.onlineService.isLoggedIn.value;
+                    
                     return Row(
                       children: [
-                        if (widget.media.serviceType !=
-                                ServicesType.extensions &&
-                            widget.media.serviceType.onlineService.isLoggedIn
-                                .value) ...[
-                          Expanded(
-                            child: Container(
-                              height: 50,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .outline
-                                      .opaque(0.2),
-                                ),
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .surfaceContainer
-                                    .opaque(0.5),
-                              ),
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  onTap: () {
-                                    if (widget.media.serviceType.onlineService
-                                        .isLoggedIn.value) {
-                                      showListEditorModal(context);
-                                    } else {
-                                      snackBar("You aren't logged in Genius.",
-                                          duration: 1000);
-                                    }
-                                  },
-                                  borderRadius: BorderRadius.circular(16),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      AnymexText(
-                                        text: convertAniListStatus(
-                                            animeStatus.value),
-                                        variant: TextVariant.bold,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
+                        if (isLoggedIn) ...[
+                          _buildLoggedInUserRow(context),
                           const SizedBox(width: 7),
-                          _buildActionIconButton(
-                            context: context,
+                          _ActionButton(
                             icon: Icons.share_rounded,
                             onTap: _showShareOptions,
                           ),
                           const SizedBox(width: 7),
-                          _buildActionIconButton(
-                            context: context,
+                          _ActionButton(
                             icon: HugeIcons.strokeRoundedLibrary,
-                            onTap: () {
-                              showCustomListDialog(context, anilistData!);
-                            },
+                            onTap: () => showCustomListDialog(context, anilistData!),
                           ),
                         ] else ...[
-                          _buildActionIconButton(
-                            context: context,
+                          _ActionButton(
                             icon: Icons.share_rounded,
                             onTap: _showShareOptions,
                           ),
                           const SizedBox(width: 7),
-                          Expanded(
-                            child: AnymexButton2(
-                              onTap: () {
-                                showCustomListDialog(context, anilistData!);
-                              },
-                              label: 'Add to Library',
-                              icon: HugeIcons.strokeRoundedLibrary,
-                            ),
-                          )
+                          _buildNonLoggedInUserRow(context),
                         ]
                       ],
                     );
@@ -648,13 +766,13 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        color: context.colors.surfaceContainer.opaque(0.3),
+        color: context.colors.surfaceContainer.withValues(alpha: 0.3),
       ),
       child: Row(
         children: [
           Icon(
             Icons.movie_filter_rounded,
-            color: context.colors.onSurface.opaque(0.7),
+            color: context.colors.onSurface.withValues(alpha: 0.7),
             size: 16,
           ),
           const SizedBox(width: 8),
@@ -664,7 +782,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
               spans: [
                 AnymexTextSpan(
                   text: "Episode ",
-                  color: context.colors.onSurface.opaque(0.7),
+                  color: context.colors.onSurface.withValues(alpha: 0.7),
                 ),
                 AnymexTextSpan(
                   text: currentAnime.value?.episodeCount?.toString() ?? '0',
@@ -673,7 +791,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                 ),
                 AnymexTextSpan(
                   text: ' of ',
-                  color: context.colors.onSurface.opaque(0.7),
+                  color: context.colors.onSurface.withValues(alpha: 0.7),
                 ),
                 AnymexTextSpan(
                   text: anilistData?.totalEpisodes.toString() ??
@@ -689,7 +807,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
-              color: context.colors.primary.opaque(0.1, iReallyMeanIt: true),
+              color: context.colors.primary.withValues(alpha: 0.1),
             ),
             child: Text(
               '${formatProgress(currentChapter: currentAnime.value?.episodeCount ?? 0, totalChapters: anilistData?.totalEpisodes ?? 0, altLength: 0)}%',
@@ -761,94 +879,6 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         ),
       ],
     );
-  }
-
-  Widget _buildDesktopNav() {
-    return Obx(() => Container(
-          margin: const EdgeInsets.all(20),
-          width: 85,
-          height: 300,
-          child: Column(
-            children: [
-              Container(
-                width: 70,
-                height: 65,
-                padding: const EdgeInsets.all(0),
-                margin: const EdgeInsets.symmetric(
-                  horizontal: 5,
-                  vertical: 0,
-                ),
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    border: Border.all(
-                      color:
-                          Theme.of(context).colorScheme.onSurface.opaque(0.2),
-                      width: 1,
-                    ),
-                    borderRadius: BorderRadius.circular(
-                      20.multiplyRadius(),
-                    )),
-                child: NavBarItem(
-                    isSelected: false,
-                    isVertical: true,
-                    onTap: () {
-                      Get.back();
-                    },
-                    selectedIcon: Iconsax.back_square,
-                    unselectedIcon: IconlyBold.arrow_left,
-                    label: "Back"),
-              ),
-              const SizedBox(height: 10),
-              ResponsiveNavBar(
-                  isDesktop: true,
-                  currentIndex: selectedPage.value,
-                  borderRadius: BorderRadius.circular(20),
-                  items: [
-                    NavItem(
-                        onTap: _onPageSelected,
-                        selectedIcon: Iconsax.info_circle5,
-                        unselectedIcon: Iconsax.info_circle,
-                        label: "Info"),
-                    if (sourceController.shouldShowExtensions.value)
-                      NavItem(
-                          onTap: _onPageSelected,
-                          selectedIcon: Iconsax.play5,
-                          unselectedIcon: Iconsax.play,
-                          label: "Watch"),
-                    NavItem(
-                        onTap: _onPageSelected,
-                        selectedIcon: HugeIcons.strokeRoundedComment01,
-                        unselectedIcon: HugeIcons.strokeRoundedComment02,
-                        label: "Comments"),
-                  ]),
-            ],
-          ),
-        ));
-  }
-
-  Widget _buildMobiledNav() {
-    return Obx(() => ResponsiveNavBar(
-            isDesktop: false,
-            currentIndex: selectedPage.value,
-            margin: const EdgeInsets.symmetric(horizontal: 80, vertical: 40),
-            items: [
-              NavItem(
-                  onTap: _onPageSelected,
-                  selectedIcon: Iconsax.info_circle5,
-                  unselectedIcon: Iconsax.info_circle,
-                  label: "Info"),
-              NavItem(
-                  onTap: _onPageSelected,
-                  selectedIcon: Iconsax.play5,
-                  unselectedIcon: Iconsax.play,
-                  label: "Watch"),
-              NavItem(
-                  onTap: _onPageSelected,
-                  selectedIcon: HugeIcons.strokeRoundedComment01,
-                  unselectedIcon: HugeIcons.strokeRoundedComment02,
-                  label: "Comments"),
-            ]));
   }
 
   void showListEditorModal(BuildContext context) {
