@@ -4,7 +4,9 @@ import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:get/get.dart';
 
 class Extensions {
-  final settings = Get.put(SourceController());
+  final settings = Get.isRegistered<SourceController>()
+      ? Get.find<SourceController>()
+      : Get.put(SourceController());
 
   Future<void> addRepo(ItemType type, String repo, ExtensionType ext) async {
     if (type == ItemType.manga) {

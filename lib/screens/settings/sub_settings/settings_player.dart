@@ -10,6 +10,7 @@ import 'package:anymex/screens/anime/watch/controls/themes/setup/player_control_
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/screens/settings/sub_settings/widgets/settings_json_shared.dart';
 import 'package:anymex/utils/player_core_visual_settings.dart';
+import 'package:anymex/utils/subtitle_style_renderer.dart';
 import 'package:anymex/utils/subtitle_translator.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/checkmark_tile.dart';
@@ -24,7 +25,6 @@ import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:outlined_text/outlined_text.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 
 const Map<String, List<String>> fontGroups = {
@@ -453,11 +453,17 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
   }
 
   void _showOutlineTypeDialog() {
-    final types = ["Outline", "Shine", "Drop Shadow", "None"];
+    final currentType = normalizeSubtitleOutlineType(
+        settings.playerSettings.value.subtitleOutlineType);
+    if (currentType != settings.playerSettings.value.subtitleOutlineType) {
+      settings.playerSettings.update((s) => s?.subtitleOutlineType = currentType);
+      PlayerSettingsKeys.subtitleOutlineType.set(currentType);
+    }
+
     showSelectionDialog<String>(
       title: "Outline Type",
-      items: types,
-      selectedItem: settings.playerSettings.value.subtitleOutlineType.obs,
+      items: subtitleOutlineTypes,
+      selectedItem: currentType.obs,
       getTitle: (v) => v,
       onItemSelected: (v) {
         final current = settings.playerSettings.value;
@@ -893,6 +899,14 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                       settings.autoSkipED = val),
                               CustomSwitchTile(
                                   padding: const EdgeInsets.all(10),
+                                  icon: Icons.fast_forward_outlined,
+                                  title: "Auto Skip Recap",
+                                  description: "Auto skip the recap section",
+                                  switchValue: settings.autoSkipRecap,
+                                  onChanged: (val) =>
+                                      settings.autoSkipRecap = val),
+                              CustomSwitchTile(
+                                  padding: const EdgeInsets.all(10),
                                   icon: Icons.all_inclusive,
                                   title: "Auto Skip Once Only",
                                   description: "Auto skip only once per watch",
@@ -1028,8 +1042,9 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                 padding: 10,
                                 icon: Icons.format_paint_rounded,
                                 title: 'Outline Type',
-                                description: settings
-                                    .playerSettings.value.subtitleOutlineType,
+                                description: normalizeSubtitleOutlineType(
+                                    settings.playerSettings.value
+                                        .subtitleOutlineType),
                                 onTap: _showOutlineTypeDialog,
                               ),
                               CustomSliderTile(
@@ -1127,8 +1142,8 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                 sliderValue:
                                     settings.subtitleOutlineWidth.toDouble(),
                                 min: 1.0,
-                                max: 5.0,
-                                divisions: 5,
+                                max: 8.0,
+                                divisions: 14,
                                 onChanged: (double value) {
                                   settings.subtitleOutlineWidth = value.toInt();
                                 },
@@ -1151,34 +1166,33 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                     ),
                                     const SizedBox(height: 10),
                                     Container(
-                                        alignment: Alignment.center,
-                                        decoration: BoxDecoration(
-                                            color: colorOptions[settings
-                                                .subtitleBackgroundColor],
-                                            borderRadius:
-                                                BorderRadius.circular(12)),
-                                        padding: const EdgeInsets.all(10),
-                                        child: OutlinedText(
-                                          text: Text(
-                                            'Subtitle Preview Text',
-                                            style: TextStyle(
-                                              color: fontColorOptions[
-                                                      settings.subtitleColor] ??
-                                                  fontColorOptions['Default'],
-                                              fontSize: settings.subtitleSize
-                                                  .toDouble(),
-                                            ),
-                                          ),
-                                          strokes: [
-                                            OutlinedTextStroke(
-                                                color: colorOptions[settings
-                                                        .subtitleOutlineColor] ??
-                                                    colorOptions['Black']!,
-                                                width: settings
-                                                    .subtitleOutlineWidth
-                                                    .toDouble())
-                                          ],
-                                        )),
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        color: colorOptions[
+                                            settings.subtitleBackgroundColor],
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      padding: const EdgeInsets.all(10),
+                                      child: buildStyledSubtitleText(
+                                        text: 'Subtitle Preview Text',
+                                        textColor: fontColorOptions[
+                                                settings.subtitleColor] ??
+                                            fontColorOptions['Default']!,
+                                        fontSize:
+                                            settings.subtitleSize.toDouble(),
+                                        fontFamily: resolveSubtitleFontFamily(
+                                            settings.playerSettings.value
+                                                .subtitleFont),
+                                        outlineType: settings.playerSettings
+                                            .value.subtitleOutlineType,
+                                        outlineWidth: settings
+                                            .subtitleOutlineWidth
+                                            .toDouble(),
+                                        outlineColor: colorOptions[
+                                                settings.subtitleOutlineColor] ??
+                                            colorOptions['Black']!,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),

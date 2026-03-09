@@ -727,9 +727,9 @@ class AnilistAuth extends GetxController {
           ..score = score.toString();
         currentMedia.value = newMedia;
         if (isAnime) {
-          fetchUserAnimeList();
+          await fetchUserAnimeList();
         } else {
-          fetchUserMangaList();
+          await fetchUserMangaList();
         }
         setCurrentMedia(listId, isManga: !isAnime);
       } else {

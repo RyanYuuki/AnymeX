@@ -6,6 +6,7 @@ import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -209,8 +210,9 @@ class BottomControls extends StatelessWidget {
         if (!isVisible(id)) continue;
         if (id == 'server' && controller.isOffline.value) continue;
         if (id == 'quality' && controller.isOffline.value) continue;
-        if (id == 'orientation' && !(Platform.isAndroid || Platform.isIOS))
+        if (id == 'orientation' && !(Platform.isAndroid || Platform.isIOS)) {
           continue;
+        }
 
         final widget = buttonWidgets[id];
         if (widget != null) {
@@ -256,40 +258,73 @@ class BottomControls extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(0, 0, 20, 5),
           child: Align(
             alignment: Alignment.centerRight,
-            child: Material(
-              borderRadius: BorderRadius.circular(16),
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: controller.isLocked.value
-                    ? null
-                    : () => controller
-                        .megaSeek(controller.playerSettings.skipDuration),
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? theme.colorScheme.surfaceContainer
-                            .withValues(alpha: 0.6)
-                        : theme.colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: isDark
-                          ? theme.colorScheme.outline
-                          : theme.colorScheme.outline.opaque(0.5),
-                      width: 0.5,
+            child: Obx(() {
+              final interval = controller.currentSkipInterval.value;
+              final skipValue = interval != null
+                  ? (interval.end - interval.start).toString()
+                  : '+${controller.playerSettings.skipDuration}';
+              final buttonText = interval != null ? 'Skip' : skipValue;
+              
+              return Material(
+                borderRadius: BorderRadius.circular(16),
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: controller.isLocked.value
+                      ? null
+                      : () {
+                          if (interval != null) {
+                            controller.seekTo(Duration(seconds: interval.end));
+                          } else {
+                            controller.megaSeek(controller.playerSettings.skipDuration);
+                          }
+                        },
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                    decoration: BoxDecoration(
+                      color: interval != null
+                          ? theme.colorScheme.primary.withValues(alpha: 0.8)
+                          : isDark
+                              ? theme.colorScheme.surfaceContainer
+                                  .withValues(alpha: 0.6)
+                              : theme.colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: interval != null
+                            ? theme.colorScheme.primary
+                            : isDark
+                                ? theme.colorScheme.outline
+                                : theme.colorScheme.outline.opaque(0.5),
+                        width: 0.5,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (interval != null)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 4),
+                            child: Icon(
+                              Icons.skip_next_rounded,
+                              color: theme.colorScheme.onPrimary,
+                              size: 20,
+                            ),
+                          ),
+                        AnymexText(
+                          text: buttonText,
+                          variant: TextVariant.semiBold,
+                          color: interval != null
+                              ? theme.colorScheme.onPrimary
+                              : controller.isLocked.value
+                                  ? theme.colorScheme.onSurface.opaque(0.4)
+                                  : null,
+                        ),
+                      ],
                     ),
                   ),
-                  child: AnymexText(
-                    text: '+${controller.playerSettings.skipDuration}',
-                    variant: TextVariant.semiBold,
-                    color: controller.isLocked.value
-                        ? theme.colorScheme.onSurface.opaque(0.4)
-                        : null,
-                  ),
                 ),
-              ),
-            ),
+              );
+            }),
           ),
         ),
         Container(

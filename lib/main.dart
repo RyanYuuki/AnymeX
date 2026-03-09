@@ -166,7 +166,9 @@ void _initializeGetxController() async {
   Get.put(SimklService());
   Get.put(MalService());
   Get.put(DiscordRPCController());
-  Get.put(SourceController());
+  if (!Get.isRegistered<SourceController>()) {
+    Get.put(SourceController());
+  }
   Get.put(Settings());
   Get.put(ServiceHandler());
   Get.put(GreetingController());
