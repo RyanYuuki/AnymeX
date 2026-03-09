@@ -257,68 +257,93 @@ class _ExtensionListState extends State<ExtensionList>
       );
     }
 
-    return CustomScrollView(
-      controller: _controller,
-      slivers: [
-        if (hasUpdates) _buildUpdateSection(updates),
-        if (hasInstalled)
-          SliverToBoxAdapter(
-            child: _buildDraggableInstalledList(installed),
+    // When there are pending updates we need a shared scroll view so the
+    // update header and the reorderable list scroll together. Use
+    // SliverReorderableList which is the sliver counterpart to
+    // ReorderableListView and natively supports auto-scroll.
+    if (hasUpdates) {
+      return CustomScrollView(
+        controller: _controller,
+        slivers: [
+          _buildUpdateSection(updates),
+          if (hasInstalled) ...[
+            SliverToBoxAdapter(child: _buildInstalledHeader()),
+            SliverReorderableList(
+              itemCount: installed.length,
+              onReorder: _onReorder,
+              proxyDecorator: _proxyDecorator,
+              itemBuilder: (context, index) {
+                final source = installed[index];
+                return _DraggableExtensionTile(
+                  key: ValueKey(source.id),
+                  index: index,
+                  source: source,
+                  mediaType: widget.itemType,
+                  onUpdate: _computeAllData,
+                );
+              },
+            ),
+          ],
+        ],
+      );
+    }
+
+    // No updates — let ReorderableListView own the entire scroll so its
+    // built-in auto-scroll logic works without any workarounds.
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildInstalledHeader(),
+        Expanded(
+          child: ReorderableListView.builder(
+            onReorder: _onReorder,
+            proxyDecorator: _proxyDecorator,
+            itemCount: installed.length,
+            itemBuilder: (context, index) {
+              final source = installed[index];
+              return _DraggableExtensionTile(
+                key: ValueKey(source.id),
+                index: index,
+                source: source,
+                mediaType: widget.itemType,
+                onUpdate: _computeAllData,
+              );
+            },
           ),
+        ),
       ],
     );
   }
 
-  Widget _buildDraggableInstalledList(List<Source> entries) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Row(
-            children: [
-              const Text(
-                'Installed',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-              ),
-              const SizedBox(width: 8),
-              Icon(
-                Icons.drag_indicator_rounded,
-                size: 14,
-                color: Colors.grey.withOpacity(0.7),
-              ),
-              const SizedBox(width: 4),
-              Text(
-                'Hold to reorder',
-                style: TextStyle(
-                  fontSize: 11,
-                  color: Colors.grey.withOpacity(0.7),
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            ],
+  Widget _buildInstalledHeader() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      child: Row(
+        children: [
+          const Text(
+            'Installed',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
           ),
-        ),
-        ReorderableListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          onReorder: _onReorder,
-          proxyDecorator: _proxyDecorator,
-          itemCount: entries.length,
-          itemBuilder: (context, index) {
-            final source = entries[index];
-            return _DraggableExtensionTile(
-              key: ValueKey(source.id),
-              index: index,
-              source: source,
-              mediaType: widget.itemType,
-              onUpdate: _computeAllData,
-            );
-          },
-        ),
-      ],
+          const SizedBox(width: 8),
+          Icon(
+            Icons.drag_indicator_rounded,
+            size: 14,
+            color: Colors.grey.withValues(alpha: 0.7),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            'Hold to reorder',
+            style: TextStyle(
+              fontSize: 11,
+              color: Colors.grey.withValues(alpha: 0.7),
+              fontStyle: FontStyle.italic,
+            ),
+          ),
+        ],
+      ),
     );
   }
+
 
   Widget _proxyDecorator(Widget child, int index, Animation<double> animation) {
     return AnimatedBuilder(
@@ -494,7 +519,7 @@ class _DraggableExtensionTile extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 4.0),
             child: Icon(
               Icons.drag_indicator_rounded,
-              color: context.colors.onSurface.withOpacity(0.35),
+              color: context.colors.onSurface.withValues(alpha: 0.35),
               size: 20,
             ),
           ),
