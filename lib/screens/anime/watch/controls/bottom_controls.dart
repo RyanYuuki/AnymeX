@@ -6,6 +6,7 @@ import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -108,7 +109,8 @@ class BottomControls extends StatelessWidget {
     final theme = context.theme;
     final isDark = theme.brightness == Brightness.dark;
 
-    final String jsonString = PlayerUiKeys.bottomControlsSettings.get<String>('{}');
+    final String jsonString =
+        PlayerUiKeys.bottomControlsSettings.get<String>('{}');
     final Map<String, dynamic> decodedConfig = json.decode(jsonString);
 
     final List<String> leftButtonIds =
@@ -207,8 +209,9 @@ class BottomControls extends StatelessWidget {
         if (!isVisible(id)) continue;
         if (id == 'server' && controller.isOffline.value) continue;
         if (id == 'quality' && controller.isOffline.value) continue;
-        if (id == 'orientation' && !(Platform.isAndroid || Platform.isIOS))
+        if (id == 'orientation' && !(Platform.isAndroid || Platform.isIOS)) {
           continue;
+        }
 
         final widget = buttonWidgets[id];
         if (widget != null) {
@@ -250,6 +253,47 @@ class BottomControls extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        // ── Skip button row (above the +skip and slider) ────────
+        Obx(() {
+          final interval = controller.currentSkipInterval.value;
+          final label = controller.currentSkipLabel.value;
+          if (interval == null || controller.isLocked.value) {
+            return const SizedBox.shrink();
+          }
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 6.0),
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: AnymexButton(
+                onTap: () {
+                  controller.seekTo(Duration(seconds: interval.end));
+                },
+                color: Colors.black.withValues(alpha: 0.55),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                radius: 12,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AnymexText(
+                      text: label,
+                      variant: TextVariant.bold,
+                      color: Colors.white,
+                      size: 14,
+                    ),
+                    const SizedBox(width: 6),
+                    const Icon(
+                      Icons.skip_next_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }),
+        // ── +Skip button (top-right, unchanged) ─────────────────
         Padding(
           padding: const EdgeInsets.fromLTRB(0, 0, 20, 5),
           child: Align(
@@ -290,10 +334,12 @@ class BottomControls extends StatelessWidget {
             ),
           ),
         ),
+        // ── Progress slider ─────────────────────────────────────
         Container(
           padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
           child: const ProgressSlider(),
         ),
+        // ── Time / controls row ─────────────────────────────────
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Row(
