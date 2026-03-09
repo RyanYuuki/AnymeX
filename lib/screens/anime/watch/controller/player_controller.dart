@@ -205,10 +205,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   aniskip.EpisodeSkipTimes? skipTimes;
   final isOPSkippedOnce = false.obs;
   final isEDSkippedOnce = false.obs;
-  // ── AniSkip v2: Recap skip state ────────────────────────────
   final isRecapSkippedOnce = false.obs;
-
-  // ── AniSkip v2: UI state for skip button ────────────────────
   final Rx<aniskip.SkipIntervals?> currentSkipInterval =
       Rx<aniskip.SkipIntervals?>(null);
   final RxString currentSkipLabel = ''.obs;
@@ -430,8 +427,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       isLeftLandscaped = true;
     }
   }
-
-  // ── AniSkip v2: fixed auto-skip (no early return bug, recap support) ──
+  
   void _handleAutoSkip() {
     if (skipTimes?.op != null && playerSettings.autoSkipOP) {
       if (!(playerSettings.autoSkipOnce && isOPSkippedOnce.value)) {
@@ -481,8 +477,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       }
     }
   }
-
-  // ── AniSkip v2: update skip UI state from current position ──
+  
   void _updateSkipUiState() {
     if (skipTimes == null) return;
 
@@ -611,8 +606,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     await _basePlayer.open(url, headers: headers, startPosition: startPosition);
   }
-
-  // ── AniSkip v2: reset all skip state + pass episodeLength ───
+  
   void _initializeAniSkip() {
     isOPSkippedOnce.value = false;
     isEDSkippedOnce.value = false;
@@ -934,8 +928,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
       selectedVideo.value = matched;
       _extractSubtitles();
-
-      // ── AniSkip v2: re-fetch skip times for new episode ────
+      
       _initializeAniSkip();
 
       final savedEpisodeData = savedEpisode;
