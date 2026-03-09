@@ -10,7 +10,6 @@ import 'package:anymex/screens/news/news_page.dart';
 import 'package:anymex/screens/anime/widgets/social_section.dart';
 import 'package:anymex/utils/anime_adaptation_util.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
-
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/utils/function.dart';
@@ -19,6 +18,227 @@ import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+// Extracted common widget for collapsible sections
+class CollapsibleBox extends StatefulWidget {
+  final Widget header;
+  final Widget content;
+  final bool isInitiallyExpanded;
+  final ColorScheme colorScheme;
+  final EdgeInsetsGeometry padding;
+
+  const CollapsibleBox({
+    super.key,
+    required this.header,
+    required this.content,
+    required this.colorScheme,
+    this.isInitiallyExpanded = false,
+    this.padding = const EdgeInsets.all(20),
+  });
+
+  @override
+  State<CollapsibleBox> createState() => _CollapsibleBoxState();
+}
+
+class _CollapsibleBoxState extends State<CollapsibleBox> with SingleTickerProviderStateMixin {
+  late bool isExpanded;
+  late AnimationController _controller;
+  late Animation<double> _iconTurns;
+
+  @override
+  void initState() {
+    super.initState();
+    isExpanded = widget.isInitiallyExpanded;
+    _controller = AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
+    _iconTurns = Tween<double>(begin: 0.0, end: 0.5).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+    if (isExpanded) {
+      _controller.value = 1.0;
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _handleTap() {
+    setState(() {
+      isExpanded = !isExpanded;
+      if (isExpanded) {
+        _controller.forward();
+      } else {
+        _controller.reverse();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: _handleTap,
+      child: Container(
+        padding: widget.padding,
+        decoration: BoxDecoration(
+          color: widget.colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: widget.colorScheme.outline.withValues(alpha: 0.15),
+            width: 1.5,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(child: widget.header),
+                RotationTransition(
+                  turns: _iconTurns,
+                  child: Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    color: widget.colorScheme.primary,
+                  ),
+                ),
+              ],
+            ),
+            AnimatedCrossFade(
+              firstChild: const SizedBox(width: double.infinity),
+              secondChild: Column(
+                children: [
+                  const SizedBox(height: 20),
+                  widget.content,
+                ],
+              ),
+              crossFadeState: isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+              duration: const Duration(milliseconds: 300),
+              sizeCurve: Curves.easeInOut,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Extracted widget for action cards (like Watch Order, Openings, News)
+class _ActionCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+  final ColorScheme colorScheme;
+
+  const _ActionCard({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+    required this.colorScheme,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        decoration: BoxDecoration(
+          color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: colorScheme.outline.withValues(alpha: 0.2),
+            width: 1.5,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: colorScheme.primary.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                icon,
+                size: 22,
+                color: colorScheme.primary,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AnymexText(
+                    text: title,
+                    variant: TextVariant.bold,
+                    size: 14,
+                  ),
+                  const SizedBox(height: 4),
+                  AnymexText(
+                    text: subtitle,
+                    variant: TextVariant.regular,
+                    size: 13,
+                    color: colorScheme.onSurface.withValues(alpha: 0.6),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_rounded,
+              size: 20,
+              color: colorScheme.primary.withValues(alpha: 0.7),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Extracted widget for section headers
+class _SectionHeader extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final ColorScheme colorScheme;
+  final double iconSize;
+  final double titleSize;
+
+  const _SectionHeader({
+    required this.icon,
+    required this.title,
+    required this.colorScheme,
+    this.iconSize = 24,
+    this.titleSize = 20,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          padding: EdgeInsets.all(iconSize == 24 ? 8 : 6),
+          decoration: BoxDecoration(
+            color: colorScheme.primary.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(iconSize == 24 ? 12 : 10),
+          ),
+          child: Icon(
+            icon,
+            size: iconSize,
+            color: colorScheme.primary,
+          ),
+        ),
+        const SizedBox(width: 12),
+        AnymexText(
+          text: title,
+          variant: TextVariant.bold,
+          size: titleSize,
+        ),
+      ],
+    );
+  }
+}
 
 class AnimeStats extends StatelessWidget {
   final Media data;
@@ -95,7 +315,7 @@ class AnimeStats extends StatelessWidget {
             content: AnymexText(
               text: data.description,
               size: 15,
-              color: colorScheme.onSurface.opaque(0.9),
+              color: colorScheme.onSurface.withValues(alpha: 0.9),
               maxLines: 100,
               stripHtml: true,
             ),
@@ -173,195 +393,45 @@ class AnimeStats extends StatelessWidget {
         title: "Others",
         child: Column(
           children: [
-            GestureDetector(
+            _ActionCard(
+              icon: Icons.music_note_rounded,
+              title: "Openings & Endings",
+              subtitle: "View opening and ending themes",
               onTap: () {
                 navigate(() => AnimeThemePlayerPage(animeDetails: data));
               },
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerHighest.opaque(0.4),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: colorScheme.outline.opaque(0.2),
-                    width: 1.5,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: colorScheme.primary
-                            .opaque(0.15, iReallyMeanIt: true),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        Icons.music_note_rounded,
-                        size: 22,
-                        color: colorScheme.primary,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          AnymexText(
-                            text: "Openings & Endings",
-                            variant: TextVariant.bold,
-                            size: 14,
-                          ),
-                          const SizedBox(height: 4),
-                          AnymexText(
-                            text: "View opening and ending themes",
-                            variant: TextVariant.regular,
-                            size: 13,
-                            color: colorScheme.onSurface.opaque(0.6),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Icon(
-                      Icons.arrow_forward_rounded,
-                      size: 20,
-                      color: colorScheme.primary.opaque(0.7),
-                    ),
-                  ],
-                ),
-              ),
+              colorScheme: colorScheme,
             ),
             const SizedBox(height: 10),
-             FutureBuilder<List<NewsItem>>(
+            FutureBuilder<List<NewsItem>>(
               future: MangaAnimeUtil.getAnimeNews(data),
               builder: (context, snapshot) {
                 if (!snapshot.hasData || snapshot.data!.isEmpty) return const SizedBox.shrink();
                 
                 return Column(
                   children: [
-                    GestureDetector(
+                    _ActionCard(
+                      icon: Icons.newspaper_rounded,
+                      title: "Recent News",
+                      subtitle: "Read latest updates about this anime",
                       onTap: () {
                         navigate(() => NewsPage(media: data, news: snapshot.data!));
                       },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: colorScheme.surfaceContainerHighest.opaque(0.4),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: colorScheme.outline.opaque(0.2),
-                            width: 1.5,
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: colorScheme.primary.opaque(0.15, iReallyMeanIt: true),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Icon(
-                                Icons.newspaper_rounded,
-                                size: 22,
-                                color: colorScheme.primary,
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  AnymexText(
-                                    text: "Recent News",
-                                    variant: TextVariant.bold,
-                                    size: 14,
-                                  ),
-                                  const SizedBox(height: 4),
-                                  AnymexText(
-                                    text: "Read latest updates about this anime",
-                                    variant: TextVariant.regular,
-                                    size: 13,
-                                    color: colorScheme.onSurface.opaque(0.6),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Icon(
-                              Icons.arrow_forward_rounded,
-                              size: 20,
-                              color: colorScheme.primary.opaque(0.7),
-                            ),
-                          ],
-                        ),
-                      ),
+                      colorScheme: colorScheme,
                     ),
                     const SizedBox(height: 10),
                   ],
                 );
               }
             ),
-            GestureDetector(
+            _ActionCard(
+              icon: Icons.playlist_play_rounded,
+              title: "Watch Order",
+              subtitle: "View the chronological watch order of this anime",
               onTap: () {
                 navigate(() => WatchOrderPage(title: data.title));
               },
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerHighest
-                      .opaque(0.4, iReallyMeanIt: true),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: colorScheme.outline.opaque(0.2),
-                    width: 1.5,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: colorScheme.primary
-                            .opaque(0.15, iReallyMeanIt: true),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        Icons.playlist_play_rounded,
-                        size: 22,
-                        color: colorScheme.primary,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          AnymexText(
-                            text: "Watch Order",
-                            variant: TextVariant.bold,
-                            size: 14,
-                          ),
-                          const SizedBox(height: 4),
-                          AnymexText(
-                            text:
-                                "View the chronological watch order of this anime",
-                            variant: TextVariant.regular,
-                            size: 13,
-                            color: colorScheme.onSurface.opaque(0.6),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Icon(
-                      Icons.arrow_forward_rounded,
-                      size: 20,
-                      color: colorScheme.primary.opaque(0.7),
-                    ),
-                  ],
-                ),
-              ),
+              colorScheme: colorScheme,
             ),
           ],
         ));
@@ -426,20 +496,20 @@ class AnimeStats extends StatelessWidget {
         gradient: LinearGradient(
           colors: Get.isDarkMode
               ? [
-                  colorScheme.primaryContainer.opaque(0.3),
-                  colorScheme.primary.opaque(0.15),
+                  colorScheme.primaryContainer.withValues(alpha: 0.3),
+                  colorScheme.primary.withValues(alpha: 0.15),
                 ]
               : [
-                  colorScheme.surfaceContainer.opaque(0.6, iReallyMeanIt: true),
+                  colorScheme.surfaceContainer.withValues(alpha: 0.6),
                   colorScheme.surfaceContainer,
-                  colorScheme.surfaceContainer.opaque(0.6, iReallyMeanIt: true),
+                  colorScheme.surfaceContainer.withValues(alpha: 0.6),
                 ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: colorScheme.primary.opaque(0.3, iReallyMeanIt: true),
+          color: colorScheme.primary.withValues(alpha: 0.3),
           width: 1.5,
         ),
       ),
@@ -453,7 +523,7 @@ class AnimeStats extends StatelessWidget {
                       "EPISODE ${data.nextAiringEpisode?.episode} RELEASES IN",
                   variant: TextVariant.bold,
                   size: 13,
-                  color: colorScheme.onSurface.opaque(0.7),
+                  color: colorScheme.onSurface.withValues(alpha: 0.7),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -483,37 +553,20 @@ class AnimeStats extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.opaque(0.4),
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: colorScheme.outline.opaque(0.2),
+          color: colorScheme.outline.withValues(alpha: 0.2),
           width: 1.5,
         ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: colorScheme.primary.opaque(0.15, iReallyMeanIt: true),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  icon,
-                  size: 24,
-                  color: colorScheme.primary,
-                ),
-              ),
-              const SizedBox(width: 12),
-              AnymexText(
-                text: title,
-                variant: TextVariant.bold,
-                size: 20,
-              ),
-            ],
+          _SectionHeader(
+            icon: icon,
+            title: title,
+            colorScheme: colorScheme,
           ),
           const SizedBox(height: 20),
           child,
@@ -533,37 +586,22 @@ class AnimeStats extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.opaque(0.35),
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: colorScheme.outline.opaque(0.15, iReallyMeanIt: true),
+          color: colorScheme.outline.withValues(alpha: 0.15),
           width: 1.5,
         ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: colorScheme.primary.opaque(0.15, iReallyMeanIt: true),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(
-                  icon,
-                  size: 18,
-                  color: colorScheme.primary,
-                ),
-              ),
-              const SizedBox(width: 10),
-              AnymexText(
-                text: title,
-                variant: TextVariant.bold,
-                size: 16,
-              ),
-            ],
+          _SectionHeader(
+            icon: icon,
+            title: title,
+            colorScheme: colorScheme,
+            iconSize: 18,
+            titleSize: 16,
           ),
           const SizedBox(height: 12),
           content,
@@ -581,29 +619,14 @@ class AnimeStats extends StatelessWidget {
   }) {
     final colorScheme = context.colors;
     
-    return _CollapsibleBox(
+    return CollapsibleBox(
       isInitiallyExpanded: isInitiallyExpanded,
-      header: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              color: colorScheme.primary.opaque(0.15, iReallyMeanIt: true),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(
-              icon,
-              size: 18,
-              color: colorScheme.primary,
-            ),
-          ),
-          const SizedBox(width: 10),
-          AnymexText(
-            text: title,
-            variant: TextVariant.bold,
-            size: 16,
-          ),
-        ],
+      header: _SectionHeader(
+        icon: icon,
+        title: title,
+        colorScheme: colorScheme,
+        iconSize: 18,
+        titleSize: 16,
       ),
       content: content,
       colorScheme: colorScheme,
@@ -619,29 +642,12 @@ class AnimeStats extends StatelessWidget {
   }) {
     final colorScheme = context.colors;
 
-    return _CollapsibleBox(
+    return CollapsibleBox(
       isInitiallyExpanded: isInitiallyExpanded,
-      header: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: colorScheme.primary.opaque(0.15, iReallyMeanIt: true),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              icon,
-              size: 24,
-              color: colorScheme.primary,
-            ),
-          ),
-          const SizedBox(width: 12),
-          AnymexText(
-            text: title,
-            variant: TextVariant.bold,
-            size: 20,
-          ),
-        ],
+      header: _SectionHeader(
+        icon: icon,
+        title: title,
+        colorScheme: colorScheme,
       ),
       content: child,
       colorScheme: colorScheme,
@@ -717,10 +723,10 @@ class AnimeStats extends StatelessWidget {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
-            color: colorScheme.surface.opaque(0.4),
+            color: colorScheme.surface.withValues(alpha: 0.4),
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: colorScheme.primary.opaque(0.1),
+              color: colorScheme.primary.withValues(alpha: 0.1),
               width: 1,
             ),
           ),
@@ -734,14 +740,14 @@ class AnimeStats extends StatelessWidget {
                   Icon(
                     stat['icon'] as IconData,
                     size: 16,
-                    color: colorScheme.primary.opaque(0.7),
+                    color: colorScheme.primary.withValues(alpha: 0.7),
                   ),
                   const SizedBox(width: 6),
                   AnymexText(
                     text: stat['label'].toString(),
                     variant: TextVariant.regular,
                     size: 11,
-                    color: colorScheme.onSurface.opaque(0.6),
+                    color: colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                 ],
               ),
@@ -758,106 +764,6 @@ class AnimeStats extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-}
-
-class _CollapsibleBox extends StatefulWidget {
-  final Widget header;
-  final Widget content;
-  final bool isInitiallyExpanded;
-  final ColorScheme colorScheme;
-  final EdgeInsetsGeometry padding;
-
-  const _CollapsibleBox({
-    required this.header,
-    required this.content,
-    required this.colorScheme,
-    this.isInitiallyExpanded = false,
-    this.padding = const EdgeInsets.all(20),
-  });
-
-  @override
-  State<_CollapsibleBox> createState() => _CollapsibleBoxState();
-}
-
-class _CollapsibleBoxState extends State<_CollapsibleBox> with SingleTickerProviderStateMixin {
-  late bool isExpanded;
-  late AnimationController _controller;
-  late Animation<double> _iconTurns;
-
-  @override
-  void initState() {
-    super.initState();
-    isExpanded = widget.isInitiallyExpanded;
-    _controller = AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
-    _iconTurns = Tween<double>(begin: 0.0, end: 0.5).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
-    if (isExpanded) {
-      _controller.value = 1.0;
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _handleTap() {
-    setState(() {
-      isExpanded = !isExpanded;
-      if (isExpanded) {
-        _controller.forward();
-      } else {
-        _controller.reverse();
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: _handleTap,
-      child: Container(
-        padding: widget.padding,
-        decoration: BoxDecoration(
-          color: widget.colorScheme.surfaceContainerHighest.opaque(0.35),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: widget.colorScheme.outline.opaque(0.15, iReallyMeanIt: true),
-            width: 1.5,
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(child: widget.header),
-                RotationTransition(
-                  turns: _iconTurns,
-                  child: Icon(
-                    Icons.keyboard_arrow_down_rounded,
-                    color: widget.colorScheme.primary,
-                  ),
-                ),
-              ],
-            ),
-            AnimatedCrossFade(
-              firstChild: const SizedBox(width: double.infinity),
-              secondChild: Column(
-                children: [
-                  const SizedBox(height: 20),
-                  widget.content,
-                ],
-              ),
-              crossFadeState: isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
-              duration: const Duration(milliseconds: 300),
-              sizeCurve: Curves.easeInOut,
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
