@@ -253,7 +253,6 @@ class BottomControls extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // ── Skip button row (above the +skip and slider) ────────
         Obx(() {
           final interval = controller.currentSkipInterval.value;
           final label = controller.currentSkipLabel.value;
@@ -293,7 +292,6 @@ class BottomControls extends StatelessWidget {
             ),
           );
         }),
-        // ── +Skip button (top-right, unchanged) ─────────────────
         Padding(
           padding: const EdgeInsets.fromLTRB(0, 0, 20, 5),
           child: Align(
@@ -334,12 +332,10 @@ class BottomControls extends StatelessWidget {
             ),
           ),
         ),
-        // ── Progress slider ─────────────────────────────────────
         Container(
           padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
           child: const ProgressSlider(),
         ),
-        // ── Time / controls row ─────────────────────────────────
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Row(
