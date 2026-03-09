@@ -77,7 +77,6 @@ class _ExtensionListState extends State<ExtensionList>
 
   @override
   void dispose() {
-    _scrollTimer?.cancel();
     _controller.dispose();
     if (_workers != null) {
       for (var w in _workers!) {
@@ -258,94 +257,93 @@ class _ExtensionListState extends State<ExtensionList>
       );
     }
 
-    return CustomScrollView(
-      controller: _controller,
-      slivers: [
-        if (hasUpdates) _buildUpdateSection(updates),
-        if (hasInstalled)
-          SliverToBoxAdapter(
-            child: _buildDraggableInstalledList(installed),
-          ),
-      ],
-    );
-  }
+    // When there are pending updates we need a shared scroll view so the
+    // update header and the reorderable list scroll together. Use
+    // SliverReorderableList which is the sliver counterpart to
+    // ReorderableListView and natively supports auto-scroll.
+    if (hasUpdates) {
+      return CustomScrollView(
+        controller: _controller,
+        slivers: [
+          _buildUpdateSection(updates),
+          if (hasInstalled) ...[
+            SliverToBoxAdapter(child: _buildInstalledHeader()),
+            SliverReorderableList(
+              itemCount: installed.length,
+              onReorder: _onReorder,
+              proxyDecorator: _proxyDecorator,
+              itemBuilder: (context, index) {
+                final source = installed[index];
+                return _DraggableExtensionTile(
+                  key: ValueKey(source.id),
+                  index: index,
+                  source: source,
+                  mediaType: widget.itemType,
+                  onUpdate: _computeAllData,
+                );
+              },
+            ),
+          ],
+        ],
+      );
+    }
 
-  // Edge-scroll state
-  Timer? _scrollTimer;
-  static const _scrollZone = 120.0;   // px from top/bottom edge that triggers scroll
-  static const _scrollStep = 8.0;     // px per tick
-  static const _scrollInterval = Duration(milliseconds: 16);
-
-  void _startEdgeScroll(bool upward) {
-    _scrollTimer?.cancel();
-    _scrollTimer = Timer.periodic(_scrollInterval, (_) {
-      if (!_controller.hasClients) return;
-      final pos = _controller.offset;
-      final max = _controller.position.maxScrollExtent;
-      final next = (pos + (upward ? -_scrollStep : _scrollStep)).clamp(0.0, max);
-      if (next == pos) return;
-      _controller.jumpTo(next);
-    });
-  }
-
-  void _stopEdgeScroll() {
-    _scrollTimer?.cancel();
-    _scrollTimer = null;
-  }
-
-  Widget _buildDraggableInstalledList(List<Source> entries) {
+    // No updates — let ReorderableListView own the entire scroll so its
+    // built-in auto-scroll logic works without any workarounds.
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Row(
-            children: [
-              const Text(
-                'Installed',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-              ),
-              const SizedBox(width: 8),
-              Icon(
-                Icons.drag_indicator_rounded,
-                size: 14,
-                color: Colors.grey.withValues(alpha: 0.7),
-              ),
-              const SizedBox(width: 4),
-              Text(
-                'Hold to reorder',
-                style: TextStyle(
-                  fontSize: 11,
-                  color: Colors.grey.withValues(alpha: 0.7),
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            ],
+        _buildInstalledHeader(),
+        Expanded(
+          child: ReorderableListView.builder(
+            onReorder: _onReorder,
+            proxyDecorator: _proxyDecorator,
+            itemCount: installed.length,
+            itemBuilder: (context, index) {
+              final source = installed[index];
+              return _DraggableExtensionTile(
+                key: ValueKey(source.id),
+                index: index,
+                source: source,
+                mediaType: widget.itemType,
+                onUpdate: _computeAllData,
+              );
+            },
           ),
-        ),
-        _ManualReorderList(
-          entries: entries,
-          itemType: widget.itemType,
-          onUpdate: _computeAllData,
-          onReorder: _onReorder,
-          onDragUpdate: (globalY) {
-            final renderBox = context.findRenderObject() as RenderBox?;
-            if (renderBox == null) return;
-            final localY = renderBox.globalToLocal(Offset(0, globalY)).dy;
-            final height = renderBox.size.height;
-            if (localY < _scrollZone) {
-              _startEdgeScroll(true);
-            } else if (localY > height - _scrollZone) {
-              _startEdgeScroll(false);
-            } else {
-              _stopEdgeScroll();
-            }
-          },
-          onDragEnd: _stopEdgeScroll,
         ),
       ],
     );
   }
+
+  Widget _buildInstalledHeader() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      child: Row(
+        children: [
+          const Text(
+            'Installed',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+          ),
+          const SizedBox(width: 8),
+          Icon(
+            Icons.drag_indicator_rounded,
+            size: 14,
+            color: Colors.grey.withValues(alpha: 0.7),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            'Hold to reorder',
+            style: TextStyle(
+              fontSize: 11,
+              color: Colors.grey.withValues(alpha: 0.7),
+              fontStyle: FontStyle.italic,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
 
   Widget _proxyDecorator(Widget child, int index, Animation<double> animation) {
     return AnimatedBuilder(
@@ -497,153 +495,43 @@ class _ExtensionListState extends State<ExtensionList>
   }
 }
 
-// ── Manual reorder list ──────────────────────────────────────────────────────
-// Uses LongPressDraggable so we own drag events and can trigger edge scrolling
-// on the parent ScrollController without fighting NeverScrollableScrollPhysics.
-
-class _ManualReorderList extends StatefulWidget {
-  final List<Source> entries;
-  final ItemType itemType;
+class _DraggableExtensionTile extends StatelessWidget {
+  final int index;
+  final Source source;
+  final ItemType mediaType;
   final VoidCallback? onUpdate;
-  final void Function(int oldIndex, int newIndex) onReorder;
-  final void Function(double globalY) onDragUpdate;
-  final VoidCallback onDragEnd;
 
-  const _ManualReorderList({
-    required this.entries,
-    required this.itemType,
-    required this.onUpdate,
-    required this.onReorder,
-    required this.onDragUpdate,
-    required this.onDragEnd,
+  const _DraggableExtensionTile({
+    super.key,
+    required this.index,
+    required this.source,
+    required this.mediaType,
+    this.onUpdate,
   });
 
   @override
-  State<_ManualReorderList> createState() => _ManualReorderListState();
-}
-
-class _ManualReorderListState extends State<_ManualReorderList> {
-  int? _draggingIndex;
-  int? _hoverIndex;
-
-  @override
   Widget build(BuildContext context) {
-    final entries = widget.entries;
-    return Column(
-      children: List.generate(entries.length, (index) {
-        final source = entries[index];
-        final isDragging = _draggingIndex == index;
-        final isHover   = _hoverIndex == index && _draggingIndex != null && _hoverIndex != _draggingIndex;
-
-        return DragTarget<int>(
-          key: ValueKey('target_${source.id}'),
-          onWillAcceptWithDetails: (details) {
-            if (details.data != index) {
-              setState(() => _hoverIndex = index);
-            }
-            return true;
-          },
-          onLeave: (_) => setState(() => _hoverIndex = null),
-          onAcceptWithDetails: (details) {
-            setState(() => _hoverIndex = null);
-            if (details.data != index) {
-              widget.onReorder(details.data, index);
-            }
-          },
-          builder: (context, candidateData, rejectedData) {
-            return AnimatedContainer(
-              duration: const Duration(milliseconds: 150),
-              decoration: isHover
-                  ? BoxDecoration(
-                      border: Border(
-                        top: BorderSide(
-                          color: context.colors.primary.withValues(alpha: 0.6),
-                          width: 2,
-                        ),
-                      ),
-                    )
-                  : null,
-              child: Opacity(
-                opacity: isDragging ? 0.35 : 1.0,
-                child: LongPressDraggable<int>(
-                  data: index,
-                  delay: const Duration(milliseconds: 300),
-                  onDragStarted: () => setState(() {
-                    _draggingIndex = index;
-                    _hoverIndex = null;
-                  }),
-                  onDragUpdate: (details) =>
-                      widget.onDragUpdate(details.globalPosition.dy),
-                  onDragEnd: (_) {
-                    setState(() {
-                      _draggingIndex = null;
-                      _hoverIndex = null;
-                    });
-                    widget.onDragEnd();
-                  },
-                  onDraggableCanceled: (_, __) {
-                    setState(() {
-                      _draggingIndex = null;
-                      _hoverIndex = null;
-                    });
-                    widget.onDragEnd();
-                  },
-                  feedback: Material(
-                    elevation: 8,
-                    borderRadius: BorderRadius.circular(12),
-                    color: Colors.transparent,
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width - 20,
-                      child: Transform.scale(
-                        scale: 1.03,
-                        child: Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                              child: Icon(
-                                Icons.drag_indicator_rounded,
-                                color: context.colors.primary,
-                                size: 20,
-                              ),
-                            ),
-                            Expanded(
-                              child: ExtensionListTileWidget(
-                                source: source,
-                                mediaType: widget.itemType,
-                                onUpdate: widget.onUpdate,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  childWhenDragging: const SizedBox.shrink(),
-                  child: Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                        child: Icon(
-                          Icons.drag_indicator_rounded,
-                          color: context.colors.onSurface.withValues(alpha: 0.35),
-                          size: 20,
-                        ),
-                      ),
-                      Expanded(
-                        child: ExtensionListTileWidget(
-                          source: source,
-                          mediaType: widget.itemType,
-                          onUpdate: widget.onUpdate,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        );
-      }),
+    return Row(
+      children: [
+        ReorderableDragStartListener(
+          index: index,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4.0),
+            child: Icon(
+              Icons.drag_indicator_rounded,
+              color: context.colors.onSurface.withValues(alpha: 0.35),
+              size: 20,
+            ),
+          ),
+        ),
+        Expanded(
+          child: ExtensionListTileWidget(
+            source: source,
+            mediaType: mediaType,
+            onUpdate: onUpdate,
+          ),
+        ),
+      ],
     );
   }
 }
