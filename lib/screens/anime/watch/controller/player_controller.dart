@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
@@ -83,7 +82,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final anymex.Media anilistData;
   RxList<model.Video> episodeTracks = RxList();
   final isOffline = false.obs;
-
   final String? folderName;
   final String? itemName;
   final String? offlineVideoPath;
@@ -164,51 +162,37 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final RxBool isPreTranslating = false.obs;
   final RxString preTranslateProgress = ''.obs;
   Timer? _seekDebounce;
-
   Timer? _autoHideTimer;
   static const Duration _autoHideDuration = Duration(seconds: 7);
-
   final RxBool isMouseHovering = false.obs;
-
   final Rx<List<AudioTrack>> embeddedAudioTracks = Rx([]);
   final Rx<List<SubtitleTrack>> embeddedSubs = Rx([]);
   final Rx<List<VideoTrack>> embeddedQuality = Rx([]);
-
   final Rx<AudioTrack?> selectedAudioTrack = Rx(null);
   final Rx<SubtitleTrack?> selectedSubsTrack = Rx(null);
   final Rx<VideoTrack?> selectedQualityTrack = Rx(null);
-
   final Rx<model.Track> selectedExternalSub = Rx(model.Track());
   final Rx<model.Track> selectedExternalAudio = Rx(model.Track());
   final Rxn<model.Video> selectedVideo = Rxn();
-
   final Rx<List<model.Track>> externalSubs = Rx([]);
-
   final Rx<bool> isSubtitlePaneOpened = false.obs;
   final Rx<bool> isEpisodePaneOpened = false.obs;
-
   final RxBool canGoForward = false.obs;
   final RxBool canGoBackward = false.obs;
-
   final RxDouble volume = 0.0.obs;
   final RxDouble brightness = 0.0.obs;
-
   final brightnessIndicator = false.obs;
   final RxBool volumeIndicator = false.obs;
-
   final currentVisualProfile = 'natural'.obs;
   RxMap<String, int> customSettings = <String, int>{}.obs;
-
   bool _hasTrackedInitialOnline = false;
   bool _hasTrackedInitialLocal = false;
-
   aniskip.EpisodeSkipTimes? skipTimes;
   final isOPSkippedOnce = false.obs;
   final isEDSkippedOnce = false.obs;
   final isRecapSkippedOnce = false.obs;
   final Rx<aniskip.SkipIntervals?> currentSkipInterval =
       Rx<aniskip.SkipIntervals?>(null);
-  final RxString currentSkipLabel = ''.obs;
 
   void applySavedProfile() {
     if (_basePlayer is MediaKitPlayer) {
@@ -227,16 +211,14 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   bool isLeftLandscaped = true;
 
   final Rx<BoxFit> videoFit = Rx<BoxFit>(BoxFit.contain);
-
   final RxBool isLocked = false.obs;
   final Rx<int?> videoHeight = Rx<int?>(null);
-
   final _subscriptions = <StreamSubscription>[];
 
   @override
   void onInit() {
     super.onInit();
-    initializePlayerControlsIfNeeded(settings);
+    PlayerController.initializePlayerControlsIfNeeded(settings);
     WidgetsBinding.instance.addObserver(this);
     _initDatabaseVars();
     _initOrientations();
@@ -429,37 +411,50 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
   
   void _handleAutoSkip() {
-    final currentSec = currentPosition.value.inSeconds;
-
     if (skipTimes?.op != null && playerSettings.autoSkipOP) {
       if (!(playerSettings.autoSkipOnce && isOPSkippedOnce.value)) {
-        if (currentSec > skipTimes!.op!.start && currentSec < skipTimes!.op!.end) {
-          final duration = Duration(seconds: skipTimes!.op!.end);
+        if (currentPosition.value.inSeconds > skipTimes!.op!.start &&
+            currentPosition.value.inSeconds < skipTimes!.op!.end) {
+          final skipNeeded =
+              skipTimes!.op!.end - currentPosition.value.inSeconds;
+          final duration =
+              Duration(seconds: currentPosition.value.inSeconds + skipNeeded);
           currentPosition.value = duration;
           _basePlayer.seek(duration);
           isOPSkippedOnce.value = true;
+          snackBar('Skipped Opening', duration: 2000);
         }
       }
     }
 
     if (skipTimes?.ed != null && playerSettings.autoSkipED) {
       if (!(playerSettings.autoSkipOnce && isEDSkippedOnce.value)) {
-        if (currentSec > skipTimes!.ed!.start && currentSec < skipTimes!.ed!.end) {
-          final duration = Duration(seconds: skipTimes!.ed!.end);
+        if (currentPosition.value.inSeconds > skipTimes!.ed!.start &&
+            currentPosition.value.inSeconds < skipTimes!.ed!.end) {
+          final skipNeeded =
+              skipTimes!.ed!.end - currentPosition.value.inSeconds;
+          final duration =
+              Duration(seconds: currentPosition.value.inSeconds + skipNeeded);
           currentPosition.value = duration;
           _basePlayer.seek(duration);
           isEDSkippedOnce.value = true;
+          snackBar('Skipped Ending', duration: 2000);
         }
       }
     }
 
     if (skipTimes?.recap != null && playerSettings.autoSkipRecap) {
       if (!(playerSettings.autoSkipOnce && isRecapSkippedOnce.value)) {
-        if (currentSec > skipTimes!.recap!.start && currentSec < skipTimes!.recap!.end) {
-          final duration = Duration(seconds: skipTimes!.recap!.end);
+        if (currentPosition.value.inSeconds > skipTimes!.recap!.start &&
+            currentPosition.value.inSeconds < skipTimes!.recap!.end) {
+          final skipNeeded =
+              skipTimes!.recap!.end - currentPosition.value.inSeconds;
+          final duration =
+              Duration(seconds: currentPosition.value.inSeconds + skipNeeded);
           currentPosition.value = duration;
           _basePlayer.seek(duration);
           isRecapSkippedOnce.value = true;
+          snackBar('Skipped Recap', duration: 2000);
         }
       }
     }
@@ -470,28 +465,23 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     final currentSec = currentPosition.value.inSeconds;
     aniskip.SkipIntervals? foundInterval;
-    String label = '';
 
     if (skipTimes!.op != null &&
         currentSec >= skipTimes!.op!.start &&
         currentSec < skipTimes!.op!.end) {
       foundInterval = skipTimes!.op;
-      label = 'Skip Opening';
     } else if (skipTimes!.ed != null &&
         currentSec >= skipTimes!.ed!.start &&
         currentSec < skipTimes!.ed!.end) {
       foundInterval = skipTimes!.ed;
-      label = 'Skip Ending';
     } else if (skipTimes!.recap != null &&
         currentSec >= skipTimes!.recap!.start &&
         currentSec < skipTimes!.recap!.end) {
       foundInterval = skipTimes!.recap;
-      label = 'Skip Recap';
     }
 
     if (currentSkipInterval.value != foundInterval) {
       currentSkipInterval.value = foundInterval;
-      currentSkipLabel.value = label;
     }
   }
 
@@ -599,7 +589,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     isEDSkippedOnce.value = false;
     isRecapSkippedOnce.value = false;
     currentSkipInterval.value = null;
-    currentSkipLabel.value = '';
 
     final episodeLengthSec =
         (currentEpisode.value.durationInMilliseconds ?? 0) ~/ 1000;
