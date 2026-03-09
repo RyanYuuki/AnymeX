@@ -19,6 +19,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:anymex/widgets/media_items/media_peek_popup.dart';
+import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -955,8 +957,14 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   }
 
   Widget _buildListItem(Media media) {
+    final itemType = widget.isManga ? ItemType.manga : ItemType.anime;
     return GestureDetector(
       onTap: () => _navigateToDetails(media),
+      onLongPress: () {
+        if (media.userStatus == null || media.userStatus!.isEmpty) {
+          MediaPeekPopup.show(context, media, itemType, media.title);
+        }
+      },
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
