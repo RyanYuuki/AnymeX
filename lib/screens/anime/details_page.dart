@@ -47,7 +47,6 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 
-// Extracted common widgets and functions
 class _ActionButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
@@ -189,7 +188,6 @@ class _MobileNav extends StatelessWidget {
   }
 }
 
-// Main widget continues below
 class AnimeDetailsPage extends StatefulWidget {
   final Media media;
   final String tag;
@@ -609,8 +607,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       ),
     );
   }
-
-  // Extracted method for the logged-in user row
+  
   Widget _buildLoggedInUserRow(BuildContext context) {
     return Expanded(
       child: Container(
@@ -648,8 +645,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       ),
     );
   }
-
-  // Extracted method for the non-logged in user row
+  
   Widget _buildNonLoggedInUserRow(BuildContext context) {
     return Expanded(
       child: AnymexButton2(
