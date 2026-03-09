@@ -254,75 +254,71 @@ class BottomControls extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(0, 0, 20, 10),
+          padding: const EdgeInsets.fromLTRB(0, 0, 20, 5),
           child: Align(
             alignment: Alignment.centerRight,
             child: Obx(() {
               final interval = controller.currentSkipInterval.value;
-              final label = controller.currentSkipLabel.value;
-              final isLocked = controller.isLocked.value;
-
-              if (interval != null && !isLocked) {
-                return AnymexButton(
-                  onTap: () =>
-                      controller.seekTo(Duration(seconds: interval.end)),
-                  color: Colors.black.withValues(alpha: 0.6),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  radius: 16,
-                  borderSide: BorderSide(
-                    color: isDark
-                        ? theme.colorScheme.outline
-                        : theme.colorScheme.outline.opaque(0.5),
-                    width: 0.5,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      AnymexText(
-                        text: label,
-                        variant: TextVariant.bold,
-                        color: Colors.white,
-                        size: 15,
-                      ),
-                      const SizedBox(width: 8),
-                      const Icon(Icons.skip_next_rounded,
-                          color: Colors.white, size: 22),
-                    ],
-                  ),
-                );
-              }
-
+              final skipValue = interval != null
+                  ? (interval.end - interval.start).toString()
+                  : '+${controller.playerSettings.skipDuration}';
+              final buttonText = interval != null ? 'Skip' : skipValue;
+              
               return Material(
                 borderRadius: BorderRadius.circular(16),
                 color: Colors.transparent,
                 child: InkWell(
-                  onTap: isLocked
+                  onTap: controller.isLocked.value
                       ? null
-                      : () => controller
-                          .megaSeek(controller.playerSettings.skipDuration),
+                      : () {
+                          if (interval != null) {
+                            controller.seekTo(Duration(seconds: interval.end));
+                          } else {
+                            controller.megaSeek(controller.playerSettings.skipDuration);
+                          }
+                        },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 20),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                     decoration: BoxDecoration(
-                      color: isDark
-                          ? theme.colorScheme.surfaceContainer
-                              .withValues(alpha: 0.6)
-                          : theme.colorScheme.surfaceContainerHighest,
+                      color: interval != null
+                          ? theme.colorScheme.primary.withValues(alpha: 0.8)
+                          : isDark
+                              ? theme.colorScheme.surfaceContainer
+                                  .withValues(alpha: 0.6)
+                              : theme.colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: isDark
-                            ? theme.colorScheme.outline
-                            : theme.colorScheme.outline.opaque(0.5),
+                        color: interval != null
+                            ? theme.colorScheme.primary
+                            : isDark
+                                ? theme.colorScheme.outline
+                                : theme.colorScheme.outline.opaque(0.5),
                         width: 0.5,
                       ),
                     ),
-                    child: AnymexText(
-                      text: '+${controller.playerSettings.skipDuration}',
-                      variant: TextVariant.semiBold,
-                      color: isLocked
-                          ? theme.colorScheme.onSurface.opaque(0.4)
-                          : null,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (interval != null)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 4),
+                            child: Icon(
+                              Icons.skip_next_rounded,
+                              color: theme.colorScheme.onPrimary,
+                              size: 20,
+                            ),
+                          ),
+                        AnymexText(
+                          text: buttonText,
+                          variant: TextVariant.semiBold,
+                          color: interval != null
+                              ? theme.colorScheme.onPrimary
+                              : controller.isLocked.value
+                                  ? theme.colorScheme.onSurface.opaque(0.4)
+                                  : null,
+                        ),
+                      ],
                     ),
                   ),
                 ),
