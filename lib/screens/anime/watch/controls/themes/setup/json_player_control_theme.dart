@@ -284,6 +284,9 @@ class ThemeRenderer {
                 _resolveNullableColor(zone.progressSecondaryActiveTrackColor),
             thumbColor: _resolveNullableColor(zone.progressThumbColor),
             overlayColor: _resolveNullableColor(zone.progressOverlayColor),
+            segmentColor: _resolveNullableColor(zone.progressSegmentColor),
+            recapSegmentColor:
+                _resolveNullableColor(zone.progressRecapSegmentColor),
           ),
         ));
         kids.add(SizedBox(height: zone.vibes.progressBottomSpacing));
@@ -528,6 +531,10 @@ class ThemeRenderer {
             item.grabString('progressThumbColor');
         final overlayColor = item.grabString('overlayColor') ??
             item.grabString('progressOverlayColor');
+        final segmentColor = item.grabString('segmentColor') ??
+            item.grabString('progressSegmentColor');
+        final recapSegmentColor = item.grabString('recapSegmentColor') ??
+            item.grabString('progressRecapSegmentColor');
         return ProgressSlider(
           style: _toSliderStyle(item.grabString('progressStyle'),
               fallback: SliderStyle.capsule),
@@ -537,6 +544,8 @@ class ThemeRenderer {
               _resolveNullableColor(secondaryActiveTrackColor),
           thumbColor: _resolveNullableColor(thumbColor),
           overlayColor: _resolveNullableColor(overlayColor),
+          segmentColor: _resolveNullableColor(segmentColor),
+          recapSegmentColor: _resolveNullableColor(recapSegmentColor),
         );
 
       case 'time_current':
@@ -2064,6 +2073,8 @@ class BottomZone {
     this.progressSecondaryActiveTrackColor,
     this.progressThumbColor,
     this.progressOverlayColor,
+    this.progressSegmentColor,
+    this.progressRecapSegmentColor,
     required this.outsidePadding,
     required this.vibes,
   });
@@ -2078,6 +2089,8 @@ class BottomZone {
   final String? progressSecondaryActiveTrackColor;
   final String? progressThumbColor;
   final String? progressOverlayColor;
+  final String? progressSegmentColor;
+  final String? progressRecapSegmentColor;
 
   final EdgeInsets outsidePadding;
   final ZoneVibes vibes;
@@ -2126,6 +2139,8 @@ class BottomZone {
           _readString(json['progressSecondaryActiveTrackColor']),
       progressThumbColor: _readString(json['progressThumbColor']),
       progressOverlayColor: _readString(json['progressOverlayColor']),
+      progressSegmentColor: _readString(json['progressSegmentColor']),
+      progressRecapSegmentColor: _readString(json['progressRecapSegmentColor']),
       outsidePadding: _readEdgeInsets(
           json['outsidePadding'], const EdgeInsets.only(bottom: 6)),
       vibes: vibes,
