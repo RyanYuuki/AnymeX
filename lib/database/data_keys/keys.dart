@@ -200,6 +200,7 @@ enum PlayerSettingsKeys {
   autoSkipOP,
   autoSkipED,
   autoSkipOnce,
+  autoSkipRecap,
   enableSwipeControls,
   markAsCompleted,
   transitionSubtitle,
