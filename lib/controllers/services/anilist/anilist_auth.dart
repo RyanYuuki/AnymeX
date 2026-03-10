@@ -520,6 +520,8 @@ class AnilistAuth extends GetxController {
           progress
           status
           score
+          startedAt { year month day }
+          completedAt { year month day }
         }
       }
     }
@@ -656,6 +658,8 @@ class AnilistAuth extends GetxController {
     String? status,
     int? progress,
     bool isAnime = true,
+    DateTime? startedAt,
+    DateTime? completedAt,
   }) async {
     final token = AuthKeys.authToken.get<String?>();
     if (token == null || !isLoggedIn.value) {
@@ -663,12 +667,14 @@ class AnilistAuth extends GetxController {
     }
 
     const String mutation = '''
-  mutation UpdateMediaList(\$id: Int, \$progress: Int, \$score: Float, \$status: MediaListStatus) {
-    SaveMediaListEntry(mediaId: \$id, progress: \$progress, score: \$score, status: \$status) {
+  mutation UpdateMediaList(\$id: Int, \$progress: Int, \$score: Float, \$status: MediaListStatus, \$startedAt: FuzzyDateInput, \$completedAt: FuzzyDateInput) {
+    SaveMediaListEntry(mediaId: \$id, progress: \$progress, score: \$score, status: \$status, startedAt: \$startedAt, completedAt: \$completedAt) {
       id
       status
       progress
       score
+      startedAt { year month day }
+      completedAt { year month day }
     }
   }
   ''';
@@ -697,6 +703,20 @@ class AnilistAuth extends GetxController {
       if (progress != null) {
         variables['progress'] = progress;
       }
+      if (startedAt != null) {
+        variables['startedAt'] = {
+          'year': startedAt.year,
+          'month': startedAt.month,
+          'day': startedAt.day,
+        };
+      }
+      if (completedAt != null) {
+        variables['completedAt'] = {
+          'year': completedAt.year,
+          'month': completedAt.month,
+          'day': completedAt.day,
+        };
+      }
 
       final response = await post(
         Uri.parse('https://graphql.anilist.co'),
@@ -717,7 +737,9 @@ class AnilistAuth extends GetxController {
             score: score,
             status: status,
             progress: progress,
-            isAnime: isAnime));
+            isAnime: isAnime,
+            startedAt: startedAt,
+            completedAt: completedAt));
       }
 
       if (response.statusCode == 200) {

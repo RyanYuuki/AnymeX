@@ -18,6 +18,8 @@ class TrackedMedia {
   String? mediaListId;
   ServicesType servicesType;
   String? userName;
+  DateTime? startedAt;
+  DateTime? completedAt;
   String? userAvatar;
   int? userProgress;
   double? userScore;
@@ -43,6 +45,8 @@ class TrackedMedia {
     this.userAvatar,
     this.userProgress,
     this.userScore,
+    this.startedAt,
+    this.completedAt,
   });
 
   factory TrackedMedia.fromJson(Map<String, dynamic> json) {
@@ -71,7 +75,9 @@ class TrackedMedia {
         servicesType: ServicesType.anilist,
         mediaListId:
             (json['media']['mediaListEntry']?['id'] ?? json['media']['id'])
-                .toString());
+                .toString(),
+        startedAt: _parseFuzzyDate(json['startedAt']),
+        completedAt: _parseFuzzyDate(json['completedAt']));
   }
 
   factory TrackedMedia.fromSocialJson(Map<String, dynamic> json) {
@@ -154,8 +160,24 @@ class TrackedMedia {
       score: json['list_status']['score']?.toString(),
       type: null,
       mediaListId: json['node']['id']?.toString(),
+      startedAt: _parseMalDate(json['list_status']?['start_date']),
+      completedAt: _parseMalDate(json['list_status']?['finish_date']),
     );
   }
+}
+
+DateTime? _parseFuzzyDate(Map<String, dynamic>? date) {
+  if (date == null) return null;
+  final y = date['year'] as int?;
+  final mo = date['month'] as int?;
+  final d = date['day'] as int?;
+  if (y == null || mo == null || d == null) return null;
+  try { return DateTime(y, mo, d); } catch (_) { return null; }
+}
+
+DateTime? _parseMalDate(String? dateStr) {
+  if (dateStr == null || dateStr.isEmpty) return null;
+  try { return DateTime.parse(dateStr); } catch (_) { return null; }
 }
 
 class Simkl {

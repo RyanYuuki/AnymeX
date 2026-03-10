@@ -13,7 +13,7 @@ class ListEditorModal extends StatefulWidget {
   final RxInt animeProgress;
   final Rx<dynamic> currentAnime;
   final Media media;
-  final Function(String, double, String, int) onUpdate;
+  final Function(String, double, String, int, DateTime?, DateTime?) onUpdate;
   final Function(String) onDelete;
   final bool isManga;
 
@@ -39,6 +39,8 @@ class _ListEditorModalState extends State<ListEditorModal> {
   late String _localStatus;
   late double _localScore;
   late int _localProgress;
+  DateTime? _startedAt;
+  DateTime? _completedAt;
 
   @override
   void initState() {
@@ -48,6 +50,13 @@ class _ListEditorModalState extends State<ListEditorModal> {
         widget.animeStatus.value.isEmpty ? "CURRENT" : widget.animeStatus.value;
     _localScore = widget.animeScore.value;
     _localProgress = widget.animeProgress.value;
+
+    // Pre-fill dates from existing tracked data if available
+    final tracked = widget.currentAnime.value;
+    if (tracked != null) {
+      _startedAt   = tracked.startedAt;
+      _completedAt = tracked.completedAt;
+    }
 
     _progressController = TextEditingController(
       text: _localProgress.toString(),
@@ -81,6 +90,8 @@ class _ListEditorModalState extends State<ListEditorModal> {
             _buildProgressSection(context),
             const SizedBox(height: 24),
             _buildScoreSection(context),
+            const SizedBox(height: 24),
+            _buildDateSection(context),
             const SizedBox(height: 32),
             _buildActionButtons(context),
           ],
@@ -157,7 +168,18 @@ class _ListEditorModalState extends State<ListEditorModal> {
             icon: Icons.info_rounded,
             onChanged: (e) {
               setState(() {
+                final prev = _localStatus;
                 _localStatus = e.value;
+                if (_localStatus == 'CURRENT' && _startedAt == null) {
+                  _startedAt = DateTime.now();
+                }
+                if (_localStatus == 'COMPLETED' && _completedAt == null) {
+                  _completedAt = DateTime.now();
+                  if (_startedAt == null) _startedAt = DateTime.now();
+                }
+                if (prev == 'COMPLETED' && _localStatus != 'COMPLETED') {
+                  _completedAt = null;
+                }
               });
             },
             selectedItem: DropdownItem(
@@ -567,6 +589,169 @@ class _ListEditorModalState extends State<ListEditorModal> {
     );
   }
 
+
+  String _formatDate(DateTime? date) {
+    if (date == null) return 'Not set';
+    return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+  }
+
+  Future<void> _pickDate(BuildContext context, {required bool isStart}) async {
+    final initial = isStart
+        ? (_startedAt ?? DateTime.now())
+        : (_completedAt ?? DateTime.now());
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: initial,
+      firstDate: DateTime(1990),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+      builder: (context, child) => Theme(
+        data: Theme.of(context).copyWith(colorScheme: context.colors),
+        child: child!,
+      ),
+    );
+    if (picked != null) {
+      setState(() {
+        if (isStart) {
+          _startedAt = picked;
+        } else {
+          _completedAt = picked;
+        }
+      });
+    }
+  }
+
+  Widget _buildDateSection(BuildContext context) {
+    final colorScheme = context.colors;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 4, bottom: 12),
+          child: Text(
+            'Dates',
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: colorScheme.onSurface,
+                  fontWeight: FontWeight.w600,
+                ),
+          ),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            color: colorScheme.surfaceContainerHighest.opaque(0.3),
+            border: Border.all(
+              color: colorScheme.outline.opaque(0.5),
+            ),
+          ),
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Expanded(
+                child: _buildDateTile(
+                  context,
+                  label: 'Start Date',
+                  icon: Icons.play_circle_outline_rounded,
+                  date: _startedAt,
+                  onTap: () => _pickDate(context, isStart: true),
+                  onClear: _startedAt != null
+                      ? () => setState(() => _startedAt = null)
+                      : null,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildDateTile(
+                  context,
+                  label: 'Finish Date',
+                  icon: Icons.check_circle_outline_rounded,
+                  date: _completedAt,
+                  onTap: () => _pickDate(context, isStart: false),
+                  onClear: _completedAt != null
+                      ? () => setState(() => _completedAt = null)
+                      : null,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDateTile(
+    BuildContext context, {
+    required String label,
+    required IconData icon,
+    required DateTime? date,
+    required VoidCallback onTap,
+    VoidCallback? onClear,
+  }) {
+    final colorScheme = context.colors;
+    final bool hasDate = date != null;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        decoration: BoxDecoration(
+          color: hasDate
+              ? colorScheme.primaryContainer.opaque(0.5)
+              : colorScheme.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: hasDate
+                ? colorScheme.primary.opaque(0.4)
+                : colorScheme.outline.opaque(0.5),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon,
+                    size: 14,
+                    color: hasDate
+                        ? colorScheme.primary
+                        : colorScheme.onSurfaceVariant),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Text(
+                    label,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: hasDate
+                              ? colorScheme.primary
+                              : colorScheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w600,
+                        ),
+                  ),
+                ),
+                if (onClear != null)
+                  GestureDetector(
+                    onTap: onClear,
+                    child: Icon(Icons.close_rounded,
+                        size: 14, color: colorScheme.onSurfaceVariant),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              _formatDate(date),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: hasDate
+                        ? colorScheme.onSurface
+                        : colorScheme.onSurfaceVariant.opaque(0.6),
+                    fontWeight:
+                        hasDate ? FontWeight.w500 : FontWeight.normal,
+                  ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildActionButtons(BuildContext context) {
     final colorScheme = context.colors;
 
@@ -619,6 +804,8 @@ class _ListEditorModalState extends State<ListEditorModal> {
                   _localScore,
                   _localStatus,
                   _localProgress,
+                  _startedAt,
+                  _completedAt,
                 );
               },
               color: colorScheme.primary,
