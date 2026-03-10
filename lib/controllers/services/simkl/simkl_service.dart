@@ -40,6 +40,20 @@ class SimklService extends GetxController
   RxList<TrackedMedia> continueWatchingMovies = <TrackedMedia>[].obs;
   RxList<TrackedMedia> continueWatchingSeries = <TrackedMedia>[].obs;
 
+  // Country-based series lists
+  RxList<Media> koreanSeries = <Media>[].obs;
+  RxList<Media> japaneseSeries = <Media>[].obs;
+  RxList<Media> usSeries = <Media>[].obs;
+  RxList<Media> ukSeries = <Media>[].obs;
+  RxList<Media> canadaSeries = <Media>[].obs;
+
+  // Country-based movie lists
+  RxList<Media> koreanMovies = <Media>[].obs;
+  RxList<Media> japaneseMovies = <Media>[].obs;
+  RxList<Media> usMovies = <Media>[].obs;
+  RxList<Media> ukMovies = <Media>[].obs;
+  RxList<Media> canadaMovies = <Media>[].obs;
+
   @override
   Future<Media> fetchDetails(FetchDetailsParams params) async {
     final id = params.id;
@@ -90,6 +104,60 @@ class SimklService extends GetxController
     } else {
       throw Exception('Failed to fetch trending series: ${resp.statusCode}');
     }
+  }
+
+  Future<List<Media>> _fetchTvGenres(String country) async {
+    final url =
+        "https://api.simkl.com/tv/genres/all/all-types/$country/all-networks/all-years/rank?extended=overview&client_id=${dotenv.env['SIMKL_CLIENT_ID']}&limit=20";
+    final resp = await get(Uri.parse(url));
+    if (resp.statusCode == 200) {
+      final data = jsonDecode(resp.body) as List<dynamic>;
+      return data.map((e) => Media.fromSimkl(e, false)).toList();
+    }
+    Logger.i("Failed to fetch TV genres for $country: ${resp.statusCode}");
+    return [];
+  }
+
+  Future<List<Media>> _fetchMovieGenres(String country) async {
+    final url =
+        "https://api.simkl.com/movies/genres/all/all-types/$country/all-years/rank?extended=overview&client_id=${dotenv.env['SIMKL_CLIENT_ID']}&limit=20";
+    final resp = await get(Uri.parse(url));
+    if (resp.statusCode == 200) {
+      final data = jsonDecode(resp.body) as List<dynamic>;
+      return data.map((e) => Media.fromSimkl(e, true)).toList();
+    }
+    Logger.i("Failed to fetch movie genres for $country: ${resp.statusCode}");
+    return [];
+  }
+
+  Future<void> fetchCountrySeries() async {
+    final results = await Future.wait([
+      _fetchTvGenres('kr'),
+      _fetchTvGenres('jp'),
+      _fetchTvGenres('us'),
+      _fetchTvGenres('gb'),
+      _fetchTvGenres('ca'),
+    ]);
+    koreanSeries.value = results[0];
+    japaneseSeries.value = results[1];
+    usSeries.value = results[2];
+    ukSeries.value = results[3];
+    canadaSeries.value = results[4];
+  }
+
+  Future<void> fetchCountryMovies() async {
+    final results = await Future.wait([
+      _fetchMovieGenres('kr'),
+      _fetchMovieGenres('jp'),
+      _fetchMovieGenres('us'),
+      _fetchMovieGenres('gb'),
+      _fetchMovieGenres('ca'),
+    ]);
+    koreanMovies.value = results[0];
+    japaneseMovies.value = results[1];
+    usMovies.value = results[2];
+    ukMovies.value = results[3];
+    canadaMovies.value = results[4];
   }
 
   @override
@@ -243,28 +311,23 @@ class SimklService extends GetxController
             child: AnymexProgressIndicator(),
           )
         else ...[
-          // TappableSearchBar(
-          //   onSubmitted: () {
-          //     // navigate(() => const SearchPage(
-          //     //       searchTerm: "",
-          //     //       isManga: false,
-          //     //     ));
-          //     searchTypeSheet(context, "");
-          //   },
-          //   chipLabel: ("MOVIES"),
-          //   hintText: "Search Movie...",
-          // ),
           buildBigCarousel(trendingMovies.value.sublist(0, 10), false,
               type: CarouselType.simkl),
-          ReusableCarousel(
-              data: trendingMovies.value.sublist(0, 10),
-              title: "Trending Movies"),
-          ReusableCarousel(
-              data: trendingMovies.value.sublist(11, 20),
-              title: "More Trending Movies"),
-          ReusableCarousel(
-              data: trendingMovies.value.sublist(21, 30),
-              title: "More than More Trending Movies"),
+          if (trendingMovies.value.isNotEmpty)
+            ReusableCarousel(
+                data: trendingMovies.value.sublist(0, 10),
+                title: "Trending Movies"),
+          if (koreanMovies.value.isNotEmpty)
+            ReusableCarousel(data: koreanMovies.value, title: "Korean Movies"),
+          if (japaneseMovies.value.isNotEmpty)
+            ReusableCarousel(
+                data: japaneseMovies.value, title: "Japanese Movies"),
+          if (usMovies.value.isNotEmpty)
+            ReusableCarousel(data: usMovies.value, title: "US Movies"),
+          if (ukMovies.value.isNotEmpty)
+            ReusableCarousel(data: ukMovies.value, title: "UK Movies"),
+          if (canadaMovies.value.isNotEmpty)
+            ReusableCarousel(data: canadaMovies.value, title: "Canadian Movies"),
         ],
       ].obs;
 
@@ -275,28 +338,22 @@ class SimklService extends GetxController
             child: AnymexProgressIndicator(),
           )
         else ...[
-          // CustomSearchBar(
-          //   onSubmitted: (val) {
-          //     navigate(() => SearchPage(
-          //           searchTerm: val,
-          //           isManga: false,
-          //         ));
-          //   },
-          //   suffixIconWidget: buildChip("SERIES"),
-          //   disableIcons: true,
-          //   hintText: "Search Series...",
-          // ),
           buildBigCarousel(trendingSeries.value.sublist(0, 10), false,
               type: CarouselType.simkl),
-          ReusableCarousel(
-              data: trendingSeries.value.sublist(0, 10),
-              title: "Trending Series"),
-          ReusableCarousel(
-              data: trendingSeries.value.sublist(11, 20),
-              title: "More Trending Series"),
-          ReusableCarousel(
-              data: trendingSeries.value.sublist(21, trendingSeries.length - 1),
-              title: "More than More Trending Series"),
+          if (trendingSeries.value.isNotEmpty)
+            ReusableCarousel(
+                data: trendingSeries.value.sublist(0, 10),
+                title: "Trending Series"),
+          if (koreanSeries.value.isNotEmpty)
+            ReusableCarousel(data: koreanSeries.value, title: "K-Dramas"),
+          if (japaneseSeries.value.isNotEmpty)
+            ReusableCarousel(data: japaneseSeries.value, title: "J-Dramas"),
+          if (usSeries.value.isNotEmpty)
+            ReusableCarousel(data: usSeries.value, title: "US Shows"),
+          if (ukSeries.value.isNotEmpty)
+            ReusableCarousel(data: ukSeries.value, title: "UK Shows"),
+          if (canadaSeries.value.isNotEmpty)
+            ReusableCarousel(data: canadaSeries.value, title: "Canadian Shows"),
         ],
       ].obs;
 
