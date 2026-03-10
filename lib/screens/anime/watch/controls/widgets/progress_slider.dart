@@ -1,5 +1,6 @@
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controller/player_utils.dart';
+import 'package:anymex/utils/aniskip.dart' as aniskip;
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -38,32 +39,52 @@ class _ProgressSliderState extends State<ProgressSlider> {
       final duration = controller.episodeDuration.value.inMilliseconds;
       final position = controller.currentPosition.value.inMilliseconds;
       final buffer = controller.bufferred.value.inMilliseconds;
-      final fullDuration = Duration(milliseconds: duration);
 
       final maxValue = duration > 0 ? duration.toDouble() : 1.0;
       final clampedPosition = position.toDouble().clamp(0.0, maxValue);
       final clampedBuffer = buffer.toDouble().clamp(0.0, maxValue);
 
+      final skipTimes = controller.skipTimes;
+      final totalDuration = controller.episodeDuration.value;
+
       return SizedBox(
         height: 27,
-        child: SliderTheme(
-          data: _getSliderTheme(colorScheme, widget.style),
-          child: Slider(
-            year2023: false,
-            label: PlayerUtils.formatDuration(Duration(milliseconds: position)),
-            divisions: null,
-            focusNode: FocusNode(canRequestFocus: false, skipTraversal: true),
-            min: 0,
-            value: clampedPosition,
-            max: maxValue,
-            secondaryTrackValue: clampedBuffer,
-            onChangeStart: (v) => controller.isSeeking.value = true,
-            onChanged: (v) =>
-                controller.seekTo(Duration(milliseconds: v.toInt())),
-            onChangeEnd: (v) {
-              controller.isSeeking.value = false;
-            },
-          ),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            SliderTheme(
+              data: _getSliderTheme(colorScheme, widget.style),
+              child: Slider(
+                year2023: false,
+                label: PlayerUtils.formatDuration(
+                    Duration(milliseconds: position)),
+                divisions: null,
+                focusNode:
+                    FocusNode(canRequestFocus: false, skipTraversal: true),
+                min: 0,
+                value: clampedPosition,
+                max: maxValue,
+                secondaryTrackValue: clampedBuffer,
+                onChangeStart: (v) => controller.isSeeking.value = true,
+                onChanged: (v) =>
+                    controller.seekTo(Duration(milliseconds: v.toInt())),
+                onChangeEnd: (v) {
+                  controller.isSeeking.value = false;
+                },
+              ),
+            ),
+            if (skipTimes != null && totalDuration.inMilliseconds > 0)
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: CustomPaint(
+                    painter: SkipTimelinePainter(
+                      skipTimes: skipTimes,
+                      totalDuration: totalDuration,
+                    ),
+                  ),
+                ),
+              ),
+          ],
         ),
       );
     });
@@ -105,6 +126,53 @@ class _ProgressSliderState extends State<ProgressSlider> {
           overlayShape: const RoundSliderOverlayShape(overlayRadius: 18),
         );
     }
+  }
+}
+
+class SkipTimelinePainter extends CustomPainter {
+  final aniskip.EpisodeSkipTimes skipTimes;
+  final Duration totalDuration;
+  static const Color _opColor = Color(0xFFEBC125);
+  static const Color _edColor = Color(0xFFEBC125);
+  static const Color _recapColor = Color(0xFF4CAF50);
+
+  const SkipTimelinePainter({
+    required this.skipTimes,
+    required this.totalDuration,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (totalDuration.inSeconds <= 0) return;
+
+    final double widthPerSecond = size.width / totalDuration.inSeconds;
+    final Paint paint = Paint()..style = PaintingStyle.fill;
+    const double markerHeight = 4.0;
+    final double yOffset = (size.height - markerHeight) / 2;
+
+    void drawInterval(aniskip.SkipIntervals? interval, Color color) {
+      if (interval == null) return;
+      final double startX = interval.start * widthPerSecond;
+      final double width = (interval.end - interval.start) * widthPerSecond;
+      paint.color = color;
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromLTWH(startX, yOffset, width, markerHeight),
+          const Radius.circular(2),
+        ),
+        paint,
+      );
+    }
+    
+    drawInterval(skipTimes.recap, _recapColor);
+    drawInterval(skipTimes.op, _opColor);
+    drawInterval(skipTimes.ed, _edColor);
+  }
+
+  @override
+  bool shouldRepaint(covariant SkipTimelinePainter oldDelegate) {
+    return oldDelegate.skipTimes != skipTimes ||
+        oldDelegate.totalDuration != totalDuration;
   }
 }
 

@@ -154,9 +154,10 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
         .setCurrentMedia(widget.media.id.toString(), isManga: true);
     var data = mediaService.onlineService.currentMedia;
 
-    if (data.value.id != null || data.value.id != '') {
+    if ((data.value.id ?? '').isNotEmpty) {
       isListedManga.value = true;
-      currentManga = data;
+      currentManga.value = data.value;
+      currentManga.refresh();
     } else {
       isListedManga.value = false;
       currentManga.value = null;
@@ -742,7 +743,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                 mediaService.onlineService.currentMedia.value.mediaListId;
             await mediaService.onlineService
                 .deleteListEntry(id!, isAnime: false);
-            setState(() {});
+            _checkMangaPresence();
           },
         );
       },
