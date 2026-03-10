@@ -156,8 +156,8 @@ class SimklService extends GetxController
   }
 
   @override
-    Future<void> fetchHomePage() async =>
-        Future.wait([fetchMovies(), fetchSeries(), fetchCountryMovies(), fetchCountrySeries()]);
+  Future<void> fetchHomePage() async =>
+      Future.wait([fetchMovies(), fetchSeries(), fetchCountryMovies(), fetchCountrySeries()]);
 
   Future<List<Media>> searchMovies(String query, {int page = 1}) async {
     final movieUrl = Uri.https('api.simkl.com', '/search/movie', {
