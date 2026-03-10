@@ -36,18 +36,13 @@ class SimklService extends GetxController
   Rx<Media> detailsData = Media(
     serviceType: ServicesType.simkl,
   ).obs;
-
   RxList<TrackedMedia> continueWatchingMovies = <TrackedMedia>[].obs;
   RxList<TrackedMedia> continueWatchingSeries = <TrackedMedia>[].obs;
-
-  // Country-based series lists
   RxList<Media> koreanSeries = <Media>[].obs;
   RxList<Media> japaneseSeries = <Media>[].obs;
   RxList<Media> usSeries = <Media>[].obs;
   RxList<Media> ukSeries = <Media>[].obs;
   RxList<Media> canadaSeries = <Media>[].obs;
-
-  // Country-based movie lists
   RxList<Media> koreanMovies = <Media>[].obs;
   RxList<Media> japaneseMovies = <Media>[].obs;
   RxList<Media> usMovies = <Media>[].obs;
@@ -311,6 +306,17 @@ class SimklService extends GetxController
             child: AnymexProgressIndicator(),
           )
         else ...[
+          // TappableSearchBar(
+          //   onSubmitted: () {
+          //     // navigate(() => const SearchPage(
+          //     //       searchTerm: "",
+          //     //       isManga: false,
+          //     //     ));
+          //     searchTypeSheet(context, "");
+          //   },
+          //   chipLabel: ("MOVIES"),
+          //   hintText: "Search Movie...",
+          // ),
           buildBigCarousel(trendingMovies.value.sublist(0, 10), false,
               type: CarouselType.simkl),
           if (trendingMovies.value.isNotEmpty)
@@ -338,6 +344,17 @@ class SimklService extends GetxController
             child: AnymexProgressIndicator(),
           )
         else ...[
+          // CustomSearchBar(
+          //   onSubmitted: (val) {
+          //     navigate(() => SearchPage(
+          //           searchTerm: val,
+          //           isManga: false,
+          //         ));
+          //   },
+          //   suffixIconWidget: buildChip("SERIES"),
+          //   disableIcons: true,
+          //   hintText: "Search Series...",
+          // ),
           buildBigCarousel(trendingSeries.value.sublist(0, 10), false,
               type: CarouselType.simkl),
           if (trendingSeries.value.isNotEmpty)
