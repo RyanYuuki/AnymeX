@@ -604,19 +604,26 @@ class MalService extends GetxController implements BaseService, OnlineService {
     final status = params.status;
     final progress = params.progress;
     final isAnime = params.isAnime;
+    final startedAt = params.startedAt;
+    final completedAt = params.completedAt;
 
     final token = AuthKeys.malAuthToken.get<String?>();
     final url = Uri.parse(
         'https://api.myanimelist.net/v2/${isAnime ? 'anime' : 'manga'}/$listId/my_list_status');
 
+    String _formatMalDate(DateTime d) =>
+        '${d.year}-${d.month.toString().padLeft(2,'0')}-${d.day.toString().padLeft(2,'0')}';
+
     final body = {
       if (status != null)
         'status': getMALStatusEquivalent(status, isAnime: isAnime),
-      if (score != null) 'score': score.toString(),
+      if (score != null) 'score': score.toInt().toString(),
       if (progress != null && isAnime)
         'num_watched_episodes': progress.toString(),
       if (progress != null && !isAnime)
         'num_chapters_read': progress.toString(),
+      if (startedAt != null) 'start_date': _formatMalDate(startedAt),
+      if (completedAt != null) 'finish_date': _formatMalDate(completedAt),
     };
 
     final req = await http.put(
@@ -634,7 +641,9 @@ class MalService extends GetxController implements BaseService, OnlineService {
           score: score,
           status: status,
           progress: progress,
-          isAnime: isAnime));
+          isAnime: isAnime,
+          startedAt: startedAt,
+          completedAt: completedAt));
     }
 
     if (req.statusCode == 200) {

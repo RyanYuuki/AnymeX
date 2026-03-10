@@ -866,7 +866,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
           animeProgress: animeProgress,
           currentAnime: currentAnime,
           media: anilistData ?? widget.media,
-          onUpdate: (id, score, status, progress) async {
+          onUpdate: (id, score, status, progress, startedAt, completedAt) async {
             final fetcher = widget.media.serviceType;
             final id = fetcher.onlineService.currentMedia.value.id;
             await fetcher.onlineService.updateListEntry(UpdateListEntryParams(
@@ -875,8 +875,15 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                 isAnime: true,
                 score: score,
                 status: status,
-                progress: progress));
-            _checkAnimePresence();
+                progress: progress,
+                startedAt: startedAt,
+                completedAt: completedAt));
+            currentAnime.value?.score = score.toString();
+            currentAnime.value?.watchingStatus = status;
+            currentAnime.value?.episodeCount = progress.toString();
+            currentAnime.value?.startedAt = startedAt;
+            currentAnime.value?.completedAt = completedAt;
+            setState(() {});
           },
           onDelete: (s) async {
             final fetcher = widget.media.serviceType;
