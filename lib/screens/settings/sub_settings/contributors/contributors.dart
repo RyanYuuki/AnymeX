@@ -156,7 +156,7 @@ Future<Map<String, ContributorModel>> _fetchContributorProfiles() async {
 
 Future<Map<String, int>> _fetchPullRequestCounts() async {
   const endpoint =
-      'https://api.github.com/repos/RyanYuuki/AnymeX/pulls?state=all&per_page=100';
+      'https://api.github.com/repos/RyanYuuki/AnymeX/pulls?state=closed&per_page=100';
   final Map<String, int> pullRequestCounts = {};
   var page = 1;
 
@@ -171,6 +171,7 @@ Future<Map<String, int>> _fetchPullRequestCounts() async {
     if (pageData.isEmpty) break;
 
     for (final rawPullRequest in pageData) {
+      if (rawPullRequest['merged_at'] == null) continue;
       final dynamic rawAuthor = rawPullRequest['user'];
       if (rawAuthor == null || _isBotAccount(rawAuthor)) continue;
       final login = ((rawAuthor['login'] as String?) ?? '').trim();
