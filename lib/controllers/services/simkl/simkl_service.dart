@@ -44,7 +44,6 @@ class SimklService extends GetxController
   RxList<Media> ukSeries = <Media>[].obs;
   RxList<Media> canadaSeries = <Media>[].obs;
   RxList<Media> koreanMovies = <Media>[].obs;
-  RxList<Media> japaneseMovies = <Media>[].obs;
   RxList<Media> usMovies = <Media>[].obs;
   RxList<Media> ukMovies = <Media>[].obs;
   RxList<Media> canadaMovies = <Media>[].obs;
@@ -143,16 +142,14 @@ class SimklService extends GetxController
   Future<void> fetchCountryMovies() async {
     final results = await Future.wait([
       _fetchMovieGenres('kr'),
-      _fetchMovieGenres('jp'),
       _fetchMovieGenres('us'),
       _fetchMovieGenres('gb'),
       _fetchMovieGenres('ca'),
     ]);
     koreanMovies.value = results[0];
-    japaneseMovies.value = results[1];
-    usMovies.value = results[2];
-    ukMovies.value = results[3];
-    canadaMovies.value = results[4];
+    usMovies.value = results[1];
+    ukMovies.value = results[2];
+    canadaMovies.value = results[3];
   }
 
   @override
@@ -325,9 +322,6 @@ class SimklService extends GetxController
                 title: "Trending Movies"),
           if (koreanMovies.value.isNotEmpty)
             ReusableCarousel(data: koreanMovies.value, title: "Korean Movies"),
-          if (japaneseMovies.value.isNotEmpty)
-            ReusableCarousel(
-                data: japaneseMovies.value, title: "Japanese Movies"),
           if (usMovies.value.isNotEmpty)
             ReusableCarousel(data: usMovies.value, title: "US Movies"),
           if (ukMovies.value.isNotEmpty)
