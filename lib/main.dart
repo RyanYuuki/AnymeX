@@ -114,6 +114,8 @@ void main(List<String> args) async {
     } else {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
       SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+          systemNavigationBarDividerColor: Colors.transparent,
+          systemNavigationBarContrastEnforced: false,
           systemNavigationBarColor: Colors.transparent,
           statusBarColor: Colors.transparent,
           statusBarBrightness: Brightness.dark));
