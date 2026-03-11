@@ -9,6 +9,7 @@ import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:blur/blur.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:kenburns_nullsafety/kenburns_nullsafety.dart';
 
@@ -141,9 +142,16 @@ class GradientPoster extends StatelessWidget {
                 children: [
                   SizedBox(
                     width: MediaQuery.of(context).size.width / 2,
-                    child: Text(data?.title ?? 'Loading...',
-                        style: const TextStyle(
-                            fontFamily: "Poppins-Bold", fontSize: 16)),
+                    child: GestureDetector(
+                      onLongPress: () {
+                        final title = data?.title ?? 'Loading...';
+                        Clipboard.setData(ClipboardData(text: title));
+                        snackBar('Title copied');
+                      },
+                      child: Text(data?.title ?? 'Loading...',
+                          style: const TextStyle(
+                              fontFamily: "Poppins-Bold", fontSize: 16)),
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10.0),
