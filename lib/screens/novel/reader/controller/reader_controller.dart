@@ -244,9 +244,9 @@ class NovelReaderController extends GetxController {
     }
 
     if (event == 'up') {
-      handleVolumeButton(true);
+      handleVolumeButton(false); // Volume up should scroll up (negative direction)
     } else if (event == 'down') {
-      handleVolumeButton(false);
+      handleVolumeButton(true); // Volume down should scroll down (positive direction)
     }
   }
 
@@ -573,11 +573,13 @@ class NovelReaderController extends GetxController {
   void handleVolumeButton(bool isVolumeUp) {
     if (!volumeButtonScrolling.value || !scrollController.hasClients) return;
 
-    double amount = isVolumeUp ? volumeScrollAmount : -volumeScrollAmount;
+    // Fixed direction: volume up scrolls up, volume down scrolls down
+    double amount = isVolumeUp ? -volumeScrollAmount : volumeScrollAmount;
     double newOffset = scrollController.offset + amount;
     double maxOffset = scrollController.position.maxScrollExtent;
+    double minOffset = scrollController.position.minScrollExtent;
 
-    newOffset = newOffset.clamp(0.0, maxOffset);
+    newOffset = newOffset.clamp(minOffset, maxOffset);
     scrollController.animateTo(
       newOffset,
       duration: const Duration(milliseconds: 200),
