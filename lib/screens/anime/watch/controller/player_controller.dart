@@ -1426,8 +1426,34 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     videoFit.value =
         BoxFit.values[(videoFit.value.index + 1) % BoxFit.values.length];
     _basePlayer.toggleVideoFit(videoFit.value);
+    _showVideoFitToast(videoFit.value);
+  }
+
+  void applyConfiguredResizeMode({bool showToast = false}) {
+    final configuredFit = BoxFit.values.firstWhere(
+      (e) => e.name == settings.resizeMode,
+      orElse: () => BoxFit.contain,
+    );
+    if (videoFit.value == configuredFit) return;
+
+    videoFit.value = configuredFit;
+    _basePlayer.toggleVideoFit(videoFit.value);
+    if (showToast) {
+      _showVideoFitToast(videoFit.value);
+    }
+  }
+
+  void resetVideoFit() {
+    if (videoFit.value != BoxFit.contain) {
+      videoFit.value = BoxFit.contain;
+      _basePlayer.toggleVideoFit(videoFit.value);
+    }
+    _showVideoFitToast(videoFit.value);
+  }
+
+  void _showVideoFitToast(BoxFit fit) {
     AnymexToast.show(
-        message: videoFit.value.name.capitalizeFirst ?? '',
+        message: fit.name.capitalizeFirst ?? '',
         duration: const Duration(milliseconds: 700));
   }
 

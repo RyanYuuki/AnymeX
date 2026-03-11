@@ -319,6 +319,7 @@ class _HomePageState extends State<HomePage> {
 class ImageButton extends StatelessWidget {
   final String buttonText;
   final VoidCallback onPressed;
+  final VoidCallback? onLongPress;
   final String backgroundImage;
   final double width;
   final double height;
@@ -330,6 +331,7 @@ class ImageButton extends StatelessWidget {
     super.key,
     required this.buttonText,
     required this.onPressed,
+    this.onLongPress,
     required this.backgroundImage,
     this.width = 160,
     this.height = 60,
@@ -386,6 +388,7 @@ class ImageButton extends StatelessWidget {
           Positioned.fill(
             child: AnymexButton(
               onTap: onPressed,
+              onLongPress: onLongPress,
               padding: EdgeInsets.zero,
               color: Colors.transparent,
               border: BorderSide(

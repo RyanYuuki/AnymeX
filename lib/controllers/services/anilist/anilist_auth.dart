@@ -496,6 +496,7 @@ class AnilistAuth extends GetxController {
         entries {
           media {
             id
+            idMal
             title {
               romaji
               english
@@ -776,6 +777,7 @@ class AnilistAuth extends GetxController {
           entries {
             media {
               id
+              idMal
               title {
                 romaji
                 english

@@ -196,6 +196,7 @@ class BottomControls extends StatelessWidget {
       'aspect_ratio': ControlButton(
         icon: Symbols.fit_screen,
         onPressed: () => controller.toggleVideoFit(),
+        onLongPress: controller.resetVideoFit,
         tooltip: 'Aspect Ratio',
         compact: true,
       ),

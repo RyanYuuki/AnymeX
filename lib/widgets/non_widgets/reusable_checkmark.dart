@@ -13,6 +13,7 @@ void showSelectionDialog<T>({
   IconData? leadingIcon,
 }) {
   final context = Get.context!;
+  var didSelectItem = false;
   showDialog(
     context: context,
     builder: (context) {
@@ -48,14 +49,20 @@ void showSelectionDialog<T>({
                           (item) => Container(
                             margin: const EdgeInsets.only(bottom: 7),
                             child: ListTileWithCheckMark(
-                              leading:
-                                  leadingIcon != null ? Icon(leadingIcon) : null,
+                              leading: leadingIcon != null
+                                  ? Icon(leadingIcon)
+                                  : null,
                               color: context.colors.primary,
                               active: item == selectedItem.value,
                               title: getTitle(item),
                               onTap: () {
-                                onItemSelected(item);
+                                if (didSelectItem) return;
+                                didSelectItem = true;
                                 Navigator.pop(context);
+                                WidgetsBinding.instance
+                                    .addPostFrameCallback((_) {
+                                  onItemSelected(item);
+                                });
                               },
                             ),
                           ),

@@ -23,8 +23,11 @@ String buildNFTitle(PlayerController c) {
 }
 
 void showNFMoreSheet(BuildContext context, PlayerController controller) {
-  showBottomSheet(
+  showModalBottomSheet(
     context: context,
+    isDismissible: true,
+    enableDrag: true,
+    isScrollControlled: true,
     backgroundColor: const Color(0xFF141414),
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
@@ -270,96 +273,101 @@ class NFMoreSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 40,
-            height: 4,
-            margin: const EdgeInsets.only(bottom: 24),
-            decoration: BoxDecoration(
-              color: Colors.white24,
-              borderRadius: BorderRadius.circular(2),
+    final maxSheetHeight = MediaQuery.sizeOf(context).height * 0.75;
+
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: maxSheetHeight),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 24),
+              decoration: BoxDecoration(
+                color: Colors.white24,
+                borderRadius: BorderRadius.circular(2),
+              ),
             ),
-          ),
-          NFSheetTile(
-            icon: Symbols.high_quality_rounded,
-            label: 'Quality',
-            onTap: () {
-              Get.back();
-              PlayerBottomSheets.showVideoQuality(ctx, controller);
-            },
-          ),
-          NFSheetTile(
-            icon: Symbols.speed_rounded,
-            label: 'Playback speed',
-            onTap: () {
-              Get.back();
-              PlayerBottomSheets.showPlaybackSpeed(ctx, controller);
-            },
-          ),
-          NFSheetTile(
-            icon: Symbols.music_note_rounded,
-            label: 'Audio track',
-            onTap: () {
-              Get.back();
-              PlayerBottomSheets.showAudioTracks(ctx, controller);
-            },
-          ),
-          NFSheetTile(
-            icon: Symbols.tune_rounded,
-            label: 'Picture & shaders',
-            onTap: () {
-              Get.back();
-              controller.openColorProfileBottomSheet(ctx);
-            },
-          ),
-          if (!controller.isOffline.value)
             NFSheetTile(
-              icon: Symbols.cloud_rounded,
-              label: 'Server',
+              icon: Symbols.high_quality_rounded,
+              label: 'Quality',
               onTap: () {
                 Get.back();
-                PlayerBottomSheets.showVideoServers(ctx, controller);
+                PlayerBottomSheets.showVideoQuality(ctx, controller);
               },
             ),
-          NFSheetTile(
-            icon: Icons.settings_outlined,
-            label: 'Player settings',
-            onTap: () {
-              Get.back();
-              showModalBottomSheet(
-                context: Get.context!,
-                isScrollControlled: true,
-                backgroundColor: Colors.transparent,
-                builder: (c) => SizedBox(
-                  height: MediaQuery.of(c).size.height,
-                  child: const SettingsPlayer(isModal: true),
-                ),
-              );
-            },
-          ),
-          NFSheetTile(
-            icon: Icons.lock_outline_rounded,
-            label: 'Lock screen',
-            onTap: () {
-              Get.back();
-              controller.isLocked.value = true;
-            },
-          ),
-          if (MediaQuery.sizeOf(context).width < 600)
             NFSheetTile(
-              icon: Icons.screen_rotation_alt_rounded,
-              label: 'Rotate',
+              icon: Symbols.speed_rounded,
+              label: 'Playback speed',
               onTap: () {
                 Get.back();
-                controller.toggleOrientation();
+                PlayerBottomSheets.showPlaybackSpeed(ctx, controller);
               },
             ),
-          const SizedBox(height: 8),
-        ],
+            NFSheetTile(
+              icon: Symbols.music_note_rounded,
+              label: 'Audio track',
+              onTap: () {
+                Get.back();
+                PlayerBottomSheets.showAudioTracks(ctx, controller);
+              },
+            ),
+            NFSheetTile(
+              icon: Symbols.tune_rounded,
+              label: 'Picture & shaders',
+              onTap: () {
+                Get.back();
+                controller.openColorProfileBottomSheet(ctx);
+              },
+            ),
+            if (!controller.isOffline.value)
+              NFSheetTile(
+                icon: Symbols.cloud_rounded,
+                label: 'Server',
+                onTap: () {
+                  Get.back();
+                  PlayerBottomSheets.showVideoServers(ctx, controller);
+                },
+              ),
+            NFSheetTile(
+              icon: Icons.settings_outlined,
+              label: 'Player settings',
+              onTap: () {
+                Get.back();
+                showModalBottomSheet(
+                  context: Get.context!,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (c) => SizedBox(
+                    height: MediaQuery.of(c).size.height,
+                    child: const SettingsPlayer(isModal: true),
+                  ),
+                );
+              },
+            ),
+            NFSheetTile(
+              icon: Icons.lock_outline_rounded,
+              label: 'Lock screen',
+              onTap: () {
+                Get.back();
+                controller.isLocked.value = true;
+              },
+            ),
+            if (MediaQuery.sizeOf(context).width < 600)
+              NFSheetTile(
+                icon: Icons.screen_rotation_alt_rounded,
+                label: 'Rotate',
+                onTap: () {
+                  Get.back();
+                  controller.toggleOrientation();
+                },
+              ),
+            const SizedBox(height: 8),
+          ],
+        ),
       ),
     );
   }

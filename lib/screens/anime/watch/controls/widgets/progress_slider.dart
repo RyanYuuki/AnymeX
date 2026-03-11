@@ -14,6 +14,8 @@ class ProgressSlider extends StatefulWidget {
   final Color? secondaryActiveTrackColor;
   final Color? thumbColor;
   final Color? overlayColor;
+  final Color? segmentColor;
+  final Color? recapSegmentColor;
 
   const ProgressSlider({
     super.key,
@@ -23,6 +25,8 @@ class ProgressSlider extends StatefulWidget {
     this.secondaryActiveTrackColor,
     this.thumbColor,
     this.overlayColor,
+    this.segmentColor,
+    this.recapSegmentColor,
   });
 
   @override
@@ -80,6 +84,12 @@ class _ProgressSliderState extends State<ProgressSlider> {
                     painter: SkipTimelinePainter(
                       skipTimes: skipTimes,
                       totalDuration: totalDuration,
+                      currentPosition: Duration(
+                        milliseconds: clampedPosition.toInt(),
+                      ),
+                      hideUnderThumb: widget.style != SliderStyle.ios,
+                      segmentColor: widget.segmentColor,
+                      recapSegmentColor: widget.recapSegmentColor,
                     ),
                   ),
                 ),
@@ -132,47 +142,88 @@ class _ProgressSliderState extends State<ProgressSlider> {
 class SkipTimelinePainter extends CustomPainter {
   final aniskip.EpisodeSkipTimes skipTimes;
   final Duration totalDuration;
-  static const Color _opColor = Color(0xFFEBC125);
-  static const Color _edColor = Color(0xFFEBC125);
-  static const Color _recapColor = Color(0xFF4CAF50);
+  final Duration currentPosition;
+  final bool hideUnderThumb;
+  final Color? segmentColor;
+  final Color? recapSegmentColor;
+  static const Color _defaultSegmentColor = Color(0xFFEBC125);
+  static const Color _defaultRecapColor = Color(0xFF4CAF50);
 
   const SkipTimelinePainter({
     required this.skipTimes,
     required this.totalDuration,
+    required this.currentPosition,
+    required this.hideUnderThumb,
+    this.segmentColor,
+    this.recapSegmentColor,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (totalDuration.inSeconds <= 0) return;
+    if (totalDuration.inMilliseconds <= 0) return;
 
-    final double widthPerSecond = size.width / totalDuration.inSeconds;
+    final double totalSeconds = totalDuration.inMilliseconds / 1000.0;
     final Paint paint = Paint()..style = PaintingStyle.fill;
     const double markerHeight = 4.0;
+    const double thumbCutoutHalfWidth = 5.0;
     final double yOffset = (size.height - markerHeight) / 2;
+    final double progressSeconds =
+        (currentPosition.inMilliseconds / 1000.0).clamp(0.0, totalSeconds);
+    final double thumbX =
+        totalSeconds > 0 ? (progressSeconds / totalSeconds) * size.width : 0.0;
 
-    void drawInterval(aniskip.SkipIntervals? interval, Color color) {
-      if (interval == null) return;
-      final double startX = interval.start * widthPerSecond;
-      final double width = (interval.end - interval.start) * widthPerSecond;
+    void drawSegment(double startX, double endX, Color color) {
+      final double clampedStart = startX.clamp(0.0, size.width);
+      final double clampedEnd = endX.clamp(0.0, size.width);
+      final double width = clampedEnd - clampedStart;
+      if (width <= 0) return;
+
       paint.color = color;
       canvas.drawRRect(
         RRect.fromRectAndRadius(
-          Rect.fromLTWH(startX, yOffset, width, markerHeight),
+          Rect.fromLTWH(clampedStart, yOffset, width, markerHeight),
           const Radius.circular(2),
         ),
         paint,
       );
     }
-    
-    drawInterval(skipTimes.recap, _recapColor);
-    drawInterval(skipTimes.op, _opColor);
-    drawInterval(skipTimes.ed, _edColor);
+
+    void drawInterval(aniskip.SkipIntervals? interval, {Color? colorOverride}) {
+      if (interval == null) return;
+      final double startX = (interval.start / totalSeconds) * size.width;
+      final double endX = (interval.end / totalSeconds) * size.width;
+      final Color color = colorOverride ?? segmentColor ?? _defaultSegmentColor;
+
+      if (!hideUnderThumb) {
+        drawSegment(startX, endX, color);
+        return;
+      }
+
+      final double cutoutStart = thumbX - thumbCutoutHalfWidth;
+      final double cutoutEnd = thumbX + thumbCutoutHalfWidth;
+      if (cutoutEnd <= startX || cutoutStart >= endX) {
+        drawSegment(startX, endX, color);
+        return;
+      }
+
+      drawSegment(startX, cutoutStart, color);
+      drawSegment(cutoutEnd, endX, color);
+    }
+
+    drawInterval(skipTimes.recap,
+        colorOverride: recapSegmentColor ?? _defaultRecapColor);
+    drawInterval(skipTimes.op);
+    drawInterval(skipTimes.ed);
   }
 
   @override
   bool shouldRepaint(covariant SkipTimelinePainter oldDelegate) {
     return oldDelegate.skipTimes != skipTimes ||
-        oldDelegate.totalDuration != totalDuration;
+        oldDelegate.totalDuration != totalDuration ||
+        oldDelegate.currentPosition != currentPosition ||
+        oldDelegate.hideUnderThumb != hideUnderThumb ||
+        oldDelegate.segmentColor != segmentColor ||
+        oldDelegate.recapSegmentColor != recapSegmentColor;
   }
 }
 

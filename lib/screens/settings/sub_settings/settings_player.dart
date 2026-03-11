@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:anymex/constants/contants.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/data_keys/keys.dart';
+import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/themes/setup/media_indicator_theme_registry.dart';
 import 'package:anymex/screens/anime/watch/controls/themes/setup/player_control_theme_registry.dart';
 import 'package:anymex/screens/other_features.dart';
@@ -92,6 +93,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
   late List<String> _rightButtonIds;
   late List<String> _hiddenButtonIds;
   late Map<String, dynamic> _buttonConfigs;
+  bool _shouldApplyResizeModeOnClose = false;
 
   @override
   void initState() {
@@ -330,10 +332,28 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
       getTitle: (item) => item,
       onItemSelected: (selected) {
         final fit = resizeModes[selected];
-        if (fit != null) settings.resizeMode = fit.name;
+        if (fit != null) {
+          settings.resizeMode = fit.name;
+          _shouldApplyResizeModeOnClose = true;
+        }
       },
       leadingIcon: Icons.crop,
     );
+  }
+
+  @override
+  void dispose() {
+    final shouldApplyResizeOnClose =
+        widget.isModal && _shouldApplyResizeModeOnClose;
+    super.dispose();
+    if (!shouldApplyResizeOnClose) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!Get.isRegistered<PlayerController>()) return;
+      final controller = Get.find<PlayerController>();
+      if (controller.isClosed) return;
+      controller.applyConfiguredResizeMode();
+    });
   }
 
   void _showColorSelectionDialog(String title, Color currentColor,
