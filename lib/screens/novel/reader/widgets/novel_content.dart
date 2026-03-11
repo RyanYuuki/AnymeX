@@ -214,7 +214,7 @@ class NovelContentWidget extends StatelessWidget {
         
         if (controller.ttsEnabled.value && 
             controller.ttsHighlightedElement.value >= 0 &&
-            element.text?.trim() == controller._ttsSegments[controller.ttsHighlightedElement.value]) {
+            element.text?.trim() == controller.ttsSegments[controller.ttsHighlightedElement.value]) {
           styles['background-color'] = context.colors.primary.withOpacity(0.3).value.toRadixString(16);
           styles['border-radius'] = '4px';
         }
