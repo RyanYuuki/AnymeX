@@ -107,7 +107,8 @@ class NovelTopControls extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            controller.currentChapter.value.title ?? 'Unknown Chapter',
+                            controller.currentChapter.value.title ??
+                                'Unknown Chapter',
                             style: TextStyle(
                               color: context.colors.onSurface,
                               fontSize: 12,
@@ -126,7 +127,8 @@ class NovelTopControls extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const Icon(Icons.arrow_drop_down, size: 20, color: Colors.grey),
+                    const Icon(Icons.arrow_drop_down,
+                        size: 20, color: Colors.grey),
                   ],
                 ),
               ),
@@ -151,7 +153,13 @@ class NovelTopControls extends StatelessWidget {
           snapSizes: const [0.5],
           expand: false,
           builder: (context, scrollController) {
-            return ChapterListSheet(controller: controller);
+            return ChapterListSheet(
+              controller: controller,
+              // Pass the DraggableScrollableSheet's own controller so the
+              // sheet itself can be dragged. ChapterListSheet will use this
+              // for its own list, not the reader's scrollController.
+              sheetScrollController: scrollController,
+            );
           },
         );
       },
@@ -178,8 +186,13 @@ class NovelTopControls extends StatelessWidget {
 
 class ChapterListSheet extends StatefulWidget {
   final NovelReaderController controller;
+  final ScrollController sheetScrollController;
 
-  const ChapterListSheet({super.key, required this.controller});
+  const ChapterListSheet({
+    super.key,
+    required this.controller,
+    required this.sheetScrollController,
+  });
 
   @override
   State<ChapterListSheet> createState() => _ChapterListSheetState();
@@ -195,6 +208,15 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
   void initState() {
     super.initState();
     _updateCachedChapters();
+    // After first frame, scroll so current chapter is visible in the list.
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => _scrollToCurrentChapter());
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   void _updateCachedChapters() {
@@ -213,6 +235,24 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
     _cachedChapters = List<Chapter>.from(chapters);
   }
 
+  void _scrollToCurrentChapter() {
+    final currentNumber = widget.controller.currentChapter.value?.number;
+    if (currentNumber == null) return;
+    final index =
+        _cachedChapters.indexWhere((c) => c.number == currentNumber);
+    if (index <= 0) return;
+    if (!widget.sheetScrollController.hasClients) return;
+    // Dense ListTile ~48px; scroll so the current chapter is visible near top.
+    final maxExtent =
+        widget.sheetScrollController.position.maxScrollExtent;
+    final target = (index * 48.0).clamp(0.0, maxExtent);
+    widget.sheetScrollController.animateTo(
+      target,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
   String _formatNumber(double? number) {
     if (number == null) return '-';
     if (number % 1 == 0) return number.toInt().toString();
@@ -229,7 +269,9 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
           borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: CustomScrollView(
-          controller: widget.controller.scrollController,
+          // Use the DraggableScrollableSheet controller so dragging works,
+          // NOT the novel reader's scrollController.
+          controller: widget.sheetScrollController,
           slivers: [
             SliverToBoxAdapter(
               child: Column(
@@ -260,26 +302,20 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                                     fontFamily: 'Poppins-Bold',
                                   ),
                             ),
-                            Row(
-                              children: [
-                                IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      _isReversed = !_isReversed;
-                                      _updateCachedChapters();
-                                    });
-                                  },
-                                  icon: Icon(
-                                    _isReversed
-                                        ? Icons.arrow_upward_rounded
-                                        : Icons.arrow_downward_rounded,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                  ),
-                                  tooltip:
-                                      _isReversed ? 'Ascending' : 'Descending',
-                                ),
-                              ],
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _isReversed = !_isReversed;
+                                  _updateCachedChapters();
+                                });
+                              },
+                              icon: Icon(
+                                _isReversed
+                                    ? Icons.arrow_upward_rounded
+                                    : Icons.arrow_downward_rounded,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                              tooltip: _isReversed ? 'Ascending' : 'Descending',
                             ),
                           ],
                         ),
@@ -332,7 +368,8 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                 (context, index) {
                   final chapter = _cachedChapters[index];
                   final isCurrent =
-                      widget.controller.currentChapter.value?.number == chapter.number;
+                      widget.controller.currentChapter.value?.number ==
+                          chapter.number;
                   return _buildListItem(chapter, isCurrent);
                 },
                 childCount: _cachedChapters.length,
@@ -349,7 +386,8 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
     String displayTitle = chapter.title ?? '';
     final prefix = 'Chapter $formattedNum';
 
-    if (displayTitle.isEmpty || displayTitle == 'Chapter ${chapter.number}') {
+    if (displayTitle.isEmpty ||
+        displayTitle == 'Chapter ${chapter.number}') {
       displayTitle = prefix;
     } else if (!displayTitle.toLowerCase().contains('chapter')) {
       displayTitle = '$prefix: $displayTitle';
@@ -360,7 +398,8 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
           ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
           : null,
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
         dense: true,
         title: Text(
           displayTitle,
