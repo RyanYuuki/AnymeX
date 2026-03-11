@@ -109,7 +109,13 @@ class NovelReaderController extends GetxController {
   RxDouble ttsPitch = 1.0.obs;
   RxString ttsVoice = ''.obs;
   RxBool ttsAutoAdvance = true.obs;
+  // Maps display name -> locale, populated from flutterTts.getVoices
   RxList<String> ttsVoices = <String>[].obs;
+  // Grouped: 'device' locale voices first, then 'other'. Used by settings UI
+  // to show voices that are more likely to actually work at the top.
+  RxList<String> ttsVoicesDevice = <String>[].obs;
+  RxList<String> ttsVoicesOther = <String>[].obs;
+  final Map<String, String> _ttsVoiceLocaleMap = {};
   RxInt ttsCurrentElement = 0.obs;
   List<String> ttsSegments = [];
   RxInt ttsHighlightedElement = (-1).obs;
@@ -243,10 +249,12 @@ class NovelReaderController extends GetxController {
       return;
     }
 
+    // FIX: vol up -> isVolumeUp=true -> scrolls UP (negative offset)
+    //      vol down -> isVolumeUp=false -> scrolls DOWN (positive offset)
     if (event == 'up') {
-      handleVolumeButton(false); // Volume up scrolls up
+      handleVolumeButton(true);  // true = volume up = scroll up
     } else if (event == 'down') {
-      handleVolumeButton(true); // Volume down scrolls down
+      handleVolumeButton(false); // false = volume down = scroll down
     }
   }
 
@@ -378,7 +386,8 @@ class NovelReaderController extends GetxController {
       ttsHighlightedElement.value = -1;
     });
 
-    flutterTts.setProgressHandler((String text, int startOffset, int endOffset, String word) {
+    flutterTts.setProgressHandler(
+        (String text, int startOffset, int endOffset, String word) {
       ttsHighlightedElement.value = ttsCurrentElement.value;
     });
 
@@ -388,18 +397,44 @@ class NovelReaderController extends GetxController {
   Future<void> _loadVoices() async {
     try {
       final voices = await flutterTts.getVoices;
-      if (voices is List) {
-        ttsVoices.value = voices
-            .map((voice) {
-              if (voice is Map) {
-                return voice['name']?.toString() ?? '';
-              }
-              return voice.toString();
-            })
-            .where((name) => name.isNotEmpty)
-            .toSet()
-            .toList();
+      if (voices is! List) return;
+
+      _ttsVoiceLocaleMap.clear();
+
+      // Get device locale string e.g. "en_US" or "en-US"
+      final deviceLocale = Get.deviceLocale?.toString() ?? 'en';
+      final deviceLang = deviceLocale.split(RegExp(r'[_-]')).first.toLowerCase();
+
+      final deviceVoices = <String>[];
+      final otherVoices = <String>[];
+
+      for (final voice in voices) {
+        String name = '';
+        String locale = '';
+        if (voice is Map) {
+          name = voice['name']?.toString() ?? '';
+          locale = voice['locale']?.toString() ?? '';
+        } else {
+          name = voice.toString();
+        }
+        if (name.isEmpty) continue;
+        if (_ttsVoiceLocaleMap.containsKey(name)) continue; // deduplicate
+
+        _ttsVoiceLocaleMap[name] = locale;
+
+        // Group: device locale voices first (match on language prefix)
+        final voiceLang = locale.split(RegExp(r'[_-]')).first.toLowerCase();
+        if (voiceLang == deviceLang || locale.isEmpty) {
+          deviceVoices.add(name);
+        } else {
+          otherVoices.add(name);
+        }
       }
+
+      ttsVoicesDevice.value = deviceVoices;
+      ttsVoicesOther.value = otherVoices;
+      // Combined flat list for backward compat (device voices appear first)
+      ttsVoices.value = [...deviceVoices, ...otherVoices];
     } catch (e) {
       Logger.i('[NovelReader] Failed to load TTS voices: $e');
     }
@@ -455,7 +490,8 @@ class NovelReaderController extends GetxController {
 
     if (ttsVoice.value.isNotEmpty) {
       try {
-        await flutterTts.setVoice({"name": ttsVoice.value, "locale": ""});
+        final locale = _ttsVoiceLocaleMap[ttsVoice.value] ?? '';
+        await flutterTts.setVoice({"name": ttsVoice.value, "locale": locale});
       } catch (e) {
         Logger.i('[NovelReader] Failed to set TTS voice: $e');
       }
@@ -570,16 +606,17 @@ class NovelReaderController extends GetxController {
     _autoScrollTimer = null;
   }
 
+  /// [isVolumeUp] = true  → volume UP button  → scroll UP   (negative offset)
+  /// [isVolumeUp] = false → volume DOWN button → scroll DOWN (positive offset)
   void handleVolumeButton(bool isVolumeUp) {
     if (!volumeButtonScrolling.value || !scrollController.hasClients) return;
 
-    // Fixed direction: volume up scrolls up, volume down scrolls down
-    double amount = isVolumeUp ? -volumeScrollAmount : volumeScrollAmount;
-    double newOffset = scrollController.offset + amount;
-    double maxOffset = scrollController.position.maxScrollExtent;
-    double minOffset = scrollController.position.minScrollExtent;
+    final double amount = isVolumeUp ? -volumeScrollAmount : volumeScrollAmount;
+    final double minOffset = scrollController.position.minScrollExtent;
+    final double maxOffset = scrollController.position.maxScrollExtent;
+    final double newOffset =
+        (scrollController.offset + amount).clamp(minOffset, maxOffset);
 
-    newOffset = newOffset.clamp(minOffset, maxOffset);
     scrollController.animateTo(
       newOffset,
       duration: const Duration(milliseconds: 200),
@@ -763,9 +800,6 @@ class NovelReaderController extends GetxController {
 
   Future<void> navigateToChapter(int index) async {
     if (index < 0 || index >= chapters.length) return;
-
-    final oldChapter = currentChapter.value;
-    final oldOffset = scrollController.offset;
 
     _saveTracking(syncToCloud: false);
 
@@ -969,6 +1003,9 @@ class NovelReaderController extends GetxController {
 
     _stopAutoScroll();
     _disableVolumeKeys();
+    _ttsVoiceLocaleMap.clear();
+    ttsVoicesDevice.value = [];
+    ttsVoicesOther.value = [];
     unawaited(flutterTts.stop());
     ttsPlaying.value = false;
     _saveSettings();
