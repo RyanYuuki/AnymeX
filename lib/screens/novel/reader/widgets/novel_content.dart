@@ -25,7 +25,7 @@ class NovelContentWidget extends StatelessWidget {
         // Single tap toggles controls
         controller.toggleControls();
       },
-      onLongPress: (details) {
+      onLongPress: () {
         // Long press for selection - handled by SelectionArea
         HapticFeedback.mediumImpact();
       },
