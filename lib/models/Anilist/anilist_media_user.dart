@@ -20,6 +20,7 @@ class TrackedMedia {
   String? userName;
   DateTime? startedAt;
   DateTime? completedAt;
+  bool? isPrivate;
   String? userAvatar;
   int? userProgress;
   double? userScore;
@@ -47,6 +48,7 @@ class TrackedMedia {
     this.userScore,
     this.startedAt,
     this.completedAt,
+    this.isPrivate,
   });
 
   factory TrackedMedia.fromJson(Map<String, dynamic> json) {
@@ -77,7 +79,8 @@ class TrackedMedia {
             (json['media']['mediaListEntry']?['id'] ?? json['media']['id'])
                 .toString(),
         startedAt: _parseFuzzyDate(json['startedAt']),
-        completedAt: _parseFuzzyDate(json['completedAt']));
+        completedAt: _parseFuzzyDate(json['completedAt']),
+        isPrivate: json['private'] as bool?);
   }
 
   factory TrackedMedia.fromSocialJson(Map<String, dynamic> json) {
