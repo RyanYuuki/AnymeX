@@ -44,9 +44,10 @@ class NovelContentWidget extends StatelessWidget {
         }
       },
       onVerticalDragEnd: (details) {
-        if (controller.swipeGestures.value) {
-          controller.handleSwipe(details, false);
-        }
+        controller.handleSwipe(details, false);
+      },
+      onHorizontalDragEnd: (details) {
+        controller.handleSwipe(details, true);
       },
       child: Container(
         color: Colors.transparent,
@@ -119,45 +120,48 @@ class NovelContentWidget extends StatelessWidget {
         if (notification is ScrollUpdateNotification) {}
         return false;
       },
-      child: CustomScrollView(
-        controller: controller.scrollController,
-        physics: const AlwaysScrollableScrollPhysics(),
-        slivers: [
-          Obx(() {
-            return SliverPadding(
-              padding: EdgeInsets.symmetric(
-                horizontal: controller.paddingHorizontal.value,
-                vertical: controller.paddingVertical.value,
-              ),
-              sliver: HtmlWidget(
-                controller.novelContent.value,
-                rebuildTriggers: [
-                  controller.showControls.value,
-                  controller.fontSize.value,
-                  controller.lineHeight.value,
-                  controller.letterSpacing.value,
-                  controller.wordSpacing.value,
-                  controller.paragraphSpacing.value,
-                  controller.fontFamily.value,
-                  controller.textAlign.value,
-                  controller.themeMode.value,
-                  controller.backgroundOpacity.value,
-                  controller.paddingHorizontal.value,
-                  controller.paddingVertical.value,
-                ],
-                renderMode: RenderMode.sliverList,
-                textStyle: _getBaseTextStyle(context),
-                customWidgetBuilder: (element) =>
-                    _getCustomWidget(element, context),
-                enableCaching: true,
-                customStylesBuilder: (element) =>
-                    _getCustomStyles(element, context),
-                onLoadingBuilder: (context, element, loadingProgress) =>
-                    const SizedBox.shrink(),
-              ),
-            );
-          }),
-        ],
+      child: SelectionArea(
+        child: CustomScrollView(
+          controller: controller.scrollController,
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            Obx(() {
+              return SliverPadding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: controller.paddingHorizontal.value,
+                  vertical: controller.paddingVertical.value,
+                ),
+                sliver: HtmlWidget(
+                  controller.novelContent.value,
+                  rebuildTriggers: [
+                    controller.showControls.value,
+                    controller.fontSize.value,
+                    controller.lineHeight.value,
+                    controller.letterSpacing.value,
+                    controller.wordSpacing.value,
+                    controller.paragraphSpacing.value,
+                    controller.fontFamily.value,
+                    controller.textAlign.value,
+                    controller.themeMode.value,
+                    controller.backgroundOpacity.value,
+                    controller.paddingHorizontal.value,
+                    controller.paddingVertical.value,
+                    controller.ttsHighlightedElement.value,
+                  ],
+                  renderMode: RenderMode.sliverList,
+                  textStyle: _getBaseTextStyle(context),
+                  customWidgetBuilder: (element) =>
+                      _getCustomWidget(element, context),
+                  enableCaching: true,
+                  customStylesBuilder: (element) =>
+                      _getCustomStyles(element, context),
+                  onLoadingBuilder: (context, element, loadingProgress) =>
+                      const SizedBox.shrink(),
+                ),
+              );
+            }),
+          ],
+        ),
       ),
     );
   }
@@ -207,6 +211,13 @@ class NovelContentWidget extends StatelessWidget {
         styles['margin-right'] = '0';
         styles['padding'] = '0';
         styles['text-align'] = _getTextAlignmentString();
+        
+        if (controller.ttsEnabled.value && 
+            controller.ttsHighlightedElement.value >= 0 &&
+            element.text?.trim() == controller._ttsSegments[controller.ttsHighlightedElement.value]) {
+          styles['background-color'] = context.colors.primary.withOpacity(0.3).value.toRadixString(16);
+          styles['border-radius'] = '4px';
+        }
         break;
 
       case 'div':
