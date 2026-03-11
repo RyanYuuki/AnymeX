@@ -69,6 +69,17 @@ class ExtensionTestController extends GetxController {
     }
   }
 
+  void toggleSelectAll(List<String> extensionNames) {
+    final names = extensionNames.where((n) => n.isNotEmpty).toList();
+    final allSelected = names.length == selectedExtensions.length &&
+        names.every((n) => selectedExtensions.contains(n));
+    if (allSelected) {
+      selectedExtensions.clear();
+    } else {
+      selectedExtensions.assignAll(names);
+    }
+  }
+
   void clearTests() {
     testResults.clear();
   }
