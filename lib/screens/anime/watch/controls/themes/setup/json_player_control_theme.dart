@@ -284,6 +284,9 @@ class ThemeRenderer {
                 _resolveNullableColor(zone.progressSecondaryActiveTrackColor),
             thumbColor: _resolveNullableColor(zone.progressThumbColor),
             overlayColor: _resolveNullableColor(zone.progressOverlayColor),
+            segmentColor: _resolveNullableColor(zone.progressSegmentColor),
+            recapSegmentColor:
+                _resolveNullableColor(zone.progressRecapSegmentColor),
           ),
         ));
         kids.add(SizedBox(height: zone.vibes.progressBottomSpacing));
@@ -524,10 +527,14 @@ class ThemeRenderer {
         final secondaryActiveTrackColor =
             item.grabString('secondaryActiveTrackColor') ??
                 item.grabString('progressSecondaryActiveTrackColor');
-        final thumbColor =
-            item.grabString('thumbColor') ?? item.grabString('progressThumbColor');
+        final thumbColor = item.grabString('thumbColor') ??
+            item.grabString('progressThumbColor');
         final overlayColor = item.grabString('overlayColor') ??
             item.grabString('progressOverlayColor');
+        final segmentColor = item.grabString('segmentColor') ??
+            item.grabString('progressSegmentColor');
+        final recapSegmentColor = item.grabString('recapSegmentColor') ??
+            item.grabString('progressRecapSegmentColor');
         return ProgressSlider(
           style: _toSliderStyle(item.grabString('progressStyle'),
               fallback: SliderStyle.capsule),
@@ -537,6 +544,8 @@ class ThemeRenderer {
               _resolveNullableColor(secondaryActiveTrackColor),
           thumbColor: _resolveNullableColor(thumbColor),
           overlayColor: _resolveNullableColor(overlayColor),
+          segmentColor: _resolveNullableColor(segmentColor),
+          recapSegmentColor: _resolveNullableColor(recapSegmentColor),
         );
 
       case 'time_current':
@@ -726,6 +735,8 @@ class ThemeRenderer {
       tooltip: item.grabString('tooltip') ?? _tooltipForId(id),
       enabled: enabled,
       onTap: enabled ? () => _doAction(id, item) : null,
+      onLongPress:
+          enabled && id == 'aspect_ratio' ? controller.resetVideoFit : null,
       guts: Icon(icon,
           size: style.iconSize, color: enabled ? iconColor : disabledColor),
     );
@@ -767,6 +778,7 @@ class ThemeRenderer {
     required Widget guts,
     required bool enabled,
     required VoidCallback? onTap,
+    VoidCallback? onLongPress,
     String? tooltip,
   }) {
     final buttonColor = _resolveColor(style.color,
@@ -785,6 +797,7 @@ class ThemeRenderer {
         child: InkWell(
           borderRadius: BorderRadius.circular(style.radius),
           onTap: onTap,
+          onLongPress: onLongPress,
           child: SizedBox(
             width: style.size,
             height: style.size,
@@ -2060,6 +2073,8 @@ class BottomZone {
     this.progressSecondaryActiveTrackColor,
     this.progressThumbColor,
     this.progressOverlayColor,
+    this.progressSegmentColor,
+    this.progressRecapSegmentColor,
     required this.outsidePadding,
     required this.vibes,
   });
@@ -2074,6 +2089,8 @@ class BottomZone {
   final String? progressSecondaryActiveTrackColor;
   final String? progressThumbColor;
   final String? progressOverlayColor;
+  final String? progressSegmentColor;
+  final String? progressRecapSegmentColor;
 
   final EdgeInsets outsidePadding;
   final ZoneVibes vibes;
@@ -2115,14 +2132,15 @@ class BottomZone {
           fallback: SliderStyle.ios),
       progressPadding: _readEdgeInsets(
           json['progressPadding'], const EdgeInsets.symmetric(horizontal: 4)),
-      progressActiveTrackColor:
-          _readString(json['progressActiveTrackColor']),
+      progressActiveTrackColor: _readString(json['progressActiveTrackColor']),
       progressInactiveTrackColor:
           _readString(json['progressInactiveTrackColor']),
       progressSecondaryActiveTrackColor:
           _readString(json['progressSecondaryActiveTrackColor']),
       progressThumbColor: _readString(json['progressThumbColor']),
       progressOverlayColor: _readString(json['progressOverlayColor']),
+      progressSegmentColor: _readString(json['progressSegmentColor']),
+      progressRecapSegmentColor: _readString(json['progressRecapSegmentColor']),
       outsidePadding: _readEdgeInsets(
           json['outsidePadding'], const EdgeInsets.only(bottom: 6)),
       vibes: vibes,

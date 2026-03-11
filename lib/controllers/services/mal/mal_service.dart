@@ -15,9 +15,11 @@ import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Service/base_service.dart';
 import 'package:anymex/models/Service/online_service.dart';
+import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
 import 'package:anymex/screens/library/online/manga_list.dart';
+import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/fallback/fallback_manga.dart';
 import 'package:anymex/utils/function.dart';
@@ -34,6 +36,37 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
 class MalService extends GetxController implements BaseService, OnlineService {
+  Media? _firstMediaWithCover(Iterable<Media> mediaList) {
+    for (final media in mediaList) {
+      final cover = media.cover;
+      if (cover != null && cover.isNotEmpty) {
+        return media;
+      }
+    }
+    return null;
+  }
+
+  Media? _lastMediaWithCover(Iterable<Media> mediaList) {
+    final list = mediaList.toList(growable: false);
+    for (var index = list.length - 1; index >= 0; index--) {
+      final media = list[index];
+      final cover = media.cover;
+      if (cover != null && cover.isNotEmpty) {
+        return media;
+      }
+    }
+    return null;
+  }
+
+  void _openHomeButtonMedia(Media media) {
+    final tag = 'home-button-${media.serviceType.name}-${media.id}';
+    if (media.mediaType == ItemType.manga) {
+      navigate(() => MangaDetailsPage(media: media, tag: tag));
+      return;
+    }
+    navigate(() => AnimeDetailsPage(media: media, tag: tag));
+  }
+
   @override
   RxList<TrackedMedia> animeList = <TrackedMedia>[].obs;
   @override
@@ -205,6 +238,16 @@ class MalService extends GetxController implements BaseService, OnlineService {
           final overflow = constraints.maxWidth < 900;
           final overflowSecond =
               !isDesktop ? false : constraints.maxWidth < 600;
+          final animeButtonMedia = _firstMediaWithCover(trendingAnimes);
+          final mangaButtonMedia = _firstMediaWithCover(
+            trendingManga.isNotEmpty ? trendingManga : trendingMangas,
+          );
+          final otherButtonMedia = _lastMediaWithCover([
+            ...popularAnimes,
+            ...(topManga.isNotEmpty ? topManga : popularMangas),
+            ...(trendingManga.isNotEmpty ? trendingManga : trendingMangas),
+            ...trendingAnimes,
+          ]);
           return Wrap(
             alignment: WrapAlignment.center,
             spacing: 15,
@@ -213,14 +256,14 @@ class MalService extends GetxController implements BaseService, OnlineService {
                 width: width,
                 height: !isDesktop ? 70 : 90,
                 buttonText: "ANIME LIST",
-                backgroundImage: trendingAnimes.isEmpty
-                    ? ''
-                    : trendingAnimes.firstWhere((e) => e.cover != null).cover ??
-                        '',
+                backgroundImage: animeButtonMedia?.cover ?? '',
                 borderRadius: 16.multiplyRadius(),
                 onPressed: () {
                   navigate(() => const AnimeList());
                 },
+                onLongPress: animeButtonMedia == null
+                    ? null
+                    : () => _openHomeButtonMedia(animeButtonMedia),
               ),
               Padding(
                 padding: EdgeInsets.only(top: overflowSecond ? 8.0 : 0),
@@ -229,31 +272,31 @@ class MalService extends GetxController implements BaseService, OnlineService {
                   height: !isDesktop ? 70 : 90,
                   buttonText: "MANGA LIST",
                   borderRadius: 16.multiplyRadius(),
-                  backgroundImage:
-                      trendingMangas.firstWhere((e) => e.cover != null).cover ??
-                          '',
+                  backgroundImage: mangaButtonMedia?.cover ?? '',
                   onPressed: () {
                     navigate(() => const AnilistMangaList());
                   },
+                  onLongPress: mangaButtonMedia == null
+                      ? null
+                      : () => _openHomeButtonMedia(mangaButtonMedia),
                 ),
               ),
               Padding(
                 padding: EdgeInsets.only(top: overflow ? 8.0 : 0),
                 child: ImageButton(
-                  width: width,
+                  width: constraints.maxWidth > (width * 3)
+                      ? width
+                      : width * 2 + 15,
                   height: !isDesktop ? 70 : 90,
                   buttonText: "OTHER",
                   borderRadius: 16.multiplyRadius(),
-                  backgroundImage: [
-                        ...popularAnimes,
-                        ...popularMangas,
-                        ...trendingMangas,
-                        ...trendingAnimes
-                      ].where((e) => e.cover != null).last.cover ??
-                      '',
+                  backgroundImage: otherButtonMedia?.cover ?? '',
                   onPressed: () {
                     navigate(() => const OtherFeaturesPage());
                   },
+                  onLongPress: otherButtonMedia == null
+                      ? null
+                      : () => _openHomeButtonMedia(otherButtonMedia),
                 ),
               ),
             ],
@@ -604,19 +647,26 @@ class MalService extends GetxController implements BaseService, OnlineService {
     final status = params.status;
     final progress = params.progress;
     final isAnime = params.isAnime;
+    final startedAt = params.startedAt;
+    final completedAt = params.completedAt;
 
     final token = AuthKeys.malAuthToken.get<String?>();
     final url = Uri.parse(
         'https://api.myanimelist.net/v2/${isAnime ? 'anime' : 'manga'}/$listId/my_list_status');
 
+    String _formatMalDate(DateTime d) =>
+        '${d.year}-${d.month.toString().padLeft(2,'0')}-${d.day.toString().padLeft(2,'0')}';
+
     final body = {
       if (status != null)
         'status': getMALStatusEquivalent(status, isAnime: isAnime),
-      if (score != null) 'score': score.toString(),
+      if (score != null) 'score': score.toInt().toString(),
       if (progress != null && isAnime)
         'num_watched_episodes': progress.toString(),
       if (progress != null && !isAnime)
         'num_chapters_read': progress.toString(),
+      if (startedAt != null) 'start_date': _formatMalDate(startedAt),
+      if (completedAt != null) 'finish_date': _formatMalDate(completedAt),
     };
 
     final req = await http.put(
@@ -634,7 +684,9 @@ class MalService extends GetxController implements BaseService, OnlineService {
           score: score,
           status: status,
           progress: progress,
-          isAnime: isAnime));
+          isAnime: isAnime,
+          startedAt: startedAt,
+          completedAt: completedAt));
     }
 
     if (req.statusCode == 200) {

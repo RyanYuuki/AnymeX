@@ -114,6 +114,8 @@ void main(List<String> args) async {
     } else {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
       SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+          systemNavigationBarDividerColor: Colors.transparent,
+          systemNavigationBarContrastEnforced: false,
           systemNavigationBarColor: Colors.transparent,
           statusBarColor: Colors.transparent,
           statusBarBrightness: Brightness.dark));
@@ -166,7 +168,9 @@ void _initializeGetxController() async {
   Get.put(SimklService());
   Get.put(MalService());
   Get.put(DiscordRPCController());
-  Get.put(SourceController());
+  if (!Get.isRegistered<SourceController>()) {
+    Get.put(SourceController());
+  }
   Get.put(Settings());
   Get.put(ServiceHandler());
   Get.put(GreetingController());

@@ -433,7 +433,6 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
   }
 
   Widget _buildImageForPaged(BuildContext context, PageUrl page, int index) {
-    final size = MediaQuery.of(context).size;
     final isContinuous =
         widget.controller.readingLayout.value == MangaPageViewMode.continuous;
 
@@ -455,6 +454,8 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                   fit: BoxFit.contain,
                   alignment: Alignment.center,
                   cropThreshold: 30,
+                  placeholder:
+                      _buildPageLoadingWidget(context, pageIndex: index),
                 )
               : ExtendedImage.network(
                   page.url,
@@ -482,26 +483,14 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                   loadStateChanged: (ExtendedImageState state) {
                     switch (state.extendedImageLoadState) {
                       case LoadState.loading:
-                        final progress = (state.loadingProgress
-                                    ?.cumulativeBytesLoaded ??
-                                0) /
-                            (state.loadingProgress?.expectedTotalBytes ?? 1)
-                                .toDouble();
-                        return SizedBox(
-                          height: size.height,
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                AnymexProgressIndicator(value: progress),
-                                const SizedBox(height: 8),
-                                Text('Loading page ${index + 1}...'),
-                              ],
-                            ),
-                          ),
+                        return _buildPageLoadingWidget(
+                          context,
+                          pageIndex: index,
+                          progress: _networkLoadProgress(state),
                         );
 
                       case LoadState.failed:
+                        final size = MediaQuery.of(context).size;
                         return SizedBox(
                           height: size.height,
                           child: Container(
@@ -547,5 +536,41 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
         ),
       );
     });
+  }
+
+  double? _networkLoadProgress(ExtendedImageState state) {
+    final progress = state.loadingProgress;
+    final totalBytes = progress?.expectedTotalBytes;
+    if (totalBytes == null || totalBytes <= 0) {
+      return null;
+    }
+
+    final loadedBytes = progress?.cumulativeBytesLoaded ?? 0;
+    return (loadedBytes / totalBytes).clamp(0.0, 1.0).toDouble();
+  }
+
+  Widget _buildPageLoadingWidget(
+    BuildContext context, {
+    required int pageIndex,
+    double? progress,
+  }) {
+    final size = MediaQuery.of(context).size;
+    final progressText = progress != null
+        ? ' (${(progress * 100).clamp(0, 100).toStringAsFixed(0)}%)'
+        : '';
+
+    return SizedBox(
+      height: size.height,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AnymexProgressIndicator(value: progress),
+            const SizedBox(height: 8),
+            Text('Loading page ${pageIndex + 1}$progressText...'),
+          ],
+        ),
+      ),
+    );
   }
 }

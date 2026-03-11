@@ -31,7 +31,19 @@ class LibraryController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _migrateGridDefaultToAuto();
     getPreferences();
+  }
+
+  void _migrateGridDefaultToAuto() {
+    final migrated = General.libraryGridAutoMigrated.get<bool>(false);
+    if (migrated) return;
+
+    for (final mediaType in ItemType.values) {
+      DynamicKeys.libraryGridSize.set(mediaType.name, 0);
+    }
+
+    General.libraryGridAutoMigrated.set(true);
   }
 
   @override
@@ -52,7 +64,7 @@ class LibraryController extends GetxController {
     currentSort = SortType.values[
         DynamicKeys.librarySortType.get<int>(type.value.name, SortType.lastAdded.index)];
     isAscending = DynamicKeys.librarySortOrder.get<bool>(type.value.name, false);
-    gridCount.value = DynamicKeys.libraryGridSize.get<int>(type.value.name, 3);
+    gridCount.value = DynamicKeys.libraryGridSize.get<int>(type.value.name, 0);
   }
 
   void savePreferences() {

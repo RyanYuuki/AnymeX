@@ -218,9 +218,10 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     service.setCurrentMedia(widget.media.id.toString());
     var data = service.currentMedia;
 
-    if (data.value.id != null || data.value.id != '') {
+    if ((data.value.id ?? '').isNotEmpty) {
       isListedAnime.value = true;
-      currentAnime = data;
+      currentAnime.value = data.value;
+      currentAnime.refresh();
     } else {
       isListedAnime.value = false;
       currentAnime.value = null;
@@ -502,7 +503,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
               child: Column(
                 children: [
                   Obx(() {
-                    widget.media.serviceType.onlineService.animeList;
+                    widget.media.serviceType.onlineService.animeList.value;
                     return Row(
                       children: [
                         if (widget.media.serviceType !=
@@ -865,19 +866,23 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
           animeProgress: animeProgress,
           currentAnime: currentAnime,
           media: anilistData ?? widget.media,
-          onUpdate: (id, score, status, progress) async {
+          onUpdate: (id, score, status, progress, startedAt, completedAt) async {
             final fetcher = widget.media.serviceType;
             final id = fetcher.onlineService.currentMedia.value.id;
-            fetcher.onlineService.updateListEntry(UpdateListEntryParams(
+            await fetcher.onlineService.updateListEntry(UpdateListEntryParams(
                 listId: id ?? widget.media.id,
                 syncIds: anilistData?.idMal != null ? [anilistData!.idMal] : [],
                 isAnime: true,
                 score: score,
                 status: status,
-                progress: progress));
+                progress: progress,
+                startedAt: startedAt,
+                completedAt: completedAt));
             currentAnime.value?.score = score.toString();
             currentAnime.value?.watchingStatus = status;
             currentAnime.value?.episodeCount = progress.toString();
+            currentAnime.value?.startedAt = startedAt;
+            currentAnime.value?.completedAt = completedAt;
             setState(() {});
           },
           onDelete: (s) async {
@@ -885,7 +890,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
             final id = fetcher.onlineService.currentMedia.value.mediaListId ??
                 widget.media.id;
             await fetcher.onlineService.deleteListEntry(id, isAnime: true);
-            setState(() {});
+            _checkAnimePresence();
           },
         );
       },

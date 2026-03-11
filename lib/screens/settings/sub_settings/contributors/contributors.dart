@@ -18,7 +18,7 @@ const Set<String> _excludedGithubIds = {
   '49699333',
 };
 
-const int _coreTeamPrThreshold = 20;
+const int _coreTeamCommitThreshold = 20;
 
 final Map<String, ContributorModel> _curatedContributors = {
   'ryanyuuki': const ContributorModel(
@@ -78,6 +78,18 @@ final Map<String, ContributorModel> _curatedContributors = {
       'Dartotsu': 'https://github.com/aayush2622/Dartotsu',
     },
   ),
+  'pandatech-sx': const ContributorModel(
+    githubLogin: 'PandaTech-SX',
+    githubId: '74928953',
+    displayName: 'Xerus',
+    avatarUrl: 'https://i.ibb.co/gF6HSFqZ/20250517-100044.png',
+    profileUrl: 'https://sxenon.carrd.co/',
+    roleTitle: 'Helped out with some UI designs',
+    prCount: 0,
+    commitCount: 0,
+    bannerUrl: 'https://i.ibb.co/zhy5G1Tv/Walpaper-1.png',
+    isSpecialThanks: false,
+  ),
 };
 
 Future<void> _openExternalLink(String url) async {
@@ -91,19 +103,14 @@ bool _isBotAccount(dynamic rawContributor) {
   final login = ((rawContributor['login'] as String?) ?? '').toLowerCase();
   final accountType = (rawContributor['type'] as String?) ?? '';
   final id = rawContributor['id']?.toString() ?? '';
-  if (_excludedGithubIds.contains(id)) {
-    return true;
-  }
-  if (accountType == 'Bot') {
-    return true;
-  }
+  if (login == 'openai') return true;
+  if (_excludedGithubIds.contains(id)) return true;
+  if (accountType == 'Bot') return true;
   return login.endsWith('[bot]') || login.endsWith('-bot');
 }
 
 int _toInt(dynamic value) {
-  if (value is int) {
-    return value;
-  }
+  if (value is int) return value;
   return int.tryParse(value?.toString() ?? '') ?? 0;
 }
 
@@ -118,23 +125,15 @@ Future<Map<String, ContributorModel>> _fetchContributorProfiles() async {
       Uri.parse('$endpoint&page=$page'),
       headers: {'Accept': 'application/vnd.github.v3+json'},
     );
-    if (response.statusCode != 200) {
-      break;
-    }
+    if (response.statusCode != 200) break;
 
     final List<dynamic> pageData = jsonDecode(response.body) as List<dynamic>;
-    if (pageData.isEmpty) {
-      break;
-    }
+    if (pageData.isEmpty) break;
 
     for (final rawContributor in pageData) {
-      if (_isBotAccount(rawContributor)) {
-        continue;
-      }
+      if (_isBotAccount(rawContributor)) continue;
       final login = ((rawContributor['login'] as String?) ?? '').trim();
-      if (login.isEmpty) {
-        continue;
-      }
+      if (login.isEmpty) continue;
       profilesByLogin[login.toLowerCase()] = ContributorModel(
         githubLogin: login,
         githubId: rawContributor['id']?.toString() ?? login,
@@ -157,7 +156,7 @@ Future<Map<String, ContributorModel>> _fetchContributorProfiles() async {
 
 Future<Map<String, int>> _fetchPullRequestCounts() async {
   const endpoint =
-      'https://api.github.com/repos/RyanYuuki/AnymeX/pulls?state=all&per_page=100';
+      'https://api.github.com/repos/RyanYuuki/AnymeX/pulls?state=closed&per_page=100';
   final Map<String, int> pullRequestCounts = {};
   var page = 1;
 
@@ -166,24 +165,17 @@ Future<Map<String, int>> _fetchPullRequestCounts() async {
       Uri.parse('$endpoint&page=$page'),
       headers: {'Accept': 'application/vnd.github.v3+json'},
     );
-    if (response.statusCode != 200) {
-      break;
-    }
+    if (response.statusCode != 200) break;
 
     final List<dynamic> pageData = jsonDecode(response.body) as List<dynamic>;
-    if (pageData.isEmpty) {
-      break;
-    }
+    if (pageData.isEmpty) break;
 
     for (final rawPullRequest in pageData) {
+      if (rawPullRequest['merged_at'] == null) continue;
       final dynamic rawAuthor = rawPullRequest['user'];
-      if (rawAuthor == null || _isBotAccount(rawAuthor)) {
-        continue;
-      }
+      if (rawAuthor == null || _isBotAccount(rawAuthor)) continue;
       final login = ((rawAuthor['login'] as String?) ?? '').trim();
-      if (login.isEmpty) {
-        continue;
-      }
+      if (login.isEmpty) continue;
       final normalizedLogin = login.toLowerCase();
       pullRequestCounts[normalizedLogin] =
           (pullRequestCounts[normalizedLogin] ?? 0) + 1;
@@ -195,12 +187,37 @@ Future<Map<String, int>> _fetchPullRequestCounts() async {
   return pullRequestCounts;
 }
 
+Future<List<StaffModel>> _fetchStaff() async {
+  try {
+    final response = await http.get(
+      Uri.parse(
+          'https://github.com/Shebyyy/AnymeX/raw/refs/heads/beta/staff.json'),
+    );
+    if (response.statusCode != 200) return [];
+    final Map<String, dynamic> data =
+        jsonDecode(response.body) as Map<String, dynamic>;
+    final List<dynamic> list = (data['staff'] as List<dynamic>?) ?? [];
+    return list
+        .map((e) => StaffModel(
+              displayName: (e['displayName'] as String?) ?? '',
+              role: (e['role'] as String?) ?? '',
+              avatarUrl: (e['avatarUrl'] as String?) ?? '',
+              profileUrl: (e['profileUrl'] as String?) ?? '',
+              platforms:
+                  List<String>.from((e['platforms'] as List<dynamic>?) ?? []),
+            ))
+        .where((s) => s.displayName.isNotEmpty)
+        .toList();
+  } catch (_) {
+    return [];
+  }
+}
+
 Future<List<ContributorModel>> fetchContributors() async {
   final profilesByLogin = await _fetchContributorProfiles();
   final pullRequestCounts = await _fetchPullRequestCounts();
   final allLogins = <String>{
     ...profilesByLogin.keys,
-    ...pullRequestCounts.keys,
     ..._curatedContributors.keys,
   };
 
@@ -208,6 +225,15 @@ Future<List<ContributorModel>> fetchContributors() async {
   for (final normalizedLogin in allLogins) {
     final curatedContributor = _curatedContributors[normalizedLogin];
     final profileContributor = profilesByLogin[normalizedLogin];
+
+    final commitCount = profileContributor?.commitCount ?? 0;
+    if (curatedContributor == null &&
+        !(curatedContributor?.isPinnedCoreTeam == true ||
+            curatedContributor?.isSpecialThanks == true) &&
+        commitCount == 0) {
+      continue;
+    }
+
     final login = curatedContributor?.githubLogin ??
         profileContributor?.githubLogin ??
         normalizedLogin;
@@ -227,7 +253,7 @@ Future<List<ContributorModel>> fetchContributors() async {
           'https://github.com/$login',
       roleTitle: curatedContributor?.roleTitle ?? 'Contributor',
       prCount: pullRequestCounts[normalizedLogin] ?? 0,
-      commitCount: profileContributor?.commitCount ?? 0,
+      commitCount: commitCount,
       bannerUrl:
           curatedContributor?.bannerUrl ?? profileContributor?.bannerUrl ?? '',
       roleLinks: curatedContributor?.roleLinks ?? const <String, String>{},
@@ -237,16 +263,30 @@ Future<List<ContributorModel>> fetchContributors() async {
   }
 
   contributors.sort((left, right) {
-    final byPrs = right.prCount.compareTo(left.prCount);
-    if (byPrs != 0) {
-      return byPrs;
-    }
+    final byCommits = right.commitCount.compareTo(left.commitCount);
+    if (byCommits != 0) return byCommits;
     return left.displayName
         .toLowerCase()
         .compareTo(right.displayName.toLowerCase());
   });
 
   return contributors;
+}
+
+class StaffModel {
+  final String displayName;
+  final String role;
+  final String avatarUrl;
+  final String profileUrl;
+  final List<String> platforms;
+
+  const StaffModel({
+    required this.displayName,
+    required this.role,
+    required this.avatarUrl,
+    required this.profileUrl,
+    required this.platforms,
+  });
 }
 
 class ContributorsPage extends StatefulWidget {
@@ -263,6 +303,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
   final RxList<ContributorModel> specialThanks = <ContributorModel>[].obs;
   final RxList<ContributorModel> communityContributors =
       <ContributorModel>[].obs;
+  final RxList<StaffModel> staff = <StaffModel>[].obs;
 
   @override
   void initState() {
@@ -279,48 +320,58 @@ class _ContributorsPageState extends State<ContributorsPage> {
     isLoading.value = true;
     errorMessage.value = '';
     try {
-      final allContributors = await fetchContributors();
+      final results = await Future.wait([
+        fetchContributors(),
+        _fetchStaff(),
+      ]);
+
+      final allContributors = results[0] as List<ContributorModel>;
+      final staffList = results[1] as List<StaffModel>;
 
       final coreTeamList = allContributors
           .where(
-            (contributor) =>
-                !contributor.isSpecialThanks &&
-                (contributor.isPinnedCoreTeam ||
-                    contributor.prCount >= _coreTeamPrThreshold),
+            (c) =>
+                !c.isSpecialThanks &&
+                (c.isPinnedCoreTeam ||
+                    c.commitCount >= _coreTeamCommitThreshold),
           )
           .toList();
       coreTeamList.sort((left, right) {
         final leftIsRyan = _isRyanYuuki(left);
         final rightIsRyan = _isRyanYuuki(right);
-        if (leftIsRyan && !rightIsRyan) {
-          return -1;
-        }
-        if (!leftIsRyan && rightIsRyan) {
-          return 1;
-        }
-        final byPrs = right.prCount.compareTo(left.prCount);
-        if (byPrs != 0) {
-          return byPrs;
-        }
-        return right.commitCount.compareTo(left.commitCount);
+        if (leftIsRyan && !rightIsRyan) return -1;
+        if (!leftIsRyan && rightIsRyan) return 1;
+        final byCommits = right.commitCount.compareTo(left.commitCount);
+        if (byCommits != 0) return byCommits;
+        return right.prCount.compareTo(left.prCount);
       });
 
-      final specialThanksList = allContributors
-          .where((contributor) => contributor.isSpecialThanks)
-          .toList();
+      final specialThanksList =
+          allContributors.where((c) => c.isSpecialThanks).toList();
 
       final communityList = allContributors
           .where(
-            (contributor) =>
-                !contributor.isSpecialThanks &&
-                !contributor.isPinnedCoreTeam &&
-                contributor.prCount < _coreTeamPrThreshold,
+            (c) =>
+                !c.isSpecialThanks &&
+                !c.isPinnedCoreTeam &&
+                c.commitCount < _coreTeamCommitThreshold,
           )
           .toList();
+      final xerusIndex = communityList.indexWhere(
+        (c) =>
+            c.githubLogin.toLowerCase() == 'pandatech-sx' ||
+            c.displayName.toLowerCase() == 'xerus',
+      );
+      if (xerusIndex != -1) {
+        final xerus = communityList.removeAt(xerusIndex);
+        final insertAt = communityList.length < 3 ? communityList.length : 3;
+        communityList.insert(insertAt, xerus);
+      }
 
       coreTeam.assignAll(coreTeamList);
       specialThanks.assignAll(specialThanksList);
       communityContributors.assignAll(communityList);
+      staff.assignAll(staffList);
     } catch (error) {
       errorMessage.value = 'Failed to load contributors';
       debugPrint('Contributors fetch error: $error');
@@ -371,7 +422,6 @@ class _ContributorsPageState extends State<ContributorsPage> {
     required String title,
     required List<ContributorModel> contributors,
     String? subtitle,
-    bool showCommits = false,
   }) {
     final colors = context.colors;
     if (contributors.isEmpty) {
@@ -427,7 +477,6 @@ class _ContributorsPageState extends State<ContributorsPage> {
                 context,
                 contributor: contributors[index],
                 index: index,
-                showCommits: showCommits,
               ),
             ),
           ),
@@ -440,7 +489,6 @@ class _ContributorsPageState extends State<ContributorsPage> {
     BuildContext context, {
     required ContributorModel contributor,
     required int index,
-    required bool showCommits,
   }) {
     final colors = context.colors;
 
@@ -476,10 +524,10 @@ class _ContributorsPageState extends State<ContributorsPage> {
                   fit: StackFit.expand,
                   children: [
                     if ((contributor.bannerUrl ?? '').isNotEmpty)
-                      Image.network(
-                        contributor.bannerUrl!,
+                      CachedNetworkImage(
+                        imageUrl: contributor.bannerUrl!,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) =>
+                        errorWidget: (_, __, ___) =>
                             Container(color: colors.primaryContainer),
                       )
                     else
@@ -572,9 +620,9 @@ class _ContributorsPageState extends State<ContributorsPage> {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          showCommits
-                              ? '${contributor.prCount} PRs • ${contributor.commitCount} commits'
-                              : '${contributor.prCount} PRs',
+                          contributor.commitCount == 1
+                              ? '1 commit • ${contributor.prCount} PRs'
+                              : '${contributor.commitCount} commits • ${contributor.prCount} PRs',
                           style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w600,
@@ -645,11 +693,12 @@ class _ContributorsPageState extends State<ContributorsPage> {
                     child: Text(
                       '#${index + 1}',
                       style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: index < 3
-                              ? colors.primary
-                              : colors.onSurface.opaque(0.7)),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: index < 3
+                            ? colors.primary
+                            : colors.onSurface.opaque(0.7),
+                      ),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -689,7 +738,9 @@ class _ContributorsPageState extends State<ContributorsPage> {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      '${contributor.prCount} PRs',
+                      contributor.commitCount == 1
+                          ? '1 commit'
+                          : '${contributor.commitCount} commits',
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
@@ -697,6 +748,25 @@ class _ContributorsPageState extends State<ContributorsPage> {
                       ),
                     ),
                   ),
+                  if (contributor.prCount > 0) ...[
+                    const SizedBox(width: 4),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 7, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: colors.primary.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        '${contributor.prCount} PRs',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: colors.primary,
+                        ),
+                      ),
+                    ),
+                  ],
                   const SizedBox(width: 6),
                   Icon(
                     Icons.chevron_right_rounded,
@@ -707,6 +777,96 @@ class _ContributorsPageState extends State<ContributorsPage> {
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStaffSection(BuildContext context) {
+    final colors = context.colors;
+    if (staff.isEmpty)
+      return const SliverToBoxAdapter(child: SizedBox.shrink());
+
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      sliver: SliverList(
+        delegate: SliverChildBuilderDelegate(
+          (context, index) {
+            final member = staff[index];
+            return StaggeredFadeSlide(
+              index: index,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(14),
+                    onTap: () => _openExternalLink(member.profileUrl),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(14),
+                        color: colors.surfaceContainerLow.opaque(0.5),
+                        border: Border.all(
+                          color: colors.outlineVariant.withOpacity(0.35),
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 20,
+                            backgroundImage: member.avatarUrl.isNotEmpty
+                                ? CachedNetworkImageProvider(member.avatarUrl)
+                                : null,
+                            backgroundColor: colors.primaryContainer,
+                            child: member.avatarUrl.isEmpty
+                                ? Icon(Icons.person_rounded,
+                                    size: 18, color: colors.onPrimaryContainer)
+                                : null,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  member.displayName,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: colors.onSurface,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                Text(
+                                  member.role,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: colors.onSurface.withOpacity(0.6),
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Icon(
+                            Icons.chevron_right_rounded,
+                            size: 18,
+                            color: colors.onSurface.withOpacity(0.35),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+          childCount: staff.length,
         ),
       ),
     );
@@ -747,7 +907,6 @@ class _ContributorsPageState extends State<ContributorsPage> {
                   context,
                   title: 'Core Team',
                   contributors: coreTeam,
-                  showCommits: true,
                 ),
                 if (specialThanks.isNotEmpty)
                   _buildFeaturedSection(
@@ -759,6 +918,8 @@ class _ContributorsPageState extends State<ContributorsPage> {
                   ),
                 _buildSectionHeader(context, 'Community Contributors'),
                 _buildContributorsList(context, communityContributors),
+                _buildSectionHeader(context, 'Staff'),
+                _buildStaffSection(context),
                 const SliverToBoxAdapter(child: SizedBox(height: 48)),
               ],
             ],

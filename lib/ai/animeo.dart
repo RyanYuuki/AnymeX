@@ -130,7 +130,7 @@ Future<List<Media>> getAiRecommendations(
         }
 
         if (!isDuplicate) {
-          uniqueMap[media.id!] = media;
+          uniqueMap[media.id] = media;
         }
       }
     }
@@ -350,7 +350,7 @@ Future<String?> _getAnilistIdFromMal(String malId) async {
 
   try {
     final token = AuthKeys.authToken.get<String?>();
-    final query = '''
+    const query = '''
     query(\$idMal: Int) {
       Media(idMal: \$idMal, type: ANIME) {
         id
@@ -414,7 +414,7 @@ Future<List<Media>> _fetchAnilistRecommendations({
     final token = AuthKeys.authToken.get<String?>();
     if (token == null) return [];
 
-    final query = '''
+    const query = '''
     query(\$page: Int) {
       Page(page: \$page, perPage: 50) {
         recommendations(sort: RATING_DESC) {

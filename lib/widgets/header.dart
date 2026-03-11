@@ -93,11 +93,14 @@ class Header extends StatelessWidget {
                                 } else {
                                   navigate(() => const SearchPage(
                                         searchTerm: '',
-                                        isManga: false,
+                                    isManga: false,
                                       ));
                                 }
                               },
-                              icon: const Icon(IconlyLight.search))),
+                              icon: Icon(
+                                IconlyLight.search,
+                                color: context.colors.primary,
+                              ))),
                     ), desktopValue: TappableSearchBar(
                   onSubmitted: () {
                     if (type == PageType.manga) {

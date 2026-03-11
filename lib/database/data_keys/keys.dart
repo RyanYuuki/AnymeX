@@ -10,6 +10,7 @@ enum General {
   universalScrapper,
   enableBetaUpdates,
   imageCacheThresholdGb,
+  libraryGridAutoMigrated,
 }
 
 enum ThemeKeys {
@@ -29,6 +30,9 @@ enum PlayerUiKeys {
   playerControlTheme,
   playerControlThemesJson,
   mediaIndicatorTheme,
+  mpvCoreSettings,
+  betterPlayerCoreSettings,
+  mpvVisualSettings,
   currentVisualProfile,
   currentVisualSettings,
   selectedShader,
@@ -127,6 +131,9 @@ enum SourceKeys {
   activeSourceId,
   activeMangaSourceId,
   activeNovelSourceId,
+  animeExtensionOrder,
+  mangaExtensionOrder,
+  novelExtensionOrder,
 }
 
 enum AuthKeys {
@@ -193,6 +200,7 @@ enum PlayerSettingsKeys {
   autoSkipOP,
   autoSkipED,
   autoSkipOnce,
+  autoSkipRecap,
   enableSwipeControls,
   markAsCompleted,
   transitionSubtitle,
@@ -230,4 +238,5 @@ enum UISettingsKeys {
   usePosterColor,
   enablePosterKenBurns,
   carouselStyle,
+  showContinueWatchingCard,
 }

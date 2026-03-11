@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 
 class AnymexOnTap extends StatelessWidget {
   final VoidCallback? onTap;
+  final GestureLongPressCallback? onLongPress;
   final GestureTapUpCallback? onTapUp;
   final GestureTapDownCallback? onTapDown;
   final GestureTapCancelCallback? onTapCancel;
@@ -32,6 +33,7 @@ class AnymexOnTap extends StatelessWidget {
     this.onTapUp,
     this.onTapDown,
     this.onTapCancel,
+    this.onLongPress,
   });
 
   @override
@@ -52,6 +54,7 @@ class AnymexOnTap extends StatelessWidget {
               onTapUp: onTapUp,
               onTapDown: onTapDown,
               onTapCancel: onTapCancel,
+              onLongPress: onLongPress,
               child: AnimatedContainer(
                 duration: animationDuration,
                 transform: Matrix4.identity()..scale(isFocused ? scale : 1.0),
@@ -61,13 +64,11 @@ class AnymexOnTap extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   color: isFocused
-                      ? (bgColor ??
-                          context.colors.secondaryContainer)
+                      ? (bgColor ?? context.colors.secondaryContainer)
                       : Colors.transparent,
                   border: Border.all(
                     color: isFocused
-                        ? (focusedBorderColor ??
-                            context.colors.primary)
+                        ? (focusedBorderColor ?? context.colors.primary)
                         : Colors.transparent,
                     width: borderWidth,
                     strokeAlign: BorderSide.strokeAlignOutside,
@@ -83,11 +84,13 @@ class AnymexOnTap extends StatelessWidget {
       if (inkWell ?? false) {
         return InkWell(
           onTap: onTap,
+          onLongPress: onLongPress,
           child: child,
         );
       } else {
         return GestureDetector(
           onTap: onTap,
+          onLongPress: onLongPress,
           child: child,
         );
       }
@@ -149,8 +152,7 @@ class AnymexOnTapAdv extends StatelessWidget {
                     : Colors.transparent,
                 border: Border.all(
                   color: isFocused
-                      ? (focusedBorderColor ??
-                          context.colors.primary)
+                      ? (focusedBorderColor ?? context.colors.primary)
                       : Colors.transparent,
                   width: borderWidth,
                   strokeAlign: BorderSide.strokeAlignOutside,

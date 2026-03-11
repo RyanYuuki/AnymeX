@@ -154,9 +154,10 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
         .setCurrentMedia(widget.media.id.toString(), isManga: true);
     var data = mediaService.onlineService.currentMedia;
 
-    if (data.value.id != null || data.value.id != '') {
+    if ((data.value.id ?? '').isNotEmpty) {
       isListedManga.value = true;
-      currentManga = data;
+      currentManga.value = data.value;
+      currentManga.refresh();
     } else {
       isListedManga.value = false;
       currentManga.value = null;
@@ -725,14 +726,16 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
           currentAnime: currentManga,
           isManga: true,
           media: anilistData ?? widget.media,
-          onUpdate: (id, score, status, progress) async {
+          onUpdate: (id, score, status, progress, startedAt, completedAt) async {
             await mediaService.onlineService.updateListEntry(
                 UpdateListEntryParams(
                     listId: id,
                     isAnime: false,
                     score: score,
                     status: status,
-                    progress: progress));
+                    progress: progress,
+                    startedAt: startedAt,
+                    completedAt: completedAt));
             setState(() {});
           },
           onDelete: (s) async {
@@ -740,7 +743,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                 mediaService.onlineService.currentMedia.value.mediaListId;
             await mediaService.onlineService
                 .deleteListEntry(id!, isAnime: false);
-            setState(() {});
+            _checkMangaPresence();
           },
         );
       },
