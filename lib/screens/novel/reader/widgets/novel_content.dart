@@ -44,8 +44,6 @@ class NovelContentWidget extends StatelessWidget {
         }
       },
       onVerticalDragEnd: (details) {
-        // For continuous scroll, use vertical swipes for chapter navigation
-        // when at the top or bottom of the content
         if (controller.swipeGestures.value) {
           if (details.primaryVelocity != null) {
             final isScrollingDown = details.primaryVelocity! < 0;
@@ -54,13 +52,11 @@ class NovelContentWidget extends StatelessWidget {
                 ? controller.scrollController.position.maxScrollExtent 
                 : 0;
             
-            // At bottom of content and swiping down -> next chapter
             if (isScrollingDown && scrollPosition >= maxScroll - 50) {
               if (controller.canGoNext.value) {
                 controller.goToNextChapter();
               }
             }
-            // At top of content and swiping up -> previous chapter
             else if (!isScrollingDown && scrollPosition <= 50) {
               if (controller.canGoPrevious.value) {
                 controller.goToPreviousChapter();
@@ -70,7 +66,6 @@ class NovelContentWidget extends StatelessWidget {
         }
       },
       onHorizontalDragEnd: (details) {
-        // Horizontal swipes always navigate between chapters
         controller.handleSwipe(details, true);
       },
       child: Container(
