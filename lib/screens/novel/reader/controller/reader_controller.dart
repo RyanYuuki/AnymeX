@@ -109,12 +109,16 @@ class NovelReaderController extends GetxController {
   RxList<String> ttsVoices = <String>[].obs;
   RxInt ttsCurrentElement = 0.obs;
   List<String> _ttsSegments = [];
+  RxInt ttsHighlightedElement = (-1).obs;
 
   // Saved chapter for tracking
   Rx<Chapter> savedChapter = Chapter().obs;
 
   // Additional tracking for sync
   RxInt consecutiveReads = 0.obs;
+
+  // Text Selection
+  final Rx<GlobalKey> selectionKey = GlobalKey().obs;
 
   @override
   void onInit() {
@@ -318,6 +322,7 @@ class NovelReaderController extends GetxController {
     });
 
     flutterTts.setCompletionHandler(() {
+      ttsHighlightedElement.value = -1;
       if (ttsAutoAdvance.value) {
         ttsCurrentElement.value++;
         if (ttsCurrentElement.value < _ttsSegments.length) {
@@ -332,6 +337,11 @@ class NovelReaderController extends GetxController {
 
     flutterTts.setErrorHandler((msg) {
       ttsPlaying.value = false;
+      ttsHighlightedElement.value = -1;
+    });
+
+    flutterTts.setProgressHandler((String text, int startOffset, int endOffset, String word) {
+      ttsHighlightedElement.value = ttsCurrentElement.value;
     });
 
     unawaited(_loadVoices());
@@ -342,7 +352,12 @@ class NovelReaderController extends GetxController {
       final voices = await flutterTts.getVoices;
       if (voices is List) {
         ttsVoices.value = voices
-            .map((voice) => (voice as Map)['name']?.toString() ?? '')
+            .map((voice) {
+              if (voice is Map) {
+                return voice['name']?.toString() ?? '';
+              }
+              return voice.toString();
+            })
             .where((name) => name.isNotEmpty)
             .toSet()
             .toList();
@@ -357,6 +372,7 @@ class NovelReaderController extends GetxController {
     if (!enabled && ttsPlaying.value) {
       await flutterTts.stop();
       ttsPlaying.value = false;
+      ttsHighlightedElement.value = -1;
     }
     _saveSettings();
   }
@@ -367,6 +383,7 @@ class NovelReaderController extends GetxController {
     if (ttsPlaying.value) {
       await flutterTts.stop();
       ttsPlaying.value = false;
+      ttsHighlightedElement.value = -1;
       return;
     }
 
@@ -391,6 +408,7 @@ class NovelReaderController extends GetxController {
         ttsCurrentElement.value < 0 ||
         ttsCurrentElement.value >= _ttsSegments.length) {
       ttsPlaying.value = false;
+      ttsHighlightedElement.value = -1;
       return;
     }
 
@@ -398,9 +416,14 @@ class NovelReaderController extends GetxController {
     await flutterTts.setPitch(ttsPitch.value);
 
     if (ttsVoice.value.isNotEmpty) {
-      await flutterTts.setVoice({"name": ttsVoice.value});
+      try {
+        await flutterTts.setVoice({"name": ttsVoice.value, "locale": ""});
+      } catch (e) {
+        Logger.i('[NovelReader] Failed to set TTS voice: $e');
+      }
     }
 
+    ttsHighlightedElement.value = ttsCurrentElement.value;
     final text = _ttsSegments[ttsCurrentElement.value];
     await flutterTts.speak(text);
   }
@@ -543,17 +566,15 @@ class NovelReaderController extends GetxController {
   }
 
   void handleSwipe(DragEndDetails details, bool isReversed) {
-    if (!swipeGestures.value || !scrollController.hasClients) return;
+    if (!swipeGestures.value) return;
 
     if (details.primaryVelocity != null) {
       bool isLeftSwipe = details.primaryVelocity! > 0;
       bool isRightSwipe = details.primaryVelocity! < 0;
 
       if ((isLeftSwipe && !isReversed) || (isRightSwipe && isReversed)) {
-        // Next chapter
         if (canGoNext.value) goToNextChapter();
       } else if ((isRightSwipe && !isReversed) || (isLeftSwipe && isReversed)) {
-        // Previous chapter
         if (canGoPrevious.value) goToPreviousChapter();
       }
     }
@@ -840,6 +861,9 @@ class NovelReaderController extends GetxController {
 
   void setTtsVoice(String value) {
     ttsVoice.value = value;
+    if (ttsPlaying.value) {
+      unawaited(_speakCurrentElement());
+    }
     _saveSettings();
   }
 
@@ -879,6 +903,7 @@ class NovelReaderController extends GetxController {
     ttsVoice.value = '';
     ttsAutoAdvance.value = true;
     ttsCurrentElement.value = 0;
+    ttsHighlightedElement.value = -1;
 
     _stopAutoScroll();
     unawaited(flutterTts.stop());
