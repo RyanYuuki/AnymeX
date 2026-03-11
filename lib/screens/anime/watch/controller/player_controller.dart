@@ -302,6 +302,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       final Map<String, dynamic> defaultConfig = {
         'leftButtonIds': ['playlist'],
         'rightButtonIds': [
+          'pip',
           'shaders',
           'subtitles',
           'server',
@@ -314,6 +315,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         'hiddenButtonIds': [],
         'buttonConfigs': {
           'playlist': {'visible': true},
+          'pip': {'visible': true},
           'shaders': {'visible': true},
           'subtitles': {'visible': true},
           'server': {'visible': true},
