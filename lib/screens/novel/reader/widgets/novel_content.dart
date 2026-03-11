@@ -44,9 +44,33 @@ class NovelContentWidget extends StatelessWidget {
         }
       },
       onVerticalDragEnd: (details) {
-        controller.handleSwipe(details, false);
+        // For continuous scroll, use vertical swipes for chapter navigation
+        // when at the top or bottom of the content
+        if (controller.swipeGestures.value) {
+          if (details.primaryVelocity != null) {
+            final isScrollingDown = details.primaryVelocity! < 0;
+            final scrollPosition = controller.scrollController.offset;
+            final maxScroll = controller.scrollController.hasClients 
+                ? controller.scrollController.position.maxScrollExtent 
+                : 0;
+            
+            // At bottom of content and swiping down -> next chapter
+            if (isScrollingDown && scrollPosition >= maxScroll - 50) {
+              if (controller.canGoNext.value) {
+                controller.goToNextChapter();
+              }
+            }
+            // At top of content and swiping up -> previous chapter
+            else if (!isScrollingDown && scrollPosition <= 50) {
+              if (controller.canGoPrevious.value) {
+                controller.goToPreviousChapter();
+              }
+            }
+          }
+        }
       },
       onHorizontalDragEnd: (details) {
+        // Horizontal swipes always navigate between chapters
         controller.handleSwipe(details, true);
       },
       child: Container(
@@ -217,6 +241,7 @@ class NovelContentWidget extends StatelessWidget {
             element.text?.trim() == controller.ttsSegments[controller.ttsHighlightedElement.value]) {
           styles['background-color'] = context.colors.primary.withOpacity(0.3).value.toRadixString(16);
           styles['border-radius'] = '4px';
+          styles['transition'] = 'background-color 0.3s ease';
         }
         break;
 
