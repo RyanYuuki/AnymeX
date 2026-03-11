@@ -13,7 +13,7 @@ class ListEditorModal extends StatefulWidget {
   final RxInt animeProgress;
   final Rx<dynamic> currentAnime;
   final Media media;
-  final Function(String, double, String, int, DateTime?, DateTime?) onUpdate;
+  final Function(String, double, String, int, DateTime?, DateTime?, bool?) onUpdate;
   final Function(String) onDelete;
   final bool isManga;
 
@@ -41,6 +41,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
   late int _localProgress;
   DateTime? _startedAt;
   DateTime? _completedAt;
+  bool _isPrivate = false;
 
   @override
   void initState() {
@@ -56,6 +57,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
     if (tracked != null) {
       _startedAt   = tracked.startedAt;
       _completedAt = tracked.completedAt;
+      _isPrivate   = tracked.isPrivate ?? false;
     }
 
     _progressController = TextEditingController(
@@ -92,6 +94,10 @@ class _ListEditorModalState extends State<ListEditorModal> {
             _buildScoreSection(context),
             const SizedBox(height: 24),
             _buildDateSection(context),
+            if (widget.media.serviceType.isAL) ...[  
+              const SizedBox(height: 24),
+              _buildPrivateSection(context),
+            ],
             const SizedBox(height: 32),
             _buildActionButtons(context),
           ],
@@ -752,6 +758,70 @@ class _ListEditorModalState extends State<ListEditorModal> {
     );
   }
 
+  Widget _buildPrivateSection(BuildContext context) {
+    final colorScheme = context.colors;
+
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        color: colorScheme.surfaceContainerHighest.opaque(0.3),
+        border: Border.all(
+          color: _isPrivate
+              ? colorScheme.primary.opaque(0.5)
+              : colorScheme.outline.opaque(0.5),
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: _isPrivate
+                  ? colorScheme.primaryContainer
+                  : colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              _isPrivate ? Icons.lock_rounded : Icons.lock_open_rounded,
+              size: 18,
+              color: _isPrivate
+                  ? colorScheme.primary
+                  : colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Private Entry',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurface,
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Hidden from your public AniList profile',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                ),
+              ],
+            ),
+          ),
+          Switch(
+            value: _isPrivate,
+            onChanged: (val) => setState(() => _isPrivate = val),
+            activeColor: colorScheme.primary,
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildActionButtons(BuildContext context) {
     final colorScheme = context.colors;
 
@@ -806,6 +876,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
                   _localProgress,
                   _startedAt,
                   _completedAt,
+                  widget.media.serviceType.isAL ? _isPrivate : null,
                 );
               },
               color: colorScheme.primary,
