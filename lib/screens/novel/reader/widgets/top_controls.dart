@@ -155,9 +155,6 @@ class NovelTopControls extends StatelessWidget {
           builder: (context, scrollController) {
             return ChapterListSheet(
               controller: controller,
-              // Pass the DraggableScrollableSheet's own controller so the
-              // sheet itself can be dragged. ChapterListSheet will use this
-              // for its own list, not the reader's scrollController.
               sheetScrollController: scrollController,
             );
           },
@@ -208,7 +205,6 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
   void initState() {
     super.initState();
     _updateCachedChapters();
-    // After first frame, scroll so current chapter is visible in the list.
     WidgetsBinding.instance
         .addPostFrameCallback((_) => _scrollToCurrentChapter());
   }
@@ -242,7 +238,6 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
         _cachedChapters.indexWhere((c) => c.number == currentNumber);
     if (index <= 0) return;
     if (!widget.sheetScrollController.hasClients) return;
-    // Dense ListTile ~48px; scroll so the current chapter is visible near top.
     final maxExtent =
         widget.sheetScrollController.position.maxScrollExtent;
     final target = (index * 48.0).clamp(0.0, maxExtent);
@@ -269,8 +264,6 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
           borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: CustomScrollView(
-          // Use the DraggableScrollableSheet controller so dragging works,
-          // NOT the novel reader's scrollController.
           controller: widget.sheetScrollController,
           slivers: [
             SliverToBoxAdapter(
