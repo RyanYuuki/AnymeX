@@ -22,26 +22,12 @@ class NovelContentWidget extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       onTapUp: (details) {
         HapticFeedback.lightImpact();
-        if (controller.tapToScroll.value) {
-          final box = context.findRenderObject() as RenderBox?;
-          final viewportHeight =
-              box?.size.height ?? MediaQuery.of(context).size.height;
-          final y = details.localPosition.dy.clamp(0.0, viewportHeight);
-          final topZone = viewportHeight * 0.25;
-          final bottomZone = viewportHeight * 0.75;
-          final isCenterTap = y >= topZone && y <= bottomZone;
-
-          if (isCenterTap) {
-            controller.toggleControls();
-          } else {
-            controller.handleTap(
-              details.localPosition,
-              viewportHeight: viewportHeight,
-            );
-          }
-        } else {
-          controller.toggleControls();
-        }
+        // Single tap toggles controls
+        controller.toggleControls();
+      },
+      onLongPress: (details) {
+        // Long press for selection - handled by SelectionArea
+        HapticFeedback.mediumImpact();
       },
       onVerticalDragEnd: (details) {
         if (controller.swipeGestures.value) {
@@ -52,11 +38,13 @@ class NovelContentWidget extends StatelessWidget {
                 ? controller.scrollController.position.maxScrollExtent 
                 : 0;
             
+            // At bottom of content and swiping down -> next chapter
             if (isScrollingDown && scrollPosition >= maxScroll - 50) {
               if (controller.canGoNext.value) {
                 controller.goToNextChapter();
               }
             }
+            // At top of content and swiping up -> previous chapter
             else if (!isScrollingDown && scrollPosition <= 50) {
               if (controller.canGoPrevious.value) {
                 controller.goToPreviousChapter();
