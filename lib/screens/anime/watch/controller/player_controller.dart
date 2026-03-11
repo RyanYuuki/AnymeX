@@ -30,6 +30,7 @@ import 'package:anymex/widgets/non_widgets/anymex_toast.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
 import 'package:dartotsu_extension_bridge/Models/DEpisode.dart' as d;
+import 'package:fl_pip/fl_pip.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -194,6 +195,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final Rx<aniskip.SkipIntervals?> currentSkipInterval =
       Rx<aniskip.SkipIntervals?>(null);
 
+  final RxBool isPipActive = false.obs;
+  bool _pipSupported = false;
+
   void applySavedProfile() {
     if (_basePlayer is MediaKitPlayer) {
       ColorProfileManager().applyColorProfile(currentVisualProfile.value,
@@ -244,6 +248,48 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       snackBar(
           "if subtitle is not showing up then disable libass in settings and restart",
           duration: 3000);
+    }
+    _initPip();
+  }
+
+  Future<void> _initPip() async {
+    if (!Platform.isAndroid && !Platform.isIOS) return;
+    try {
+      _pipSupported = await FlPiP().isAvailable;
+    } catch (_) {
+      _pipSupported = false;
+    }
+  }
+
+  Future<void> togglePip() async {
+    if (Platform.isAndroid || Platform.isIOS) {
+      await _toggleMobilePip();
+    }
+  }
+
+  Future<void> _toggleMobilePip() async {
+    if (!_pipSupported) {
+      snackBar('PiP not supported on this device');
+      return;
+    }
+
+    try {
+      final active = await FlPiP().isActive;
+      if (active) {
+        await FlPiP().disable();
+        isPipActive.value = false;
+      } else {
+        await FlPiP().enable(
+          androidConfig: FlPiPAndroidConfig(
+            aspectRatio: const Rational(16, 9),
+          ),
+          iosConfig: FlPiPiOSConfig(),
+        );
+        isPipActive.value = true;
+      }
+    } catch (e) {
+      Logger.e('PiP toggle error: $e');
+      snackBar('Failed to toggle PiP');
     }
   }
 
@@ -314,6 +360,41 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         _trackLocally();
       }
     }
+
+    if (Platform.isAndroid || Platform.isIOS) {
+      if (state == AppLifecycleState.inactive ||
+          state == AppLifecycleState.paused) {
+        _onAppBackgrounded();
+      } else if (state == AppLifecycleState.resumed) {
+        _onAppResumed();
+      }
+    }
+  }
+
+  Future<void> _onAppBackgrounded() async {
+    if (!_pipSupported) return;
+    try {
+      final active = await FlPiP().isActive;
+      if (!active && isPlaying.value) {
+        await FlPiP().enable(
+          androidConfig: FlPiPAndroidConfig(
+            aspectRatio: const Rational(16, 9),
+          ),
+          iosConfig: FlPiPiOSConfig(),
+        );
+        isPipActive.value = true;
+      }
+    } catch (_) {}
+  }
+
+  Future<void> _onAppResumed() async {
+    try {
+      final active = await FlPiP().isActive;
+      if (active) {
+        await FlPiP().disable();
+      }
+      isPipActive.value = false;
+    } catch (_) {}
   }
 
   void _initDatabaseVars() {
@@ -409,7 +490,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       isLeftLandscaped = true;
     }
   }
-  
+
   void _handleAutoSkip() {
     if (skipTimes?.op != null && playerSettings.autoSkipOP) {
       if (!(playerSettings.autoSkipOnce && isOPSkippedOnce.value)) {
@@ -459,7 +540,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       }
     }
   }
-  
+
   void _updateSkipUiState() {
     if (skipTimes == null) return;
 
@@ -583,7 +664,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     await _basePlayer.open(url, headers: headers, startPosition: startPosition);
   }
-  
+
   void _initializeAniSkip() {
     isOPSkippedOnce.value = false;
     isEDSkippedOnce.value = false;
@@ -904,7 +985,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
       selectedVideo.value = matched;
       _extractSubtitles();
-      
+
       _initializeAniSkip();
 
       final savedEpisodeData = savedEpisode;
@@ -1047,6 +1128,13 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       }
     } catch (e) {
       Logger.e('Error saving during dispose: $e');
+    }
+
+    if (Platform.isAndroid || Platform.isIOS) {
+      try {
+        final active = await FlPiP().isActive;
+        if (active) await FlPiP().disable();
+      } catch (_) {}
     }
 
     _revertOrientations();
