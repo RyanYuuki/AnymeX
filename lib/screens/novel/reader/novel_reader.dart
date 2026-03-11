@@ -8,6 +8,7 @@ import 'package:anymex/screens/novel/reader/widgets/top_controls.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 class NovelReader extends StatefulWidget {
@@ -75,10 +76,23 @@ class _NovelReaderState extends State<NovelReader>
           child: content,
         );
       }
-      if (controller.useSystemReaderTheme) {
-        return Glow(child: content);
-      }
-      return content;
+      
+      return CallbackShortcuts(
+        bindings: {
+          const SingleActivator(LogicalKeyboardKey.volumeUp): () {
+            controller.handleVolumeButton(true);
+          },
+          const SingleActivator(LogicalKeyboardKey.volumeDown): () {
+            controller.handleVolumeButton(false);
+          },
+        },
+        child: Focus(
+          autofocus: true,
+          child: controller.useSystemReaderTheme
+              ? Glow(child: content)
+              : content,
+        ),
+      );
     });
   }
 }
