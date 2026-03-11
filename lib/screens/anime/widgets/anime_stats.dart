@@ -36,6 +36,16 @@ class AnimeStats extends StatelessWidget {
     this.serviceType,
   });
 
+  bool get _hasSeasonsContent {
+    final list = data.relations
+        ?.where((e) =>
+            e.relationType == 'SEQUEL' || e.relationType == 'PREQUEL')
+        .take(2)
+        .toList() ??
+        [];
+    return list.isNotEmpty;
+  }
+
   @override
   Widget build(BuildContext context) {
     final serviceHandler = Get.find<ServiceHandler>();
@@ -147,24 +157,22 @@ class AnimeStats extends StatelessWidget {
               },
             ),
           ),
-          const SizedBox(height: 16),
           if (friendsWatching != null && friendsWatching!.isNotEmpty) ...[
+            const SizedBox(height: 16),
             SocialSection(
               friends: friendsWatching!,
               totalEpisodes: totalEpisodes,
             ),
-            const SizedBox(height: 16),
           ],
-
-          const SizedBox(height: 16),
-          _buildSeasons(context),
-          const SizedBox(height: 16),
-          if (serviceType != null &&
-              (serviceType != ServicesType.simkl))
-            _buildOthersSection(context),
-          if (serviceType != null &&
-              (serviceType != ServicesType.simkl))
+          if (_hasSeasonsContent) ...[
             const SizedBox(height: 16),
+            _buildSeasons(context),
+          ],
+          if (serviceType != null &&
+              (serviceType != ServicesType.simkl)) ...[
+            const SizedBox(height: 16),
+            _buildOthersSection(context),
+          ],
         ],
       ),
     );
