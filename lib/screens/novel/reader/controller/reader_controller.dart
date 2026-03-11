@@ -244,9 +244,9 @@ class NovelReaderController extends GetxController {
     }
 
     if (event == 'up') {
-      handleVolumeButton(false);
+      handleVolumeButton(false); // Volume up scrolls up
     } else if (event == 'down') {
-      handleVolumeButton(true);
+      handleVolumeButton(true); // Volume down scrolls down
     }
   }
 
@@ -573,6 +573,7 @@ class NovelReaderController extends GetxController {
   void handleVolumeButton(bool isVolumeUp) {
     if (!volumeButtonScrolling.value || !scrollController.hasClients) return;
 
+    // Fixed direction: volume up scrolls up, volume down scrolls down
     double amount = isVolumeUp ? -volumeScrollAmount : volumeScrollAmount;
     double newOffset = scrollController.offset + amount;
     double maxOffset = scrollController.position.maxScrollExtent;
@@ -757,6 +758,23 @@ class NovelReaderController extends GetxController {
       if (scrollController.hasClients) {
         scrollController.jumpTo(0);
       }
+    }
+  }
+
+  Future<void> navigateToChapter(int index) async {
+    if (index < 0 || index >= chapters.length) return;
+
+    final oldChapter = currentChapter.value;
+    final oldOffset = scrollController.offset;
+
+    _saveTracking(syncToCloud: false);
+
+    currentChapter.value = chapters[index];
+    updateNavigationButtons();
+    await fetchData();
+
+    if (scrollController.hasClients) {
+      scrollController.jumpTo(0);
     }
   }
 
