@@ -33,6 +33,7 @@ class UpdateListEntryParams {
   bool isAnime;
   DateTime? startedAt;
   DateTime? completedAt;
+  bool? isPrivate;
 
   UpdateListEntryParams({
     required this.listId,
@@ -43,5 +44,6 @@ class UpdateListEntryParams {
     this.isAnime = true,
     this.startedAt,
     this.completedAt,
+    this.isPrivate,
   });
 }
