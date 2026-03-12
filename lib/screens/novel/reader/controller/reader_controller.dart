@@ -684,8 +684,20 @@ class NovelReaderController extends GetxController {
     if (scrollController.hasClients) scrollController.jumpTo(0);
   }
 
-  void increaseFontSize() => fontSize.value < 24 ? (fontSize.value += 1, _saveSettings()) : null;
-  void decreaseFontSize() => fontSize.value > 12 ? (fontSize.value -= 1, _saveSettings()) : null;
+  void increaseFontSize() {
+    if (fontSize.value < 24) {
+      fontSize.value += 1;
+      _saveSettings();
+    }
+  }
+
+  void decreaseFontSize() {
+    if (fontSize.value > 12) {
+      fontSize.value -= 1;
+      _saveSettings();
+    }
+  }
+
   void setFontSize(double value) { fontSize.value = value.clamp(12.0, 24.0); _saveSettings(); }
   void setLineHeight(double value) { lineHeight.value = value.clamp(1.0, 3.0); _saveSettings(); }
   void setParagraphSpacing(double value) { paragraphSpacing.value = value.clamp(8.0, 32.0); _saveSettings(); }
@@ -765,6 +777,28 @@ class NovelReaderController extends GetxController {
     }
   }
 
+  ColorScheme get readerColorScheme {
+    switch (themeMode.value) {
+      case 0:
+        return ColorScheme.fromSeed(
+          seedColor: const Color(0xFF4A6FA5),
+          brightness: Brightness.light,
+        );
+      case 1:
+        return ColorScheme.fromSeed(
+          seedColor: const Color(0xFF7AA2F7),
+          brightness: Brightness.dark,
+        );
+      case 2:
+        return ColorScheme.fromSeed(
+          seedColor: const Color(0xFF8B6B3F),
+          brightness: Brightness.light,
+        );
+      default:
+        return Get.theme.colorScheme;
+    }
+  }
+
   TextAlign get textAlignment {
     switch (textAlign.value) {
       case 1: return TextAlign.center;
@@ -772,6 +806,17 @@ class NovelReaderController extends GetxController {
       default: return TextAlign.left;
     }
   }
+
+  List<String> get availableFonts => [
+    'System',
+    'Serif',
+    'Roboto',
+    'Open Sans',
+    'Lato',
+    'Merriweather',
+    'Crimson Text',
+    'Libre Baskerville'
+  ];
 
   String get fontFamilyName {
     switch (fontFamily.value) {
