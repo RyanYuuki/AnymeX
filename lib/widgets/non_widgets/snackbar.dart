@@ -22,7 +22,9 @@ void snackBar(
   final theme = Theme.of(context);
 
   if (_currentSnackBar != null) {
-    _currentSnackBar?.remove();
+    try {
+      _currentSnackBar?.remove();
+    } catch (_) {}
     _currentSnackBar = null;
   }
 
@@ -43,13 +45,19 @@ void snackBar(
       duration: Duration(milliseconds: duration),
       theme: theme,
       onDismiss: () {
-        _currentSnackBar?.remove();
+        try {
+          _currentSnackBar?.remove();
+        } catch (_) {}
         _currentSnackBar = null;
       },
     ),
   );
 
-  Overlay.of(Get.overlayContext!).insert(_currentSnackBar!);
+  try {
+    Overlay.of(Get.overlayContext!).insert(_currentSnackBar!);
+  } catch (_) {
+    _currentSnackBar = null;
+  }
 }
 
 class _SnackBarWidget extends StatefulWidget {
