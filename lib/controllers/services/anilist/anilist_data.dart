@@ -1341,7 +1341,10 @@ averageScore
           score: params.score,
           status: params.status,
           progress: params.progress,
-          isAnime: params.isAnime);
+          isAnime: params.isAnime,
+          startedAt: params.startedAt,
+          completedAt: params.completedAt,
+          isPrivate: params.isPrivate);
 
   @override
   Future<void> deleteListEntry(String listId, {bool isAnime = true}) async =>

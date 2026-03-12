@@ -180,7 +180,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
         animeProgress: _animeProgress,
         currentAnime: _currentMedia,
         media: widget.media,
-        onUpdate: (id, score, status, progress, startedAt, completedAt) async {
+        onUpdate: (id, score, status, progress, startedAt, completedAt, isPrivate) async {
           final listId =
               fetcher.onlineService.currentMedia.value.id ?? widget.media.id;
           fetcher.onlineService.updateListEntry(UpdateListEntryParams(
@@ -191,6 +191,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
             progress: progress,
             startedAt: startedAt,
             completedAt: completedAt,
+            isPrivate: isPrivate,
           ));
           _currentMedia.value?.score = score.toString();
           _currentMedia.value?.watchingStatus = status;
@@ -201,6 +202,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
           }
           _currentMedia.value?.startedAt = startedAt;
           _currentMedia.value?.completedAt = completedAt;
+          _currentMedia.value?.isPrivate = isPrivate;
           _animeStatus.value = status;
           _animeScore.value = score;
           _animeProgress.value = progress;
