@@ -741,6 +741,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                   countdown: formatTime(timeLeft.value),
                   friendsWatching: anilistData?.friendsWatching,
                   totalEpisodes: anilistData?.totalEpisodes,
+                  serviceType: widget.media.serviceType,
                 ),
               ),
               const SizedBox(height: 20),
@@ -757,7 +758,11 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
           StaffCarousel(staff: anilistData!.staff!),
         ReusableCarousel(
           data: anilistData!.recommendations,
-          title: "Recommended Animes",
+          title: widget.media.serviceType == ServicesType.simkl
+              ? (anilistData!.id.endsWith('*MOVIE')
+                  ? 'Recommended Movies'
+                  : 'Recommended Shows')
+              : 'Recommended Animes',
           variant: DataVariant.recommendation,
         ),
       ],

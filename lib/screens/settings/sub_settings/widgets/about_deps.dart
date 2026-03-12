@@ -1,7 +1,9 @@
 import 'package:anymex/screens/settings/sub_settings/settings_about.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class ProfileInfo extends StatelessWidget {
   final String username;
@@ -28,11 +30,17 @@ class ProfileInfo extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 4),
-        Text(
-          version,
-          style: theme.textTheme.bodyLarge?.copyWith(
-            fontFamily: "Poppins-SemiBold",
-            color: theme.colorScheme.onSurface.opaque(0.7),
+        GestureDetector(
+          onLongPress: () {
+            Clipboard.setData(ClipboardData(text: version));
+            snackBar('Version copied');
+          },
+          child: Text(
+            version,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              fontFamily: "Poppins-SemiBold",
+              color: theme.colorScheme.onSurface.opaque(0.7),
+            ),
           ),
         ),
         Text(
@@ -107,10 +115,16 @@ class ProfileSection extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 4),
-          Text(
-            version,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: theme.colorScheme.onSurface.opaque(0.7),
+          GestureDetector(
+            onLongPress: () {
+              Clipboard.setData(ClipboardData(text: version));
+              snackBar('Version copied');
+            },
+            child: Text(
+              version,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: theme.colorScheme.onSurface.opaque(0.7),
+              ),
             ),
           ),
           Text(

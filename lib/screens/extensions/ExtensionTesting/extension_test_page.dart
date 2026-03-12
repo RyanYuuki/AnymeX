@@ -275,14 +275,40 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Select Extensions',
-          style: TextStyle(
-            fontFamily: 'Poppins',
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-            color: theme.onSurface,
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Select Extensions',
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: theme.onSurface,
+              ),
+            ),
+            Obx(() {
+              final extensions = _getInstalledExtensions(sourceController);
+              if (extensions.isEmpty) return const SizedBox.shrink();
+              final names = extensions
+                  .map((s) => s.name)
+                  .whereType<String>()
+                  .toList();
+              final allSelected = names.length == controller.selectedExtensions.length &&
+                  names.every((n) => controller.selectedExtensions.contains(n));
+              return TextButton(
+                onPressed: () => controller.toggleSelectAll(names),
+                child: Text(
+                  allSelected ? 'Deselect all' : 'Select all',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 14,
+                    color: theme.primary,
+                  ),
+                ),
+              );
+            }),
+          ],
         ),
         const SizedBox(height: 12),
         Obx(() {
@@ -432,7 +458,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
               ),
               elevation: 0,
             ),
-            child: Text(
+            child: const Text(
               'Start Test',
               style: TextStyle(
                 fontFamily: 'Poppins',
