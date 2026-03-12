@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:anymex/screens/novel/reader/controller/reader_controller.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
@@ -25,6 +24,7 @@ class NovelContentWidget extends StatefulWidget {
 
 class _NovelContentWidgetState extends State<NovelContentWidget> {
   DateTime? _lastDragEnd;
+  final Map<int, GlobalKey> _paragraphKeys = {};
 
   bool get _isDragRecent {
     if (_lastDragEnd == null) return false;
@@ -201,6 +201,8 @@ class _NovelContentWidgetState extends State<NovelContentWidget> {
                   widget.controller.paddingHorizontal.value,
                   widget.controller.paddingVertical.value,
                   widget.controller.ttsHighlightedElement.value,
+                  widget.controller.ttsCurrentWordStart.value,
+                  widget.controller.ttsCurrentWordEnd.value,
                 ],
                 renderMode: RenderMode.sliverList,
                 textStyle: _getBaseTextStyle(context),
@@ -270,13 +272,31 @@ class _NovelContentWidgetState extends State<NovelContentWidget> {
         if (widget.controller.ttsEnabled.value &&
             widget.controller.ttsHighlightedElement.value >= 0 &&
             widget.controller.ttsHighlightedElement.value <
-                widget.controller.ttsSegments.length &&
-            element.text?.trim() ==
-                widget.controller
-                    .ttsSegments[widget.controller.ttsHighlightedElement.value]) {
-          styles['background-color'] =
-              '#${context.colors.primary.withOpacity(0.3).value.toRadixString(16).padLeft(8, '0')}';
-          styles['border-radius'] = '4px';
+                widget.controller.ttsSegments.length) {
+          
+          String elementText = element.text?.trim() ?? '';
+          String currentSegment = widget.controller
+              .ttsSegments[widget.controller.ttsHighlightedElement.value];
+          
+          if (elementText == currentSegment) {
+            int wordStart = widget.controller.ttsCurrentWordStart.value;
+            int wordEnd = widget.controller.ttsCurrentWordEnd.value;
+            
+            if (wordStart < wordEnd && wordStart >= 0 && wordEnd <= elementText.length) {
+              styles['background-image'] = 
+                  'linear-gradient(90deg, '
+                  'transparent 0, '
+                  'transparent ${wordStart}ch, '
+                  '#${context.colors.primary.withOpacity(0.3).value.toRadixString(16).padLeft(8, '0')} ${wordStart}ch, '
+                  '#${context.colors.primary.withOpacity(0.3).value.toRadixString(16).padLeft(8, '0')} ${wordEnd}ch, '
+                  'transparent ${wordEnd}ch, '
+                  'transparent 100%)';
+            } else {
+              styles['background-color'] =
+                  '#${context.colors.primary.withOpacity(0.3).value.toRadixString(16).padLeft(8, '0')}';
+            }
+            styles['border-radius'] = '4px';
+          }
         }
         break;
 
@@ -451,7 +471,6 @@ class _DictionarySheetState extends State<_DictionarySheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Handle bar
           Center(
             child: Container(
               width: 40,
