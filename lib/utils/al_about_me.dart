@@ -30,14 +30,14 @@ String preprocessAnilistAbout(String raw) {
       .replaceAll('&lrm;', '')
       .replaceAll('&rlm;', '');
 
-  // Detect if this is already HTML or raw markdown
+  
   final hasHtml = RegExp(r'<[a-zA-Z][^>]*>').hasMatch(html);
   if (!hasHtml) {
-    // Raw convert to HTML using AniListparser
+    // Raw convert to HTML using alparser
     html = parseMarkdown(html);
   }
 
-  // Handles AniList specific markdown_spoiler things from API
+  // Handles al  markdown_spoiler 
   html = html.replaceAllMapped(
     RegExp(
       r"""<span\s+class=['"]markdown_spoiler['"][^>]*>(?:\s*<span>)?([\s\S]*?)(?:</span>\s*)?</span>""",
@@ -46,7 +46,7 @@ String preprocessAnilistAbout(String raw) {
     (m) => '<details><summary>Spoiler</summary>${m[1] ?? ''}</details>',
   );
 
-  // Handle YouTube divs
+  // Handle yt divs
   html = html.replaceAllMapped(
     RegExp(
       r"""<div\s+class=['"]youtube['"]\s+id=['"]([^'"]+)['"][^>]*></div>""",
@@ -61,7 +61,7 @@ String preprocessAnilistAbout(String raw) {
     },
   );
 
-  // Handle youtube() syntax that parseMarkdown might have missed
+  // Handle yt() sytax
   html = html.replaceAllMapped(
     RegExp(r'youtube\s?\(\s*([^\)]+)\s*\)', caseSensitive: false),
     (m) {
@@ -73,7 +73,7 @@ String preprocessAnilistAbout(String raw) {
     },
   );
 
-  // Handle div rel="spoiler" ani-spoiler thing
+  // Handle div rel="spoiler" al-spoiler thing
   html = html.replaceAllMapped(
     RegExp(r'<div\s+rel=["\x27]spoiler["\x27][^>]*>([\s\S]*?)</div>',
         caseSensitive: false),
@@ -104,7 +104,7 @@ String preprocessAnilistAbout(String raw) {
     },
   );
 
-  // nested image links: [![alt](img)](link)
+  // nested img link
   html = html.replaceAllMapped(
     RegExp(r'\[!\[([^\]]*?)\]\((https?://[^\)]+)\)\]\((https?://[^\)]+)\)'),
     (m) =>
@@ -117,19 +117,19 @@ String preprocessAnilistAbout(String raw) {
     (m) => '<img src="${m[2] ?? ''}" alt="${m[1] ?? ''}">',
   );
 
-  // Handle markdown links: [text](url)
+  // Handle links md
   html = html.replaceAllMapped(
     RegExp(r'\[([^\]]+?)\]\((https?://[^\)]+)\)'),
     (m) => '<a href="${m[2] ?? ''}">${m[1] ?? ''}</a>',
   );
 
-  // Handle remaining spoiler markdown: ~!content!~
+  // Handle  soiler
   html = html.replaceAllMapped(
     RegExp(r'~!([\s\S]*?)!~'),
     (m) => '<details><summary>Spoiler</summary>${m[1] ?? ''}</details>',
   );
 
-  // Handle bold/italic markdown that API might not have converted
+  // Handle bold/italic markdown
   html = html.replaceAllMapped(
     RegExp(r'___([^\n]*?)___'),
     (m) => '<em><strong>${m[1] ?? ''}</strong></em>',
@@ -143,7 +143,7 @@ String preprocessAnilistAbout(String raw) {
     (m) => '<strong>${m[1] ?? ''}</strong>',
   );
 
-  // Decode common HTML entities
+  // Decode  HTML entities
   html = html
       .replaceAll('&nbsp;', ' ')
       .replaceAll('&amp;', '&')
@@ -152,20 +152,16 @@ String preprocessAnilistAbout(String raw) {
       .replaceAll('&quot;', '"')
       .replaceAll('&apos;', "'");
 
-  // Strip single newlines between consecutive images/image-links to prevent unwanted <br> gaps.
-  // We use [ \t]*\n[ \t]* to ensure we only strip single newlines (preserving \n\n as intentional gaps).
-  // The regex ensures the left side ends with an <img> (or <img></a>) and the right side starts with an <img> (or <a><img).
+ 
   html = html.replaceAllMapped(
     RegExp(r'(<img[^>]*>\s*(?:</a>)?)[ \t]*\n[ \t]*(?=(?:<a[^>]*>\s*)?<img)'),
     (m) =>
         '${m[1]}<div style="display:block;height:0;margin:0;padding:0;line-height:0"></div>',
   );
 
-  // Convert remaining newlines to <br> (critical for proper text line breaks)
-  // AniList's HTML uses \n for line breaks which HtmlWidget doesn't render
   html = html.replaceAll('\n', '<br>');
 
-  // Clean up excessive <br> tags that result from the conversion
+ 
   html = html.replaceAll(RegExp(r'(<br\s*/?>\s*){3,}'), '<br><br>');
 
   return html;
@@ -292,7 +288,7 @@ class _AnilistAboutMeState extends State<AnilistAboutMe> {
                 };
               },
               customWidgetBuilder: (element) {
-                // Spoiler — <details> tag
+                // Spoiler tag
                 if (element.localName == 'details') {
                   final body = element.innerHtml
                       .replaceAll(
@@ -306,14 +302,14 @@ class _AnilistAboutMeState extends State<AnilistAboutMe> {
                   );
                 }
 
-                // YouTube — <youtube> tag
+                // Yt tag
                 if (element.localName == 'youtube') {
                   final id = (element.attributes['id'] ?? element.text).trim();
                   if (id.isEmpty) return null;
                   return AnilistYouTubePlayer(videoId: id);
                 }
 
-                // Video — <video> tag (WebM etc.)
+                // Video tag
                 if (element.localName == 'video') {
                   var src = '';
                   final direct = (element.attributes['src'] ?? '').trim();
@@ -335,11 +331,11 @@ class _AnilistAboutMeState extends State<AnilistAboutMe> {
                   }
                 }
 
-                // Iframe — embedded content
+                // Iframe 
                 if (element.localName == 'iframe') {
                   final src = (element.attributes['src'] ?? '').trim();
                   if (src.isNotEmpty) {
-                    // Check for YouTube iframe
+                    // yt iframe
                     final ytId = RegExp(
                       r'(?:youtube\.com/embed/|youtube\.com/watch\?v=)([0-9A-Za-z_-]{11})',
                     ).firstMatch(src)?.group(1);
@@ -379,7 +375,7 @@ class _AnilistAboutMeState extends State<AnilistAboutMe> {
                     final type = mediaMatch.group(1) ?? 'anime';
                     final id = int.tryParse(mediaMatch.group(2) ?? '');
                     if (id != null) {
-                      // Walk up parents to check if inside <center>
+                     
                       var isCentered = false;
                       var parent = element.parent;
                       while (parent != null) {
@@ -450,7 +446,7 @@ class _AnilistAboutMeState extends State<AnilistAboutMe> {
       }
     }
 
-    // AniList user links (by name)
+    // AniList user links
     final userNameMatch =
         RegExp(r'anilist\.co/user/([^/?#]+)', caseSensitive: false)
             .firstMatch(url);
@@ -468,7 +464,6 @@ class _AnilistAboutMeState extends State<AnilistAboutMe> {
       }
     }
 
-    // Everything else — open in external browser
     await launchUrl(uri, mode: LaunchMode.externalApplication);
     return true;
   }
@@ -671,8 +666,7 @@ class _SmartImageWidgetState extends State<_SmartImageWidget> {
       height: widget.height,
       fit: BoxFit.contain,
       errorWidget: (_, __, ___) {
-        // CachedNetworkImage failed (SVG, dynamic widget, etc.)
-        // Switch to platform-aware fallback
+        
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) setState(() => _useFallback = true);
         });
@@ -682,7 +676,7 @@ class _SmartImageWidgetState extends State<_SmartImageWidget> {
   }
 
   Widget _buildFallback(BuildContext context) {
-    // Desktop: InAppWebView not available — show clickable tile
+    // Desktop
     if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
       return AnilistExternalTile(
         url: widget.url,
@@ -693,7 +687,7 @@ class _SmartImageWidgetState extends State<_SmartImageWidget> {
       );
     }
 
-    // Mobile: Render via InAppWebView with auto-sizing
+    // Mobile
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       height: _webViewHeight,
@@ -737,7 +731,7 @@ class _SmartImageWidgetState extends State<_SmartImageWidget> {
           );
         },
         onLoadStop: (controller, url) async {
-          // Fallback: measure height after page fully loads
+          // Fallback
           final h = await controller.evaluateJavascript(
             source: 'document.body.scrollHeight',
           );
