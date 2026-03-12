@@ -660,6 +660,7 @@ class AnilistAuth extends GetxController {
     bool isAnime = true,
     DateTime? startedAt,
     DateTime? completedAt,
+    bool? isPrivate,
   }) async {
     final token = AuthKeys.authToken.get<String?>();
     if (token == null || !isLoggedIn.value) {
@@ -667,8 +668,8 @@ class AnilistAuth extends GetxController {
     }
 
     const String mutation = '''
-  mutation UpdateMediaList(\$id: Int, \$progress: Int, \$score: Float, \$status: MediaListStatus, \$startedAt: FuzzyDateInput, \$completedAt: FuzzyDateInput) {
-    SaveMediaListEntry(mediaId: \$id, progress: \$progress, score: \$score, status: \$status, startedAt: \$startedAt, completedAt: \$completedAt) {
+  mutation UpdateMediaList(\$id: Int, \$progress: Int, \$score: Float, \$status: MediaListStatus, \$startedAt: FuzzyDateInput, \$completedAt: FuzzyDateInput, \$private: Boolean) {
+    SaveMediaListEntry(mediaId: \$id, progress: \$progress, score: \$score, status: \$status, startedAt: \$startedAt, completedAt: \$completedAt, private: \$private) {
       id
       status
       progress
@@ -716,6 +717,9 @@ class AnilistAuth extends GetxController {
           'month': completedAt.month,
           'day': completedAt.day,
         };
+      }
+      if (isPrivate != null) {
+        variables['private'] = isPrivate;
       }
 
       final response = await post(

@@ -726,7 +726,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
           currentAnime: currentManga,
           isManga: true,
           media: anilistData ?? widget.media,
-          onUpdate: (id, score, status, progress, startedAt, completedAt) async {
+          onUpdate: (id, score, status, progress, startedAt, completedAt, isPrivate) async {
             await mediaService.onlineService.updateListEntry(
                 UpdateListEntryParams(
                     listId: id,
@@ -735,7 +735,8 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                     status: status,
                     progress: progress,
                     startedAt: startedAt,
-                    completedAt: completedAt));
+                    completedAt: completedAt,
+                    isPrivate: isPrivate));
             setState(() {});
           },
           onDelete: (s) async {
