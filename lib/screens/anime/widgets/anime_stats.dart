@@ -27,6 +27,7 @@ class AnimeStats extends StatelessWidget {
   final String countdown;
   final List<TrackedMedia>? friendsWatching;
   final String? totalEpisodes;
+  final ServicesType? serviceType;
 
   const AnimeStats({
     super.key,
@@ -34,7 +35,18 @@ class AnimeStats extends StatelessWidget {
     required this.countdown,
     this.friendsWatching,
     this.totalEpisodes,
+    this.serviceType,
   });
+
+  bool get _hasSeasonsContent {
+    final list = data.relations
+        ?.where((e) =>
+            e.relationType == 'SEQUEL' || e.relationType == 'PREQUEL')
+        .take(2)
+        .toList() ??
+        [];
+    return list.isNotEmpty;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -147,21 +159,22 @@ class AnimeStats extends StatelessWidget {
               },
             ),
           ),
-          const SizedBox(height: 16),
           if (friendsWatching != null && friendsWatching!.isNotEmpty) ...[
+            const SizedBox(height: 16),
             SocialSection(
               friends: friendsWatching!,
               totalEpisodes: totalEpisodes,
             ),
-            const SizedBox(height: 16),
           ],
-
-          const SizedBox(height: 16),
-          _buildSeasons(context),
-          const SizedBox(height: 16),
-
-          _buildOthersSection(context),
-          const SizedBox(height: 16),
+          if (_hasSeasonsContent) ...[
+            const SizedBox(height: 16),
+            _buildSeasons(context),
+          ],
+          if (serviceType != null &&
+              (serviceType != ServicesType.simkl)) ...[
+            const SizedBox(height: 16),
+            _buildOthersSection(context),
+          ],
         ],
       ),
     );

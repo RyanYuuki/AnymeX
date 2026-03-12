@@ -5,6 +5,7 @@ import 'package:anymex/controllers/ui/greeting.dart';
 import 'package:anymex/screens/manga/widgets/search_selector.dart';
 import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
@@ -14,7 +15,6 @@ import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
@@ -22,7 +22,7 @@ import 'package:provider/provider.dart';
 
 import 'package:anymex/screens/profile/profile_page.dart';
 
-enum PageType { manga, anime, home }
+enum PageType { manga, anime, home, novel }
 
 class Header extends StatelessWidget {
   final PageType type;
@@ -95,11 +95,14 @@ class Header extends StatelessWidget {
                                 } else {
                                   navigate(() => const SearchPage(
                                         searchTerm: '',
-                                        isManga: false,
+                                    isManga: false,
                                       ));
                                 }
                               },
-                              icon: const Icon(IconlyLight.search))),
+                              icon: Icon(
+                                IconlyLight.search,
+                                color: context.colors.primary,
+                              ))),
                     ), desktopValue: TappableSearchBar(
                   onSubmitted: () {
                     if (type == PageType.manga) {

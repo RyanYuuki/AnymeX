@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:anymex/utils/logger.dart';
+import 'package:anymex/utils/player_core_visual_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
@@ -78,13 +80,15 @@ class MediaKitPlayer extends base.BasePlayer {
 
     _videoController = VideoController(
       _player,
-      configuration: const VideoControllerConfiguration(
-        hwdec: 'no',
+      configuration: VideoControllerConfiguration(
+        hwdec: config.hwdec,
         androidAttachSurfaceAfterVideoParameters: true,
       ),
     );
 
     _setupListeners();
+    await PlayerCoreVisualSettings.applyMpvCoreSettings(_player);
+    await PlayerCoreVisualSettings.applyMpvVisualSettings(_player);
   }
 
   void _setupListeners() {
@@ -148,6 +152,7 @@ class MediaKitPlayer extends base.BasePlayer {
     }));
 
     _subscriptions.add(_player.stream.error.listen((error) {
+      Logger.e('Player error: $error');
       _errorController.add(error);
     }));
 

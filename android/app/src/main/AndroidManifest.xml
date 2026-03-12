@@ -154,6 +154,12 @@
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data android:scheme="anymex" android:host="callback"/>
             </intent-filter>
+            <intent-filter android:label="Login Gist">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="anymex" android:host="oauth" android:pathPrefix="/github"/>
+            </intent-filter>
         </activity>
 
         <!-- FileProvider for sharing downloaded APK files -->

@@ -1,10 +1,10 @@
 import 'package:anymex/constants/contants.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
+import 'package:anymex/utils/subtitle_style_renderer.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
-import 'package:outlined_text/outlined_text.dart';
 
 class SubtitleText extends StatelessWidget {
   final PlayerController controller;
@@ -19,14 +19,17 @@ class SubtitleText extends StatelessWidget {
     return Obx(() {
       if (controller.subtitleText.isEmpty) return const SizedBox.shrink();
 
+      final htmlRx = RegExp(r'<[^>]*>');
+      final assRx = RegExp(r'\{[^}]*\}');
+      final newlineRx = RegExp(r'\\[nN]');
+
       final bottomPosition = controller.showControls.value
           ? 100
-          : (30 + controller.settings.bottomMargin);
+          : (30 + controller.playerSettings.subtitleBottomMargin);
 
-     
-      final useTranslation = controller.playerSettings.autoTranslate && 
+      final useTranslation = controller.playerSettings.autoTranslate &&
           controller.translatedSubtitle.value.isNotEmpty;
-      
+
       final subtitle = useTranslation
           ? controller.translatedSubtitle.value
           : [
@@ -34,23 +37,36 @@ class SubtitleText extends StatelessWidget {
                 if (line.trim().isNotEmpty) line.trim(),
             ].join('\n');
 
-      final content = OutlinedText(
-        key: ValueKey(controller.subtitleText.join()),
-        text: Text(
-          subtitle,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: fontColorOptions[controller.settings.subtitleColor],
-            fontSize: controller.settings.subtitleSize.toDouble(),
-            fontFamily: "Poppins-Bold",
-          ),
-        ),
-        strokes: [
-          OutlinedTextStroke(
-            color: fontColorOptions[controller.settings.subtitleOutlineColor]!,
-            width: controller.settings.subtitleOutlineWidth.toDouble(),
-          )
-        ],
+      final sanitizedSubtitle = subtitle
+          .replaceAll(htmlRx, '')
+          .replaceAll(assRx, '')
+          .replaceAll(newlineRx, '\n')
+          .trim();
+
+      if (sanitizedSubtitle.isEmpty) return const SizedBox.shrink();
+
+      final String outlineType = normalizeSubtitleOutlineType(
+          controller.playerSettings.subtitleOutlineType);
+      final double outlineWidth =
+          controller.settings.subtitleOutlineWidth.toDouble();
+      final Color outlineColorVal =
+          fontColorOptions[controller.settings.subtitleOutlineColor] ??
+              Colors.black;
+      final Color subtitleColorVal =
+          fontColorOptions[controller.settings.subtitleColor] ?? Colors.white;
+      final String fontFamily =
+          resolveSubtitleFontFamily(controller.playerSettings.subtitleFont);
+
+      final Widget content = buildStyledSubtitleText(
+        key: ValueKey(
+            '$sanitizedSubtitle|$outlineType|${controller.settings.subtitleSize}|${controller.settings.subtitleOutlineWidth}|${controller.playerSettings.subtitleFont}|${controller.settings.subtitleColor}|${controller.settings.subtitleOutlineColor}'),
+        text: sanitizedSubtitle,
+        textColor: subtitleColorVal,
+        fontSize: controller.settings.subtitleSize.toDouble(),
+        fontFamily: fontFamily,
+        outlineType: outlineType,
+        outlineWidth: outlineWidth,
+        outlineColor: outlineColorVal,
       );
 
       final subtitleBox = Container(
@@ -82,15 +98,19 @@ class SubtitleText extends StatelessWidget {
             : content,
       );
 
+      final baseOpacity = controller.subtitleText[0].isEmpty ? 0.0 : 1.0;
+      final finalOpacity =
+          baseOpacity * controller.playerSettings.subtitleOpacity;
+
       final opacityWidget = subtitleAnimation
           ? AnimatedOpacity(
-              opacity: controller.subtitleText[0].isEmpty ? 0.0 : 1.0,
+              opacity: finalOpacity,
               duration: animDuration,
               curve: Curves.easeInOut,
               child: subtitleBox,
             )
           : Opacity(
-              opacity: controller.subtitleText[0].isEmpty ? 0.0 : 1.0,
+              opacity: finalOpacity,
               child: subtitleBox,
             );
 

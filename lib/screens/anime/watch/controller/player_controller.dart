@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/database/isar_models/video.dart' as model;
@@ -21,6 +21,7 @@ import 'package:anymex/screens/anime/watch/subtitles/model/online_subtitle.dart'
 import 'package:anymex/utils/aniskip.dart' as aniskip;
 import 'package:anymex/utils/color_profiler.dart';
 import 'package:anymex/utils/logger.dart';
+import 'package:anymex/utils/player_core_visual_settings.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/subtitle_pre_translator.dart';
 import 'package:anymex/utils/subtitle_translator.dart';
@@ -81,7 +82,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final anymex.Media anilistData;
   RxList<model.Video> episodeTracks = RxList();
   final isOffline = false.obs;
-
   final String? folderName;
   final String? itemName;
   final String? offlineVideoPath;
@@ -162,47 +162,37 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final RxBool isPreTranslating = false.obs;
   final RxString preTranslateProgress = ''.obs;
   Timer? _seekDebounce;
-
   Timer? _autoHideTimer;
   static const Duration _autoHideDuration = Duration(seconds: 7);
-
   final RxBool isMouseHovering = false.obs;
-
   final Rx<List<AudioTrack>> embeddedAudioTracks = Rx([]);
   final Rx<List<SubtitleTrack>> embeddedSubs = Rx([]);
   final Rx<List<VideoTrack>> embeddedQuality = Rx([]);
-
   final Rx<AudioTrack?> selectedAudioTrack = Rx(null);
   final Rx<SubtitleTrack?> selectedSubsTrack = Rx(null);
   final Rx<VideoTrack?> selectedQualityTrack = Rx(null);
-
   final Rx<model.Track> selectedExternalSub = Rx(model.Track());
   final Rx<model.Track> selectedExternalAudio = Rx(model.Track());
   final Rxn<model.Video> selectedVideo = Rxn();
-
   final Rx<List<model.Track>> externalSubs = Rx([]);
-
   final Rx<bool> isSubtitlePaneOpened = false.obs;
   final Rx<bool> isEpisodePaneOpened = false.obs;
-
   final RxBool canGoForward = false.obs;
   final RxBool canGoBackward = false.obs;
-
   final RxDouble volume = 0.0.obs;
   final RxDouble brightness = 0.0.obs;
-
   final brightnessIndicator = false.obs;
   final RxBool volumeIndicator = false.obs;
-
   final currentVisualProfile = 'natural'.obs;
   RxMap<String, int> customSettings = <String, int>{}.obs;
-
   bool _hasTrackedInitialOnline = false;
   bool _hasTrackedInitialLocal = false;
-
   aniskip.EpisodeSkipTimes? skipTimes;
   final isOPSkippedOnce = false.obs;
   final isEDSkippedOnce = false.obs;
+  final isRecapSkippedOnce = false.obs;
+  final Rx<aniskip.SkipIntervals?> currentSkipInterval =
+      Rx<aniskip.SkipIntervals?>(null);
 
   void applySavedProfile() {
     if (_basePlayer is MediaKitPlayer) {
@@ -221,16 +211,14 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   bool isLeftLandscaped = true;
 
   final Rx<BoxFit> videoFit = Rx<BoxFit>(BoxFit.contain);
-
   final RxBool isLocked = false.obs;
   final Rx<int?> videoHeight = Rx<int?>(null);
-
   final _subscriptions = <StreamSubscription>[];
 
   @override
   void onInit() {
     super.onInit();
-    initializePlayerControlsIfNeeded(settings);
+    PlayerController.initializePlayerControlsIfNeeded(settings);
     WidgetsBinding.instance.addObserver(this);
     _initDatabaseVars();
     _initOrientations();
@@ -335,21 +323,57 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     seekDuration.value = settings.seekDuration;
     skipDuration.value = settings.skipDuration;
     playbackSpeed.value = settings.speed;
+    final savedProfile =
+        PlayerUiKeys.currentVisualProfile.get<String>('natural').toLowerCase();
     currentVisualProfile.value =
-        PlayerUiKeys.currentVisualProfile.get<String>('natural');
-    customSettings.value = (PlayerUiKeys.currentVisualSettings
-            .get<Map<String, dynamic>>({}) as Map)
-        .cast<String, int>();
+        ColorProfileManager.profiles.containsKey(savedProfile)
+            ? savedProfile
+            : 'natural';
+    customSettings.value = _loadVisualSettings();
+  }
+
+  Map<String, int> _loadVisualSettings() {
+    try {
+      final raw =
+          PlayerUiKeys.currentVisualSettings.get<Map<String, dynamic>>({});
+      if (raw is! Map) return <String, int>{};
+
+      final out = <String, int>{};
+      for (final entry in raw.entries) {
+        final key = entry.key.toString();
+        final value = entry.value;
+        if (value is int) {
+          out[key] = value;
+          continue;
+        }
+        if (value is num) {
+          out[key] = value.round();
+          continue;
+        }
+        if (value is String) {
+          final parsed = int.tryParse(value);
+          if (parsed != null) out[key] = parsed;
+        }
+      }
+      return out;
+    } catch (e, stack) {
+      Logger.e('Failed to load visual settings: $e');
+      Logger.e('STACK: $stack');
+      return <String, int>{};
+    }
   }
 
   Future<void> _initOrientations() async {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-    ever(isFullScreen,
-        (isFullScreen) => AnymexTitleBar.setFullScreen(isFullScreen));
+    if (!Platform.isMacOS) {
+      ever(isFullScreen,
+          (isFullScreen) => AnymexTitleBar.setFullScreen(isFullScreen));
+    }
 
-    final orientation = await _getClosestLandscapeOrientation();
-
-    SystemChrome.setPreferredOrientations([orientation]);
+    if (Platform.isAndroid || Platform.isIOS) {
+      final orientation = await _getClosestLandscapeOrientation();
+      SystemChrome.setPreferredOrientations([orientation]);
+    }
   }
 
   Future<DeviceOrientation> _getClosestLandscapeOrientation() async {
@@ -360,9 +384,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       const double threshold = 0.3;
 
       if (event.x > threshold) {
-        return DeviceOrientation.landscapeLeft;
-      } else if (event.x < -threshold) {
         return DeviceOrientation.landscapeRight;
+      } else if (event.x < -threshold) {
+        return DeviceOrientation.landscapeLeft;
       }
 
       if (event.y.abs() < 0.5) {
@@ -385,35 +409,79 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       isLeftLandscaped = true;
     }
   }
-
+  
   void _handleAutoSkip() {
     if (skipTimes?.op != null && playerSettings.autoSkipOP) {
-      if (playerSettings.autoSkipOnce && isOPSkippedOnce.value) {
-        return;
-      }
-      if (currentPosition.value.inSeconds > skipTimes!.op!.start &&
-          currentPosition.value.inSeconds < skipTimes!.op!.end) {
-        final skipNeeded = skipTimes!.op!.end - currentPosition.value.inSeconds;
-        final duration =
-            Duration(seconds: currentPosition.value.inSeconds + skipNeeded);
-        currentPosition.value = duration;
-        _basePlayer.seek(duration);
-        isOPSkippedOnce.value = true;
+      if (!(playerSettings.autoSkipOnce && isOPSkippedOnce.value)) {
+        if (currentPosition.value.inSeconds > skipTimes!.op!.start &&
+            currentPosition.value.inSeconds < skipTimes!.op!.end) {
+          final skipNeeded =
+              skipTimes!.op!.end - currentPosition.value.inSeconds;
+          final duration =
+              Duration(seconds: currentPosition.value.inSeconds + skipNeeded);
+          currentPosition.value = duration;
+          _basePlayer.seek(duration);
+          isOPSkippedOnce.value = true;
+          snackBar('Skipped Opening', duration: 2000);
+        }
       }
     }
+
     if (skipTimes?.ed != null && playerSettings.autoSkipED) {
-      if (playerSettings.autoSkipOnce && isEDSkippedOnce.value) {
-        return;
+      if (!(playerSettings.autoSkipOnce && isEDSkippedOnce.value)) {
+        if (currentPosition.value.inSeconds > skipTimes!.ed!.start &&
+            currentPosition.value.inSeconds < skipTimes!.ed!.end) {
+          final skipNeeded =
+              skipTimes!.ed!.end - currentPosition.value.inSeconds;
+          final duration =
+              Duration(seconds: currentPosition.value.inSeconds + skipNeeded);
+          currentPosition.value = duration;
+          _basePlayer.seek(duration);
+          isEDSkippedOnce.value = true;
+          snackBar('Skipped Ending', duration: 2000);
+        }
       }
-      if (currentPosition.value.inSeconds > skipTimes!.ed!.start &&
-          currentPosition.value.inSeconds < skipTimes!.ed!.end) {
-        final skipNeeded = skipTimes!.ed!.end - currentPosition.value.inSeconds;
-        final duration =
-            Duration(seconds: currentPosition.value.inSeconds + skipNeeded);
-        currentPosition.value = duration;
-        _basePlayer.seek(duration);
-        isEDSkippedOnce.value = true;
+    }
+
+    if (skipTimes?.recap != null && playerSettings.autoSkipRecap) {
+      if (!(playerSettings.autoSkipOnce && isRecapSkippedOnce.value)) {
+        if (currentPosition.value.inSeconds > skipTimes!.recap!.start &&
+            currentPosition.value.inSeconds < skipTimes!.recap!.end) {
+          final skipNeeded =
+              skipTimes!.recap!.end - currentPosition.value.inSeconds;
+          final duration =
+              Duration(seconds: currentPosition.value.inSeconds + skipNeeded);
+          currentPosition.value = duration;
+          _basePlayer.seek(duration);
+          isRecapSkippedOnce.value = true;
+          snackBar('Skipped Recap', duration: 2000);
+        }
       }
+    }
+  }
+  
+  void _updateSkipUiState() {
+    if (skipTimes == null) return;
+
+    final currentSec = currentPosition.value.inSeconds;
+    aniskip.SkipIntervals? foundInterval;
+
+    if (skipTimes!.op != null &&
+        currentSec >= skipTimes!.op!.start &&
+        currentSec < skipTimes!.op!.end) {
+      foundInterval = skipTimes!.op;
+    } else if (skipTimes!.ed != null &&
+        currentSec >= skipTimes!.ed!.start &&
+        currentSec < skipTimes!.ed!.end) {
+      foundInterval = skipTimes!.ed;
+    } else if (skipTimes!.recap != null &&
+        currentSec >= skipTimes!.recap!.start &&
+        currentSec < skipTimes!.recap!.end) {
+      foundInterval = skipTimes!.recap;
+    }
+
+    if (currentSkipInterval.value != foundInterval) {
+      currentSkipInterval.value = foundInterval;
     }
   }
 
@@ -444,12 +512,20 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void _initializePlayer() {
     final useMediaKit = _shouldUseMediaKit();
+    final mpvCore = PlayerCoreVisualSettings.getMpvCoreSettings();
+    final betterCore = PlayerCoreVisualSettings.getBetterPlayerCoreSettings();
+    final bufferSizeMb = (useMediaKit
+            ? (mpvCore['demuxerMaxBytesMb'] as num? ?? 64)
+            : (betterCore['bufferSizeMb'] as num? ?? 32))
+        .toInt();
 
     final config = PlayerConfiguration(
-      bufferSize: 1024 * 1024 * 32,
+      bufferSize: bufferSizeMb * 1024 * 1024,
       useLibass: PlayerKeys.useLibass.get<bool>(false),
-      hwdec: 'no',
+      hwdec: (mpvCore['hwdec'] as String?) ?? 'auto-safe',
       playerType: useMediaKit ? PlayerType.mediaKit : PlayerType.betterPlayer,
+      autoPlay: (betterCore['autoPlay'] as bool?) ?? true,
+      useBuffering: (betterCore['useBuffering'] as bool?) ?? true,
     );
 
     if (useMediaKit) {
@@ -469,12 +545,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           startPosition: Duration(milliseconds: stamp ?? 0),
         );
       } else {
-        _basePlayer.open(
-          selectedVideo.value!.url ?? "",
-          headers: selectedVideo.value!.headers,
-          startPosition: Duration(
-              milliseconds: savedEpisode?.timeStampInMilliseconds ?? 0),
-        );
+        _openWithCloudFallback();
       }
 
       _performInitialTracking();
@@ -482,16 +553,56 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     });
   }
 
+  Future<void> _openWithCloudFallback() async {
+    final localStamp = savedEpisode?.timeStampInMilliseconds ?? 0;
+    final url = selectedVideo.value?.url ?? '';
+    final headers = selectedVideo.value?.headers;
+    final episodeNum = currentEpisode.value.number;
+
+    Duration startPosition = Duration(milliseconds: localStamp);
+
+    try {
+      final ctrl = Get.isRegistered<GistSyncController>()
+          ? Get.find<GistSyncController>()
+          : null;
+      if (ctrl != null && ctrl.isConnected.value && ctrl.syncEnabled.value) {
+        final cloudMs = await ctrl
+            .fetchNewerEpisodeTimestamp(
+              mediaId: anilistData.id,
+              malId: anilistData.idMal,
+              episodeNumber: episodeNum,
+              localTimestampMs: localStamp,
+            )
+            .timeout(const Duration(seconds: 4), onTimeout: () => null);
+
+        if (cloudMs != null && cloudMs > localStamp) {
+          startPosition = Duration(milliseconds: cloudMs);
+        }
+      }
+    } catch (_) {}
+
+    await _basePlayer.open(url, headers: headers, startPosition: startPosition);
+  }
+  
   void _initializeAniSkip() {
     isOPSkippedOnce.value = false;
     isEDSkippedOnce.value = false;
+    isRecapSkippedOnce.value = false;
+    currentSkipInterval.value = null;
+
+    final episodeLengthSec =
+        (currentEpisode.value.durationInMilliseconds ?? 0) ~/ 1000;
+
     final skipQuery = aniskip.SkipSearchQuery(
-        idMAL: anilistData.idMal, episodeNumber: currentEpisode.value.number);
+      idMAL: anilistData.idMal,
+      episodeNumber: currentEpisode.value.number,
+      episodeLength: episodeLengthSec,
+    );
     aniskip.AniSkipApi().getSkipTimes(skipQuery).then((skipTimeResult) {
       skipTimes = skipTimeResult;
     }).onError((error, stackTrace) {
-      debugPrint("An error occurred: $error");
-      debugPrint("Stack trace: $stackTrace");
+      debugPrint('An error occurred: $error');
+      debugPrint('Stack trace: $stackTrace');
     });
   }
 
@@ -562,6 +673,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
       if (isPlaying.value && skipTimes != null && !isOffline.value) {
         _handleAutoSkip();
+        _updateSkipUiState();
       }
     }));
 
@@ -617,13 +729,19 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     int subtitleTranslateRequestId = 0;
 
     _subscriptions.add(_basePlayer.subtitleStream.listen((e) async {
-      subtitleText.value = e;
+      final sanitizedLines = e
+          .map((line) => line
+              .replaceAll(_htmlRx, '')
+              .replaceAll(_assRx, '')
+              .replaceAll(_newlineRx, '\n')
+              .trim())
+          .where((line) => line.isNotEmpty)
+          .toList();
+
+      subtitleText.value = sanitizedLines;
       final int currentRequestId = ++subtitleTranslateRequestId;
 
-      final cleanedText = [
-        for (final line in e)
-          if (line.trim().isNotEmpty) line.trim(),
-      ].join('\n');
+      final cleanedText = sanitizedLines.join('\n');
 
       if (!playerSettings.autoTranslate) {
         translatedSubtitle.value = '';
@@ -644,7 +762,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
         final cached = SubtitlePreTranslator.lookup(lookupKey);
         if (cached != null) {
-          translatedSubtitle.value = cached;
+          translatedSubtitle.value = cached
+              .replaceAll(_htmlRx, '')
+              .replaceAll(_assRx, '')
+              .replaceAll(_newlineRx, '\n')
+              .trim();
           return;
         }
 
@@ -654,10 +776,16 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
             playerSettings.translateTo,
           );
 
+          final sanitizedTranslated = translated
+              .replaceAll(_htmlRx, '')
+              .replaceAll(_assRx, '')
+              .replaceAll(_newlineRx, '\n')
+              .trim();
+
           if (currentRequestId == subtitleTranslateRequestId &&
-              translated.isNotEmpty) {
-            translatedSubtitle.value = translated;
-            SubtitlePreTranslator.manualAdd(lookupKey, translated);
+              sanitizedTranslated.isNotEmpty) {
+            translatedSubtitle.value = sanitizedTranslated;
+            SubtitlePreTranslator.manualAdd(lookupKey, sanitizedTranslated);
           }
         } catch (_) {}
       }
@@ -776,11 +904,24 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
       selectedVideo.value = matched;
       _extractSubtitles();
+      
+      _initializeAniSkip();
 
-      final episodeTimestamp = savedEpisode?.timeStampInMilliseconds;
-      final startPosition = episodeTimestamp != null && episodeTimestamp > 0
-          ? Duration(milliseconds: episodeTimestamp)
-          : (savedPosition ?? Duration.zero);
+      final savedEpisodeData = savedEpisode;
+      Duration startPosition = Duration.zero;
+
+      if (savedEpisodeData != null) {
+        final savedTimestamp = savedEpisodeData.timeStampInMilliseconds ?? 0;
+        final episodeTotalDuration =
+            savedEpisodeData.durationInMilliseconds ?? 0;
+
+        final bool wasCompleted = episodeTotalDuration > 0 &&
+            (savedTimestamp / episodeTotalDuration) >= 0.99;
+
+        if (!wasCompleted && savedTimestamp > 0) {
+          startPosition = Duration(milliseconds: savedTimestamp);
+        }
+      }
 
       await _switchMedia(matched.url ?? "", matched.headers,
           startPosition: startPosition);
@@ -894,7 +1035,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   Future<void> dispose() async {
     super.dispose();
     try {
-      await _trackLocally();
+      await _trackLocally(syncToCloud: false);
       if (!isOffline.value) {
         final durationMs = episodeDuration.value.inMilliseconds;
         final hasCrossedLimit = durationMs > 0
@@ -902,6 +1043,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
                 settings.markAsCompleted)
             : false;
         await _trackOnline(hasCrossedLimit);
+        await _syncCloudProgressOnExit();
       }
     } catch (e) {
       Logger.e('Error saving during dispose: $e');
@@ -1260,7 +1402,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       _trackOnline(_shouldMarkAsCompleted);
     }
     isEpisodePaneOpened.value = false;
-    fetchEpisode(episode, savedPosition: currentPosition.value);
+    resetListeners();
+    fetchEpisode(episode);
     onUserInteraction();
   }
 
@@ -1283,12 +1426,38 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     videoFit.value =
         BoxFit.values[(videoFit.value.index + 1) % BoxFit.values.length];
     _basePlayer.toggleVideoFit(videoFit.value);
+    _showVideoFitToast(videoFit.value);
+  }
+
+  void applyConfiguredResizeMode({bool showToast = false}) {
+    final configuredFit = BoxFit.values.firstWhere(
+      (e) => e.name == settings.resizeMode,
+      orElse: () => BoxFit.contain,
+    );
+    if (videoFit.value == configuredFit) return;
+
+    videoFit.value = configuredFit;
+    _basePlayer.toggleVideoFit(videoFit.value);
+    if (showToast) {
+      _showVideoFitToast(videoFit.value);
+    }
+  }
+
+  void resetVideoFit() {
+    if (videoFit.value != BoxFit.contain) {
+      videoFit.value = BoxFit.contain;
+      _basePlayer.toggleVideoFit(videoFit.value);
+    }
+    _showVideoFitToast(videoFit.value);
+  }
+
+  void _showVideoFitToast(BoxFit fit) {
     AnymexToast.show(
-        message: videoFit.value.name.capitalizeFirst ?? '',
+        message: fit.name.capitalizeFirst ?? '',
         duration: const Duration(milliseconds: 700));
   }
 
-  Future<void> _trackLocally() async {
+  Future<void> _trackLocally({bool syncToCloud = true}) async {
     if (isOffline.value) {
       DynamicKeys.offlineVideoProgress
           .set(offlineVideoPath, currentPosition.value.inMilliseconds);
@@ -1341,6 +1510,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       offlineStorage.addOrUpdateWatchedEpisode(
         anilistData.id,
         episodeToSave,
+        syncToCloud: syncToCloud,
       );
       Logger.i(
         'Saved episode ${episodeToSave.number} | '
@@ -1366,7 +1536,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     try {
       final service = anilistData.serviceType.onlineService;
-      final currEpisodeNum = (currentEpisode.value.number ?? "1").toInt();
+      final currEpisodeNum = currentEpisode.value.number.toInt();
 
       final int newProgress =
           hasCrossedLimit ? currEpisodeNum : currEpisodeNum - 1;
@@ -1395,5 +1565,25 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     } catch (e) {
       Logger.i('Failed to track online: $e');
     }
+  }
+
+  Future<void> _syncCloudProgressOnExit() async {
+    final syncCtrl = Get.isRegistered<GistSyncController>()
+        ? Get.find<GistSyncController>()
+        : null;
+    if (syncCtrl == null) {
+      return;
+    }
+
+    final shouldRemove = syncCtrl.autoDeleteCompletedOnExit.value &&
+        _shouldMarkAsCompleted &&
+        !hasNextEpisode;
+
+    await syncCtrl.syncEpisodeProgressOnExit(
+      mediaId: anilistData.id,
+      malId: anilistData.idMal,
+      episode: currentEpisode.value,
+      isCompleted: shouldRemove,
+    );
   }
 }

@@ -13,6 +13,7 @@ import 'package:anymex/controllers/services/simkl/simkl_service.dart';
 import 'package:anymex/controllers/services/storage/storage_manager_service.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/controllers/ui/greeting.dart';
 import 'package:anymex/database/database.dart';
@@ -113,6 +114,8 @@ void main(List<String> args) async {
     } else {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
       SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+          systemNavigationBarDividerColor: Colors.transparent,
+          systemNavigationBarContrastEnforced: false,
           systemNavigationBarColor: Colors.transparent,
           statusBarColor: Colors.transparent,
           statusBarBrightness: Brightness.dark));
@@ -165,12 +168,15 @@ void _initializeGetxController() async {
   Get.put(SimklService());
   Get.put(MalService());
   Get.put(DiscordRPCController());
-  Get.put(SourceController());
+  if (!Get.isRegistered<SourceController>()) {
+    Get.put(SourceController());
+  }
   Get.put(Settings());
   Get.put(ServiceHandler());
   Get.put(GreetingController());
   Get.put(CommentumService());
   Get.put(CommentPreloader());
+  Get.put(GistSyncController(), permanent: true);
   Get.lazyPut(() => CacheController());
   await StorageManagerService().enforceImageCacheLimit();
 }

@@ -155,12 +155,10 @@ class AnilistAuth extends GetxController {
 
     String clientId = dotenv.env['AL_CLIENT_ID'] ?? '';
     String clientSecret = dotenv.env['AL_CLIENT_SECRET'] ?? '';
-    String redirectUri = dotenv.env['CALLBACK_SCHEME'] ?? '';
 
     if (selectedMethod == 'browser') {
-      // Browser login flow
       final url =
-          'https://anilist.co/api/v2/oauth/authorize?client_id=$clientId&redirect_uri=$redirectUri&response_type=code';
+          'https://anilist.co/api/v2/oauth/authorize?client_id=$clientId&redirect_uri=anymex://callback&response_type=code';
       try {
         final result = await FlutterWebAuth2.authenticate(
           url: url,
@@ -170,7 +168,7 @@ class AnilistAuth extends GetxController {
         if (code != null) {
           Logger.i("token found");
           await _exchangeCodeForToken(
-              code, clientId, clientSecret, redirectUri);
+              code, clientId, clientSecret);
         }
       } catch (e) {
         Logger.i('Error during login: $e');
@@ -196,7 +194,6 @@ class AnilistAuth extends GetxController {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Handle bar
           Center(
             child: Container(
               width: 40,
@@ -208,7 +205,6 @@ class AnilistAuth extends GetxController {
             ),
           ),
           const SizedBox(height: 24),
-          // Title
           Text(
             'Login to AniList',
             style: TextStyle(
@@ -220,7 +216,6 @@ class AnilistAuth extends GetxController {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 38),
-          // Browser login button
           _buildButton(
             context,
             onPressed: () => Navigator.pop(context, 'browser'),
@@ -416,8 +411,8 @@ class AnilistAuth extends GetxController {
     );
   }
 
-  Future<void> _exchangeCodeForToken(String code, String clientId,
-      String clientSecret, String redirectUri) async {
+  Future<void> _exchangeCodeForToken(
+      String code, String clientId, String clientSecret) async {
     final response = await http.post(
       Uri.parse('https://anilist.co/api/v2/oauth/token'),
       headers: {
@@ -427,7 +422,7 @@ class AnilistAuth extends GetxController {
         'grant_type': 'authorization_code',
         'client_id': clientId,
         'client_secret': clientSecret,
-        'redirect_uri': redirectUri,
+        'redirect_uri': "anymex://callback",
         'code': code,
       },
     );
@@ -1659,6 +1654,7 @@ class AnilistAuth extends GetxController {
         entries {
           media {
             id
+            idMal
             title {
               romaji
               english
@@ -1687,6 +1683,8 @@ class AnilistAuth extends GetxController {
           status
           score
           updatedAt
+          startedAt { year month day }
+          completedAt { year month day }
         }
       }
     }
@@ -1827,6 +1825,9 @@ class AnilistAuth extends GetxController {
     String? status,
     int? progress,
     bool isAnime = true,
+    DateTime? startedAt,
+    DateTime? completedAt,
+    bool? isPrivate,
   }) async {
     final token = AuthKeys.authToken.get<String?>();
     if (token == null || !isLoggedIn.value) {
@@ -1834,12 +1835,14 @@ class AnilistAuth extends GetxController {
     }
 
     const String mutation = '''
-  mutation UpdateMediaList(\$id: Int, \$progress: Int, \$score: Float, \$status: MediaListStatus) {
-    SaveMediaListEntry(mediaId: \$id, progress: \$progress, score: \$score, status: \$status) {
+  mutation UpdateMediaList(\$id: Int, \$progress: Int, \$score: Float, \$status: MediaListStatus, \$startedAt: FuzzyDateInput, \$completedAt: FuzzyDateInput, \$private: Boolean) {
+    SaveMediaListEntry(mediaId: \$id, progress: \$progress, score: \$score, status: \$status, startedAt: \$startedAt, completedAt: \$completedAt, private: \$private) {
       id
       status
       progress
       score
+      startedAt { year month day }
+      completedAt { year month day }
     }
   }
   ''';
@@ -1868,6 +1871,23 @@ class AnilistAuth extends GetxController {
       if (progress != null) {
         variables['progress'] = progress;
       }
+      if (startedAt != null) {
+        variables['startedAt'] = {
+          'year': startedAt.year,
+          'month': startedAt.month,
+          'day': startedAt.day,
+        };
+      }
+      if (completedAt != null) {
+        variables['completedAt'] = {
+          'year': completedAt.year,
+          'month': completedAt.month,
+          'day': completedAt.day,
+        };
+      }
+      if (isPrivate != null) {
+        variables['private'] = isPrivate;
+      }
 
       final response = await http.post(
         Uri.parse('https://graphql.anilist.co'),
@@ -1888,7 +1908,9 @@ class AnilistAuth extends GetxController {
             score: score,
             status: status,
             progress: progress,
-            isAnime: isAnime));
+            isAnime: isAnime,
+            startedAt: startedAt,
+            completedAt: completedAt));
       }
 
       if (response.statusCode == 200) {
@@ -1898,9 +1920,9 @@ class AnilistAuth extends GetxController {
           ..score = score.toString();
         currentMedia.value = newMedia;
         if (isAnime) {
-          fetchUserAnimeList();
+          await fetchUserAnimeList();
         } else {
-          fetchUserMangaList();
+          await fetchUserMangaList();
         }
         setCurrentMedia(listId, isManga: !isAnime);
       } else if (response.statusCode == 403) {
@@ -1928,6 +1950,7 @@ class AnilistAuth extends GetxController {
           entries {
             media {
               id
+              idMal
               title {
                 romaji
                 english

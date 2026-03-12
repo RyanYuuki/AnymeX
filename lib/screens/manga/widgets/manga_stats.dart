@@ -39,13 +39,30 @@ class _MangaStatsState extends State<MangaStats> {
   late final Future<AnimeAdaptation> _animeAdaptationFuture;
   late final Future<NextRelease> _nextReleaseFuture;
   late final Future<List<NewsItem>> _newsFuture;
+  String? _latestChapter;
 
   @override
   void initState() {
     super.initState();
 
     _animeAdaptationFuture = MangaAnimeUtil.getAnimeAdaptation(widget.data);
-    _nextReleaseFuture = MangaAnimeUtil.getNextChapterPrediction(widget.data);
+    _nextReleaseFuture = MangaAnimeUtil.getNextChapterPrediction(widget.data).then((value) {
+      if (value.nextChapter != null && mounted) {
+        setState(() {
+          final chapterMatch = RegExp(r'Chapter\s+(\d+(?:\.\d+)?)').firstMatch(value.nextChapter!);
+          if (chapterMatch != null) {
+            final chapterNum = double.parse(chapterMatch.group(1)!);
+            final prevChapterNum = chapterNum - 1;
+            if (prevChapterNum % 1 == 0) {
+              _latestChapter = 'Chapter ${prevChapterNum.toInt()}';
+            } else {
+              _latestChapter = 'Chapter ${prevChapterNum.toStringAsFixed(1)}';
+            }
+          }
+        });
+      }
+      return value;
+    });
     _newsFuture = MangaAnimeUtil.getMangaNovelNews(widget.data);
   }
 
@@ -442,7 +459,9 @@ class _MangaStatsState extends State<MangaStats> {
       },
       {
         'label': 'Chapters',
-        'value': widget.data.totalChapters ?? '??',
+        'value': (widget.data.totalChapters == '??' && _latestChapter != null) 
+            ? _latestChapter!.replaceAll('Chapter ', '')
+            : (widget.data.totalChapters ?? '??'),
         'icon': Icons.menu_book_outlined
       },
     ];
@@ -542,6 +561,26 @@ class _MangaStatsState extends State<MangaStats> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      if (_latestChapter != null) ...[
+                        Row(
+                          children: [
+                            AnymexText(
+                              text: "Current • ",
+                              variant: TextVariant.regular,
+                              size: 11,
+                              color: colorScheme.onSurface
+                                  .opaque(0.6, iReallyMeanIt: true),
+                            ),
+                            AnymexText(
+                              text: _latestChapter!,
+                              variant: TextVariant.bold,
+                              size: 11,
+                              color: colorScheme.primary,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                      ],
                       AnymexText(
                         text: "Next Release",
                         variant: TextVariant.regular,

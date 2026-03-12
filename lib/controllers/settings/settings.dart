@@ -233,6 +233,13 @@ class Settings extends GetxController {
     UISettingsKeys.animationDuration.set(value);
   }
 
+  bool get showContinueWatchingCard =>
+      _getUISetting((s) => s.showContinueWatchingCard);
+  set showContinueWatchingCard(bool value) {
+    uiSettings.update((s) => s?.showContinueWatchingCard = value);
+    UISettingsKeys.showContinueWatchingCard.set(value);
+  }
+
   bool get defaultPortraitMode =>
       _getPlayerSetting((s) => s.defaultPortraitMode);
   set defaultPortraitMode(bool value) {
@@ -361,6 +368,12 @@ class Settings extends GetxController {
   set autoSkipOnce(bool value) {
     playerSettings.update((s) => s?.autoSkipOnce = value);
     PlayerSettingsKeys.autoSkipOnce.set(value);
+  }
+
+  bool get autoSkipRecap => _getPlayerSetting((s) => s.autoSkipRecap);
+  set autoSkipRecap(bool value) {
+    playerSettings.update((s) => s?.autoSkipRecap = value);
+    PlayerSettingsKeys.autoSkipRecap.set(value);
   }
 
   bool get autoSkipFiller => _getPlayerSetting((s) => s.autoSkipFiller);

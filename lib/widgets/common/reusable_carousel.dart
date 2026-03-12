@@ -19,6 +19,7 @@ import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:anymex/widgets/media_items/media_peek_popup.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 
 class ReusableCarousel extends StatefulWidget {
@@ -141,14 +142,27 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
     final tag = '${itemData.hashCode}-${itemData.id}';
 
     return Obx(() {
+      final card = settingsController.enableAnimation
+          ? SlideAndScaleAnimation(child: _buildCard(itemData, tag))
+          : _buildCard(itemData, tag);
+
       final child = AnymexOnTap(
         onTap: () => _navigateToDetailsPage(itemData, tag),
-        child: settingsController.enableAnimation
-            ? SlideAndScaleAnimation(child: _buildCard(itemData, tag))
-            : _buildCard(itemData, tag),
+        child: GestureDetector(
+          onLongPress: () => _showPeekPopup(context, itemData, tag),
+          child: card,
+        ),
       );
       return child;
     });
+  }
+
+  void _showPeekPopup(BuildContext context, CarouselData itemData, String tag) {
+    final bool isMediaManga = _determineIfManga(itemData);
+    final ItemType mediaType = isMediaManga ? ItemType.manga : ItemType.anime;
+    final media = Media.fromCarouselData(itemData, mediaType);
+    if (media.userStatus != null && media.userStatus!.isNotEmpty) return;
+    MediaPeekPopup.show(context, media, mediaType, tag);
   }
 
   MediaCardGate _buildCard(CarouselData itemData, String tag) {
@@ -169,6 +183,28 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
     final ItemType mediaType = isMediaManga ? ItemType.manga : ItemType.anime;
     final media = Media.fromCarouselData(itemData, mediaType);
 
+    void onTapHandler() {
+      if (widget.type == ItemType.novel) {
+        final source =
+            widget.source ?? sourceController.installedNovelExtensions.first;
+        navigate(() => NovelDetailsPage(
+              media: media,
+              tag: media.title,
+              source: source,
+            ));
+      } else if (widget.type == ItemType.manga) {
+        navigate(() => MangaDetailsPage(
+              media: media,
+              tag: media.title,
+            ));
+      } else {
+        navigate(() => AnimeDetailsPage(
+              media: media,
+              tag: media.title,
+            ));
+      }
+    }
+
     final Widget page = isMediaManga
         ? MangaDetailsPage(
             media: media,
@@ -181,7 +217,7 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
               )
             : NovelDetailsPage(media: media, tag: tag, source: widget.source!);
     _setActiveSource(controller, itemData);
-    navigate(() => page);
+    onTapHandler();
   }
 
   bool _determineIfManga(CarouselData itemData) {

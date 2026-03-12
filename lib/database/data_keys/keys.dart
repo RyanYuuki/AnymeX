@@ -1,5 +1,4 @@
 import 'package:anymex/database/kv_helper.dart';
-
 export 'package:anymex/database/kv_helper.dart';
 
 enum General {
@@ -11,6 +10,7 @@ enum General {
   universalScrapper,
   enableBetaUpdates,
   imageCacheThresholdGb,
+  libraryGridAutoMigrated,
 }
 
 enum ThemeKeys {
@@ -30,6 +30,9 @@ enum PlayerUiKeys {
   playerControlTheme,
   playerControlThemesJson,
   mediaIndicatorTheme,
+  mpvCoreSettings,
+  betterPlayerCoreSettings,
+  mpvVisualSettings,
   currentVisualProfile,
   currentVisualSettings,
   selectedShader,
@@ -55,6 +58,51 @@ enum ReaderKeys {
   dualPageMode,
   autoScrollEnabled,
   autoScrollSpeed,
+  customBrightnessEnabled,
+  customBrightnessValue,
+  colorFilterEnabled,
+  colorFilterValue,
+  colorFilterMode,
+  grayscaleEnabled,
+  invertColorsEnabled,
+  readerTheme,
+  keepScreenOn,
+  alwaysShowChapterTransition,
+  longPressPageActionsEnabled,
+  autoWebtoonMode,
+  displayRefreshEnabled,
+  displayRefreshDurationMs,
+  displayRefreshInterval,
+  displayRefreshColor,
+}
+
+enum NovelReaderKeys {
+  themeMode,
+  backgroundOpacity,
+  fontSize,
+  lineHeight,
+  letterSpacing,
+  wordSpacing,
+  paragraphSpacing,
+  fontFamily,
+  textAlign,
+  paddingHorizontal,
+  paddingVertical,
+  autoScroll,
+  autoScrollSpeed,
+  volumeScrolling,
+  tapToScroll,
+  keepScreenOn,
+  verticalSeekbar,
+  swipeGestures,
+  pageReader,
+  showReadingProgress,
+  showBatteryTime,
+  ttsSpeed,
+  ttsPitch,
+  ttsVoice,
+  ttsAutoAdvance,
+  ttsEnabled,
 }
 
 enum LocalSourceKeys {
@@ -66,6 +114,13 @@ enum LocalSourceKeys {
 
 enum ServiceKeys { serviceType }
 
+enum SyncKeys {
+  gistGithubToken,
+  gistGithubUsername,
+  gistAutoDeleteCompleted,
+  gistExitSyncNotifications,
+}
+
 enum SourceKeys {
   activeAnimeRepo,
   activeMangaRepo,
@@ -76,6 +131,9 @@ enum SourceKeys {
   activeSourceId,
   activeMangaSourceId,
   activeNovelSourceId,
+  animeExtensionOrder,
+  mangaExtensionOrder,
+  novelExtensionOrder,
 }
 
 enum AuthKeys {
@@ -142,6 +200,7 @@ enum PlayerSettingsKeys {
   autoSkipOP,
   autoSkipED,
   autoSkipOnce,
+  autoSkipRecap,
   enableSwipeControls,
   markAsCompleted,
   transitionSubtitle,
@@ -149,6 +208,9 @@ enum PlayerSettingsKeys {
   translateTo,
   autoSkipFiller,
   enableScreenshot,
+  subtitleOpacity,
+  subtitleBottomMargin,
+  subtitleOutlineType,
 }
 
 enum UISettingsKeys {
@@ -176,4 +238,5 @@ enum UISettingsKeys {
   usePosterColor,
   enablePosterKenBurns,
   carouselStyle,
+  showContinueWatchingCard,
 }

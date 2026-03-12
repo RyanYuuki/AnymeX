@@ -1,9 +1,9 @@
 import 'dart:async';
-
 import 'dart:ui';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/calendar_data.dart';
+import 'package:anymex/controllers/services/simkl/calendar_data.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
@@ -48,17 +48,33 @@ class _CalendarState extends State<Calendar>
   RxBool isFetching = false.obs;
   List<DubAnimeInfo> dubCache = [];
 
+  bool get isAnilist => serviceHandler.serviceType.value == ServicesType.anilist;
+  bool get isSimkl => serviceHandler.serviceType.value == ServicesType.simkl;
+
   @override
   void initState() {
     super.initState();
     final ids = serviceHandler.animeList.map((e) => e.id).toSet().toList();
-    fetchCalendarData(calendarData).then((_) {
-      setState(() {
-        rawData.value = calendarData.map((e) => e).toList();
-        listData.value = calendarData.where((e) => ids.contains(e.id)).toList();
-        isLoading = false;
+    
+    if (isSimkl) {
+      fetchSimklCalendarData(calendarData, isMovies: true).then((_) {
+        fetchSimklCalendarData(calendarData, isMovies: false).then((_) {
+          setState(() {
+            rawData.value = calendarData.map((e) => e).toList();
+            listData.value = calendarData.where((e) => ids.contains(e.id)).toList();
+            isLoading = false;
+          });
+        });
       });
-    });
+    } else {
+      fetchCalendarData(calendarData).then((_) {
+        setState(() {
+          rawData.value = calendarData.map((e) => e).toList();
+          listData.value = calendarData.where((e) => ids.contains(e.id)).toList();
+          isLoading = false;
+        });
+      });
+    }
 
     dateTabs =
         List.generate(7, (index) => DateTime.now().add(Duration(days: index)));
@@ -67,6 +83,8 @@ class _CalendarState extends State<Calendar>
   }
 
   Future<void> _toggleDub() async {
+    if (!isAnilist) return;
+    
     isDubMode.value = !isDubMode.value;
     if (isDubMode.value && dubCache.isEmpty) {
       isFetching.value = true;
@@ -79,6 +97,8 @@ class _CalendarState extends State<Calendar>
       t.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
 
   DubAnimeInfo? _getDubInfo(Media m) {
+    if (!isAnilist) return null;
+    
     String normalized = _norm(m.title);
     for (var dub in dubCache) {
       if (_norm(dub.title) == normalized) {
@@ -118,19 +138,20 @@ class _CalendarState extends State<Calendar>
                 color: context.colors.primary,
               )),
           actions: [
-            Obx(() => IconButton(
-                  onPressed: _toggleDub,
-                  tooltip: isDubMode.value ? "Show All" : "Show Dubs Only",
-                  icon: Icon(
-                    isDubMode.value
-                        ? HugeIcons.strokeRoundedMicOff01
-                        : HugeIcons.strokeRoundedMic01,
-                    color: isDubMode.value
-                        ? context.colors.primary
-                        : null,
-                  ),
-                )),
-            const SizedBox(width: 10),
+            if (isAnilist)
+              Obx(() => IconButton(
+                    onPressed: _toggleDub,
+                    tooltip: isDubMode.value ? "Show All" : "Show Dubs Only",
+                    icon: Icon(
+                      isDubMode.value
+                          ? HugeIcons.strokeRoundedMicOff01
+                          : HugeIcons.strokeRoundedMic01,
+                      color: isDubMode.value
+                          ? context.colors.primary
+                          : null,
+                    ),
+                  )),
+            if (isAnilist) const SizedBox(width: 10),
             if (serviceHandler.isLoggedIn.value) ...[
               IconButton(
                   style: ElevatedButton.styleFrom(
@@ -167,7 +188,7 @@ class _CalendarState extends State<Calendar>
                 size: 16,
               ),
               Obx(() {
-                if (isDubMode.value) {
+                if (isDubMode.value && isAnilist) {
                   return AnymexText(
                     text: isFetching.value ? "Fetching..." : "Dubbed Only",
                     variant: TextVariant.regular,
@@ -186,14 +207,23 @@ class _CalendarState extends State<Calendar>
             tabs: dateTabs.map((date) {
               return Obx(() {
                 var list = (includeList ? listData : rawData)
-                    .where((media) =>
-                        DateTime.fromMillisecondsSinceEpoch(
+                    .where((media) {
+                      if (media.nextAiringEpisode != null) {
+                        return DateTime.fromMillisecondsSinceEpoch(
                                 media.nextAiringEpisode!.airingAt * 1000)
                             .day ==
-                        date.day)
+                        date.day;
+                      } else {
+                        try {
+                          return DateTime.parse(media.aired).day == date.day;
+                        } catch (e) {
+                          return false;
+                        }
+                      }
+                    })
                     .toList();
 
-                if (isDubMode.value && !isFetching.value) {
+                if (isDubMode.value && isAnilist && !isFetching.value) {
                   list = list.where((m) => _getDubInfo(m) != null).toList();
                 }
 
@@ -212,19 +242,28 @@ class _CalendarState extends State<Calendar>
           controller: _tabController,
           children: dateTabs.map((date) {
             return Obx(() {
-              if (isFetching.value) {
+              if (isFetching.value && isAnilist) {
                 return const Center(child: AnymexProgressIndicator());
               }
 
               var filteredList = (includeList ? listData : rawData)
-                  .where((media) =>
-                      DateTime.fromMillisecondsSinceEpoch(
+                  .where((media) {
+                    if (media.nextAiringEpisode != null) {
+                      return DateTime.fromMillisecondsSinceEpoch(
                               media.nextAiringEpisode!.airingAt * 1000)
                           .day ==
-                      date.day)
+                      date.day;
+                    } else {
+                      try {
+                        return DateTime.parse(media.aired).day == date.day;
+                      } catch (e) {
+                        return false;
+                      }
+                    }
+                  })
                   .toList();
 
-              if (isDubMode.value) {
+              if (isDubMode.value && isAnilist) {
                 filteredList =
                     filteredList.where((m) => _getDubInfo(m) != null).toList();
               }
@@ -250,12 +289,12 @@ class _CalendarState extends State<Calendar>
                     mainAxisSpacing: 25),
                 itemBuilder: (context, index) {
                   final data = filteredList[index];
-                  final dubInfo = isDubMode.value ? _getDubInfo(data) : null;
+                  final dubInfo = isDubMode.value && isAnilist ? _getDubInfo(data) : null;
                   return isGrid
                       ? GridAnimeCard(
                           data: data,
                           dubInfo: dubInfo,
-                          isDubMode: isDubMode.value)
+                          isDubMode: isDubMode.value && isAnilist)
                       : BlurAnimeCard(data: data);
                 },
               );
@@ -285,6 +324,11 @@ class GridAnimeCard extends StatefulWidget {
 class _GridAnimeCardState extends State<GridAnimeCard> {
   static const double cardWidth = 108;
   static const double cardHeight = 280;
+
+  final serviceHandler = Get.find<ServiceHandler>();
+  
+  bool get isAnilist => serviceHandler.serviceType.value == ServicesType.anilist;
+  bool get isSimkl => serviceHandler.serviceType.value == ServicesType.simkl;
 
   Future<void> _launchUrl(String? url) async {
     if (url != null && url.isNotEmpty) {
@@ -437,7 +481,6 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
                                               .toLowerCase()
                                               .contains('apple')
                                           ? AnymeXImage(
-                                              // color: Colors.white,
                                               imageUrl:
                                                   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVCJpAHzn91VMfwirwAbAmV-ONO02UjmCj2w&s",
                                               height: 20,
@@ -499,9 +542,12 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.movie_filter_rounded,
-                    color: Colors.grey, size: 16),
-                if (widget.data.nextAiringEpisode?.episode != null) ...[
+                Icon(
+                  isSimkl ? Icons.movie_filter_rounded : Icons.movie_filter_rounded,
+                  color: Colors.grey, 
+                  size: 16
+                ),
+                if (isAnilist && widget.data.nextAiringEpisode?.episode != null) ...[
                   const SizedBox(width: 5),
                   AnymexText(
                     text: 'EPISODE ${widget.data.nextAiringEpisode!.episode}',
@@ -525,7 +571,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
               textAlign: TextAlign.center,
             ),
           ),
-          if (!widget.isDubMode &&
+          if (isAnilist && !widget.isDubMode &&
               widget.data.nextAiringEpisode?.episode != null)
             SizedBox(
               width: cardWidth,
@@ -584,6 +630,9 @@ class BlurAnimeCard extends StatefulWidget {
 
 class _BlurAnimeCardState extends State<BlurAnimeCard> {
   RxInt timeLeft = 0.obs;
+  final serviceHandler = Get.find<ServiceHandler>();
+  
+  bool get isAnilist => serviceHandler.serviceType.value == ServicesType.anilist;
 
   @override
   void initState() {
@@ -696,16 +745,17 @@ class _BlurAnimeCardState extends State<BlurAnimeCard> {
                         SizedBox(
                             height: getResponsiveSize(context,
                                 mobileSize: 10, desktopSize: 30)),
-                        AnymexText(
-                          text:
-                              "Episode ${widget.data.nextAiringEpisode!.episode}",
-                          size: 14,
-                          maxLines: 2,
-                          color: context.colors.primary,
-                          variant: TextVariant.bold,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 10),
+                        if (isAnilist && widget.data.nextAiringEpisode != null) ...[
+                          AnymexText(
+                            text: "Episode ${widget.data.nextAiringEpisode!.episode}",
+                            size: 14,
+                            maxLines: 2,
+                            color: context.colors.primary,
+                            variant: TextVariant.bold,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 10),
+                        ],
                         AnymexText(
                           text: widget.data.title,
                           size: 14,

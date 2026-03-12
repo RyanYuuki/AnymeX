@@ -19,6 +19,7 @@ class AnymexButton extends StatelessWidget {
   final Clip clipBehavior;
   final bool enableGlow;
   final Function()? onTap;
+  final VoidCallback? onLongPress;
 
   const AnymexButton({
     super.key,
@@ -37,6 +38,7 @@ class AnymexButton extends StatelessWidget {
     this.clipBehavior = Clip.none,
     this.enableGlow = false,
     this.onTap,
+    this.onLongPress,
   });
 
   @override
@@ -83,6 +85,7 @@ class AnymexButton extends StatelessWidget {
                           const BorderSide(color: Colors.transparent)))),
           child: ElevatedButton(
             onPressed: onTap,
+            onLongPress: onLongPress,
             child: Container(
               height: height,
               width: width,

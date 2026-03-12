@@ -71,8 +71,7 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
       BuildContext context, PlayerController controller, bool isDesktop) {
     final theme = Theme.of(context);
 
-    return _GlassPanel(
-      radius: 24,
+    return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: isDesktop ? 16 : 12,
         vertical: isDesktop ? 12 : 10,
@@ -418,6 +417,7 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
       'aspect_ratio': ControlButton(
         icon: Symbols.fit_screen,
         onPressed: () => controller.toggleVideoFit(),
+        onLongPress: controller.resetVideoFit,
         tooltip: 'Aspect Ratio',
         compact: true,
       ),
@@ -464,52 +464,48 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
     final leftButtons = buildButtonList(leftButtonIds);
     final rightButtons = buildButtonList(rightButtonIds);
 
-    return _GlassPanel(
-      radius: 28,
-      padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 4),
-            child: ProgressSlider(style: SliderStyle.ios),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              _GlassTimeChip(
-                child: Obx(
-                  () => Text(
-                    controller.formattedCurrentPosition,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.3,
-                    ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 4),
+          child: ProgressSlider(style: SliderStyle.ios),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            _GlassTimeChip(
+              child: Obx(
+                () => Text(
+                  controller.formattedCurrentPosition,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.3,
                   ),
                 ),
               ),
-              if (leftButtons.isNotEmpty) const SizedBox(width: 10),
-              ...leftButtons,
-              const Spacer(),
-              ...rightButtons,
-              if (rightButtons.isNotEmpty) const SizedBox(width: 10),
-              _GlassTimeChip(
-                child: Obx(
-                  () => Text(
-                    controller.formattedEpisodeDuration,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.3,
-                    ),
+            ),
+            if (leftButtons.isNotEmpty) const SizedBox(width: 10),
+            ...leftButtons,
+            const Spacer(),
+            ...rightButtons,
+            if (rightButtons.isNotEmpty) const SizedBox(width: 10),
+            _GlassTimeChip(
+              child: Obx(
+                () => Text(
+                  controller.formattedEpisodeDuration,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.3,
                   ),
                 ),
               ),
-            ],
-          ),
-        ],
-      ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

@@ -20,9 +20,11 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Media/staff.dart';
 import 'package:anymex/models/Service/base_service.dart';
 import 'package:anymex/models/Service/online_service.dart';
+import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
 import 'package:anymex/screens/library/online/manga_list.dart';
+import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart' as fb;
 import 'package:anymex/utils/fallback/fallback_manga.dart' as fbm;
@@ -64,6 +66,37 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
   // Novel Data
   RxList<DMedia> novelData = <DMedia>[].obs;
 
+  Media? _firstMediaWithCover(Iterable<Media> mediaList) {
+    for (final media in mediaList) {
+      final cover = media.cover;
+      if (cover != null && cover.isNotEmpty) {
+        return media;
+      }
+    }
+    return null;
+  }
+
+  Media? _lastMediaWithCover(Iterable<Media> mediaList) {
+    final list = mediaList.toList(growable: false);
+    for (var index = list.length - 1; index >= 0; index--) {
+      final media = list[index];
+      final cover = media.cover;
+      if (cover != null && cover.isNotEmpty) {
+        return media;
+      }
+    }
+    return null;
+  }
+
+  void _openHomeButtonMedia(Media media) {
+    final tag = 'home-button-${media.serviceType.name}-${media.id}';
+    if (media.mediaType == ItemType.manga) {
+      navigate(() => MangaDetailsPage(media: media, tag: tag));
+      return;
+    }
+    navigate(() => AnimeDetailsPage(media: media, tag: tag));
+  }
+
   @override
   RxList<Widget> homeWidgets(BuildContext context) {
     final settings = Get.find<Settings>();
@@ -85,6 +118,14 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
           builder: (context, constraints) {
             final isDesktop = constraints.maxWidth > 600;
             final buttonHeight = !isDesktop ? 70.0 : 90.0;
+            final animeButtonMedia = _firstMediaWithCover(trendingAnimes);
+            final mangaButtonMedia = _firstMediaWithCover(trendingMangas);
+            final otherButtonMedia = _lastMediaWithCover([
+              ...popularAnimes,
+              ...popularMangas,
+              ...trendingMangas,
+              ...trendingAnimes,
+            ]);
 
             final double itemWidth = isDesktop ? 300.0 : constraints.maxWidth;
 
@@ -103,11 +144,12 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                           child: ImageButton(
                             height: buttonHeight,
                             buttonText: "ANIME LIST",
-                            backgroundImage: trendingAnimes
-                                .firstWhere((e) => e.cover != null)
-                                .cover!,
+                            backgroundImage: animeButtonMedia?.cover ?? '',
                             borderRadius: 16.multiplyRadius(),
                             onPressed: () => navigate(() => const AnimeList()),
+                            onLongPress: animeButtonMedia == null
+                                ? null
+                                : () => _openHomeButtonMedia(animeButtonMedia),
                           ),
                         ),
                         const SizedBox(width: 15),
@@ -115,12 +157,13 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                           child: ImageButton(
                             height: buttonHeight,
                             buttonText: "MANGA LIST",
-                            backgroundImage: trendingMangas
-                                .firstWhere((e) => e.cover != null)
-                                .cover!,
+                            backgroundImage: mangaButtonMedia?.cover ?? '',
                             borderRadius: 16.multiplyRadius(),
                             onPressed: () =>
                                 navigate(() => const AnilistMangaList()),
+                            onLongPress: mangaButtonMedia == null
+                                ? null
+                                : () => _openHomeButtonMedia(mangaButtonMedia),
                           ),
                         ),
                       ],
@@ -134,14 +177,12 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                       height: buttonHeight,
                       buttonText: "OTHER",
                       borderRadius: 16.multiplyRadius(),
-                      backgroundImage: [
-                        ...popularAnimes,
-                        ...popularMangas,
-                        ...trendingMangas,
-                        ...trendingAnimes
-                      ].where((e) => e.cover != null).last.cover!,
+                      backgroundImage: otherButtonMedia?.cover ?? '',
                       onPressed: () =>
                           navigate(() => const OtherFeaturesPage()),
+                      onLongPress: otherButtonMedia == null
+                          ? null
+                          : () => _openHomeButtonMedia(otherButtonMedia),
                     ),
                   ),
                 ],
@@ -765,7 +806,8 @@ averageScore
         isManga: params.isManga,
         query: params.query,
         filters: filters,
-        isAdult: params.args);
+        isAdult: params.args,
+        page: params.page);
     return data;
   }
 
@@ -773,7 +815,8 @@ averageScore
       {required bool isManga,
       String? query,
       Map<String, dynamic>? filters,
-      required bool isAdult}) async {
+      required bool isAdult,
+      int page = 1}) async {
     const url = 'https://graphql.anilist.co/';
     final token = AuthKeys.authToken.get<String?>();
     final headers = {
@@ -900,8 +943,8 @@ averageScore
   ''';
 
     final String queryStr = '''
-  query (\$page: Int${queryArgsDef.isNotEmpty ? ', $queryArgsDef' : ''}) {
-    Page (page: \$page) {
+  query (\$page: Int, \$perPage: Int${queryArgsDef.isNotEmpty ? ', $queryArgsDef' : ''}) {
+    Page (page: \$page, perPage: \$perPage) {
       media (
         type: ${isManga ? "MANGA" : "ANIME"},
         $queryArgsPass
@@ -916,7 +959,7 @@ averageScore
 
     final Map<String, dynamic> body = {
       'query': queryStr,
-      'variables': {'page': 1, ...variables},
+      'variables': {'page': page, 'perPage': 50, ...variables},
     };
 
     try {
@@ -1434,7 +1477,10 @@ averageScore
           score: params.score,
           status: params.status,
           progress: params.progress,
-          isAnime: params.isAnime);
+          isAnime: params.isAnime,
+          startedAt: params.startedAt,
+          completedAt: params.completedAt,
+          isPrivate: params.isPrivate);
 
   @override
   Future<void> deleteListEntry(String listId, {bool isAnime = true}) async =>

@@ -79,7 +79,7 @@ class BetterPlayerImpl extends BasePlayer {
   Future<void> initialize() async {
     WakelockPlus.enable();
     final betterPlayerConfiguration = BetterPlayerConfiguration(
-      autoPlay: true,
+      autoPlay: config.autoPlay,
       autoDetectFullscreenDeviceOrientation: true,
       subtitlesConfiguration: BetterPlayerSubtitlesConfiguration(
         fontSize: config.useLibass ? 14 : 0,
@@ -293,10 +293,12 @@ class BetterPlayerImpl extends BasePlayer {
       videoFormat: url.contains('.mp4')
           ? BetterPlayerVideoFormat.other
           : BetterPlayerVideoFormat.hls,
-      bufferingConfiguration: BetterPlayerBufferingConfiguration(
-        minBufferMs: config.bufferSize ~/ 1000,
-        maxBufferMs: config.bufferSize ~/ 500,
-      ),
+      bufferingConfiguration: config.useBuffering
+          ? BetterPlayerBufferingConfiguration(
+              minBufferMs: config.bufferSize ~/ 1000,
+              maxBufferMs: config.bufferSize ~/ 500,
+            )
+          : const BetterPlayerBufferingConfiguration(),
     );
 
     await _controller.setupDataSource(_currentDataSource!);

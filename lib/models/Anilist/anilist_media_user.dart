@@ -2,6 +2,7 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 
 class TrackedMedia {
   String? id;
+  String? idMal;
   String? title;
   String? poster;
   String? episodeCount;
@@ -18,6 +19,9 @@ class TrackedMedia {
   ServicesType servicesType;
   String? userName;
   int? userId;
+  DateTime? startedAt;
+  DateTime? completedAt;
+  bool? isPrivate;
   String? userAvatar;
   int? userProgress;
   double? userScore;
@@ -27,6 +31,7 @@ class TrackedMedia {
 
   TrackedMedia({
     this.id,
+    this.idMal,
     this.title,
     this.poster,
     this.episodeCount,
@@ -49,11 +54,15 @@ class TrackedMedia {
     this.genres = const [],
     this.startYear,
     this.updatedAt,
+    this.startedAt,
+    this.completedAt,
+    this.isPrivate,
   });
 
   factory TrackedMedia.fromJson(Map<String, dynamic> json) {
     return TrackedMedia(
       id: json['media']['id']?.toString(),
+      idMal: json['media']['idMal']?.toString(),
       title: json['media']['title']['english'] ??
           json['media']['title']['romaji'] ??
           json['media']['title']['native'],
@@ -83,6 +92,9 @@ class TrackedMedia {
           const [],
       startYear: json['media']['startDate']?['year'] as int?,
       updatedAt: json['updatedAt'] as int?,
+      startedAt: _parseFuzzyDate(json['startedAt']),
+      completedAt: _parseFuzzyDate(json['completedAt']),
+      isPrivate: json['private'] as bool?,
     );
   }
 
@@ -150,6 +162,7 @@ class TrackedMedia {
   factory TrackedMedia.fromMAL(Map<String, dynamic> json) {
     return TrackedMedia(
       id: json['node']['id']?.toString(),
+      idMal: json['node']['id']?.toString(),
       title: json['node']['title'],
       servicesType: ServicesType.mal,
       poster: json['node']['main_picture']['large'],
@@ -166,8 +179,24 @@ class TrackedMedia {
       score: json['list_status']['score']?.toString(),
       type: null,
       mediaListId: json['node']['id']?.toString(),
+      startedAt: _parseMalDate(json['list_status']?['start_date']),
+      completedAt: _parseMalDate(json['list_status']?['finish_date']),
     );
   }
+}
+
+DateTime? _parseFuzzyDate(Map<String, dynamic>? date) {
+  if (date == null) return null;
+  final y = date['year'] as int?;
+  final mo = date['month'] as int?;
+  final d = date['day'] as int?;
+  if (y == null || mo == null || d == null) return null;
+  try { return DateTime(y, mo, d); } catch (_) { return null; }
+}
+
+DateTime? _parseMalDate(String? dateStr) {
+  if (dateStr == null || dateStr.isEmpty) return null;
+  try { return DateTime.parse(dateStr); } catch (_) { return null; }
 }
 
 class Simkl {

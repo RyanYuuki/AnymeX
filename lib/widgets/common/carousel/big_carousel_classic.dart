@@ -12,6 +12,8 @@ import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
+import 'package:anymex/widgets/media_items/media_peek_popup.dart';
+import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -132,6 +134,14 @@ class _BigCarouselClassicState extends State<BigCarouselClassic> {
                         children: [
                           GestureDetector(
                             onTap: () => navigateToDetailsPage(anime, tag),
+                            onLongPress: () {
+                              final itemType = widget.carouselType == CarouselType.manga
+                                  ? ItemType.manga
+                                  : ItemType.anime;
+                              if (anime.userStatus == null || anime.userStatus!.isEmpty) {
+                                MediaPeekPopup.show(context, anime, itemType, tag);
+                              }
+                            },
                             child: _buildItem(context, tag, posterUrl),
                           ),
                           const SizedBox(height: 10),

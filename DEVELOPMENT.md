@@ -26,7 +26,7 @@ If you maintain multiple versions, you can specify the path directly for Flutter
 If you're looking to test your changes on a virtual device, we recommend you get set up with [Android Studio (Android)](https://developer.android.com/studio) and/or [Xcode (iOS)](https://developer.apple.com/xcode/).
 
 > [!NOTE]  
-> Xcode and the iOS simulator is only available on MacOS (or via. VM)  
+> Xcode and the iOS simulator is only available on MacOS (or via. VM)
 
 ## .env file
 
@@ -35,13 +35,13 @@ You can stub these values for local development purposes.
 To do so, create a `.env` file with the following content:
 
 ```env
-AL_CLIENT_ID: 0
-AL_CLIENT_SECRET: 0
-SIMKL_CLIENT_ID: 0
-SIMKL_CLIENT_SECRET: 0
-MAL_CLIENT_ID: 0
-MAL_CLIENT_SECRET: 0
-CALLBACK_SCHEME: anymex://callback
+AL_CLIENT_ID=0
+AL_CLIENT_SECRET=0
+SIMKL_CLIENT_ID=0
+SIMKL_CLIENT_SECRET=0
+MAL_CLIENT_ID=0
+MAL_CLIENT_SECRET=0
+CALLBACK_SCHEME=anymex://callback
 ```
 
 You can however create your own API keys and populate the values as necessary.

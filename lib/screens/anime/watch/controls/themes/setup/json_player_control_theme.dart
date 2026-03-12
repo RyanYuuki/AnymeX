@@ -274,7 +274,20 @@ class ThemeRenderer {
       if (zone.showProgress && !alreadyHasProgress) {
         kids.add(Padding(
           padding: zone.progressPadding,
-          child: ProgressSlider(style: zone.progressStyle),
+          child: ProgressSlider(
+            style: zone.progressStyle,
+            activeTrackColor:
+                _resolveNullableColor(zone.progressActiveTrackColor),
+            inactiveTrackColor:
+                _resolveNullableColor(zone.progressInactiveTrackColor),
+            secondaryActiveTrackColor:
+                _resolveNullableColor(zone.progressSecondaryActiveTrackColor),
+            thumbColor: _resolveNullableColor(zone.progressThumbColor),
+            overlayColor: _resolveNullableColor(zone.progressOverlayColor),
+            segmentColor: _resolveNullableColor(zone.progressSegmentColor),
+            recapSegmentColor:
+                _resolveNullableColor(zone.progressRecapSegmentColor),
+          ),
         ));
         kids.add(SizedBox(height: zone.vibes.progressBottomSpacing));
       }
@@ -507,9 +520,32 @@ class ThemeRenderer {
             flex: item.grabInt('flex', 1), child: const SizedBox.shrink());
 
       case 'progress_slider':
+        final activeTrackColor = item.grabString('activeTrackColor') ??
+            item.grabString('progressActiveTrackColor');
+        final inactiveTrackColor = item.grabString('inactiveTrackColor') ??
+            item.grabString('progressInactiveTrackColor');
+        final secondaryActiveTrackColor =
+            item.grabString('secondaryActiveTrackColor') ??
+                item.grabString('progressSecondaryActiveTrackColor');
+        final thumbColor = item.grabString('thumbColor') ??
+            item.grabString('progressThumbColor');
+        final overlayColor = item.grabString('overlayColor') ??
+            item.grabString('progressOverlayColor');
+        final segmentColor = item.grabString('segmentColor') ??
+            item.grabString('progressSegmentColor');
+        final recapSegmentColor = item.grabString('recapSegmentColor') ??
+            item.grabString('progressRecapSegmentColor');
         return ProgressSlider(
           style: _toSliderStyle(item.grabString('progressStyle'),
               fallback: SliderStyle.capsule),
+          activeTrackColor: _resolveNullableColor(activeTrackColor),
+          inactiveTrackColor: _resolveNullableColor(inactiveTrackColor),
+          secondaryActiveTrackColor:
+              _resolveNullableColor(secondaryActiveTrackColor),
+          thumbColor: _resolveNullableColor(thumbColor),
+          overlayColor: _resolveNullableColor(overlayColor),
+          segmentColor: _resolveNullableColor(segmentColor),
+          recapSegmentColor: _resolveNullableColor(recapSegmentColor),
         );
 
       case 'time_current':
@@ -699,6 +735,8 @@ class ThemeRenderer {
       tooltip: item.grabString('tooltip') ?? _tooltipForId(id),
       enabled: enabled,
       onTap: enabled ? () => _doAction(id, item) : null,
+      onLongPress:
+          enabled && id == 'aspect_ratio' ? controller.resetVideoFit : null,
       guts: Icon(icon,
           size: style.iconSize, color: enabled ? iconColor : disabledColor),
     );
@@ -740,6 +778,7 @@ class ThemeRenderer {
     required Widget guts,
     required bool enabled,
     required VoidCallback? onTap,
+    VoidCallback? onLongPress,
     String? tooltip,
   }) {
     final buttonColor = _resolveColor(style.color,
@@ -758,6 +797,7 @@ class ThemeRenderer {
         child: InkWell(
           borderRadius: BorderRadius.circular(style.radius),
           onTap: onTap,
+          onLongPress: onLongPress,
           child: SizedBox(
             width: style.size,
             height: style.size,
@@ -1190,6 +1230,13 @@ class ThemeRenderer {
       default:
         return fallback;
     }
+  }
+
+  Color? _resolveNullableColor(String? raw) {
+    if (raw == null || raw.trim().isEmpty) return null;
+    const sentinel = Color(0x01020304);
+    final parsed = _resolveColor(raw, fallback: sentinel);
+    return parsed == sentinel ? null : parsed;
   }
 
   Color? _getDynamicColor(String key) {
@@ -2021,6 +2068,13 @@ class BottomZone {
     required this.showProgress,
     required this.progressStyle,
     required this.progressPadding,
+    this.progressActiveTrackColor,
+    this.progressInactiveTrackColor,
+    this.progressSecondaryActiveTrackColor,
+    this.progressThumbColor,
+    this.progressOverlayColor,
+    this.progressSegmentColor,
+    this.progressRecapSegmentColor,
     required this.outsidePadding,
     required this.vibes,
   });
@@ -2030,6 +2084,13 @@ class BottomZone {
   final bool showProgress;
   final SliderStyle progressStyle;
   final EdgeInsets progressPadding;
+  final String? progressActiveTrackColor;
+  final String? progressInactiveTrackColor;
+  final String? progressSecondaryActiveTrackColor;
+  final String? progressThumbColor;
+  final String? progressOverlayColor;
+  final String? progressSegmentColor;
+  final String? progressRecapSegmentColor;
 
   final EdgeInsets outsidePadding;
   final ZoneVibes vibes;
@@ -2071,6 +2132,15 @@ class BottomZone {
           fallback: SliderStyle.ios),
       progressPadding: _readEdgeInsets(
           json['progressPadding'], const EdgeInsets.symmetric(horizontal: 4)),
+      progressActiveTrackColor: _readString(json['progressActiveTrackColor']),
+      progressInactiveTrackColor:
+          _readString(json['progressInactiveTrackColor']),
+      progressSecondaryActiveTrackColor:
+          _readString(json['progressSecondaryActiveTrackColor']),
+      progressThumbColor: _readString(json['progressThumbColor']),
+      progressOverlayColor: _readString(json['progressOverlayColor']),
+      progressSegmentColor: _readString(json['progressSegmentColor']),
+      progressRecapSegmentColor: _readString(json['progressRecapSegmentColor']),
       outsidePadding: _readEdgeInsets(
           json['outsidePadding'], const EdgeInsets.only(bottom: 6)),
       vibes: vibes,

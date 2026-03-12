@@ -224,6 +224,8 @@ class PlayerConfiguration {
   final String hwdec;
   final PlayerType playerType;
   final bool enableCache;
+  final bool autoPlay;
+  final bool useBuffering;
   final Duration? seekAccuracy;
 
   PlayerConfiguration({
@@ -232,6 +234,8 @@ class PlayerConfiguration {
     this.hwdec = 'no',
     this.playerType = PlayerType.mediaKit,
     this.enableCache = true,
+    this.autoPlay = true,
+    this.useBuffering = true,
     this.seekAccuracy,
   });
 }

@@ -3,12 +3,14 @@ class SearchParams {
   bool isManga;
   Map<String, dynamic>? filters;
   dynamic args;
+  int page;
 
   SearchParams({
     required this.query,
     this.isManga = false,
     this.filters,
     this.args,
+    this.page = 1,
   });
 }
 
@@ -22,8 +24,6 @@ class FetchDetailsParams {
   });
 }
 
-
-
 class UpdateListEntryParams {
   String listId;
   List<String>? syncIds;
@@ -31,6 +31,9 @@ class UpdateListEntryParams {
   String? status;
   int? progress;
   bool isAnime;
+  DateTime? startedAt;
+  DateTime? completedAt;
+  bool? isPrivate;
 
   UpdateListEntryParams({
     required this.listId,
@@ -39,5 +42,8 @@ class UpdateListEntryParams {
     this.status,
     this.progress,
     this.isAnime = true,
+    this.startedAt,
+    this.completedAt,
+    this.isPrivate,
   });
 }
