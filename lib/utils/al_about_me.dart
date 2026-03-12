@@ -1,17 +1,175 @@
 import 'dart:io';
+
+import 'package:anymex/controllers/service_handler/params.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex/screens/profile/user_profile_page.dart';
+import 'package:anymex/screens/profile/profile_page.dart';
+import 'package:anymex/utils/al_about_me_helpers.dart';
 import 'package:anymex/utils/function.dart';
-import 'package:flutter/material.dart';
+import 'package:anymex/utils/markdown.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/controllers/service_handler/params.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+
+String preprocessAnilistAbout(String raw) {
+  final source = raw.trim();
+  var html = source
+      .replaceAll('\u200e', '')
+      .replaceAll('\u200f', '')
+      .replaceAll('\u200b', '')
+      .replaceAll('\u200c', '')
+      .replaceAll('\u200d', '')
+      .replaceAll('\u034f', '')
+      .replaceAll('&lrm;', '')
+      .replaceAll('&rlm;', '');
+
+  // Detect if this is already HTML or raw markdown
+  final hasHtml = RegExp(r'<[a-zA-Z][^>]*>').hasMatch(html);
+  if (!hasHtml) {
+    // Raw convert to HTML using AniListparser
+    html = parseMarkdown(html);
+  }
+
+  // Handles AniList specific markdown_spoiler things from API
+  html = html.replaceAllMapped(
+    RegExp(
+      r"""<span\s+class=['"]markdown_spoiler['"][^>]*>(?:\s*<span>)?([\s\S]*?)(?:</span>\s*)?</span>""",
+      caseSensitive: false,
+    ),
+    (m) => '<details><summary>Spoiler</summary>${m[1] ?? ''}</details>',
+  );
+
+  // Handle YouTube divs
+  html = html.replaceAllMapped(
+    RegExp(
+      r"""<div\s+class=['"]youtube['"]\s+id=['"]([^'"]+)['"][^>]*></div>""",
+      caseSensitive: false,
+    ),
+    (m) {
+      final token = m[1] ?? '';
+      final id = RegExp(r'(?:v=|youtu\.be/|embed/|shorts/)([0-9A-Za-z_-]{11})')
+          .firstMatch(token)
+          ?.group(1);
+      return '<youtube id="${id ?? token}"></youtube>';
+    },
+  );
+
+  // Handle youtube() syntax that parseMarkdown might have missed
+  html = html.replaceAllMapped(
+    RegExp(r'youtube\s?\(\s*([^\)]+)\s*\)', caseSensitive: false),
+    (m) {
+      final token = m[1] ?? '';
+      final id = RegExp(r'(?:v=|youtu\.be/|embed/|shorts/)([0-9A-Za-z_-]{11})')
+          .firstMatch(token)
+          ?.group(1);
+      return '<youtube id="${id ?? token.trim()}"></youtube>';
+    },
+  );
+
+  // Handle div rel="spoiler" ani-spoiler thing
+  html = html.replaceAllMapped(
+    RegExp(r'<div\s+rel=["\x27]spoiler["\x27][^>]*>([\s\S]*?)</div>',
+        caseSensitive: false),
+    (m) => '<details><summary>Spoiler</summary>${m[1] ?? ''}</details>',
+  );
+
+  // Handle centering 
+  html = html.replaceAllMapped(
+    RegExp(r'~~~([\s\S]*?)~~~'),
+    (m) => '<center>${m[1] ?? ''}</center>',
+  );
+
+  // Handle webm() to video tag
+  html = html.replaceAllMapped(
+    RegExp(r'webm\((https?://[^\)]+)\)', caseSensitive: false),
+    (m) =>
+        '<video><source src="${m[1] ?? ''}" type="video/webm"></source></video>',
+  );
+
+  // Handle img() — al custom image syntax
+  html = html.replaceAllMapped(
+    RegExp(r'img((?:\d+%?)?)?\((https?://[^\)]+)\)', caseSensitive: false),
+    (m) {
+      final width = (m[1] ?? '').trim();
+      final src = (m[2] ?? '').trim();
+      if (width.isEmpty) return '<img src="$src">';
+      return '<img src="$src" width="$width">';
+    },
+  );
+
+  // nested image links: [![alt](img)](link)
+  html = html.replaceAllMapped(
+    RegExp(r'\[!\[([^\]]*?)\]\((https?://[^\)]+)\)\]\((https?://[^\)]+)\)'),
+    (m) =>
+        '<a href="${m[3] ?? ''}"><img src="${m[2] ?? ''}" alt="${m[1] ?? ''}"></a>',
+  );
+
+ 
+  html = html.replaceAllMapped(
+    RegExp(r'!\[([^\]]*?)\]\((https?://[^\)]+)\)'),
+    (m) => '<img src="${m[2] ?? ''}" alt="${m[1] ?? ''}">',
+  );
+
+  // Handle markdown links: [text](url)
+  html = html.replaceAllMapped(
+    RegExp(r'\[([^\]]+?)\]\((https?://[^\)]+)\)'),
+    (m) => '<a href="${m[2] ?? ''}">${m[1] ?? ''}</a>',
+  );
+
+  // Handle remaining spoiler markdown: ~!content!~
+  html = html.replaceAllMapped(
+    RegExp(r'~!([\s\S]*?)!~'),
+    (m) => '<details><summary>Spoiler</summary>${m[1] ?? ''}</details>',
+  );
+
+  // Handle bold/italic markdown that API might not have converted
+  html = html.replaceAllMapped(
+    RegExp(r'___([^\n]*?)___'),
+    (m) => '<em><strong>${m[1] ?? ''}</strong></em>',
+  );
+  html = html.replaceAllMapped(
+    RegExp(r'__(?!_)([^\n]*?)(?<!_)__'),
+    (m) => '<strong>${m[1] ?? ''}</strong>',
+  );
+  html = html.replaceAllMapped(
+    RegExp(r'\*\*([^\n]*?)\*\*'),
+    (m) => '<strong>${m[1] ?? ''}</strong>',
+  );
+
+  // Decode common HTML entities
+  html = html
+      .replaceAll('&nbsp;', ' ')
+      .replaceAll('&amp;', '&')
+      .replaceAll('&lt;', '<')
+      .replaceAll('&gt;', '>')
+      .replaceAll('&quot;', '"')
+      .replaceAll('&apos;', "'");
+
+  // Strip single newlines between consecutive images/image-links to prevent unwanted <br> gaps.
+  // We use [ \t]*\n[ \t]* to ensure we only strip single newlines (preserving \n\n as intentional gaps).
+  // The regex ensures the left side ends with an <img> (or <img></a>) and the right side starts with an <img> (or <a><img).
+  html = html.replaceAllMapped(
+    RegExp(r'(<img[^>]*>\s*(?:</a>)?)[ \t]*\n[ \t]*(?=(?:<a[^>]*>\s*)?<img)'),
+    (m) =>
+        '${m[1]}<div style="display:block;height:0;margin:0;padding:0;line-height:0"></div>',
+  );
+
+  // Convert remaining newlines to <br> (critical for proper text line breaks)
+  // AniList's HTML uses \n for line breaks which HtmlWidget doesn't render
+  html = html.replaceAll('\n', '<br>');
+
+  // Clean up excessive <br> tags that result from the conversion
+  html = html.replaceAll(RegExp(r'(<br\s*/?>\s*){3,}'), '<br><br>');
+
+  return html;
+}
 
 class AnilistAboutMe extends StatefulWidget {
   final String about;
@@ -23,329 +181,36 @@ class AnilistAboutMe extends StatefulWidget {
 }
 
 class _AnilistAboutMeState extends State<AnilistAboutMe> {
-  String _preprocessAbout(String raw) {
-    var c = raw;
+  late String _html;
+  bool _failed = false;
 
-    // Clean up zero-width spaces and other invisible characters
-    c = c
-        .replaceAll('\u200e', '')
-        .replaceAll('\u200f', '')
-        .replaceAll('\u200b', '')
-        .replaceAll('\u200c', '')
-        .replaceAll('\u200d', '')
-        .replaceAll('\u034f', '')
-        .replaceAll('&lrm;', '')
-        .replaceAll('&rlm;', '')
-        .replaceAll('&#8206;', '')
-        .replaceAll('&#8207;', '')
-        .replaceAll('&nbsp;', ' ')
-        .replaceAll('&#160;', ' ')
-        .replaceAll('&thinsp;', '')
-        .replaceAll('&emsp;', '')
-        .replaceAll('&ensp;', '');
-
-    // Handle spoilers that are inside <a> tags
-    c = c.replaceAllMapped(
-      RegExp(r'<a([^>]*)>([\s\S]*?)~!([\s\S]*?)!~([\s\S]*?)</a>'),
-      (m) {
-        final attrs = m[1] ?? '';
-        final beforeSpoiler = m[2] ?? '';
-        final spoilerContent = m[3] ?? '';
-        final afterSpoiler = m[4] ?? '';
-
-        String result = '';
-        if (beforeSpoiler.isNotEmpty) {
-          result += '<a$attrs>$beforeSpoiler</a>';
-        }
-        result += '<spoiler>$spoilerContent</spoiler>';
-        if (afterSpoiler.isNotEmpty) {
-          result += '<a$attrs>$afterSpoiler</a>';
-        }
-        return result;
-      },
-    );
-
-    // Handle spoilers at start of <a> tag
-    c = c.replaceAllMapped(
-      RegExp(r'<a([^>]*)>(~![\s\S]*?!~)([\s\S]*?)</a>'),
-      (m) {
-        final attrs = m[1] ?? '';
-        final spoilerContent = m[2] ?? '';
-        final afterSpoiler = m[3] ?? '';
-
-        return '<spoiler>${spoilerContent.replaceAll('~!', '').replaceAll('!~', '')}</spoiler><a$attrs>$afterSpoiler</a>';
-      },
-    );
-
-    // Handle spoilers at end of <a> tag
-    c = c.replaceAllMapped(
-      RegExp(r'<a([^>]*)>([\s\S]*?)(~![\s\S]*?!~)</a>'),
-      (m) {
-        final attrs = m[1] ?? '';
-        final beforeSpoiler = m[2] ?? '';
-        final spoilerContent = m[3] ?? '';
-
-        return '<a$attrs>$beforeSpoiler</a><spoiler>${spoilerContent.replaceAll('~!', '').replaceAll('!~', '')}</spoiler>';
-      },
-    );
-
-    c = c.replaceAllMapped(
-      RegExp(
-          r'<div\s+class=["\x27]youtube["\x27]\s+id=["\x27]([^"\x27]+)["\x27][^>]*></div>',
-          caseSensitive: false),
-      (m) {
-        final rawId = m[1] ?? '';
-        final match = RegExp(r'(?:v=|\/|youtu\.be\/)([0-9A-Za-z_-]{11})')
-            .firstMatch(rawId);
-        final id = match?.group(1) ?? rawId;
-        return '<youtube id="$id"></youtube>';
-      },
-    );
-
-    c = c.replaceAllMapped(
-      RegExp(r'<iframe[^>]*src=["\x27]([^"\x27]+)["\x27][^>]*>.*?</iframe>',
-          caseSensitive: false),
-      (m) {
-        final src = (m[1] ?? '').trim();
-        if (src.isEmpty) return '';
-
-        final yt = RegExp(r'(?:v=|\/|youtu\.be\/|embed\/)([0-9A-Za-z_-]{11})')
-            .firstMatch(src)
-            ?.group(1);
-        if (yt != null && yt.isNotEmpty) {
-          return '<youtube id="$yt"></youtube>';
-        }
-
-        if (src.toLowerCase().contains('spotify.com')) {
-          return '<spotify src="$src"></spotify>';
-        }
-
-        return '<embed src="$src"></embed>';
-      },
-    );
-
-    c = c.replaceAllMapped(
-      RegExp(r'webm\(([^)]+)\)'),
-      (m) => '<a href="${(m[1] ?? '').trim()}">&#9654; View video</a>',
-    );
-
-    c = c.replaceAllMapped(
-      RegExp(r'img(\d+)?\(([^)]+)\)'),
-      (m) {
-        final width = m[1];
-        final url = (m[2] ?? '').trim();
-        if (url.toLowerCase().contains('count.getloli.com')) {
-          return '';
-        }
-        final wAttr =
-            width != null && width.isNotEmpty ? ' width="$width"' : '';
-        return '<img src="$url"$wAttr>&#8203;';
-      },
-    );
-
-    c = c.replaceAllMapped(
-      RegExp(r'\[([^\]]+)\]\(([^)]+)\)'),
-      (m) => '<a href="${m[2] ?? ''}">${m[1] ?? ''}</a>',
-    );
-
-    c = c.replaceAllMapped(
-      RegExp(r'~!([\s\S]*?)!~'),
-      (m) {
-        final content = m[1] ?? '';
-        return '<spoiler>$content</spoiler>';
-      },
-    );
-
-    c = c.replaceAllMapped(
-      RegExp(r'!\[([^\]]*)\]\((.*?)\)', dotAll: true),
-      (m) {
-        String alt = m[1] ?? '';
-        String rawSrc = m[2] ?? '';
-        if (rawSrc.toLowerCase().contains('count.getloli.com')) {
-          return '';
-        }
-
-        String src = rawSrc.replaceAllMapped(
-          RegExp(r'<a[^>]*>([\s\S]*?)</a>', caseSensitive: false),
-          (a) => a[1] ?? '',
-        );
-        return '<img src="$src" alt="$alt">';
-      },
-    );
-
-    c = c.replaceAllMapped(
-        RegExp(r'<img[^>]*src=["\x27]([^"\x27]+)["\x27][^>]*>',
-            caseSensitive: false), (m) {
-      if ((m[1] ?? '').toLowerCase().contains('count.getloli.com')) return '';
-      return m[0]!;
-    });
-
-    c = c.replaceAllMapped(
-      RegExp(
-          r'(?<!["\x27=])https?:\/\/anilist\.co\/(anime|manga)\/(\d+)[^\s<]*'),
-      (m) {
-        final type = m[1] ?? 'anime';
-        final id = m[2] ?? '';
-        return '<anilist id="$id" type="$type"></anilist>';
-      },
-    );
-
-    c = c.replaceAllMapped(
-      RegExp(r'(?<!["\x27=])(https?:\/\/[^\s<]+)(?![^<]*>)'),
-      (m) {
-        final url = m[1] ?? '';
-        return '<a href="$url">$url</a>';
-      },
-    );
-
-    // Handle centering
-    c = c.replaceAllMapped(
-      RegExp(r'~~~([\s\S]*?)~~~'),
-      (m) => '<div style="text-align:center;">${m[1] ?? ''}</div>',
-    );
-
-    c = c.replaceAllMapped(
-      RegExp(r'<center>([\s\S]*?)</center>', caseSensitive: false),
-      (m) => '<div style="text-align:center;">${m[1] ?? ''}</div>',
-    );
-
-    // Handle align attributes
-    c = c.replaceAllMapped(
-      RegExp(
-        r'<(div|p)(\s[^>]*)?\salign=(["\x27])(\w+)\3([^>]*)>',
-        caseSensitive: false,
-      ),
-      (m) {
-        final tag = m[1] ?? 'div';
-        final before = m[2] ?? '';
-        final align = m[4] ?? 'left';
-        final after = m[5] ?? '';
-        if (before.contains('style=') || after.contains('style=')) {
-          return '<$tag$before$after>';
-        }
-        return '<$tag$before style="text-align:$align;"$after>';
-      },
-    );
-
-    // Handle html spoilers
-    c = c.replaceAllMapped(
-      RegExp(r'<div\s+rel=["\x27]spoiler["\x27][^>]*>([\s\S]*?)</div>',
-          caseSensitive: false),
-      (m) => '<spoiler>${m[1] ?? ''}</spoiler>',
-    );
-
-    c = c.replaceAllMapped(
-      RegExp(
-          r"<span\s+class=['\x22]markdown_spoiler['\x22][^>]*>(?:\s*<span>)?([\s\S]*?)(?:</span>\s*)?</span>",
-          caseSensitive: false),
-      (m) => '<spoiler>${m[1] ?? ''}</spoiler>',
-    );
-
-    c = _mdToHtml(c);
-
-    bool changed = true;
-    while (changed) {
-      final old = c;
-      c = c.replaceAll(
-          RegExp(r'<div[^>]*>\s*</div>', caseSensitive: false), '');
-      c = c.replaceAll(RegExp(r'<p[^>]*>\s*</p>', caseSensitive: false), '');
-      c = c.replaceAll(
-          RegExp(r'<center[^>]*>\s*</center>', caseSensitive: false), '');
-      changed = old != c;
-    }
-
-    c = c.replaceAll(RegExp(r'(<br\s*/?>\s*)+', caseSensitive: false), '<br>');
-    c = c.replaceAll(
-        RegExp(r'(?:<br\s*/?>\s*)*<hr[^>]*>(?:\s*<br\s*/?>\s*)*',
-            caseSensitive: false),
-        '<hr>');
-    c = c.replaceAll(RegExp(r'(<hr[^>]*>\s*)+', caseSensitive: false), '<hr>');
-
-    return c;
+  @override
+  void initState() {
+    super.initState();
+    _rebuildHtml();
   }
 
-  String _mdToHtml(String md) {
-    final lines = md.split('\n');
-    final buffer = StringBuffer();
-    bool lastWasHr = false;
-
-    for (final rawLine in lines) {
-      var line = rawLine.trim();
-      if (line.isEmpty) continue;
-
-      bool isHr = RegExp(r'^<hr.*?/?>(?:\s*<br\s*/?>)*\s*$|^[-_]{3,}$',
-              caseSensitive: false)
-          .hasMatch(line);
-      if (isHr) {
-        if (lastWasHr) continue;
-        lastWasHr = true;
-      } else {
-        lastWasHr = false;
-      }
-
-      if (RegExp(
-              r'^<(div|p|h[1-6]|ul|ol|li|blockquote|br|hr|pre|spoiler|youtube|spotify|anilist)',
-              caseSensitive: false)
-          .hasMatch(line)) {
-        buffer.writeln(line);
-        continue;
-      }
-      line = line
-          .replaceAllMapped(RegExp(r'\*\*\*(.*?)\*\*\*'),
-              (m) => '<strong><em>${m[1]}</em></strong>')
-          .replaceAllMapped(
-              RegExp(r'\*\*(.*?)\*\*'), (m) => '<strong>${m[1]}</strong>')
-          .replaceAllMapped(RegExp(r'_(.*?)_'), (m) => '<em>${m[1]}</em>')
-          .replaceAllMapped(RegExp(r'\*(.*?)\*'), (m) => '<em>${m[1]}</em>')
-          .replaceAllMapped(RegExp(r'~~(.*?)~~'), (m) => '<del>${m[1]}</del>')
-          .replaceAllMapped(RegExp(r'`(.*?)`'), (m) => '<code>${m[1]}</code>')
-          .replaceAllMapped(RegExp(r'^#{5}\s+(.+)$'), (m) => '<h5>${m[1]}</h5>')
-          .replaceAllMapped(RegExp(r'^#{4}\s+(.+)$'), (m) => '<h4>${m[1]}</h4>')
-          .replaceAllMapped(RegExp(r'^#{3}\s+(.+)$'), (m) => '<h3>${m[1]}</h3>')
-          .replaceAllMapped(RegExp(r'^#{2}\s+(.+)$'), (m) => '<h2>${m[1]}</h2>')
-          .replaceAllMapped(RegExp(r'^#\s+(.+)$'), (m) => '<h1>${m[1]}</h1>');
-
-      // Horizontal rules
-      if (RegExp(r'^(-{3,}|\*{3,}|(\s*-\s*){3,}|(\s*\*\s*){3,})$')
-          .hasMatch(line)) {
-        buffer.writeln('<hr>');
-        continue;
-      }
-      // Bullet lists
-      if (RegExp(r'^[-*+]\s+').hasMatch(line)) {
-        final text = line.replaceFirst(RegExp(r'^[-*+]\s+'), '');
-        buffer.writeln('<ul><li>$text</li></ul>');
-        continue;
-      }
-      // Numbered lists
-      if (RegExp(r'^\d+\.\s+').hasMatch(line)) {
-        final text = line.replaceFirst(RegExp(r'^\d+\.\s+'), '');
-        buffer.writeln('<ol><li>$text</li></ol>');
-        continue;
-      }
-      // Blockquote
-      if (line.startsWith('&gt;') || line.startsWith('>')) {
-        final text = line
-            .replaceFirst(RegExp(r'^&gt;\s*'), '')
-            .replaceFirst(RegExp(r'^>\s*'), '');
-        buffer.writeln('<blockquote>$text</blockquote>');
-        continue;
-      }
-      if (RegExp(r'^<h[1-6]>').hasMatch(line)) {
-        buffer.writeln(line);
-      } else {
-        buffer.writeln('<p>$line</p>');
-      }
+  @override
+  void didUpdateWidget(covariant AnilistAboutMe oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.about != widget.about) {
+      _rebuildHtml();
     }
-    return buffer.toString();
+  }
+
+  void _rebuildHtml() {
+    try {
+      _html = preprocessAnilistAbout(widget.about);
+      _failed = false;
+    } catch (_) {
+      _html = widget.about;
+      _failed = true;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final String content;
-    try {
-      content = _preprocessAbout(widget.about);
-    } catch (e) {
+    if (_failed) {
       return Text(
         widget.about,
         style: TextStyle(
@@ -355,566 +220,307 @@ class _AnilistAboutMeState extends State<AnilistAboutMe> {
       );
     }
 
-    return SelectionArea(
-        child: Html(
-      data: content,
-      onLinkTap: (url, attributes, element) {
-        if (url != null) {
-          launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
-        }
-      },
-      style: {
-        'body': Style(
-          margin: Margins.zero,
-          padding: HtmlPaddings.zero,
-          fontSize: FontSize(13.5),
-          lineHeight: const LineHeight(1.6),
-          color: context.theme.colorScheme.onSurfaceVariant,
-          fontFamily: 'Poppins',
-        ),
-        'div': Style(margin: Margins.only(bottom: 8)),
-        'p': Style(margin: Margins.only(bottom: 8)),
-        'a': Style(
-          display: Display.inline,
-          textDecoration: TextDecoration.none,
-          color: context.theme.colorScheme.primary,
-        ),
-        'img': Style(
-          display: Display.inline,
-          margin: Margins.only(right: 4, bottom: 4),
-        ),
-        'h1': Style(
-            fontSize: FontSize(20),
-            fontWeight: FontWeight.bold,
-            color: context.theme.colorScheme.onSurface),
-        'h2': Style(
-            fontSize: FontSize(18),
-            fontWeight: FontWeight.bold,
-            color: context.theme.colorScheme.onSurface),
-        'h3': Style(
-            fontSize: FontSize(16),
-            fontWeight: FontWeight.bold,
-            color: context.theme.colorScheme.onSurface),
-        'h4': Style(
-            fontSize: FontSize(14),
-            fontWeight: FontWeight.bold,
-            color: context.theme.colorScheme.onSurface),
-        'h5': Style(
-            fontSize: FontSize(13),
-            fontWeight: FontWeight.bold,
-            color: context.theme.colorScheme.onSurface),
-        'strong': Style(
-            fontWeight: FontWeight.w700,
-            color: context.theme.colorScheme.onSurface),
-        'b': Style(
-            fontWeight: FontWeight.w700,
-            color: context.theme.colorScheme.onSurface),
-        'em': Style(
-            fontStyle: FontStyle.italic,
-            color: context.theme.colorScheme.onSurface),
-        'i': Style(
-            fontStyle: FontStyle.italic,
-            color: context.theme.colorScheme.onSurface),
-        'del': Style(
-            textDecoration: TextDecoration.lineThrough,
-            color: context.theme.colorScheme.onSurfaceVariant),
-        'strike': Style(
-            textDecoration: TextDecoration.lineThrough,
-            color: context.theme.colorScheme.onSurfaceVariant),
-        'code': Style(
-          fontFamily: 'monospace',
-          fontSize: FontSize(12),
-          backgroundColor: context.theme.colorScheme.surfaceContainer,
-          color: context.theme.colorScheme.primary,
-        ),
-        'pre': Style(
-          fontFamily: 'monospace',
-          fontSize: FontSize(12),
-          backgroundColor: context.theme.colorScheme.surfaceContainer,
-          padding: HtmlPaddings.all(10),
-          margin: Margins.only(bottom: 8),
-        ),
-        'blockquote': Style(
-          backgroundColor: context.theme.colorScheme.primary.withOpacity(0.07),
-          padding: HtmlPaddings.symmetric(horizontal: 12, vertical: 8),
-          margin: Margins.only(left: 0, right: 0, top: 4, bottom: 4),
-          border: Border(
-              left: BorderSide(
-                  color: context.theme.colorScheme.primary, width: 3)),
-        ),
-        'ul': Style(margin: Margins.only(bottom: 8, left: 16)),
-        'anilist': Style(margin: Margins.zero, padding: HtmlPaddings.zero),
-        'youtube': Style(margin: Margins.zero, padding: HtmlPaddings.zero),
-        'spotify': Style(margin: Margins.zero, padding: HtmlPaddings.zero),
-        'embed': Style(margin: Margins.zero, padding: HtmlPaddings.zero),
-        'ol': Style(margin: Margins.only(bottom: 8, left: 16)),
-        'li': Style(
-          margin: Margins.only(bottom: 4),
-          color: context.theme.colorScheme.onSurfaceVariant,
-        ),
-        'hr': Style(
-          border: Border(
-              bottom: BorderSide(
-                  color:
-                      context.theme.colorScheme.outlineVariant.withOpacity(0.5),
-                  width: 1)),
-          margin: Margins.symmetric(vertical: 12),
-        ),
-      },
-      extensions: [
-        TagExtension(
-          tagsToExtend: {'img'},
-          builder: (ext) {
-            final src = ext.attributes['src'] ?? '';
-            if (src.isEmpty ||
-                src.toLowerCase().contains('count.getloli.com')) {
-              return const SizedBox.shrink();
-            }
-            double? parsePx(String? v) =>
-                v == null ? null : double.tryParse(v.replaceAll('px', ''));
-            double? parseFromStyle(String? style, String key) {
-              if (style == null || style.isEmpty) return null;
-              final match = RegExp('$key\\s*:\\s*([0-9]+(?:\\.[0-9]+)?)px',
-                      caseSensitive: false)
-                  .firstMatch(style);
-              return match == null ? null : double.tryParse(match.group(1)!);
-            }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final viewportWidth = constraints.maxWidth.isFinite
+            ? constraints.maxWidth
+            : MediaQuery.of(context).size.width;
+        final contentMaxWidth = viewportWidth >= 1200
+            ? 760.0
+            : viewportWidth >= 900
+                ? 680.0
+                : viewportWidth;
 
-            final styleAttr = ext.attributes['style'];
-            var w = parsePx(ext.attributes['width']) ??
-                parseFromStyle(styleAttr, 'width');
-            var h = parsePx(ext.attributes['height']) ??
-                parseFromStyle(styleAttr, 'height');
-
-            final isIcon = w != null && w <= 96;
-            final isSvg = src.toLowerCase().contains('.svg');
-
-            const headers = {
-              'User-Agent':
-                  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-              'Accept': 'image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-            };
-
-            return Builder(
-              builder: (context) {
-                final screenW = MediaQuery.of(context).size.width;
-                final maxMediaWidth = screenW.clamp(240.0, 520.0).toDouble();
-
-                Widget media;
-
-                if (isSvg) {
-                  media = SvgPicture.network(
-                    src,
-                    headers: headers,
-                    width: w?.clamp(0.0, maxMediaWidth).toDouble(),
-                    height: h,
-                    fit: (w == null && h == null)
-                        ? BoxFit.scaleDown
-                        : BoxFit.contain,
-                    placeholderBuilder: (_) => SizedBox(
-                      width: w != null
-                          ? w.clamp(0.0, maxMediaWidth).toDouble()
-                          : 40,
-                      height: h ?? 40,
-                    ),
-                  );
-                } else {
-                  media = CachedNetworkImage(
-                    imageUrl: src,
-                    httpHeaders: headers,
-                    width: w?.clamp(0.0, maxMediaWidth).toDouble(),
-                    height: h,
-                    fit: BoxFit.contain,
-                    errorWidget: (_, __, ___) => const SizedBox.shrink(),
-                    placeholder: (_, __) => const SizedBox.shrink(),
-                  );
-                }
-
-                if (isIcon) {
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 4, bottom: 4),
-                    child: media,
-                  );
-                }
-
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(maxWidth: maxMediaWidth),
-                      child: media,
-                    ),
-                  ),
-                );
+        return Align(
+          alignment: Alignment.centerLeft,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: contentMaxWidth),
+            child: HtmlWidget(
+              _html,
+              factoryBuilder: () => _AnilistWidgetFactory(),
+              textStyle: TextStyle(
+                fontSize: 13.5,
+                height: 1.6,
+                color: context.theme.colorScheme.onSurfaceVariant,
+                fontFamily: 'Poppins',
+                fontFamilyFallback: const [
+                  'Apple Color Emoji',
+                  'Segoe UI Emoji',
+                  'Noto Color Emoji'
+                ],
+              ),
+              onTapUrl: (url) async => _openUrl(url),
+              onErrorBuilder: (_, __, ___) => const SizedBox.shrink(),
+              customStylesBuilder: (element) {
+                return switch (element.localName) {
+                  'br' => const {'line-height': '15px'},
+                  'i' || 'em' => const {'font-style': 'italic'},
+                  'b' || 'strong' => const {'font-weight': '600'},
+                  'a' => const {'text-decoration': 'none'},
+                  'center' => const {'text-align': 'center'},
+                  'img' => {
+                      'max-width': '100%',
+                      'height': 'auto',
+                      if (element.attributes['width'] != null)
+                        'width': element.attributes['width']!,
+                    },
+                  'video' => const {
+                      'max-width': '100%',
+                      'height': 'auto',
+                    },
+                  'h1' => const {'font-size': '20px', 'font-weight': '700'},
+                  'h2' => const {'font-size': '18px', 'font-weight': '700'},
+                  'h3' => const {'font-size': '16px', 'font-weight': '700'},
+                  'h4' => const {'font-size': '14px', 'font-weight': '700'},
+                  'h5' => const {'font-size': '13px', 'font-weight': '700'},
+                  'blockquote' => {
+                      'border-left':
+                          '3px solid ${_toRgba(context.theme.colorScheme.primary)}',
+                      'padding': '8px 12px',
+                      'margin': '4px 0',
+                      'background-color': _toRgba(
+                        context.theme.colorScheme.primary.withOpacity(0.07),
+                      ),
+                    },
+                  'hr' => {
+                      'border': 'none',
+                      'border-bottom':
+                          '1px solid ${_toRgba(context.theme.colorScheme.outlineVariant.withOpacity(0.5))}',
+                      'margin': '12px 0',
+                    },
+                  _ => const {},
+                };
               },
-            );
-          },
-        ),
-        TagExtension(
-          tagsToExtend: {'spoiler'},
-          builder: (ext) {
-            return _SpoilerWidget(
-              child: AnilistAboutMe(about: ext.innerHtml),
-            );
-          },
-        ),
-        TagExtension(
-          tagsToExtend: {'youtube'},
-          builder: (ext) {
-            final id = ext.attributes['id'] ?? '';
-            if (id.isEmpty) return const SizedBox.shrink();
-            return _YouTubePlayerWidget(videoId: id);
-          },
-        ),
-        TagExtension(
-          tagsToExtend: {'spotify'},
-          builder: (ext) {
-            final src = ext.attributes['src'] ?? '';
-            if (src.isEmpty) return const SizedBox.shrink();
-            return GestureDetector(
-              onTap: () => launchUrl(Uri.parse(src),
-                  mode: LaunchMode.externalApplication),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1DB954).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                        color: const Color(0xFF1DB954).withOpacity(0.3)),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.music_note_rounded,
-                          color: Color(0xFF1DB954), size: 32),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Spotify Widget',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color:
-                                        context.theme.colorScheme.onSurface)),
-                            Text('Tap to open in browser / Spotify app',
-                                style: TextStyle(
-                                    fontSize: 12,
-                                    color: context
-                                        .theme.colorScheme.onSurfaceVariant)),
-                          ],
-                        ),
-                      ),
-                      const Icon(Icons.open_in_new_rounded,
-                          size: 20, color: Color(0xFF1DB954)),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
-        TagExtension(
-          tagsToExtend: {'anilist'},
-          builder: (ext) {
-            final idString = ext.attributes['id'] ?? '';
-            final type = ext.attributes['type'] ?? 'anime';
-            final id = int.tryParse(idString);
-            if (id == null) return const SizedBox.shrink();
+              customWidgetBuilder: (element) {
+                // Spoiler — <details> tag
+                if (element.localName == 'details') {
+                  final body = element.innerHtml
+                      .replaceAll(
+                        RegExp(r'<summary>[\s\S]*?</summary>',
+                            caseSensitive: false),
+                        '',
+                      )
+                      .trim();
+                  return AnilistSpoilerWidget(
+                    child: AnilistAboutMe(about: body),
+                  );
+                }
 
-            return _AnilistCard(id: id, type: type);
-          },
-        ),
-        TagExtension(
-          tagsToExtend: {'embed'},
-          builder: (ext) {
-            final src = ext.attributes['src'] ?? '';
-            if (src.isEmpty) return const SizedBox.shrink();
+                // YouTube — <youtube> tag
+                if (element.localName == 'youtube') {
+                  final id = (element.attributes['id'] ?? element.text).trim();
+                  if (id.isEmpty) return null;
+                  return AnilistYouTubePlayer(videoId: id);
+                }
 
-            return GestureDetector(
-              onTap: () => launchUrl(Uri.parse(src),
-                  mode: LaunchMode.externalApplication),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: context.theme.colorScheme.surfaceContainerHighest
-                        .withOpacity(0.4),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: context.theme.colorScheme.outlineVariant
-                          .withOpacity(0.3),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.open_in_new_rounded,
-                          size: 18,
-                          color: context.theme.colorScheme.onSurfaceVariant),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'Embedded content (tap to open)',
-                          style: TextStyle(
-                            fontSize: 12.5,
-                            color: context.theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
-      ],
-    ));
-  }
-}
+                // Video — <video> tag (WebM etc.)
+                if (element.localName == 'video') {
+                  var src = '';
+                  final direct = (element.attributes['src'] ?? '').trim();
+                  if (direct.isNotEmpty) {
+                    src = direct;
+                  } else {
+                    for (final child in element.children) {
+                      if (child.localName == 'source') {
+                        final value = (child.attributes['src'] ?? '').trim();
+                        if (value.isNotEmpty) {
+                          src = value;
+                          break;
+                        }
+                      }
+                    }
+                  }
+                  if (src.isNotEmpty) {
+                    return AnilistWebmPlayer(url: src);
+                  }
+                }
 
-class _SpoilerWidget extends StatefulWidget {
-  final Widget child;
-  const _SpoilerWidget({required this.child});
+                // Iframe — embedded content
+                if (element.localName == 'iframe') {
+                  final src = (element.attributes['src'] ?? '').trim();
+                  if (src.isNotEmpty) {
+                    // Check for YouTube iframe
+                    final ytId = RegExp(
+                      r'(?:youtube\.com/embed/|youtube\.com/watch\?v=)([0-9A-Za-z_-]{11})',
+                    ).firstMatch(src)?.group(1);
+                    if (ytId != null) {
+                      return AnilistYouTubePlayer(videoId: ytId);
+                    }
+                    // Check for Spotify iframe
+                    if (src.contains('spotify.com')) {
+                      return AnilistExternalTile(
+                        url: src,
+                        icon: Icons.music_note_rounded,
+                        color: const Color(0xFF1DB954),
+                        title: 'Spotify',
+                        subtitle: 'Tap to open in Spotify',
+                      );
+                    }
+                    return AnilistExternalTile(
+                      url: src,
+                      icon: Icons.open_in_new_rounded,
+                      color: context.theme.colorScheme.primary,
+                      title: 'Embedded content',
+                      subtitle: 'Tap to open',
+                    );
+                  }
+                }
 
-  @override
-  State<_SpoilerWidget> createState() => _SpoilerWidgetState();
-}
+                // <a> tag — handle AniList media cards
+                if (element.localName == 'a') {
+                  final href = (element.attributes['href'] ?? '').trim();
+                  if (href.isEmpty) return null;
 
-class _SpoilerWidgetState extends State<_SpoilerWidget> {
-  bool open = false;
+                  // AniList anime/manga link → render as card
+                  final mediaMatch = RegExp(
+                    r'anilist\.co/(anime|manga)/(\d+)',
+                  ).firstMatch(href);
+                  if (mediaMatch != null) {
+                    final type = mediaMatch.group(1) ?? 'anime';
+                    final id = int.tryParse(mediaMatch.group(2) ?? '');
+                    if (id != null) {
+                      // Walk up parents to check if inside <center>
+                      var isCentered = false;
+                      var parent = element.parent;
+                      while (parent != null) {
+                        if (parent.localName == 'center') {
+                          isCentered = true;
+                          break;
+                        }
+                        parent = parent.parent;
+                      }
+                      return _AnilistMediaCard(
+                        id: id,
+                        type: type,
+                        centered: isCentered,
+                      );
+                    }
+                  }
+                }
 
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 540),
-        child: Container(
-          margin: const EdgeInsets.symmetric(vertical: 8),
-          decoration: BoxDecoration(
-            color: context.theme.colorScheme.surfaceContainer,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: context.theme.colorScheme.outlineVariant.withOpacity(0.4),
+                return null;
+              },
             ),
           ),
-          clipBehavior: Clip.hardEdge,
-          child: open ? _buildRevealed(context) : _buildHidden(context),
-        ),
-      ),
+        );
+      },
     );
   }
 
-  Widget _buildHidden(BuildContext context) {
-    return InkWell(
-      onTap: () => setState(() => open = true),
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.visibility_off_rounded,
-                size: 16,
-                color: context.theme.colorScheme.onSurfaceVariant
-                    .withOpacity(0.7)),
-            const SizedBox(width: 8),
-            Text(
-              'Spoiler \u2014 tap to reveal',
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-                color:
-                    context.theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
-                fontStyle: FontStyle.italic,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  Future<bool> _openUrl(String url) async {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return true;
 
-  Widget _buildRevealed(BuildContext context) {
-    return Stack(
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 36, 16),
-          child: widget.child,
-        ),
-        Positioned(
-          top: 0,
-          right: 0,
-          child: IconButton(
-            icon: Icon(Icons.close_rounded,
-                size: 20, color: context.theme.colorScheme.onSurfaceVariant),
-            onPressed: () => setState(() => open = false),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _YouTubePlayerWidget extends StatefulWidget {
-  final String videoId;
-
-  const _YouTubePlayerWidget({required this.videoId});
-
-  @override
-  State<_YouTubePlayerWidget> createState() => _YouTubePlayerWidgetState();
-}
-
-class _YouTubePlayerWidgetState extends State<_YouTubePlayerWidget> {
-  bool _isPlaying = false;
-
-  @override
-  Widget build(BuildContext context) {
-    if (_isPlaying) {
-      return Align(
-        alignment: Alignment.centerLeft,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 450),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: AspectRatio(
-              aspectRatio: 16 / 9,
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: Colors.black,
-                ),
-                clipBehavior: Clip.hardEdge,
-                child: InAppWebView(
-                  initialData: InAppWebViewInitialData(
-                    data: '''
-              <!DOCTYPE html>
-              <html>
-                <head>
-                  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-                  <style>
-                    body { margin: 0; background-color: black; overflow: hidden; }
-                    iframe { width: 100%; height: 100vh; border: none; }
-                  </style>
-                </head>
-                <body>
-                  <iframe 
-                    src="https://www.youtube.com/embed/${widget.videoId}?autoplay=1&playsinline=1&modestbranding=1&rel=0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen>
-                  </iframe>
-                </body>
-              </html>
-            ''',
-                  ),
-                  initialSettings: InAppWebViewSettings(
-                    mediaPlaybackRequiresUserGesture: false,
-                    allowsInlineMediaPlayback: true,
-                    iframeAllowFullscreen: true,
-                    transparentBackground: true,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
+    // YouTube links
+    final ytId = RegExp(
+      r'(?:youtube\.com/(?:watch\?v=|shorts/|embed/)|youtu\.be/)([0-9A-Za-z_-]{11})',
+    ).firstMatch(url)?.group(1);
+    if (ytId != null && ytId.isNotEmpty) {
+      await launchUrl(
+        Uri.parse('https://www.youtube.com/watch?v=$ytId'),
+        mode: LaunchMode.externalApplication,
       );
+      return true;
     }
 
-    return GestureDetector(
-      onTap: () {
-        if (Platform.isAndroid || Platform.isIOS) {
-          setState(() {
-            _isPlaying = true;
-          });
+    // AniList media links (anime/manga)
+    final mediaMatch =
+        RegExp(r'anilist\.co/(anime|manga)/(\d+)').firstMatch(url);
+    if (mediaMatch != null) {
+      final type = mediaMatch.group(1) ?? 'anime';
+      final id = int.tryParse(mediaMatch.group(2) ?? '');
+      if (id != null) {
+        await _openAnilistMedia(id, type);
+        return true;
+      }
+    }
+
+    // AniList user links (by ID)
+    final userIdMatch = RegExp(r'anilist\.co/user/(\d+)').firstMatch(url);
+    if (userIdMatch != null) {
+      final id = int.tryParse(userIdMatch.group(1) ?? '');
+      if (id != null) {
+        final currentUserId = Get.find<ServiceHandler>().profileData.value.id;
+        if (id.toString() == currentUserId) {
+          navigateWithSlide(() => const ProfilePage());
         } else {
-          launchUrl(
-            Uri.parse('https://www.youtube.com/watch?v=${widget.videoId}'),
-            mode: LaunchMode.externalApplication,
-          );
+          navigateWithSlide(() => UserProfilePage(userId: id));
         }
-      },
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 450),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: AspectRatio(
-              aspectRatio: 16 / 9,
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: Colors.black,
-                ),
-                clipBehavior: Clip.hardEdge,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    CachedNetworkImage(
-                      imageUrl:
-                          'https://img.youtube.com/vi/${widget.videoId}/hqdefault.jpg',
-                      width: double.infinity,
-                      height: double.infinity,
-                      fit: BoxFit.cover,
-                      errorWidget: (_, __, ___) => Container(
-                        color: Colors.black54,
-                        child: const Icon(Icons.play_circle_outline,
-                            color: Colors.white, size: 48),
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 12),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE52D27),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: const Icon(Icons.play_arrow_rounded,
-                          color: Colors.white, size: 36),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
+        return true;
+      }
+    }
+
+    // AniList user links (by name)
+    final userNameMatch =
+        RegExp(r'anilist\.co/user/([^/?#]+)', caseSensitive: false)
+            .firstMatch(url);
+    if (userNameMatch != null) {
+      final name = Uri.decodeComponent(userNameMatch.group(1)!);
+      final id = await Get.find<AnilistAuth>().fetchUserIdByName(name);
+      if (id != null) {
+        final currentUserId = Get.find<ServiceHandler>().profileData.value.id;
+        if (id.toString() == currentUserId) {
+          navigateWithSlide(() => const ProfilePage());
+        } else {
+          navigateWithSlide(() => UserProfilePage(userId: id));
+        }
+        return true;
+      }
+    }
+
+    // Everything else — open in external browser
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+    return true;
+  }
+
+  Future<void> _openAnilistMedia(int id, String type) async {
+    final handler = Get.find<ServiceHandler>();
+    final data = await handler.anilistService.fetchDetails(
+      FetchDetailsParams(
+        id: id.toString(),
+        isManga: type == 'manga',
       ),
     );
+
+    final heroTag = 'about-$type-$id-${DateTime.now().microsecondsSinceEpoch}';
+    if (type == 'manga') {
+      navigate(() => MangaDetailsPage(media: data, tag: heroTag));
+    } else {
+      navigate(() => AnimeDetailsPage(media: data, tag: heroTag));
+    }
+  }
+
+  String _toRgba(Color color) {
+    return 'rgba(${color.red}, ${color.green}, ${color.blue}, ${color.opacity.toStringAsFixed(2)})';
   }
 }
 
-class _AnilistCard extends StatefulWidget {
+class _AnilistMediaCard extends StatefulWidget {
   final int id;
   final String type;
-
-  const _AnilistCard({required this.id, required this.type});
+  final bool centered;
+  const _AnilistMediaCard({
+    required this.id,
+    required this.type,
+    this.centered = false,
+  });
 
   @override
-  State<_AnilistCard> createState() => _AnilistCardState();
+  State<_AnilistMediaCard> createState() => _AnilistMediaCardState();
 }
 
-class _AnilistCardState extends State<_AnilistCard> {
+class _AnilistMediaCardState extends State<_AnilistMediaCard> {
   Future<dynamic>? _dataFuture;
 
   @override
   void initState() {
     super.initState();
-    _fetchData();
-  }
-
-  void _fetchData() {
-    final handler = Get.find<ServiceHandler>();
-    _dataFuture = handler.anilistService.fetchDetails(FetchDetailsParams(
-      id: widget.id.toString(),
-      isManga: widget.type == 'manga',
-    ));
+    _dataFuture = Get.find<ServiceHandler>().anilistService.fetchDetails(
+          FetchDetailsParams(
+            id: widget.id.toString(),
+            isManga: widget.type == 'manga',
+          ),
+        );
   }
 
   @override
@@ -923,40 +529,30 @@ class _AnilistCardState extends State<_AnilistCard> {
       future: _dataFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const SizedBox(width: 0, height: 0);
+          return const SizedBox.shrink();
         }
-
-        if (snapshot.hasError || !snapshot.hasData || snapshot.data == null) {
-          if (snapshot.hasError) {
-            debugPrint(
-                'AnilistCard Error: ${snapshot.error}\\nStatus: ${snapshot.connectionState}\\nStacktrace: ${snapshot.stackTrace}');
-          }
-          return const SizedBox(width: 0, height: 0); // Ignore if it fails
+        if (!snapshot.hasData || snapshot.data == null) {
+          return const SizedBox.shrink();
         }
 
         final data = snapshot.data;
-
-        final screenWidth = MediaQuery.of(context).size.width;
-        final isDesktop = screenWidth > 600;
+        final isDesktop = MediaQuery.of(context).size.width > 600;
 
         return GestureDetector(
           onTap: () {
-            if (widget.type.toLowerCase() == 'manga') {
-              navigate(() => MangaDetailsPage(
-                    media: data,
-                    tag: data.title,
-                  ));
+            final tag =
+                'card-${widget.type}-${widget.id}-${DateTime.now().microsecondsSinceEpoch}';
+            if (widget.type == 'manga') {
+              navigate(() => MangaDetailsPage(media: data, tag: tag));
             } else {
-              navigate(() => AnimeDetailsPage(
-                    media: data,
-                    tag: data.title,
-                  ));
+              navigate(() => AnimeDetailsPage(media: data, tag: tag));
             }
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: Align(
-              alignment: Alignment.centerLeft,
+              alignment:
+                  widget.centered ? Alignment.center : Alignment.centerLeft,
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 500),
                 child: Container(
@@ -991,9 +587,9 @@ class _AnilistCardState extends State<_AnilistCard> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                data.title.isNotEmpty
+                                data.title?.isNotEmpty == true
                                     ? data.title
-                                    : (data.romajiTitle ?? 'Unknown Title'),
+                                    : (data.romajiTitle ?? 'Unknown'),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
@@ -1004,8 +600,7 @@ class _AnilistCardState extends State<_AnilistCard> {
                               ),
                               const SizedBox(height: 6),
                               Text(
-                                '${widget.type.capitalizeFirst!} \u2022 ${data.status ?? "Unknown"} \u2022 ${data.premiered ?? "-"} '
-                                '${(data.rating != null && data.rating.toString().isNotEmpty) ? '\u2022 ${data.rating}0%' : ''}',
+                                '${widget.type.capitalizeFirst} \u2022 ${data.status ?? "Unknown"}',
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
@@ -1027,6 +622,131 @@ class _AnilistCardState extends State<_AnilistCard> {
           ),
         );
       },
+    );
+  }
+}
+
+class _AnilistWidgetFactory extends WidgetFactory {
+  @override
+  Widget? buildImageWidget(BuildTree meta, ImageSource src) {
+    final url = src.url;
+    if (url.isEmpty) return super.buildImageWidget(meta, src);
+
+    return _SmartImageWidget(
+      url: url,
+      width: src.width,
+      height: src.height,
+    );
+  }
+}
+
+class _SmartImageWidget extends StatefulWidget {
+  final String url;
+  final double? width;
+  final double? height;
+
+  const _SmartImageWidget({
+    required this.url,
+    this.width,
+    this.height,
+  });
+
+  @override
+  State<_SmartImageWidget> createState() => _SmartImageWidgetState();
+}
+
+class _SmartImageWidgetState extends State<_SmartImageWidget> {
+  bool _useFallback = false;
+  double _webViewHeight = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    if (_useFallback) {
+      return _buildFallback(context);
+    }
+
+    return CachedNetworkImage(
+      imageUrl: widget.url,
+      width: widget.width,
+      height: widget.height,
+      fit: BoxFit.contain,
+      errorWidget: (_, __, ___) {
+        // CachedNetworkImage failed (SVG, dynamic widget, etc.)
+        // Switch to platform-aware fallback
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) setState(() => _useFallback = true);
+        });
+        return const SizedBox.shrink();
+      },
+    );
+  }
+
+  Widget _buildFallback(BuildContext context) {
+    // Desktop: InAppWebView not available — show clickable tile
+    if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
+      return AnilistExternalTile(
+        url: widget.url,
+        icon: Icons.open_in_new_rounded,
+        color: context.theme.colorScheme.primary,
+        title: 'Dynamic Widget',
+        subtitle: 'Tap to view in browser',
+      );
+    }
+
+    // Mobile: Render via InAppWebView with auto-sizing
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      height: _webViewHeight,
+      clipBehavior: Clip.hardEdge,
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+      child: InAppWebView(
+        initialData: InAppWebViewInitialData(
+          data: '''
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: transparent; overflow: hidden; }
+    img { max-width: 100%; height: auto; display: block; }
+  </style>
+</head>
+<body>
+  <img src="${widget.url}" onload="window.flutter_inappwebview.callHandler('onHeight', document.body.scrollHeight);" onerror="window.flutter_inappwebview.callHandler('onHeight', 0);" />
+</body>
+</html>
+''',
+        ),
+        initialSettings: InAppWebViewSettings(
+          transparentBackground: true,
+          disableVerticalScroll: true,
+          disableHorizontalScroll: true,
+          supportZoom: false,
+          javaScriptEnabled: true,
+        ),
+        onWebViewCreated: (controller) {
+          controller.addJavaScriptHandler(
+            handlerName: 'onHeight',
+            callback: (args) {
+              final h = (args.firstOrNull as num?)?.toDouble() ?? 0;
+              if (h > 0 && mounted) {
+                setState(() => _webViewHeight = h);
+              }
+            },
+          );
+        },
+        onLoadStop: (controller, url) async {
+          // Fallback: measure height after page fully loads
+          final h = await controller.evaluateJavascript(
+            source: 'document.body.scrollHeight',
+          );
+          final height = (h as num?)?.toDouble() ?? 0;
+          if (height > 0 && mounted && _webViewHeight == 0) {
+            setState(() => _webViewHeight = height);
+          }
+        },
+      ),
     );
   }
 }
