@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
@@ -35,11 +34,9 @@ class NovelReaderController extends GetxController {
 
   final offlineStorageController = Get.find<OfflineStorageController>();
 
-  // UI Controls
   RxBool showControls = true.obs;
   RxBool showSettings = false.obs;
 
-  // Text Settings
   RxDouble fontSize = 16.0.obs;
   RxDouble lineHeight = 1.6.obs;
   RxDouble letterSpacing = 0.0.obs;
@@ -50,58 +47,44 @@ class NovelReaderController extends GetxController {
   RxDouble paddingHorizontal = 16.0.obs;
   RxDouble paddingVertical = 8.0.obs;
 
-  // Theme Settings
   RxInt themeMode = 0.obs;
   RxDouble backgroundOpacity = 1.0.obs;
 
-  // Navigation
   RxBool canGoNext = true.obs;
   RxBool canGoPrevious = true.obs;
 
-  // Auto-hide timer
   RxBool autoHideEnabled = true.obs;
   Timer? _hideTimer;
 
-  // Page Indicators
   RxDouble progress = 0.0.obs;
   RxInt currentPage = 1.obs;
   RxInt totalPages = 1.obs;
 
-  // Auto Scroll
   RxBool autoScrollEnabled = false.obs;
   RxDouble autoScrollSpeed = 3.0.obs;
   Timer? _autoScrollTimer;
 
-  // Volume Button Scrolling
   RxBool volumeButtonScrolling = false.obs;
   RxDouble volumeScrollOffset = 0.0.obs;
   static const double volumeScrollAmount = 50.0;
   final VolumeKeyHandler _volumeKeyHandler = VolumeKeyHandler();
   StreamSubscription? _volumeSubscription;
 
-  // Tap to Scroll
   RxBool tapToScroll = false.obs;
   RxDouble tapScrollAmount = 20.0.obs;
 
-  // Keep Screen On
   RxBool keepScreenOn = true.obs;
 
-  // Vertical Seekbar
   RxBool verticalSeekbar = true.obs;
 
-  // Swipe Gestures
   RxBool swipeGestures = true.obs;
 
-  // Page Reader Mode (vs continuous scroll)
   RxBool pageReaderMode = false.obs;
 
-  // Reading Progress
   RxBool showReadingProgress = true.obs;
 
-  // Battery & Time
   RxBool showBatteryAndTime = true.obs;
 
-  // TTS
   late FlutterTts flutterTts;
   RxBool ttsEnabled = false.obs;
   RxBool ttsPlaying = false.obs;
@@ -116,11 +99,13 @@ class NovelReaderController extends GetxController {
   RxInt ttsCurrentElement = 0.obs;
   List<String> ttsSegments = [];
   RxInt ttsHighlightedElement = (-1).obs;
+  RxMap<int, List<int>> ttsWordBoundaries = <int, List<int>>{}.obs;
+  RxInt ttsCurrentWordStart = 0.obs;
+  RxInt ttsCurrentWordEnd = 0.obs;
+  bool _isChangingVoice = false;
 
-  // Saved chapter for tracking
   Rx<Chapter> savedChapter = Chapter().obs;
 
-  // Additional tracking for sync
   RxInt consecutiveReads = 0.obs;
 
   @override
@@ -260,7 +245,14 @@ class NovelReaderController extends GetxController {
     double offset = scrollController.offset;
     double maxScrollExtent = scrollController.position.maxScrollExtent;
 
-    if (offset < 0 || offset > maxScrollExtent) return;
+    if (offset < 0 || offset > maxScrollExtent) {
+      if (offset < 0 && canGoPrevious.value) {
+        goToPreviousChapter();
+      } else if (offset > maxScrollExtent && canGoNext.value) {
+        goToNextChapter();
+      }
+      return;
+    }
 
     progress.value = maxScrollExtent > 0 ? offset / maxScrollExtent : 0.0;
 
@@ -353,6 +345,21 @@ class NovelReaderController extends GetxController {
         .map((line) => line.replaceAll(RegExp(r'\s+'), ' ').trim())
         .where((line) => line.isNotEmpty)
         .toList();
+    
+    ttsWordBoundaries.clear();
+    for (int i = 0; i < ttsSegments.length; i++) {
+      final words = ttsSegments[i].split(' ');
+      List<int> boundaries = [];
+      int pos = 0;
+      for (String word in words) {
+        if (word.isNotEmpty) {
+          boundaries.add(pos);
+          boundaries.add(pos + word.length);
+          pos += word.length + 1;
+        }
+      }
+      ttsWordBoundaries[i] = boundaries;
+    }
   }
 
   void _initTts() {
@@ -360,10 +367,13 @@ class NovelReaderController extends GetxController {
 
     flutterTts.setStartHandler(() {
       ttsPlaying.value = true;
+      _scrollToTtsElement();
     });
 
     flutterTts.setCompletionHandler(() {
       ttsHighlightedElement.value = -1;
+      ttsCurrentWordStart.value = 0;
+      ttsCurrentWordEnd.value = 0;
       if (ttsAutoAdvance.value) {
         ttsCurrentElement.value++;
         if (ttsCurrentElement.value < ttsSegments.length) {
@@ -379,14 +389,57 @@ class NovelReaderController extends GetxController {
     flutterTts.setErrorHandler((msg) {
       ttsPlaying.value = false;
       ttsHighlightedElement.value = -1;
+      ttsCurrentWordStart.value = 0;
+      ttsCurrentWordEnd.value = 0;
     });
 
     flutterTts.setProgressHandler(
         (String text, int startOffset, int endOffset, String word) {
       ttsHighlightedElement.value = ttsCurrentElement.value;
+      ttsCurrentWordStart.value = startOffset;
+      ttsCurrentWordEnd.value = endOffset;
     });
 
     unawaited(_loadVoices());
+  }
+
+  void _scrollToTtsElement() {
+    if (ttsSegments.isEmpty || !scrollController.hasClients) return;
+    
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final context = Get.context;
+      if (context == null) return;
+      
+      final renderBox = context.findRenderObject() as RenderBox?;
+      if (renderBox == null) return;
+      
+      final scrollOffset = scrollController.offset;
+      final viewportHeight = scrollController.position.viewportDimension;
+      
+      for (int i = 0; i < ttsCurrentElement.value; i++) {
+        final index = i;
+        final elementKey = GlobalKey();
+        final renderObj = elementKey.currentContext?.findRenderObject();
+        if (renderObj is RenderBox) {
+          final elementOffset = renderObj.localToGlobal(Offset.zero).dy;
+          if (elementOffset > scrollOffset + viewportHeight - 100) {
+            scrollController.animateTo(
+              elementOffset - 50,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeIn,
+            );
+            break;
+          } else if (elementOffset < scrollOffset + 50) {
+            scrollController.animateTo(
+              elementOffset - 50,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeIn,
+            );
+            break;
+          }
+        }
+      }
+    });
   }
 
   Future<void> _loadVoices() async {
@@ -438,6 +491,8 @@ class NovelReaderController extends GetxController {
       await flutterTts.stop();
       ttsPlaying.value = false;
       ttsHighlightedElement.value = -1;
+      ttsCurrentWordStart.value = 0;
+      ttsCurrentWordEnd.value = 0;
     }
     _saveSettings();
   }
@@ -449,6 +504,8 @@ class NovelReaderController extends GetxController {
       await flutterTts.stop();
       ttsPlaying.value = false;
       ttsHighlightedElement.value = -1;
+      ttsCurrentWordStart.value = 0;
+      ttsCurrentWordEnd.value = 0;
       return;
     }
 
@@ -474,6 +531,8 @@ class NovelReaderController extends GetxController {
         ttsCurrentElement.value >= ttsSegments.length) {
       ttsPlaying.value = false;
       ttsHighlightedElement.value = -1;
+      ttsCurrentWordStart.value = 0;
+      ttsCurrentWordEnd.value = 0;
       return;
     }
 
@@ -492,9 +551,13 @@ class NovelReaderController extends GetxController {
     ttsHighlightedElement.value = ttsCurrentElement.value;
     final text = ttsSegments[ttsCurrentElement.value];
     await flutterTts.speak(text);
+    _scrollToTtsElement();
   }
 
   void ttsNext() {
+    if (ttsPlaying.value) {
+      flutterTts.stop();
+    }
     if (ttsCurrentElement.value < ttsSegments.length - 1) {
       ttsCurrentElement.value++;
       unawaited(_speakCurrentElement());
@@ -502,6 +565,9 @@ class NovelReaderController extends GetxController {
   }
 
   void ttsPrevious() {
+    if (ttsPlaying.value) {
+      flutterTts.stop();
+    }
     if (ttsCurrentElement.value > 0) {
       ttsCurrentElement.value--;
       unawaited(_speakCurrentElement());
@@ -761,6 +827,15 @@ class NovelReaderController extends GetxController {
       _stopAutoScroll();
       autoScrollEnabled.value = false;
 
+      if (ttsPlaying.value) {
+        await flutterTts.stop();
+        ttsPlaying.value = false;
+        ttsHighlightedElement.value = -1;
+        ttsCurrentWordStart.value = 0;
+        ttsCurrentWordEnd.value = 0;
+        ttsCurrentElement.value = 0;
+      }
+
       currentChapter.value = chapters[currentIndex + 1];
       updateNavigationButtons();
       await fetchData();
@@ -778,6 +853,15 @@ class NovelReaderController extends GetxController {
       _stopAutoScroll();
       autoScrollEnabled.value = false;
 
+      if (ttsPlaying.value) {
+        await flutterTts.stop();
+        ttsPlaying.value = false;
+        ttsHighlightedElement.value = -1;
+        ttsCurrentWordStart.value = 0;
+        ttsCurrentWordEnd.value = 0;
+        ttsCurrentElement.value = 0;
+      }
+
       currentChapter.value = chapters[currentIndex - 1];
       updateNavigationButtons();
       await fetchData();
@@ -792,6 +876,15 @@ class NovelReaderController extends GetxController {
     if (index < 0 || index >= chapters.length) return;
 
     _saveTracking(syncToCloud: false);
+
+    if (ttsPlaying.value) {
+      await flutterTts.stop();
+      ttsPlaying.value = false;
+      ttsHighlightedElement.value = -1;
+      ttsCurrentWordStart.value = 0;
+      ttsCurrentWordEnd.value = 0;
+      ttsCurrentElement.value = 0;
+    }
 
     currentChapter.value = chapters[index];
     updateNavigationButtons();
@@ -946,10 +1039,27 @@ class NovelReaderController extends GetxController {
   }
 
   void setTtsVoice(String value) {
-    ttsVoice.value = value;
-    if (ttsPlaying.value) {
-      unawaited(_speakCurrentElement());
+    if (_isChangingVoice) return;
+    _isChangingVoice = true;
+    
+    bool wasPlaying = ttsPlaying.value;
+    int currentElement = ttsCurrentElement.value;
+    
+    if (wasPlaying) {
+      flutterTts.stop();
     }
+    
+    ttsVoice.value = value;
+    
+    if (wasPlaying && ttsSegments.isNotEmpty && currentElement < ttsSegments.length) {
+      Future.delayed(const Duration(milliseconds: 100), () {
+        _speakCurrentElement();
+        _isChangingVoice = false;
+      });
+    } else {
+      _isChangingVoice = false;
+    }
+    
     _saveSettings();
   }
 
