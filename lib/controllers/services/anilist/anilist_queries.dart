@@ -39,6 +39,7 @@ const detailsPrimaryQuery = '''
         genres
         studios {
           nodes {
+            id
             name
           }
         }

@@ -8,7 +8,9 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/database/comments/comments_db.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
+import 'package:anymex/models/Anilist/anilist_activity.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
+import 'package:anymex/models/Anilist/social_user.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/logger.dart';
@@ -34,6 +36,7 @@ class AnilistAuth extends GetxController {
 
   RxList<TrackedMedia> currentlyReading = <TrackedMedia>[].obs;
   RxList<TrackedMedia> mangaList = <TrackedMedia>[].obs;
+  DateTime? _rateLimitUntil;
 
   void _handle403(http.Response response) {
     dynamic errorJson;
@@ -42,13 +45,66 @@ class AnilistAuth extends GetxController {
     } catch (_) {}
 
     const base = "Why is it 403";
-    final apiMessage =
-        errorJson?['errors']?[0]?['message'] as String?;
+    final apiMessage = errorJson?['errors']?[0]?['message'] as String?;
     final message = apiMessage != null && apiMessage.isNotEmpty
         ? "$base: $apiMessage"
         : "$base: Forbidden (error 403)";
 
     throw Exception(message);
+  }
+
+  Future<http.Response> _anilistPost({
+    required Map<String, String> headers,
+    required Map<String, dynamic> body,
+    int maxRetries = 3,
+  }) async {
+    const url = 'https://graphql.anilist.co';
+    int attempt = 0;
+
+    while (true) {
+      if (_rateLimitUntil != null &&
+          DateTime.now().isBefore(_rateLimitUntil!)) {
+        final wait = _rateLimitUntil!.difference(DateTime.now());
+        if (wait.inMilliseconds > 0) {
+          await Future.delayed(wait);
+        }
+      }
+
+      final response = await http.post(
+        Uri.parse(url),
+        headers: headers,
+        body: json.encode(body),
+      );
+
+      final resetEpoch =
+          int.tryParse(response.headers['x-ratelimit-reset'] ?? '');
+      if (resetEpoch != null && resetEpoch > 0) {
+        final resetAt = DateTime.fromMillisecondsSinceEpoch(resetEpoch * 1000);
+        if (_rateLimitUntil == null || resetAt.isAfter(_rateLimitUntil!)) {
+          _rateLimitUntil = resetAt;
+        }
+      }
+
+      if (response.statusCode != 429 || attempt >= maxRetries) {
+        return response;
+      }
+
+      // Parse Retry After header
+      final retryAfter = response.headers['retry-after'];
+      final waitSeconds = retryAfter != null
+          ? (int.tryParse(retryAfter) ?? (2 << attempt))
+          : (2 << attempt);
+
+      final retryUntil = DateTime.now().add(Duration(seconds: waitSeconds));
+      if (_rateLimitUntil == null || retryUntil.isAfter(_rateLimitUntil!)) {
+        _rateLimitUntil = retryUntil;
+      }
+
+      Logger.i(
+          'AniList 429 rate limit hit, retry ${attempt + 1}/$maxRetries after ${waitSeconds}s');
+      await Future.delayed(Duration(seconds: waitSeconds));
+      attempt++;
+    }
   }
 
   Future<void> tryAutoLogin() async {
@@ -407,6 +463,10 @@ class AnilistAuth extends GetxController {
       id
       name
       about(asHtml: true)
+      aboutMarkdown: about
+      donatorTier
+      donatorBadge
+      createdAt
       avatar {
         large
       }
@@ -417,12 +477,36 @@ class AnilistAuth extends GetxController {
           episodesWatched
           meanScore
           minutesWatched
+          standardDeviation
+          scores(sort: MEAN_SCORE) { score count meanScore minutesWatched }
+          formats { format count meanScore minutesWatched }
+          statuses { status count meanScore minutesWatched }
+          countries { country count meanScore minutesWatched }
+          lengths { length count meanScore minutesWatched }
+          releaseYears { releaseYear count meanScore minutesWatched }
+          startYears { startYear count meanScore minutesWatched }
+          genres(sort: COUNT_DESC) { genre count meanScore minutesWatched }
+          tags(sort: COUNT_DESC) { tag { name } count meanScore minutesWatched }
+          voiceActors(sort: COUNT_DESC) { voiceActor { id name { full } image { medium } } count meanScore minutesWatched }
+          studios(sort: COUNT_DESC) { studio { id name } count meanScore minutesWatched }
+          staff(sort: COUNT_DESC) { staff { id name { full } image { medium } } count meanScore minutesWatched }
         }
         manga {
           count
           chaptersRead
           volumesRead
           meanScore
+          standardDeviation
+          scores(sort: MEAN_SCORE) { score count meanScore chaptersRead }
+          formats { format count meanScore chaptersRead }
+          statuses { status count meanScore chaptersRead }
+          countries { country count meanScore chaptersRead }
+          lengths { length count meanScore chaptersRead }
+          releaseYears { releaseYear count meanScore chaptersRead }
+          startYears { startYear count meanScore chaptersRead }
+          genres(sort: COUNT_DESC) { genre count meanScore chaptersRead }
+          tags(sort: COUNT_DESC) { tag { name } count meanScore chaptersRead }
+          staff(sort: COUNT_DESC) { staff { id name { full } image { medium } } count meanScore chaptersRead }
         }
       }
       favourites {
@@ -432,6 +516,8 @@ class AnilistAuth extends GetxController {
             id
             title { userPreferred english romaji }
             coverImage { large }
+            averageScore
+            format
           }
         }
         manga {
@@ -440,6 +526,8 @@ class AnilistAuth extends GetxController {
             id
             title { userPreferred english romaji }
             coverImage { large }
+            averageScore
+            format
           }
         }
         characters {
@@ -462,6 +550,17 @@ class AnilistAuth extends GetxController {
             name
           }
         }
+      }
+      stats {
+        activityHistory {
+          date
+          amount
+          level
+        }
+      }
+      mediaListOptions {
+        animeList { splitCompletedSectionByFormat sectionOrder }
+        mangaList { splitCompletedSectionByFormat sectionOrder }
       }
     }
   }
@@ -503,6 +602,993 @@ class AnilistAuth extends GetxController {
     }
   }
 
+  Future<Profile?> fetchUserDetails(int userId) async {
+    const query = r'''
+  query ($id: Int) {
+    User(id: $id) {
+      id
+      name
+      about(asHtml: true)
+      aboutMarkdown: about
+      donatorTier
+      donatorBadge
+      isFollowing
+      isFollower
+      createdAt
+      avatar {
+        large
+      }
+      bannerImage
+      statistics {
+        anime {
+          count
+          episodesWatched
+          meanScore
+          minutesWatched
+          standardDeviation
+          scores(sort: MEAN_SCORE) { score count meanScore minutesWatched }
+          formats { format count meanScore minutesWatched }
+          statuses { status count meanScore minutesWatched }
+          countries { country count meanScore minutesWatched }
+          lengths { length count meanScore minutesWatched }
+          releaseYears { releaseYear count meanScore minutesWatched }
+          startYears { startYear count meanScore minutesWatched }
+          genres(sort: COUNT_DESC) { genre count meanScore minutesWatched }
+          tags(sort: COUNT_DESC) { tag { name } count meanScore minutesWatched }
+          voiceActors(sort: COUNT_DESC) { voiceActor { id name { full } image { medium } } count meanScore minutesWatched }
+          studios(sort: COUNT_DESC) { studio { id name } count meanScore minutesWatched }
+          staff(sort: COUNT_DESC) { staff { id name { full } image { medium } } count meanScore minutesWatched }
+        }
+        manga {
+          count
+          chaptersRead
+          volumesRead
+          meanScore
+          standardDeviation
+          scores(sort: MEAN_SCORE) { score count meanScore chaptersRead }
+          formats { format count meanScore chaptersRead }
+          statuses { status count meanScore chaptersRead }
+          countries { country count meanScore chaptersRead }
+          lengths { length count meanScore chaptersRead }
+          releaseYears { releaseYear count meanScore chaptersRead }
+          startYears { startYear count meanScore chaptersRead }
+          genres(sort: COUNT_DESC) { genre count meanScore chaptersRead }
+          tags(sort: COUNT_DESC) { tag { name } count meanScore chaptersRead }
+          staff(sort: COUNT_DESC) { staff { id name { full } image { medium } } count meanScore chaptersRead }
+        }
+      }
+      favourites {
+        anime {
+          pageInfo { total }
+          nodes {
+            id
+            title { userPreferred english romaji }
+            coverImage { large }
+            averageScore
+            format
+          }
+        }
+        manga {
+          pageInfo { total }
+          nodes {
+            id
+            title { userPreferred english romaji }
+            coverImage { large }
+            averageScore
+            format
+          }
+        }
+        characters {
+          nodes {
+            id
+            name { full }
+            image { large medium }
+          }
+        }
+        staff {
+          nodes {
+            id
+            name { full userPreferred }
+            image { large }
+          }
+        }
+        studios {
+          nodes {
+            id
+            name
+          }
+        }
+      }
+      stats {
+        activityHistory {
+          date
+          amount
+          level
+        }
+      }
+      mediaListOptions {
+        animeList { splitCompletedSectionByFormat sectionOrder }
+        mangaList { splitCompletedSectionByFormat sectionOrder }
+      }
+    }
+  }
+  ''';
+
+    try {
+      final token = AuthKeys.authToken.get<String?>();
+      final headers = <String, String>{
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+      if (token != null && token.isNotEmpty) {
+        headers['Authorization'] = 'Bearer $token';
+      }
+
+      final response = await _anilistPost(
+        headers: headers,
+        body: {
+          'query': query,
+          'variables': {'id': userId},
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final userData = data['data']['User'];
+        if (userData != null) {
+          return Profile.fromJson(userData);
+        }
+      } else {
+        Logger.e('Failed to load user details: ${response.statusCode}');
+      }
+    } catch (e) {
+      Logger.e('Error fetching user details: $e');
+    }
+    return null;
+  }
+
+  Future<bool?> toggleFollow(int userId) async {
+    const mutation = r'''
+  mutation ($userId: Int) {
+    ToggleFollow(userId: $userId) {
+      isFollowing
+    }
+  }
+  ''';
+
+    try {
+      final token = AuthKeys.authToken.get<String?>();
+      if (token == null || token.isEmpty) return null;
+
+      final response = await _anilistPost(
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: {
+          'query': mutation,
+          'variables': {'userId': userId},
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data['data']?['ToggleFollow']?['isFollowing'] as bool?;
+      } else {
+        Logger.e('Failed to toggle follow: ${response.statusCode}');
+      }
+    } catch (e) {
+      Logger.e('Error toggling follow: $e');
+    }
+    return null;
+  }
+
+  Future<Map<String, List<TrackedMedia>>> fetchUserMediaList(
+      int userId, String type) async {
+    const query = r'''
+  query ($userId: Int, $type: MediaType) {
+    MediaListCollection(userId: $userId, type: $type, sort: UPDATED_TIME) {
+      lists {
+        name
+        entries {
+          status
+          score(format: POINT_100)
+          progress
+          updatedAt
+          media {
+            id
+            type
+            format
+            status
+            episodes
+            chapters
+            averageScore
+            genres
+            startDate { year }
+            title { english romaji native }
+            coverImage { large }
+            nextAiringEpisode { episode }
+            mediaListEntry { id }
+          }
+        }
+      }
+    }
+  }
+  ''';
+
+    try {
+      final token = AuthKeys.authToken.get<String?>();
+      final headers = <String, String>{
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+      if (token != null && token.isNotEmpty) {
+        headers['Authorization'] = 'Bearer $token';
+      }
+
+      final response = await _anilistPost(
+        headers: headers,
+        body: {
+          'query': query,
+          'variables': {'userId': userId, 'type': type},
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final lists =
+            data['data']?['MediaListCollection']?['lists'] as List<dynamic>?;
+        if (lists == null) return {};
+
+        final result = <String, List<TrackedMedia>>{};
+        final allEntries = <TrackedMedia>[];
+        for (final list in lists) {
+          final name = list['name'] as String? ?? 'Unknown';
+          final entries = list['entries'] as List<dynamic>? ?? [];
+          final parsed = <TrackedMedia>[];
+          for (final entry in entries) {
+            if (entry['media'] == null) continue;
+            parsed.add(TrackedMedia.fromJson(entry));
+          }
+          if (parsed.isNotEmpty) {
+            result[name] = parsed;
+            allEntries.addAll(parsed);
+          }
+        }
+        if (allEntries.isNotEmpty) {
+          result['All'] = allEntries;
+        }
+        return result;
+      } else {
+        Logger.e('Failed to fetch user media list: ${response.statusCode}');
+      }
+    } catch (e) {
+      Logger.e('Error fetching user media list: $e');
+    }
+    return {};
+  }
+
+  Future<int?> fetchUserIdByName(String username) async {
+    const query = r'''
+  query ($name: String) {
+    User(name: $name) {
+      id
+    }
+  }
+  ''';
+
+    try {
+      final token = AuthKeys.authToken.get<String?>();
+      final headers = <String, String>{
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+      if (token != null && token.isNotEmpty) {
+        headers['Authorization'] = 'Bearer $token';
+      }
+
+      final response = await _anilistPost(
+        headers: headers,
+        body: {
+          'query': query,
+          'variables': {'name': username},
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data['data']?['User']?['id'] as int?;
+      }
+    } catch (e) {
+      Logger.i('Error resolving AniList user by name ($username): $e');
+    }
+
+    return null;
+  }
+
+  Future<(List<SocialUser>, bool, int)> fetchFollowingPage(int userId,
+      {int page = 1}) async {
+    final token = AuthKeys.authToken.get<String?>();
+    final headers = <String, String>{
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+    if (token != null && token.isNotEmpty) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+
+    const query = r'''
+  query ($userId: Int!, $page: Int) {
+    Page(page: $page, perPage: 50) {
+      pageInfo { hasNextPage total }
+      following(userId: $userId, sort: USERNAME) {
+        id
+        name
+        avatar { large }
+        bannerImage
+      }
+    }
+  }
+  ''';
+
+    try {
+      final response = await _anilistPost(
+        headers: headers,
+        body: {
+          'query': query,
+          'variables': {'userId': userId, 'page': page},
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final pageData = data['data']?['Page'];
+        final list = pageData?['following'] as List<dynamic>? ?? [];
+        final hasNextPage = pageData?['pageInfo']?['hasNextPage'] == true;
+        final totalCount = pageData?['pageInfo']?['total'] as int? ?? 0;
+        return (
+          list.map((e) => SocialUser.fromJson(e)).toList(),
+          hasNextPage,
+          totalCount,
+        );
+      } else {
+        Logger.e(
+            'fetchFollowing failed: status=${response.statusCode}, body=${response.body}');
+      }
+    } catch (e) {
+      Logger.e('Error fetching following: $e');
+    }
+    return (<SocialUser>[], false, 0);
+  }
+
+  Future<List<SocialUser>> fetchFollowing(int userId, {int page = 1}) async {
+    final (users, _, _) = await fetchFollowingPage(userId, page: page);
+    return users;
+  }
+
+  Future<(List<SocialUser>, bool, int)> fetchFollowersPage(int userId,
+      {int page = 1}) async {
+    final token = AuthKeys.authToken.get<String?>();
+    final headers = <String, String>{
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+    if (token != null && token.isNotEmpty) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+
+    const query = r'''
+  query ($userId: Int!, $page: Int) {
+    Page(page: $page, perPage: 50) {
+      pageInfo { hasNextPage total }
+      followers(userId: $userId, sort: USERNAME) {
+        id
+        name
+        avatar { large }
+        bannerImage
+      }
+    }
+  }
+  ''';
+
+    try {
+      final response = await _anilistPost(
+        headers: headers,
+        body: {
+          'query': query,
+          'variables': {'userId': userId, 'page': page},
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final pageData = data['data']?['Page'];
+        final list = pageData?['followers'] as List<dynamic>? ?? [];
+        final hasNextPage = pageData?['pageInfo']?['hasNextPage'] == true;
+        final totalCount = pageData?['pageInfo']?['total'] as int? ?? 0;
+        return (
+          list.map((e) => SocialUser.fromJson(e)).toList(),
+          hasNextPage,
+          totalCount,
+        );
+      } else {
+        Logger.e(
+            'fetchFollowers failed: status=${response.statusCode}, body=${response.body}');
+      }
+    } catch (e) {
+      Logger.e('Error fetching followers: $e');
+    }
+    return (<SocialUser>[], false, 0);
+  }
+
+  Future<List<SocialUser>> fetchFollowers(int userId, {int page = 1}) async {
+    final (users, _, _) = await fetchFollowersPage(userId, page: page);
+    return users;
+  }
+
+  Future<(List<AnilistActivity>, bool)> fetchUserActivities(int userId,
+      {int page = 1,
+      List<String> typeIn = const [
+        'ANIME_LIST',
+        'MANGA_LIST',
+        'TEXT',
+        'MESSAGE'
+      ]}) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null || token.isEmpty) return (<AnilistActivity>[], false);
+
+    const query = r'''
+  query ($userId: Int, $page: Int, $typeIn: [ActivityType]) {
+    Page(page: $page, perPage: 25) {
+      pageInfo { hasNextPage }
+      activities(userId: $userId, sort: ID_DESC, type_in: $typeIn) {
+        ... on ListActivity {
+          id
+          type
+          status
+          progress
+          createdAt
+          likeCount
+          replyCount
+          isLiked
+          isPinned
+          isSubscribed
+          likes {
+            id
+            name
+            avatar { large }
+            bannerImage
+          }
+          media {
+            id
+            title { userPreferred }
+            coverImage { large }
+            bannerImage
+          }
+          user {
+            id
+            name
+            avatar { large }
+          }
+        }
+        ... on TextActivity {
+          id
+          type
+          text(asHtml: true)
+          createdAt
+          likeCount
+          replyCount
+          isLiked
+          isPinned
+          isSubscribed
+          likes {
+            id
+            name
+            avatar { large }
+            bannerImage
+          }
+          user {
+            id
+            name
+            avatar { large }
+          }
+        }
+        ... on MessageActivity {
+          id
+          type
+          message(asHtml: true)
+          createdAt
+          likeCount
+          replyCount
+          isLiked
+          isSubscribed
+          isPrivate
+          likes {
+            id
+            name
+            avatar { large }
+            bannerImage
+          }
+          messenger {
+            id
+            name
+            avatar { large }
+          }
+        }
+      }
+    }
+  }
+  ''';
+
+    try {
+      final response = await _anilistPost(
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: {
+          'query': query,
+          'variables': {
+            'userId': userId,
+            'page': page,
+            'typeIn': typeIn,
+          },
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final activitiesJson =
+            data['data']?['Page']?['activities'] as List<dynamic>? ?? [];
+
+        final hasNextPage =
+            data['data']?['Page']?['pageInfo']?['hasNextPage'] == true;
+
+        final activities = activitiesJson
+            .where((e) => e != null && e is Map<String, dynamic>)
+            .map((e) => AnilistActivity.fromJson(e as Map<String, dynamic>))
+            .toList();
+        return (activities, hasNextPage);
+      } else if (response.statusCode == 403) {
+        _handle403(response);
+      } else {
+        Logger.i('Failed to fetch activities: ${response.statusCode}');
+      }
+    } catch (e) {
+      Logger.i('Error fetching activities: $e');
+    }
+    return (<AnilistActivity>[], false);
+  }
+
+  Future<bool> toggleLike(int id, String type) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return false;
+
+    const mutation = r'''
+  mutation ToggleLike($id: Int, $type: LikeableType) {
+    ToggleLikeV2(id: $id, type: $type) {
+      ... on ListActivity { likeCount isLiked }
+      ... on TextActivity { likeCount isLiked }
+      ... on MessageActivity { likeCount isLiked }
+      ... on ActivityReply { likeCount isLiked }
+    }
+  }
+  ''';
+
+    try {
+      final response = await http.post(
+        Uri.parse('https://graphql.anilist.co'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode({
+          'query': mutation,
+          'variables': {'id': id, 'type': type},
+        }),
+      );
+
+      return response.statusCode == 200;
+    } catch (e) {
+      Logger.i('Error toggling like: $e');
+      return false;
+    }
+  }
+
+  Future<bool> deleteActivity(int id) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return false;
+
+    const mutation = r'''
+  mutation DeleteActivity($id: Int) {
+    DeleteActivity(id: $id) {
+      deleted
+    }
+  }
+  ''';
+
+    try {
+      final response = await http.post(
+        Uri.parse('https://graphql.anilist.co'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode({
+          'query': mutation,
+          'variables': {'id': id},
+        }),
+      );
+
+      return response.statusCode == 200;
+    } catch (e) {
+      Logger.i('Error deleting activity: $e');
+      return false;
+    }
+  }
+
+  Future<bool> postActivityReply(int activityId, String text) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return false;
+
+    const mutation = r'''
+  mutation SaveActivityReply($activityId: Int, $text: String) {
+    SaveActivityReply(activityId: $activityId, text: $text) {
+      id
+    }
+  }
+  ''';
+
+    try {
+      final response = await http.post(
+        Uri.parse('https://graphql.anilist.co'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode({
+          'query': mutation,
+          'variables': {'activityId': activityId, 'text': text},
+        }),
+      );
+
+      return response.statusCode == 200;
+    } catch (e) {
+      Logger.i('Error posting activity reply: $e');
+      return false;
+    }
+  }
+
+  Future<bool> editActivityReply(int id, String text) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return false;
+
+    const mutation = r'''
+  mutation SaveActivityReply($id: Int, $text: String) {
+    SaveActivityReply(id: $id, text: $text) {
+      id
+    }
+  }
+  ''';
+
+    try {
+      final response = await http.post(
+        Uri.parse('https://graphql.anilist.co'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode({
+          'query': mutation,
+          'variables': {'id': id, 'text': text},
+        }),
+      );
+
+      return response.statusCode == 200;
+    } catch (e) {
+      Logger.i('Error editing activity reply: $e');
+      return false;
+    }
+  }
+
+  Future<bool> deleteActivityReply(int id) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return false;
+
+    const mutation = r'''
+  mutation DeleteActivityReply($id: Int) {
+    DeleteActivityReply(id: $id) {
+      deleted
+    }
+  }
+  ''';
+
+    try {
+      final response = await http.post(
+        Uri.parse('https://graphql.anilist.co'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode({
+          'query': mutation,
+          'variables': {'id': id},
+        }),
+      );
+
+      return response.statusCode == 200;
+    } catch (e) {
+      Logger.i('Error deleting activity reply: $e');
+      return false;
+    }
+  }
+
+  Future<List<ActivityReply>> fetchActivityReplies(int activityId) async {
+    final token = AuthKeys.authToken.get<String?>();
+
+  
+    final headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+    if (token != null && token.isNotEmpty) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+
+    const query = r'''
+  query ($activityId: Int!, $page: Int) {
+    Page(page: $page, perPage: 50) {
+      pageInfo { hasNextPage }
+      activityReplies(activityId: $activityId) {
+        id
+        text(asHtml: true)
+        likeCount
+        isLiked
+        createdAt
+        user { id name avatar { large } }
+        likes {
+          id
+          name
+          avatar { large medium }
+          bannerImage
+        }
+      }
+    }
+  }
+  ''';
+
+    try {
+      final response = await _anilistPost(
+        headers: headers,
+        body: {
+          'query': query,
+          'variables': {'activityId': activityId, 'page': 1},
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final repliesJson =
+            data['data']?['Page']?['activityReplies'] as List<dynamic>? ?? [];
+        return repliesJson
+            .where((e) => e != null && e is Map<String, dynamic>)
+            .map((e) => ActivityReply.fromJson(e as Map<String, dynamic>))
+            .toList();
+      } else if (response.statusCode == 403) {
+        _handle403(response);
+      } else {
+        Logger.e(
+            'fetchActivityReplies failed: status=${response.statusCode}, body=${response.body}');
+      }
+    } catch (e) {
+      Logger.e('Error fetching activity replies: $e');
+    }
+    return [];
+  }
+
+  Future<bool> createActivity(String text) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return false;
+
+   
+    const mutation = r'''
+  mutation CreateActivity($text: String) {
+    SaveTextActivity(text: $text) {
+      id
+      text
+    }
+  }
+  ''';
+
+    try {
+      final response = await http.post(
+        Uri.parse('https://graphql.anilist.co'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode({
+          'query': mutation,
+          'variables': {'text': text},
+        }),
+      );
+      if (response.statusCode != 200) {
+        Logger.e('Error creating activity: ${response.body}');
+        throw Exception(response.body);
+      }
+      return true;
+    } catch (e) {
+      Logger.e('Error creating activity: $e');
+      rethrow;
+    }
+  }
+
+  Future<bool> createMessageActivity(
+      int recipientId, String message, bool isPrivate) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return false;
+
+    const mutation = r'''
+  mutation SaveMessageActivity($recipientId: Int, $message: String, $private: Boolean) {
+    SaveMessageActivity(recipientId: $recipientId, message: $message, private: $private) {
+      id
+      message
+      isPrivate
+    }
+  }
+  ''';
+
+    try {
+      final response = await http.post(
+        Uri.parse('https://graphql.anilist.co'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode({
+          'query': mutation,
+          'variables': {
+            'recipientId': recipientId,
+            'message': message,
+            'private': isPrivate
+          },
+        }),
+      );
+      if (response.statusCode != 200) {
+        Logger.e('Error creating message activity: ${response.body}');
+        throw Exception(response.body);
+      }
+      return true;
+    } catch (e) {
+      Logger.e('Error creating message activity: $e');
+      rethrow;
+    }
+  }
+
+  Future<bool> editActivity(int id, String text) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return false;
+
+    const mutation = r'''
+  mutation EditActivity($id: Int, $text: String) {
+    SaveTextActivity(id: $id, text: $text) {
+      id
+      text
+    }
+  }
+  ''';
+
+    try {
+      final response = await http.post(
+        Uri.parse('https://graphql.anilist.co'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode({
+          'query': mutation,
+          'variables': {'id': id, 'text': text},
+        }),
+      );
+      return response.statusCode == 200;
+    } catch (e) {
+      Logger.i('Error editing activity: $e');
+      return false;
+    }
+  }
+
+  Future<String?> toggleActivityPin(int id, bool isPinned) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return "Not logged in";
+
+    const mutation = r'''
+  mutation ToggleActivityPin($id: Int, $pinned: Boolean) {
+    ToggleActivityPin(id: $id, pinned: $pinned) {
+      ... on TextActivity {
+        id
+        isPinned
+      }
+      ... on ListActivity {
+        id
+        isPinned
+      }
+    }
+  }
+  ''';
+
+    try {
+      final response = await http.post(
+        Uri.parse('https://graphql.anilist.co'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode({
+          'query': mutation,
+          'variables': {'id': id, 'pinned': isPinned},
+        }),
+      );
+      
+      final data = json.decode(response.body);
+      
+      if (response.statusCode == 200 && data['errors'] == null) {
+        return null; // Success
+      } else {
+        if (data['errors'] != null && data['errors'].isNotEmpty) {
+          return data['errors'][0]['message'] ?? 'Failed to pin activity';
+        }
+        return 'Failed to pin activity (Status: ${response.statusCode})';
+      }
+    } catch (e) {
+      Logger.i('Error toggling activity pin: $e');
+      return 'Network error occurred';
+    }
+  }
+
+  Future<bool> toggleActivitySubscription(int id, bool isSubscribed) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return false;
+
+    const mutation = r'''
+  mutation ToggleActivitySubscription($id: Int, $subscribe: Boolean) {
+    ToggleActivitySubscription(activityId: $id, subscribe: $subscribe) {
+      id
+      isSubscribed
+    }
+  }
+  ''';
+
+    try {
+      final response = await http.post(
+        Uri.parse('https://graphql.anilist.co'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode({
+          'query': mutation,
+          'variables': {'id': id, 'subscribe': isSubscribed},
+        }),
+      );
+      return response.statusCode == 200;
+    } catch (e) {
+      Logger.i('Error toggling activity subscription: $e');
+      return false;
+    }
+  }
+
   Future<void> fetchFollowersAndFollowing(String userId) async {
     final token = AuthKeys.authToken.get<String?>();
 
@@ -538,8 +1624,10 @@ class AnilistAuth extends GetxController {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final followersCount = data['data']['followers']['pageInfo']['total'] as int;
-        final followingCount = data['data']['following']['pageInfo']['total'] as int;
+        final followersCount =
+            data['data']['followers']['pageInfo']['total'] as int;
+        final followingCount =
+            data['data']['following']['pageInfo']['total'] as int;
 
         final updatedProfile = profileData.value
           ..followers = followersCount
@@ -587,6 +1675,10 @@ class AnilistAuth extends GetxController {
             }
             averageScore
             type
+            genres
+            startDate {
+              year
+            }
             coverImage {
               large
             }
@@ -594,6 +1686,7 @@ class AnilistAuth extends GetxController {
           progress
           status
           score
+          updatedAt
         }
       }
     }
@@ -848,6 +1941,10 @@ class AnilistAuth extends GetxController {
               status
               type
               averageScore
+              genres
+              startDate {
+                year
+              }
               coverImage {
                 large
               }
@@ -855,6 +1952,7 @@ class AnilistAuth extends GetxController {
             progress
             status
             score
+            updatedAt
           }
         }
       }
@@ -1041,7 +2139,15 @@ class AnilistAuth extends GetxController {
     final token = AuthKeys.authToken.get<String?>();
     if (token == null) return false;
 
-    final String idField = type == "CHARACTER" ? "characterId" : "staffId";
+    String idField;
+    if (type == "CHARACTER") {
+      idField = "characterId";
+    } else if (type == "STUDIO") {
+      idField = "studioId";
+    } else {
+      idField = "staffId";
+    }
+
     final mutation = '''
     mutation (\$id: Int) {
       ToggleFavourite($idField: \$id) {
@@ -1049,6 +2155,9 @@ class AnilistAuth extends GetxController {
           nodes { id }
         }
         staff {
+          nodes { id }
+        }
+        studios {
           nodes { id }
         }
       }
@@ -1096,7 +2205,7 @@ class AnilistAuth extends GetxController {
               ));
     } else {
       final savedAnime = offlineStorage.getAnimeById(id);
-      final number = savedAnime?.currentEpisode?.number?.toInt() ?? 0;
+      final number = savedAnime?.currentEpisode?.number.toInt() ?? 0;
       currentMedia.value = animeList.value.firstWhere((el) => el.id == id,
           orElse: () => TrackedMedia(
               episodeCount: number.toString(),

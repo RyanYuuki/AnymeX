@@ -17,9 +17,13 @@ class TrackedMedia {
   String? mediaListId;
   ServicesType servicesType;
   String? userName;
+  int? userId;
   String? userAvatar;
   int? userProgress;
   double? userScore;
+  List<String> genres;
+  int? startYear;
+  int? updatedAt;
 
   TrackedMedia({
     this.id,
@@ -38,43 +42,55 @@ class TrackedMedia {
     this.mediaListId,
     this.servicesType = ServicesType.anilist,
     this.userName,
+    this.userId,
     this.userAvatar,
     this.userProgress,
     this.userScore,
+    this.genres = const [],
+    this.startYear,
+    this.updatedAt,
   });
 
   factory TrackedMedia.fromJson(Map<String, dynamic> json) {
     return TrackedMedia(
-        id: json['media']['id']?.toString(),
-        title: json['media']['title']['english'] ??
-            json['media']['title']['romaji'] ??
-            json['media']['title']['native'],
-        poster: json['media']['coverImage']['large'],
-        episodeCount: json['progress']?.toString(),
-        chapterCount: json['media']['chapters']?.toString(),
-        totalEpisodes: json['media']['episodes']?.toString(),
-        releasedEpisodes: json['media']['nextAiringEpisode'] != null
-            ? (json['media']['nextAiringEpisode']['episode'] - 1).toString()
-            : null,
-        rating: (double.tryParse(
-                    json['media']['averageScore']?.toString() ?? "0")! /
-                10)
-            .toString(),
-        watchingStatus: json['status'],
-        format: json['media']['format'],
-        mediaStatus: json['media']['status'],
-        score: json['score']?.toString(),
-        type: json['media']['type']?.toString(),
-        servicesType: ServicesType.anilist,
-        mediaListId:
-            (json['media']['mediaListEntry']?['id'] ?? json['media']['id'])
-                .toString());
+      id: json['media']['id']?.toString(),
+      title: json['media']['title']['english'] ??
+          json['media']['title']['romaji'] ??
+          json['media']['title']['native'],
+      poster: json['media']['coverImage']['large'],
+      episodeCount: json['progress']?.toString(),
+      chapterCount: json['media']['chapters']?.toString(),
+      totalEpisodes: json['media']['episodes']?.toString(),
+      releasedEpisodes: json['media']['nextAiringEpisode'] != null
+          ? (json['media']['nextAiringEpisode']['episode'] - 1).toString()
+          : null,
+      rating:
+          (double.tryParse(json['media']['averageScore']?.toString() ?? "0")! /
+                  10)
+              .toString(),
+      watchingStatus: json['status'],
+      format: json['media']['format'],
+      mediaStatus: json['media']['status'],
+      score: json['score']?.toString(),
+      type: json['media']['type']?.toString(),
+      servicesType: ServicesType.anilist,
+      mediaListId:
+          (json['media']['mediaListEntry']?['id'] ?? json['media']['id'])
+              .toString(),
+      genres: (json['media']['genres'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const [],
+      startYear: json['media']['startDate']?['year'] as int?,
+      updatedAt: json['updatedAt'] as int?,
+    );
   }
 
   factory TrackedMedia.fromSocialJson(Map<String, dynamic> json) {
     return TrackedMedia(
       id: json['id']?.toString(),
       userName: json['user']['name'],
+      userId: json['user']['id'] as int?,
       userAvatar: json['user']['avatar']['large'],
       userProgress: json['progress'],
       userScore: (json['score'] ?? 0).toDouble(),
