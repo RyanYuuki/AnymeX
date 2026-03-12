@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/screens/novel/reader/controller/reader_controller.dart';
 import 'package:anymex/utils/theme_extensions.dart';
