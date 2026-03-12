@@ -1,20 +1,24 @@
-import 'dart:ui';
+import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
+import 'package:anymex/models/Anilist/anilist_activity.dart';
+
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
-import 'package:anymex/utils/al_about_me.dart';
+import 'package:anymex/widgets/non_widgets/activity_composer_sheet.dart';
+import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/screens/anime/widgets/character_staff_sheet.dart';
+import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/screens/anime/details_page.dart';
-import 'package:anymex/screens/library/online/anime_list.dart';
-import 'package:anymex/screens/library/online/manga_list.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/screens/profile/activity_details_page.dart';
+import 'package:anymex/widgets/non_widgets/activity_card.dart';
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
+import 'package:palette_generator/palette_generator.dart';
+import 'package:anymex/screens/profile/widgets/widgets.dart';
+import 'dart:developer';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -27,6 +31,45 @@ class _ProfilePageState extends State<ProfilePage>
     with SingleTickerProviderStateMixin {
   late final AnimationController _bannerController;
   late final Animation<Alignment> _bannerAnim;
+  bool _ready = false;
+  int _selectedTab = 0;
+  List<AnilistActivity> _activities = [];
+  bool _activitiesLoading = true;
+  bool _loadingMoreActivities = false;
+  bool _hasMoreActivities = true;
+  int _activitiesPage = 1;
+  final List<String> _activityFilters = [
+    'ANIME_LIST',
+    'MANGA_LIST',
+    'TEXT',
+    'MESSAGE',
+  ];
+
+  // Social tab
+  final GlobalKey<SocialTabState> _socialTabKey = GlobalKey<SocialTabState>();
+  bool _isAboutExpanded = true;
+
+  Color? _avatarDominantColor;
+
+  Future<void> _extractDominantColor(String imageUrl) async {
+    if (imageUrl.isEmpty) return;
+    try {
+      final palette = await PaletteGenerator.fromImageProvider(
+        NetworkImage(imageUrl),
+        size: const Size(100, 100),
+        maximumColorCount: 5,
+      );
+      if (mounted) {
+        setState(() {
+          _avatarDominantColor = palette.dominantColor?.color ??
+              palette.vibrantColor?.color ??
+              palette.mutedColor?.color;
+        });
+      }
+    } catch (e) {
+      log("Error extracting palette: $e");
+    }
+  }
 
   @override
   void initState() {
@@ -38,774 +81,898 @@ class _ProfilePageState extends State<ProfilePage>
     _bannerAnim = Tween<Alignment>(
       begin: Alignment.centerLeft,
       end: Alignment.centerRight,
-    ).animate(CurvedAnimation(
-      parent: _bannerController,
-      curve: Curves.easeInOut,
-    ));
+    ).animate(
+      CurvedAnimation(parent: _bannerController, curve: Curves.easeInOut),
+    );
+    _fetchActivities();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) setState(() => _ready = true);
+      final handler = Get.find<ServiceHandler>();
+      if (handler.profileData.value.avatar != null) {
+        _extractDominantColor(handler.profileData.value.avatar!);
+      }
+    });
   }
 
   @override
   void dispose() {
     _bannerController.dispose();
+
     super.dispose();
+  }
+
+  Future<void> _fetchActivities({bool reset = true}) async {
+    final handler = Get.find<ServiceHandler>();
+    final userId = handler.profileData.value.id;
+    if (userId == null) {
+      setState(() => _activitiesLoading = false);
+      return;
+    }
+    if (reset) {
+      setState(() {
+        if (_activities.isEmpty) _activitiesLoading = true;
+        _activitiesPage = 1;
+        _hasMoreActivities = true;
+      });
+    }
+    try {
+      final anilistAuth = Get.find<AnilistAuth>();
+      final (activities, hasMore) = await anilistAuth.fetchUserActivities(
+        int.parse(userId),
+        page: _activitiesPage,
+        typeIn: _activityFilters,
+      );
+      if (mounted) {
+        setState(() {
+          if (reset) {
+            _activities = activities.toList();
+          } else {
+            _activities.addAll(activities);
+          }
+          _hasMoreActivities = hasMore;
+          _activitiesLoading = false;
+          _loadingMoreActivities = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _activitiesLoading = false;
+          _loadingMoreActivities = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _refreshActivityTab({bool showMessage = true}) async {
+    if (mounted) {
+      setState(() {
+        _activitiesLoading = true;
+        _activities = [];
+        _activitiesPage = 1;
+        _hasMoreActivities = true;
+      });
+    }
+    await _fetchActivities(reset: true);
+    Get.find<ServiceHandler>().refresh();
+    if (!mounted || !showMessage) return;
+
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Activity refreshed'),
+        duration: Duration(milliseconds: 1200),
+      ),
+    );
+  }
+
+  void _loadMoreActivities() {
+    if (_loadingMoreActivities || !_hasMoreActivities) return;
+    setState(() {
+      _loadingMoreActivities = true;
+      _activitiesPage++;
+    });
+    _fetchActivities(reset: false);
+  }
+
+  List<NavItem> get _profileNavItems => [
+        NavItem(
+          selectedIcon: IconlyBold.home,
+          unselectedIcon: IconlyLight.home,
+          label: 'Overview',
+          onTap: (i) => setState(() => _selectedTab = 0),
+        ),
+        NavItem(
+          selectedIcon: Icons.forum_rounded,
+          unselectedIcon: Icons.forum_outlined,
+          label: 'Activity',
+          onTap: (i) => setState(() => _selectedTab = 1),
+        ),
+        NavItem(
+          selectedIcon: IconlyBold.chart,
+          unselectedIcon: IconlyLight.chart,
+          label: 'Stats',
+          onTap: (i) => setState(() => _selectedTab = 2),
+        ),
+        NavItem(
+          selectedIcon: IconlyBold.user_3,
+          unselectedIcon: IconlyLight.user_1,
+          label: 'Social',
+          onTap: (i) => setState(() => _selectedTab = 3),
+        ),
+      ];
+
+  Widget _buildBody(BuildContext context, bool isDesktop) {
+    final handler = Get.find<ServiceHandler>();
+    final profileData = handler.profileData;
+
+    return Obx(() {
+      final user = profileData.value;
+
+      final tabScrollView = CustomScrollView(
+        physics: isDesktop
+            ? const AlwaysScrollableScrollPhysics()
+            : const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
+        slivers: [
+          if (isDesktop)
+            SliverToBoxAdapter(
+              child: Column(
+                children: [
+                  DesktopProfileHeader(
+                    user: user,
+                    bannerAnim: _bannerAnim,
+                    bannerController: _bannerController,
+                    avatarDominantColor: _avatarDominantColor,
+                  ),
+                  const SizedBox(height: 40),
+                  DesktopStatsGrid(user: user),
+                  const SizedBox(height: 34),
+                  _buildDesktopTabs(context),
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ),
+          if (!isDesktop)
+            SliverToBoxAdapter(
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 900),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 10),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 26.0,
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: HighlightCard(
+                                label: 'Anime',
+                                value: user.stats?.animeStats?.animeCount
+                                        ?.toString() ??
+                                    '0',
+                                icon: IconlyBold.video,
+                                color: context.theme.colorScheme.primary,
+                                onTap: () {
+                                  final userId =
+                                      int.tryParse(user.id ?? '') ?? 0;
+                                  navigate(
+                                    () => UserMediaListPage(
+                                      userId: userId,
+                                      type: 'ANIME',
+                                      userName: user.name ?? 'User',
+                                      favourites: user.favourites?.anime,
+                                      sectionOrder: user.animeSectionOrder,
+                                    ),
+                                  );
+                                },
+                                compact: true,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: HighlightCard(
+                                label: 'Manga',
+                                value: user.stats?.mangaStats?.mangaCount
+                                        ?.toString() ??
+                                    '0',
+                                icon: IconlyBold.document,
+                                color: context.theme.colorScheme.secondary,
+                                onTap: () {
+                                  final userId =
+                                      int.tryParse(user.id ?? '') ?? 0;
+                                  navigate(
+                                    () => UserMediaListPage(
+                                      userId: userId,
+                                      type: 'MANGA',
+                                      userName: user.name ?? 'User',
+                                      favourites: user.favourites?.manga,
+                                      sectionOrder: user.mangaSectionOrder,
+                                    ),
+                                  );
+                                },
+                                compact: true,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ..._buildTabSlivers(context, user),
+        ],
+      );
+
+      return NotificationListener<ScrollNotification>(
+        onNotification: (scrollInfo) {
+          if (scrollInfo is ScrollUpdateNotification &&
+              _selectedTab == 1 &&
+              !_loadingMoreActivities &&
+              _hasMoreActivities &&
+              scrollInfo.metrics.pixels >=
+                  scrollInfo.metrics.maxScrollExtent - 200) {
+            _loadMoreActivities();
+          } else if (scrollInfo is ScrollUpdateNotification &&
+              _selectedTab == 3 &&
+              (_socialTabKey.currentState?.shouldLoadMore ?? false) &&
+              scrollInfo.metrics.pixels >=
+                  scrollInfo.metrics.maxScrollExtent - 200) {
+            _socialTabKey.currentState?.loadMore();
+          }
+          return false;
+        },
+        child: NestedScrollView(
+          headerSliverBuilder: (context, innerBoxIsScrolled) {
+            return [
+              if (!isDesktop)
+                MobileProfileHeaderSliver(
+                  avatarUrl: user.avatar ?? '',
+                  bannerUrl: user.cover,
+                  user: user,
+                  bannerAnim: _bannerAnim,
+                  bannerController: _bannerController,
+                ),
+            ];
+          },
+          body: _selectedTab == 1
+              ? RefreshIndicator(
+                  onRefresh: () => _refreshActivityTab(showMessage: false),
+                  child: tabScrollView,
+                )
+              : tabScrollView,
+        ),
+      );
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final handler = Get.find<ServiceHandler>();
-    final profileData = handler.profileData;
+    final bool isDesktop = getResponsiveValue(
+      context,
+      mobileValue: false,
+      desktopValue: true,
+    );
 
     return Glow(
       child: Scaffold(
         backgroundColor: context.theme.colorScheme.surface,
-        body: Obx(() {
-          final user = profileData.value;
-          final bannerUrl = user.avatar ?? '';
+        extendBody: false,
+        bottomNavigationBar: isDesktop
+            ? null
+            : ResponsiveNavBar(
+                isDesktop: false,
+                height: 64,
+                currentIndex: _selectedTab,
+                margin: EdgeInsets.zero,
+                borderRadius: BorderRadius.zero,
+                backgroundColor: context.theme.colorScheme.surface,
+                items: _profileNavItems,
+              ),
+        body: _ready
+            ? _buildBody(context, isDesktop)
+            : const Center(child: CircularProgressIndicator()),
+      ),
+    );
+  }
 
-          return CustomScrollView(
-            physics: const BouncingScrollPhysics(),
-            slivers: [
-              _buildSliverAppBar(context, bannerUrl, user.cover,
-                  user.name ?? 'Guest', _bannerAnim),
-              SliverToBoxAdapter(
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 900),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const SizedBox(height: 60),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: _buildAvatarAndName(
-                              context, user.avatar ?? '', user.name ?? 'Guest'),
-                        ),
-                        const SizedBox(height: 24),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: _buildHighlightCard(
-                                  context,
-                                  'Anime',
-                                  user.stats?.animeStats?.animeCount
-                                          ?.toString() ??
-                                      '0',
-                                  IconlyBold.video,
-                                  context.theme.colorScheme.primary,
-                                  () => navigate(
-                                      () => const AnimeList(initialTab: 'ALL')),
-                                ),
-                              ),
-                              const SizedBox(width: 15),
-                              Expanded(
-                                child: _buildHighlightCard(
-                                  context,
-                                  'Manga',
-                                  user.stats?.mangaStats?.mangaCount
-                                          ?.toString() ??
-                                      '0',
-                                  IconlyBold.document,
-                                  context.theme.colorScheme.secondary,
-                                  () => navigate(() => const AnilistMangaList(
-                                      initialTab: 'ALL')),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: _buildSectionHeader(
-                              context, "Statistics", IconlyLight.chart),
-                        ),
-                        const SizedBox(height: 10),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color:
-                                  context.theme.colorScheme.surfaceContainerLow,
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: context.theme.colorScheme.outlineVariant
-                                    .withOpacity(0.3),
-                              ),
-                            ),
-                            padding: const EdgeInsets.all(20),
-                            child: Column(
-                              children: [
-                                _buildStatRow(
-                                    context,
-                                    "Episodes Watched",
-                                    user.stats?.animeStats?.episodesWatched
-                                            ?.toString() ??
-                                        '0',
-                                    IconlyLight.play),
-                                const Divider(height: 24, thickness: 0.5),
-                                _buildStatRow(
-                                    context,
-                                    "Minutes Watched",
-                                    user.stats?.animeStats?.minutesWatched
-                                            ?.toString() ??
-                                        '0',
-                                    IconlyLight.time_circle),
-                                const Divider(height: 24, thickness: 0.5),
-                                _buildStatRow(
-                                    context,
-                                    "Chapters Read",
-                                    user.stats?.mangaStats?.chaptersRead
-                                            ?.toString() ??
-                                        '0',
-                                    IconlyLight.paper),
-                                const Divider(height: 24, thickness: 0.5),
-                                _buildStatRow(
-                                    context,
-                                    "Volumes Read",
-                                    user.stats?.mangaStats?.volumesRead
-                                            ?.toString() ??
-                                        '0',
-                                    IconlyLight.bookmark),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                  child: _buildScoreCard(
-                                      context,
-                                      "Anime Score",
-                                      user.stats?.animeStats?.meanScore
-                                              ?.toString() ??
-                                          '0')),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                  child: _buildScoreCard(
-                                      context,
-                                      "Manga Score",
-                                      user.stats?.mangaStats?.meanScore
-                                              ?.toString() ??
-                                          '0')),
-                            ],
-                          ),
-                        ),
-                        if (user.about != null &&
-                            user.about!.trim().isNotEmpty) ...[
-                          const SizedBox(height: 20),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 20.0),
-                            child: _buildSectionHeader(
-                                context, "About", IconlyLight.profile),
-                          ),
-                          const SizedBox(height: 10),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 20.0),
-                            child: Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                color: context
-                                    .theme.colorScheme.surfaceContainerLow,
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                  color: context
-                                      .theme.colorScheme.outlineVariant
-                                      .withOpacity(0.3),
-                                ),
-                              ),
-                              child: AnilistAboutMe(about: user.about!),
-                            ),
-                          ),
-                        ],
-                        if (user.favourites?.anime.isNotEmpty ?? false) ...[
-                          const SizedBox(height: 20),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 20.0),
-                            child: _buildSectionHeader(
-                                context, "Favourite Anime", IconlyBold.video),
-                          ),
-                          const SizedBox(height: 10),
-                          _buildMediaFavCarousel(
-                              context, user.favourites!.anime, true),
-                        ],
-                        if (user.favourites?.manga.isNotEmpty ?? false) ...[
-                          const SizedBox(height: 10),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 20.0),
-                            child: _buildSectionHeader(context,
-                                "Favourite Manga", IconlyBold.document),
-                          ),
-                          const SizedBox(height: 10),
-                          _buildMediaFavCarousel(
-                              context, user.favourites!.manga, false),
-                        ],
-                        if (user.favourites?.characters.isNotEmpty ??
-                            false) ...[
-                          const SizedBox(height: 10),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 20.0),
-                            child: _buildSectionHeader(context,
-                                "Favourite Characters", IconlyBold.profile),
-                          ),
-                          const SizedBox(height: 10),
-                          _buildPersonCarousel(
-                              context,
-                              user.favourites!.characters
-                                  .map((c) => _PersonItem(
-                                      id: c.id, name: c.name, image: c.image))
-                                  .toList(),
-                              true),
-                        ],
-                        if (user.favourites?.staff.isNotEmpty ?? false) ...[
-                          const SizedBox(height: 10),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 20.0),
-                            child: _buildSectionHeader(context,
-                                "Favourite Staff", Icons.people_rounded),
-                          ),
-                          const SizedBox(height: 10),
-                          _buildPersonCarousel(
-                              context,
-                              user.favourites!.staff
-                                  .map((s) => _PersonItem(
-                                      id: s.id, name: s.name, image: s.image))
-                                  .toList(),
-                              false),
-                        ],
-                        if (user.favourites?.studios.isNotEmpty ?? false) ...[
-                          const SizedBox(height: 10),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 20.0),
-                            child: _buildSectionHeader(context,
-                                "Favourite Studios", Icons.business_rounded),
-                          ),
-                          const SizedBox(height: 10),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 20.0),
-                            child: Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              children: user.favourites!.studios
-                                  .map(
-                                    (studio) => Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 14, vertical: 8),
-                                      decoration: BoxDecoration(
-                                        color: context
-                                            .theme.colorScheme.surfaceContainer,
-                                        borderRadius: BorderRadius.circular(20),
-                                        border: Border.all(
-                                          color: context
-                                              .theme.colorScheme.outlineVariant
-                                              .withOpacity(0.3),
-                                        ),
-                                      ),
-                                      child: Text(
-                                        studio.name ?? '',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600,
-                                          color: context
-                                              .theme.colorScheme.onSurface,
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                  .toList(),
-                            ),
-                          ),
-                        ],
-                        const SizedBox(height: 50),
-                      ],
+  void _showCreateActivitySheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: context.theme.colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+            left: 16,
+            right: 16,
+            top: 20,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Create Status",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: context.theme.colorScheme.onSurface,
                     ),
                   ),
-                ),
-              ),
-            ],
-          );
-        }),
-      ),
-    );
-  }
-
-  Widget _buildSliverAppBar(BuildContext context, String avatarUrl,
-      String? bannerUrl, String name, Animation<Alignment> bannerAnim) {
-    final hasBanner = bannerUrl != null && bannerUrl.trim().isNotEmpty;
-    final imageUrl = hasBanner ? bannerUrl : avatarUrl;
-
-    final screenHeight = MediaQuery.of(context).size.height;
-    final bannerHeight = (screenHeight * 0.35).clamp(220.0, 400.0);
-
-    return SliverAppBar(
-      expandedHeight: bannerHeight,
-      floating: false,
-      pinned: true,
-      backgroundColor: context.theme.colorScheme.surface,
-      leading: Container(
-        margin: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: context.theme.colorScheme.surface.withOpacity(0.5),
-          shape: BoxShape.circle,
-        ),
-        child: IconButton(
-          icon: const Icon(IconlyLight.arrow_left),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      flexibleSpace: FlexibleSpaceBar(
-        collapseMode: CollapseMode.parallax,
-        background: Stack(
-          fit: StackFit.expand,
-          children: [
-            AnimatedBuilder(
-              animation: bannerAnim,
-              builder: (context, child) {
-                return SizedBox(
-                  width: double.infinity,
-                  height: double.infinity,
-                  child: AnymeXImage(
-                    imageUrl: imageUrl,
-                    fit: BoxFit.cover,
-                    alignment: hasBanner ? bannerAnim.value : Alignment.center,
-                    radius: 0,
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
                   ),
-                );
-              },
-            ),
-            if (!hasBanner)
-              BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-                child: Container(
-                    color: context.theme.colorScheme.surface.withOpacity(0.2)),
+                ],
               ),
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    context.theme.colorScheme.surface.withOpacity(0.8),
-                    context.theme.colorScheme.surface,
-                  ],
-                  stops: const [0.0, 0.8, 1.0],
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.only(
+                  left: 12,
+                  right: 12,
+                  top: 8,
+                  bottom: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: context.theme.colorScheme.surfaceContainer,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: ActivityComposerSheet(
+                  isModal: true,
+                  hintText: "What's on your mind?",
+                  onSubmit: (text, {isPrivate = false}) async {
+                    final anilistAuth = Get.find<AnilistAuth>();
+                    try {
+                      await anilistAuth.createActivity(text);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Status posted successfully!'),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                        _fetchActivities(); // refresh listt
+                      }
+                      return true;
+                    } catch (e) {
+                      if (context.mounted) {
+                        String errorMessage = 'Failed to post status.';
+                        final errStr = e.toString();
+                        if (errStr.contains('validation')) {
+                          errorMessage =
+                              'Failed: ${errStr.split('"text":[').last.split(']').first.replaceAll('"', '')}';
+                        }
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(errorMessage),
+                            backgroundColor: context.theme.colorScheme.error,
+                          ),
+                        );
+                      }
+                      return false;
+                    }
+                  },
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 20),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  List<Widget> _buildTabSlivers(BuildContext context, Profile user) {
+    Widget content;
+    switch (_selectedTab) {
+      case 0:
+        content = _buildOverviewTab(context, user);
+        break;
+      case 2:
+        content = ProfileStatsTab(user: user);
+        break;
+      case 3:
+        content = SocialTab(
+          key: _socialTabKey,
+          userId: int.tryParse(
+                  Get.find<ServiceHandler>().profileData.value.id?.toString() ??
+                      '0') ??
+              0,
+          onCountsFetched: (followingCount, followersCount) {
+            final profile = Get.find<ServiceHandler>().profileData.value;
+            profile.following = followingCount;
+            profile.followers = followersCount;
+          },
+        );
+        break;
+      case 1:
+        return _buildActivitySlivers(context);
+      default:
+        content = _buildOverviewTab(context, user);
+    }
+    final isDesktop = getResponsiveValue(
+      context,
+      mobileValue: false,
+      desktopValue: true,
+    );
+    final maxW = (isDesktop && _selectedTab == 0) ? 1400.0 : 900.0;
+    return [
+      SliverToBoxAdapter(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: maxW),
+            child: content,
+          ),
         ),
       ),
-    );
+    ];
   }
 
-  Widget _buildAvatarAndName(
-      BuildContext context, String avatarUrl, String name) {
-    final handler = Get.find<ServiceHandler>();
-    final expiry = handler.profileData.value.tokenExpiry;
-    String expiryText = '';
-    if (expiry != null) {
-      final days = expiry.difference(DateTime.now()).inDays;
-      if (days < 0) {
-        expiryText = 'Token expired. Please reconnect.';
-      } else if (days < 30) {
-        expiryText = 'Reconnect in $days day(s)';
-      } else {
-        final months = (days / 30).floor();
-        expiryText = 'Reconnect in $months month(s)';
-      }
+  List<Widget> _buildActivitySlivers(BuildContext context) {
+    if (_activitiesLoading) {
+      return [
+        const SliverToBoxAdapter(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 40),
+            child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+          ),
+        ),
+      ];
     }
-    return Transform.translate(
-      offset: const Offset(0, -50),
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: context.theme.colorScheme.surface,
-              boxShadow: [
-                BoxShadow(
-                  color: context.theme.colorScheme.shadow.withOpacity(0.1),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
-                )
-              ],
-            ),
-            child: CircleAvatar(
-              radius: 60,
-              backgroundColor: context.theme.colorScheme.surfaceContainer,
-              backgroundImage: CachedNetworkImageProvider(avatarUrl),
-            ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            name,
-            style: TextStyle(
-              fontSize: 26,
-              fontFamily: 'Poppins-Bold',
-              fontWeight: FontWeight.w700,
-              color: context.theme.colorScheme.onSurface,
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.only(top: 5),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            decoration: BoxDecoration(
-              color:
-                  context.theme.colorScheme.primaryContainer.withOpacity(0.4),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              'Anilist Member',
-              style: TextStyle(
-                  fontSize: 12,
-                  color: context.theme.colorScheme.primary,
-                  fontWeight: FontWeight.w600),
-            ),
-          ),
-          if (expiryText.isNotEmpty) ...[
-            const SizedBox(height: 4),
-            Text(
-              expiryText,
-              style: TextStyle(
-                fontSize: 11,
-                color:
-                    context.theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
-                fontStyle: FontStyle.italic,
-              ),
-            ),
-          ]
-        ],
-      ),
-    );
-  }
 
-  Widget _buildHighlightCard(BuildContext context, String label, String value,
-      IconData icon, Color color,
-      [VoidCallback? onTap]) {
-    return _PressableHighlightCard(
-      label: label,
-      value: value,
-      icon: icon,
-      color: color,
-      onTap: onTap,
-    );
-  }
-
-  Widget _buildScoreCard(BuildContext context, String label, String value) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: context.theme.colorScheme.secondaryContainer.withOpacity(0.3),
-        borderRadius: BorderRadius.circular(16),
-      ),
+    // Header + filter button
+    final header = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Expanded(
-            child: Text(
-              label,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: context.theme.colorScheme.onSurfaceVariant,
+          const SectionHeader(
+              title: "Recent Activity", icon: Icons.forum_outlined),
+          Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.add),
+                onPressed: () => _showCreateActivitySheet(context),
+                tooltip: "Create Activity",
+                style: IconButton.styleFrom(
+                  backgroundColor: context.theme.colorScheme.primaryContainer,
+                  foregroundColor: context.theme.colorScheme.primary,
+                ),
               ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            '$value%',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: context.theme.colorScheme.primary,
-            ),
+              const SizedBox(width: 8),
+              IconButton(
+                icon: const Icon(IconlyLight.filter),
+                onPressed: () => _showFilterSheet(context),
+                tooltip: "Filter Activities",
+              ),
+            ],
           ),
         ],
       ),
     );
-  }
 
-  Widget _buildSectionHeader(
-      BuildContext context, String title, IconData icon) {
-    return Row(
-      children: [
-        Icon(icon, size: 18, color: context.theme.colorScheme.primary),
-        const SizedBox(width: 8),
-        Text(title,
-            style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Poppins-SemiBold',
-                color: context.theme.colorScheme.onSurface)),
-      ],
-    );
-  }
-
-  Widget _buildStatRow(
-      BuildContext context, String label, String value, IconData icon) {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-              color: context.theme.colorScheme.surface,
-              borderRadius: BorderRadius.circular(8)),
-          child: Icon(icon,
-              size: 16, color: context.theme.colorScheme.onSurfaceVariant),
-        ),
-        const SizedBox(width: 15),
-        Expanded(
-          child: Text(label,
-              style: TextStyle(
-                  fontSize: 14,
-                  color: context.theme.colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w500)),
-        ),
-        Text(value,
-            style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                color: context.theme.colorScheme.onSurface)),
-      ],
-    );
-  }
-
-  Widget _buildMediaFavCarousel(
-      BuildContext context, List<FavouriteMedia> items, bool isAnime) {
-    return SizedBox(
-      height: 190,
-      child: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        scrollDirection: Axis.horizontal,
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          final item = items[index];
-          return _buildMediaCard(context, item, isAnime);
-        },
-      ),
-    );
-  }
-
-  Widget _buildMediaCard(
-      BuildContext context, FavouriteMedia item, bool isAnime) {
-    return GestureDetector(
-      onTap: () {
-        if (item.id != null) {
-          final media = Media(
-            id: item.id!,
-            title: item.title ?? '?',
-            poster: item.cover ?? '',
-            serviceType: ServicesType.anilist,
-          );
-          final tag = item.title ?? 'fav-${item.id}';
-          if (isAnime) {
-            navigate(() => AnimeDetailsPage(media: media, tag: tag));
-          } else {
-            navigate(() => MangaDetailsPage(media: media, tag: tag));
-          }
-        }
-      },
-      child: Container(
-        width: 112,
-        margin: const EdgeInsets.only(right: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Hero(
-              tag: item.title ?? 'fav-${item.id}',
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: item.cover != null
-                    ? CachedNetworkImage(
-                        imageUrl: item.cover!,
-                        width: 112,
-                        height: 150,
-                        fit: BoxFit.cover,
-                        errorWidget: (_, __, ___) => Container(
-                            width: 112,
-                            height: 150,
-                            color: context.theme.colorScheme.surfaceContainer))
-                    : Container(
-                        width: 112,
-                        height: 150,
-                        color: context.theme.colorScheme.surfaceContainer),
-              ),
-            ),
-            const SizedBox(height: 5),
-            Text(item.title ?? '',
-                style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
-                    color: context.theme.colorScheme.onSurface),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPersonCarousel(
-      BuildContext context, List<_PersonItem> items, bool isCharacter) {
-    return SizedBox(
-      height: 128,
-      child: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        scrollDirection: Axis.horizontal,
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          final item = items[index];
-          return _buildPersonCard(
-              context, item.id, item.image, item.name, isCharacter);
-        },
-      ),
-    );
-  }
-
-  Widget _buildPersonCard(BuildContext context, String? id, String? imageUrl,
-      String? name, bool isCharacter) {
-    return Container(
-      width: 78,
-      margin: const EdgeInsets.only(right: 10),
-      child: GestureDetector(
-        onTap: () {
-          if (id != null) {
-            showCharacterStaffSheet(context,
-                item: _PersonItem(id: id, name: name, image: imageUrl),
-                isCharacter: isCharacter);
-          }
-        },
-        child: Column(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(50),
-              child: imageUrl != null
-                  ? CachedNetworkImage(
-                      imageUrl: imageUrl,
-                      width: 70,
-                      height: 70,
-                      fit: BoxFit.cover,
-                      errorWidget: (_, __, ___) => Container(
-                          width: 70,
-                          height: 70,
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color:
-                                  context.theme.colorScheme.surfaceContainer)))
-                  : Container(
-                      width: 70,
-                      height: 70,
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: context.theme.colorScheme.surfaceContainer)),
-            ),
-            const SizedBox(height: 6),
-            Text(name ?? '',
-                style: TextStyle(
-                    fontSize: 10.5,
-                    fontWeight: FontWeight.w500,
-                    color: context.theme.colorScheme.onSurface),
-                maxLines: 2,
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _PersonItem {
-  final String? id;
-  final String? name;
-  final String? image;
-  const _PersonItem({this.id, this.name, this.image});
-}
-
-class _PressableHighlightCard extends StatefulWidget {
-  final String label;
-  final String value;
-  final IconData icon;
-  final Color color;
-  final VoidCallback? onTap;
-
-  const _PressableHighlightCard({
-    required this.label,
-    required this.value,
-    required this.icon,
-    required this.color,
-    this.onTap,
-  });
-
-  @override
-  State<_PressableHighlightCard> createState() =>
-      _PressableHighlightCardState();
-}
-
-class _PressableHighlightCardState extends State<_PressableHighlightCard> {
-  bool _isPressed = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return AnimatedScale(
-      scale: _isPressed ? 0.98 : 1,
-      duration: const Duration(milliseconds: 110),
-      curve: Curves.easeOut,
-      child: AnimatedOpacity(
-        opacity: _isPressed ? 0.92 : 1,
-        duration: const Duration(milliseconds: 110),
-        curve: Curves.easeOut,
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: widget.onTap,
-            onHighlightChanged: (pressed) {
-              if (_isPressed != pressed) {
-                setState(() => _isPressed = pressed);
-              }
-            },
-            borderRadius: BorderRadius.circular(20),
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
-              decoration: BoxDecoration(
-                  color: colors.surfaceContainer,
-                  borderRadius: BorderRadius.circular(20)),
+    if (_activities.isEmpty) {
+      return [
+        SliverToBoxAdapter(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 900),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(widget.icon, color: widget.color, size: 28),
-                  const SizedBox(height: 10),
-                  Text(widget.value,
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: colors.onSurface)),
-                  Text(widget.label,
-                      style: TextStyle(
-                          fontSize: 12, color: colors.onSurfaceVariant)),
+                  const SizedBox(height: 12),
+                  header,
+                  const PlaceholderTab(
+                    title: 'Activity',
+                    subtitle: 'No recent activity found for selected filters',
+                    icon: IconlyLight.activity,
+                  ),
                 ],
               ),
             ),
           ),
         ),
+      ];
+    }
+
+    final slivers = <Widget>[
+      SliverToBoxAdapter(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 900),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 12),
+                header,
+                const SizedBox(height: 10),
+              ],
+            ),
+          ),
+        ),
       ),
+      SliverList(
+        delegate: SliverChildBuilderDelegate((context, index) {
+          final activity = _activities[index];
+          return Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 900),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 2.0),
+                child: ActivityCard(
+                  activity: activity,
+                  onTap: () {
+                    if (activity.type == 'ANIME_LIST') {
+                      final media = Media(
+                        id: activity.mediaId!.toString(),
+                        title: activity.mediaTitle ?? '',
+                        poster: activity.mediaCoverUrl ?? '',
+                        serviceType: ServicesType.anilist,
+                      );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => AnimeDetailsPage(
+                            media: media,
+                            tag: 'activity-${activity.id}',
+                          ),
+                        ),
+                      );
+                    } else if (activity.type == 'MANGA_LIST') {
+                      final media = Media(
+                        id: activity.mediaId!.toString(),
+                        title: activity.mediaTitle ?? '',
+                        poster: activity.mediaCoverUrl ?? '',
+                        serviceType: ServicesType.anilist,
+                      );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => MangaDetailsPage(
+                            media: media,
+                            tag: 'activity-${activity.id}',
+                          ),
+                        ),
+                      );
+                    } else {
+                      showActivityDetailsSheet(context, activity);
+                    }
+                  },
+                  onReplyTap: () {
+                    showActivityDetailsSheet(context, activity);
+                  },
+                ),
+              ),
+            ),
+          );
+        }, childCount: _activities.length),
+      ),
+    ];
+
+    if (_loadingMoreActivities ||
+        (!_hasMoreActivities && _activities.isNotEmpty)) {
+      slivers.add(
+        SliverToBoxAdapter(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 900),
+              child: Column(
+                children: [
+                  const SizedBox(height: 10),
+                  if (_loadingMoreActivities)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Center(
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    ),
+                  if (!_hasMoreActivities && _activities.isNotEmpty)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Center(
+                        child: Text(
+                          'No more activities',
+                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                        ),
+                      ),
+                    ),
+                  const SizedBox(height: 40),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    } else {
+      slivers.add(const SliverToBoxAdapter(child: SizedBox(height: 40)));
+    }
+
+    return slivers;
+  }
+
+  void _showFilterSheet(BuildContext context) {
+    showActivityFilterSheet(
+      context,
+      activityFilters: _activityFilters,
+      onApply: () => _fetchActivities(),
+    );
+  }
+
+  Widget _buildOverviewTab(BuildContext context, Profile user) {
+    final isDesktop = getResponsiveValue(
+      context,
+      mobileValue: false,
+      desktopValue: true,
+    );
+
+    final hasAbout = (user.about != null && user.about!.trim().isNotEmpty) ||
+        (user.aboutMarkdown != null && user.aboutMarkdown!.trim().isNotEmpty);
+
+    Widget buildAboutSection({bool needsPadding = true}) {
+      if (!hasAbout) return const SizedBox.shrink();
+      final aboutText = (user.about?.trim().isNotEmpty ?? false)
+          ? user.about!
+          : (user.aboutMarkdown ?? '');
+      return AboutSection(
+        aboutText: aboutText,
+        needsPadding: needsPadding,
+        isDesktop: isDesktop,
+        isExpanded: _isAboutExpanded,
+        onToggle: () => setState(() => _isAboutExpanded = !_isAboutExpanded),
+      );
+    }
+
+    final hasActivity =
+        user.activityHistory != null && user.activityHistory!.isNotEmpty;
+
+    Widget buildListStatusCard(
+      BuildContext context, {
+      required String title,
+      required List<TypeStat> statuses,
+      required int userId,
+      required String userName,
+      required bool isAnime,
+    }) {
+      return ListStatusCard(
+        title: title,
+        statuses: statuses,
+        userId: userId,
+        userName: userName,
+        isAnime: isAnime,
+      );
+    }
+
+    Widget buildActivitySection({bool needsPadding = true}) {
+      if (!hasActivity) return const SizedBox.shrink();
+
+      final auth = Get.find<AnilistAuth>();
+      final animeStatuses =
+          ['CURRENT', 'COMPLETED', 'PAUSED', 'DROPPED', 'PLANNING'].map((
+        status,
+      ) {
+        return TypeStat(
+          type: status,
+          count: auth.animeList
+              .where((e) => e.watchingStatus?.toUpperCase() == status)
+              .length,
+          meanScore: 0,
+          amount: 0,
+        );
+      }).toList();
+
+      final mangaStatuses =
+          ['CURRENT', 'COMPLETED', 'PAUSED', 'DROPPED', 'PLANNING'].map((
+        status,
+      ) {
+        return TypeStat(
+          type: status,
+          count: auth.mangaList
+              .where((e) => e.watchingStatus?.toUpperCase() == status)
+              .length,
+          meanScore: 0,
+          amount: 0,
+        );
+      }).toList();
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 20),
+          Padding(
+            padding: needsPadding
+                ? const EdgeInsets.symmetric(horizontal: 20.0)
+                : EdgeInsets.zero,
+            child: const SectionHeader(
+              title: 'Activity',
+              icon: IconlyLight.activity,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Padding(
+            padding: needsPadding
+                ? const EdgeInsets.symmetric(horizontal: 20.0)
+                : EdgeInsets.zero,
+            child: ActivityHeatmap(history: user.activityHistory!),
+          ),
+          if (animeStatuses.isNotEmpty) ...[
+            const SizedBox(height: 20),
+            Padding(
+              padding: needsPadding
+                  ? EdgeInsets.symmetric(horizontal: isDesktop ? 20.0 : 26.0)
+                  : EdgeInsets.zero,
+              child: buildListStatusCard(
+                context,
+                title: "ANIME LIST",
+                statuses: animeStatuses,
+                userId: int.tryParse(user.id?.toString() ?? '0') ?? 0,
+                userName: user.name ?? "User",
+                isAnime: true,
+              ),
+            ),
+          ],
+          if (mangaStatuses.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Padding(
+              padding: needsPadding
+                  ? EdgeInsets.symmetric(horizontal: isDesktop ? 20.0 : 26.0)
+                  : EdgeInsets.zero,
+              child: buildListStatusCard(
+                context,
+                title: "MANGA LIST",
+                statuses: mangaStatuses,
+                userId: int.tryParse(user.id?.toString() ?? '0') ?? 0,
+                userName: user.name ?? "User",
+                isAnime: false,
+              ),
+            ),
+          ],
+        ],
+      );
+    }
+
+    Widget buildFavouritesSection({bool needsPadding = true}) {
+      return FavoritesSection(user: user, needsPadding: needsPadding);
+    }
+
+    if (isDesktop) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Left column: About
+            Expanded(flex: 6, child: buildAboutSection(needsPadding: false)),
+            const SizedBox(width: 20),
+            // Right column: Activity + Favourites
+            Expanded(
+              flex: 4,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  buildActivitySection(needsPadding: false),
+                  buildFavouritesSection(needsPadding: false),
+                  const SizedBox(height: 50),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Mobile stats ui
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20.0),
+          child: SectionHeader(title: "Stats", icon: IconlyLight.chart),
+        ),
+        const SizedBox(height: 8),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: context.theme.colorScheme.surfaceContainerLow,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: context.theme.colorScheme.outlineVariant.withOpacity(
+                  0.3,
+                ),
+              ),
+            ),
+            padding: const EdgeInsets.all(14),
+            child: Column(
+              children: [
+                StatRow(
+                  label: "Episodes Watched",
+                  value: user.stats?.animeStats?.episodesWatched?.toString() ??
+                      '0',
+                  icon: IconlyLight.play,
+                  compact: true,
+                ),
+                const Divider(height: 16, thickness: 0.4),
+                StatRow(
+                  label: "Minutes Watched",
+                  value:
+                      user.stats?.animeStats?.minutesWatched?.toString() ?? '0',
+                  icon: IconlyLight.time_circle,
+                  compact: true,
+                ),
+                const Divider(height: 16, thickness: 0.4),
+                StatRow(
+                  label: "Chapters Read",
+                  value:
+                      user.stats?.mangaStats?.chaptersRead?.toString() ?? '0',
+                  icon: IconlyLight.paper,
+                  compact: true,
+                ),
+                const Divider(height: 16, thickness: 0.4),
+                StatRow(
+                  label: "Volumes Read",
+                  value: user.stats?.mangaStats?.volumesRead?.toString() ?? '0',
+                  icon: IconlyLight.bookmark,
+                  compact: true,
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: ScoreCard(
+                  label: "Anime Score",
+                  value: user.stats?.animeStats?.meanScore?.toString() ?? '0',
+                  compact: true,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: ScoreCard(
+                  label: "Manga Score",
+                  value: user.stats?.mangaStats?.meanScore?.toString() ?? '0',
+                  compact: true,
+                ),
+              ),
+            ],
+          ),
+        ),
+        buildActivitySection(),
+        buildAboutSection(),
+        buildFavouritesSection(),
+        const SizedBox(height: 50),
+      ],
+    );
+  }
+
+
+
+
+  Widget _buildDesktopTabs(BuildContext context) {
+    return ProfileDesktopTabs(
+      labels: _profileNavItems.map((e) => e.label).toList(),
+      selectedIndex: _selectedTab,
+      onTabSelected: (i) => setState(() => _selectedTab = i),
     );
   }
 }
