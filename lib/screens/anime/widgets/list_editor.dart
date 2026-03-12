@@ -56,7 +56,6 @@ class _ListEditorModalState extends State<ListEditorModal> {
     _localScore = widget.animeScore.value;
     _localProgress = widget.animeProgress.value;
 
-    // Pre-fill dates from existing tracked data if available
     final tracked = widget.currentAnime.value;
     if (tracked != null) {
       _startedAt = tracked.startedAt;
@@ -81,7 +80,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final double gap = 12.0;
+        const double gap = 12.0;
         final bool isWide = constraints.maxWidth >= 520;
         final double cardWidth =
             isWide ? (constraints.maxWidth - gap) / 2 : constraints.maxWidth;
@@ -235,7 +234,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
               }
               if (_localStatus == 'COMPLETED' && _completedAt == null) {
                 _completedAt = DateTime.now();
-                if (_startedAt == null) _startedAt = DateTime.now();
+                _startedAt ??= DateTime.now();
               }
               if (prev == 'COMPLETED' && _localStatus != 'COMPLETED') {
                 _completedAt = null;
@@ -398,19 +397,26 @@ class _ListEditorModalState extends State<ListEditorModal> {
                       ),
                     ),
                     onChanged: (String value) {
-                      final int? newProgress = int.tryParse(value);
+                      final int? parsed = int.tryParse(value);
 
-                      if (newProgress == null || newProgress < 0) {
+                      if (parsed == null || parsed < 0) {
                         return;
                       }
 
+                      final int clamped = hasKnownLimit && parsed > maxTotal
+                          ? maxTotal
+                          : parsed;
+
+                      if (clamped != parsed) {
+                        _progressController.text = clamped.toString();
+                        _progressController.selection =
+                            TextSelection.fromPosition(
+                          TextPosition(offset: _progressController.text.length),
+                        );
+                      }
+
                       setState(() {
-                        if (hasKnownLimit) {
-                          _localProgress =
-                              newProgress <= maxTotal ? newProgress : maxTotal;
-                        } else {
-                          _localProgress = newProgress;
-                        }
+                        _localProgress = clamped;
                       });
                     },
                     onEditingComplete: () {
@@ -430,7 +436,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
             ClipRRect(
               borderRadius: BorderRadius.circular(4),
               child: LinearProgressIndicator(
-                value: (_localProgress / maxTotal!).clamp(0.0, 1.0),
+                value: (_localProgress / maxTotal).clamp(0.0, 1.0),
                 backgroundColor: colorScheme.surfaceContainerHighest,
                 valueColor: AlwaysStoppedAnimation<Color>(colorScheme.primary),
                 minHeight: 3,
@@ -819,6 +825,9 @@ class _ListEditorModalState extends State<ListEditorModal> {
       child: AnymexButton(
         borderRadius: BorderRadius.circular(14),
         onTap: () {
+          widget.animeStatus.value = _localStatus;
+          widget.animeScore.value = _localScore;
+          widget.animeProgress.value = _localProgress;
           Get.back();
           widget.onUpdate(
             widget.media.id,
@@ -957,10 +966,16 @@ class _ListEditorModalState extends State<ListEditorModal> {
   }
 
   String _getAdvancedSummary() {
-    final bool hasPrivate = widget.media.serviceType.isAL && _isPrivate;
-
     final List<String> parts = [];
-    if (hasPrivate) {
+
+    if (_startedAt != null || _completedAt != null) {
+      final List<String> dateParts = [];
+      if (_startedAt != null) dateParts.add('Start');
+      if (_completedAt != null) dateParts.add('Finish');
+      parts.add(dateParts.join(' & '));
+    }
+
+    if (widget.media.serviceType.isAL && _isPrivate) {
       parts.add('Private');
     }
 
@@ -994,12 +1009,13 @@ class _DeleteConfirmDialogState extends State<_DeleteConfirmDialog> {
     _secondsLeft = _waitSeconds;
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (!mounted) return;
+      if (_secondsLeft <= 0) {
+        timer.cancel();
+        return;
+      }
       setState(() {
         _secondsLeft--;
       });
-      if (_secondsLeft <= 0) {
-        timer.cancel();
-      }
     });
   }
 
