@@ -5,8 +5,8 @@ import 'package:anymex/models/Media/character.dart';
 import 'package:anymex/models/Media/staff.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/custom_widgets/fullscreen_image_viewer.dart';
 
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -14,7 +14,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
-
 
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:markdown/markdown.dart' as md;
@@ -25,38 +24,62 @@ import 'package:iconsax/iconsax.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
-void showCharacterStaffSheet(BuildContext context, {required dynamic item, bool isCharacter = true}) {
-  final theme = context.colors;
-  
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: theme.surface,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+void showCharacterStaffSheet(BuildContext context,
+    {required dynamic item, bool isCharacter = true, String? heroTag}) {
+  Navigator.of(context, rootNavigator: true).push(
+    PageRouteBuilder(
+      opaque: false,
+      barrierColor: Colors.black.withOpacity(0.5),
+      barrierDismissible: true,
+      transitionDuration: const Duration(milliseconds: 300),
+      reverseTransitionDuration: const Duration(milliseconds: 300),
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return GestureDetector(
+          onTap: () => Navigator.of(context).pop(),
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            resizeToAvoidBottomInset: false,
+            body: GestureDetector(
+              onTap: () {}, 
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: CharacterStaffSheetContent(
+                  item: item,
+                  isCharacter: isCharacter,
+                  heroTag: heroTag,
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        return SlideTransition(
+          position: Tween<Offset>(begin: const Offset(0, 1), end: Offset.zero)
+              .animate(CurvedAnimation(
+                  parent: animation, curve: Curves.easeOutCubic)),
+          child: child,
+        );
+      },
     ),
-    builder: (context) {
-      return CharacterStaffSheetContent(item: item, isCharacter: isCharacter);
-    },
   );
 }
 
 class CharacterStaffSheetContent extends StatefulWidget {
   final dynamic item;
   final bool isCharacter;
+  final String? heroTag;
 
-  const CharacterStaffSheetContent({
-    super.key, 
-    required this.item, 
-    this.isCharacter = true
-  });
+  const CharacterStaffSheetContent(
+      {super.key, required this.item, this.isCharacter = true, this.heroTag});
 
   @override
-  State<CharacterStaffSheetContent> createState() => _CharacterStaffSheetContentState();
+  State<CharacterStaffSheetContent> createState() =>
+      _CharacterStaffSheetContentState();
 }
 
-class _CharacterStaffSheetContentState extends State<CharacterStaffSheetContent> {
-  final _spoilerBuilder = SpoilerElementBuilder();
+class _CharacterStaffSheetContentState
+    extends State<CharacterStaffSheetContent> {
   late RxBool isFav;
   final RxBool showOnlyOnList = false.obs;
   final RxBool isExpanded = false.obs;
@@ -70,7 +93,6 @@ class _CharacterStaffSheetContentState extends State<CharacterStaffSheetContent>
    
     try {
       if (widget.item != null) {
-       
         dynamic item = widget.item;
         bool? initialFav;
         try {
@@ -87,8 +109,8 @@ class _CharacterStaffSheetContentState extends State<CharacterStaffSheetContent>
       isFav = false.obs;
     }
 
-    _detailsFuture = widget.isCharacter 
-        ? anilistData.getCharacterDetails(widget.item.id.toString()) 
+    _detailsFuture = widget.isCharacter
+        ? anilistData.getCharacterDetails(widget.item.id.toString())
         : anilistData.getStaffDetails(widget.item.id.toString());
     
    
@@ -99,7 +121,7 @@ class _CharacterStaffSheetContentState extends State<CharacterStaffSheetContent>
        
         bool initialFav = false;
         try {
-           initialFav = widget.item.isFavourite ?? false;
+          initialFav = widget.item.isFavourite ?? false;
         } catch (_) {}
 
        
@@ -115,7 +137,7 @@ class _CharacterStaffSheetContentState extends State<CharacterStaffSheetContent>
   @override
   Widget build(BuildContext context) {
     final theme = context.colors;
-    
+
     return DraggableScrollableSheet(
       initialChildSize: 0.7,
       maxChildSize: 0.95,
@@ -131,236 +153,289 @@ class _CharacterStaffSheetContentState extends State<CharacterStaffSheetContent>
             future: _detailsFuture,
             initialData: widget.item,
             builder: (context, snapshot) {
-            final dynamic fullItem = snapshot.data;
-            if (snapshot.connectionState == ConnectionState.done && fullItem == null) {
-               return const Center(child: Text("Failed to load details"));
-            }
-
-            final isLoading = snapshot.connectionState == ConnectionState.waiting;
-            
-            
-            String? initialDescription;
-            try {
-              initialDescription = (widget.item as dynamic).description;
-            } catch (_) {}
-            
-            String? description = initialDescription;
-            if (fullItem is Character || fullItem is Staff) {
-               description = (fullItem as dynamic).description ?? initialDescription;
-            }
-            
-         
-            List<Media> initialMedia = [];
-             try {
-              initialMedia = (widget.item as dynamic).media ?? [];
-            } catch (_) {}
-
-            List<Media> mediaList = initialMedia;
-            if (fullItem is Character || fullItem is Staff) {
-              final val = (fullItem as dynamic).media;
-              if (val != null) mediaList = val;
-            }
-            
-            final List<VoiceActor> voiceActors = (fullItem is Character) ? fullItem.voiceActors : [];
-            final List<Character> rawVoicedCharacters = (!widget.isCharacter && fullItem is Staff && fullItem.characters != null) 
-                ? fullItem.characters! 
-                : [];
-            
-
-            final Set<String> seenCharacterIds = {};
-            final List<Character> voicedCharacters = [];
-            for (var char in rawVoicedCharacters) {
-              if (char.id != null && !seenCharacterIds.contains(char.id)) {
-                seenCharacterIds.add(char.id!);
-                voicedCharacters.add(char);
+              final dynamic fullItem = snapshot.data;
+              if (snapshot.connectionState == ConnectionState.done &&
+                  fullItem == null) {
+                return const Center(child: Text("Failed to load details"));
               }
-            }
-            
-            String sanitizedDesc = (description ?? 'No information available.')
-                .replaceAll('<br>', '\n')
-                .replaceAll('<br/>', '\n')
-                .replaceAll('<i>', '*')
-                .replaceAll('</i>', '*')
-                .replaceAll('<b>', '**')
-                .replaceAll('</b>', '**');
-            
-            sanitizedDesc = sanitizedDesc.replaceAll('\n', '\n\n');
 
-            final fullDescription = sanitizedDesc;
+              final isLoading =
+                  snapshot.connectionState == ConnectionState.waiting;
 
-            return SingleChildScrollView(
-              controller: scrollController,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 10),
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: theme.onSurface.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(2),
+              String? initialDescription;
+              try {
+                initialDescription = (widget.item as dynamic).description;
+              } catch (_) {}
+
+              String? description = initialDescription;
+              if (fullItem is Character || fullItem is Staff) {
+                description =
+                    (fullItem as dynamic).description ?? initialDescription;
+              }
+
+              List<Media> initialMedia = [];
+              try {
+                initialMedia = (widget.item as dynamic).media ?? [];
+              } catch (_) {}
+
+              List<Media> mediaList = initialMedia;
+              if (fullItem is Character || fullItem is Staff) {
+                final val = (fullItem as dynamic).media;
+                if (val != null) mediaList = val;
+              }
+
+              final List<VoiceActor> voiceActors =
+                  (fullItem is Character) ? fullItem.voiceActors : [];
+              final List<Character> rawVoicedCharacters =
+                  (!widget.isCharacter &&
+                          fullItem is Staff &&
+                          fullItem.characters != null)
+                      ? fullItem.characters!
+                      : [];
+
+              final Set<String> seenCharacterIds = {};
+              final List<Character> voicedCharacters = [];
+              for (var char in rawVoicedCharacters) {
+                if (char.id != null && !seenCharacterIds.contains(char.id)) {
+                  seenCharacterIds.add(char.id!);
+                  voicedCharacters.add(char);
+                }
+              }
+
+              String sanitizedDesc =
+                  (description ?? 'No information available.')
+                      .replaceAll('<br>', '\n')
+                      .replaceAll('<br/>', '\n')
+                      .replaceAll('<i>', '*')
+                      .replaceAll('</i>', '*')
+                      .replaceAll('<b>', '**')
+                      .replaceAll('</b>', '**');
+
+              sanitizedDesc = sanitizedDesc.replaceAll('\n', '\n\n');
+
+              final fullDescription = sanitizedDesc;
+
+              return SingleChildScrollView(
+                controller: scrollController,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 10),
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: theme.onSurface.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Hero(
-                          tag: widget.item.id.toString(),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(18),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.3),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 5),
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              if (widget.item.image != null &&
+                                  widget.item.image!.isNotEmpty) {
+                                final tag =
+                                    widget.heroTag ?? widget.item.id.toString();
+                                Navigator.of(context, rootNavigator: true).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => FullscreenImageViewer(
+                                      imageUrl: widget.item.image!,
+                                      tag: tag,
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                            child: Hero(
+                              tag: widget.heroTag ?? widget.item.id.toString(),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(18),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.3),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 5),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(18),
-                              child: AnymeXImage(
-                                imageUrl: widget.item.image ?? '',
-                                width: 130, 
-                                height: 195, 
-                                fit: BoxFit.cover,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(18),
+                                  child: AnymeXImage(
+                                    imageUrl: widget.item.image ?? '',
+                                    width: 130,
+                                    height: 195,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: AnymexText(
-                                      text: widget.item.name ?? 'Unknown',
-                                      size: 22,
-                                      variant: TextVariant.bold,
-                                      maxLines: 2,
+                          const SizedBox(width: 20),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: AnymexText(
+                                        text: widget.item.name ?? 'Unknown',
+                                        size: 22,
+                                        variant: TextVariant.bold,
+                                        maxLines: 2,
+                                      ),
                                     ),
-                                  ),
-                                  IconButton(
-                                    onPressed: () async {
-                                      final isCharacter = widget.isCharacter;
-                                      final type = isCharacter ? 'character' : 'staff';
-                                      final url = 'https://anilist.co/$type/${widget.item.id}';
-                                      
-                                      if (GetPlatform.isDesktop) {
-                                        await Clipboard.setData(ClipboardData(text: url));
-                                        snackBar("Link copied to clipboard!", duration: 2000);
-                                      } else {
-                                        Share.share(url);
-                                      }
-                                    },
-                                    icon: Icon(Icons.share, color: theme.primary),
-                                  ),
-                                ],
-                              ),
-                              Builder(
-                                builder: (context) {
+                                    IconButton(
+                                      onPressed: () async {
+                                        final isCharacter = widget.isCharacter;
+                                        final type =
+                                            isCharacter ? 'character' : 'staff';
+                                        final url =
+                                            'https://anilist.co/$type/${widget.item.id}';
+
+                                        if (GetPlatform.isDesktop) {
+                                          await Clipboard.setData(
+                                              ClipboardData(text: url));
+                                          snackBar("Link copied to clipboard!",
+                                              duration: 2000);
+                                        } else {
+                                          Share.share(url);
+                                        }
+                                      },
+                                      icon: Icon(Icons.share,
+                                          color: theme.primary),
+                                    ),
+                                  ],
+                                ),
+                                Builder(builder: (context) {
                                   String? nativeName;
-                                  if (fullItem is Character || fullItem is Staff) {
-                                    nativeName = (fullItem as dynamic).nativeName;
+                                  if (fullItem is Character ||
+                                      fullItem is Staff) {
+                                    nativeName =
+                                        (fullItem as dynamic).nativeName;
                                   }
-                                  
+
                                   if (nativeName != null) {
                                     return Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         const SizedBox(height: 4),
                                         AnymexText(
                                           text: nativeName,
                                           size: 16,
-                                          color: theme.onSurface.withOpacity(0.7),
+                                          color:
+                                              theme.onSurface.withOpacity(0.7),
                                           variant: TextVariant.semiBold,
                                         ),
                                       ],
                                     );
                                   }
                                   return const SizedBox.shrink();
-                                }
-                              ),
-                              const SizedBox(height: 15),
-                              Obx(() => GestureDetector(
-                                onTap: () async {
-                                  if (!anilistAuth.isLoggedIn.value) {
-                                    snackBar("Please login to favorite!");
-                                    return;
-                                  }
-                                  
-                                  
-                                  bool previousState = isFav.value;
-                                  isFav.value = !previousState;
-                                  
-                                  // Call the API
-                                  bool success = await anilistAuth.toggleFavorite(
-                                    id: int.parse(widget.item.id.toString()), 
-                                    type: widget.isCharacter ? "CHARACTER" : "STAFF"
-                                  );
+                                }),
+                                const SizedBox(height: 15),
+                                Obx(() => GestureDetector(
+                                      onTap: () async {
+                                        if (!anilistAuth.isLoggedIn.value) {
+                                          snackBar("Please login to favorite!");
+                                          return;
+                                        }
 
-                                  if (!success) {
-                                    
-                                    isFav.value = previousState;
-                                    snackBar("Failed to update AniList");
-                                  } else {
-                                    snackBar(isFav.value ? "Added to Favorites" : "Removed from Favorites");
-                                  }
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                  decoration: BoxDecoration(
-                                    color: isFav.value 
-                                        ? Colors.red.withOpacity(0.2) 
-                                        : theme.surfaceContainerHighest.withOpacity(0.5),
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                      color: isFav.value ? Colors.red.withOpacity(0.5) : Colors.transparent,
-                                      width: 1,
-                                    )
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        isFav.value ? Icons.favorite : Icons.favorite_border,
-                                        color: isFav.value ? Colors.red : theme.onSurface,
-                                        size: 20,
+                                        bool previousState = isFav.value;
+                                        isFav.value = !previousState;
+
+                                        // Call the API
+                                        bool success =
+                                            await anilistAuth.toggleFavorite(
+                                                id: int.parse(
+                                                    widget.item.id.toString()),
+                                                type: widget.isCharacter
+                                                    ? "CHARACTER"
+                                                    : "STAFF");
+
+                                        if (!success) {
+                                          isFav.value = previousState;
+                                          snackBar("Failed to update AniList");
+                                        } else {
+                                          snackBar(isFav.value
+                                              ? "Added to Favorites"
+                                              : "Removed from Favorites");
+                                        }
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16, vertical: 8),
+                                        decoration: BoxDecoration(
+                                            color: isFav.value
+                                                ? Colors.red.withOpacity(0.2)
+                                                : theme.surfaceContainerHighest
+                                                    .withOpacity(0.5),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                            border: Border.all(
+                                              color: isFav.value
+                                                  ? Colors.red.withOpacity(0.5)
+                                                  : Colors.transparent,
+                                              width: 1,
+                                            )),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(
+                                              isFav.value
+                                                  ? Icons.favorite
+                                                  : Icons.favorite_border,
+                                              color: isFav.value
+                                                  ? Colors.red
+                                                  : theme.onSurface,
+                                              size: 20,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            AnymexText(
+                                              text: "${() {
+                                                    if (fullItem is Character ||
+                                                        fullItem is Staff) {
+                                                      return (fullItem
+                                                              as dynamic)
+                                                          .favourites;
+                                                    }
+                                                    try {
+                                                      return (widget.item
+                                                              as dynamic)
+                                                          .favourites;
+                                                    } catch (_) {
+                                                      return 0;
+                                                    }
+                                                  }() ?? 0}",
+                                              size: 14,
+                                              variant: TextVariant.bold,
+                                              color: isFav.value
+                                                  ? Colors.red
+                                                  : theme.onSurface,
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                      const SizedBox(width: 8),
-                                      AnymexText(
-                                        text: "${(){
-                                          if (fullItem is Character || fullItem is Staff) {
-                                            return (fullItem as dynamic).favourites;
-                                          }
-                                          try { 
-                                            return (widget.item as dynamic).favourites; 
-                                          } catch(_) { return 0; }
-                                        }() ?? 0}",
-                                        size: 14,
-                                        variant: TextVariant.bold,
-                                        color: isFav.value ? Colors.red : theme.onSurface,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              )),
-                              Builder(
-                                builder: (context) {
+                                    )),
+                                Builder(builder: (context) {
                                   List<String>? occupations;
                                   try {
-                                    occupations = (fullItem?.primaryOccupations ?? (widget.item as dynamic).primaryOccupations)?.cast<String>();
+                                    occupations =
+                                        (fullItem?.primaryOccupations ??
+                                                (widget.item as dynamic)
+                                                    .primaryOccupations)
+                                            ?.cast<String>();
                                   } catch (_) {}
-                                  
-                                  if (!widget.isCharacter && occupations != null) {
+
+                                  if (!widget.isCharacter &&
+                                      occupations != null) {
                                     return Padding(
                                       padding: const EdgeInsets.only(top: 8.0),
                                       child: AnymexText(
@@ -372,165 +447,201 @@ class _CharacterStaffSheetContentState extends State<CharacterStaffSheetContent>
                                     );
                                   }
                                   return const SizedBox.shrink();
-                                }
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
+                                }),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                  Divider(
-                    height: 1, 
-                    indent: 20, 
-                    endIndent: 20, 
-                    color: theme.onSurface.withOpacity(0.1)
-                  ),
-                  const SizedBox(height: 20),
-                  
-                  if (isLoading)
-                    const Padding(
-                      padding: EdgeInsets.only(top: 50),
-                      child: Center(child: CircularProgressIndicator()),
-                    )
-                  else ...[
+                    Divider(
+                        height: 1,
+                        indent: 20,
+                        endIndent: 20,
+                        color: theme.onSurface.withOpacity(0.1)),
+                    const SizedBox(height: 20),
+                    if (isLoading)
+                      const Padding(
+                        padding: EdgeInsets.only(top: 50),
+                        child: Center(child: CircularProgressIndicator()),
+                      )
+                    else ...[
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            if (widget.isCharacter && fullItem is Character) ...[
-                               _buildBioRow("Gender", fullItem.gender),
-                               _buildBioRow("Age", fullItem.age),
-                               _buildBioRow("Birthday", fullItem.dateOfBirth),
-                               _buildBioRow("Blood Type", fullItem.bloodType),
+                            if (widget.isCharacter &&
+                                fullItem is Character) ...[
+                              _buildBioRow("Gender", fullItem.gender),
+                              _buildBioRow("Age", fullItem.age),
+                              _buildBioRow("Birthday", fullItem.dateOfBirth),
+                              _buildBioRow("Blood Type", fullItem.bloodType),
                             ],
-
                             if (!widget.isCharacter && fullItem is Staff) ...[
-                               _buildBioRow("Birth", fullItem.dateOfBirth),
-                               _buildBioRow("Age", fullItem.age?.toString()),
-                               _buildBioRow("Gender", fullItem.gender),
-                               _buildBioRow("Years active", fullItem.yearsActive),
-                               _buildBioRow("Hometown", fullItem.homeTown),
-                               _buildBioRow("Blood Type", fullItem.bloodType),
-                               
-                               
-                                Builder(
-                                 builder: (context) {
-                                   if (fullItem.bloodType != null) return const SizedBox.shrink();
-                                   
-                                   String? bloodType;
-                                   final RegExp bloodRegex = RegExp(r"(?:\*\*|__)?Blood Type:?(?:\*\*|__)?\s*([ABO]{1,2})", caseSensitive: false);
-                                   final match = bloodRegex.firstMatch(description ?? "");
-                                   if (match != null) {
-                                     bloodType = match.group(1);
-                                   }
-                                   
-                                   if (bloodType != null) {
-                                     return _buildBioRow("Blood Type", bloodType.toUpperCase());
-                                   }
-                                   return const SizedBox.shrink();
-                                 }
-                               ),
+                              _buildBioRow("Birth", fullItem.dateOfBirth),
+                              _buildBioRow("Age", fullItem.age?.toString()),
+                              _buildBioRow("Gender", fullItem.gender),
+                              _buildBioRow(
+                                  "Years active", fullItem.yearsActive),
+                              _buildBioRow("Hometown", fullItem.homeTown),
+                              _buildBioRow("Blood Type", fullItem.bloodType),
+                              Builder(builder: (context) {
+                                if (fullItem.bloodType != null) {
+                                  return const SizedBox.shrink();
+                                }
+
+                                String? bloodType;
+                                final RegExp bloodRegex = RegExp(
+                                    r"(?:\*\*|__)?Blood Type:?(?:\*\*|__)?\s*([ABO]{1,2})",
+                                    caseSensitive: false);
+                                final match =
+                                    bloodRegex.firstMatch(description ?? "");
+                                if (match != null) {
+                                  bloodType = match.group(1);
+                                }
+
+                                if (bloodType != null) {
+                                  return _buildBioRow(
+                                      "Blood Type", bloodType.toUpperCase());
+                                }
+                                return const SizedBox.shrink();
+                              }),
                             ],
-                            
+                            if (widget.isCharacter &&
+                                (fullItem as Character).bloodType == null)
+                              Builder(builder: (context) {
+                                String? bloodType;
+                                final RegExp bloodRegex = RegExp(
+                                    r"(?:\*\*|__)?Blood Type:?(?:\*\*|__)?\s*([ABO]{1,2})",
+                                    caseSensitive: false);
+                                final match =
+                                    bloodRegex.firstMatch(description ?? "");
+                                if (match != null) {
+                                  bloodType = match.group(1);
+                                }
 
-                            if (widget.isCharacter && (fullItem as Character).bloodType == null)
-                                Builder(
-                                 builder: (context) {
-                                   String? bloodType;
-                                   final RegExp bloodRegex = RegExp(r"(?:\*\*|__)?Blood Type:?(?:\*\*|__)?\s*([ABO]{1,2})", caseSensitive: false);
-                                   final match = bloodRegex.firstMatch(description ?? "");
-                                   if (match != null) {
-                                     bloodType = match.group(1);
-                                   }
-                                   
-                                   if (bloodType != null) {
-                                     return _buildBioRow("Blood Type", bloodType.toUpperCase());
-                                   }
-                                   return const SizedBox.shrink();
-                                 }
-                               ),
-
-                              
-                               Builder(
-                                 builder: (context) {
-                                   String? height;
-                                   final RegExp heightRegex = RegExp(r"(?:\*\*|__)?Height:?(?:\*\*|__)?\s*(.+?)(\n|$)", caseSensitive: false);
-                                   final match = heightRegex.firstMatch(description ?? "");
-                                   if (match != null) {
-                                     height = match.group(1)?.trim();
-                                   }
-                                   
-                                   if (height != null) {
-                                     return _buildBioRow("Height", height);
-                                   }
-                                   return const SizedBox.shrink();
-                                 }
-                               ),
-
-                              
-                               Builder(
-                                 builder: (context) {
-                                    final List<String> knownKeys = [
-                                      "Occupation", "Affiliation", "Grade", "Species", "Status", "Abilities", 
-                                      "Level", "Family", "Cursed Technique", "Weapon", "Bounty", "Devil Fruit", "Nen Type",
-                                      "Quirk", "Stand", "Guild"
-                                    ];
-                                    
-                                    List<Widget> extractedRows = [];
-                                    String tempDesc = fullDescription;
-                                    
-                                    for (String key in knownKeys) {
-                                      
-                                      final RegExp keyRegex = RegExp(r"(?:^|\n)(?:\*\*|__)?(" + RegExp.escape(key) + r"):(?:\*\*|__)?[\t ]*(.+?)(\n|$)", caseSensitive: false);
-                                      final match = keyRegex.firstMatch(tempDesc);
-                                      
-                                      if (match != null) {
-                                        String value = match.group(2)?.trim() ?? "";
-                                       
-                                        bool isValueAnotherKey = knownKeys.any((k) => value.startsWith("__$k") || value.startsWith("**$k"));
-                                        
-                                        if (value.isNotEmpty && !isValueAnotherKey) {
-                                          extractedRows.add(_buildBioRow(key, value));
-                                        }
-                                      }
-                                    }
-                                    
-                                    return Column(children: extractedRows);
-                                 }
-                               ),
-                               
-                               const SizedBox(height: 10),
-                            
-                         
-                          StatefulBuilder(
-                            builder: (context, setState) {
-                              String displayDesc = fullDescription;
-                              
-                             
-                              final RegExp heightLineRegex = RegExp(r"(?:^|\n)(?:\*\*|__)?Height:?(?:\*\*|__)?[\t ]*.*(\n|$)", caseSensitive: false);
-                              displayDesc = displayDesc.replaceAll(heightLineRegex, "\n").trim();
-
-                             
-                              final RegExp bloodLineRegex = RegExp(r"(?:^|\n)(?:\*\*|__)?Blood Type:?(?:\*\*|__)?[\t ]*.*(\n|$)", caseSensitive: false);
-                              displayDesc = displayDesc.replaceAll(bloodLineRegex, "\n").trim();
-                              
-                             
-                               final List<String> knownKeys = [
-                                      "Occupation", "Affiliation", "Grade", "Species", "Status", "Abilities", 
-                                      "Level", "Family", "Cursed Technique", "Weapon", "Bounty", "Devil Fruit", "Nen Type",
-                                      "Quirk", "Stand", "Guild"
-                               ];
-                              for (String key in knownKeys) {
-                                  final RegExp keyRegex = RegExp(r"(?:^|\n)(?:\*\*|__)?(" + RegExp.escape(key) + r"):(?:\*\*|__)?[\t ]*.+?(\n|$)", caseSensitive: false);
-                                  displayDesc = displayDesc.replaceAll(keyRegex, "\n").trim();
+                                if (bloodType != null) {
+                                  return _buildBioRow(
+                                      "Blood Type", bloodType.toUpperCase());
+                                }
+                                return const SizedBox.shrink();
+                              }),
+                            Builder(builder: (context) {
+                              String? height;
+                              final RegExp heightRegex = RegExp(
+                                  r"(?:\*\*|__)?Height:?(?:\*\*|__)?\s*(.+?)(\n|$)",
+                                  caseSensitive: false);
+                              final match =
+                                  heightRegex.firstMatch(description ?? "");
+                              if (match != null) {
+                                height = match.group(1)?.trim();
                               }
 
-                            
-                              final RegExp separatorRegex = RegExp(r"\n\s*[-_]{2,}\s*\n");
-                              displayDesc = displayDesc.replaceAll(separatorRegex, "\n\n").trim();
-                              
+                              if (height != null) {
+                                return _buildBioRow("Height", height);
+                              }
+                              return const SizedBox.shrink();
+                            }),
+                            Builder(builder: (context) {
+                              final List<String> knownKeys = [
+                                "Occupation",
+                                "Affiliation",
+                                "Grade",
+                                "Species",
+                                "Status",
+                                "Abilities",
+                                "Level",
+                                "Family",
+                                "Cursed Technique",
+                                "Weapon",
+                                "Bounty",
+                                "Devil Fruit",
+                                "Nen Type",
+                                "Quirk",
+                                "Stand",
+                                "Guild"
+                              ];
+
+                              List<Widget> extractedRows = [];
+                              String tempDesc = fullDescription;
+
+                              for (String key in knownKeys) {
+                                final RegExp keyRegex = RegExp(
+                                    r"(?:^|\n)(?:\*\*|__)?(" +
+                                        RegExp.escape(key) +
+                                        r"):(?:\*\*|__)?[\t ]*(.+?)(\n|$)",
+                                    caseSensitive: false);
+                                final match = keyRegex.firstMatch(tempDesc);
+
+                                if (match != null) {
+                                  String value = match.group(2)?.trim() ?? "";
+
+                                  bool isValueAnotherKey = knownKeys.any((k) =>
+                                      value.startsWith("__$k") ||
+                                      value.startsWith("**$k"));
+
+                                  if (value.isNotEmpty && !isValueAnotherKey) {
+                                    extractedRows.add(_buildBioRow(key, value));
+                                  }
+                                }
+                              }
+
+                              return Column(children: extractedRows);
+                            }),
+                            const SizedBox(height: 10),
+                            StatefulBuilder(builder: (context, setState) {
+                              String displayDesc = fullDescription;
+
+                              final RegExp heightLineRegex = RegExp(
+                                  r"(?:^|\n)(?:\*\*|__)?Height:?(?:\*\*|__)?[\t ]*.*(\n|$)",
+                                  caseSensitive: false);
+                              displayDesc = displayDesc
+                                  .replaceAll(heightLineRegex, "\n")
+                                  .trim();
+
+                              final RegExp bloodLineRegex = RegExp(
+                                  r"(?:^|\n)(?:\*\*|__)?Blood Type:?(?:\*\*|__)?[\t ]*.*(\n|$)",
+                                  caseSensitive: false);
+                              displayDesc = displayDesc
+                                  .replaceAll(bloodLineRegex, "\n")
+                                  .trim();
+
+                              final List<String> knownKeys = [
+                                "Occupation",
+                                "Affiliation",
+                                "Grade",
+                                "Species",
+                                "Status",
+                                "Abilities",
+                                "Level",
+                                "Family",
+                                "Cursed Technique",
+                                "Weapon",
+                                "Bounty",
+                                "Devil Fruit",
+                                "Nen Type",
+                                "Quirk",
+                                "Stand",
+                                "Guild"
+                              ];
+                              for (String key in knownKeys) {
+                                final RegExp keyRegex = RegExp(
+                                    r"(?:^|\n)(?:\*\*|__)?(" +
+                                        RegExp.escape(key) +
+                                        r"):(?:\*\*|__)?[\t ]*.+?(\n|$)",
+                                    caseSensitive: false);
+                                displayDesc = displayDesc
+                                    .replaceAll(keyRegex, "\n")
+                                    .trim();
+                              }
+
+                              final RegExp separatorRegex =
+                                  RegExp(r"\n\s*[-_]{2,}\s*\n");
+                              displayDesc = displayDesc
+                                  .replaceAll(separatorRegex, "\n\n")
+                                  .trim();
+
                               return Column(
                                 children: [
                                   AnimatedSize(
@@ -538,35 +649,16 @@ class _CharacterStaffSheetContentState extends State<CharacterStaffSheetContent>
                                     curve: Curves.easeInOut,
                                     child: isExpanded.value
                                         ? Padding(
-                                            padding: const EdgeInsets.only(bottom: 10),
-                                            child: MarkdownBody(
-                                              data: displayDesc,
-                                              onTapLink: (text, href, title) {
-                                                if (href != null) {
-                                                  launchUrl(Uri.parse(href));
-                                                }
-                                              },
-                                              inlineSyntaxes: [SpoilerSyntax()],
-                                              builders: {
-                                                'spoiler': _spoilerBuilder,
-                                              },
-                                              styleSheet: MarkdownStyleSheet(
-                                                p: TextStyle(
-                                                  fontSize: 14,
-                                                  color: theme.onSurface.withOpacity(0.8),
-                                                  fontFamily: 'Poppins',
-                                                ),
-                                                strong: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: theme.primary,
-                                                ),
-                                                blockSpacing: 10,
-                                              ),
+                                            padding: const EdgeInsets.only(
+                                                bottom: 10),
+                                            child:
+                                                _buildDescriptionWithSpoilers(
+                                              displayDesc,
+                                              theme,
                                             ),
                                           )
                                         : const SizedBox.shrink(),
                                   ),
-                                  
                                   Center(
                                     child: IconButton(
                                       onPressed: () {
@@ -575,289 +667,336 @@ class _CharacterStaffSheetContentState extends State<CharacterStaffSheetContent>
                                         });
                                       },
                                       icon: Icon(
-                                        isExpanded.value ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                                        isExpanded.value
+                                            ? Icons.keyboard_arrow_up
+                                            : Icons.keyboard_arrow_down,
                                         color: theme.primary,
                                       ),
                                     ),
                                   ),
                                 ],
                               );
-                            }
-                          ),
-
-                    const SizedBox(height: 30),
-
-                    if (widget.isCharacter && voiceActors.isNotEmpty) ...[
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 20),
-                        child: AnymexText(
-                          text: "Voice Actors",
-                          variant: TextVariant.bold,
-                          size: 16,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      SizedBox(
-                        height: 220, 
-                        child: ListView.builder(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          scrollDirection: Axis.horizontal,
-                          itemCount: voiceActors.length,
-                          itemBuilder: (context, index) {
-                            final actor = voiceActors[index];
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 15),
-                              child: GestureDetector(
-                                onTap: () {
-                                  showModalBottomSheet(
-                                    context: context,
-                                    isScrollControlled: true,
-                                    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                                    builder: (context) => CharacterStaffSheetContent(
-                                      item: actor,
-                                      isCharacter: false,
-                                    ),
-                                  );
-                                },
-                                child: SizedBox(
-                                  width: 100,
-                                  child: Column(
-                                    children: [
-                                       SizedBox(
-                                        height: 150,
-                                        width: 100,
-                                        child: ClipRRect(
-                                          borderRadius: BorderRadius.circular(12),
-                                          child: AnymeXImage(
-                                            imageUrl: actor.image ?? '',
-                                            width: 100,
-                                            height: 150,
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 5),
-                                      SizedBox(
-                                        height: 32,
-                                        child: Center(
-                                          child: AnymexText(
-                                            text: actor.name ?? 'Unknown',
-                                            size: 12,
-                                            maxLines: 2,
-                                            textAlign: TextAlign.center,
-                                            overflow: TextOverflow.ellipsis,
-                                            variant: TextVariant.bold,
-                                          ),
-                                        ),
-                                      ),
-                                      if (actor.language != null) ...[
-                                        const SizedBox(height: 5),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                          decoration: BoxDecoration(
-                                            color: theme.primary.withOpacity(0.2), 
-                                            borderRadius: BorderRadius.circular(4),
-                                          ),
-                                          child: AnymexText(
-                                            text: actor.language!,
-                                            size: 10,
-                                            color: theme.primary,
-                                          ),
-                                        ),
-                                      ]
-                                    ],
-                                  ),
+                            }),
+                            const SizedBox(height: 30),
+                            if (widget.isCharacter &&
+                                voiceActors.isNotEmpty) ...[
+                              const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                child: AnymexText(
+                                  text: "Voice Actors",
+                                  variant: TextVariant.bold,
+                                  size: 16,
                                 ),
                               ),
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(height: 30),
-                    ],
-                    
-                    if (voicedCharacters.isNotEmpty) ...[
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 20),
-                        child: AnymexText(
-                          text: "Voiced Characters",
-                          variant: TextVariant.bold,
-                          size: 16,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      const SizedBox(height: 10),
-                      SizedBox(
-                        height: 200, 
-                        child: _buildCharacterList(context, voicedCharacters, theme),
-                      ),
-                      const SizedBox(height: 30),
-                      const SizedBox(height: 30),
-                    ],
-
-                    if (mediaList.isNotEmpty) ...[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            AnymexText(
-                              text: widget.isCharacter ? "Appears In" : "Works & Roles",
-                              variant: TextVariant.bold,
-                              size: 16,
-                            ),
-                            GestureDetector(
-                              onTap: () => showOnlyOnList.value = !showOnlyOnList.value,
-                              child: Row(
-                                children: [
-                                  Obx(() => AnimatedContainer(
-                                    duration: const Duration(milliseconds: 200),
-                                    width: 20,
-                                    height: 20,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(6),
-                                      border: Border.all(
-                                        color: showOnlyOnList.value 
-                                            ? theme.primary 
-                                            : theme.onSurface.withOpacity(0.4),
-                                        width: 2,
+                              const SizedBox(height: 10),
+                              SizedBox(
+                                height: 220,
+                                child: ListView.builder(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20),
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: voiceActors.length,
+                                  itemBuilder: (context, index) {
+                                    final actor = voiceActors[index];
+                                    return Padding(
+                                      padding: const EdgeInsets.only(right: 15),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          showModalBottomSheet(
+                                            context: context,
+                                            isScrollControlled: true,
+                                            backgroundColor: Theme.of(context)
+                                                .scaffoldBackgroundColor,
+                                            builder: (context) =>
+                                                CharacterStaffSheetContent(
+                                              item: actor,
+                                              isCharacter: false,
+                                            ),
+                                          );
+                                        },
+                                        child: SizedBox(
+                                          width: 100,
+                                          child: Column(
+                                            children: [
+                                              SizedBox(
+                                                height: 150,
+                                                width: 100,
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                  child: AnymeXImage(
+                                                    imageUrl: actor.image ?? '',
+                                                    width: 100,
+                                                    height: 150,
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(height: 5),
+                                              SizedBox(
+                                                height: 32,
+                                                child: Center(
+                                                  child: AnymexText(
+                                                    text:
+                                                        actor.name ?? 'Unknown',
+                                                    size: 12,
+                                                    maxLines: 2,
+                                                    textAlign: TextAlign.center,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    variant: TextVariant.bold,
+                                                  ),
+                                                ),
+                                              ),
+                                              if (actor.language != null) ...[
+                                                const SizedBox(height: 5),
+                                                Container(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 6,
+                                                      vertical: 2),
+                                                  decoration: BoxDecoration(
+                                                    color: theme.primary
+                                                        .withOpacity(0.2),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            4),
+                                                  ),
+                                                  child: AnymexText(
+                                                    text: actor.language!,
+                                                    size: 10,
+                                                    color: theme.primary,
+                                                  ),
+                                                ),
+                                              ]
+                                            ],
+                                          ),
+                                        ),
                                       ),
-                                      color: showOnlyOnList.value 
-                                          ? theme.primary 
-                                          : Colors.transparent,
-                                    ),
-                                    child: showOnlyOnList.value 
-                                        ? Icon(
-                                            Icons.check, 
-                                            size: 14, 
-                                            color: theme.onPrimary
-                                          ) 
-                                        : null,
-                                  )),
-                                  const SizedBox(width: 10),
-                                  AnymexText(
-                                    text: "On My List",
-                                    size: 14,
-                                    color: theme.onSurface.withOpacity(0.7),
-                                    variant: TextVariant.bold,
-                                  ),
-                                ],
+                                    );
+                                  },
+                                ),
                               ),
-                            ),
+                              const SizedBox(height: 30),
+                            ],
+                            if (voicedCharacters.isNotEmpty) ...[
+                              const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                child: AnymexText(
+                                  text: "Voiced Characters",
+                                  variant: TextVariant.bold,
+                                  size: 16,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              const SizedBox(height: 10),
+                              SizedBox(
+                                height: 200,
+                                child: _buildCharacterList(
+                                    context, voicedCharacters, theme),
+                              ),
+                              const SizedBox(height: 30),
+                              const SizedBox(height: 30),
+                            ],
+                            if (mediaList.isNotEmpty) ...[
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    AnymexText(
+                                      text: widget.isCharacter
+                                          ? "Appears In"
+                                          : "Works & Roles",
+                                      variant: TextVariant.bold,
+                                      size: 16,
+                                    ),
+                                    GestureDetector(
+                                      onTap: () => showOnlyOnList.value =
+                                          !showOnlyOnList.value,
+                                      child: Row(
+                                        children: [
+                                          Obx(() => AnimatedContainer(
+                                                duration: const Duration(
+                                                    milliseconds: 200),
+                                                width: 20,
+                                                height: 20,
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(6),
+                                                  border: Border.all(
+                                                    color: showOnlyOnList.value
+                                                        ? theme.primary
+                                                        : theme.onSurface
+                                                            .withOpacity(0.4),
+                                                    width: 2,
+                                                  ),
+                                                  color: showOnlyOnList.value
+                                                      ? theme.primary
+                                                      : Colors.transparent,
+                                                ),
+                                                child: showOnlyOnList.value
+                                                    ? Icon(Icons.check,
+                                                        size: 14,
+                                                        color: theme.onPrimary)
+                                                    : null,
+                                              )),
+                                          const SizedBox(width: 10),
+                                          AnymexText(
+                                            text: "On My List",
+                                            size: 14,
+                                            color: theme.onSurface
+                                                .withOpacity(0.7),
+                                            variant: TextVariant.bold,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              Obx(() {
+                                final filteredList = showOnlyOnList.value
+                                    ? mediaList
+                                        .where((m) => m.userStatus != null)
+                                        .toList()
+                                    : mediaList;
+
+                                if (filteredList.isEmpty) {
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 20),
+                                    child: Center(
+                                      child: AnymexText(
+                                        text: showOnlyOnList.value
+                                            ? "No media found on your list"
+                                            : "No media found",
+                                        variant: TextVariant.semiBold,
+                                        color: theme.onSurface.withOpacity(0.5),
+                                      ),
+                                    ),
+                                  );
+                                }
+
+                                final Map<int, List<Media>> groupedMedia = {};
+                                final List<Media> unknownYearMedia = [];
+
+                                for (var item in filteredList) {
+                                  if (item.seasonYear != null) {
+                                    if (!groupedMedia
+                                        .containsKey(item.seasonYear)) {
+                                      groupedMedia[item.seasonYear!] = [];
+                                    }
+                                    groupedMedia[item.seasonYear!]!.add(item);
+                                  } else {
+                                    Logger.i(
+                                        "Missing seasonYear for ${item.title} (ID: ${item.id}) - StartDate: ${item.aired}");
+                                    unknownYearMedia.add(item);
+                                  }
+                                }
+
+                                final sortedYears = groupedMedia.keys.toList()
+                                  ..sort((a, b) => b.compareTo(a));
+
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    if (unknownYearMedia.isNotEmpty) ...[
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 20, vertical: 10),
+                                        child: Row(
+                                          children: [
+                                            Expanded(
+                                                child: Divider(
+                                                    color: theme.primary
+                                                        .withOpacity(0.3))),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 10),
+                                              child: AnymexText(
+                                                text:
+                                                    "TBA (${unknownYearMedia.length})",
+                                                variant: TextVariant.bold,
+                                                size: 18,
+                                                color: theme.primary,
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child: Divider(
+                                                    color: theme.primary
+                                                        .withOpacity(0.3))),
+                                          ],
+                                        ),
+                                      ),
+                                      _buildMediaGrid(
+                                          context, unknownYearMedia, theme),
+                                    ],
+                                    ...sortedYears.map((year) {
+                                      final mediaList = groupedMedia[year]!;
+                                      return Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 20, vertical: 10),
+                                            child: Row(
+                                              children: [
+                                                Expanded(
+                                                    child: Divider(
+                                                        color: theme.primary
+                                                            .withOpacity(0.3))),
+                                                Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 10),
+                                                  child: AnymexText(
+                                                    text:
+                                                        "$year (${mediaList.length})",
+                                                    variant: TextVariant.bold,
+                                                    size: 18,
+                                                    color: theme.primary,
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                    child: Divider(
+                                                        color: theme.primary
+                                                            .withOpacity(0.3))),
+                                              ],
+                                            ),
+                                          ),
+                                          _buildMediaGrid(
+                                              context, mediaList, theme),
+                                          const SizedBox(height: 30),
+                                        ],
+                                      );
+                                    }),
+                                  ],
+                                );
+                              }),
+                            ],
+                            const SizedBox(height: 40),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 10),
-                      Obx(() {
-                        final filteredList = showOnlyOnList.value
-                            ? mediaList.where((m) => m.userStatus != null).toList()
-                            : mediaList;
-
-                        if (filteredList.isEmpty) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 20),
-                            child: Center(
-                              child: AnymexText(
-                                text: showOnlyOnList.value ? "No media found on your list" : "No media found",
-                                variant: TextVariant.semiBold,
-                                color: theme.onSurface.withOpacity(0.5),
-                              ),
-                            ),
-                          );
-                        }
-
-                        
-                        final Map<int, List<Media>> groupedMedia = {};
-                        final List<Media> unknownYearMedia = [];
-
-                        for (var item in filteredList) {
-                          if (item.seasonYear != null) {
-                            if (!groupedMedia.containsKey(item.seasonYear)) {
-                              groupedMedia[item.seasonYear!] = [];
-                            }
-                            groupedMedia[item.seasonYear!]!.add(item);
-                          } else {
-                            Logger.i("Missing seasonYear for ${item.title} (ID: ${item.id}) - StartDate: ${item.aired}");
-                            unknownYearMedia.add(item);
-                          }
-                        }
-
-                        
-                        final sortedYears = groupedMedia.keys.toList()..sort((a, b) => b.compareTo(a));
-
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (unknownYearMedia.isNotEmpty) ...[
-                               Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                                    child: Row(
-                                      children: [
-                                        Expanded(child: Divider(color: theme.primary.withOpacity(0.3))),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                                          child: AnymexText(
-                                            text: "TBA (${unknownYearMedia.length})",
-                                            variant: TextVariant.bold,
-                                            size: 18,
-                                            color: theme.primary,
-                                          ),
-                                        ),
-                                        Expanded(child: Divider(color: theme.primary.withOpacity(0.3))),
-                                      ],
-                                    ),
-                               ),
-                               _buildMediaGrid(context, unknownYearMedia, theme),
-                            ],
-                            ...sortedYears.map((year) {
-                              final mediaList = groupedMedia[year]!;
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                                    child: Row(
-                                      children: [
-                                        Expanded(child: Divider(color: theme.primary.withOpacity(0.3))),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                                          child: AnymexText(
-                                            text: "$year (${mediaList.length})",
-                                            variant: TextVariant.bold,
-                                            size: 18,
-                                            color: theme.primary,
-                                          ),
-                                        ),
-                                        Expanded(child: Divider(color: theme.primary.withOpacity(0.3))),
-                                      ],
-                                    ),
-                                  ),
-                                  _buildMediaGrid(context, mediaList, theme),
-                                  const SizedBox(height: 30),
-                                ],
-                              );
-                            }),
-                          ],
-                        );
-                      }),
                     ],
-
-                  const SizedBox(height: 40),
-                ],
-              ),
-            ),
-          ],
-        ],
-      ),
-          );
-          },
-        ),
+                  ],
+                ),
+              );
+            },
+          ),
         );
       },
-      );
+    );
   }
 
-  Widget _buildCharacterList(BuildContext context, List<Character> characters, dynamic theme) {
+  Widget _buildCharacterList(
+      BuildContext context, List<Character> characters, dynamic theme) {
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       scrollDirection: Axis.horizontal,
@@ -870,18 +1009,14 @@ class _CharacterStaffSheetContentState extends State<CharacterStaffSheetContent>
           padding: const EdgeInsets.only(right: 15),
           child: GestureDetector(
             onTap: () {
-               showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: context.theme.scaffoldBackgroundColor,
-                  builder: (context) => CharacterStaffSheetContent(
-                    item: character,
-                    isCharacter: true,
-                  ),
-                );
+              showCharacterStaffSheet(
+                context,
+                item: character,
+                isCharacter: true,
+              );
             },
             child: SizedBox(
-              width: 120, 
+              width: 120,
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
@@ -913,7 +1048,8 @@ class _CharacterStaffSheetContentState extends State<CharacterStaffSheetContent>
                               Colors.black.withOpacity(0.9),
                             ],
                           ),
-                          borderRadius: const BorderRadius.vertical(bottom: Radius.circular(12)),
+                          borderRadius: const BorderRadius.vertical(
+                              bottom: Radius.circular(12)),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -949,33 +1085,36 @@ class _CharacterStaffSheetContentState extends State<CharacterStaffSheetContent>
     );
   }
 
-  Widget _buildMediaGrid(BuildContext context, List<Media> mediaList, dynamic theme) {
+  Widget _buildMediaGrid(
+      BuildContext context, List<Media> mediaList, dynamic theme) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Wrap(
-        spacing: 15, 
+        spacing: 15,
         runSpacing: 15,
         alignment: WrapAlignment.start,
         children: mediaList.asMap().entries.map((entry) {
           final index = entry.key;
           final item = entry.value;
-          final tag = "${item.id}-${widget.isCharacter ? 'char' : 'staff'}-$index";
-          
+          final tag =
+              "${item.id}-${widget.isCharacter ? 'char' : 'staff'}-$index";
+
           return SizedBox(
             width: 120,
             child: GestureDetector(
               onTap: () {
-                Get.to(() => AnimeDetailsPage(
-                  media: item, 
-                  tag: tag
-                ));
+                Navigator.of(context, rootNavigator: true).push(
+                  MaterialPageRoute(
+                    builder: (_) => AnimeDetailsPage(media: item, tag: tag),
+                  ),
+                );
               },
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                   AspectRatio(
-                    aspectRatio: 0.7, 
+                  AspectRatio(
+                    aspectRatio: 0.7,
                     child: Stack(
                       children: [
                         Hero(
@@ -989,14 +1128,14 @@ class _CharacterStaffSheetContentState extends State<CharacterStaffSheetContent>
                               borderRadius: BorderRadius.circular(12),
                               child: AnymeXImage(
                                 imageUrl: item.poster,
-                                width: double.infinity, 
+                                width: double.infinity,
                                 height: double.infinity,
                                 fit: BoxFit.cover,
                               ),
                             ),
                           ),
                         ),
-                       
+
                         if (item.characterRole != null)
                           Positioned(
                             bottom: 0,
@@ -1027,7 +1166,7 @@ class _CharacterStaffSheetContentState extends State<CharacterStaffSheetContent>
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   color: theme.primary,
-                                  fontSize: 8, 
+                                  fontSize: 8,
                                   fontWeight: FontWeight.w900,
                                   fontFamily: 'Poppins',
                                   letterSpacing: 0.5,
@@ -1042,13 +1181,14 @@ class _CharacterStaffSheetContentState extends State<CharacterStaffSheetContent>
                               ),
                             ),
                           ),
-    
+
                         // Rating thing
                         Positioned(
                           top: 4,
                           left: 4,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 4, vertical: 2),
                             decoration: BoxDecoration(
                               color: Colors.black.withOpacity(0.6),
                               borderRadius: BorderRadius.circular(6),
@@ -1057,7 +1197,8 @@ class _CharacterStaffSheetContentState extends State<CharacterStaffSheetContent>
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Icon(Iconsax.star1, size: 10, color: theme.primary),
+                                Icon(Iconsax.star1,
+                                    size: 10, color: theme.primary),
                                 const SizedBox(width: 2),
                                 Text(
                                   item.rating.isNotEmpty ? item.rating : '?',
@@ -1071,20 +1212,21 @@ class _CharacterStaffSheetContentState extends State<CharacterStaffSheetContent>
                             ),
                           ),
                         ),
-    
+
                         // Format
                         if (item.type.isNotEmpty) ...[
                           Positioned(
                             top: 5,
                             right: 5,
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 3),
                               decoration: BoxDecoration(
                                 color: theme.primary,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
-                                    item.type.toUpperCase(),
+                                item.type.toUpperCase(),
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 8,
@@ -1115,7 +1257,69 @@ class _CharacterStaffSheetContentState extends State<CharacterStaffSheetContent>
       ),
     );
   }
-    
+
+  Widget _buildDescriptionWithSpoilers(String text, dynamic theme) {
+    final spoilerRegex = RegExp(r'~!([\s\S]*?)!~');
+    final parts = <Widget>[];
+    int lastEnd = 0;
+
+    for (final match in spoilerRegex.allMatches(text)) {
+      final before = text.substring(lastEnd, match.start).trim();
+      if (before.isNotEmpty) {
+        parts.add(MarkdownBody(
+          data: before,
+          onTapLink: (text, href, title) {
+            if (href != null) {
+              launchUrl(Uri.parse(href));
+            }
+          },
+          styleSheet: MarkdownStyleSheet(
+            p: TextStyle(
+              fontSize: 14,
+              color: theme.onSurface.withOpacity(0.8),
+              fontFamily: 'Poppins',
+            ),
+            strong: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: theme.primary,
+            ),
+            blockSpacing: 10,
+          ),
+        ));
+      }
+      parts.add(SpoilerWidget(text: match.group(1)?.trim() ?? ''));
+      lastEnd = match.end;
+    }
+
+    final remaining = text.substring(lastEnd).trim();
+    if (remaining.isNotEmpty) {
+      parts.add(MarkdownBody(
+        data: remaining,
+        onTapLink: (text, href, title) {
+          if (href != null) {
+            launchUrl(Uri.parse(href));
+          }
+        },
+        styleSheet: MarkdownStyleSheet(
+          p: TextStyle(
+            fontSize: 14,
+            color: theme.onSurface.withOpacity(0.8),
+            fontFamily: 'Poppins',
+          ),
+          strong: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: theme.primary,
+          ),
+          blockSpacing: 10,
+        ),
+      ));
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: parts,
+    );
+  }
 }
 
 class SpoilerWidget extends StatefulWidget {
@@ -1123,7 +1327,7 @@ class SpoilerWidget extends StatefulWidget {
   final TextStyle? style;
 
   const SpoilerWidget({
-    super.key, 
+    super.key,
     required this.text,
     this.style,
   });
@@ -1138,12 +1342,6 @@ class _SpoilerWidgetState extends State<SpoilerWidget> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
-    final revealedStyle = widget.style?.copyWith(
-      color: theme.colorScheme.onSurface,
-      decoration: TextDecoration.none,
-      decorationColor: Colors.transparent, 
-    );
 
     return GestureDetector(
       onTap: () {
@@ -1155,15 +1353,28 @@ class _SpoilerWidgetState extends State<SpoilerWidget> {
           ? Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                color:
+                    theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color: theme.colorScheme.outline.withOpacity(0.1),
                 ),
               ),
-              child: Text(
-                widget.text.isNotEmpty ? widget.text : 'Spoilers',
-                style: revealedStyle,
+              child: MarkdownBody(
+                data: widget.text.isNotEmpty ? widget.text : 'Spoilers',
+                shrinkWrap: true,
+                styleSheet: MarkdownStyleSheet(
+                  p: TextStyle(
+                    fontSize: 14,
+                    color: theme.colorScheme.onSurface.withOpacity(0.8),
+                    fontFamily: 'Poppins',
+                  ),
+                  strong: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.primary,
+                  ),
+                  blockSpacing: 10,
+                ),
               ),
             )
           : Container(
@@ -1218,6 +1429,107 @@ class SpoilerElementBuilder extends MarkdownElementBuilder {
 extension _CharacterStaffSheetExtension on _CharacterStaffSheetContentState {
   Widget _buildBioRow(String label, String? value) {
     if (value == null || value.isEmpty) return const SizedBox.shrink();
+
+    final spoilerRegex = RegExp(r'~!([\s\S]*?)!~');
+    final hasSpoiler = spoilerRegex.hasMatch(value);
+
+    final hasLinks = RegExp(r'\[.+?\]\(.+?\)').hasMatch(value);
+
+    if (!hasSpoiler && !hasLinks) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 4.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              width: 140,
+              child: AnymexText(
+                text: "$label:",
+                size: 14,
+                variant: TextVariant.bold,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: AnymexText(
+                text: value,
+                size: 14,
+                maxLines: 10,
+                variant: TextVariant.semiBold,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (!hasSpoiler && hasLinks) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 4.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              width: 140,
+              child: AnymexText(
+                text: "$label:",
+                size: 14,
+                variant: TextVariant.bold,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: MarkdownBody(
+                data: value,
+                shrinkWrap: true,
+                onTapLink: (text, href, title) {
+                  if (href != null) {
+                    launchUrl(Uri.parse(href));
+                  }
+                },
+                styleSheet: MarkdownStyleSheet(
+                  p: TextStyle(
+                    fontSize: 14,
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontFamily: 'Poppins',
+                  ),
+                  blockSpacing: 0,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final widgets = <Widget>[];
+    int lastEnd = 0;
+    for (final match in spoilerRegex.allMatches(value)) {
+      final before = value.substring(lastEnd, match.start).trim();
+      if (before.isNotEmpty) {
+        widgets.add(AnymexText(
+          text: before,
+          size: 14,
+          variant: TextVariant.semiBold,
+          color: Theme.of(context).colorScheme.onSurface,
+        ));
+      }
+      widgets.add(SpoilerWidget(text: match.group(1)?.trim() ?? ''));
+      lastEnd = match.end;
+    }
+    final remaining = value.substring(lastEnd).trim();
+    if (remaining.isNotEmpty) {
+      widgets.add(AnymexText(
+        text: remaining,
+        size: 14,
+        variant: TextVariant.semiBold,
+        color: Theme.of(context).colorScheme.onSurface,
+      ));
+    }
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 4.0),
       child: Row(
@@ -1234,12 +1546,9 @@ extension _CharacterStaffSheetExtension on _CharacterStaffSheetContentState {
           ),
           const SizedBox(width: 10),
           Expanded(
-            child: AnymexText(
-              text: value,
-              size: 14,
-              maxLines: 10,
-              variant: TextVariant.semiBold,
-              color: Theme.of(context).colorScheme.onSurface,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: widgets,
             ),
           ),
         ],

@@ -1,18 +1,48 @@
 import 'dart:math';
 
-import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
+import 'package:anymex/models/Anilist/anilist_profile.dart';
+import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/media_items/media_item.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
-enum _MangaSortMode { lastUpdated, score, title, releaseDate }
+const _animeStandardOrder = [
+  'Watching',
+  'Completed', 
+  'Completed TV', 
+  'Completed Movie',
+  'Completed OVA',
+  'Completed ONA',
+  'Completed TV Short',
+  'Completed Special',
+  'Paused',
+  'Dropped',
+  'Planning',
+  'Rewatching',
+];
 
-const _mangaAnilistGenres = [
+const _mangaStandardOrder = [
+  'Reading',
+  'Completed',
+  'Completed Manga',
+  'Completed Novel',
+  'Completed One Shot',
+  'Paused',
+  'Dropped',
+  'Planning',
+  'Rereading',
+];
+
+enum _SortMode { lastUpdated, score, title, releaseDate }
+
+const _anilistGenres = [
   'Action',
   'Adventure',
   'Comedy',
@@ -34,38 +64,30 @@ const _mangaAnilistGenres = [
   'Thriller',
 ];
 
-class AnilistMangaList extends StatefulWidget {
-  final List<TrackedMedia>? data;
-  final String? title;
-  final String? initialTab;
-  final String? userName;
-  final Set<String>? initialGenres;
-  
-  const AnilistMangaList({
+class UserMediaListPage extends StatefulWidget {
+  final int userId;
+  final String type;
+  final String userName;
+  final List<FavouriteMedia>? favourites;
+  final List<String> sectionOrder;
+  const UserMediaListPage({
     super.key,
-    this.data,
-    this.title,
-    this.initialTab,
-    this.userName,
-    this.initialGenres,
+    required this.userId,
+    required this.type,
+    required this.userName,
+    this.favourites,
+    this.sectionOrder = const [],
   });
 
   @override
-  State<AnilistMangaList> createState() => _AnilistMangaListState();
+  State<UserMediaListPage> createState() => _UserMediaListPageState();
 }
 
-class _AnilistMangaListState extends State<AnilistMangaList>
+class _UserMediaListPageState extends State<UserMediaListPage>
     with TickerProviderStateMixin {
-  final anilistAuth = Get.find<ServiceHandler>();
-  late final List<String> _allTabs;
-
-  List<String> get tabs {
-    final mangaList = widget.data ?? anilistAuth.mangaList;
-    return _allTabs.where((tab) {
-      if (tab == 'ALL') return true;
-      return _getFilteredList(mangaList, tab).isNotEmpty;
-    }).toList();
-  }
+  Map<String, List<TrackedMedia>> _lists = {};
+  bool _loading = true;
+  bool _isReversed = false;
 
   // Search
   bool _searchOpen = false;
@@ -73,74 +95,19 @@ class _AnilistMangaListState extends State<AnilistMangaList>
   String _searchQuery = '';
 
   // Sort
-  _MangaSortMode _sortMode = _MangaSortMode.lastUpdated;
+  _SortMode _sortMode = _SortMode.lastUpdated;
   bool _sortAscending = false;
 
   // Genre filter
   Set<String> _allGenres = {};
   Set<String> _selectedGenres = {};
 
-  bool _isReversed = false;
   TabController? _tabController;
 
   @override
   void initState() {
     super.initState();
-    if (widget.initialGenres != null) {
-      _selectedGenres = Set.from(widget.initialGenres!);
-    }
-    
-    final splitManga =
-        anilistAuth.profileData.value.splitCompletedManga == true;
-    final List<String> defaultTabs = [
-      'READING',
-      if (splitManga) ...[
-        'COMPLETED MANGA',
-        'COMPLETED NOVEL',
-        'COMPLETED ONE SHOT',
-      ] else
-        'COMPLETED',
-      'PAUSED',
-      'DROPPED',
-      'PLANNING',
-      'REREADING',
-      'FAVOURITES',
-      'ALL',
-    ];
-
-    // user tab order lissts
-    final sectionOrder =
-        anilistAuth.profileData.value.mangaSectionOrder;
-    if (sectionOrder.isNotEmpty) {
-      const nameMap = {
-        'Reading': 'READING',
-        'Completed': 'COMPLETED',
-        'Completed Manga': 'COMPLETED MANGA',
-        'Completed Novel': 'COMPLETED NOVEL',
-        'Completed One Shot': 'COMPLETED ONE SHOT',
-        'Paused': 'PAUSED',
-        'Dropped': 'DROPPED',
-        'Planning': 'PLANNING',
-        'Rereading': 'REREADING',
-      };
-      final ordered = <String>[];
-      for (final name in sectionOrder) {
-        final tab = nameMap[name];
-        if (tab != null && defaultTabs.contains(tab)) {
-          ordered.add(tab);
-        }
-      }
-      for (final tab in defaultTabs) {
-        if (!ordered.contains(tab)) {
-          ordered.add(tab);
-        }
-      }
-      _allTabs = ordered;
-    } else {
-      _allTabs = defaultTabs;
-    }
-    _initTabController();
-    _collectGenres();
+    _fetchList();
     _searchController.addListener(() {
       if (_searchQuery != _searchController.text.toLowerCase()) {
         setState(() => _searchQuery = _searchController.text.toLowerCase());
@@ -155,48 +122,113 @@ class _AnilistMangaListState extends State<AnilistMangaList>
     super.dispose();
   }
 
-  void _initTabController() {
-    _tabController?.dispose();
-    final orderedTabs = _isReversed ? tabs.reversed.toList() : tabs;
-    final requestedInitialTab = widget.initialTab;
-    final initialIndex = requestedInitialTab == null
-        ? 0
-        : orderedTabs.indexOf(requestedInitialTab).clamp(0, orderedTabs.length - 1);
-    _tabController = TabController(
-      length: orderedTabs.length,
-      vsync: this,
-      initialIndex: initialIndex,
-    );
-  }
+  Future<void> _fetchList() async {
+    final anilistAuth = Get.find<AnilistAuth>();
+    final data =
+        await anilistAuth.fetchUserMediaList(widget.userId, widget.type);
 
-  void _collectGenres() {
-    final anilistAuth = Get.find<ServiceHandler>();
-    final mangaList = widget.data ?? anilistAuth.mangaList;
-    final genres = <String>{..._mangaAnilistGenres};
-    for (final entry in mangaList) {
-      genres.addAll(entry.genres);
+    final trackedById = <String, TrackedMedia>{};
+    for (final list in data.values) {
+      for (final entry in list) {
+        final id = (entry.id ?? '').trim();
+        if (id.isEmpty || trackedById.containsKey(id)) continue;
+        trackedById[id] = entry;
+      }
     }
-    _allGenres = genres;
-  }
 
-  List<TrackedMedia> _getFilteredList(List<TrackedMedia> baseList, String tab) {
-    if (tab == 'FAVOURITES') {
-      final favs =
-          Get.find<ServiceHandler>().profileData.value.favourites?.manga ?? [];
-      return favs.map((f) {
-        final tracked = baseList.where((b) => b.id == f.id).firstOrNull;
-        if (tracked != null) return tracked;
+    // Add fav
+    if (widget.favourites != null && widget.favourites!.isNotEmpty) {
+      final favEntries = widget.favourites!.map((f) {
+        final id = (f.id ?? '').trim();
+        final tracked = trackedById[id];
+
+        if (tracked != null) {
+          return TrackedMedia(
+            id: tracked.id,
+            title: tracked.title,
+            poster: tracked.poster,
+            episodeCount: tracked.episodeCount,
+            chapterCount: tracked.chapterCount,
+            rating: tracked.rating,
+            totalEpisodes: tracked.totalEpisodes,
+            releasedEpisodes: tracked.releasedEpisodes,
+            watchingStatus: tracked.watchingStatus,
+            format: tracked.format,
+            mediaStatus: tracked.mediaStatus,
+            score: tracked.score,
+            type: tracked.type,
+            mediaListId: tracked.mediaListId,
+            servicesType: tracked.servicesType,
+            userName: tracked.userName,
+            userId: tracked.userId,
+            userAvatar: tracked.userAvatar,
+            userProgress: tracked.userProgress,
+            userScore: tracked.userScore,
+            genres: tracked.genres,
+            startYear: tracked.startYear,
+            updatedAt: tracked.updatedAt,
+          );
+        }
 
         return TrackedMedia(
           id: f.id,
           title: f.title,
           poster: f.cover,
-          episodeCount: 'N/A',
-          rating: f.averageScore?.toString(),
+          episodeCount: '0',
+          totalEpisodes: f.episodes?.toString() ?? '?',
+          rating: f.averageScore?.toStringAsFixed(1),
+          score: f.averageScore?.toStringAsFixed(1),
         );
       }).toList();
+      data['Favourites'] = favEntries;
     }
-    return filterListByStatus(baseList, tab);
+
+   
+    final genres = <String>{..._anilistGenres};
+    for (final list in data.values) {
+      for (final entry in list) {
+        genres.addAll(entry.genres);
+      }
+    }
+
+    if (mounted) {
+      setState(() {
+        _lists = data;
+        _allGenres = genres;
+        _loading = false;
+      });
+      _initTabController();
+    }
+  }
+
+  void _initTabController() {
+    _tabController?.dispose();
+    final tabs = _isReversed ? _tabNames.reversed.toList() : _tabNames;
+    _tabController = TabController(length: tabs.length, vsync: this);
+  }
+
+  List<String> get _tabNames {
+    final sectionOrder = widget.sectionOrder;
+    final fallbackOrder =
+        widget.type == 'ANIME' ? _animeStandardOrder : _mangaStandardOrder;
+    final order = sectionOrder.isNotEmpty ? sectionOrder : fallbackOrder;
+    final sorted = <String>[];
+    final remaining = <String>[];
+    for (final name in _lists.keys) {
+      if (name == 'All' || name == 'Favourites') continue;
+      if (order.contains(name)) {
+        sorted.add(name);
+      } else {
+        remaining.add(name);
+      }
+    }
+    
+    sorted.sort((a, b) => order.indexOf(a).compareTo(order.indexOf(b)));
+
+    final result = [...sorted, ...remaining];
+    if (_lists.containsKey('Favourites')) result.add('Favourites');
+    if (_lists.containsKey('All')) result.add('All');
+    return result;
   }
 
   List<TrackedMedia> _applyFilters(List<TrackedMedia> items) {
@@ -205,16 +237,14 @@ class _AnilistMangaListState extends State<AnilistMangaList>
     // Search filter
     if (_searchQuery.isNotEmpty) {
       result = result
-          .where((e) =>
-              (e.title ?? '').toLowerCase().contains(_searchQuery))
+          .where((e) => (e.title ?? '').toLowerCase().contains(_searchQuery))
           .toList();
     }
 
     // Genre filter
     if (_selectedGenres.isNotEmpty) {
       result = result
-          .where(
-              (e) => _selectedGenres.every((g) => e.genres.contains(g)))
+          .where((e) => _selectedGenres.every((g) => e.genres.contains(g)))
           .toList();
     }
 
@@ -222,18 +252,18 @@ class _AnilistMangaListState extends State<AnilistMangaList>
     result.sort((a, b) {
       int cmp;
       switch (_sortMode) {
-        case _MangaSortMode.score:
+        case _SortMode.score:
           final sa = double.tryParse(a.score ?? '0') ?? 0;
           final sb = double.tryParse(b.score ?? '0') ?? 0;
           cmp = sa.compareTo(sb);
           break;
-        case _MangaSortMode.title:
+        case _SortMode.title:
           cmp = (a.title ?? '').compareTo(b.title ?? '');
           break;
-        case _MangaSortMode.releaseDate:
+        case _SortMode.releaseDate:
           cmp = (a.startYear ?? 0).compareTo(b.startYear ?? 0);
           break;
-        case _MangaSortMode.lastUpdated:
+        case _SortMode.lastUpdated:
           cmp = (a.updatedAt ?? 0).compareTo(b.updatedAt ?? 0);
           break;
       }
@@ -244,15 +274,17 @@ class _AnilistMangaListState extends State<AnilistMangaList>
   }
 
   void _openRandom() {
-    final anilistAuth = Get.find<ServiceHandler>();
-    final mangaList = widget.data ?? anilistAuth.mangaList;
-    final orderedTabs = _isReversed ? tabs.reversed.toList() : tabs;
-    final currentTabName = orderedTabs[_tabController?.index ?? 0];
-    final items = _applyFilters(_getFilteredList(mangaList, currentTabName));
+    final tabs = _isReversed ? _tabNames.reversed.toList() : _tabNames;
+    final currentTabName = tabs[_tabController?.index ?? 0];
+    final items = _applyFilters(_lists[currentTabName] ?? []);
     if (items.isEmpty) return;
     final random = items[Random().nextInt(items.length)];
+    final isManga = widget.type == 'MANGA';
+   
     final media = CardData.fromTrackedMedia(random);
-    navigate(() => MangaDetailsPage(media: media.data, tag: media.title));
+    navigate(() => isManga
+        ? MangaDetailsPage(media: media.data, tag: media.title)
+        : AnimeDetailsPage(media: media.data, tag: media.title));
   }
 
   void _showSortMenu(BuildContext context) {
@@ -310,32 +342,29 @@ class _AnilistMangaListState extends State<AnilistMangaList>
                 ),
               ),
               const SizedBox(height: 4),
-              ..._MangaSortMode.values.map((mode) {
+              ..._SortMode.values.map((mode) {
                 final selected = _sortMode == mode;
                 final label = {
-                  _MangaSortMode.lastUpdated: 'Last Updated',
-                  _MangaSortMode.score: 'Score',
-                  _MangaSortMode.title: 'Title',
-                  _MangaSortMode.releaseDate: 'Release Date',
+                  _SortMode.lastUpdated: 'Last Updated',
+                  _SortMode.score: 'Score',
+                  _SortMode.title: 'Title',
+                  _SortMode.releaseDate: 'Release Date',
                 }[mode]!;
                 final icon = {
-                  _MangaSortMode.lastUpdated: Icons.update_rounded,
-                  _MangaSortMode.score: Icons.star_rounded,
-                  _MangaSortMode.title: Icons.sort_by_alpha_rounded,
-                  _MangaSortMode.releaseDate: Icons.calendar_today_rounded,
+                  _SortMode.lastUpdated: Icons.update_rounded,
+                  _SortMode.score: Icons.star_rounded,
+                  _SortMode.title: Icons.sort_by_alpha_rounded,
+                  _SortMode.releaseDate: Icons.calendar_today_rounded,
                 }[mode]!;
                 return ListTile(
                   leading: Icon(icon,
-                      color: selected
-                          ? colors.primary
-                          : colors.onSurfaceVariant),
+                      color:
+                          selected ? colors.primary : colors.onSurfaceVariant),
                   title: Text(label,
                       style: TextStyle(
                         fontWeight:
                             selected ? FontWeight.w700 : FontWeight.w500,
-                        color: selected
-                            ? colors.primary
-                            : colors.onSurface,
+                        color: selected ? colors.primary : colors.onSurface,
                       )),
                   trailing: selected
                       ? Icon(Icons.check_rounded,
@@ -357,6 +386,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
   void _showGenreFilter(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final sortedGenres = _allGenres.toList()..sort();
+   
     final tempSelected = Set<String>.from(_selectedGenres);
 
     showModalBottomSheet(
@@ -489,14 +519,50 @@ class _AnilistMangaListState extends State<AnilistMangaList>
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final anilistAuth = Get.find<ServiceHandler>();
-    final userName = widget.userName ?? anilistAuth.profileData.value.name;
-    final mangaList = widget.data ?? anilistAuth.mangaList;
-    final orderedTabs = _isReversed ? tabs.reversed.toList() : tabs;
+    final typeLabel = widget.type == 'ANIME' ? 'Anime' : 'Manga';
 
-    if (_tabController == null || _tabController!.length != orderedTabs.length) {
+    if (_loading) {
+      return Glow(
+        child: Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: Icon(Icons.arrow_back_ios_new, color: colors.primary),
+            ),
+            title: Text(
+              "${widget.userName}'s $typeLabel List",
+              style: TextStyle(fontSize: 16, color: colors.primary),
+            ),
+          ),
+          body: const Center(child: AnymexProgressIndicator()),
+        ),
+      );
+    }
+
+    if (_lists.isEmpty || _tabNames.isEmpty) {
+      return Glow(
+        child: Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: Icon(Icons.arrow_back_ios_new, color: colors.primary),
+            ),
+            title: Text(
+              "${widget.userName}'s $typeLabel List",
+              style: TextStyle(fontSize: 16, color: colors.primary),
+            ),
+          ),
+          body: const Center(child: Text('No entries found')),
+        ),
+      );
+    }
+
+    final tabs = _isReversed ? _tabNames.reversed.toList() : _tabNames;
+
+    
+    if (_tabController == null || _tabController!.length != tabs.length) {
       _tabController?.dispose();
-      _tabController = TabController(length: orderedTabs.length, vsync: this);
+      _tabController = TabController(length: tabs.length, vsync: this);
     }
 
     return Glow(
@@ -504,15 +570,15 @@ class _AnilistMangaListState extends State<AnilistMangaList>
         appBar: AppBar(
           titleSpacing: 0,
           leading: IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: Icon(
-                Icons.arrow_back_ios_new,
-                color: colors.primary,
-              )),
-          title: Text("$userName's ${widget.title ?? 'Manga'} List",
-                  style: TextStyle(fontSize: 16, color: colors.primary)),
+            onPressed: () => Navigator.pop(context),
+            icon: Icon(Icons.arrow_back_ios_new, color: colors.primary),
+          ),
+          title: Text(
+            "${widget.userName}'s $typeLabel List",
+            style: TextStyle(fontSize: 16, color: colors.primary),
+          ),
           actions: [
-            // Search toggle
+          
             IconButton(
               onPressed: () {
                 setState(() {
@@ -598,7 +664,8 @@ class _AnilistMangaListState extends State<AnilistMangaList>
                 if (_searchOpen)
                   Container(
                     height: 40,
-                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                     decoration: BoxDecoration(
                       color: colors.surfaceContainerHighest.withOpacity(0.5),
                       borderRadius: BorderRadius.circular(20),
@@ -617,10 +684,10 @@ class _AnilistMangaListState extends State<AnilistMangaList>
                             style: TextStyle(
                                 color: colors.onSurface, fontSize: 14),
                             decoration: InputDecoration(
-                              hintText: 'Search manga...',
+                              hintText: 'Search ${typeLabel.toLowerCase()}...',
                               hintStyle: TextStyle(
-                                  color: colors.onSurfaceVariant
-                                      .withOpacity(0.4),
+                                  color:
+                                      colors.onSurfaceVariant.withOpacity(0.4),
                                   fontSize: 14),
                               border: InputBorder.none,
                               isDense: true,
@@ -639,8 +706,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 10),
                               child: Icon(Icons.close_rounded,
-                                  size: 18,
-                                  color: colors.onSurfaceVariant),
+                                  size: 18, color: colors.onSurfaceVariant),
                             ),
                           )
                         else
@@ -651,23 +717,19 @@ class _AnilistMangaListState extends State<AnilistMangaList>
                 TabBar(
                   controller: _tabController,
                   padding: EdgeInsets.zero,
-                  unselectedLabelColor: Colors.grey,
                   physics: const BouncingScrollPhysics(),
                   tabAlignment: TabAlignment.start,
                   isScrollable: true,
                   dividerColor: Colors.transparent,
-                  labelPadding:
-                      const EdgeInsets.symmetric(horizontal: 14),
+                  unselectedLabelColor: Colors.grey,
+                  labelPadding: const EdgeInsets.symmetric(horizontal: 14),
                   indicatorSize: TabBarIndicatorSize.label,
-                  tabs: orderedTabs.map((tab) {
-                    final filtered =
-                        _applyFilters(_getFilteredList(mangaList, tab));
-                    final label =
-                        '${tab.toUpperCase()} (${filtered.length})';
+                  tabs: tabs.map((name) {
+                    final filtered = _applyFilters(_lists[name] ?? []);
+                    final label = '${name.toUpperCase()} (${filtered.length})';
                     return Tab(
                       child: ConstrainedBox(
-                        constraints:
-                            const BoxConstraints(maxWidth: 300),
+                        constraints: const BoxConstraints(maxWidth: 300),
                         child: Text(
                           label,
                           textAlign: TextAlign.center,
@@ -686,9 +748,8 @@ class _AnilistMangaListState extends State<AnilistMangaList>
         ),
         body: TabBarView(
           controller: _tabController,
-          children: orderedTabs.map((tab) {
-            final items =
-                _applyFilters(_getFilteredList(mangaList, tab));
+          children: tabs.map((name) {
+            final items = _applyFilters(_lists[name] ?? []);
 
             if (items.isEmpty) {
               return Center(
@@ -702,10 +763,9 @@ class _AnilistMangaListState extends State<AnilistMangaList>
                     Text(
                       _searchQuery.isNotEmpty || _selectedGenres.isNotEmpty
                           ? 'No matches found'
-                          : 'No entries in $tab',
+                          : 'No entries in $name',
                       style: TextStyle(
-                          color:
-                              colors.onSurfaceVariant.withOpacity(0.6)),
+                          color: colors.onSurfaceVariant.withOpacity(0.6)),
                     ),
                   ],
                 ),
@@ -716,15 +776,20 @@ class _AnilistMangaListState extends State<AnilistMangaList>
               padding: const EdgeInsets.all(10),
               physics: const BouncingScrollPhysics(),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: getResponsiveCrossAxisVal(
-                      MediaQuery.of(context).size.width,
-                      itemWidth: 108),
-                  mainAxisExtent: 250,
-                  crossAxisSpacing: 10),
+                crossAxisCount: getResponsiveCrossAxisVal(
+                  MediaQuery.of(context).size.width,
+                  itemWidth: 108,
+                ),
+                mainAxisExtent: 250,
+                crossAxisSpacing: 10,
+              ),
               itemCount: items.length,
               itemBuilder: (context, index) {
                 final item = items[index];
-                return GridAnimeCard(data: item, isManga: true);
+                return GridAnimeCard(
+                  data: item,
+                  isManga: widget.type == 'MANGA',
+                );
               },
             );
           }).toList(),

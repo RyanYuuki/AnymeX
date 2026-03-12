@@ -465,6 +465,16 @@ List<TrackedMedia> filterListByStatus(
           .where((anime) =>
               anime.watchingStatus == 'COMPLETED' && anime.format == 'SPECIAL')
           .toList();
+    case 'COMPLETED ONA':
+      return animeList
+          .where((anime) =>
+              anime.watchingStatus == 'COMPLETED' && anime.format == 'ONA')
+          .toList();
+    case 'COMPLETED TV SHORT':
+      return animeList
+          .where((anime) =>
+              anime.watchingStatus == 'COMPLETED' && anime.format == 'TV_SHORT')
+          .toList();
     case 'PAUSED':
       return animeList
           .where((anime) => anime.watchingStatus == 'PAUSED')
@@ -480,6 +490,25 @@ List<TrackedMedia> filterListByStatus(
     case 'REWATCHING':
       return animeList
           .where((anime) => anime.watchingStatus == "REPEATING")
+          .toList();
+    case 'REREADING':
+      return animeList
+          .where((anime) => anime.watchingStatus == "REPEATING")
+          .toList();
+    case 'COMPLETED MANGA':
+      return animeList
+          .where((anime) =>
+              anime.watchingStatus == 'COMPLETED' && anime.format == 'MANGA')
+          .toList();
+    case 'COMPLETED NOVEL':
+      return animeList
+          .where((anime) =>
+              anime.watchingStatus == 'COMPLETED' && anime.format == 'NOVEL')
+          .toList();
+    case 'COMPLETED ONE SHOT':
+      return animeList
+          .where((anime) =>
+              anime.watchingStatus == 'COMPLETED' && anime.format == 'ONE_SHOT')
           .toList();
 
     case 'CURRENTLY WATCHING':
@@ -562,6 +591,37 @@ Future<bool> isTv() async {
 
 Future<void> navigate(dynamic page) async {
   await Navigator.push(Get.context!, MaterialPageRoute(builder: (c) => page()));
+}
+
+Future<void> navigateWithSlide(dynamic page) async {
+  await Navigator.push(
+    Get.context!,
+    PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => page(),
+      transitionDuration: const Duration(milliseconds: 300),
+      reverseTransitionDuration: const Duration(milliseconds: 250),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        final offsetAnim = Tween<Offset>(
+          begin: const Offset(0, 0.08),
+          end: Offset.zero,
+        ).animate(CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutCubic,
+        ));
+        final fadeAnim = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeIn,
+        );
+        return FadeTransition(
+          opacity: fadeAnim,
+          child: SlideTransition(
+            position: offsetAnim,
+            child: child,
+          ),
+        );
+      },
+    ),
+  );
 }
 
 extension SizedBoxExt on num {

@@ -1,6 +1,12 @@
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
+import 'package:anymex/screens/profile/user_profile_page.dart';
+import 'package:anymex/screens/profile/profile_page.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:get/get.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class SocialSection extends StatelessWidget {
@@ -39,112 +45,137 @@ class SocialSection extends StatelessWidget {
 
     return SizedBox(
       width: 100,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Stack(
-            alignment: Alignment.bottomCenter,
-            children: [
-              Container(
-                margin: const EdgeInsets.only(bottom: 10),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: CircleAvatar(
-                  radius: 40,
-                  backgroundColor: Colors.transparent,
-                  backgroundImage: (user.userAvatar != null &&
-                          user.userAvatar!.isNotEmpty)
-                      ? NetworkImage(user.userAvatar!)
-                      : const NetworkImage(
-                          'https://s4.anilist.co/file/anilistcdn/user/avatar/large/default.png'),
-                ),
-              ),
-              if (user.userScore != null && user.userScore! > 0)
-                Positioned(
-                  bottom: 0,
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                    decoration: BoxDecoration(
-                        color: theme.primary,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: user.userId == null
+            ? null
+            : () {
+                final currentUserId = Get.find<ServiceHandler>().profileData.value.id;
+                if (user.userId.toString() == currentUserId) {
+                  navigateWithSlide(() => const ProfilePage());
+                } else {
+                  navigateWithSlide(() => UserProfilePage(userId: user.userId!));
+                }
+              },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Stack(
+              alignment: Alignment.bottomCenter,
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(bottom: 10),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: ClipOval(
+                    child: (user.userAvatar != null && user.userAvatar!.isNotEmpty)
+                        ? CachedNetworkImage(
+                            imageUrl: user.userAvatar!,
+                            width: 80,
+                            height: 80,
+                            fit: BoxFit.cover,
+                            errorWidget: (context, url, error) => Image.network(
+                              'https://s4.anilist.co/file/anilistcdn/user/avatar/large/default.png',
+                              width: 80,
+                              height: 80,
+                              fit: BoxFit.cover,
+                            ),
                           )
-                        ]),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.star_rounded,
-                            size: 12, color: theme.onPrimary),
-                        const SizedBox(width: 4),
-                        AnymexText(
-                          text: ((user.userScore ?? 1) / 10).toStringAsFixed(1),
-                          size: 11,
-                          color: theme.onPrimary,
-                          variant: TextVariant.bold,
-                        ),
-                      ],
+                        : Image.network(
+                            'https://s4.anilist.co/file/anilistcdn/user/avatar/large/default.png',
+                            width: 80,
+                            height: 80,
+                            fit: BoxFit.cover,
+                          ),
+                  ),
+                ),
+                if (user.userScore != null && user.userScore! > 0)
+                  Positioned(
+                    bottom: 0,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                          color: theme.primary,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.3),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            )
+                          ]),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.star_rounded,
+                              size: 12, color: theme.onPrimary),
+                          const SizedBox(width: 4),
+                          AnymexText(
+                            text: (user.userScore!).toStringAsFixed(1),
+                            size: 11,
+                            color: theme.onPrimary,
+                            variant: TextVariant.bold,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          if (status.isNotEmpty)
-            AnymexText(
-              text: status,
-              size: 12,
-              color: theme.onSurface.withOpacity(0.7),
-              fontStyle: FontStyle.italic,
-              textAlign: TextAlign.center,
+              ],
             ),
-          const SizedBox(height: 2),
-          AnymexText(
-            text: user.userName ?? 'Unknown',
-            size: 13,
-            maxLines: 1,
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
-            variant: TextVariant.bold,
-            color: theme.onSurface,
-          ),
-          const SizedBox(height: 2),
-          if (user.userProgress != null)
-            Text.rich(
-              TextSpan(
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Poppins',
-                ),
-                children: [
-                  TextSpan(
-                    text: "${user.userProgress}",
-                    style: TextStyle(color: theme.primary),
-                  ),
-                  TextSpan(
-                    text: " | ${totalEpisodes ?? '?'}",
-                    style: TextStyle(color: theme.onSurface.withOpacity(0.9)),
-                  ),
-                ],
+            const SizedBox(height: 8),
+            if (status.isNotEmpty)
+              AnymexText(
+                text: status,
+                size: 12,
+                color: theme.onSurface.withOpacity(0.7),
+                fontStyle: FontStyle.italic,
+                textAlign: TextAlign.center,
               ),
+            const SizedBox(height: 2),
+            AnymexText(
+              text: user.userName ?? 'Unknown',
+              size: 13,
               maxLines: 1,
               textAlign: TextAlign.center,
               overflow: TextOverflow.ellipsis,
+              variant: TextVariant.bold,
+              color: theme.onSurface,
             ),
-        ],
+            const SizedBox(height: 2),
+            if (user.userProgress != null)
+              Text.rich(
+                TextSpan(
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Poppins',
+                  ),
+                  children: [
+                    TextSpan(
+                      text: "${user.userProgress}",
+                      style: TextStyle(color: theme.primary),
+                    ),
+                    TextSpan(
+                      text: " | ${totalEpisodes ?? '?'}",
+                      style: TextStyle(color: theme.onSurface.withOpacity(0.9)),
+                    ),
+                  ],
+                ),
+                maxLines: 1,
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+              ),
+          ],
+        ),
       ),
     );
   }

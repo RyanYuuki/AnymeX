@@ -228,24 +228,34 @@ class SettingsSheet extends StatelessWidget {
           children: [
             Row(children: [
               const SizedBox(width: 5),
-              CircleAvatar(
-                radius: 24,
-                backgroundColor: context.colors.surfaceContainer,
-                child: serviceHandler.isLoggedIn.value
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(50),
-                        child: AnymeXImage(
-                            fit: BoxFit.cover,
-                            width: 45,
-                            height: 45,
-                            radius: 0,
-                            imageUrl: serviceHandler.profileData.value.avatar ??
-                                ''),
-                      )
-                    : Icon(
-                        Icons.person,
-                        color: context.colors.inverseSurface,
-                      ),
+              GestureDetector(
+                onTap: serviceHandler.isLoggedIn.value &&
+                        serviceHandler.serviceType.value == ServicesType.anilist
+                    ? () {
+                        Get.back();
+                        navigate(() => const ProfilePage());
+                      }
+                    : null,
+                child: CircleAvatar(
+                  radius: 24,
+                  backgroundColor: context.colors.surfaceContainer,
+                  child: serviceHandler.isLoggedIn.value
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(50),
+                          child: AnymeXImage(
+                              fit: BoxFit.cover,
+                              width: 45,
+                              height: 45,
+                              radius: 0,
+                              imageUrl:
+                                  serviceHandler.profileData.value.avatar ??
+                                      ''),
+                        )
+                      : Icon(
+                          Icons.person,
+                          color: context.colors.inverseSurface,
+                        ),
+                ),
               ),
               const SizedBox(width: 15),
               Column(

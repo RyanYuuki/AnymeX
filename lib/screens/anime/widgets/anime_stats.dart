@@ -1,8 +1,10 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
+import 'package:anymex/screens/anime/studio_details_page.dart';
 import 'package:anymex/screens/anime/themes/anime_theme_view.dart';
 import 'package:anymex/screens/anime/widgets/watch_order_page.dart';
 import 'package:anymex/models/mangaupdates/news_item.dart';
@@ -710,7 +712,20 @@ class AnimeStats extends StatelessWidget {
         {
           'label': 'Studio',
           'value': data.studios?.first ?? '',
-          'icon': Icons.business_outlined
+          'icon': Icons.business_outlined,
+          'onTap': () async {
+            final studioName = data.studios?.first ?? '';
+            if (studioName.isEmpty) return;
+            final studioId = await AnilistData.fetchStudioIdByName(studioName);
+            if (studioId != null) {
+              if (!context.mounted) return;
+              showStudioDetailsSheet(
+                context,
+                studioId,
+                studioName,
+              );
+            }
+          },
         },
     ];
 
@@ -727,47 +742,51 @@ class AnimeStats extends StatelessWidget {
       ),
       itemBuilder: (context, index) {
         final stat = stats[index];
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          decoration: BoxDecoration(
-            color: colorScheme.surface.opaque(0.4),
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: colorScheme.primary.opaque(0.1),
-              width: 1,
+        final onTap = stat['onTap'] as Function?;
+        return GestureDetector(
+          onTap: onTap != null ? () => onTap() : null,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              color: colorScheme.surface.opaque(0.4),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: colorScheme.primary.opaque(0.1),
+                width: 1,
+              ),
             ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    stat['icon'] as IconData,
-                    size: 16,
-                    color: colorScheme.primary.opaque(0.7),
-                  ),
-                  const SizedBox(width: 6),
-                  AnymexText(
-                    text: stat['label'].toString(),
-                    variant: TextVariant.regular,
-                    size: 11,
-                    color: colorScheme.onSurface.opaque(0.6),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 6),
-              AnymexText(
-                text: stat['value'].toString(),
-                variant: TextVariant.bold,
-                size: 15,
-                color: colorScheme.primary,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      stat['icon'] as IconData,
+                      size: 16,
+                      color: colorScheme.primary.opaque(0.7),
+                    ),
+                    const SizedBox(width: 6),
+                    AnymexText(
+                      text: stat['label'].toString(),
+                      variant: TextVariant.regular,
+                      size: 11,
+                      color: colorScheme.onSurface.opaque(0.6),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                AnymexText(
+                  text: stat['value'].toString(),
+                  variant: TextVariant.bold,
+                  size: 15,
+                  color: colorScheme.primary,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
           ),
         );
       },

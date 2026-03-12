@@ -178,7 +178,7 @@ class GridAnimeCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 3),
-          if (media.episodeCount != 'N/A')
+          if (media.episodeCount != 'N/A' && media.episodeCount != null)
             SizedBox(
               width: cardWidth,
               child: AnymexTextSpans(
@@ -210,6 +210,24 @@ class GridAnimeCard extends StatelessWidget {
   }
 
   Widget _buildEpisodeChip(BuildContext context, CardData media) {
+    String displayScore = '0.0';
+    if (media.score != null && media.score != '0' && media.score != '0.0') {
+      final parsedScore = double.tryParse(media.score!);
+      if (parsedScore != null) {
+        if (parsedScore > 10) {
+          displayScore = (parsedScore / 10).toStringAsFixed(1);
+        } else {
+          displayScore = parsedScore.toStringAsFixed(1);
+        }
+      } else {
+        displayScore = media.score!;
+      }
+    } else if (media.rating != null &&
+        media.rating != '0' &&
+        media.rating != '0.0') {
+      displayScore = media.rating!;
+    }
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -229,7 +247,7 @@ class GridAnimeCard extends StatelessWidget {
           ),
           const SizedBox(width: 4),
           AnymexText(
-            text: media.rating ?? '0.0',
+            text: displayScore,
             color: context.colors.onPrimary,
             size: 12,
             variant: TextVariant.bold,
@@ -261,8 +279,7 @@ class BlurAnimeCard extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
           border: Border(
-              right: BorderSide(
-                  width: 2, color: context.colors.primary)),
+              right: BorderSide(width: 2, color: context.colors.primary)),
           borderRadius: BorderRadius.circular(12.multiplyRadius()),
           color: context.colors.surface.withAlpha(144),
         ),

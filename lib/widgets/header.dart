@@ -20,6 +20,8 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 
+import 'package:anymex/screens/profile/profile_page.dart';
+
 enum PageType { manga, anime, home, novel }
 
 class Header extends StatelessWidget {
@@ -190,23 +192,30 @@ class Header extends StatelessWidget {
       onTap: () {
         return SettingsSheet.show(context);
       },
-      child: CircleAvatar(
-        radius: 24,
-        backgroundColor: context.colors.secondaryContainer.opaque(0.50),
-        child: profileData.isLoggedIn.value
-            ? ClipRRect(
-                borderRadius: BorderRadius.circular(50),
-                child: AnymeXImage(
-                  width: 45,
-                  height: 45,
-                  fit: BoxFit.cover,
-                  radius: 0,
-                  errorImage: '',
-                  imageUrl: profileData.profileData.value.avatar ?? '',
-                ),
-              )
-            : Icon(IconlyBold.profile,
-                color: context.colors.onSecondaryContainer),
+      child: GestureDetector(
+        onLongPress: () {
+          if (profileData.isLoggedIn.value) {
+            navigate(() => const ProfilePage());
+          }
+        },
+        child: CircleAvatar(
+          radius: 24,
+          backgroundColor: context.colors.secondaryContainer.opaque(0.50),
+          child: profileData.isLoggedIn.value
+              ? ClipRRect(
+                  borderRadius: BorderRadius.circular(50),
+                  child: AnymeXImage(
+                    width: 45,
+                    height: 45,
+                    fit: BoxFit.cover,
+                    radius: 0,
+                    errorImage: '',
+                    imageUrl: profileData.profileData.value.avatar ?? '',
+                  ),
+                )
+              : Icon(IconlyBold.profile,
+                  color: context.colors.onSecondaryContainer),
+        ),
       ),
     );
   }
