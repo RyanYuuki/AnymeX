@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/widgets/common/slider_semantics.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
@@ -13,7 +15,8 @@ class ListEditorModal extends StatefulWidget {
   final RxInt animeProgress;
   final Rx<dynamic> currentAnime;
   final Media media;
-  final Function(String, double, String, int, DateTime?, DateTime?, bool?) onUpdate;
+  final Function(String, double, String, int, DateTime?, DateTime?, bool?)
+      onUpdate;
   final Function(String) onDelete;
   final bool isManga;
 
@@ -42,6 +45,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
   DateTime? _startedAt;
   DateTime? _completedAt;
   bool _isPrivate = false;
+  bool _showAdvanced = false;
 
   @override
   void initState() {
@@ -55,10 +59,12 @@ class _ListEditorModalState extends State<ListEditorModal> {
     // Pre-fill dates from existing tracked data if available
     final tracked = widget.currentAnime.value;
     if (tracked != null) {
-      _startedAt   = tracked.startedAt;
+      _startedAt = tracked.startedAt;
       _completedAt = tracked.completedAt;
-      _isPrivate   = tracked.isPrivate ?? false;
+      _isPrivate = tracked.isPrivate ?? false;
     }
+
+    _showAdvanced = false;
 
     _progressController = TextEditingController(
       text: _localProgress.toString(),
@@ -73,36 +79,54 @@ class _ListEditorModalState extends State<ListEditorModal> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: EdgeInsets.only(
-          left: 24.0,
-          right: 24.0,
-          bottom: MediaQuery.of(context).viewInsets.bottom + 24.0,
-          top: 24.0,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(context),
-            const SizedBox(height: 32),
-            _buildStatusSection(context),
-            const SizedBox(height: 24),
-            _buildProgressSection(context),
-            const SizedBox(height: 24),
-            _buildScoreSection(context),
-            const SizedBox(height: 24),
-            _buildDateSection(context),
-            if (widget.media.serviceType.isAL) ...[  
-              const SizedBox(height: 24),
-              _buildPrivateSection(context),
-            ],
-            const SizedBox(height: 32),
-            _buildActionButtons(context),
-          ],
-        ),
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double gap = 12.0;
+        final bool isWide = constraints.maxWidth >= 520;
+        final double cardWidth =
+            isWide ? (constraints.maxWidth - gap) / 2 : constraints.maxWidth;
+
+        return SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: 16.0,
+              right: 16.0,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 16.0,
+              top: 12.0,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildHeader(context),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: gap,
+                  runSpacing: gap,
+                  children: [
+                    SizedBox(
+                      width: cardWidth,
+                      child: _buildStatusSection(context),
+                    ),
+                    SizedBox(
+                      width: cardWidth,
+                      child: _buildScoreSection(context),
+                    ),
+                    SizedBox(
+                      width: constraints.maxWidth,
+                      child: _buildProgressSection(context),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                _buildAdvancedSection(context),
+                const SizedBox(height: 16),
+                _buildActionButtons(context),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -117,99 +141,128 @@ class _ListEditorModalState extends State<ListEditorModal> {
           children: [
             Text(
               'Edit ${widget.isManga ? 'Manga' : 'Anime'}',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: colorScheme.onSurface,
                   ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              'Update your progress and rating',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
+          ],
+        ),
+        Row(
+          children: [
+            _buildHeaderIconButton(
+              context,
+              icon: Icons.delete_outline_rounded,
+              color: colorScheme.error,
+              onTap: _showDeleteConfirmation,
+            ),
+            const SizedBox(width: 8),
+            _buildHeaderIconButton(
+              context,
+              icon: Icons.close_rounded,
+              color: colorScheme.onSurfaceVariant,
+              onTap: () => Get.back(),
             ),
           ],
         ),
-        Container(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: colorScheme.surfaceContainerHighest,
-          ),
-          padding: const EdgeInsets.all(8),
-          child: IconButton(
-              color: colorScheme.onSurface,
-              onPressed: () => Get.back(),
-              icon: const Icon(Icons.close_rounded)),
-        )
       ],
     );
   }
 
-  Widget _buildStatusSection(BuildContext context) {
+  Widget _buildHeaderIconButton(
+    BuildContext context, {
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
     final colorScheme = context.colors;
 
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainerHighest.opaque(0.25),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: colorScheme.outline.opaque(0.2),
+            ),
+          ),
+          alignment: Alignment.center,
+          child: Icon(
+            icon,
+            size: 19,
+            color: color,
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showDeleteConfirmation() {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => _DeleteConfirmDialog(
+        title: 'Delete entry?',
+        message: 'This will remove it from your list.',
+        onConfirm: () {
+          Navigator.of(dialogContext).pop();
+          Get.back();
+          widget.onDelete(widget.media.id);
+        },
+      ),
+    );
+  }
+
+  Widget _buildStatusSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 12),
-          child: Text(
-            'Status',
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  color: colorScheme.onSurface,
-                  fontWeight: FontWeight.w600,
-                ),
+        AnymexDropdown(
+          label: 'Status',
+          icon: Icons.info_rounded,
+          compact: true,
+          onChanged: (e) {
+            setState(() {
+              final prev = _localStatus;
+              _localStatus = e.value;
+              if (_localStatus == 'CURRENT' && _startedAt == null) {
+                _startedAt = DateTime.now();
+              }
+              if (_localStatus == 'COMPLETED' && _completedAt == null) {
+                _completedAt = DateTime.now();
+                if (_startedAt == null) _startedAt = DateTime.now();
+              }
+              if (prev == 'COMPLETED' && _localStatus != 'COMPLETED') {
+                _completedAt = null;
+              }
+            });
+          },
+          selectedItem: DropdownItem(
+            value: _localStatus,
+            text: _getStatusDisplayText(_localStatus),
           ),
-        ),
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: colorScheme.outline.opaque(0.5),
+          items: [
+            ('PLANNING', 'Planning', Icons.schedule_rounded),
+            (
+              'CURRENT',
+              widget.isManga ? 'Reading' : 'Watching',
+              Icons.play_circle_rounded
             ),
-          ),
-          child: AnymexDropdown(
-            label: 'Status',
-            icon: Icons.info_rounded,
-            onChanged: (e) {
-              setState(() {
-                final prev = _localStatus;
-                _localStatus = e.value;
-                if (_localStatus == 'CURRENT' && _startedAt == null) {
-                  _startedAt = DateTime.now();
-                }
-                if (_localStatus == 'COMPLETED' && _completedAt == null) {
-                  _completedAt = DateTime.now();
-                  if (_startedAt == null) _startedAt = DateTime.now();
-                }
-                if (prev == 'COMPLETED' && _localStatus != 'COMPLETED') {
-                  _completedAt = null;
-                }
-              });
-            },
-            selectedItem: DropdownItem(
-              value: _localStatus,
-              text: _getStatusDisplayText(_localStatus),
-            ),
-            items: [
-              ('PLANNING', 'Planning', Icons.schedule_rounded),
-              (
-                'CURRENT',
-                widget.isManga ? 'Reading' : 'Watching',
-                Icons.play_circle_rounded
-              ),
-              ('COMPLETED', 'Completed', Icons.check_circle_rounded),
-              ('REPEATING', 'Repeating', Icons.repeat_rounded),
-              ('PAUSED', 'Paused', Icons.pause_circle_rounded),
-              ('DROPPED', 'Dropped', Icons.cancel_rounded),
-            ].map((item) {
-              return DropdownItem(
-                value: item.$1,
-                text: item.$2,
-              );
-            }).toList(),
-          ),
+            ('COMPLETED', 'Completed', Icons.check_circle_rounded),
+            ('REPEATING', 'Repeating', Icons.repeat_rounded),
+            ('PAUSED', 'Paused', Icons.pause_circle_rounded),
+            ('DROPPED', 'Dropped', Icons.cancel_rounded),
+          ].map((item) {
+            return DropdownItem(
+              value: item.$1,
+              text: item.$2,
+            );
+          }).toList(),
         ),
       ],
     );
@@ -261,122 +314,131 @@ class _ListEditorModalState extends State<ListEditorModal> {
       return widget.media.totalEpisodes;
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 12),
-          child: Text(
-            'Progress',
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  color: colorScheme.onSurface,
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-        ),
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            color: colorScheme.surfaceContainerHighest.opaque(0.3),
-            border: Border.all(
-              color: colorScheme.outline.opaque(0.5),
-            ),
-          ),
-          padding: const EdgeInsets.all(16),
-          child: Column(
+    return _buildSectionCard(
+      context,
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+      child: Column(
+        children: [
+          Row(
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildDecrementButton(context),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: SizedBox(
-                      height: 50,
-                      child: TextFormField(
-                        controller: _progressController,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          LengthLimitingTextInputFormatter(6),
-                        ],
-                        style: Theme.of(context).textTheme.bodyLarge,
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(
-                            isForManga
-                                ? Icons.menu_book_rounded
-                                : Icons.play_circle_rounded,
-                            color: colorScheme.primary,
-                          ),
-                          filled: true,
-                          fillColor: colorScheme.surface,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: colorScheme.outline.opaque(0.5),
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: colorScheme.outline.opaque(0.5),
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: colorScheme.primary,
-                              width: 2,
-                            ),
-                          ),
-                          labelText:
-                              isForManga ? 'Chapters Read' : 'Episodes Watched',
-                          labelStyle: TextStyle(
-                            color: colorScheme.onSurfaceVariant,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 16,
-                          ),
-                        ),
-                        onChanged: (String value) {
-                          final int? newProgress = int.tryParse(value);
-
-                          if (newProgress == null || newProgress < 0) {
-                            return;
-                          }
-
-                          setState(() {
-                            if (hasKnownLimit) {
-                              _localProgress = newProgress <= maxTotal
-                                  ? newProgress
-                                  : maxTotal;
-                            } else {
-                              _localProgress = newProgress;
-                            }
-                          });
-                        },
-                        onEditingComplete: () {
-                          setState(() {
-                            _progressController.text =
-                                _localProgress.toString();
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  _buildIncrementButton(context, hasKnownLimit, maxTotal),
-                ],
+              Icon(
+                isForManga
+                    ? Icons.menu_book_rounded
+                    : Icons.play_circle_rounded,
+                color: colorScheme.primary,
+                size: 16,
               ),
-              const SizedBox(height: 16),
-              _buildProgressIndicator(
-                  context, hasKnownLimit, maxTotal, getDisplayTotal()),
+              const SizedBox(width: 6),
+              Text(
+                'Progress',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurface,
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
+              const Spacer(),
+              Text(
+                '$_localProgress / ${getDisplayTotal()}',
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
             ],
           ),
-        ),
-      ],
+          const SizedBox(height: 8),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildDecrementButton(context),
+              const SizedBox(width: 8),
+              Expanded(
+                child: SizedBox(
+                  height: 40,
+                  child: TextFormField(
+                    controller: _progressController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(6),
+                    ],
+                    style: Theme.of(context).textTheme.bodyLarge,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: colorScheme.surface,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: colorScheme.outline.opaque(0.4),
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: colorScheme.outline.opaque(0.4),
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: colorScheme.primary,
+                          width: 2,
+                        ),
+                      ),
+                      hintText:
+                          isForManga ? 'Chapters read' : 'Episodes watched',
+                      hintStyle: TextStyle(
+                        color: colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 10,
+                      ),
+                    ),
+                    onChanged: (String value) {
+                      final int? newProgress = int.tryParse(value);
+
+                      if (newProgress == null || newProgress < 0) {
+                        return;
+                      }
+
+                      setState(() {
+                        if (hasKnownLimit) {
+                          _localProgress =
+                              newProgress <= maxTotal ? newProgress : maxTotal;
+                        } else {
+                          _localProgress = newProgress;
+                        }
+                      });
+                    },
+                    onEditingComplete: () {
+                      setState(() {
+                        _progressController.text = _localProgress.toString();
+                      });
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              _buildIncrementButton(context, hasKnownLimit, maxTotal),
+            ],
+          ),
+          if (hasKnownLimit) ...[
+            const SizedBox(height: 8),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: LinearProgressIndicator(
+                value: (_localProgress / maxTotal!).clamp(0.0, 1.0),
+                backgroundColor: colorScheme.surfaceContainerHighest,
+                valueColor: AlwaysStoppedAnimation<Color>(colorScheme.primary),
+                minHeight: 3,
+              ),
+            ),
+          ],
+        ],
+      ),
     );
   }
 
@@ -400,15 +462,15 @@ class _ListEditorModalState extends State<ListEditorModal> {
               }
             : null,
         child: Container(
-          width: 50,
-          height: 50,
+          width: 40,
+          height: 40,
           alignment: Alignment.center,
           child: Icon(
             Icons.remove_rounded,
             color: canDecrement
                 ? colorScheme.onSecondaryContainer
                 : colorScheme.onSurfaceVariant.opaque(0.5),
-            size: 24,
+            size: 20,
           ),
         ),
       ),
@@ -437,164 +499,92 @@ class _ListEditorModalState extends State<ListEditorModal> {
               }
             : null,
         child: Container(
-          width: 50,
-          height: 50,
+          width: 40,
+          height: 40,
           alignment: Alignment.center,
           child: Icon(
             Icons.add_rounded,
             color: canIncrement
                 ? colorScheme.onPrimary
                 : colorScheme.onSurfaceVariant.opaque(0.5),
-            size: 24,
+            size: 20,
           ),
         ),
       ),
     );
   }
 
-  Widget _buildProgressIndicator(BuildContext context, bool hasKnownLimit,
-      int? maxTotal, String displayTotal) {
-    final colorScheme = context.colors;
-    final double progressPercentage =
-        hasKnownLimit ? (_localProgress / maxTotal!).clamp(0.0, 1.0) : 0.0;
-
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              '$_localProgress / $displayTotal',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w500,
-                  ),
-            ),
-            if (hasKnownLimit)
-              Text(
-                '${(progressPercentage * 100).toStringAsFixed(0)}%',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.primary,
-                      fontWeight: FontWeight.w600,
-                    ),
-              ),
-          ],
-        ),
-        if (hasKnownLimit) ...[
-          const SizedBox(height: 8),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(
-              value: progressPercentage,
-              backgroundColor: colorScheme.surfaceContainerHighest,
-              valueColor: AlwaysStoppedAnimation<Color>(colorScheme.primary),
-              minHeight: 6,
-            ),
-          ),
-        ],
-        if (!hasKnownLimit)
-          Padding(
-            padding: const EdgeInsets.only(top: 4),
-            child: Text(
-              'Total ${widget.isManga ? 'chapters' : 'episodes'} unknown',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                    fontStyle: FontStyle.italic,
-                  ),
-            ),
-          ),
-      ],
-    );
-  }
-
   Widget _buildScoreSection(BuildContext context) {
     final colorScheme = context.colors;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 12),
-          child: Text(
-            'Rating',
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  color: colorScheme.onSurface,
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-        ),
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            color: colorScheme.surfaceContainerHighest.opaque(0.3),
-            border: Border.all(
-              color: colorScheme.outline.opaque(0.5),
-            ),
-          ),
-          padding: const EdgeInsets.all(20),
-          child: Column(
+    return _buildSectionCard(
+      context,
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 8),
+      child: Column(
+        children: [
+          Row(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.star_rounded,
-                        color: colorScheme.primary,
-                        size: 24,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Score',
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: colorScheme.onSurface,
-                              fontWeight: FontWeight.w500,
-                            ),
-                      ),
-                    ],
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: colorScheme.primary,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      '${_localScore.toStringAsFixed(1)}/10',
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                            color: colorScheme.onPrimary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                    ),
-                  ),
-                ],
+              Icon(
+                Icons.star_rounded,
+                color: colorScheme.primary,
+                size: 16,
               ),
-              const SizedBox(height: 16),
-              CustomSlider(
-                value: _localScore,
-                min: 0.0,
-                max: 10.0,
-                divisions: 100,
-                label: _localScore.toStringAsFixed(1),
-                activeColor: colorScheme.primary,
-                inactiveColor: colorScheme.surfaceContainerHighest,
-                onChanged: (double newValue) {
-                  setState(() {
-                    _localScore = newValue;
-                  });
-                },
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  'Score',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurface,
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: colorScheme.primary,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  _localScore.toStringAsFixed(1),
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: colorScheme.onPrimary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
               ),
             ],
           ),
-        ),
-      ],
+          const SizedBox(height: 4),
+          SliderTheme(
+            data: SliderTheme.of(context).copyWith(
+              trackHeight: 2,
+              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8),
+              overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
+              showValueIndicator: ShowValueIndicator.never,
+            ),
+            child: CustomSlider(
+              value: _localScore,
+              min: 0.0,
+              max: 10.0,
+              divisions: 100,
+              label: _localScore.toStringAsFixed(1),
+              activeColor: colorScheme.primary,
+              inactiveColor: colorScheme.surfaceContainerHighest,
+              onChanged: (double newValue) {
+                setState(() {
+                  _localScore = newValue;
+                });
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
-
 
   String _formatDate(DateTime? date) {
     if (date == null) return 'Not set';
@@ -632,51 +622,57 @@ class _ListEditorModalState extends State<ListEditorModal> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 12),
-          child: Text(
-            'Dates',
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  color: colorScheme.onSurface,
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-        ),
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            color: colorScheme.surfaceContainerHighest.opaque(0.3),
-            border: Border.all(
-              color: colorScheme.outline.opaque(0.5),
-            ),
-          ),
-          padding: const EdgeInsets.all(16),
-          child: Row(
+        _buildSectionCard(
+          context,
+          padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+          child: Column(
             children: [
-              Expanded(
-                child: _buildDateTile(
-                  context,
-                  label: 'Start Date',
-                  icon: Icons.play_circle_outline_rounded,
-                  date: _startedAt,
-                  onTap: () => _pickDate(context, isStart: true),
-                  onClear: _startedAt != null
-                      ? () => setState(() => _startedAt = null)
-                      : null,
-                ),
+              Row(
+                children: [
+                  Icon(
+                    Icons.event_rounded,
+                    color: colorScheme.primary,
+                    size: 16,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Dates',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurface,
+                          fontWeight: FontWeight.w600,
+                        ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildDateTile(
-                  context,
-                  label: 'Finish Date',
-                  icon: Icons.check_circle_outline_rounded,
-                  date: _completedAt,
-                  onTap: () => _pickDate(context, isStart: false),
-                  onClear: _completedAt != null
-                      ? () => setState(() => _completedAt = null)
-                      : null,
-                ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildDateTile(
+                      context,
+                      label: 'Start',
+                      icon: Icons.play_circle_outline_rounded,
+                      date: _startedAt,
+                      onTap: () => _pickDate(context, isStart: true),
+                      onClear: _startedAt != null
+                          ? () => setState(() => _startedAt = null)
+                          : null,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: _buildDateTile(
+                      context,
+                      label: 'Finish',
+                      icon: Icons.check_circle_outline_rounded,
+                      date: _completedAt,
+                      onTap: () => _pickDate(context, isStart: false),
+                      onClear: _completedAt != null
+                          ? () => setState(() => _completedAt = null)
+                          : null,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -699,7 +695,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         decoration: BoxDecoration(
           color: hasDate
               ? colorScheme.primaryContainer.opaque(0.5)
@@ -717,7 +713,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
             Row(
               children: [
                 Icon(icon,
-                    size: 14,
+                    size: 11,
                     color: hasDate
                         ? colorScheme.primary
                         : colorScheme.onSurfaceVariant),
@@ -737,19 +733,18 @@ class _ListEditorModalState extends State<ListEditorModal> {
                   GestureDetector(
                     onTap: onClear,
                     child: Icon(Icons.close_rounded,
-                        size: 14, color: colorScheme.onSurfaceVariant),
+                        size: 11, color: colorScheme.onSurfaceVariant),
                   ),
               ],
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 3),
             Text(
               _formatDate(date),
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: hasDate
                         ? colorScheme.onSurface
                         : colorScheme.onSurfaceVariant.opaque(0.6),
-                    fontWeight:
-                        hasDate ? FontWeight.w500 : FontWeight.normal,
+                    fontWeight: hasDate ? FontWeight.w500 : FontWeight.normal,
                   ),
             ),
           ],
@@ -763,34 +758,34 @@ class _ListEditorModalState extends State<ListEditorModal> {
 
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: colorScheme.surfaceContainerHighest.opaque(0.3),
+        borderRadius: BorderRadius.circular(14),
+        color: colorScheme.surfaceContainerHighest.opaque(0.25),
         border: Border.all(
           color: _isPrivate
               ? colorScheme.primary.opaque(0.5)
               : colorScheme.outline.opaque(0.5),
         ),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(5),
             decoration: BoxDecoration(
               color: _isPrivate
                   ? colorScheme.primaryContainer
                   : colorScheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
               _isPrivate ? Icons.lock_rounded : Icons.lock_open_rounded,
-              size: 18,
+              size: 14,
               color: _isPrivate
                   ? colorScheme.primary
                   : colorScheme.onSurfaceVariant,
             ),
           ),
-          const SizedBox(width: 14),
+          const SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -800,13 +795,6 @@ class _ListEditorModalState extends State<ListEditorModal> {
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: colorScheme.onSurface,
                         fontWeight: FontWeight.w600,
-                      ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  'Hidden from your public AniList profile',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
                       ),
                 ),
               ],
@@ -825,81 +813,247 @@ class _ListEditorModalState extends State<ListEditorModal> {
   Widget _buildActionButtons(BuildContext context) {
     final colorScheme = context.colors;
 
-    return Row(
+    return SizedBox(
+      height: 44,
+      width: double.infinity,
+      child: AnymexButton(
+        borderRadius: BorderRadius.circular(14),
+        onTap: () {
+          Get.back();
+          widget.onUpdate(
+            widget.media.id,
+            _localScore,
+            _localStatus,
+            _localProgress,
+            _startedAt,
+            _completedAt,
+            widget.media.serviceType.isAL ? _isPrivate : null,
+          );
+        },
+        color: colorScheme.primary,
+        border: BorderSide.none,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.save_rounded,
+              color: colorScheme.onPrimary,
+              size: 18,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              'Save',
+              style: TextStyle(
+                color: colorScheme.onPrimary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionCard(
+    BuildContext context, {
+    required Widget child,
+    EdgeInsets? padding,
+    Color? backgroundColor,
+    Color? borderColor,
+  }) {
+    final colorScheme = context.colors;
+
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(14),
+        color: backgroundColor ?? colorScheme.surfaceContainer.opaque(0.25),
+        border: Border.all(
+          color: borderColor ?? colorScheme.outline.opaque(0.2),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: colorScheme.shadow.opaque(0.08, iReallyMeanIt: true),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      padding: padding ?? const EdgeInsets.all(12),
+      child: child,
+    );
+  }
+
+  Widget _buildAdvancedSection(BuildContext context) {
+    final colorScheme = context.colors;
+    final String summary = _getAdvancedSummary();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: SizedBox(
-            height: 56,
-            child: AnymexButton(
-              onTap: () {
-                Navigator.pop(context);
-                widget.onDelete(widget.media.id);
-              },
-              color: colorScheme.tertiary,
-              border: BorderSide.none,
-              borderRadius: const BorderRadius.horizontal(
-                  left: Radius.circular(100), right: Radius.circular(10)),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.delete_rounded,
-                    color: colorScheme.onTertiary,
-                    size: 20,
+        InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: () => setState(() => _showAdvanced = !_showAdvanced),
+          child: _buildSectionCard(
+            context,
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.tune_rounded,
+                  size: 16,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    'Advanced',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurface,
+                          fontWeight: FontWeight.w600,
+                        ),
+                  ),
+                ),
+                if (summary.isNotEmpty) ...[
+                  Text(
+                    summary,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w600,
+                        ),
                   ),
                   const SizedBox(width: 8),
-                  Text(
-                    'Delete',
-                    style: TextStyle(
-                      color: colorScheme.onTertiary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
                 ],
-              ),
+                AnimatedRotation(
+                  turns: _showAdvanced ? 0.5 : 0.0,
+                  duration: const Duration(milliseconds: 200),
+                  child: Icon(
+                    Icons.expand_more_rounded,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
-        const SizedBox(width: 5),
-        Expanded(
-          child: SizedBox(
-            height: 56,
-            child: AnymexButton(
-              borderRadius: const BorderRadius.horizontal(
-                  right: Radius.circular(100), left: Radius.circular(10)),
-              onTap: () {
-                Get.back();
-                widget.onUpdate(
-                  widget.media.id,
-                  _localScore,
-                  _localStatus,
-                  _localProgress,
-                  _startedAt,
-                  _completedAt,
-                  widget.media.serviceType.isAL ? _isPrivate : null,
-                );
-              },
-              color: colorScheme.primary,
-              border: BorderSide.none,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.save_rounded,
-                    color: colorScheme.onPrimary,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Save Changes',
-                    style: TextStyle(
-                      color: colorScheme.onPrimary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
+        AnimatedCrossFade(
+          firstChild: const SizedBox.shrink(),
+          secondChild: Column(
+            children: [
+              const SizedBox(height: 8),
+              _buildDateSection(context),
+              if (widget.media.serviceType.isAL) ...[
+                const SizedBox(height: 8),
+                _buildPrivateSection(context),
+              ],
+            ],
+          ),
+          crossFadeState: _showAdvanced
+              ? CrossFadeState.showSecond
+              : CrossFadeState.showFirst,
+          duration: const Duration(milliseconds: 200),
+        ),
+      ],
+    );
+  }
+
+  String _getAdvancedSummary() {
+    final bool hasPrivate = widget.media.serviceType.isAL && _isPrivate;
+
+    final List<String> parts = [];
+    if (hasPrivate) {
+      parts.add('Private');
+    }
+
+    return parts.join(' / ');
+  }
+}
+
+class _DeleteConfirmDialog extends StatefulWidget {
+  final String title;
+  final String message;
+  final VoidCallback onConfirm;
+
+  const _DeleteConfirmDialog({
+    required this.title,
+    required this.message,
+    required this.onConfirm,
+  });
+
+  @override
+  State<_DeleteConfirmDialog> createState() => _DeleteConfirmDialogState();
+}
+
+class _DeleteConfirmDialogState extends State<_DeleteConfirmDialog> {
+  static const int _waitSeconds = 3;
+  late int _secondsLeft;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _secondsLeft = _waitSeconds;
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) return;
+      setState(() {
+        _secondsLeft--;
+      });
+      if (_secondsLeft <= 0) {
+        timer.cancel();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = context.colors;
+    final bool canConfirm = _secondsLeft <= 0;
+
+    return AlertDialog(
+      backgroundColor: colorScheme.surface,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      title: Text(
+        widget.title,
+        style: theme.textTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.w700,
+          color: colorScheme.onSurface,
+        ),
+      ),
+      content: Text(
+        widget.message,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: colorScheme.onSurfaceVariant,
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(
+            'Cancel',
+            style: TextStyle(color: colorScheme.onSurfaceVariant),
+          ),
+        ),
+        FilledButton(
+          onPressed: canConfirm ? widget.onConfirm : null,
+          style: FilledButton.styleFrom(
+            backgroundColor: colorScheme.error,
+            foregroundColor: colorScheme.onError,
+            disabledBackgroundColor:
+                colorScheme.error.opaque(0.4, iReallyMeanIt: true),
+            disabledForegroundColor:
+                colorScheme.onError.opaque(0.7, iReallyMeanIt: true),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
             ),
+          ),
+          child: Text(
+            canConfirm ? 'Confirm' : 'Confirm (${_secondsLeft}s)',
           ),
         ),
       ],
