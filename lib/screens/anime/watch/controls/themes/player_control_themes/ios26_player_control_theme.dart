@@ -288,44 +288,68 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
         );
       }
 
-      return IgnorePointer(
-        ignoring: !controller.showControls.value,
-        child: AnimatedSlide(
-          offset:
-              controller.showControls.value ? Offset.zero : const Offset(0, 1),
-          duration: const Duration(milliseconds: 360),
-          curve: Curves.easeOutCubic,
-          child: AnimatedOpacity(
-            opacity: controller.showControls.value ? 1 : 0,
-            duration: const Duration(milliseconds: 240),
-            child: SafeArea(
-              top: false,
-              left: false,
-              right: false,
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: isDesktop ? 28 : 14,
-                  vertical: isDesktop ? 18 : 8,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: _GlassActionChip(
-                        icon: CupertinoIcons.forward_fill,
-                        label: '+${controller.playerSettings.skipDuration}',
-                        onTap: controller.isLocked.value
-                            ? null
-                            : () => controller.megaSeek(
-                                controller.playerSettings.skipDuration),
+      final showControls = controller.showControls.value;
+      final inSkipSegment = controller.currentSkipInterval.value != null;
+      final bottomBarVisible = showControls || inSkipSegment;
+      final horizontal = isDesktop ? 28.0 : 14.0;
+      final vertical = isDesktop ? 18.0 : 8.0;
+
+      return GestureDetector(
+        behavior: HitTestBehavior.deferToChild,
+        child: IgnorePointer(
+          ignoring: !bottomBarVisible,
+          child: AnimatedSlide(
+            offset: bottomBarVisible ? Offset.zero : const Offset(0, 1),
+            duration: const Duration(milliseconds: 360),
+            curve: Curves.easeOutCubic,
+            child: AnimatedOpacity(
+              opacity: bottomBarVisible ? 1 : 0,
+              duration: const Duration(milliseconds: 240),
+              child: showControls
+                  ? SafeArea(
+                      top: false,
+                      left: false,
+                      right: false,
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: horizontal,
+                          vertical: vertical,
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: Obx(() => _GlassActionChip(
+                                    icon: CupertinoIcons.forward_fill,
+                                    label: controller.skipButtonLabel,
+                                    onTap: controller.isLocked.value
+                                        ? null
+                                        : controller.performSkipAction,
+                                  )),
+                            ),
+                            const SizedBox(height: 8),
+                            _buildBottomSection(context, controller),
+                          ],
+                        ),
                       ),
+                    )
+                  : Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Positioned(
+                          right: horizontal,
+                          bottom: vertical,
+                          child: Obx(() => _GlassActionChip(
+                                icon: CupertinoIcons.forward_fill,
+                                label: controller.skipButtonLabel,
+                                onTap: controller.isLocked.value
+                                    ? null
+                                    : controller.performSkipAction,
+                              )),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 8),
-                    _buildBottomSection(context, controller),
-                  ],
-                ),
-              ),
             ),
           ),
         ),

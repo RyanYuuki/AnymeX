@@ -485,6 +485,26 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
   }
 
+  String get skipButtonLabel {
+    final interval = currentSkipInterval.value;
+    if (interval == null || skipTimes == null) {
+      return '+${playerSettings.skipDuration}';
+    }
+    if (identical(skipTimes!.op, interval)) return 'Skip intro';
+    if (identical(skipTimes!.ed, interval)) return 'Skip outro';
+    if (identical(skipTimes!.recap, interval)) return 'Skip recap';
+    return '+${playerSettings.skipDuration}';
+  }
+
+  void performSkipAction() {
+    final interval = currentSkipInterval.value;
+    if (interval != null) {
+      seekTo(Duration(seconds: interval.end));
+    } else {
+      megaSeek(playerSettings.skipDuration);
+    }
+  }
+
   void _initializeSwipeStuffs() async {
     try {
       VolumeController.instance.showSystemUI = false;
