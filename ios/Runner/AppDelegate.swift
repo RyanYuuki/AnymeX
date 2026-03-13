@@ -2,7 +2,7 @@ import fl_pip
 import Flutter
 import UIKit
 
-@UIApplicationMain
+@main
 @objc class AppDelegate: FlFlutterAppDelegate {
   override func application(
     _ application: UIApplication,
