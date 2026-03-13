@@ -751,7 +751,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
             ],
           ),
 
-          if (totalEps > 0 && epDuration != null && epDuration > 0) ...[
+          if (displayTotal > 0 && epDuration != null && epDuration > 0) ...[
             const SizedBox(height: 10),
             Row(
               children: [
