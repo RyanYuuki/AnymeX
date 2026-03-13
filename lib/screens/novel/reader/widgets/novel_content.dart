@@ -121,32 +121,39 @@ class _NovelContentWidgetState extends State<NovelContentWidget> {
   }
 
   Widget _buildContent(BuildContext context) {
-    return CustomScrollView(
-      controller: widget.controller.scrollController,
-      physics: const AlwaysScrollableScrollPhysics(),
-      slivers: [
-        Obx(() {
-          return SliverPadding(
-            padding: EdgeInsets.symmetric(horizontal: widget.controller.paddingHorizontal.value, vertical: widget.controller.paddingVertical.value),
-            sliver: HtmlWidget(
-              widget.controller.novelContent.value,
-              rebuildTriggers: [
-                widget.controller.fontSize.value,
-                widget.controller.lineHeight.value,
-                widget.controller.textAlign.value,
-                widget.controller.themeMode.value,
-                widget.controller.ttsHighlightedElement.value,
-                widget.controller.ttsCurrentWordStart.value,
-                widget.controller.ttsCurrentWordEnd.value,
-              ],
-              renderMode: RenderMode.sliverList,
-              textStyle: _getBaseTextStyle(context),
-              customWidgetBuilder: (element) => _getCustomWidget(element, context),
-              customStylesBuilder: (element) => _getCustomStyles(element, context),
-            ),
-          );
-        }),
-      ],
+    return Listener(
+      onPointerDown: widget.controller.onPointerDown,
+      onPointerUp: widget.controller.onPointerUp,
+      child: NotificationListener<ScrollNotification>(
+        onNotification: widget.controller.onScrollNotification,
+        child: CustomScrollView(
+          controller: widget.controller.scrollController,
+          physics: const AlwaysScrollableScrollPhysics(parent: ClampingScrollPhysics()),
+          slivers: [
+            Obx(() {
+              return SliverPadding(
+                padding: EdgeInsets.symmetric(horizontal: widget.controller.paddingHorizontal.value, vertical: widget.controller.paddingVertical.value),
+                sliver: HtmlWidget(
+                  widget.controller.novelContent.value,
+                  rebuildTriggers: [
+                    widget.controller.fontSize.value,
+                    widget.controller.lineHeight.value,
+                    widget.controller.textAlign.value,
+                    widget.controller.themeMode.value,
+                    widget.controller.ttsHighlightedElement.value,
+                    widget.controller.ttsCurrentWordStart.value,
+                    widget.controller.ttsCurrentWordEnd.value,
+                  ],
+                  renderMode: RenderMode.sliverList,
+                  textStyle: _getBaseTextStyle(context),
+                  customWidgetBuilder: (element) => _getCustomWidget(element, context),
+                  customStylesBuilder: (element) => _getCustomStyles(element, context),
+                ),
+              );
+            }),
+          ],
+        ),
+      ),
     );
   }
 
@@ -177,21 +184,6 @@ class _NovelContentWidgetState extends State<NovelContentWidget> {
       case 'p':
         styles['margin-bottom'] = '${widget.controller.paragraphSpacing.value}px';
         styles['text-align'] = _getTextAlignmentString();
-        if (widget.controller.ttsEnabled.value && widget.controller.ttsHighlightedElement.value >= 0) {
-          String elementText = element.text?.trim() ?? '';
-          String currentSegment = widget.controller.ttsSegments[widget.controller.ttsHighlightedElement.value];
-          if (elementText == currentSegment) {
-            int wordStart = widget.controller.ttsCurrentWordStart.value;
-            int wordEnd = widget.controller.ttsCurrentWordEnd.value;
-            if (wordStart < wordEnd && wordStart >= 0 && wordEnd <= elementText.length) {
-              String highlightColor = context.colors.primary.withOpacity(0.3).value.toRadixString(16).padLeft(8, '0');
-              styles['background-image'] = 'linear-gradient(90deg, transparent 0, transparent ${wordStart}ch, #$highlightColor ${wordStart}ch, #$highlightColor ${wordEnd}ch, transparent ${wordEnd}ch, transparent 100%)';
-            } else {
-              styles['background-color'] = '#${context.colors.primary.withOpacity(0.3).value.toRadixString(16).padLeft(8, '0')}';
-            }
-            styles['border-radius'] = '4px';
-          }
-        }
         break;
       case 'h1': case 'h2': case 'h3': case 'h4': case 'h5': case 'h6':
         styles['margin-top'] = '${widget.controller.paragraphSpacing.value * 1.5}px';

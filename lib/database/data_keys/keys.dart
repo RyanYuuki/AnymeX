@@ -103,6 +103,7 @@ enum NovelReaderKeys {
   ttsVoice,
   ttsAutoAdvance,
   ttsEnabled,
+  overscrollToChapter,
 }
 
 enum LocalSourceKeys {
