@@ -208,6 +208,7 @@ enum PlayerSettingsKeys {
   translateTo,
   autoSkipFiller,
   enableScreenshot,
+  enablePiP,
   subtitleOpacity,
   subtitleBottomMargin,
   subtitleOutlineType,
