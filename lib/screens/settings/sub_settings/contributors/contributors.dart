@@ -739,24 +739,24 @@ class _ContributorsPageState extends State<ContributorsPage> {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: colors.secondaryContainer,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      contributor.commitCount == 1
-                          ? '1 commit'
-                          : '${contributor.commitCount} commits',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        color: colors.onSecondaryContainer,
+                  if (contributor.commitCount > 0) ...[
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 9, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: colors.secondaryContainer,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        '${contributor.commitCount} commit${contributor.commitCount == 1 ? '' : 's'}',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: colors.onSecondaryContainer,
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                   if (contributor.prCount > 0) ...[
                     const SizedBox(width: 4),
                     Container(
