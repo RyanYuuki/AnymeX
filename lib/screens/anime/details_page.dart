@@ -682,13 +682,15 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
   Widget _buildProgressContainer(BuildContext context) {
     final int totalEps = int.tryParse(anilistData?.totalEpisodes?.toString() ?? '0') ?? 0;
+    final int airedEps = (anilistData?.nextAiringEpisode?.episode ?? 1) - 1;
+    final int displayTotal = totalEps > 0 ? totalEps : airedEps;
     final int watchedEps =
         int.tryParse(currentAnime.value?.episodeCount?.toString() ?? '0') ?? 0;
-    final int remainingEps = (totalEps - watchedEps).clamp(0, totalEps);
-    final int epDuration = int.tryParse((anilistData?.duration?.toString() ?? '24').replaceAll(RegExp(r'[^0-9]'), '')) ?? 24;
-    final int totalMins = totalEps * epDuration;
-    final int watchedMins = watchedEps * epDuration;
-    final int remainingMins = remainingEps * epDuration;
+    final int remainingEps = (displayTotal - watchedEps).clamp(0, displayTotal);
+    final int? epDuration = int.tryParse((anilistData?.duration?.toString() ?? '').replaceAll(RegExp(r'[^0-9]'), ''));
+    final int totalMins = displayTotal * (epDuration ?? 0);
+    final int watchedMins = watchedEps * (epDuration ?? 0);
+    final int remainingMins = remainingEps * (epDuration ?? 0);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -724,9 +726,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                       color: context.colors.onSurface.opaque(0.7),
                     ),
                     AnymexTextSpan(
-                      text: anilistData?.totalEpisodes.toString() ??
-                          anilistData?.totalEpisodes.toString() ??
-                          '??',
+                      text: anilistData?.totalEpisodes?.toString() ?? '??',
                       variant: TextVariant.bold,
                       color: context.colors.primary,
                     ),
@@ -750,7 +750,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
               ),
             ],
           ),
-          if (totalEps > 0) ...[
+
+          if (totalEps > 0 && epDuration != null && epDuration > 0) ...[
             const SizedBox(height: 10),
             Row(
               children: [
