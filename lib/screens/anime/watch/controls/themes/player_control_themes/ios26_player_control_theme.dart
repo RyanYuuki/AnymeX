@@ -321,11 +321,20 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                             Align(
                               alignment: Alignment.centerRight,
                               child: Obx(() => _GlassActionChip(
-                                    icon: CupertinoIcons.forward_fill,
+                                    icon: controller.isAutoSkipCountdownActive
+                                        ? CupertinoIcons.xmark
+                                        : CupertinoIcons.forward_fill,
                                     label: controller.skipButtonLabel,
                                     onTap: controller.isLocked.value
                                         ? null
                                         : controller.performSkipAction,
+                                    countdownProgress: controller
+                                            .isAutoSkipCountdownActive
+                                        ? controller.autoSkipCountdownRemaining
+                                            .value /
+                                            PlayerController
+                                                .autoSkipCountdownSeconds
+                                        : null,
                                   )),
                             ),
                             const SizedBox(height: 8),
@@ -341,11 +350,19 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                           right: horizontal,
                           bottom: vertical,
                           child: Obx(() => _GlassActionChip(
-                                icon: CupertinoIcons.forward_fill,
+                                icon: controller.isAutoSkipCountdownActive
+                                    ? CupertinoIcons.xmark
+                                    : CupertinoIcons.forward_fill,
                                 label: controller.skipButtonLabel,
                                 onTap: controller.isLocked.value
                                     ? null
                                     : controller.performSkipAction,
+                                countdownProgress: controller
+                                        .isAutoSkipCountdownActive
+                                    ? controller.autoSkipCountdownRemaining
+                                            .value /
+                                        PlayerController.autoSkipCountdownSeconds
+                                    : null,
                               )),
                         ),
                       ],
@@ -658,15 +675,18 @@ class _GlassActionChip extends StatelessWidget {
   final IconData icon;
   final String label;
   final VoidCallback? onTap;
+  final double? countdownProgress;
 
   const _GlassActionChip({
     required this.icon,
     required this.label,
     required this.onTap,
+    this.countdownProgress,
   });
 
   @override
   Widget build(BuildContext context) {
+    final showCountdown = countdownProgress != null;
     return _GlassPanel(
       radius: 16,
       padding: EdgeInsets.zero,
@@ -678,21 +698,44 @@ class _GlassActionChip extends StatelessWidget {
           onTap: onTap,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            child: Row(
+            child: Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Icon(icon, color: Colors.white, size: 14),
-                const SizedBox(width: 6),
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: onTap == null
-                        ? Colors.white.withValues(alpha: 0.45)
-                        : Colors.white,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 12,
-                  ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(icon, color: Colors.white, size: 14),
+                    const SizedBox(width: 6),
+                    Text(
+                      label,
+                      style: TextStyle(
+                        color: onTap == null
+                            ? Colors.white.withValues(alpha: 0.45)
+                            : Colors.white,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
                 ),
+                if (showCountdown) ...[
+                  const SizedBox(height: 5),
+                  SizedBox(
+                    height: 2,
+                    width: 40,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(1),
+                      child: LinearProgressIndicator(
+                        value: 1 - countdownProgress!,
+                        backgroundColor:
+                            Colors.white.withValues(alpha: 0.25),
+                        valueColor: const AlwaysStoppedAnimation<Color>(
+                            Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),

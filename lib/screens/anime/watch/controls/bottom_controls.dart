@@ -135,6 +135,7 @@ class BottomControls extends StatelessWidget {
     final theme = context.theme;
     final isDark = theme.brightness == Brightness.dark;
     final interval = controller.currentSkipInterval.value;
+    final inSegment = interval != null || controller.isAutoSkipCountdownActive;
 
     return Material(
       borderRadius: BorderRadius.circular(16),
@@ -147,14 +148,14 @@ class BottomControls extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
           decoration: BoxDecoration(
-            color: interval != null
+            color: inSegment
                 ? theme.colorScheme.primary.withValues(alpha: 0.8)
                 : isDark
                     ? theme.colorScheme.surfaceContainer.withValues(alpha: 0.6)
                     : theme.colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: interval != null
+              color: inSegment
                   ? theme.colorScheme.primary
                   : isDark
                       ? theme.colorScheme.outline
@@ -162,27 +163,58 @@ class BottomControls extends StatelessWidget {
               width: 0.5,
             ),
           ),
-          child: Row(
+          child: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              if (interval != null)
-                Padding(
-                  padding: const EdgeInsets.only(right: 4),
-                  child: Icon(
-                    Icons.skip_next_rounded,
-                    color: theme.colorScheme.onPrimary,
-                    size: 20,
-                  ),
-                ),
-              Obx(() => AnymexText(
-                    text: controller.skipButtonLabel,
-                    variant: TextVariant.semiBold,
-                    color: interval != null
-                        ? theme.colorScheme.onPrimary
-                        : controller.isLocked.value
-                            ? theme.colorScheme.onSurface.opaque(0.4)
-                            : null,
-                  )),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (inSegment)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 4),
+                      child: Icon(
+                        controller.isAutoSkipCountdownActive
+                            ? Icons.close_rounded
+                            : Icons.skip_next_rounded,
+                        color: theme.colorScheme.onPrimary,
+                        size: 20,
+                      ),
+                    ),
+                  Obx(() => AnymexText(
+                        text: controller.skipButtonLabel,
+                        variant: TextVariant.semiBold,
+                        color: inSegment
+                            ? theme.colorScheme.onPrimary
+                            : controller.isLocked.value
+                                ? theme.colorScheme.onSurface.opaque(0.4)
+                                : null,
+                      )),
+                ],
+              ),
+              if (controller.isAutoSkipCountdownActive)
+                Obx(() {
+                  final remaining =
+                      controller.autoSkipCountdownRemaining.value /
+                          PlayerController.autoSkipCountdownSeconds;
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: SizedBox(
+                      height: 2,
+                      width: 48,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(1),
+                        child: LinearProgressIndicator(
+                          value: 1 - remaining,
+                          backgroundColor: theme.colorScheme.onPrimary
+                              .withValues(alpha: 0.25),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                              theme.colorScheme.onPrimary),
+                        ),
+                      ),
+                    ),
+                  );
+                }),
             ],
           ),
         ),
@@ -344,62 +376,7 @@ class BottomControls extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(0, 0, 20, 5),
           child: Align(
             alignment: Alignment.centerRight,
-            child: Obx(() {
-              final interval = controller.currentSkipInterval.value;
-              return Material(
-                borderRadius: BorderRadius.circular(16),
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: controller.isLocked.value
-                      ? null
-                      : controller.performSkipAction,
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                    decoration: BoxDecoration(
-                      color: interval != null
-                          ? theme.colorScheme.primary.withValues(alpha: 0.8)
-                          : isDark
-                              ? theme.colorScheme.surfaceContainer
-                                  .withValues(alpha: 0.6)
-                              : theme.colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: interval != null
-                            ? theme.colorScheme.primary
-                            : isDark
-                                ? theme.colorScheme.outline
-                                : theme.colorScheme.outline.opaque(0.5),
-                        width: 0.5,
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (interval != null)
-                          Padding(
-                            padding: const EdgeInsets.only(right: 4),
-                            child: Icon(
-                              Icons.skip_next_rounded,
-                              color: theme.colorScheme.onPrimary,
-                              size: 20,
-                            ),
-                          ),
-                        AnymexText(
-                          text: controller.skipButtonLabel,
-                          variant: TextVariant.semiBold,
-                          color: interval != null
-                              ? theme.colorScheme.onPrimary
-                              : controller.isLocked.value
-                                  ? theme.colorScheme.onSurface.opaque(0.4)
-                                  : null,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            }),
+            child: _buildSkipButton(context),
           ),
         ),
         Container(
