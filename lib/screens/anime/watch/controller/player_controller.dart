@@ -274,16 +274,16 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
 
     try {
-      final active = await FlPiP().isActive;
-      if (active) {
+      final status = await FlPiP().isActive;
+      if (status?.status == PiPStatus.enabled) {
         await FlPiP().disable();
         isPipActive.value = false;
       } else {
         await FlPiP().enable(
-          androidConfig: FlPiPAndroidConfig(
+          android: FlPiPAndroidConfig(
             aspectRatio: const Rational(16, 9),
           ),
-          iosConfig: FlPiPiOSConfig(),
+          ios: FlPiPiOSConfig(),
         );
         isPipActive.value = true;
       }
@@ -374,15 +374,15 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> _onAppBackgrounded() async {
-    if (!_pipSupported) return;
+    if (!_pipSupported || !settings.enablePiP) return;
     try {
-      final active = await FlPiP().isActive;
-      if (!active && isPlaying.value) {
+      final status = await FlPiP().isActive;
+      if (status?.status != PiPStatus.enabled && isPlaying.value) {
         await FlPiP().enable(
-          androidConfig: FlPiPAndroidConfig(
+          android: FlPiPAndroidConfig(
             aspectRatio: const Rational(16, 9),
           ),
-          iosConfig: FlPiPiOSConfig(),
+          ios: FlPiPiOSConfig(),
         );
         isPipActive.value = true;
       }
@@ -391,8 +391,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   Future<void> _onAppResumed() async {
     try {
-      final active = await FlPiP().isActive;
-      if (active) {
+      final status = await FlPiP().isActive;
+      if (status?.status == PiPStatus.enabled) {
         await FlPiP().disable();
       }
       isPipActive.value = false;
@@ -1134,8 +1134,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     if (Platform.isAndroid || Platform.isIOS) {
       try {
-        final active = await FlPiP().isActive;
-        if (active) await FlPiP().disable();
+        final status = await FlPiP().isActive;
+        if (status?.status == PiPStatus.enabled) await FlPiP().disable();
       } catch (_) {}
     }
 
