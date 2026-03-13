@@ -172,7 +172,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
       backgroundColor: context.colors.surfaceContainer,
       context: context,
       isScrollControlled: true,
-      showDragHandle: true,
+      showDragHandle: false,
       builder: (ctx) => ListEditorModal(
         animeStatus: _animeStatus,
         isManga: isManga,
@@ -180,7 +180,8 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
         animeProgress: _animeProgress,
         currentAnime: _currentMedia,
         media: widget.media,
-        onUpdate: (id, score, status, progress, startedAt, completedAt, isPrivate) async {
+        onUpdate: (id, score, status, progress, startedAt, completedAt,
+            isPrivate) async {
           final listId =
               fetcher.onlineService.currentMedia.value.id ?? widget.media.id;
           fetcher.onlineService.updateListEntry(UpdateListEntryParams(
