@@ -63,7 +63,7 @@ class AnimeDetailsPage extends StatefulWidget {
 
 class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   Media? anilistData;
-  Rx<TrackedMedia?> currentAnime = TrackedMedia().obs;
+  Rxn<TrackedMedia> currentAnime = Rxn<TrackedMedia>();
   final anilist = Get.find<AnilistAuth>();
 
   RxBool isListedAnime = false.obs;
@@ -644,63 +644,133 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     return progress.toStringAsFixed(2);
   }
 
+  String _formatWatchTime(int totalMinutes) {
+    if (totalMinutes <= 0) return '—';
+    final h = totalMinutes ~/ 60;
+    final m = totalMinutes % 60;
+    if (h == 0) return '${m}m';
+    return m > 0 ? '${h}h ${m}m' : '${h}h';
+  }
+
+  Widget _buildTimeStat(BuildContext context,
+      {required String label, required String value, required Color color}) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          color: context.colors.surfaceContainer.opaque(0.5),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label,
+                style: TextStyle(
+                    fontSize: 11,
+                    color: context.colors.onSurface.opaque(0.5))),
+            const SizedBox(height: 2),
+            Text(value,
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: color)),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildProgressContainer(BuildContext context) {
+    final int totalEps = int.tryParse(anilistData?.totalEpisodes?.toString() ?? '0') ?? 0;
+    final int watchedEps =
+        int.tryParse(currentAnime.value?.episodeCount?.toString() ?? '0') ?? 0;
+    final int remainingEps = (totalEps - watchedEps).clamp(0, totalEps);
+    final int epDuration = int.tryParse((anilistData?.duration?.toString() ?? '24').replaceAll(RegExp(r'[^0-9]'), '')) ?? 24;
+    final int totalMins = totalEps * epDuration;
+    final int watchedMins = watchedEps * epDuration;
+    final int remainingMins = remainingEps * epDuration;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         color: context.colors.surfaceContainer.opaque(0.3),
       ),
-      child: Row(
+      child: Column(
         children: [
-          Icon(
-            Icons.movie_filter_rounded,
-            color: context.colors.onSurface.opaque(0.7),
-            size: 16,
+          Row(
+            children: [
+              Icon(
+                Icons.movie_filter_rounded,
+                color: context.colors.onSurface.opaque(0.7),
+                size: 16,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: AnymexTextSpans(
+                  fontSize: 14,
+                  spans: [
+                    AnymexTextSpan(
+                      text: "Episode ",
+                      color: context.colors.onSurface.opaque(0.7),
+                    ),
+                    AnymexTextSpan(
+                      text: currentAnime.value?.episodeCount?.toString() ?? '0',
+                      variant: TextVariant.bold,
+                      color: context.colors.primary,
+                    ),
+                    AnymexTextSpan(
+                      text: ' of ',
+                      color: context.colors.onSurface.opaque(0.7),
+                    ),
+                    AnymexTextSpan(
+                      text: anilistData?.totalEpisodes.toString() ??
+                          anilistData?.totalEpisodes.toString() ??
+                          '??',
+                      variant: TextVariant.bold,
+                      color: context.colors.primary,
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: context.colors.primary.opaque(0.1, iReallyMeanIt: true),
+                ),
+                child: Text(
+                  '${formatProgress(currentChapter: currentAnime.value?.episodeCount ?? 0, totalChapters: anilistData?.totalEpisodes ?? 0, altLength: 0)}%',
+                  style: TextStyle(
+                    color: context.colors.primary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: AnymexTextSpans(
-              fontSize: 14,
-              spans: [
-                AnymexTextSpan(
-                  text: "Episode ",
-                  color: context.colors.onSurface.opaque(0.7),
-                ),
-                AnymexTextSpan(
-                  text: currentAnime.value?.episodeCount?.toString() ?? '0',
-                  variant: TextVariant.bold,
-                  color: context.colors.primary,
-                ),
-                AnymexTextSpan(
-                  text: ' of ',
-                  color: context.colors.onSurface.opaque(0.7),
-                ),
-                AnymexTextSpan(
-                  text: anilistData?.totalEpisodes.toString() ??
-                      anilistData?.totalEpisodes.toString() ??
-                      '??',
-                  variant: TextVariant.bold,
-                  color: context.colors.primary,
-                ),
+          if (totalEps > 0) ...[
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                _buildTimeStat(context,
+                    label: 'Total',
+                    value: _formatWatchTime(totalMins),
+                    color: context.colors.onSurface),
+                const SizedBox(width: 8),
+                _buildTimeStat(context,
+                    label: 'Watched',
+                    value: _formatWatchTime(watchedMins),
+                    color: Colors.green),
+                const SizedBox(width: 8),
+                _buildTimeStat(context,
+                    label: 'Remaining',
+                    value: _formatWatchTime(remainingMins),
+                    color: Colors.orange),
               ],
             ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              color: context.colors.primary.opaque(0.1, iReallyMeanIt: true),
-            ),
-            child: Text(
-              '${formatProgress(currentChapter: currentAnime.value?.episodeCount ?? 0, totalChapters: anilistData?.totalEpisodes ?? 0, altLength: 0)}%',
-              style: TextStyle(
-                color: context.colors.primary,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
+          ],
         ],
       ),
     );
