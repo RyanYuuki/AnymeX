@@ -456,7 +456,8 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
     final currentType = normalizeSubtitleOutlineType(
         settings.playerSettings.value.subtitleOutlineType);
     if (currentType != settings.playerSettings.value.subtitleOutlineType) {
-      settings.playerSettings.update((s) => s?.subtitleOutlineType = currentType);
+      settings.playerSettings
+          .update((s) => s?.subtitleOutlineType = currentType);
       PlayerSettingsKeys.subtitleOutlineType.set(currentType);
     }
 
@@ -940,6 +941,15 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                   switchValue: settings.enableScreenshot,
                                   onChanged: (val) =>
                                       settings.enableScreenshot = val),
+                              CustomSwitchTile(
+                                  padding: const EdgeInsets.all(10),
+                                  icon: Icons.animation_rounded,
+                                  title: "Player Menu Animation",
+                                  description:
+                                      "Disable to show player menu instantly without animation",
+                                  switchValue: settings.playerMenuAnimation,
+                                  onChanged: (val) =>
+                                      settings.playerMenuAnimation = val),
                               CustomSliderTile(
                                 sliderValue: settings.seekDuration.toDouble(),
                                 max: 50,
@@ -1188,8 +1198,8 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                         outlineWidth: settings
                                             .subtitleOutlineWidth
                                             .toDouble(),
-                                        outlineColor: colorOptions[
-                                                settings.subtitleOutlineColor] ??
+                                        outlineColor: colorOptions[settings
+                                                .subtitleOutlineColor] ??
                                             colorOptions['Black']!,
                                       ),
                                     ),
