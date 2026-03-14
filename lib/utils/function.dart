@@ -357,7 +357,8 @@ enum DataVariant {
   anilist,
   extension,
   offline,
-  library
+  library,
+  underrated
 }
 
 List<CarouselData> convertData(List<dynamic> data,

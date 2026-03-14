@@ -1,3 +1,4 @@
+import 'package:anymex/controllers/services/underrated_service.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/big_carousel.dart';
@@ -39,6 +40,16 @@ Widget buildSection(String title, dynamic data,
     variant: variant,
     isLoading: isLoading,
     source: source,
+  );
+}
+
+Widget buildUnderratedSection(String title, List<UnderratedMedia> data,
+    {ItemType type = ItemType.anime}) {
+  return ReusableCarousel(
+    data: data.map((e) => e.toCarouselData(isManga: type == ItemType.manga)).toList(),
+    title: title,
+    type: type,
+    variant: DataVariant.underrated,
   );
 }
 
@@ -84,6 +95,15 @@ Widget buildMangaSection(String title, List<Media> data,
     title: title,
     type: ItemType.manga,
     variant: isAnilist ? DataVariant.anilist : DataVariant.regular,
+  );
+}
+
+Widget buildUnderratedMangaSection(String title, List<UnderratedMedia> data) {
+  return ReusableCarousel(
+    data: data.map((e) => e.toCarouselData(isManga: true)).toList(),
+    title: title,
+    type: ItemType.manga,
+    variant: DataVariant.underrated,
   );
 }
 

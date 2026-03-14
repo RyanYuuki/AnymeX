@@ -556,6 +556,43 @@ class Media {
     );
   }
 
+  /// Factory for parsing media from AniList API for underrated section
+  factory Media.fromUnderratedAnilist(Map<String, dynamic> json, bool isManga) {
+    ItemType type = isManga ? ItemType.manga : ItemType.anime;
+
+    return Media(
+      id: json['id']?.toString() ?? '0',
+      idMal: json['idMal']?.toString() ?? '0',
+      romajiTitle: json['title']?['romaji'] ?? '?',
+      title: json['title']?['english'] ?? json['title']?['romaji'] ?? '?',
+      description: json['description'] ?? '',
+      poster: json['coverImage']?['large'] ?? '',
+      largePoster: json['coverImage']?['extraLarge'] ?? '',
+      cover: json['bannerImage'],
+      color: json['coverImage']?['color'] ?? '',
+      totalEpisodes: json['episodes']?.toString() ?? '?',
+      totalChapters: json['chapters']?.toString() ?? '?',
+      rating: ((json['averageScore'] ?? 0) / 10).toStringAsFixed(1),
+      popularity: json['popularity']?.toString() ?? '0',
+      type: json['type'] ?? (isManga ? 'MANGA' : 'ANIME'),
+      status: (json['status'] ?? '?').replaceAll('_', ' '),
+      format: json['format'] ?? '?',
+      season: json['season'] ?? '?',
+      seasonYear: json['seasonYear'] ?? json['startDate']?['year'],
+      premiered: '${json['season'] ?? '?'} ${json['seasonYear'] ?? '?'}',
+      genres: List<String>.from(json['genres'] ?? []),
+      studios: (json['studios']?['nodes'] as List?)
+              ?.map((el) => el['name'].toString())
+              .toList() ??
+          [],
+      mediaType: type,
+      serviceType: ServicesType.anilist,
+      nextAiringEpisode: json['nextAiringEpisode'] != null
+          ? NextAiringEpisode.fromJson(json['nextAiringEpisode'])
+          : null,
+    );
+  }
+
   static String _parseDateRange(
       Map<String, dynamic>? start, Map<String, dynamic>? end) {
     if (start == null && end == null) return 'Unknown';

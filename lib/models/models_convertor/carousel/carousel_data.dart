@@ -9,14 +9,21 @@ class CarouselData {
   String? args;
   ServicesType servicesType;
   bool releasing;
+  
+  // Underrated section fields
+  String? recommendedBy;
+  String? reason;
 
-  CarouselData(
-      {this.id,
-      this.title,
-      this.poster,
-      this.extraData,
-      this.source,
-      this.args,
-      required this.servicesType,
-      required this.releasing});
+  CarouselData({
+    this.id,
+    this.title,
+    this.poster,
+    this.extraData,
+    this.source,
+    this.args,
+    required this.servicesType,
+    required this.releasing,
+    this.recommendedBy,
+    this.reason,
+  });
 }
