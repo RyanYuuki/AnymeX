@@ -82,7 +82,7 @@ dependencies:
     window_manager: ^0.4.3
     app_links: ^6.4.0
     preload_page_view: ^0.2.0
-
+    uuid: ^4.0.0
     archive: any
     image: any
     flutter_widget_from_html: ^0.15.3
