@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:super_sliver_list/super_sliver_list.dart';
-import 'package:uuid/uuid.dart';
 
 class SettingsAniSkipContribute extends StatefulWidget {
   const SettingsAniSkipContribute({super.key});
@@ -24,7 +23,7 @@ class _SettingsAniSkipContributeState extends State<SettingsAniSkipContribute> {
   bool isSubmitting = false;
   String? submitStatus;
 
-  final List<String> skipTypes = ['op', 'ed', 'recap', 'mixed-op', 'mixed-ed'];
+  final List<String> skipTypes = ['op', 'ed', 'recap'];
 
   Future<void> submitSkipTime() async {
     if (malIdController.text.isEmpty ||
@@ -67,15 +66,13 @@ class _SettingsAniSkipContributeState extends State<SettingsAniSkipContribute> {
         return;
       }
 
-      final uuid = const Uuid().v4();
-
       final Map<String, dynamic> requestBody = {
         'skipType': selectedSkipType,
-        'providerName': 'AnymeX',
+        'providerName': 'AnymeX User',
         'startTime': startTime,
         'endTime': endTime,
         'episodeLength': episodeLength,
-        'submitterId': uuid,
+        'submitterId': 'anymex-user-${DateTime.now().millisecondsSinceEpoch}',
       };
 
       final response = await http.post(
@@ -84,10 +81,25 @@ class _SettingsAniSkipContributeState extends State<SettingsAniSkipContribute> {
         body: jsonEncode(requestBody),
       );
 
-      if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
+      final responseData = jsonDecode(response.body);
+      
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        String successMessage = '✓ Success!';
+        
+        if (responseData['message'] != null) {
+          successMessage = '✓ ${responseData['message']}';
+        }
+        
+        if (responseData['skipId'] != null) {
+          successMessage += '\nSkip ID: ${responseData['skipId']}';
+        }
+        
+        if (responseData['statusCode'] != null) {
+          successMessage += '\nStatus Code: ${responseData['statusCode']}';
+        }
+        
         setState(() {
-          submitStatus = 'Successfully submitted! Skip ID: ${responseData['skipId']}';
+          submitStatus = successMessage;
           malIdController.clear();
           episodeNumberController.clear();
           startTimeController.clear();
@@ -96,14 +108,27 @@ class _SettingsAniSkipContributeState extends State<SettingsAniSkipContribute> {
           selectedSkipType = null;
         });
       } else {
-        final errorData = jsonDecode(response.body);
+        String errorMessage = '✗ Error ${response.statusCode}';
+        
+        if (responseData['message'] != null) {
+          errorMessage += '\n${responseData['message']}';
+        }
+        
+        if (responseData['statusCode'] != null) {
+          errorMessage += '\nStatus Code: ${responseData['statusCode']}';
+        }
+        
+        if (responseData['error'] != null) {
+          errorMessage += '\n${responseData['error']}';
+        }
+        
         setState(() {
-          submitStatus = 'Error: ${response.statusCode} - ${errorData['message'] ?? errorData}';
+          submitStatus = errorMessage;
         });
       }
     } catch (e) {
       setState(() {
-        submitStatus = 'Error: $e';
+        submitStatus = '✗ Exception: $e';
       });
     } finally {
       setState(() {
@@ -173,7 +198,7 @@ class _SettingsAniSkipContributeState extends State<SettingsAniSkipContribute> {
                                 controller: malIdController,
                                 keyboardType: TextInputType.number,
                                 decoration: InputDecoration(
-                                  hintText: 'e.g., 21 for One Piece',
+                                  hintText: 'e.g., 5114 for Fullmetal Alchemist',
                                   filled: true,
                                   fillColor: Theme.of(context).colorScheme.surface,
                                   border: OutlineInputBorder(
@@ -188,7 +213,7 @@ class _SettingsAniSkipContributeState extends State<SettingsAniSkipContribute> {
                                 controller: episodeNumberController,
                                 keyboardType: TextInputType.number,
                                 decoration: InputDecoration(
-                                  hintText: 'e.g., 1155',
+                                  hintText: 'e.g., 1',
                                   filled: true,
                                   fillColor: Theme.of(context).colorScheme.surface,
                                   border: OutlineInputBorder(
@@ -208,29 +233,9 @@ class _SettingsAniSkipContributeState extends State<SettingsAniSkipContribute> {
                                   value: selectedSkipType,
                                   hint: const Text('Select skip type'),
                                   items: skipTypes.map((type) {
-                                    String displayText;
-                                    switch (type) {
-                                      case 'op':
-                                        displayText = 'Opening (OP)';
-                                        break;
-                                      case 'ed':
-                                        displayText = 'Ending (ED)';
-                                        break;
-                                      case 'recap':
-                                        displayText = 'Recap';
-                                        break;
-                                      case 'mixed-op':
-                                        displayText = 'Mixed Opening';
-                                        break;
-                                      case 'mixed-ed':
-                                        displayText = 'Mixed Ending';
-                                        break;
-                                      default:
-                                        displayText = type;
-                                    }
                                     return DropdownMenuItem(
                                       value: type,
-                                      child: Text(displayText),
+                                      child: Text(type.toUpperCase()),
                                     );
                                   }).toList(),
                                   onChanged: (value) {
@@ -293,17 +298,31 @@ class _SettingsAniSkipContributeState extends State<SettingsAniSkipContribute> {
                               ),
                               const SizedBox(height: 24),
                               if (submitStatus != null)
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 16.0),
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: submitStatus!.startsWith('✓') 
+                                        ? Colors.green.withOpacity(0.1)
+                                        : Colors.red.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                      color: submitStatus!.startsWith('✓')
+                                          ? Colors.green
+                                          : Colors.red,
+                                      width: 1,
+                                    ),
+                                  ),
                                   child: Text(
                                     submitStatus!,
                                     style: TextStyle(
-                                      color: submitStatus!.startsWith('Success') 
-                                          ? Colors.green 
+                                      color: submitStatus!.startsWith('✓')
+                                          ? Colors.green
                                           : Colors.red,
+                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
                                 ),
+                              const SizedBox(height: 16),
                               SizedBox(
                                 width: double.infinity,
                                 child: ElevatedButton(
@@ -345,7 +364,6 @@ class _SettingsAniSkipContributeState extends State<SettingsAniSkipContribute> {
                           Text('• Find the MAL ID from MyAnimeList.net'),
                           Text('• Time values should be in seconds'),
                           Text('• OP = Opening, ED = Ending, Recap = Previous episode summary'),
-                          Text('• Mixed-OP/ED = Opening/Ending with additional content'),
                           Text('• Make sure times are accurate before submitting'),
                           SizedBox(height: 8),
                           Text(
