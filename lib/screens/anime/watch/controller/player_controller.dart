@@ -39,15 +39,8 @@ import 'package:rxdart/rxdart.dart' show ThrottleExtensions;
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:volume_controller/volume_controller.dart';
-
 import '../../../../database/isar_models/track.dart' as model;
 
-// ---------------------------------------------------------------------------
-// PiP controls bridge
-// ---------------------------------------------------------------------------
-
-/// Bridges native PiP control buttons (Android RemoteActions /
-/// iOS MPRemoteCommandCenter) to Flutter callbacks.
 class _PipControlsService {
   static const _channel = MethodChannel('com.ryan.anymex/pip_controls');
 
@@ -95,8 +88,6 @@ class _PipControlsService {
     }
   }
 
-  /// Push the current playback state to native so it can update the PiP
-  /// button icon (Android) and MPNowPlayingInfo (iOS).
   Future<void> updatePlaybackState({required bool isPlaying}) async {
     if (!Platform.isAndroid && !Platform.isIOS) return;
     try {
@@ -105,10 +96,6 @@ class _PipControlsService {
     } catch (_) {}
   }
 }
-
-// ---------------------------------------------------------------------------
-// Extensions
-// ---------------------------------------------------------------------------
 
 extension PlayerControllerExtensions on PlayerController {
   bool get hasNextEpisode {
@@ -140,10 +127,6 @@ extension PlayerControllerExtensions on PlayerController {
   int get currentEpisodeIndex =>
       episodeList.indexWhere((e) => e.number == currentEpisode.value.number);
 }
-
-// ---------------------------------------------------------------------------
-// PlayerController
-// ---------------------------------------------------------------------------
 
 class PlayerController extends GetxController with WidgetsBindingObserver {
   static final _htmlRx = RegExp(r'<[^>]*>');
@@ -295,8 +278,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   @override
   void onInit() {
     super.onInit();
-
-    // Wire up native PiP controls (Android RemoteActions / iOS MPRemoteCommandCenter)
+    
     _pipControls = _PipControlsService(
       onTogglePlayPause: togglePlayPause,
       onPlay: play,
@@ -865,7 +847,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       if (e) {
         _resetAutoHideTimer();
       }
-      // Push playback state to native for PiP button icon updates
       _pipControls.updatePlaybackState(isPlaying: e);
 
       if (isOffline.value) return;
