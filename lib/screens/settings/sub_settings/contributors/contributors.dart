@@ -191,7 +191,7 @@ Future<List<StaffModel>> _fetchStaff() async {
   try {
     final response = await http.get(
       Uri.parse(
-          'https://github.com/Shebyyy/AnymeX/raw/refs/heads/beta/staff.json'),
+          'https://github.com/Shebyyy/AnymeX-Preview/raw/refs/heads/beta/staff.json'),
     );
     if (response.statusCode != 200) return [];
     final Map<String, dynamic> data =
