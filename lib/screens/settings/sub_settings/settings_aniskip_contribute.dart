@@ -1,5 +1,6 @@
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -116,7 +117,26 @@ class _SettingsAniSkipContributeState extends State<SettingsAniSkipContribute> {
       child: Scaffold(
         body: Column(
           children: [
-            const NestedHeader(title: 'Contribute Skip Times'),
+            Container(
+              padding: const EdgeInsets.only(top: 50, left: 20, right: 20, bottom: 20),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    'Contribute Skip Times',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: textColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
             Expanded(
               child: SuperListView(
                 padding: const EdgeInsets.all(16.0),
