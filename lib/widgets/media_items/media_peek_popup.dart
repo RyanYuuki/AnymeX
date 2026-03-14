@@ -11,6 +11,7 @@ import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/anime/widgets/custom_list_dialog.dart';
 import 'package:anymex/screens/anime/widgets/list_editor.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex/screens/profile/user_profile_page.dart';
 import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -18,17 +19,21 @@ import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import 'package:get/get.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:http/http.dart' as http;
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class MediaPeekPopup extends StatefulWidget {
   final Media media;
   final ItemType type;
   final String tag;
-  final String? recommendedBy;
+  final int? anilistUserId;
+  final int? malUserId;
+  final String? author;
   final String? reason;
 
   const MediaPeekPopup({
@@ -36,13 +41,15 @@ class MediaPeekPopup extends StatefulWidget {
     required this.media,
     required this.type,
     required this.tag,
-    this.recommendedBy,
+    this.anilistUserId,
+    this.malUserId,
+    this.author,
     this.reason,
   });
 
   static void show(
       BuildContext context, Media media, ItemType type, String tag,
-      {String? recommendedBy, String? reason}) {
+      {int? anilistUserId, int? malUserId, String? author, String? reason}) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -54,7 +61,9 @@ class MediaPeekPopup extends StatefulWidget {
         media: media,
         type: type,
         tag: tag,
-        recommendedBy: recommendedBy,
+        anilistUserId: anilistUserId,
+        malUserId: malUserId,
+        author: author,
         reason: reason,
       ),
     );
@@ -99,12 +108,10 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
 
   Future<void> _fetchPeekData() async {
     try {
-      // Use the same fetchDetails the info page uses — works for all services
       final service = widget.media.serviceType.service;
       final details = await service
           .fetchDetails(FetchDetailsParams(id: widget.media.id.toString()));
 
-      // Fetch synonyms + tags via AniList only (they live in AniList's schema)
       List<String> synonyms = [];
       List<String> tags = [];
       final isAniList = widget.media.serviceType == ServicesType.anilist ||
@@ -394,8 +401,6 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
           color: colors.primary));
     }
 
-    // Prefer the fetched status (accurate, service-specific),
-    // fall back to widget.media.status while loading
     final rawStatus = (_data?.status.isNotEmpty == true)
         ? _data!.status
         : widget.media.status;
@@ -466,9 +471,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
       const gap = 8.0;
       const iconBtnWidth = 50.0;
 
-      // Layout: [Watch icon] [List Editor wide] [Library icon]
-      // When not logged in: [Watch/Read wide] [Library icon]
-      const fixedUsed = iconBtnWidth * 2 + gap * 2; // watch icon + library icon
+      const fixedUsed = iconBtnWidth * 2 + gap * 2;
       final listEditorW =
           _isLoggedIn ? (available - fixedUsed).clamp(0.0, available) : 0.0;
       final watchW = _isLoggedIn
@@ -478,7 +481,6 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
       return Row(
         mainAxisSize: MainAxisSize.max,
         children: [
-          // Watch/Read — icon-only when logged in, wide with label when not
           SizedBox(
             width: watchW,
             child: _DetailsStyleButton(
@@ -517,7 +519,6 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                     ),
             ),
           ),
-          // List Editor — wide with status label, logged in only
           if (_isLoggedIn) ...[
             const SizedBox(width: gap),
             SizedBox(
@@ -550,7 +551,6 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
             ),
           ],
           const SizedBox(width: gap),
-          // Add to Library — icon only, always shown
           SizedBox(
             width: iconBtnWidth,
             child: _DetailsStyleButton(
@@ -590,8 +590,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Recommended by section for underrated items
-        if (widget.recommendedBy != null && widget.recommendedBy!.isNotEmpty) ...[
+        if (widget.author != null && widget.author!.isNotEmpty) ...[
           _buildRecommendedBySection(colors),
           const SizedBox(height: 20),
         ],
@@ -729,6 +728,12 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
   }
 
   Widget _buildRecommendedBySection(ColorScheme colors) {
+    final serviceHandler = Get.find<ServiceHandler>();
+    final isAnilist = serviceHandler.serviceType.value == ServicesType.anilist;
+    final hasValidId = isAnilist
+        ? widget.anilistUserId != null
+        : widget.malUserId != null;
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -743,12 +748,23 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
             children: [
               Icon(Iconsax.user, size: 16, color: colors.primary),
               const SizedBox(width: 8),
-              AnymexText(
-                text: 'Recommended by @${widget.recommendedBy}',
-                variant: TextVariant.semiBold,
-                size: 13,
-                color: colors.primary,
-              ),
+              if (hasValidId)
+                GestureDetector(
+                  onTap: () => _navigateToAuthorProfile(isAnilist),
+                  child: AnymexText(
+                    text: 'Recommended by @${widget.author}',
+                    variant: TextVariant.semiBold,
+                    size: 13,
+                    color: colors.primary,
+                  ),
+                )
+              else
+                AnymexText(
+                  text: 'Recommended by @${widget.author}',
+                  variant: TextVariant.semiBold,
+                  size: 13,
+                  color: colors.primary,
+                ),
             ],
           ),
           if (widget.reason != null && widget.reason!.isNotEmpty) ...[
@@ -765,6 +781,15 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
         ],
       ),
     );
+  }
+
+  void _navigateToAuthorProfile(bool isAnilist) {
+    Navigator.of(context).pop();
+    if (isAnilist && widget.anilistUserId != null) {
+      navigate(() => UserProfilePage(userId: widget.anilistUserId!));
+    } else if (!isAnilist && widget.author != null) {
+      launchUrlString('https://myanimelist.net/profile/${widget.author}');
+    }
   }
 }
 

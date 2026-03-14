@@ -5,6 +5,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex/screens/profile/user_profile_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/big_carousel.dart';
 import 'package:anymex/widgets/common/cards/base_card.dart';
@@ -19,6 +20,7 @@ import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 Widget buildSection(String title, dynamic data,
     {DataVariant variant = DataVariant.regular,
@@ -137,7 +139,6 @@ Widget buildFutureSection(
   );
 }
 
-/// Custom carousel widget for underrated anime/manga with special styling
 class _UnderratedCarousel extends StatelessWidget {
   final String title;
   final List<UnderratedMedia> data;
@@ -160,7 +161,6 @@ class _UnderratedCarousel extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Title
           Padding(
             padding: const EdgeInsets.only(left: 20.0),
             child: Text(
@@ -173,7 +173,6 @@ class _UnderratedCarousel extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          // Carousel list
           SizedBox(
             height: cardHeight,
             child: ListView.builder(
@@ -195,7 +194,6 @@ class _UnderratedCarousel extends StatelessWidget {
   }
 }
 
-/// Card widget for underrated items - uses same cards as the rest of the app
 class _UnderratedCard extends StatelessWidget {
   final UnderratedMedia item;
   final ItemType type;
@@ -220,7 +218,6 @@ class _UnderratedCard extends StatelessWidget {
         width: cardWidth,
         child: Stack(
           children: [
-            // Use the same card system as the rest of the app
             MediaCardGate(
               itemData: carouselData,
               tag: tag,
@@ -228,45 +225,71 @@ class _UnderratedCard extends StatelessWidget {
               cardStyle: CardStyle.values[settingsController.cardStyle],
               type: type,
             ),
-            // Recommended by badge (overlay on top-left)
-            if (item.recommendedBy != null && item.recommendedBy!.isNotEmpty)
+            if (item.author != null && item.author!.isNotEmpty)
               Positioned(
                 top: 6,
                 left: 6,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.primary,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Iconsax.user,
-                        size: 10,
-                        color: theme.colorScheme.onPrimary,
-                      ),
-                      const SizedBox(width: 3),
-                      Text(
-                        '@${item.recommendedBy}',
-                        style: TextStyle(
-                          fontSize: 9,
-                          fontWeight: FontWeight.bold,
-                          color: theme.colorScheme.onPrimary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                child: _buildAuthorBadge(context, theme),
               ),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildAuthorBadge(BuildContext context, ThemeData theme) {
+    final serviceHandler = Get.find<ServiceHandler>();
+    final isAnilist = serviceHandler.serviceType.value == ServicesType.anilist;
+    final hasValidId = isAnilist
+        ? item.anilistUserId != null
+        : item.malUserId != null;
+
+    final badge = Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 6,
+        vertical: 3,
+      ),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primary,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Iconsax.user,
+            size: 10,
+            color: theme.colorScheme.onPrimary,
+          ),
+          const SizedBox(width: 3),
+          Text(
+            '@${item.author}',
+            style: TextStyle(
+              fontSize: 9,
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.onPrimary,
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (!hasValidId) {
+      return badge;
+    }
+
+    return GestureDetector(
+      onTap: () => _navigateToAuthorProfile(context, isAnilist),
+      child: badge,
+    );
+  }
+
+  void _navigateToAuthorProfile(BuildContext context, bool isAnilist) {
+    if (isAnilist && item.anilistUserId != null) {
+      navigate(() => UserProfilePage(userId: item.anilistUserId!));
+    } else if (!isAnilist && item.author != null) {
+      launchUrlString('https://myanimelist.net/profile/${item.author}');
+    }
   }
 
   void _showPeekPopup(BuildContext context) {
@@ -275,7 +298,9 @@ class _UnderratedCard extends StatelessWidget {
       item.media,
       type,
       'underrated-${item.media.id}',
-      recommendedBy: item.recommendedBy,
+      anilistUserId: item.anilistUserId,
+      malUserId: item.malUserId,
+      author: item.author,
       reason: item.reason,
     );
   }

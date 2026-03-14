@@ -9,9 +9,10 @@ class CarouselData {
   String? args;
   ServicesType servicesType;
   bool releasing;
-  
-  // Underrated section fields
-  String? recommendedBy;
+
+  int? anilistUserId;
+  int? malUserId;
+  String? author;
   String? reason;
 
   CarouselData({
@@ -23,7 +24,9 @@ class CarouselData {
     this.args,
     required this.servicesType,
     required this.releasing,
-    this.recommendedBy,
+    this.anilistUserId,
+    this.malUserId,
+    this.author,
     this.reason,
   });
 }
