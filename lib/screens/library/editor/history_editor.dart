@@ -6,6 +6,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
@@ -437,27 +438,23 @@ class _HistoryEditorState extends State<HistoryEditor> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        item.name ?? item.jname ?? 'Unknown',
-                        style: TextStyle(
-                          color: theme.colorScheme.onSurface,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                          letterSpacing: -0.3,
-                        ),
+                      AnymexText(
+                        text: item.name ?? item.jname ?? 'Unknown',
+                        size: 16,
+                        variant: TextVariant.semiBold,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
+                        isMarquee: true,
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        subtitle,
-                        style: TextStyle(
-                          color: theme.colorScheme.onSurface.opaque(0.7),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
+                      AnymexText(
+                        text: subtitle,
+                        size: 14,
+                        variant: TextVariant.regular,
+                        color: theme.colorScheme.onSurface.opaque(0.7),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
+                        isMarquee: true,
                       ),
                       const SizedBox(height: 4),
                       Text(

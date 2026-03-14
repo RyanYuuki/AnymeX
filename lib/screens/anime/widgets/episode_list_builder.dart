@@ -637,14 +637,12 @@ class ContinueEpisodeButton extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          episodeLabel.toUpperCase(),
-                          style: textStyle ??
-                              TextStyle(
-                                color: textColor,
-                                fontFamily: 'Poppins-SemiBold',
-                              ),
+                        AnymexText(
+                          text: episodeLabel.toUpperCase(),
+                          variant: TextVariant.semiBold,
+                          color: textColor,
                           textAlign: TextAlign.center,
+                          isMarquee: true,
                         ),
                         PlatformBuilder(
                             androidBuilder: SizedBox.shrink(),
