@@ -55,9 +55,10 @@ class UnderratedService extends GetxController {
 
   /// Fetch media details from AniList by ID
   Future<Media?> _fetchMediaFromAnilist(int anilistId, bool isManga) async {
-    const String query = '''
-      query (\$id: Int) {
-        Media(id: \$id, type: ${isManga ? 'MANGA' : 'ANIME'}) {
+    final String mediaType = isManga ? 'MANGA' : 'ANIME';
+    final String query = '''
+      query (\$id: Int, \$type: MediaType) {
+        Media(id: \$id, type: \$type) {
           id
           idMal
           title {
@@ -101,7 +102,10 @@ class UnderratedService extends GetxController {
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'query': query,
-          'variables': {'id': anilistId},
+          'variables': {
+            'id': anilistId,
+            'type': mediaType,
+          },
         }),
       );
 

@@ -120,7 +120,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                   buildSectionIfNotEmpty("Upcoming Anime", upcomingAnimes),
                   // Underrated Anime section at the bottom
                   if (underratedService.underratedAnimes.isNotEmpty)
-                    buildSection('Underrated Anime', underratedService.underratedAnimes),
+                    buildUnderratedSection('Underrated Anime', underratedService.underratedAnimes.toList()),
                 ],
               )),
       ].obs;
@@ -142,7 +142,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                   ...sourceController.novelSections.value,
                   // Underrated Manga section at the bottom
                   if (underratedService.underratedMangas.isNotEmpty)
-                    buildMangaSection('Underrated Manga', underratedService.underratedMangas),
+                    buildUnderratedMangaSection('Underrated Manga', underratedService.underratedMangas.toList()),
                 ],
               )),
       ].obs;

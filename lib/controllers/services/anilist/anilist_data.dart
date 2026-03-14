@@ -253,7 +253,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
         if (underratedService.underratedAnimes.isEmpty) {
           return const SizedBox.shrink();
         }
-        return buildSection('Underrated Anime', underratedService.underratedAnimes);
+        return buildUnderratedSection('Underrated Anime', underratedService.underratedAnimes.toList());
       }),
     ].obs;
   }
@@ -276,7 +276,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
         if (underratedService.underratedMangas.isEmpty) {
           return const SizedBox.shrink();
         }
-        return buildMangaSection('Underrated Manga', underratedService.underratedMangas);
+        return buildUnderratedMangaSection('Underrated Manga', underratedService.underratedMangas.toList());
       }),
     ].obs;
   }
