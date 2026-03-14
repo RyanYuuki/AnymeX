@@ -110,6 +110,7 @@ dependencies:
     palette_generator: ^0.3.3+7
     better_player_plus: any
     text_scroll: ^0.2.1
+    marquee: ^2.3.0
 
     flutter_cache_manager: any
     crypto: any

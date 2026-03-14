@@ -1,3 +1,4 @@
+import 'package:anymex/widgets/common/marquee_text.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
@@ -17,6 +18,7 @@ class AnymexText extends StatelessWidget {
   final bool autoResize;
   final double? minFontSize;
   final double? stepGranularity;
+  final bool isMarquee;
 
   const AnymexText({
     super.key,
@@ -32,6 +34,7 @@ class AnymexText extends StatelessWidget {
     this.autoResize = false,
     this.minFontSize = 10,
     this.stepGranularity = 1,
+    this.isMarquee = false,
   });
 
   const AnymexText.regular({
@@ -47,6 +50,7 @@ class AnymexText extends StatelessWidget {
     bool autoResize = false,
     double? minFontSize = 10,
     double? stepGranularity = 1,
+    bool isMarquee = false,
   }) : this(
           key: key,
           text: text,
@@ -61,6 +65,7 @@ class AnymexText extends StatelessWidget {
           autoResize: autoResize,
           minFontSize: minFontSize,
           stepGranularity: stepGranularity,
+          isMarquee: isMarquee,
         );
 
   const AnymexText.semiBold({
@@ -76,6 +81,7 @@ class AnymexText extends StatelessWidget {
     bool autoResize = false,
     double? minFontSize = 10,
     double? stepGranularity = 1,
+    bool isMarquee = false,
   }) : this(
           key: key,
           text: text,
@@ -90,6 +96,7 @@ class AnymexText extends StatelessWidget {
           autoResize: autoResize,
           minFontSize: minFontSize,
           stepGranularity: stepGranularity,
+          isMarquee: isMarquee,
         );
 
   const AnymexText.bold({
@@ -105,6 +112,7 @@ class AnymexText extends StatelessWidget {
     bool autoResize = false,
     double? minFontSize = 10,
     double? stepGranularity = 1,
+    bool isMarquee = false,
   }) : this(
           key: key,
           text: text,
@@ -119,6 +127,7 @@ class AnymexText extends StatelessWidget {
           autoResize: autoResize,
           minFontSize: minFontSize,
           stepGranularity: stepGranularity,
+          isMarquee: isMarquee,
         );
 
   @override
@@ -137,6 +146,16 @@ class AnymexText extends StatelessWidget {
       color: color,
       fontStyle: fontStyle,
     );
+
+    if (isMarquee) {
+      return MarqueeText(
+        processedText,
+        style: textStyle,
+        textAlign: textAlign,
+        overflow: overflow,
+        maxLines: maxLines,
+      );
+    }
 
     if (!autoResize) {
       return Text(
