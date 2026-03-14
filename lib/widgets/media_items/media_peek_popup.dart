@@ -22,21 +22,27 @@ import 'package:get/get.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:http/http.dart' as http;
 import 'package:hugeicons/hugeicons.dart';
+import 'package:iconsax/iconsax.dart';
 
 class MediaPeekPopup extends StatefulWidget {
   final Media media;
   final ItemType type;
   final String tag;
+  final String? recommendedBy;
+  final String? reason;
 
   const MediaPeekPopup({
     super.key,
     required this.media,
     required this.type,
     required this.tag,
+    this.recommendedBy,
+    this.reason,
   });
 
   static void show(
-      BuildContext context, Media media, ItemType type, String tag) {
+      BuildContext context, Media media, ItemType type, String tag,
+      {String? recommendedBy, String? reason}) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -44,7 +50,13 @@ class MediaPeekPopup extends StatefulWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (_) => MediaPeekPopup(media: media, type: type, tag: tag),
+      builder: (_) => MediaPeekPopup(
+        media: media,
+        type: type,
+        tag: tag,
+        recommendedBy: recommendedBy,
+        reason: reason,
+      ),
     );
   }
 
@@ -578,6 +590,11 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Recommended by section for underrated items
+        if (widget.recommendedBy != null && widget.recommendedBy!.isNotEmpty) ...[
+          _buildRecommendedBySection(colors),
+          const SizedBox(height: 20),
+        ],
         if (data.description.isNotEmpty) ...[
           _sectionLabel('Synopsis', colors),
           const SizedBox(height: 8),
@@ -707,6 +724,45 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
         child: chip,
+      ),
+    );
+  }
+
+  Widget _buildRecommendedBySection(ColorScheme colors) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: colors.primaryContainer.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: colors.primary.withOpacity(0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Iconsax.user, size: 16, color: colors.primary),
+              const SizedBox(width: 8),
+              AnymexText(
+                text: 'Recommended by @${widget.recommendedBy}',
+                variant: TextVariant.semiBold,
+                size: 13,
+                color: colors.primary,
+              ),
+            ],
+          ),
+          if (widget.reason != null && widget.reason!.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(
+              '"${widget.reason}"',
+              style: TextStyle(
+                fontSize: 13,
+                fontStyle: FontStyle.italic,
+                color: colors.onSurface,
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }

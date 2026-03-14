@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/utils/logger.dart';
@@ -52,6 +53,47 @@ class UnderratedService extends GetxController {
   // Error states
   RxString animeError = ''.obs;
   RxString mangaError = ''.obs;
+
+  // Statuses to filter out (already consumed or abandoned)
+  static const Set<String> _filteredStatuses = {'COMPLETED', 'CURRENT', 'DROPPED'};
+
+  /// Get filtered underrated anime (excludes COMPLETED, CURRENT, DROPPED)
+  List<UnderratedMedia> getFilteredAnimes() {
+    try {
+      final anilistAuth = Get.find<AnilistAuth>();
+      final userList = anilistAuth.animeList;
+      
+      // Create a set of IDs with filtered statuses
+      final filteredIds = userList
+          .where((item) => _filteredStatuses.contains(item.watchingStatus?.toUpperCase()))
+          .map((item) => item.id)
+          .toSet();
+      
+      return underratedAnimes.where((item) => !filteredIds.contains(item.media.id)).toList();
+    } catch (e) {
+      // If not logged in or error, return all
+      return underratedAnimes.toList();
+    }
+  }
+
+  /// Get filtered underrated manga (excludes COMPLETED, CURRENT, DROPPED)
+  List<UnderratedMedia> getFilteredMangas() {
+    try {
+      final anilistAuth = Get.find<AnilistAuth>();
+      final userList = anilistAuth.mangaList;
+      
+      // Create a set of IDs with filtered statuses
+      final filteredIds = userList
+          .where((item) => _filteredStatuses.contains(item.watchingStatus?.toUpperCase()))
+          .map((item) => item.id)
+          .toSet();
+      
+      return underratedMangas.where((item) => !filteredIds.contains(item.media.id)).toList();
+    } catch (e) {
+      // If not logged in or error, return all
+      return underratedMangas.toList();
+    }
+  }
 
   /// Fetch media details from AniList by ID
   Future<Media?> _fetchMediaFromAnilist(int anilistId, bool isManga) async {

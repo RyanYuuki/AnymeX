@@ -248,12 +248,13 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
       buildSection('Popular Anime', popularAnimes),
       buildSection('Recently Completed', latestAnimes),
       buildSection('Upcoming Anime', upcomingAnimes),
-      // Underrated Anime section at the bottom
+      // Underrated Anime section at the bottom (filtered for logged-in users)
       Obx(() {
-        if (underratedService.underratedAnimes.isEmpty) {
+        final filteredList = underratedService.getFilteredAnimes();
+        if (filteredList.isEmpty) {
           return const SizedBox.shrink();
         }
-        return buildUnderratedSection('Underrated Anime', underratedService.underratedAnimes.toList());
+        return buildUnderratedSection('Underrated Anime', filteredList);
       }),
     ].obs;
   }
@@ -271,12 +272,13 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
       // buildMangaSection('Top Rated Mangas', topRatedMangas),
       // buildMangaSection('Top Ongoing Mangas', topOngoingMangas),
       ...sourceController.novelSections,
-      // Underrated Manga section at the bottom
+      // Underrated Manga section at the bottom (filtered for logged-in users)
       Obx(() {
-        if (underratedService.underratedMangas.isEmpty) {
+        final filteredList = underratedService.getFilteredMangas();
+        if (filteredList.isEmpty) {
           return const SizedBox.shrink();
         }
-        return buildUnderratedMangaSection('Underrated Manga', underratedService.underratedMangas.toList());
+        return buildUnderratedMangaSection('Underrated Manga', filteredList);
       }),
     ].obs;
   }

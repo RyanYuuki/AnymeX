@@ -118,10 +118,14 @@ class MalService extends GetxController implements BaseService, OnlineService {
                   buildSectionIfNotEmpty("Popular Anime", popularAnimes),
                   buildSectionIfNotEmpty("Top Anime", topAnimes),
                   buildSectionIfNotEmpty("Upcoming Anime", upcomingAnimes),
-                  // Underrated Anime section at the bottom
-                  Obx(() => underratedService.underratedAnimes.isEmpty
-                      ? const SizedBox.shrink()
-                      : buildUnderratedSection('Underrated Anime', underratedService.underratedAnimes.toList())),
+                  // Underrated Anime section at the bottom (filtered for logged-in users)
+                  Obx(() {
+                    final filteredList = underratedService.getFilteredAnimes();
+                    if (filteredList.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
+                    return buildUnderratedSection('Underrated Anime', filteredList);
+                  }),
                 ],
               )),
       ].obs;
@@ -141,10 +145,14 @@ class MalService extends GetxController implements BaseService, OnlineService {
                   buildSectionIfNotEmpty("Top Manhua", topManhua,
                       isManga: true),
                   ...sourceController.novelSections.value,
-                  // Underrated Manga section at the bottom
-                  Obx(() => underratedService.underratedMangas.isEmpty
-                      ? const SizedBox.shrink()
-                      : buildUnderratedMangaSection('Underrated Manga', underratedService.underratedMangas.toList())),
+                  // Underrated Manga section at the bottom (filtered for logged-in users)
+                  Obx(() {
+                    final filteredList = underratedService.getFilteredMangas();
+                    if (filteredList.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
+                    return buildUnderratedMangaSection('Underrated Manga', filteredList);
+                  }),
                 ],
               )),
       ].obs;
