@@ -239,5 +239,6 @@ enum UISettingsKeys {
   usePosterColor,
   enablePosterKenBurns,
   carouselStyle,
+  listEditorTheme,
   showContinueWatchingCard,
 }

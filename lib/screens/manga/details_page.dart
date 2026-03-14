@@ -717,7 +717,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
       backgroundColor: context.colors.surfaceContainer,
       context: context,
       isScrollControlled: true,
-      showDragHandle: true,
+      showDragHandle: false,
       builder: (BuildContext context) {
         return ListEditorModal(
           animeStatus: mangaStatus,
@@ -726,7 +726,8 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
           currentAnime: currentManga,
           isManga: true,
           media: anilistData ?? widget.media,
-          onUpdate: (id, score, status, progress, startedAt, completedAt, isPrivate) async {
+          onUpdate: (id, score, status, progress, startedAt, completedAt,
+              isPrivate) async {
             await mediaService.onlineService.updateListEntry(
                 UpdateListEntryParams(
                     listId: id,

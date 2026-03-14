@@ -9,6 +9,7 @@ class AnymexDropdown extends StatefulWidget {
   final IconData icon;
   final IconData? actionIcon;
   final VoidCallback? onActionPressed;
+  final bool compact;
 
   const AnymexDropdown({
     super.key,
@@ -19,6 +20,7 @@ class AnymexDropdown extends StatefulWidget {
     required this.icon,
     this.actionIcon,
     this.onActionPressed,
+    this.compact = false,
   });
 
   @override
@@ -349,16 +351,26 @@ class _AnymexDropdownState extends State<AnymexDropdown>
 
   @override
   Widget build(BuildContext context) {
+    final double paddingSize = widget.compact ? 10 : 20;
+    final double borderRadius = widget.compact ? 12 : 16;
+    final double labelSize = widget.compact ? 10 : 13;
+    final double titleSize = widget.compact ? 13 : 16;
+    final double iconSize = widget.compact ? 16 : 20;
+    final double arrowSize = widget.compact ? 18 : 24;
+    final double verticalGap = widget.compact ? 6 : 12;
+    final double leadingSize = widget.compact ? 20 : 24;
+    final double leadingRadius = widget.compact ? 5 : 6;
+
     return CompositedTransformTarget(
       link: _layerLink,
       child: GestureDetector(
         onTap: widget.items.isNotEmpty ? _toggleDropdown : null,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.all(paddingSize),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surfaceContainer.opaque(0.3),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(borderRadius),
             border: Border.all(
               color: _isOpen
                   ? context.colors.primary
@@ -382,14 +394,14 @@ class _AnymexDropdownState extends State<AnymexDropdown>
                 children: [
                   Icon(
                     widget.icon,
-                    size: 20,
+                    size: iconSize,
                     color: context.colors.primary,
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: widget.compact ? 8 : 12),
                   Text(
                     widget.label,
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: labelSize,
                       fontWeight: FontWeight.w600,
                       color: context.colors.primary,
                       letterSpacing: 0.5,
@@ -401,12 +413,12 @@ class _AnymexDropdownState extends State<AnymexDropdown>
                     child: Icon(
                       Icons.keyboard_arrow_down_rounded,
                       color: context.colors.primary,
-                      size: 24,
+                      size: arrowSize,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: verticalGap),
               Row(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -416,17 +428,19 @@ class _AnymexDropdownState extends State<AnymexDropdown>
                       children: [
                         if (widget.selectedItem?.leadingIcon != null) ...[
                           Container(
-                            width: 24,
-                            height: 24,
+                            width: leadingSize,
+                            height: leadingSize,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(6),
+                              borderRadius:
+                                  BorderRadius.circular(leadingRadius),
                             ),
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(6),
+                              borderRadius:
+                                  BorderRadius.circular(leadingRadius),
                               child: widget.selectedItem!.leadingIcon!,
                             ),
                           ),
-                          const SizedBox(width: 10),
+                          SizedBox(width: widget.compact ? 8 : 10),
                         ],
                         Expanded(
                           child: Column(
@@ -435,7 +449,7 @@ class _AnymexDropdownState extends State<AnymexDropdown>
                               Text(
                                 widget.selectedItem?.text ?? "No item selected",
                                 style: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: titleSize,
                                   fontWeight: FontWeight.w500,
                                   color: widget.selectedItem != null
                                       ? context.colors.onSurface
@@ -450,7 +464,7 @@ class _AnymexDropdownState extends State<AnymexDropdown>
                                 Text(
                                   widget.selectedItem!.subtitle!,
                                   style: TextStyle(
-                                    fontSize: 12,
+                                    fontSize: widget.compact ? 11 : 12,
                                     fontWeight: FontWeight.w400,
                                     color: Theme.of(context)
                                         .colorScheme
