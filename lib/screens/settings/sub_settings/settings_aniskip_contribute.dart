@@ -23,7 +23,7 @@ class _SettingsAniSkipContributeState extends State<SettingsAniSkipContribute> {
   bool isSubmitting = false;
   String? submitStatus;
 
-  final List<String> skipTypes = ['op', 'ed', 'recap'];
+  final List<String> skipTypes = ['op', 'ed', 'recap', 'mixed-op', 'mixed-ed'];
 
   Future<void> submitSkipTime() async {
     if (malIdController.text.isEmpty ||
@@ -81,54 +81,38 @@ class _SettingsAniSkipContributeState extends State<SettingsAniSkipContribute> {
         body: jsonEncode(requestBody),
       );
 
-      final responseData = jsonDecode(response.body);
+      String responseBody = response.body;
       
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        String successMessage = '✓ Success!';
+      try {
+        final responseData = jsonDecode(responseBody);
         
-        if (responseData['message'] != null) {
-          successMessage = '✓ ${responseData['message']}';
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          String message = responseData['message'] ?? 'Success';
+          String skipId = responseData['skipId'] ?? 'N/A';
+          int statusCode = responseData['statusCode'] ?? 0;
+          
+          setState(() {
+            submitStatus = 'Status: ${response.statusCode}\nMessage: $message\nSkip ID: $skipId\nStatus Code: $statusCode';
+            malIdController.clear();
+            episodeNumberController.clear();
+            startTimeController.clear();
+            endTimeController.clear();
+            episodeLengthController.clear();
+            selectedSkipType = null;
+          });
+        } else {
+          setState(() {
+            submitStatus = 'Error ${response.statusCode}:\n${responseData.toString()}';
+          });
         }
-        
-        if (responseData['skipId'] != null) {
-          successMessage += '\nSkip ID: ${responseData['skipId']}';
-        }
-        
-        if (responseData['statusCode'] != null) {
-          successMessage += '\nStatus Code: ${responseData['statusCode']}';
-        }
-        
+      } catch (e) {
         setState(() {
-          submitStatus = successMessage;
-          malIdController.clear();
-          episodeNumberController.clear();
-          startTimeController.clear();
-          endTimeController.clear();
-          episodeLengthController.clear();
-          selectedSkipType = null;
-        });
-      } else {
-        String errorMessage = '✗ Error ${response.statusCode}';
-        
-        if (responseData['message'] != null) {
-          errorMessage += '\n${responseData['message']}';
-        }
-        
-        if (responseData['statusCode'] != null) {
-          errorMessage += '\nStatus Code: ${responseData['statusCode']}';
-        }
-        
-        if (responseData['error'] != null) {
-          errorMessage += '\n${responseData['error']}';
-        }
-        
-        setState(() {
-          submitStatus = errorMessage;
+          submitStatus = 'Status: ${response.statusCode}\nRaw Response: $responseBody';
         });
       }
     } catch (e) {
       setState(() {
-        submitStatus = '✗ Exception: $e';
+        submitStatus = 'Error: $e';
       });
     } finally {
       setState(() {
@@ -298,31 +282,28 @@ class _SettingsAniSkipContributeState extends State<SettingsAniSkipContribute> {
                               ),
                               const SizedBox(height: 24),
                               if (submitStatus != null)
-                                Container(
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: submitStatus!.startsWith('✓') 
-                                        ? Colors.green.withOpacity(0.1)
-                                        : Colors.red.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(
-                                      color: submitStatus!.startsWith('✓')
-                                          ? Colors.green
-                                          : Colors.red,
-                                      width: 1,
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 16.0),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: (submitStatus!.contains('Error') && !submitStatus!.contains('Status: 200') && !submitStatus!.contains('Status: 201')) 
+                                          ? Colors.red.withOpacity(0.1) 
+                                          : Colors.green.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(8),
                                     ),
-                                  ),
-                                  child: Text(
-                                    submitStatus!,
-                                    style: TextStyle(
-                                      color: submitStatus!.startsWith('✓')
-                                          ? Colors.green
-                                          : Colors.red,
-                                      fontWeight: FontWeight.w500,
+                                    child: Text(
+                                      submitStatus!,
+                                      style: TextStyle(
+                                        color: (submitStatus!.contains('Error') && !submitStatus!.contains('Status: 200') && !submitStatus!.contains('Status: 201')) 
+                                            ? Colors.red 
+                                            : Colors.green,
+                                        fontFamily: 'monospace',
+                                        fontSize: 12,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              const SizedBox(height: 16),
                               SizedBox(
                                 width: double.infinity,
                                 child: ElevatedButton(
@@ -364,6 +345,7 @@ class _SettingsAniSkipContributeState extends State<SettingsAniSkipContribute> {
                           Text('• Find the MAL ID from MyAnimeList.net'),
                           Text('• Time values should be in seconds'),
                           Text('• OP = Opening, ED = Ending, Recap = Previous episode summary'),
+                          Text('• mixed-op = Opening with recap, mixed-ed = Ending with preview'),
                           Text('• Make sure times are accurate before submitting'),
                           SizedBox(height: 8),
                           Text(
