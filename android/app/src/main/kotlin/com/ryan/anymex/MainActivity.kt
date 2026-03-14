@@ -34,7 +34,6 @@ class MainActivity : FlPiPActivity() {
     private var volumeEventsSink: EventChannel.EventSink? = null
     private var pipControlsChannel: MethodChannel? = null
 
-    // PiP broadcast action constants
     companion object {
         private const val ACTION_PIP_CONTROL = "com.ryan.anymex.PIP_CONTROL"
         private const val EXTRA_CONTROL_TYPE = "control_type"
@@ -46,7 +45,6 @@ class MainActivity : FlPiPActivity() {
         private const val REQUEST_CODE_NEXT = 103
     }
 
-    // Tracks current playing state so we can flip the icon
     private var isPlaying = true
 
     private val pipBroadcastReceiver = object : BroadcastReceiver() {
@@ -121,14 +119,10 @@ class MainActivity : FlPiPActivity() {
                 else -> result.notImplemented()
             }
         }
-
-        // Channel for PiP control callbacks (Flutter calls us to update state,
-        // and we call Flutter when the user taps a PiP button)
+        
         pipControlsChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, PIP_CONTROLS_CHANNEL)
         pipControlsChannel!!.setMethodCallHandler { call, result ->
             when (call.method) {
-                // Flutter tells us the current playback state so we can update
-                // the PiP action icon (play vs pause)
                 "updatePlaybackState" -> {
                     val playing = call.argument<Boolean>("isPlaying") ?: true
                     isPlaying = playing
@@ -168,7 +162,6 @@ class MainActivity : FlPiPActivity() {
         try {
             unregisterReceiver(pipBroadcastReceiver)
         } catch (_: IllegalArgumentException) {
-            // already unregistered
         }
     }
 
@@ -183,8 +176,6 @@ class MainActivity : FlPiPActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun updatePipActions() {
         val actions = ArrayList<RemoteAction>()
-
-        // Previous episode button
         val prevIntent = Intent(ACTION_PIP_CONTROL).apply {
             putExtra(EXTRA_CONTROL_TYPE, CONTROL_PREVIOUS)
             setPackage(packageName)
@@ -199,8 +190,7 @@ class MainActivity : FlPiPActivity() {
                 "Previous", "Previous episode", prevPendingIntent
             )
         )
-
-        // Play/Pause toggle button — icon reflects current state
+        
         val playPauseIcon = if (isPlaying) android.R.drawable.ic_media_pause else android.R.drawable.ic_media_play
         val playPauseLabel = if (isPlaying) "Pause" else "Play"
         val playPauseIntent = Intent(ACTION_PIP_CONTROL).apply {
@@ -217,8 +207,7 @@ class MainActivity : FlPiPActivity() {
                 playPauseLabel, "Toggle playback", playPausePendingIntent
             )
         )
-
-        // Next episode button
+        
         val nextIntent = Intent(ACTION_PIP_CONTROL).apply {
             putExtra(EXTRA_CONTROL_TYPE, CONTROL_NEXT)
             setPackage(packageName)
