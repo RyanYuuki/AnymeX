@@ -120,7 +120,7 @@ class MainActivity : FlPiPActivity() {
                 else -> result.notImplemented()
             }
         }
-        
+
         pipControlsChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, PIP_CONTROLS_CHANNEL)
         pipControlsChannel!!.setMethodCallHandler { call, result ->
             when (call.method) {
@@ -129,7 +129,7 @@ class MainActivity : FlPiPActivity() {
                     val autoPiP = call.argument<Boolean>("enablePiP") ?: false
                     isPlaying = playing
                     isAutoPipEnabled = autoPiP
-                    
+
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         updatePipActions(isAutoPipEnabled)
                     }
@@ -194,7 +194,7 @@ class MainActivity : FlPiPActivity() {
                 "Previous", "Previous episode", prevPendingIntent
             )
         )
-        
+
         val playPauseIcon = if (isPlaying) R.drawable.ic_pip_pause else R.drawable.ic_pip_play
         val playPauseLabel = if (isPlaying) "Pause" else "Play"
         val playPauseIntent = Intent(ACTION_PIP_CONTROL).apply {
@@ -211,7 +211,7 @@ class MainActivity : FlPiPActivity() {
                 playPauseLabel, "Toggle playback", playPausePendingIntent
             )
         )
-        
+
         val nextIntent = Intent(ACTION_PIP_CONTROL).apply {
             putExtra(EXTRA_CONTROL_TYPE, CONTROL_NEXT)
             setPackage(packageName)
