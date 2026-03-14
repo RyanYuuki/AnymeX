@@ -1,16 +1,23 @@
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/underrated_service.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/big_carousel.dart';
+import 'package:anymex/widgets/common/cards/base_card.dart';
+import 'package:anymex/widgets/common/cards/card_gate.dart';
 import 'package:anymex/widgets/common/future_reusable_carousel.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:iconsax/iconsax.dart';
 
 Widget buildSection(String title, dynamic data,
     {DataVariant variant = DataVariant.regular,
@@ -144,7 +151,9 @@ class _UnderratedCarousel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+    final cardHeight = getCardHeight(
+        CardStyle.values[settingsController.cardStyle], getPlatform(context));
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5.0),
       child: Column(
@@ -165,7 +174,7 @@ class _UnderratedCarousel extends StatelessWidget {
           const SizedBox(height: 10),
           // Carousel list
           SizedBox(
-            height: 220,
+            height: cardHeight + 40, // Extra space for reason text
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.only(left: 15, top: 5, bottom: 10),
@@ -185,7 +194,7 @@ class _UnderratedCarousel extends StatelessWidget {
   }
 }
 
-/// Card widget for underrated items with recommendedBy badge and scrolling reason
+/// Card widget for underrated items - uses same cards as the rest of the app
 class _UnderratedCard extends StatefulWidget {
   final UnderratedMedia item;
   final ItemType type;
@@ -199,206 +208,189 @@ class _UnderratedCard extends StatefulWidget {
   State<_UnderratedCard> createState() => _UnderratedCardState();
 }
 
-class _UnderratedCardState extends State<_UnderratedCard> {
-  late final ScrollController _scrollController;
-  bool _isHovering = false;
+class _UnderratedCardState extends State<_UnderratedCard>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _marqueeController;
+  late Animation<double> _marqueeAnimation;
 
   @override
   void initState() {
     super.initState();
-    _scrollController = ScrollController();
+    _initMarquee();
+  }
+
+  void _initMarquee() {
+    final reason = widget.item.reason;
+    final hasReason = reason != null && reason.isNotEmpty;
+
+    _marqueeController = AnimationController(
+      vsync: this,
+      duration: Duration(
+        milliseconds: hasReason ? (reason.length * 100).clamp(3000, 15000) : 3000,
+      ),
+    );
+
+    _marqueeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _marqueeController,
+      curve: Curves.linear,
+    ));
+
+    // Start scrolling automatically
+    if (hasReason) {
+      _marqueeController.repeat();
+    }
   }
 
   @override
   void dispose() {
-    _scrollController.dispose();
+    _marqueeController.dispose();
     super.dispose();
-  }
-
-  void _startScrolling() {
-    if (_scrollController.hasClients && widget.item.reason != null) {
-      final maxScroll = _scrollController.position.maxScrollExtent;
-      if (maxScroll > 0) {
-        _scrollController.animateTo(
-          maxScroll,
-          duration: Duration(milliseconds: maxScroll.toInt() * 20),
-          curve: Curves.linear,
-        );
-      }
-    }
-  }
-
-  void _stopScrolling() {
-    if (_scrollController.hasClients) {
-      _scrollController.jumpTo(0);
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final media = widget.item.media;
-    
-    return MouseRegion(
-      onEnter: (_) {
-        setState(() => _isHovering = true);
-        _startScrolling();
-      },
-      onExit: (_) {
-        setState(() => _isHovering = false);
-        _stopScrolling();
-      },
-      child: GestureDetector(
-        onTap: () {
-          // Navigate to details page
-          final tag = 'underrated-${media.id}';
-          if (widget.type == ItemType.manga) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => MangaDetailsPage(
-                  media: media,
-                  tag: tag,
-                ),
-              ),
-            );
-          } else {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AnimeDetailsPage(
-                  media: media,
-                  tag: tag,
-                ),
-              ),
-            );
-          }
-        },
-        child: Container(
-          width: 130,
-          margin: const EdgeInsets.symmetric(horizontal: 5),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Poster with recommendedBy badge
-              Stack(
+    final isDesktop = MediaQuery.of(context).size.width > 600;
+    final cardWidth = isDesktop ? 160.0 : 118.0;
+    final carouselData = widget.item.toCarouselData(isManga: widget.type == ItemType.manga);
+    final tag = 'underrated-${carouselData.id}-${widget.item.media.hashCode}';
+
+    return GestureDetector(
+      onTap: () => _navigateToDetails(context),
+      child: SizedBox(
+        width: cardWidth,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Card with MediaCardGate (same as other sections)
+            Expanded(
+              child: Stack(
                 children: [
-                  // Poster image
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      media.poster,
-                      width: 130,
-                      height: 180,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Container(
-                        width: 130,
-                        height: 180,
-                        color: theme.colorScheme.surfaceContainerHigh,
-                        child: Icon(
-                          widget.type == ItemType.manga
-                              ? Icons.book
-                              : Icons.movie,
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ),
+                  // Use the same card system as the rest of the app
+                  MediaCardGate(
+                    itemData: carouselData,
+                    tag: tag,
+                    variant: DataVariant.underrated,
+                    cardStyle: CardStyle.values[settingsController.cardStyle],
+                    type: widget.type,
                   ),
-                  // Recommended by badge
-                  if (widget.item.recommendedBy != null)
+                  // Recommended by badge (overlay on top-left)
+                  if (widget.item.recommendedBy != null &&
+                      widget.item.recommendedBy!.isNotEmpty)
                     Positioned(
-                      top: 4,
-                      left: 4,
+                      top: 6,
+                      left: 6,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 6,
-                          vertical: 2,
+                          vertical: 3,
                         ),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.primaryContainer
-                              .withValues(alpha: 0.9),
-                          borderRadius: BorderRadius.circular(4),
+                          color: theme.colorScheme.primary,
+                          borderRadius: BorderRadius.circular(20),
                         ),
-                        child: Text(
-                          '@${widget.item.recommendedBy}',
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            color: theme.colorScheme.onPrimaryContainer,
-                          ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Iconsax.user,
+                              size: 10,
+                              color: theme.colorScheme.onPrimary,
+                            ),
+                            const SizedBox(width: 3),
+                            Text(
+                              '@${widget.item.recommendedBy}',
+                              style: TextStyle(
+                                fontSize: 9,
+                                fontWeight: FontWeight.bold,
+                                color: theme.colorScheme.onPrimary,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                  // Score badge
-                  Positioned(
-                    bottom: 4,
-                    right: 4,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.7),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.star,
-                            size: 10,
-                            color: Colors.amber,
-                          ),
-                          const SizedBox(width: 2),
-                          Text(
-                            media.rating.toString(),
-                            style: const TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
+                ],
+              ),
+            ),
+            // Scrolling reason text (always scrolls automatically)
+            if (widget.item.reason != null && widget.item.reason!.isNotEmpty)
+              _buildScrollingReason(theme),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildScrollingReason(ThemeData theme) {
+    final reason = widget.item.reason!;
+    final textWidth = reason.length * 6.0; // Approximate text width
+
+    return Container(
+      height: 16,
+      margin: const EdgeInsets.only(top: 4),
+      child: ClipRect(
+        child: AnimatedBuilder(
+          animation: _marqueeAnimation,
+          builder: (context, child) {
+            // Scroll from left to right (text moves right)
+            return Transform.translate(
+              offset: Offset(
+                -textWidth + (textWidth * 2 * _marqueeAnimation.value),
+                0,
+              ),
+              child: Row(
+                children: [
+                  Text(
+                    reason,
+                    style: TextStyle(
+                      fontSize: 9,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                  const SizedBox(width: 80), // Gap between repeats
+                  Text(
+                    reason,
+                    style: TextStyle(
+                      fontSize: 9,
+                      color: theme.colorScheme.primary,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 4),
-              // Title (scrolling if reason exists)
-              if (widget.item.reason != null && widget.item.reason!.isNotEmpty)
-                SizedBox(
-                  height: 28,
-                  child: SingleChildScrollView(
-                    controller: _scrollController,
-                    scrollDirection: Axis.horizontal,
-                    physics: const NeverScrollableScrollPhysics(),
-                    child: Text(
-                      widget.item.reason!,
-                      maxLines: 2,
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ),
-                )
-              else
-                Text(
-                  widget.item.displayTitle,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: theme.colorScheme.onSurface,
-                  ),
-                ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );
+  }
+
+  void _navigateToDetails(BuildContext context) {
+    final media = widget.item.media;
+    final tag = 'underrated-${media.id}';
+    if (widget.type == ItemType.manga) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MangaDetailsPage(
+            media: media,
+            tag: tag,
+          ),
+        ),
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AnimeDetailsPage(
+            media: media,
+            tag: tag,
+          ),
+        ),
+      );
+    }
   }
 }
