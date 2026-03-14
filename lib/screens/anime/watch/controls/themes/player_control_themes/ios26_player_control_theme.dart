@@ -693,16 +693,36 @@ class _GlassActionChip extends StatelessWidget {
       tint: Colors.white.withValues(alpha: 0.10),
       child: Material(
         type: MaterialType.transparency,
+        borderRadius: BorderRadius.circular(16),
+        clipBehavior: Clip.antiAlias,
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Row(
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              if (showCountdown)
+                Positioned.fill(
+                  child: TweenAnimationBuilder<double>(
+                    duration: const Duration(milliseconds: 1000),
+                    curve: Curves.linear,
+                    tween: Tween<double>(begin: 0.0, end: 1.0 - countdownProgress!),
+                    builder: (context, value, child) {
+                      return FractionallySizedBox(
+                        alignment: Alignment.centerLeft,
+                        widthFactor: value,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.25),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(icon, color: Colors.white, size: 14),
@@ -719,25 +739,8 @@ class _GlassActionChip extends StatelessWidget {
                     ),
                   ],
                 ),
-                if (showCountdown) ...[
-                  const SizedBox(height: 5),
-                  SizedBox(
-                    height: 2,
-                    width: 40,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(1),
-                      child: LinearProgressIndicator(
-                        value: 1 - countdownProgress!,
-                        backgroundColor:
-                            Colors.white.withValues(alpha: 0.25),
-                        valueColor: const AlwaysStoppedAnimation<Color>(
-                            Colors.white),
-                      ),
-                    ),
-                  ),
-                ],
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

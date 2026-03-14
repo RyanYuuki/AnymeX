@@ -134,92 +134,96 @@ class BottomControls extends StatelessWidget {
     final controller = Get.find<PlayerController>();
     final theme = context.theme;
     final isDark = theme.brightness == Brightness.dark;
-    final interval = controller.currentSkipInterval.value;
-    final inSegment = interval != null || controller.isAutoSkipCountdownActive;
 
-    return Material(
-      borderRadius: BorderRadius.circular(16),
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: controller.isLocked.value
-            ? null
-            : controller.performSkipAction,
+    return Obx(() {
+      final isCountdownActive = controller.isAutoSkipCountdownActive;
+      final interval = controller.currentSkipInterval.value;
+      final inSegment = interval != null || isCountdownActive;
+      final progress = isCountdownActive
+          ? 1.0 -
+              (controller.autoSkipCountdownRemaining.value /
+                  PlayerController.autoSkipCountdownSeconds)
+          : 0.0;
+
+      return Material(
         borderRadius: BorderRadius.circular(16),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-          decoration: BoxDecoration(
-            color: inSegment
-                ? theme.colorScheme.primary.withValues(alpha: 0.8)
-                : isDark
-                    ? theme.colorScheme.surfaceContainer.withValues(alpha: 0.6)
-                    : theme.colorScheme.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: inSegment
-                  ? theme.colorScheme.primary
-                  : isDark
-                      ? theme.colorScheme.outline
-                      : theme.colorScheme.outline.opaque(0.5),
-              width: 0.5,
+        color: Colors.transparent,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap:
+              controller.isLocked.value ? null : controller.performSkipAction,
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            decoration: BoxDecoration(
+              color: isDark
+                  ? theme.colorScheme.surfaceContainer.withValues(alpha: 0.6)
+                  : theme.colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: isDark
+                    ? theme.colorScheme.outline
+                    : theme.colorScheme.outline.opaque(0.5),
+                width: 0.5,
+              ),
             ),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (inSegment)
-                    Padding(
-                      padding: const EdgeInsets.only(right: 4),
-                      child: Icon(
-                        controller.isAutoSkipCountdownActive
-                            ? Icons.close_rounded
-                            : Icons.skip_next_rounded,
-                        color: theme.colorScheme.onPrimary,
-                        size: 20,
-                      ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                if (isCountdownActive)
+                  Positioned.fill(
+                    child: TweenAnimationBuilder<double>(
+                      duration: const Duration(milliseconds: 1000),
+                      curve: Curves.linear,
+                      tween: Tween<double>(begin: 0.0, end: progress),
+                      builder: (context, value, child) {
+                        return FractionallySizedBox(
+                          alignment: Alignment.centerLeft,
+                          widthFactor: value,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.primary
+                                  .withValues(alpha: 0.25),
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                  Obx(() => AnymexText(
+                  ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (inSegment)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 4),
+                          child: Icon(
+                            isCountdownActive
+                                ? Icons.close_rounded
+                                : Icons.skip_next_rounded,
+                            color: controller.isLocked.value
+                                ? theme.colorScheme.onSurface.opaque(0.4)
+                                : theme.colorScheme.onSurface,
+                            size: 20,
+                          ),
+                        ),
+                      AnymexText(
                         text: controller.skipButtonLabel,
                         variant: TextVariant.semiBold,
-                        color: inSegment
-                            ? theme.colorScheme.onPrimary
-                            : controller.isLocked.value
-                                ? theme.colorScheme.onSurface.opaque(0.4)
-                                : null,
-                      )),
-                ],
-              ),
-              if (controller.isAutoSkipCountdownActive)
-                Obx(() {
-                  final remaining =
-                      controller.autoSkipCountdownRemaining.value /
-                          PlayerController.autoSkipCountdownSeconds;
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 6),
-                    child: SizedBox(
-                      height: 2,
-                      width: 48,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(1),
-                        child: LinearProgressIndicator(
-                          value: 1 - remaining,
-                          backgroundColor: theme.colorScheme.onPrimary
-                              .withValues(alpha: 0.25),
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                              theme.colorScheme.onPrimary),
-                        ),
+                        color: controller.isLocked.value
+                            ? theme.colorScheme.onSurface.opaque(0.4)
+                            : null,
                       ),
-                    ),
-                  );
-                }),
-            ],
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildLayout(BuildContext context) {
