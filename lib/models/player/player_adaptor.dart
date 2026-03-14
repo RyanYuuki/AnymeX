@@ -30,6 +30,7 @@ class PlayerSettings {
   double subtitleBottomMargin;
   String subtitleOutlineType;
   bool enableScreenshot;
+  bool enablePiP;
 
   PlayerSettings({
     this.speed = 1.0,
@@ -61,6 +62,7 @@ class PlayerSettings {
     this.subtitleOutlineType = "Outline",
     this.autoSkipFiller = false,
     this.enableScreenshot = true,
+    this.enablePiP = true,
   });
 
   factory PlayerSettings.fromDB() {
@@ -128,6 +130,7 @@ class PlayerSettings {
           PlayerSettingsKeys.autoSkipFiller.get<bool>(defaults.autoSkipFiller),
       enableScreenshot: PlayerSettingsKeys.enableScreenshot
           .get<bool>(defaults.enableScreenshot),
+      enablePiP: PlayerSettingsKeys.enablePiP.get<bool>(defaults.enablePiP),
     );
   }
 }

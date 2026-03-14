@@ -82,6 +82,7 @@ dependencies:
     window_manager: ^0.4.3
     app_links: ^6.4.0
     preload_page_view: ^0.2.0
+    fl_pip: ^3.2.1
 
     archive: any
     image: any

@@ -940,6 +940,16 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                   switchValue: settings.enableScreenshot,
                                   onChanged: (val) =>
                                       settings.enableScreenshot = val),
+                              if (Platform.isAndroid || Platform.isIOS)
+                                CustomSwitchTile(
+                                    padding: const EdgeInsets.all(10),
+                                    icon: Icons.picture_in_picture_rounded,
+                                    title: "Auto Enter PiP",
+                                    description:
+                                        "Automatically enter Picture-in-Picture mode when leaving the app",
+                                    switchValue: settings.enablePiP,
+                                    onChanged: (val) =>
+                                        settings.enablePiP = val),
                               CustomSliderTile(
                                 sliderValue: settings.seekDuration.toDouble(),
                                 max: 50,
