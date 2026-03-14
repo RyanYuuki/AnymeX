@@ -64,46 +64,54 @@ class _WatchScreenState extends State<WatchScreen> {
         Obx(() {
           return controller.videoWidget;
         }),
-        PlayerOverlay(controller: controller),
-        if (!PlayerKeys.useLibass.get<bool>(false))
-          SubtitleText(controller: controller),
-        DoubleTapSeekWidget(
-          controller: controller,
-        ),
-        const Align(
-          alignment: Alignment.center,
-          child: ThemedCenterControls(),
-        ),
-        const Align(
-          alignment: Alignment.topCenter,
-          child: ThemedTopControls(),
-        ),
-        const Align(
-          alignment: Alignment.bottomCenter,
-          child: ThemedBottomControls(),
-        ),
-        MediaIndicatorBuilder(
-          isVolumeIndicator: false,
-          controller: controller,
-        ),
-        MediaIndicatorBuilder(
-          isVolumeIndicator: true,
-          controller: controller,
-        ),
-        Positioned(
-          right: 0,
-          top: 0,
-          bottom: 0,
-          left: 0,
-          child: SubtitleSearchBottomSheet(controller: controller),
-        ),
-        Positioned(
-          right: 0,
-          top: 0,
-          bottom: 0,
-          left: 0,
-          child: EpisodesPane(controller: controller),
-        ),
+       
+        Obx(() {
+          if (controller.isPipActive.value) return const SizedBox.shrink();
+          return Stack(
+            children: [
+              PlayerOverlay(controller: controller),
+              if (!PlayerKeys.useLibass.get<bool>(false))
+                SubtitleText(controller: controller),
+              DoubleTapSeekWidget(
+                controller: controller,
+              ),
+              const Align(
+                alignment: Alignment.center,
+                child: ThemedCenterControls(),
+              ),
+              const Align(
+                alignment: Alignment.topCenter,
+                child: ThemedTopControls(),
+              ),
+              const Align(
+                alignment: Alignment.bottomCenter,
+                child: ThemedBottomControls(),
+              ),
+              MediaIndicatorBuilder(
+                isVolumeIndicator: false,
+                controller: controller,
+              ),
+              MediaIndicatorBuilder(
+                isVolumeIndicator: true,
+                controller: controller,
+              ),
+              Positioned(
+                right: 0,
+                top: 0,
+                bottom: 0,
+                left: 0,
+                child: SubtitleSearchBottomSheet(controller: controller),
+              ),
+              Positioned(
+                right: 0,
+                top: 0,
+                bottom: 0,
+                left: 0,
+                child: EpisodesPane(controller: controller),
+              ),
+            ],
+          );
+        }),
       ],
     ));
   }
