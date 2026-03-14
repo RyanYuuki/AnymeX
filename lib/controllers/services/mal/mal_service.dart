@@ -119,8 +119,9 @@ class MalService extends GetxController implements BaseService, OnlineService {
                   buildSectionIfNotEmpty("Top Anime", topAnimes),
                   buildSectionIfNotEmpty("Upcoming Anime", upcomingAnimes),
                   // Underrated Anime section at the bottom
-                  if (underratedService.underratedAnimes.isNotEmpty)
-                    buildUnderratedSection('Underrated Anime', underratedService.underratedAnimes.toList()),
+                  Obx(() => underratedService.underratedAnimes.isEmpty
+                      ? const SizedBox.shrink()
+                      : buildUnderratedSection('Underrated Anime', underratedService.underratedAnimes.toList())),
                 ],
               )),
       ].obs;
@@ -141,8 +142,9 @@ class MalService extends GetxController implements BaseService, OnlineService {
                       isManga: true),
                   ...sourceController.novelSections.value,
                   // Underrated Manga section at the bottom
-                  if (underratedService.underratedMangas.isNotEmpty)
-                    buildUnderratedMangaSection('Underrated Manga', underratedService.underratedMangas.toList()),
+                  Obx(() => underratedService.underratedMangas.isEmpty
+                      ? const SizedBox.shrink()
+                      : buildUnderratedMangaSection('Underrated Manga', underratedService.underratedMangas.toList())),
                 ],
               )),
       ].obs;
@@ -178,6 +180,9 @@ class MalService extends GetxController implements BaseService, OnlineService {
       topManhua.value = (await fetchDataFromApi(
               'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manhua&limit=15'))
           .removeDupes();
+
+      // Fetch underrated content
+      await underratedService.fetchAll();
     } catch (e) {
       Logger.i('Error fetching home page data: $e');
     }
