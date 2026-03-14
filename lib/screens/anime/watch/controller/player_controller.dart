@@ -88,11 +88,16 @@ class _PipControlsService {
     }
   }
 
-  Future<void> updatePlaybackState({required bool isPlaying}) async {
+  Future<void> updatePlaybackState({
+    required bool isPlaying,
+    required bool enablePiP,
+  }) async {
     if (!Platform.isAndroid && !Platform.isIOS) return;
     try {
-      await _channel
-          .invokeMethod('updatePlaybackState', {'isPlaying': isPlaying});
+      await _channel.invokeMethod('updatePlaybackState', {
+        'isPlaying': isPlaying,
+        'enablePiP': enablePiP,
+      });
     } catch (_) {}
   }
 }
@@ -447,7 +452,12 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     if (!_pipSupported || !settings.enablePiP) return;
     try {
       final status = await FlPiP().isActive;
-      if (status?.status != PiPStatus.enabled && isPlaying.value) {
+      if (status?.status == PiPStatus.enabled) {
+      
+        showControls.value = false;
+        isPipActive.value = true;
+      } else if (isPlaying.value) {
+        showControls.value = false;
         await FlPiP().enable(
           android: FlPiPAndroidConfig(
             aspectRatio: const Rational(16, 9),
@@ -847,7 +857,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       if (e) {
         _resetAutoHideTimer();
       }
-      _pipControls.updatePlaybackState(isPlaying: e);
+      _pipControls.updatePlaybackState(
+        isPlaying: e,
+        enablePiP: settings.enablePiP,
+      );
 
       if (isOffline.value) return;
       if (!e) {
@@ -1297,8 +1310,14 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void togglePlayPause() {
-    _basePlayer.playOrPause();
-    onUserInteraction();
+    if (isPlaying.value) {
+      pause();
+    } else {
+      play();
+    }
+    if (!isPipActive.value) {
+      onUserInteraction();
+    }
   }
 
   void toggleMute() {
