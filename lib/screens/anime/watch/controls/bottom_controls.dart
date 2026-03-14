@@ -67,11 +67,15 @@ class BottomControls extends StatelessWidget {
         child: AnimatedSlide(
           offset:
               controller.showControls.value ? Offset.zero : const Offset(0, 1),
-          duration: const Duration(milliseconds: 400),
+          duration: controller.playerSettings.playerMenuAnimation
+              ? const Duration(milliseconds: 400)
+              : Duration.zero,
           curve: Curves.easeOutCubic,
           child: AnimatedOpacity(
             opacity: controller.showControls.value ? 1.0 : 0.0,
-            duration: const Duration(milliseconds: 300),
+            duration: controller.playerSettings.playerMenuAnimation
+                ? const Duration(milliseconds: 300)
+                : Duration.zero,
             curve: Curves.easeOut,
             child: Container(
               width: double.infinity,
