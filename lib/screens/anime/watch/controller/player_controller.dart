@@ -42,6 +42,74 @@ import 'package:volume_controller/volume_controller.dart';
 
 import '../../../../database/isar_models/track.dart' as model;
 
+// ---------------------------------------------------------------------------
+// PiP controls bridge
+// ---------------------------------------------------------------------------
+
+/// Bridges native PiP control buttons (Android RemoteActions /
+/// iOS MPRemoteCommandCenter) to Flutter callbacks.
+class _PipControlsService {
+  static const _channel = MethodChannel('com.ryan.anymex/pip_controls');
+
+  final VoidCallback onTogglePlayPause;
+  final VoidCallback onPlay;
+  final VoidCallback onPause;
+  final VoidCallback onNextEpisode;
+  final VoidCallback onPreviousEpisode;
+
+  _PipControlsService({
+    required this.onTogglePlayPause,
+    required this.onPlay,
+    required this.onPause,
+    required this.onNextEpisode,
+    required this.onPreviousEpisode,
+  });
+
+  void init() {
+    if (!Platform.isAndroid && !Platform.isIOS) return;
+    _channel.setMethodCallHandler(_handle);
+  }
+
+  void dispose() {
+    if (!Platform.isAndroid && !Platform.isIOS) return;
+    _channel.setMethodCallHandler(null);
+  }
+
+  Future<void> _handle(MethodCall call) async {
+    switch (call.method) {
+      case 'togglePlayPause':
+        onTogglePlayPause();
+        break;
+      case 'play':
+        onPlay();
+        break;
+      case 'pause':
+        onPause();
+        break;
+      case 'nextEpisode':
+        onNextEpisode();
+        break;
+      case 'previousEpisode':
+        onPreviousEpisode();
+        break;
+    }
+  }
+
+  /// Push the current playback state to native so it can update the PiP
+  /// button icon (Android) and MPNowPlayingInfo (iOS).
+  Future<void> updatePlaybackState({required bool isPlaying}) async {
+    if (!Platform.isAndroid && !Platform.isIOS) return;
+    try {
+      await _channel
+          .invokeMethod('updatePlaybackState', {'isPlaying': isPlaying});
+    } catch (_) {}
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Extensions
+// ---------------------------------------------------------------------------
+
 extension PlayerControllerExtensions on PlayerController {
   bool get hasNextEpisode {
     final index =
@@ -72,6 +140,10 @@ extension PlayerControllerExtensions on PlayerController {
   int get currentEpisodeIndex =>
       episodeList.indexWhere((e) => e.number == currentEpisode.value.number);
 }
+
+// ---------------------------------------------------------------------------
+// PlayerController
+// ---------------------------------------------------------------------------
 
 class PlayerController extends GetxController with WidgetsBindingObserver {
   static final _htmlRx = RegExp(r'<[^>]*>');
@@ -131,6 +203,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   late BasePlayer _basePlayer;
+  late _PipControlsService _pipControls;
 
   Widget get videoWidget => _basePlayer.getVideoWidget(fit: videoFit.value);
 
@@ -222,6 +295,21 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   @override
   void onInit() {
     super.onInit();
+
+    // Wire up native PiP controls (Android RemoteActions / iOS MPRemoteCommandCenter)
+    _pipControls = _PipControlsService(
+      onTogglePlayPause: togglePlayPause,
+      onPlay: play,
+      onPause: pause,
+      onNextEpisode: () {
+        if (hasNextEpisode) navigator(true);
+      },
+      onPreviousEpisode: () {
+        if (hasPreviousEpisode) navigator(false);
+      },
+    );
+    _pipControls.init();
+
     PlayerController.initializePlayerControlsIfNeeded(settings);
     WidgetsBinding.instance.addObserver(this);
     _initDatabaseVars();
@@ -777,6 +865,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       if (e) {
         _resetAutoHideTimer();
       }
+      // Push playback state to native for PiP button icon updates
+      _pipControls.updatePlaybackState(isPlaying: e);
+
       if (isOffline.value) return;
       if (!e) {
         DiscordRPCController.instance.updateAnimePresencePaused(
@@ -1117,6 +1208,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   @override
   Future<void> dispose() async {
     super.dispose();
+    _pipControls.dispose();
+
     try {
       await _trackLocally(syncToCloud: false);
       if (!isOffline.value) {
