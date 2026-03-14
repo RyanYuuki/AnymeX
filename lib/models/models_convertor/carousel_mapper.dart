@@ -96,7 +96,9 @@ extension UnderratedMediaMapper on UnderratedMedia {
         poster: media.poster,
         extraData: media.rating.toString(),
         releasing: media.status == "RELEASING",
-        recommendedBy: recommendedBy,
+        anilistUserId: anilistUserId,
+        malUserId: malUserId,
+        author: author,
         reason: reason);
   }
 }

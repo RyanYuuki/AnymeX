@@ -240,15 +240,20 @@ class UnderratedService extends GetxController {
     Media? media;
     String? fetchedAuthor;
 
-    if (serviceType == ServicesType.mal && entry.malId != null) {
-      media = await _fetchMediaFromMAL(entry.malId, isManga);
-      if (entry.malUserId != null) {
-        fetchedAuthor = await _fetchMALUsername(entry.malUserId);
+    final malId = entry.malId;
+    final anilistId = entry.anilistId;
+    final malUserId = entry.malUserId;
+    final anilistUserId = entry.anilistUserId;
+
+    if (serviceType == ServicesType.mal && malId != null) {
+      media = await _fetchMediaFromMAL(malId, isManga);
+      if (malUserId != null) {
+        fetchedAuthor = await _fetchMALUsername(malUserId);
       }
-    } else if (entry.anilistId != null) {
-      media = await _fetchMediaFromAnilist(entry.anilistId, isManga);
-      if (entry.anilistUserId != null) {
-        fetchedAuthor = await _fetchAnilistUsername(entry.anilistUserId);
+    } else if (anilistId != null) {
+      media = await _fetchMediaFromAnilist(anilistId, isManga);
+      if (anilistUserId != null) {
+        fetchedAuthor = await _fetchAnilistUsername(anilistUserId);
       }
     }
 
