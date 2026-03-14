@@ -46,6 +46,7 @@ class MainActivity : FlPiPActivity() {
     }
 
     private var isPlaying = true
+    private var isAutoPipEnabled = false
 
     private val pipBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -125,9 +126,12 @@ class MainActivity : FlPiPActivity() {
             when (call.method) {
                 "updatePlaybackState" -> {
                     val playing = call.argument<Boolean>("isPlaying") ?: true
+                    val autoPiP = call.argument<Boolean>("enablePiP") ?: false
                     isPlaying = playing
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isInPictureInPictureMode) {
-                        updatePipActions()
+                    isAutoPipEnabled = autoPiP
+                    
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        updatePipActions(isAutoPipEnabled)
                     }
                     result.success(null)
                 }
@@ -166,7 +170,7 @@ class MainActivity : FlPiPActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean, newConfig: android.content.res.Configuration) {
+    override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean, newConfig: android.content.res.Configuration?) {
         super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
         if (isInPictureInPictureMode) {
             updatePipActions()
@@ -174,7 +178,7 @@ class MainActivity : FlPiPActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun updatePipActions() {
+    private fun updatePipActions(autoEnter: Boolean = isAutoPipEnabled) {
         val actions = ArrayList<RemoteAction>()
         val prevIntent = Intent(ACTION_PIP_CONTROL).apply {
             putExtra(EXTRA_CONTROL_TYPE, CONTROL_PREVIOUS)
@@ -186,12 +190,12 @@ class MainActivity : FlPiPActivity() {
         )
         actions.add(
             RemoteAction(
-                Icon.createWithResource(this, android.R.drawable.ic_media_previous),
+                Icon.createWithResource(this, R.drawable.ic_pip_skip_previous),
                 "Previous", "Previous episode", prevPendingIntent
             )
         )
         
-        val playPauseIcon = if (isPlaying) android.R.drawable.ic_media_pause else android.R.drawable.ic_media_play
+        val playPauseIcon = if (isPlaying) R.drawable.ic_pip_pause else R.drawable.ic_pip_play
         val playPauseLabel = if (isPlaying) "Pause" else "Play"
         val playPauseIntent = Intent(ACTION_PIP_CONTROL).apply {
             putExtra(EXTRA_CONTROL_TYPE, CONTROL_PLAY_PAUSE)
@@ -218,16 +222,33 @@ class MainActivity : FlPiPActivity() {
         )
         actions.add(
             RemoteAction(
-                Icon.createWithResource(this, android.R.drawable.ic_media_next),
+                Icon.createWithResource(this, R.drawable.ic_pip_skip_next),
                 "Next", "Next episode", nextPendingIntent
             )
         )
 
-        val params = PictureInPictureParams.Builder()
+        val paramsBuilder = PictureInPictureParams.Builder()
             .setAspectRatio(Rational(16, 9))
             .setActions(actions)
-            .build()
-        setPictureInPictureParams(params)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            paramsBuilder.setAutoEnterEnabled(autoEnter && isPlaying)
+        }
+
+        setPictureInPictureParams(paramsBuilder.build())
+    }
+
+    override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+            if (isPlaying && isAutoPipEnabled) {
+                updatePipActions(isAutoPipEnabled)
+                val params = PictureInPictureParams.Builder()
+                    .setAspectRatio(Rational(16, 9))
+                    .build()
+                enterPictureInPictureMode(params)
+            }
+        }
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
