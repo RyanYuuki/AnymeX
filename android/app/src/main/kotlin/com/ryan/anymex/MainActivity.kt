@@ -1,52 +1,85 @@
 package com.ryan.anymex
 
+import android.app.PendingIntent
+import android.app.PictureInPictureParams
+import android.app.RemoteAction
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.graphics.drawable.Icon
 import android.net.Uri
+import android.os.Build
 import android.provider.Settings
+import android.util.Rational
 import android.view.KeyEvent
 import android.view.KeyEvent.ACTION_DOWN
 import android.view.KeyEvent.KEYCODE_VOLUME_DOWN
 import android.view.KeyEvent.KEYCODE_VOLUME_UP
+import androidx.annotation.RequiresApi
 import fl.pip.FlPiPActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
-import android.os.Build
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
-class MainActivity: FlPiPActivity() {
+class MainActivity : FlPiPActivity() {
     private val CHANNEL = "app/architecture"
     private val VOLUME_CHANNEL = "com.ryan.anymex/volume"
     private val VOLUME_EVENTS = "com.ryan.anymex/volume_events"
+    private val PIP_CONTROLS_CHANNEL = "com.ryan.anymex/pip_controls"
+
     private var volumeKeysEnabled = false
     private var volumeEventsSink: EventChannel.EventSink? = null
+    private var pipControlsChannel: MethodChannel? = null
+
+    // PiP broadcast action constants
+    companion object {
+        private const val ACTION_PIP_CONTROL = "com.ryan.anymex.PIP_CONTROL"
+        private const val EXTRA_CONTROL_TYPE = "control_type"
+        private const val CONTROL_PLAY_PAUSE = 1
+        private const val CONTROL_PREVIOUS = 2
+        private const val CONTROL_NEXT = 3
+        private const val REQUEST_CODE_PLAY_PAUSE = 101
+        private const val REQUEST_CODE_PREVIOUS = 102
+        private const val REQUEST_CODE_NEXT = 103
+    }
+
+    // Tracks current playing state so we can flip the icon
+    private var isPlaying = true
+
+    private val pipBroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent == null || intent.action != ACTION_PIP_CONTROL) return
+            when (intent.getIntExtra(EXTRA_CONTROL_TYPE, 0)) {
+                CONTROL_PLAY_PAUSE -> {
+                    pipControlsChannel?.invokeMethod("togglePlayPause", null)
+                }
+                CONTROL_PREVIOUS -> {
+                    pipControlsChannel?.invokeMethod("previousEpisode", null)
+                }
+                CONTROL_NEXT -> {
+                    pipControlsChannel?.invokeMethod("nextEpisode", null)
+                }
+            }
+        }
+    }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        
+
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
             when (call.method) {
-                "getCurrentArchitecture" -> {
-                    val architecture = getCurrentArchitecture()
-                    result.success(architecture)
-                }
-                else -> {
-                    result.notImplemented()
-                }
+                "getCurrentArchitecture" -> result.success(getCurrentArchitecture())
+                else -> result.notImplemented()
             }
         }
 
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, VOLUME_CHANNEL).setMethodCallHandler { call, result ->
             when (call.method) {
-                "enable" -> {
-                    volumeKeysEnabled = true
-                    result.success(null)
-                }
-                "disable" -> {
-                    volumeKeysEnabled = false
-                    result.success(null)
-                }
+                "enable" -> { volumeKeysEnabled = true; result.success(null) }
+                "disable" -> { volumeKeysEnabled = false; result.success(null) }
                 else -> result.notImplemented()
             }
         }
@@ -58,10 +91,7 @@ class MainActivity: FlPiPActivity() {
                     if (path != null) {
                         try {
                             android.media.MediaScannerConnection.scanFile(
-                                applicationContext,
-                                arrayOf(path),
-                                null
-                            ) { _, _ -> }
+                                applicationContext, arrayOf(path), null) { _, _ -> }
                             result.success(true)
                         } catch (e: Exception) {
                             result.error("SCAN_FAILED", e.message, null)
@@ -76,20 +106,36 @@ class MainActivity: FlPiPActivity() {
                         val openByDefaultIntent = Intent(Settings.ACTION_APP_OPEN_BY_DEFAULT_SETTINGS).apply {
                             data = packageUri
                         }
-
                         if (openByDefaultIntent.resolveActivity(packageManager) != null) {
                             startActivity(openByDefaultIntent)
                         } else {
-                            val fallbackIntent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                            startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                                 data = packageUri
-                            }
-                            startActivity(fallbackIntent)
+                            })
                         }
-
                         result.success(true)
                     } catch (e: Exception) {
                         result.error("OPEN_DEFAULT_SETTINGS_FAILED", e.message, null)
                     }
+                }
+                else -> result.notImplemented()
+            }
+        }
+
+        // Channel for PiP control callbacks (Flutter calls us to update state,
+        // and we call Flutter when the user taps a PiP button)
+        pipControlsChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, PIP_CONTROLS_CHANNEL)
+        pipControlsChannel!!.setMethodCallHandler { call, result ->
+            when (call.method) {
+                // Flutter tells us the current playback state so we can update
+                // the PiP action icon (play vs pause)
+                "updatePlaybackState" -> {
+                    val playing = call.argument<Boolean>("isPlaying") ?: true
+                    isPlaying = playing
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isInPictureInPictureMode) {
+                        updatePipActions()
+                    }
+                    result.success(null)
                 }
                 else -> result.notImplemented()
             }
@@ -100,12 +146,99 @@ class MainActivity: FlPiPActivity() {
                 override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
                     volumeEventsSink = events
                 }
-
                 override fun onCancel(arguments: Any?) {
                     volumeEventsSink = null
                 }
             }
         )
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(pipBroadcastReceiver, IntentFilter(ACTION_PIP_CONTROL), RECEIVER_NOT_EXPORTED)
+        } else {
+            @Suppress("UnspecifiedRegisterReceiverFlag")
+            registerReceiver(pipBroadcastReceiver, IntentFilter(ACTION_PIP_CONTROL))
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        try {
+            unregisterReceiver(pipBroadcastReceiver)
+        } catch (_: IllegalArgumentException) {
+            // already unregistered
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean, newConfig: android.content.res.Configuration) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
+        if (isInPictureInPictureMode) {
+            updatePipActions()
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun updatePipActions() {
+        val actions = ArrayList<RemoteAction>()
+
+        // Previous episode button
+        val prevIntent = Intent(ACTION_PIP_CONTROL).apply {
+            putExtra(EXTRA_CONTROL_TYPE, CONTROL_PREVIOUS)
+            setPackage(packageName)
+        }
+        val prevPendingIntent = PendingIntent.getBroadcast(
+            this, REQUEST_CODE_PREVIOUS, prevIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        actions.add(
+            RemoteAction(
+                Icon.createWithResource(this, android.R.drawable.ic_media_previous),
+                "Previous", "Previous episode", prevPendingIntent
+            )
+        )
+
+        // Play/Pause toggle button — icon reflects current state
+        val playPauseIcon = if (isPlaying) android.R.drawable.ic_media_pause else android.R.drawable.ic_media_play
+        val playPauseLabel = if (isPlaying) "Pause" else "Play"
+        val playPauseIntent = Intent(ACTION_PIP_CONTROL).apply {
+            putExtra(EXTRA_CONTROL_TYPE, CONTROL_PLAY_PAUSE)
+            setPackage(packageName)
+        }
+        val playPausePendingIntent = PendingIntent.getBroadcast(
+            this, REQUEST_CODE_PLAY_PAUSE, playPauseIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        actions.add(
+            RemoteAction(
+                Icon.createWithResource(this, playPauseIcon),
+                playPauseLabel, "Toggle playback", playPausePendingIntent
+            )
+        )
+
+        // Next episode button
+        val nextIntent = Intent(ACTION_PIP_CONTROL).apply {
+            putExtra(EXTRA_CONTROL_TYPE, CONTROL_NEXT)
+            setPackage(packageName)
+        }
+        val nextPendingIntent = PendingIntent.getBroadcast(
+            this, REQUEST_CODE_NEXT, nextIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        actions.add(
+            RemoteAction(
+                Icon.createWithResource(this, android.R.drawable.ic_media_next),
+                "Next", "Next episode", nextPendingIntent
+            )
+        )
+
+        val params = PictureInPictureParams.Builder()
+            .setAspectRatio(Rational(16, 9))
+            .setActions(actions)
+            .build()
+        setPictureInPictureParams(params)
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
