@@ -8,6 +8,7 @@ import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/anilist/anilist_queries.dart';
 import 'package:anymex/controllers/services/anilist/kitsu.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
+import 'package:anymex/controllers/services/underrated_service.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
@@ -45,6 +46,7 @@ Map<String, dynamic> _parseJson(String body) {
 
 class AnilistData extends GetxController implements BaseService, OnlineService {
   final anilistAuth = Get.find<AnilistAuth>();
+  final underratedService = Get.find<UnderratedService>();
 
   // Anime Data
   RxList<Media> upcomingAnimes = <Media>[].obs;
@@ -246,6 +248,13 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
       buildSection('Popular Anime', popularAnimes),
       buildSection('Recently Completed', latestAnimes),
       buildSection('Upcoming Anime', upcomingAnimes),
+      // Underrated Anime section at the bottom
+      Obx(() {
+        if (underratedService.underratedAnimes.isEmpty) {
+          return const SizedBox.shrink();
+        }
+        return buildSection('Underrated Anime', underratedService.underratedAnimes);
+      }),
     ].obs;
   }
 
@@ -261,7 +270,14 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
       // buildMangaSection('Most Favorite Mangas', mostFavoriteMangas),
       // buildMangaSection('Top Rated Mangas', topRatedMangas),
       // buildMangaSection('Top Ongoing Mangas', topOngoingMangas),
-      ...sourceController.novelSections
+      ...sourceController.novelSections,
+      // Underrated Manga section at the bottom
+      Obx(() {
+        if (underratedService.underratedMangas.isEmpty) {
+          return const SizedBox.shrink();
+        }
+        return buildMangaSection('Underrated Manga', underratedService.underratedMangas);
+      }),
     ].obs;
   }
 
@@ -1078,6 +1094,7 @@ averageScore
     await Future.wait([
       fetchAnilistHomepage(),
       fetchAnilistMangaPage(),
+      underratedService.fetchAll(),
     ]);
   }
 

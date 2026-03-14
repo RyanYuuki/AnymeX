@@ -534,6 +534,28 @@ class Media {
     );
   }
 
+  /// Factory for parsing underrated anime/manga from GitHub JSON
+  factory Media.fromUnderratedJson(Map<String, dynamic> json, bool isManga) {
+    return Media(
+      id: json['id']?.toString() ?? '0',
+      title: json['title'] ?? 'Unknown Title',
+      romajiTitle: json['title'] ?? 'Unknown Title',
+      description: json['reason'] ?? json['description'] ?? 'No description available.',
+      poster: json['cover'] ?? json['poster'] ?? '',
+      cover: json['cover'] ?? json['banner'] ?? '',
+      totalEpisodes: json['episodes']?.toString() ?? '?',
+      totalChapters: json['chapters']?.toString() ?? '?',
+      rating: json['score']?.toString() ?? json['averageScore']?.toString() ?? '?',
+      type: isManga ? 'MANGA' : 'ANIME',
+      mediaType: isManga ? ItemType.manga : ItemType.anime,
+      serviceType: ServicesType.anilist,
+      genres: (json['genres'] as List<dynamic>?)
+              ?.map((g) => g.toString())
+              .toList() ??
+          [],
+    );
+  }
+
   static String _parseDateRange(
       Map<String, dynamic>? start, Map<String, dynamic>? end) {
     if (start == null && end == null) return 'Unknown';

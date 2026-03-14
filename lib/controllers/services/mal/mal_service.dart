@@ -6,6 +6,7 @@ import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
+import 'package:anymex/controllers/services/underrated_service.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
@@ -36,6 +37,8 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
 class MalService extends GetxController implements BaseService, OnlineService {
+  final underratedService = Get.find<UnderratedService>();
+
   Media? _firstMediaWithCover(Iterable<Media> mediaList) {
     for (final media in mediaList) {
       final cover = media.cover;
@@ -115,6 +118,9 @@ class MalService extends GetxController implements BaseService, OnlineService {
                   buildSectionIfNotEmpty("Popular Anime", popularAnimes),
                   buildSectionIfNotEmpty("Top Anime", topAnimes),
                   buildSectionIfNotEmpty("Upcoming Anime", upcomingAnimes),
+                  // Underrated Anime section at the bottom
+                  if (underratedService.underratedAnimes.isNotEmpty)
+                    buildSection('Underrated Anime', underratedService.underratedAnimes),
                 ],
               )),
       ].obs;
@@ -133,7 +139,10 @@ class MalService extends GetxController implements BaseService, OnlineService {
                       isManga: true),
                   buildSectionIfNotEmpty("Top Manhua", topManhua,
                       isManga: true),
-                  ...sourceController.novelSections.value
+                  ...sourceController.novelSections.value,
+                  // Underrated Manga section at the bottom
+                  if (underratedService.underratedMangas.isNotEmpty)
+                    buildMangaSection('Underrated Manga', underratedService.underratedMangas),
                 ],
               )),
       ].obs;
