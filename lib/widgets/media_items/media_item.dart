@@ -168,15 +168,13 @@ class GridAnimeCard extends StatelessWidget {
               ],
             ),
           const SizedBox(height: 5),
-          SizedBox(
-            width: cardWidth,
-            child: AnymexText(
+            AnymexText(
               text: media.title,
               maxLines: 2,
               size: 14,
               variant: TextVariant.semiBold,
+              isMarquee: true,
             ),
-          ),
           const SizedBox(height: 3),
           if (media.episodeCount != 'N/A' && media.episodeCount != null)
             SizedBox(
@@ -344,7 +342,7 @@ class BlurAnimeCard extends StatelessWidget {
                           size: 14,
                           maxLines: 2,
                           variant: TextVariant.bold,
-                          overflow: TextOverflow.ellipsis,
+                          isMarquee: true,
                         ),
                       ],
                     ),

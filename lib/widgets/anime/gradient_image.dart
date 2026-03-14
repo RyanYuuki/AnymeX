@@ -3,7 +3,6 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anime/visuals/visuals_popup.dart';
-import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -12,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:kenburns_nullsafety/kenburns_nullsafety.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 
 class GradientPoster extends StatelessWidget {
   const GradientPoster({
@@ -148,9 +148,12 @@ class GradientPoster extends StatelessWidget {
                         Clipboard.setData(ClipboardData(text: title));
                         snackBar('Title copied');
                       },
-                      child: Text(data?.title ?? 'Loading...',
-                          style: const TextStyle(
-                              fontFamily: "Poppins-Bold", fontSize: 16)),
+                      child: AnymexText(
+                          text: data?.title ?? 'Loading...',
+                          variant: TextVariant.bold,
+                          size: 16,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis),
                     ),
                   ),
                   Padding(
