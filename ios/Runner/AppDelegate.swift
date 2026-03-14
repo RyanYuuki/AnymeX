@@ -1,12 +1,17 @@
 import fl_pip
 import Flutter
 import UIKit
-import MediaPlayer
+import AVKit
+import AVFoundation
 
 @main
 @objc class AppDelegate: FlFlutterAppDelegate {
 
     private var pipControlsChannel: FlutterMethodChannel?
+    private var pipController: AVPictureInPictureController?
+    private var pipSampleLayer: AVSampleBufferDisplayLayer?
+    private var pipContainerView: UIView?
+    private var isPlayingState: Bool = true
 
     override func application(
         _ application: UIApplication,
@@ -14,28 +19,37 @@ import MediaPlayer
     ) -> Bool {
         GeneratedPluginRegistrant.register(with: self)
 
-        // Set up the MethodChannel for PiP controls after the Flutter engine is ready
+        setupAudioSession()
+
         if let controller = window?.rootViewController as? FlutterViewController {
             pipControlsChannel = FlutterMethodChannel(
                 name: "com.ryan.anymex/pip_controls",
                 binaryMessenger: controller.binaryMessenger
             )
-
-            // Handle calls from Flutter to update our MPNowPlayingInfo state
             pipControlsChannel?.setMethodCallHandler { [weak self] call, result in
-                if call.method == "updatePlaybackState" {
+                guard let self = self else { return }
+                switch call.method {
+                case "updatePlaybackState":
                     if let args = call.arguments as? [String: Any],
-                       let isPlaying = args["isPlaying"] as? Bool {
-                        self?.updateNowPlayingPlaybackState(isPlaying: isPlaying)
+                       let playing = args["isPlaying"] as? Bool {
+                        self.isPlayingState = playing
+                        self.pipController?.invalidatePlaybackState()
                     }
                     result(nil)
-                } else {
+                case "setupNativePip":
+                    self.setupNativePipController()
+                    result(nil)
+                case "startNativePip":
+                    self.pipController?.startPictureInPicture()
+                    result(nil)
+                case "stopNativePip":
+                    self.pipController?.stopPictureInPicture()
+                    result(nil)
+                default:
                     result(FlutterMethodNotImplemented)
                 }
             }
         }
-
-        setupRemoteCommandCenter()
 
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
@@ -44,50 +58,172 @@ import MediaPlayer
         GeneratedPluginRegistrant.register(with: registry)
     }
 
-    // MARK: - MPRemoteCommandCenter
+    private func setupAudioSession() {
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {}
+    }
 
-    /// Registers system-level play/pause/next/previous handlers.
-    /// These fire from the iOS PiP overlay controls, lock screen, and Control Center.
-    private func setupRemoteCommandCenter() {
-        let commandCenter = MPRemoteCommandCenter.shared()
+    private func setupNativePipController() {
+        guard AVPictureInPictureController.isPictureInPictureSupported() else { return }
+        guard let rootView = window?.rootViewController?.view else { return }
 
-        commandCenter.playCommand.isEnabled = true
-        commandCenter.playCommand.addTarget { [weak self] _ in
-            self?.pipControlsChannel?.invokeMethod("play", arguments: nil)
-            return .success
+        if pipController != nil { return }
+
+        let layer = AVSampleBufferDisplayLayer()
+        layer.videoGravity = .resizeAspect
+
+        var timebase: CMTimebase?
+        CMTimebaseCreateWithSourceClock(
+            allocator: kCFAllocatorDefault,
+            sourceClock: CMClockGetHostTimeClock(),
+            timebaseOut: &timebase
+        )
+        if let tb = timebase {
+            CMTimebaseSetTime(tb, time: .zero)
+            CMTimebaseSetRate(tb, rate: 1.0)
+            layer.controlTimebase = tb
         }
 
-        commandCenter.pauseCommand.isEnabled = true
-        commandCenter.pauseCommand.addTarget { [weak self] _ in
-            self?.pipControlsChannel?.invokeMethod("pause", arguments: nil)
-            return .success
-        }
+        enqueueDummyBuffer(into: layer)
 
-        commandCenter.togglePlayPauseCommand.isEnabled = true
-        commandCenter.togglePlayPauseCommand.addTarget { [weak self] _ in
-            self?.pipControlsChannel?.invokeMethod("togglePlayPause", arguments: nil)
-            return .success
-        }
+        let containerView = UIView(frame: CGRect(x: 0, y: 0, width: 1, height: 1))
+        containerView.alpha = 0.01
+        containerView.isUserInteractionEnabled = false
+        containerView.layer.addSublayer(layer)
+        rootView.addSubview(containerView)
 
-        commandCenter.nextTrackCommand.isEnabled = true
-        commandCenter.nextTrackCommand.addTarget { [weak self] _ in
-            self?.pipControlsChannel?.invokeMethod("nextEpisode", arguments: nil)
-            return .success
-        }
+        layer.frame = containerView.bounds
 
-        commandCenter.previousTrackCommand.isEnabled = true
-        commandCenter.previousTrackCommand.addTarget { [weak self] _ in
-            self?.pipControlsChannel?.invokeMethod("previousEpisode", arguments: nil)
-            return .success
+        pipSampleLayer = layer
+        pipContainerView = containerView
+
+        let source = AVPictureInPictureController.ContentSource(
+            sampleBufferDisplayLayer: layer,
+            playbackDelegate: self
+        )
+        let controller = AVPictureInPictureController(contentSource: source)
+        controller.canStartPictureInPictureAutomaticallyFromInline = false
+        controller.delegate = self
+        pipController = controller
+    }
+
+    private func enqueueDummyBuffer(into layer: AVSampleBufferDisplayLayer) {
+        let width = 16
+        let height = 9
+        var pixelBuffer: CVPixelBuffer?
+        CVPixelBufferCreate(
+            kCFAllocatorDefault,
+            width, height,
+            kCVPixelFormatType_32BGRA,
+            [kCVPixelBufferIOSurfacePropertiesKey: [:]] as CFDictionary,
+            &pixelBuffer
+        )
+        guard let pb = pixelBuffer else { return }
+
+        CVPixelBufferLockBaseAddress(pb, [])
+        if let base = CVPixelBufferGetBaseAddress(pb) {
+            memset(base, 0, CVPixelBufferGetDataSize(pb))
+        }
+        CVPixelBufferUnlockBaseAddress(pb, [])
+
+        var formatDesc: CMVideoFormatDescription?
+        CMVideoFormatDescriptionCreateForImageBuffer(
+            allocator: kCFAllocatorDefault,
+            imageBuffer: pb,
+            formatDescriptionOut: &formatDesc
+        )
+        guard let fd = formatDesc else { return }
+
+        var timing = CMSampleTimingInfo(
+            duration: CMTime(value: 1, timescale: 30),
+            presentationTimeStamp: .zero,
+            decodeTimeStamp: .invalid
+        )
+        var sampleBuffer: CMSampleBuffer?
+        CMSampleBufferCreateReadyWithImageBuffer(
+            allocator: kCFAllocatorDefault,
+            imageBuffer: pb,
+            formatDescription: fd,
+            sampleTiming: &timing,
+            sampleBufferOut: &sampleBuffer
+        )
+        guard let sb = sampleBuffer else { return }
+
+        let attachments = CMSampleBufferGetSampleAttachmentsArray(sb, createIfNecessary: true)
+        if let arr = attachments, CFArrayGetCount(arr) > 0,
+           let dict = CFArrayGetValueAtIndex(arr, 0) {
+            let mutableDict = dict as! CFMutableDictionary
+            CFDictionarySetValue(
+                mutableDict,
+                Unmanaged.passUnretained(kCMSampleAttachmentKey_DisplayImmediately).toOpaque(),
+                Unmanaged.passUnretained(kCFBooleanTrue).toOpaque()
+            )
+        }
+        layer.enqueue(sb)
+    }
+}
+
+extension AppDelegate: AVPictureInPictureControllerDelegate {
+
+    func pictureInPictureControllerDidStartPictureInPicture(
+        _ pictureInPictureController: AVPictureInPictureController
+    ) {
+        pipControlsChannel?.invokeMethod("pipDidStart", arguments: nil)
+    }
+
+    func pictureInPictureControllerDidStopPictureInPicture(
+        _ pictureInPictureController: AVPictureInPictureController
+    ) {
+        pipControlsChannel?.invokeMethod("pipDidStop", arguments: nil)
+    }
+
+    func pictureInPictureController(
+        _ pictureInPictureController: AVPictureInPictureController,
+        failedToStartPictureInPictureWithError error: Error
+    ) {}
+
+    func pictureInPictureController(
+        _ pictureInPictureController: AVPictureInPictureController,
+        restoreUserInterfaceForPictureInPictureStopWithCompletionHandler completionHandler: @escaping (Bool) -> Void
+    ) {
+        completionHandler(true)
+    }
+}
+
+extension AppDelegate: AVPictureInPictureSampleBufferPlaybackDelegate {
+
+    func pictureInPictureController(
+        _ pictureInPictureController: AVPictureInPictureController,
+        setPlaying playing: Bool
+    ) {
+        if playing {
+            pipControlsChannel?.invokeMethod("play", arguments: nil)
+        } else {
+            pipControlsChannel?.invokeMethod("pause", arguments: nil)
         }
     }
 
-    /// Updates the MPNowPlayingInfoCenter so the system PiP overlay shows the
-    /// correct play/pause icon.
-    private func updateNowPlayingPlaybackState(isPlaying: Bool) {
-        var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo ?? [:]
-        nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = isPlaying ? 1.0 : 0.0
-        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
-        MPNowPlayingInfoCenter.default().playbackState = isPlaying ? .playing : .paused
+    func pictureInPictureControllerTimeRangeForPlayback(
+        _ pictureInPictureController: AVPictureInPictureController
+    ) -> CMTimeRange {
+        return CMTimeRange(start: .negativeInfinity, duration: .positiveInfinity)
     }
+
+    func pictureInPictureControllerIsPlaybackPaused(
+        _ pictureInPictureController: AVPictureInPictureController
+    ) -> Bool {
+        return !isPlayingState
+    }
+
+    func pictureInPictureController(
+        _ pictureInPictureController: AVPictureInPictureController,
+        didTransitionToRenderSize newRenderSize: CMVideoDimensions
+    ) {}
+
+    func pictureInPictureController(
+        _ pictureInPictureController: AVPictureInPictureController,
+        skipByInterval skipInterval: CMTime
+    ) async {}
 }
