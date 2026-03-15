@@ -35,6 +35,7 @@ abstract class CarouselCard extends StatelessWidget {
         size: isDesktop ? 14 : 12,
         variant: TextVariant.semiBold,
         overflow: TextOverflow.ellipsis,
+        isMarquee: true,
       ),
     );
   }

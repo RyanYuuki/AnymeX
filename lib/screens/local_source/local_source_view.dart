@@ -12,6 +12,7 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
@@ -528,13 +529,13 @@ class _WatchOfflineState extends State<WatchOffline> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      title,
+                    AnymexText(
+                      text: title,
                       maxLines: 2,
+                      size: 16,
+                      variant: TextVariant.semiBold,
                       overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                      isMarquee: true,
                     ),
                     const SizedBox(height: 8),
                     Row(
@@ -612,13 +613,13 @@ class _WatchOfflineState extends State<WatchOffline> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      title,
+                    AnymexText(
+                      text: title,
                       maxLines: 2,
+                      size: 16,
+                      variant: TextVariant.semiBold,
                       overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                      isMarquee: true,
                     ),
                     const SizedBox(height: 8),
                     Row(
@@ -681,13 +682,13 @@ class _WatchOfflineState extends State<WatchOffline> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      title,
+                    AnymexText(
+                      text: title,
                       maxLines: 2,
+                      size: 16,
+                      variant: TextVariant.semiBold,
                       overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                      isMarquee: true,
                     ),
                     const SizedBox(height: 8),
                     Row(

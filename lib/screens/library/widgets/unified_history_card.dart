@@ -115,6 +115,7 @@ class UnifiedHistoryCard extends StatelessWidget {
                                 mobileValue: 1, desktopValue: 2),
                             variant: TextVariant.bold,
                             overflow: TextOverflow.ellipsis,
+                            isMarquee: true,
                           ),
                           const SizedBox(height: 4),
                           if (media.title != null &&
@@ -126,6 +127,7 @@ class UnifiedHistoryCard extends StatelessWidget {
                               variant: TextVariant.regular,
                               color: colorScheme.onSurface.opaque(0.7),
                               overflow: TextOverflow.ellipsis,
+                              isMarquee: true,
                             ),
                           const Spacer(),
                           Column(
@@ -375,6 +377,7 @@ class UnifiedHistoryCardV2 extends StatelessWidget {
                             mobileValue: 1, desktopValue: 2),
                         variant: TextVariant.bold,
                         overflow: TextOverflow.ellipsis,
+                        isMarquee: true,
                       ),
                       const SizedBox(height: 4),
                       if (media.title != null &&
@@ -386,6 +389,7 @@ class UnifiedHistoryCardV2 extends StatelessWidget {
                           variant: TextVariant.regular,
                           color: colorScheme.onSurface.opaque(0.7),
                           overflow: TextOverflow.ellipsis,
+                          isMarquee: true,
                         ),
                       const Spacer(),
                       // Progress indicator

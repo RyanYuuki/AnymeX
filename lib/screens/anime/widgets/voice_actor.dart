@@ -3,6 +3,7 @@ import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Media/character.dart';
 import 'package:anymex/models/Media/staff.dart';
 import 'package:anymex/screens/anime/widgets/character_staff_sheet.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:flutter/material.dart';
@@ -116,13 +117,13 @@ class CharactersCarousel extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 10),
-                        Text(
-                          itemData.name ?? '??',
+                        AnymexText(
+                          text: itemData.name ?? '??',
                           maxLines: 2,
-                          style: TextStyle(
-                              fontSize: isDesktop ? 14 : 12,
-                              fontFamily: "Poppins-SemiBold"),
+                          size: isDesktop ? 14 : 12,
+                          variant: TextVariant.semiBold,
                           overflow: TextOverflow.ellipsis,
+                          isMarquee: true,
                         )
                       ],
                     ),
@@ -242,13 +243,13 @@ class CharactersCarousel extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        Text(
-                          itemData?.name ?? 'No Voice Actor',
+                        AnymexText(
+                          text: itemData?.name ?? 'No Voice Actor',
                           maxLines: 2,
-                          style: TextStyle(
-                              fontSize: isDesktop ? 14 : 12,
-                              fontFamily: "Poppins-SemiBold"),
+                          size: isDesktop ? 14 : 12,
+                          variant: TextVariant.semiBold,
                           overflow: TextOverflow.ellipsis,
+                          isMarquee: true,
                         ),
                       ],
                     ),
@@ -354,13 +355,13 @@ class StaffCarousel extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 10),
-                        Text(
-                          itemData.name ?? '??',
+                        AnymexText(
+                          text: itemData.name ?? '??',
                           maxLines: 2,
-                          style: TextStyle(
-                              fontSize: isDesktop ? 14 : 12,
-                              fontFamily: "Poppins-SemiBold"),
+                          size: isDesktop ? 14 : 12,
+                          variant: TextVariant.semiBold,
                           overflow: TextOverflow.ellipsis,
+                          isMarquee: true,
                         ),
                         if (itemData.primaryOccupations != null &&
                             itemData.primaryOccupations!.isNotEmpty)
