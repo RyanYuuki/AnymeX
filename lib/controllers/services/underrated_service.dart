@@ -59,6 +59,8 @@ class UnderratedService extends GetxController {
 
   static const Set<String> _filteredStatuses = {'COMPLETED', 'CURRENT', 'DROPPED'};
 
+  ServicesType? _cachedServiceType;
+
   List<UnderratedMedia> getFilteredAnimes() {
     try {
       final anilistAuth = Get.find<AnilistAuth>();
@@ -167,7 +169,7 @@ class UnderratedService extends GetxController {
       if (clientId.isEmpty) return null;
 
       final endpoint = isManga ? 'manga' : 'anime';
-      final fields = "fields=mean,status,media_type,synopsis,genres,num_episodes,num_chapters,rank,popularity";
+      final fields = "fields=main_picture,mean,status,media_type,synopsis,genres,num_episodes,num_chapters,rank,popularity";
 
       final response = await http.get(
         Uri.parse('https://api.myanimelist.net/v2/$endpoint/$malId?$fields'),
@@ -176,7 +178,7 @@ class UnderratedService extends GetxController {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        return Media.fromMAL(data);
+        return Media.fromFullMAL(data);
       } else {
         Logger.i('Failed to fetch MAL media $malId: ${response.statusCode}');
       }
@@ -217,9 +219,12 @@ class UnderratedService extends GetxController {
 
   Future<String?> _fetchMALUsername(int userId) async {
     try {
+      final clientId = dotenv.env['MAL_CLIENT_ID'] ?? '';
+      if (clientId.isEmpty) return null;
+
       final response = await http.get(
         Uri.parse('https://api.myanimelist.net/v2/users/$userId'),
-        headers: {'X-MAL-CLIENT-ID': dotenv.env['MAL_CLIENT_ID'] ?? ''},
+        headers: {'X-MAL-CLIENT-ID': clientId},
       );
 
       if (response.statusCode == 200) {
@@ -271,7 +276,14 @@ class UnderratedService extends GetxController {
   }
 
   Future<void> fetchUnderratedAnime() async {
-    if (underratedAnimes.isNotEmpty) return;
+    final serviceType = Get.find<ServiceHandler>().serviceType.value;
+
+    if (underratedAnimes.isNotEmpty && _cachedServiceType == serviceType) return;
+
+    if (_cachedServiceType != serviceType) {
+      underratedAnimes.clear();
+      underratedMangas.clear();
+    }
 
     isLoadingAnime.value = true;
     animeError.value = '';
@@ -283,13 +295,12 @@ class UnderratedService extends GetxController {
         final List<dynamic> data = json.decode(response.body);
         final entries = data.map((e) => UnderratedEntry.fromJson(e)).toList();
 
-        final serviceType = Get.find<ServiceHandler>().serviceType.value;
-
         final results = await Future.wait(
           entries.map((entry) => _processEntry(entry, false, serviceType)),
         );
 
         underratedAnimes.value = results.whereType<UnderratedMedia>().toList();
+        _cachedServiceType = serviceType;
         Logger.i('Fetched ${underratedAnimes.length} underrated anime');
       } else {
         animeError.value = 'Failed to load: ${response.statusCode}';
@@ -304,7 +315,9 @@ class UnderratedService extends GetxController {
   }
 
   Future<void> fetchUnderratedManga() async {
-    if (underratedMangas.isNotEmpty) return;
+    final serviceType = Get.find<ServiceHandler>().serviceType.value;
+
+    if (underratedMangas.isNotEmpty && _cachedServiceType == serviceType) return;
 
     isLoadingManga.value = true;
     mangaError.value = '';
@@ -316,13 +329,12 @@ class UnderratedService extends GetxController {
         final List<dynamic> data = json.decode(response.body);
         final entries = data.map((e) => UnderratedEntry.fromJson(e)).toList();
 
-        final serviceType = Get.find<ServiceHandler>().serviceType.value;
-
         final results = await Future.wait(
           entries.map((entry) => _processEntry(entry, true, serviceType)),
         );
 
         underratedMangas.value = results.whereType<UnderratedMedia>().toList();
+        _cachedServiceType = serviceType;
         Logger.i('Fetched ${underratedMangas.length} underrated manga');
       } else {
         mangaError.value = 'Failed to load: ${response.statusCode}';
@@ -377,7 +389,7 @@ class UnderratedMedia {
       title: displayTitle,
       poster: media.poster,
       extraData: media.rating.toString(),
-      servicesType: ServicesType.anilist,
+      servicesType: media.serviceType,
       releasing: media.status == "RELEASING",
       anilistUserId: anilistUserId,
       malUserId: malUserId,

@@ -203,9 +203,10 @@ class Media {
           ?.map((studio) => studio['name']?.toString() ?? '??')
           .toList(),
       characters: [],
-      recommendations: (node['recommendations'] as List<dynamic>)
-          .map((e) => Media.fromMAL(e))
-          .toList(),
+      recommendations: (node['recommendations'] as List<dynamic>?)
+              ?.map((e) => Media.fromMAL(e))
+              .toList() ??
+          [],
       nextAiringEpisode: null,
       rankings: [],
       mediaContent: [],
