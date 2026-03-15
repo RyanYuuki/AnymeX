@@ -7,6 +7,7 @@ import 'package:anymex/screens/novel/reader/widgets/settings_view.dart';
 import 'package:anymex/screens/novel/reader/widgets/top_controls.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -328,16 +329,15 @@ class _NovelReaderState extends State<NovelReader>
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        displayTitle,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: context.colors.onSurface,
-                        ),
+                      AnymexText(
+                        text: displayTitle,
+                        size: 14,
+                        variant: TextVariant.semiBold,
+                        color: context.colors.onSurface,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.center,
+                        isMarquee: true,
                       ),
                     ],
                   ),
