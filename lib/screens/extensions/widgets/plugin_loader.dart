@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex_extension_bridge/AnymeXBridge.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
@@ -39,7 +40,7 @@ class _PluginInitDialogState extends State<PluginInitDialog>
   String? _errorMsg;
 
   String get pluginUrl =>
-      "https://github.com/RyanYuuki/AnymeX/assets/anymex_runtime_bridge.apk";
+      "https://github.com/RyanYuuki/AnymeX/raw/refs/heads/main/assets/apk/anymex_bridge_host.apk";
 
   late final AnimationController _pulseCtrl;
   late final Animation<double> _pulse;
@@ -119,6 +120,7 @@ class _PluginInitDialogState extends State<PluginInitDialog>
   }
 
   Future<void> _runPostDownloadSteps(File downloadedFile) async {
+    AnymeXRuntimeBridge.loadAnymeXRuntimeHost(downloadedFile.path);
     for (final step in _steps) {
       if (!mounted) return;
       setState(() => _stage = step.stage);
