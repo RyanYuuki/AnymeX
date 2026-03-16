@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/database.dart';
@@ -50,9 +51,10 @@ class _ExtensionScreenState extends State<ExtensionScreen>
   }
 
   void _showPluginLoader() async {
-    // if (Platform.isAndroid && !kDebugMode) {
-    PluginInitDialog.show(context, pluginUrl: '');
-    // }
+    final status = await AnymeXRuntimeBridge.isLoaded();
+    if (Platform.isAndroid && !status) {
+      PluginInitDialog.show(context);
+    }
   }
 
   @override
