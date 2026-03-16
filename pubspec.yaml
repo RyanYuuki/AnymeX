@@ -27,7 +27,6 @@ dependencies:
     flutter_svg: ^2.0.10
     # flutter_local_notifications: ^18.0.1
     flutter_markdown: ^0.7.6
-    markdown: ^7.3.0
     flutter_native_splash: ^2.4.4
     flutter_web_auth_2: ^4.0.2
     flutter_tts: ^3.8.5
@@ -45,10 +44,6 @@ dependencies:
     install_plugin: ^2.1.0
     intl: ^0.20.1
     kenburns_nullsafety: ^1.0.1
-    dartotsu_extension_bridge:
-        git:
-            url: https://github.com/aayush2622/DartotsuExtensionBridge.git
-            ref: 239ef59
 
     outlined_text: ^1.0.1
     media_kit:
@@ -95,8 +90,8 @@ dependencies:
     rxdart: any
     ffi: any
     win32: any
-    isar_community: ^3.3.0-dev.3
-    isar_community_flutter_libs: ^3.3.0-dev.3
+    isar_community: 3.3.0-dev.3
+    isar_community_flutter_libs: 3.3.0-dev.3
     sensors_plus: ^7.0.0
     flutter_discord_rpc_fork:
         git:
@@ -109,15 +104,13 @@ dependencies:
     vibration: ^3.1.5
     palette_generator: ^0.3.3+7
     better_player_plus: any
-    text_scroll: ^0.2.1
+    anymex_extension_bridge:
+        path: ./AnymeXExtensionBridge
 
-    flutter_cache_manager: any
-    crypto: any
-    encrypt: any
 dev_dependencies:
     build_runner: ^2.4.11
     change_app_package_name: ^1.4.0
-    isar_community_generator: ^3.3.0-dev.3
+    isar_community_generator: 3.3.0-dev.3
     flutter_lints: ^3.0.0
     flutter_test:
         sdk: flutter

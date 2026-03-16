@@ -6,7 +6,7 @@ class PlayerCoreVisualSettings {
     'hwdec': 'auto-safe',
     'videoSync': 'audio',
     'interpolation': false,
-    'cacheSeconds': 30,
+    'cacheMinutes': 5,
     'demuxerReadaheadSeconds': 20,
     'demuxerMaxBytesMb': 64,
     'vdLavcThreads': 0,

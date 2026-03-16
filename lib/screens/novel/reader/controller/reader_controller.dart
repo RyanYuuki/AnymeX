@@ -6,7 +6,7 @@ import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/services/volume_key_handler.dart';
 import 'package:anymex/utils/logger.dart';
-import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
+import 'package:anymex_extension_bridge/anymex_extension_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -140,7 +140,8 @@ class NovelReaderController extends GetxController {
 
   void _loadSettings() {
     themeMode.value = NovelReaderKeys.themeMode.get<int>(3);
-    backgroundOpacity.value = NovelReaderKeys.backgroundOpacity.get<double>(1.0);
+    backgroundOpacity.value =
+        NovelReaderKeys.backgroundOpacity.get<double>(1.0);
     fontSize.value = NovelReaderKeys.fontSize.get<double>(16.0);
     lineHeight.value = NovelReaderKeys.lineHeight.get<double>(1.6);
     letterSpacing.value = NovelReaderKeys.letterSpacing.get<double>(0.0);
@@ -148,24 +149,28 @@ class NovelReaderController extends GetxController {
     paragraphSpacing.value = NovelReaderKeys.paragraphSpacing.get<double>(16.0);
     fontFamily.value = NovelReaderKeys.fontFamily.get<String>('System');
     textAlign.value = NovelReaderKeys.textAlign.get<int>(0);
-    paddingHorizontal.value = NovelReaderKeys.paddingHorizontal.get<double>(16.0);
+    paddingHorizontal.value =
+        NovelReaderKeys.paddingHorizontal.get<double>(16.0);
     paddingVertical.value = NovelReaderKeys.paddingVertical.get<double>(8.0);
     autoScrollEnabled.value = NovelReaderKeys.autoScroll.get<bool>(false);
     autoScrollSpeed.value = NovelReaderKeys.autoScrollSpeed.get<double>(3.0);
-    volumeButtonScrolling.value = NovelReaderKeys.volumeScrolling.get<bool>(false);
+    volumeButtonScrolling.value =
+        NovelReaderKeys.volumeScrolling.get<bool>(false);
     tapToScroll.value = NovelReaderKeys.tapToScroll.get<bool>(false);
     keepScreenOn.value = NovelReaderKeys.keepScreenOn.get<bool>(true);
     verticalSeekbar.value = NovelReaderKeys.verticalSeekbar.get<bool>(true);
     swipeGestures.value = NovelReaderKeys.swipeGestures.get<bool>(true);
     pageReaderMode.value = NovelReaderKeys.pageReader.get<bool>(false);
-    showReadingProgress.value = NovelReaderKeys.showReadingProgress.get<bool>(true);
+    showReadingProgress.value =
+        NovelReaderKeys.showReadingProgress.get<bool>(true);
     showBatteryAndTime.value = NovelReaderKeys.showBatteryTime.get<bool>(true);
     ttsSpeed.value = NovelReaderKeys.ttsSpeed.get<double>(0.5);
     ttsPitch.value = NovelReaderKeys.ttsPitch.get<double>(1.0);
     ttsVoice.value = NovelReaderKeys.ttsVoice.get<String>('');
     ttsAutoAdvance.value = NovelReaderKeys.ttsAutoAdvance.get<bool>(true);
     ttsEnabled.value = NovelReaderKeys.ttsEnabled.get<bool>(false);
-    overscrollToChapter.value = NovelReaderKeys.overscrollToChapter.get<bool>(true);
+    overscrollToChapter.value =
+        NovelReaderKeys.overscrollToChapter.get<bool>(true);
 
     if (keepScreenOn.value) {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
@@ -220,7 +225,9 @@ class NovelReaderController extends GetxController {
   }
 
   void _handleVolumeEvent(String event) {
-    if (Get.isBottomSheetOpen == true || Get.isDialogOpen == true || Get.isOverlaysOpen == true) return;
+    if (Get.isBottomSheetOpen == true ||
+        Get.isDialogOpen == true ||
+        Get.isOverlaysOpen == true) return;
     if (showControls.value) {
       toggleControls();
       return;
@@ -239,10 +246,13 @@ class NovelReaderController extends GetxController {
     double offset = scrollController.offset;
     double maxScrollExtent = scrollController.position.maxScrollExtent;
 
-    progress.value = maxScrollExtent > 0 ? (offset / maxScrollExtent).clamp(0.0, 1.0) : 0.0;
+    progress.value =
+        maxScrollExtent > 0 ? (offset / maxScrollExtent).clamp(0.0, 1.0) : 0.0;
 
     if (pageReaderMode.value) {
-      double pageHeight = Get.height - MediaQuery.of(Get.context!).padding.top - MediaQuery.of(Get.context!).padding.bottom;
+      double pageHeight = Get.height -
+          MediaQuery.of(Get.context!).padding.top -
+          MediaQuery.of(Get.context!).padding.bottom;
       totalPages.value = (maxScrollExtent / pageHeight).ceil() + 1;
       currentPage.value = (offset / pageHeight).floor() + 1;
     }
@@ -276,7 +286,9 @@ class NovelReaderController extends GetxController {
       await Future.delayed(const Duration(milliseconds: 50));
       if (!scrollController.hasClients) continue;
       if (scrollController.position.maxScrollExtent >= current) {
-        scrollController.animateTo(current, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+        scrollController.animateTo(current,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut);
         break;
       }
     }
@@ -286,7 +298,8 @@ class NovelReaderController extends GetxController {
     try {
       loadingState.value = LoadingState.loading;
       _saveTracking();
-      final data = await source.methods.getNovelContent(currentChapter.value.title!, currentChapter.value.link!);
+      final data = await source.methods.getNovelContent(
+          currentChapter.value.title!, currentChapter.value.link!);
       if (data != null && data.isNotEmpty) {
         final processedContent = _buildHtml(data);
         _rawNovelContent = processedContent;
@@ -305,14 +318,18 @@ class NovelReaderController extends GetxController {
   void _extractTtsSegments(String html) {
     final normalized = html
         .replaceAll(RegExp(r'<\s*br\s*/?>', caseSensitive: false), '\n')
-        .replaceAll(RegExp(r'</(p|div|li|h[1-6]|blockquote)>', caseSensitive: false), '\n');
+        .replaceAll(
+            RegExp(r'</(p|div|li|h[1-6]|blockquote)>', caseSensitive: false),
+            '\n');
     final tagRegex = RegExp(r'<[^>]*>');
     final plainText = normalized.replaceAll(tagRegex, ' ');
     ttsSegments = plainText
         .split(RegExp(r'[\n\r]+'))
         .map((line) => line.replaceAll(RegExp(r'\s+'), ' ').trim())
         .where((line) => line.isNotEmpty)
-        .where((line) => line.replaceAll(RegExp(r'[\s\p{P}\p{S}]+', unicode: true), '').isNotEmpty)
+        .where((line) => line
+            .replaceAll(RegExp(r'[\s\p{P}\p{S}]+', unicode: true), '')
+            .isNotEmpty)
         .toList();
   }
 
@@ -349,7 +366,8 @@ class NovelReaderController extends GetxController {
       if (_rawNovelContent.isNotEmpty) novelContent.value = _rawNovelContent;
     });
 
-    flutterTts.setProgressHandler((String text, int startOffset, int endOffset, String word) {
+    flutterTts.setProgressHandler(
+        (String text, int startOffset, int endOffset, String word) {
       final adjustedStart = startOffset + _ttsResumeOffset;
       final adjustedEnd = endOffset + _ttsResumeOffset;
       ttsHighlightedElement.value = ttsCurrentElement.value;
@@ -365,12 +383,13 @@ class NovelReaderController extends GetxController {
   void _scrollToTtsElement() {
     if (ttsSegments.isEmpty || !scrollController.hasClients) return;
 
-   
     int charsBefore = 0;
-    for (int i = 0; i < ttsCurrentElement.value && i < ttsSegments.length; i++) {
+    for (int i = 0;
+        i < ttsCurrentElement.value && i < ttsSegments.length;
+        i++) {
       charsBefore += ttsSegments[i].length;
     }
-  
+
     charsBefore += ttsCurrentWordStart.value;
 
     int totalChars = 0;
@@ -380,8 +399,10 @@ class NovelReaderController extends GetxController {
     if (totalChars <= 0) return;
 
     final double viewportHeight = scrollController.position.viewportDimension;
-    final double totalContentHeight = scrollController.position.maxScrollExtent + viewportHeight;
-    final double targetPosition = (charsBefore / totalChars) * totalContentHeight;
+    final double totalContentHeight =
+        scrollController.position.maxScrollExtent + viewportHeight;
+    final double targetPosition =
+        (charsBefore / totalChars) * totalContentHeight;
 
     final double scrollTo = (targetPosition - viewportHeight * 0.4)
         .clamp(0.0, scrollController.position.maxScrollExtent);
@@ -395,17 +416,20 @@ class NovelReaderController extends GetxController {
     }
   }
 
-  
   void _updateTtsHighlight(int wordStart, int wordEnd) {
     if (_rawNovelContent.isEmpty || ttsSegments.isEmpty) return;
     if (ttsCurrentElement.value >= ttsSegments.length) return;
 
     final currentSegment = ttsSegments[ttsCurrentElement.value];
-    if (wordStart < 0 || wordEnd <= wordStart || wordEnd > currentSegment.length) return;
+    if (wordStart < 0 ||
+        wordEnd <= wordStart ||
+        wordEnd > currentSegment.length) return;
 
-    final normalizedSegment = currentSegment.replaceAll(RegExp(r'\s+'), ' ').trim();
+    final normalizedSegment =
+        currentSegment.replaceAll(RegExp(r'\s+'), ' ').trim();
 
-    final pTagRegex = RegExp(r'<p(\s[^>]*)?>(.+?)</p>', caseSensitive: false, dotAll: true);
+    final pTagRegex =
+        RegExp(r'<p(\s[^>]*)?>(.+?)</p>', caseSensitive: false, dotAll: true);
     String result = _rawNovelContent;
     bool found = false;
 
@@ -422,14 +446,18 @@ class NovelReaderController extends GetxController {
         final htmlStart = _mapPlainToHtmlOffset(pContent, wordStart);
         final htmlEnd = _mapPlainToHtmlOffset(pContent, wordEnd);
 
-        if (htmlStart >= 0 && htmlEnd > htmlStart && htmlEnd <= pContent.length) {
+        if (htmlStart >= 0 &&
+            htmlEnd > htmlStart &&
+            htmlEnd <= pContent.length) {
           final before = pContent.substring(0, htmlStart);
           final word = pContent.substring(htmlStart, htmlEnd);
           final after = pContent.substring(htmlEnd);
-          final highlighted = '$before<mark style="background-color:rgba(${_getTtsPrimaryRgb()},0.35);border-radius:3px;padding:1px 2px;">$word</mark>$after';
+          final highlighted =
+              '$before<mark style="background-color:rgba(${_getTtsPrimaryRgb()},0.35);border-radius:3px;padding:1px 2px;">$word</mark>$after';
 
           final pAttrs = match.group(1) ?? '';
-          final newP = '<p$pAttrs style="background-color:rgba(${_getTtsPrimaryRgb()},0.08);border-radius:4px;padding:2px 4px;">$highlighted</p>';
+          final newP =
+              '<p$pAttrs style="background-color:rgba(${_getTtsPrimaryRgb()},0.08);border-radius:4px;padding:2px 4px;">$highlighted</p>';
           result = result.replaceRange(match.start, match.end, newP);
           found = true;
         }
@@ -442,11 +470,10 @@ class NovelReaderController extends GetxController {
     }
   }
 
- 
   int _mapPlainToHtmlOffset(String html, int plainOffset) {
     int plainCount = 0;
     int i = 0;
-  
+
     bool inLeadingWhitespace = true;
 
     while (i < html.length) {
@@ -458,16 +485,17 @@ class NovelReaderController extends GetxController {
         continue;
       }
 
-      
       if (RegExp(r'\s').hasMatch(html[i])) {
         if (inLeadingWhitespace) {
           i++;
           continue;
         }
-   
+
         if (plainCount == plainOffset) return i;
         plainCount++;
-        while (i < html.length && RegExp(r'\s').hasMatch(html[i]) && html[i] != '<') {
+        while (i < html.length &&
+            RegExp(r'\s').hasMatch(html[i]) &&
+            html[i] != '<') {
           i++;
         }
         continue;
@@ -479,7 +507,7 @@ class NovelReaderController extends GetxController {
       i++;
     }
 
-    return i; 
+    return i;
   }
 
   String _getTtsPrimaryRgb() {
@@ -493,7 +521,8 @@ class NovelReaderController extends GetxController {
       if (voices is! List) return;
       _ttsVoiceLocaleMap.clear();
       final deviceLocale = Get.deviceLocale?.toString() ?? 'en';
-      final deviceLang = deviceLocale.split(RegExp(r'[_-]')).first.toLowerCase();
+      final deviceLang =
+          deviceLocale.split(RegExp(r'[_-]')).first.toLowerCase();
       final deviceVoices = <String>[];
       final otherVoices = <String>[];
       for (final voice in voices) {
@@ -542,7 +571,8 @@ class NovelReaderController extends GetxController {
       ttsPlaying.value = false;
       return;
     }
-    if (ttsHighlightedElement.value >= 0 && ttsHighlightedElement.value == ttsCurrentElement.value) {
+    if (ttsHighlightedElement.value >= 0 &&
+        ttsHighlightedElement.value == ttsCurrentElement.value) {
       // reusume state
       final fullText = ttsSegments[ttsCurrentElement.value];
       final resumeFrom = ttsCurrentWordEnd.value.clamp(0, fullText.length);
@@ -578,7 +608,9 @@ class NovelReaderController extends GetxController {
 
   Future<void> _speakCurrentElement() async {
     _ttsResumeOffset = 0;
-    if (ttsSegments.isEmpty || ttsCurrentElement.value < 0 || ttsCurrentElement.value >= ttsSegments.length) {
+    if (ttsSegments.isEmpty ||
+        ttsCurrentElement.value < 0 ||
+        ttsCurrentElement.value >= ttsSegments.length) {
       ttsPlaying.value = false;
       ttsHighlightedElement.value = -1;
       ttsCurrentWordStart.value = 0;
@@ -620,23 +652,31 @@ class NovelReaderController extends GetxController {
   }
 
   Future<void> _resumeFromCloudIfNewer() async {
-    final ctrl = Get.isRegistered<GistSyncController>() ? Get.find<GistSyncController>() : null;
-    if (ctrl == null || !ctrl.isLoggedIn.value || !ctrl.syncEnabled.value) return;
+    final ctrl = Get.isRegistered<GistSyncController>()
+        ? Get.find<GistSyncController>()
+        : null;
+    if (ctrl == null || !ctrl.isLoggedIn.value || !ctrl.syncEnabled.value)
+      return;
     try {
       final chapter = currentChapter.value;
       if (chapter.number == null) return;
       final localUpdated = chapter.lastReadTime ?? 0;
-      final entry = await ctrl.fetchNewerChapterProgress(
-        mediaId: media.id,
-        mediaType: 'novel',
-        chapterNumber: chapter.number!,
-        localUpdatedAt: localUpdated,
-      ).timeout(const Duration(seconds: 4), onTimeout: () => null);
+      final entry = await ctrl
+          .fetchNewerChapterProgress(
+            mediaId: media.id,
+            mediaType: 'novel',
+            chapterNumber: chapter.number!,
+            localUpdatedAt: localUpdated,
+          )
+          .timeout(const Duration(seconds: 4), onTimeout: () => null);
       if (entry?.scrollOffset != null) {
         final offset = entry!.scrollOffset!;
         await Future.delayed(const Duration(milliseconds: 200));
-        if (scrollController.hasClients && offset <= scrollController.position.maxScrollExtent) {
-          scrollController.animateTo(offset, duration: const Duration(milliseconds: 400), curve: Curves.easeInOut);
+        if (scrollController.hasClients &&
+            offset <= scrollController.position.maxScrollExtent) {
+          scrollController.animateTo(offset,
+              duration: const Duration(milliseconds: 400),
+              curve: Curves.easeInOut);
         }
       }
     } catch (e) {
@@ -667,7 +707,8 @@ class NovelReaderController extends GetxController {
     _stopAutoScroll();
     final pixelsPerSecond = Get.height / autoScrollSpeed.value;
     const tickMs = 50;
-    _autoScrollTimer = Timer.periodic(const Duration(milliseconds: tickMs), (_) {
+    _autoScrollTimer =
+        Timer.periodic(const Duration(milliseconds: tickMs), (_) {
       if (!autoScrollEnabled.value || !scrollController.hasClients) return;
       final current = scrollController.offset;
       final max = scrollController.position.maxScrollExtent;
@@ -676,7 +717,8 @@ class NovelReaderController extends GetxController {
         autoScrollEnabled.value = false;
         return;
       }
-      final newOffset = (current + pixelsPerSecond * tickMs / 1000).clamp(0.0, max);
+      final newOffset =
+          (current + pixelsPerSecond * tickMs / 1000).clamp(0.0, max);
       scrollController.jumpTo(newOffset);
     });
   }
@@ -685,14 +727,16 @@ class NovelReaderController extends GetxController {
     _autoScrollTimer?.cancel();
     _autoScrollTimer = null;
   }
-  
+
   void handleVolumeButton(bool isVolumeUp) {
     if (!volumeButtonScrolling.value || !scrollController.hasClients) return;
     final double amount = isVolumeUp ? -volumeScrollAmount : volumeScrollAmount;
     final double minOffset = scrollController.position.minScrollExtent;
     final double maxOffset = scrollController.position.maxScrollExtent;
-    final double newOffset = (scrollController.offset + amount).clamp(minOffset, maxOffset);
-    scrollController.animateTo(newOffset, duration: const Duration(milliseconds: 200), curve: Curves.easeOut);
+    final double newOffset =
+        (scrollController.offset + amount).clamp(minOffset, maxOffset);
+    scrollController.animateTo(newOffset,
+        duration: const Duration(milliseconds: 200), curve: Curves.easeOut);
   }
 
   void handleTap(Offset tapPosition, {double? viewportHeight}) {
@@ -703,7 +747,8 @@ class NovelReaderController extends GetxController {
     double newOffset = scrollController.offset + amount;
     double maxOffset = scrollController.position.maxScrollExtent;
     newOffset = newOffset.clamp(0.0, maxOffset);
-    scrollController.animateTo(newOffset, duration: const Duration(milliseconds: 200), curve: Curves.easeOut);
+    scrollController.animateTo(newOffset,
+        duration: const Duration(milliseconds: 200), curve: Curves.easeOut);
   }
 
   void handleSwipe(DragEndDetails details, bool isReversed) {
@@ -721,19 +766,27 @@ class NovelReaderController extends GetxController {
 
   void _saveTracking({bool syncToCloud = true}) {
     consecutiveReads.value++;
-    savedChapter.value = offlineStorageController.getReadChapter(media.id, currentChapter.value.number!) ?? currentChapter.value;
+    savedChapter.value = offlineStorageController.getReadChapter(
+            media.id, currentChapter.value.number!) ??
+        currentChapter.value;
     if (consecutiveReads.value > 1) {
       Future.microtask(() {
-        offlineStorageController.addOrUpdateNovel(media, chapters, currentChapter.value, source);
-        offlineStorageController.addOrUpdateReadChapter(media.id, currentChapter.value, source: source, syncToCloud: syncToCloud);
+        offlineStorageController.addOrUpdateNovel(
+            media, chapters, currentChapter.value, source);
+        offlineStorageController.addOrUpdateReadChapter(
+            media.id, currentChapter.value,
+            source: source, syncToCloud: syncToCloud);
       });
     }
   }
 
   Future<void> _syncCloudProgressOnExit() async {
-    final syncCtrl = Get.isRegistered<GistSyncController>() ? Get.find<GistSyncController>() : null;
+    final syncCtrl = Get.isRegistered<GistSyncController>()
+        ? Get.find<GistSyncController>()
+        : null;
     if (syncCtrl == null) return;
-    final shouldRemove = syncCtrl.autoDeleteCompletedOnExit.value && _hasFinishedCurrentMedia();
+    final shouldRemove =
+        syncCtrl.autoDeleteCompletedOnExit.value && _hasFinishedCurrentMedia();
     await syncCtrl.syncChapterProgressOnExit(
       mediaId: media.id,
       malId: media.idMal,
@@ -746,9 +799,14 @@ class NovelReaderController extends GetxController {
   bool _hasFinishedCurrentMedia() {
     final chapter = currentChapter.value;
     final chapterNumber = chapter.number;
-    if (chapterNumber == null || chapter.pageNumber == null || chapter.totalPages == null || chapter.totalPages! <= 0 || chapter.pageNumber! < chapter.totalPages!) return false;
+    if (chapterNumber == null ||
+        chapter.pageNumber == null ||
+        chapter.totalPages == null ||
+        chapter.totalPages! <= 0 ||
+        chapter.pageNumber! < chapter.totalPages!) return false;
     final totalChapters = double.tryParse(media.totalChapters ?? '');
-    if (totalChapters != null && totalChapters > 0) return chapterNumber >= totalChapters;
+    if (totalChapters != null && totalChapters > 0)
+      return chapterNumber >= totalChapters;
     for (final item in chapters) {
       if (item.number != null && item.number! > chapterNumber) return false;
     }
@@ -756,7 +814,12 @@ class NovelReaderController extends GetxController {
   }
 
   String _buildHtml(String input) {
-    final processed = input.replaceAll("\\n", "").replaceAll("\\t", "").replaceAll("\\\"", "\"").replaceAll('*"', '').replaceAll('"*', '');
+    final processed = input
+        .replaceAll("\\n", "")
+        .replaceAll("\\t", "")
+        .replaceAll("\\\"", "\"")
+        .replaceAll('*"', '')
+        .replaceAll('"*', '');
     return '<div id="readerViewContent"><div style="max-width: 800px; margin: 0 auto;">$processed</div></div>';
   }
 
@@ -769,16 +832,20 @@ class NovelReaderController extends GetxController {
     }
   }
 
-  void toggleSettings() => (showSettings.value = !showSettings.value) ? showControls.value = true : null;
+  void toggleSettings() => (showSettings.value = !showSettings.value)
+      ? showControls.value = true
+      : null;
 
   void updateNavigationButtons() {
-    int currentIndex = chapters.indexWhere((ch) => ch.link == currentChapter.value.link);
+    int currentIndex =
+        chapters.indexWhere((ch) => ch.link == currentChapter.value.link);
     canGoPrevious.value = currentIndex > 0;
     canGoNext.value = currentIndex < chapters.length - 1;
   }
 
   Future<void> goToNextChapter() async {
-    int currentIndex = chapters.indexWhere((ch) => ch.link == currentChapter.value.link);
+    int currentIndex =
+        chapters.indexWhere((ch) => ch.link == currentChapter.value.link);
     if (currentIndex < chapters.length - 1) {
       _isNavigating = true;
       _stopAutoScroll();
@@ -800,7 +867,8 @@ class NovelReaderController extends GetxController {
   }
 
   Future<void> goToPreviousChapter() async {
-    int currentIndex = chapters.indexWhere((ch) => ch.link == currentChapter.value.link);
+    int currentIndex =
+        chapters.indexWhere((ch) => ch.link == currentChapter.value.link);
     if (currentIndex > 0) {
       _isNavigating = true;
       _stopAutoScroll();
@@ -852,36 +920,122 @@ class NovelReaderController extends GetxController {
     }
   }
 
-  void setFontSize(double value) { fontSize.value = value.clamp(12.0, 24.0); _saveSettings(); }
-  void setLineHeight(double value) { lineHeight.value = value.clamp(1.0, 3.0); _saveSettings(); }
-  void setParagraphSpacing(double value) { paragraphSpacing.value = value.clamp(8.0, 32.0); _saveSettings(); }
-  void setLetterSpacing(double value) { letterSpacing.value = value.clamp(-1.0, 2.0); _saveSettings(); }
-  void setWordSpacing(double value) { wordSpacing.value = value.clamp(0.0, 5.0); _saveSettings(); }
-  void setFontFamily(String value) { fontFamily.value = value; _saveSettings(); }
-  void setTextAlign(int value) { textAlign.value = value; _saveSettings(); }
-  void setHorizontalPadding(double value) { paddingHorizontal.value = value.clamp(8.0, 32.0); _saveSettings(); }
-  void setVerticalPadding(double value) { paddingVertical.value = value.clamp(4.0, 24.0); _saveSettings(); }
-  void setThemeMode(int value) { themeMode.value = value.clamp(0, 3); _saveSettings(); }
-  void setBackgroundOpacity(double value) { backgroundOpacity.value = value.clamp(0.3, 1.0); _saveSettings(); }
-  void togglePageReaderMode() { pageReaderMode.value = !pageReaderMode.value; _saveSettings(); }
-  void toggleVerticalSeekbar() { verticalSeekbar.value = !verticalSeekbar.value; _saveSettings(); }
-  void toggleSwipeGestures() { swipeGestures.value = !swipeGestures.value; _saveSettings(); }
+  void setFontSize(double value) {
+    fontSize.value = value.clamp(12.0, 24.0);
+    _saveSettings();
+  }
+
+  void setLineHeight(double value) {
+    lineHeight.value = value.clamp(1.0, 3.0);
+    _saveSettings();
+  }
+
+  void setParagraphSpacing(double value) {
+    paragraphSpacing.value = value.clamp(8.0, 32.0);
+    _saveSettings();
+  }
+
+  void setLetterSpacing(double value) {
+    letterSpacing.value = value.clamp(-1.0, 2.0);
+    _saveSettings();
+  }
+
+  void setWordSpacing(double value) {
+    wordSpacing.value = value.clamp(0.0, 5.0);
+    _saveSettings();
+  }
+
+  void setFontFamily(String value) {
+    fontFamily.value = value;
+    _saveSettings();
+  }
+
+  void setTextAlign(int value) {
+    textAlign.value = value;
+    _saveSettings();
+  }
+
+  void setHorizontalPadding(double value) {
+    paddingHorizontal.value = value.clamp(8.0, 32.0);
+    _saveSettings();
+  }
+
+  void setVerticalPadding(double value) {
+    paddingVertical.value = value.clamp(4.0, 24.0);
+    _saveSettings();
+  }
+
+  void setThemeMode(int value) {
+    themeMode.value = value.clamp(0, 3);
+    _saveSettings();
+  }
+
+  void setBackgroundOpacity(double value) {
+    backgroundOpacity.value = value.clamp(0.3, 1.0);
+    _saveSettings();
+  }
+
+  void togglePageReaderMode() {
+    pageReaderMode.value = !pageReaderMode.value;
+    _saveSettings();
+  }
+
+  void toggleVerticalSeekbar() {
+    verticalSeekbar.value = !verticalSeekbar.value;
+    _saveSettings();
+  }
+
+  void toggleSwipeGestures() {
+    swipeGestures.value = !swipeGestures.value;
+    _saveSettings();
+  }
+
   void toggleVolumeScrolling() {
     volumeButtonScrolling.value = !volumeButtonScrolling.value;
     volumeButtonScrolling.value ? _enableVolumeKeys() : _disableVolumeKeys();
     _saveSettings();
   }
-  void toggleTapToScroll() { tapToScroll.value = !tapToScroll.value; _saveSettings(); }
-  void setTapScrollAmount(double amount) { tapScrollAmount.value = amount.clamp(10.0, 200.0); _saveSettings(); }
-  void toggleKeepScreenOn() {
-    keepScreenOn.value = !keepScreenOn.value;
-    SystemChrome.setEnabledSystemUIMode(keepScreenOn.value ? SystemUiMode.edgeToEdge : SystemUiMode.manual, overlays: SystemUiOverlay.values);
+
+  void toggleTapToScroll() {
+    tapToScroll.value = !tapToScroll.value;
     _saveSettings();
   }
-  void toggleShowReadingProgress() { showReadingProgress.value = !showReadingProgress.value; _saveSettings(); }
-  void toggleShowBatteryAndTime() { showBatteryAndTime.value = !showBatteryAndTime.value; _saveSettings(); }
-  void setTtsSpeed(double value) { ttsSpeed.value = value.clamp(0.1, 1.0); if (ttsPlaying.value) flutterTts.setSpeechRate(ttsSpeed.value); _saveSettings(); }
-  void setTtsPitch(double value) { ttsPitch.value = value.clamp(0.5, 2.0); if (ttsPlaying.value) flutterTts.setPitch(ttsPitch.value); _saveSettings(); }
+
+  void setTapScrollAmount(double amount) {
+    tapScrollAmount.value = amount.clamp(10.0, 200.0);
+    _saveSettings();
+  }
+
+  void toggleKeepScreenOn() {
+    keepScreenOn.value = !keepScreenOn.value;
+    SystemChrome.setEnabledSystemUIMode(
+        keepScreenOn.value ? SystemUiMode.edgeToEdge : SystemUiMode.manual,
+        overlays: SystemUiOverlay.values);
+    _saveSettings();
+  }
+
+  void toggleShowReadingProgress() {
+    showReadingProgress.value = !showReadingProgress.value;
+    _saveSettings();
+  }
+
+  void toggleShowBatteryAndTime() {
+    showBatteryAndTime.value = !showBatteryAndTime.value;
+    _saveSettings();
+  }
+
+  void setTtsSpeed(double value) {
+    ttsSpeed.value = value.clamp(0.1, 1.0);
+    if (ttsPlaying.value) flutterTts.setSpeechRate(ttsSpeed.value);
+    _saveSettings();
+  }
+
+  void setTtsPitch(double value) {
+    ttsPitch.value = value.clamp(0.5, 2.0);
+    if (ttsPlaying.value) flutterTts.setPitch(ttsPitch.value);
+    _saveSettings();
+  }
+
   void setTtsVoice(String value) {
     if (_isChangingVoice) return;
     _isChangingVoice = true;
@@ -889,27 +1043,41 @@ class NovelReaderController extends GetxController {
     int currentElement = ttsCurrentElement.value;
     if (wasPlaying) flutterTts.stop();
     ttsVoice.value = value;
-    if (wasPlaying && ttsSegments.isNotEmpty && currentElement < ttsSegments.length) {
-      Future.delayed(const Duration(milliseconds: 100), () { _speakCurrentElement(); _isChangingVoice = false; });
+    if (wasPlaying &&
+        ttsSegments.isNotEmpty &&
+        currentElement < ttsSegments.length) {
+      Future.delayed(const Duration(milliseconds: 100), () {
+        _speakCurrentElement();
+        _isChangingVoice = false;
+      });
     } else {
       _isChangingVoice = false;
     }
     _saveSettings();
   }
-  void toggleTtsAutoAdvance() { ttsAutoAdvance.value = !ttsAutoAdvance.value; _saveSettings(); }
-  void toggleOverscrollToChapter() { overscrollToChapter.value = !overscrollToChapter.value; _saveSettings(); }
 
-  // Overscroll 
+  void toggleTtsAutoAdvance() {
+    ttsAutoAdvance.value = !ttsAutoAdvance.value;
+    _saveSettings();
+  }
+
+  void toggleOverscrollToChapter() {
+    overscrollToChapter.value = !overscrollToChapter.value;
+    _saveSettings();
+  }
+
+  // Overscroll
 
   bool onScrollNotification(ScrollNotification notification) {
     if (!overscrollToChapter.value || _isNavigating) return false;
 
-   
     if (!isOverscrolling.value) {
       bool isUserDrag = false;
-      if (notification is ScrollUpdateNotification && notification.dragDetails != null) {
+      if (notification is ScrollUpdateNotification &&
+          notification.dragDetails != null) {
         isUserDrag = true;
-      } else if (notification is OverscrollNotification && notification.dragDetails != null) {
+      } else if (notification is OverscrollNotification &&
+          notification.dragDetails != null) {
         isUserDrag = true;
       }
       if (!isUserDrag) return false;
@@ -917,7 +1085,6 @@ class NovelReaderController extends GetxController {
 
     final metrics = notification.metrics;
 
-   
     if (metrics.pixels > metrics.maxScrollExtent) {
       final delta = metrics.pixels - metrics.maxScrollExtent;
       _virtualOverscrollPixels = delta * _dragRate;
@@ -930,7 +1097,8 @@ class NovelReaderController extends GetxController {
       return false;
     }
 
-    if (notification is OverscrollNotification && notification.overscroll != 0) {
+    if (notification is OverscrollNotification &&
+        notification.overscroll != 0) {
       final ovs = notification.overscroll;
       final isNext = ovs > 0;
 
@@ -967,7 +1135,8 @@ class NovelReaderController extends GetxController {
   }
 
   void _updateOverscrollProgress(bool isNext) {
-    final progress = (_virtualOverscrollPixels / _maxOverscrollDistance).clamp(0.0, 1.0);
+    final progress =
+        (_virtualOverscrollPixels / _maxOverscrollDistance).clamp(0.0, 1.0);
     _handleOverscrollUpdate(progress, isNext);
   }
 
@@ -1024,35 +1193,71 @@ class NovelReaderController extends GetxController {
   }
 
   void resetSettings() {
-    fontSize.value = 16.0; lineHeight.value = 1.6; letterSpacing.value = 0.0; wordSpacing.value = 0.0;
-    paragraphSpacing.value = 16.0; fontFamily.value = 'System'; textAlign.value = 0; paddingHorizontal.value = 16.0;
-    paddingVertical.value = 8.0; autoScrollEnabled.value = false; autoScrollSpeed.value = 3.0;
-    volumeButtonScrolling.value = false; tapToScroll.value = false; tapScrollAmount.value = 20.0;
-    keepScreenOn.value = true; verticalSeekbar.value = true; swipeGestures.value = true;
-    pageReaderMode.value = false; themeMode.value = 3; backgroundOpacity.value = 1.0;
-    showReadingProgress.value = true; showBatteryAndTime.value = true;
-    ttsEnabled.value = false; ttsSpeed.value = 0.5; ttsPitch.value = 1.0; ttsVoice.value = '';
-    ttsAutoAdvance.value = true; ttsCurrentElement.value = 0; ttsHighlightedElement.value = -1;
-    _stopAutoScroll(); _disableVolumeKeys(); _ttsVoiceLocaleMap.clear(); ttsVoicesDevice.value = [];
-    ttsVoicesOther.value = []; unawaited(flutterTts.stop()); ttsPlaying.value = false; _saveSettings();
+    fontSize.value = 16.0;
+    lineHeight.value = 1.6;
+    letterSpacing.value = 0.0;
+    wordSpacing.value = 0.0;
+    paragraphSpacing.value = 16.0;
+    fontFamily.value = 'System';
+    textAlign.value = 0;
+    paddingHorizontal.value = 16.0;
+    paddingVertical.value = 8.0;
+    autoScrollEnabled.value = false;
+    autoScrollSpeed.value = 3.0;
+    volumeButtonScrolling.value = false;
+    tapToScroll.value = false;
+    tapScrollAmount.value = 20.0;
+    keepScreenOn.value = true;
+    verticalSeekbar.value = true;
+    swipeGestures.value = true;
+    pageReaderMode.value = false;
+    themeMode.value = 3;
+    backgroundOpacity.value = 1.0;
+    showReadingProgress.value = true;
+    showBatteryAndTime.value = true;
+    ttsEnabled.value = false;
+    ttsSpeed.value = 0.5;
+    ttsPitch.value = 1.0;
+    ttsVoice.value = '';
+    ttsAutoAdvance.value = true;
+    ttsCurrentElement.value = 0;
+    ttsHighlightedElement.value = -1;
+    _stopAutoScroll();
+    _disableVolumeKeys();
+    _ttsVoiceLocaleMap.clear();
+    ttsVoicesDevice.value = [];
+    ttsVoicesOther.value = [];
+    unawaited(flutterTts.stop());
+    ttsPlaying.value = false;
+    _saveSettings();
   }
 
   bool get useSystemReaderTheme => themeMode.value == 3;
 
   Color get readerBackgroundColor {
     switch (themeMode.value) {
-      case 0: return const Color(0xFFF7F7F7).withValues(alpha: backgroundOpacity.value);
-      case 1: return const Color(0xFF111318).withValues(alpha: backgroundOpacity.value);
-      case 2: return const Color(0xFFF1E7D0).withValues(alpha: backgroundOpacity.value);
-      default: return Colors.transparent;
+      case 0:
+        return const Color(0xFFF7F7F7)
+            .withValues(alpha: backgroundOpacity.value);
+      case 1:
+        return const Color(0xFF111318)
+            .withValues(alpha: backgroundOpacity.value);
+      case 2:
+        return const Color(0xFFF1E7D0)
+            .withValues(alpha: backgroundOpacity.value);
+      default:
+        return Colors.transparent;
     }
   }
 
   Color get readerTextColor {
     switch (themeMode.value) {
-      case 1: return const Color(0xFFE6E6E6);
-      case 2: return const Color(0xFF4A3B2A);
-      default: return const Color(0xFF1A1A1A);
+      case 1:
+        return const Color(0xFFE6E6E6);
+      case 2:
+        return const Color(0xFF4A3B2A);
+      default:
+        return const Color(0xFF1A1A1A);
     }
   }
 
@@ -1080,33 +1285,44 @@ class NovelReaderController extends GetxController {
 
   TextAlign get textAlignment {
     switch (textAlign.value) {
-      case 1: return TextAlign.center;
-      case 2: return TextAlign.justify;
-      default: return TextAlign.left;
+      case 1:
+        return TextAlign.center;
+      case 2:
+        return TextAlign.justify;
+      default:
+        return TextAlign.left;
     }
   }
 
   List<String> get availableFonts => [
-    'System',
-    'Serif',
-    'Roboto',
-    'Open Sans',
-    'Lato',
-    'Merriweather',
-    'Crimson Text',
-    'Libre Baskerville'
-  ];
+        'System',
+        'Serif',
+        'Roboto',
+        'Open Sans',
+        'Lato',
+        'Merriweather',
+        'Crimson Text',
+        'Libre Baskerville'
+      ];
 
   String get fontFamilyName {
     switch (fontFamily.value) {
-      case 'Serif': return 'serif';
-      case 'Roboto': return 'Roboto';
-      case 'Open Sans': return 'OpenSans';
-      case 'Lato': return 'Lato';
-      case 'Merriweather': return 'Merriweather';
-      case 'Crimson Text': return 'CrimsonText';
-      case 'Libre Baskerville': return 'LibreBaskerville';
-      default: return '';
+      case 'Serif':
+        return 'serif';
+      case 'Roboto':
+        return 'Roboto';
+      case 'Open Sans':
+        return 'OpenSans';
+      case 'Lato':
+        return 'Lato';
+      case 'Merriweather':
+        return 'Merriweather';
+      case 'Crimson Text':
+        return 'CrimsonText';
+      case 'Libre Baskerville':
+        return 'LibreBaskerville';
+      default:
+        return '';
     }
   }
 }

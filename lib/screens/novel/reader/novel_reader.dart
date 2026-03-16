@@ -7,7 +7,7 @@ import 'package:anymex/screens/novel/reader/widgets/settings_view.dart';
 import 'package:anymex/screens/novel/reader/widgets/top_controls.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
-import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
+import 'package:anymex_extension_bridge/anymex_extension_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -219,10 +219,9 @@ class _NovelReaderState extends State<NovelReader>
               : null;
 
       final subtitleText = isNext ? 'Next Chapter' : 'Previous Chapter';
-      final titleText = targetChapter?.title ??
-          'Chapter ${targetChapter?.number ?? '?'}';
+      final titleText =
+          targetChapter?.title ?? 'Chapter ${targetChapter?.number ?? '?'}';
 
-  
       final String displaySubtitle;
       final String displayTitle;
       if (targetChapter != null) {

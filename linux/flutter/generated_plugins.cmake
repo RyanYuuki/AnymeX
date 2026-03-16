@@ -3,7 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  dartotsu_extension_bridge
+  anymex_extension_bridge
   desktop_webview_window
   dynamic_color
   flutter_qjs
@@ -19,6 +19,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
+  fjs
   flutter_discord_rpc_fork
 )
 

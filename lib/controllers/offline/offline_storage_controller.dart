@@ -8,7 +8,7 @@ import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/main.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/logger.dart';
-import 'package:dartotsu_extension_bridge/Models/Source.dart';
+import 'package:anymex_extension_bridge/Models/Source.dart';
 import 'package:get/get.dart';
 import 'package:isar_community/isar.dart';
 

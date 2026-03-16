@@ -18,11 +18,10 @@ import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_chip.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
-import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
+import 'package:anymex_extension_bridge/anymex_extension_bridge.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -56,7 +55,6 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   final Rx<Episode> continueEpisode = Episode(number: "1").obs;
   final Rx<Episode> savedEpisode = Episode(number: "1").obs;
   List<Episode> offlineEpisodes = [];
-  bool _initializedChunk = false;
   Worker? _authLoginWorker;
   Worker? _userProgressWorker;
   Worker? _currentMediaWorker;
@@ -109,7 +107,6 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
         oldLen != newLen || oldFirst != newFirst || oldLast != newLast;
 
     if (contentChanged) {
-      _initializedChunk = false;
       _initEpisodes();
       _updateChunkIndex();
     }
@@ -147,7 +144,6 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
           if (selectedChunkIndex.value != nextIndex) {
             selectedChunkIndex.value = nextIndex;
           }
-          _initializedChunk = true;
         } else {
           if (selectedChunkIndex.value != 0) {
             selectedChunkIndex.value = 0;
@@ -352,25 +348,50 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       builder: (context) {
         return SizedBox(
           width: double.infinity,
-          child: FutureBuilder<List<Video>>(
-            future: sourceController.activeSource.value!.methods
-                .getVideoList(DEpisode(episodeNumber: ep.number, url: ep.link)),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return _buildScrapingLoadingState(true);
-              } else if (snapshot.hasError) {
-                return _buildErrorState(snapshot.error.toString());
-              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return _buildEmptyState();
-              } else {
-                streamList.value = snapshot.data
-                        ?.map((e) => hive.Video.fromVideo(e))
-                        .toList() ??
-                    [];
-                return _buildServerList();
-              }
-            },
-          ),
+          child: sourceController.activeSource.value!.methods
+                      .getVideoListStream(
+                          DEpisode(episodeNumber: ep.number, url: ep.link)) !=
+                  null
+              ? StreamBuilder(
+                  stream: sourceController.activeSource.value!.methods
+                      .getVideoListStream(
+                          DEpisode(episodeNumber: ep.number, url: ep.link)),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return _buildScrapingLoadingState(true);
+                    } else if (snapshot.hasError) {
+                      return _buildErrorState(snapshot.error.toString());
+                    } else if (!snapshot.hasData) {
+                      return _buildEmptyState();
+                    } else {
+                      if (snapshot.data != null) {
+                        streamList.value
+                            .add(hive.Video.fromVideo(snapshot.data!));
+                      }
+                      return _buildServerList();
+                    }
+                  },
+                )
+              : FutureBuilder<List<Video>>(
+                  future: sourceController.activeSource.value!.methods
+                      .getVideoList(
+                          DEpisode(episodeNumber: ep.number, url: ep.link)),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return _buildScrapingLoadingState(true);
+                    } else if (snapshot.hasError) {
+                      return _buildErrorState(snapshot.error.toString());
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return _buildEmptyState();
+                    } else {
+                      streamList.value = snapshot.data
+                              ?.map((e) => hive.Video.fromVideo(e))
+                              .toList() ??
+                          [];
+                      return _buildServerList();
+                    }
+                  },
+                ),
         );
       },
     );

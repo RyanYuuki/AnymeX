@@ -456,7 +456,8 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
     final currentType = normalizeSubtitleOutlineType(
         settings.playerSettings.value.subtitleOutlineType);
     if (currentType != settings.playerSettings.value.subtitleOutlineType) {
-      settings.playerSettings.update((s) => s?.subtitleOutlineType = currentType);
+      settings.playerSettings
+          .update((s) => s?.subtitleOutlineType = currentType);
       PlayerSettingsKeys.subtitleOutlineType.set(currentType);
     }
 
@@ -624,24 +625,23 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                   ),
                                   CustomSliderTile(
                                     icon: Icons.timer_outlined,
-                                    title: 'Cache Seconds',
+                                    title: 'Cache Minutes',
                                     description:
-                                        'Read-ahead duration in seconds',
+                                        'Read-ahead duration in Minutes',
                                     sliderValue:
-                                        ((mpvCore['cacheSeconds'] as num?) ??
-                                                30)
+                                        ((mpvCore['cacheMinutes'] as num?) ?? 5)
                                             .toDouble(),
                                     min: 0,
-                                    max: 120,
-                                    divisions: 24,
-                                    label: ((mpvCore['cacheSeconds'] as num?) ??
-                                            30)
-                                        .toInt()
-                                        .toString(),
+                                    max: 60,
+                                    divisions: 60,
+                                    label:
+                                        ((mpvCore['cacheMinutes'] as num?) ?? 5)
+                                            .toInt()
+                                            .toString(),
                                     onChanged: (value) {
                                       PlayerCoreVisualSettings
                                           .setMpvCoreSetting(
-                                              'cacheSeconds', value.round());
+                                              'cacheMinutes', value.round());
                                       setState(() {});
                                     },
                                   ),
@@ -1188,8 +1188,8 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                         outlineWidth: settings
                                             .subtitleOutlineWidth
                                             .toDouble(),
-                                        outlineColor: colorOptions[
-                                                settings.subtitleOutlineColor] ??
+                                        outlineColor: colorOptions[settings
+                                                .subtitleOutlineColor] ??
                                             colorOptions['Black']!,
                                       ),
                                     ),

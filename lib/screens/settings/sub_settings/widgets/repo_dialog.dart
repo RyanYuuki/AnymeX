@@ -1,22 +1,20 @@
 import 'dart:io';
 
-import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
+import 'package:anymex/utils/extensions.dart';
+import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex_extension_bridge/Models/Source.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
-import 'package:dartotsu_extension_bridge/Models/Source.dart';
-import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 class GitHubRepoDialog extends StatefulWidget {
   final ItemType type;
-  final ExtensionType extType;
+  final String managerId;
 
   const GitHubRepoDialog({
     super.key,
     required this.type,
-    required this.extType,
+    required this.managerId,
   });
 
   @override
@@ -27,7 +25,7 @@ class GitHubRepoDialog extends StatefulWidget {
   }) {
     showDialog(
       context: context,
-      builder: (context) => GitHubRepoDialog(type: type, extType: extType),
+      builder: (context) => GitHubRepoDialog(type: type, managerId: managerId),
     );
   }
 }
@@ -43,13 +41,6 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _focusNode.requestFocus();
-      setState(() {
-        _controller.text = widget.type == ItemType.anime
-            ? sourceController.activeAnimeRepo
-            : widget.type == ItemType.manga
-                ? sourceController.activeMangaRepo
-                : sourceController.activeNovelRepo;
-      });
     });
   }
 
@@ -60,17 +51,16 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
     super.dispose();
   }
 
-  String? _validateUrl(String url) {
-    if (url.isEmpty) {
-      return 'Please enter a GitHub repository URL';
+  String? _validateUrl(String text) {
+    if (text.trim().isEmpty) {
+      return 'Please enter at least one GitHub repository URL';
     }
-
     return null;
   }
 
   void _handleSubmit() async {
-    final url = _controller.text.trim();
-    final error = _validateUrl(url);
+    final text = _controller.text.trim();
+    final error = _validateUrl(text);
 
     setState(() {
       _errorMessage = error;
@@ -81,24 +71,23 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
         _isLoading = true;
       });
 
-      await Future.delayed(const Duration(milliseconds: 500));
+      try {
+        final urls = text
+            .split(RegExp(r'[\n,]'))
+            .map((u) => u.trim())
+            .where((u) => u.isNotEmpty)
+            .toList();
 
-      switch (widget.type) {
-        case ItemType.anime:
-          sourceController.setAnimeRepo(url, widget.extType);
-          break;
+        await Extensions().addRepos(widget.type, urls, widget.managerId);
 
-        case ItemType.manga:
-          sourceController.setMangaRepo(url, widget.extType);
-          break;
-
-        case ItemType.novel:
-          sourceController.activeNovelRepo = url;
-          break;
-      }
-
-      if (mounted) {
-        Navigator.of(context).pop();
+        if (mounted) {
+          Navigator.of(context).pop();
+        }
+      } catch (e) {
+        setState(() {
+          _errorMessage = 'Failed to add repositories: $e';
+          _isLoading = false;
+        });
       }
     }
   }
@@ -212,8 +201,7 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
                         decoration: InputDecoration(
                             hintText: 'https://github.com/username/repo.json',
                             hintStyle: TextStyle(
-                              color:
-                                  colorScheme.onSurfaceVariant.opaque(0.6),
+                              color: colorScheme.onSurfaceVariant.opaque(0.6),
                               fontSize: 14,
                             ),
                             prefixIcon: Icon(
