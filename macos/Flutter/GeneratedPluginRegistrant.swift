@@ -5,7 +5,7 @@
 import FlutterMacOS
 import Foundation
 
-import anymex_extension_bridge
+import anymex_extension_runtime_bridge
 import app_links
 import audio_session
 import desktop_webview_window
@@ -38,7 +38,7 @@ import window_manager
 import window_to_front
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
-  AnymexExtensionBridgePlugin.register(with: registry.registrar(forPlugin: "AnymexExtensionBridgePlugin"))
+  AnymexExtensionRuntimeBridgePlugin.register(with: registry.registrar(forPlugin: "AnymexExtensionRuntimeBridgePlugin"))
   AppLinksMacosPlugin.register(with: registry.registrar(forPlugin: "AppLinksMacosPlugin"))
   AudioSessionPlugin.register(with: registry.registrar(forPlugin: "AudioSessionPlugin"))
   DesktopWebviewWindowPlugin.register(with: registry.registrar(forPlugin: "DesktopWebviewWindowPlugin"))

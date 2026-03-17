@@ -7,13 +7,12 @@ import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/carousel/carousel_types.dart';
-import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/media_items/media_peek_popup.dart';
-import 'package:anymex_extension_bridge/Models/Source.dart';
+import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -47,12 +46,11 @@ class _BigCarouselClassicState extends State<BigCarouselClassic> {
       return;
     }
 
-  
     if (delta.dx != 0) {
       _scrollDelta -= delta.dx;
     }
 
-    if (_scrollDelta.abs() > 50) { 
+    if (_scrollDelta.abs() > 50) {
       if (_scrollDelta > 0) {
         controller.nextPage();
       } else {
@@ -78,7 +76,6 @@ class _BigCarouselClassicState extends State<BigCarouselClassic> {
               }
             },
             onPointerPanZoomUpdate: (event) {
-               
               _handleScroll(event.panDelta, event.kind);
             },
             child: AnymexOnTapAdv(
@@ -109,176 +106,181 @@ class _BigCarouselClassicState extends State<BigCarouselClassic> {
               },
               scale: 1,
               child: ScrollConfiguration(
-              behavior: ScrollConfiguration.of(context).copyWith(
-                dragDevices: {
-                  PointerDeviceKind.touch,
-                  PointerDeviceKind.mouse,
-                  PointerDeviceKind.trackpad,
-                },
-              ),
-              child: CarouselSlider.builder(
-                itemCount: newData.length,
-                disableGesture: false,
-                itemBuilder: (context, index, realIndex) {
-                  final anime = newData[index];
-                  final String posterUrl = anime.cover!;
-                  final title = anime.title;
-                  final randNum = Random().nextInt(100000);
-                  final tag = '$randNum$index${anime.title}';
-                  String extraData = anime.rating.toString();
+                behavior: ScrollConfiguration.of(context).copyWith(
+                  dragDevices: {
+                    PointerDeviceKind.touch,
+                    PointerDeviceKind.mouse,
+                    PointerDeviceKind.trackpad,
+                  },
+                ),
+                child: CarouselSlider.builder(
+                  itemCount: newData.length,
+                  disableGesture: false,
+                  itemBuilder: (context, index, realIndex) {
+                    final anime = newData[index];
+                    final String posterUrl = anime.cover!;
+                    final title = anime.title;
+                    final randNum = Random().nextInt(100000);
+                    final tag = '$randNum$index${anime.title}';
+                    String extraData = anime.rating.toString();
 
-                  return Stack(
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          GestureDetector(
-                            onTap: () => navigateToDetailsPage(anime, tag),
-                            onLongPress: () {
-                              final itemType = widget.carouselType == CarouselType.manga
-                                  ? ItemType.manga
-                                  : ItemType.anime;
-                              if (anime.userStatus == null || anime.userStatus!.isEmpty) {
-                                MediaPeekPopup.show(context, anime, itemType, tag);
-                              }
-                            },
-                            child: _buildItem(context, tag, posterUrl),
-                          ),
-                          const SizedBox(height: 10),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 10.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    title,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                const SizedBox(width: 20),
-                                Container(
-                                  padding: const EdgeInsets.all(5),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(
-                                      (8.multiplyRadius()),
-                                    ),
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .secondaryContainer,
-                                  ),
-                                  clipBehavior: Clip.antiAlias,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Iconsax.star5,
-                                        size: 16,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                      ),
-                                      const SizedBox(width: 3),
-                                      Text(
-                                        extraData,
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                          fontFamily: "Poppins-Bold",
-                                        ),
-                                      ),
-                                      const SizedBox(width: 3),
-                                    ],
-                                  ),
-                                ),
-                              ],
+                    return Stack(
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            GestureDetector(
+                              onTap: () => navigateToDetailsPage(anime, tag),
+                              onLongPress: () {
+                                final itemType =
+                                    widget.carouselType == CarouselType.manga
+                                        ? ItemType.manga
+                                        : ItemType.anime;
+                                if (anime.userStatus == null ||
+                                    anime.userStatus!.isEmpty) {
+                                  MediaPeekPopup.show(
+                                      context, anime, itemType, tag);
+                                }
+                              },
+                              child: _buildItem(context, tag, posterUrl),
                             ),
-                          ),
-                          const SizedBox(height: 10),
-                          Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 8),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 8.0),
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .surface
-                                  .opaque(0.5),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: GestureDetector(
-                              onTap: () => _showDescriptionModal(
-                                  context, anime.description),
+                            const SizedBox(height: 10),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10.0),
                               child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Expanded(
-                                    child: AnymexText(
-                                      text: anime.description
-                                              .replaceAll(
-                                                  RegExp(r'<[^>]*>'), '')
-                                              .replaceAll(RegExp(r'\s+'), ' ')
-                                              .trim()
-                                              .isNotEmpty
-                                          ? anime.description
-                                              .replaceAll(
-                                                  RegExp(r'<[^>]*>'), '')
-                                              .replaceAll(RegExp(r'\s+'), ' ')
-                                              .trim()
-                                          : 'Tap to read description',
-                                      size: 12,
-                                      maxLines: 2,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurface
-                                          .opaque(0.7),
+                                    child: Text(
+                                      title,
                                       overflow: TextOverflow.ellipsis,
-                                      stripHtml: true,
                                     ),
                                   ),
-                                  const SizedBox(width: 8),
-                                  Icon(
-                                    Icons.info_outline,
-                                    size: 16,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .primary
-                                        .opaque(0.7),
+                                  const SizedBox(width: 20),
+                                  Container(
+                                    padding: const EdgeInsets.all(5),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(
+                                        (8.multiplyRadius()),
+                                      ),
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondaryContainer,
+                                    ),
+                                    clipBehavior: Clip.antiAlias,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Iconsax.star5,
+                                          size: 16,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                        ),
+                                        const SizedBox(width: 3),
+                                        Text(
+                                          extraData,
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            fontFamily: "Poppins-Bold",
+                                          ),
+                                        ),
+                                        const SizedBox(width: 3),
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
-                          )
-                        ],
-                      ),
-                    ],
-                  );
-                },
-                options: CarouselOptions(
-                  height: getResponsiveSize(context,
-                      mobileSize: 270, desktopSize: 450),
-                  viewportFraction: 1,
-                  initialPage: 0,
-                  enableInfiniteScroll: true,
-                  reverse: false,
-                  autoPlay: true,
-                  autoPlayInterval: const Duration(seconds: 5),
-                  autoPlayAnimationDuration: const Duration(milliseconds: 800),
-                  autoPlayCurve: Curves.fastOutSlowIn,
-                  enlargeCenterPage: false,
-                  scrollDirection: Axis.horizontal,
-                  onPageChanged: (index, reason) {
-                    setState(() {
-                      activeIndex = index;
-                    });
+                            const SizedBox(height: 10),
+                            Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 8),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0, vertical: 8.0),
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .surface
+                                    .opaque(0.5),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: GestureDetector(
+                                onTap: () => _showDescriptionModal(
+                                    context, anime.description),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: AnymexText(
+                                        text: anime.description
+                                                .replaceAll(
+                                                    RegExp(r'<[^>]*>'), '')
+                                                .replaceAll(RegExp(r'\s+'), ' ')
+                                                .trim()
+                                                .isNotEmpty
+                                            ? anime.description
+                                                .replaceAll(
+                                                    RegExp(r'<[^>]*>'), '')
+                                                .replaceAll(RegExp(r'\s+'), ' ')
+                                                .trim()
+                                            : 'Tap to read description',
+                                        size: 12,
+                                        maxLines: 2,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurface
+                                            .opaque(0.7),
+                                        overflow: TextOverflow.ellipsis,
+                                        stripHtml: true,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Icon(
+                                      Icons.info_outline,
+                                      size: 16,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary
+                                          .opaque(0.7),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ],
+                    );
                   },
+                  options: CarouselOptions(
+                    height: getResponsiveSize(context,
+                        mobileSize: 270, desktopSize: 450),
+                    viewportFraction: 1,
+                    initialPage: 0,
+                    enableInfiniteScroll: true,
+                    reverse: false,
+                    autoPlay: true,
+                    autoPlayInterval: const Duration(seconds: 5),
+                    autoPlayAnimationDuration:
+                        const Duration(milliseconds: 800),
+                    autoPlayCurve: Curves.fastOutSlowIn,
+                    enlargeCenterPage: false,
+                    scrollDirection: Axis.horizontal,
+                    onPageChanged: (index, reason) {
+                      setState(() {
+                        activeIndex = index;
+                      });
+                    },
+                  ),
+                  carouselController: controller,
                 ),
-                carouselController: controller,
               ),
-            ),
             ),
           ),
           const SizedBox(height: 16),

@@ -1,10 +1,9 @@
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
-import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:anymex_extension_bridge/Models/Source.dart';
+import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -61,9 +60,10 @@ class LibraryController extends GetxController {
         DynamicKeys.libraryLastListIndex.get<int>(type.value.name, 0);
     selectedListIndex.value = savedListIndex;
 
-    currentSort = SortType.values[
-        DynamicKeys.librarySortType.get<int>(type.value.name, SortType.lastAdded.index)];
-    isAscending = DynamicKeys.librarySortOrder.get<bool>(type.value.name, false);
+    currentSort = SortType.values[DynamicKeys.librarySortType
+        .get<int>(type.value.name, SortType.lastAdded.index)];
+    isAscending =
+        DynamicKeys.librarySortOrder.get<bool>(type.value.name, false);
     gridCount.value = DynamicKeys.libraryGridSize.get<int>(type.value.name, 0);
   }
 

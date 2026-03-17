@@ -6,8 +6,8 @@ import 'package:anymex/screens/anime/watch/controls/themes/setup/player_control_
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:anymex_extension_bridge/ExtensionManager.dart';
-import 'package:anymex_extension_bridge/Models/Source.dart';
+import 'package:anymex_extension_runtime_bridge/ExtensionManager.dart';
+import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:get/get.dart';
 
 class Deeplink {

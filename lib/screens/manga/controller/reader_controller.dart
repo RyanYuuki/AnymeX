@@ -12,7 +12,7 @@ import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/services/volume_key_handler.dart';
 import 'package:anymex/utils/logger.dart';
-import 'package:anymex_extension_bridge/anymex_extension_bridge.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -92,7 +92,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   });
 
   final SourceController sourceController = Get.find<SourceController>();
-  final OfflineStorageController offlineStorageController = Get.find<OfflineStorageController>();
+  final OfflineStorageController offlineStorageController =
+      Get.find<OfflineStorageController>();
   final RxInt currentPageIndex = 1.obs;
   final RxDouble pageWidthMultiplier = 1.0.obs;
   final RxDouble scrollSpeedMultiplier = 1.0.obs;
@@ -101,8 +102,10 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   ItemPositionsListener? itemPositionsListener;
   final TapZoneRepository _tapRepo = TapZoneRepository();
   final Rx<TapZoneLayout> pagedProfile = TapZoneLayout.defaultPaged.obs;
-  final Rx<TapZoneLayout> pagedVerticalProfile = TapZoneLayout.defaultPagedVertical.obs;
-  final Rx<TapZoneLayout> webtoonHorizontalProfile = TapZoneLayout.defaultWebtoonHorizontal.obs;
+  final Rx<TapZoneLayout> pagedVerticalProfile =
+      TapZoneLayout.defaultPagedVertical.obs;
+  final Rx<TapZoneLayout> webtoonHorizontalProfile =
+      TapZoneLayout.defaultWebtoonHorizontal.obs;
   final Rx<TapZoneLayout> webtoonProfile = TapZoneLayout.defaultWebtoon.obs;
   final RxBool tapZonesEnabled = true.obs;
   ScrollOffsetListener? scrollOffsetListener;
@@ -115,7 +118,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   RxInt preloadPages = 5.obs;
   RxBool showPageIndicator = false.obs;
   final Rx<MangaPageViewMode> readingLayout = MangaPageViewMode.continuous.obs;
-  final Rx<MangaPageViewDirection> readingDirection = MangaPageViewDirection.down.obs;
+  final Rx<MangaPageViewDirection> readingDirection =
+      MangaPageViewDirection.down.obs;
   final Rx<DualPageMode> dualPageMode = DualPageMode.off.obs;
   final RxBool cropImages = false.obs;
   final RxBool volumeKeysEnabled = false.obs;
@@ -699,10 +703,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
     customBrightnessEnabled.value =
         ReaderKeys.customBrightnessEnabled.get<bool>(false);
-    customBrightnessValue.value =
-        ReaderKeys.customBrightnessValue.get<int>(0);
-    colorFilterEnabled.value =
-        ReaderKeys.colorFilterEnabled.get<bool>(false);
+    customBrightnessValue.value = ReaderKeys.customBrightnessValue.get<int>(0);
+    colorFilterEnabled.value = ReaderKeys.colorFilterEnabled.get<bool>(false);
     colorFilterValue.value = ReaderKeys.colorFilterValue.get<int>(0);
     colorFilterMode.value = ReaderKeys.colorFilterMode.get<int>(0);
     grayscaleEnabled.value = ReaderKeys.grayscaleEnabled.get<bool>(false);
@@ -754,8 +756,10 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     ReaderKeys.invertColorsEnabled.set(invertColorsEnabled.value);
     ReaderKeys.readerTheme.set(readerTheme.value);
     ReaderKeys.keepScreenOn.set(keepScreenOn.value);
-    ReaderKeys.alwaysShowChapterTransition.set(alwaysShowChapterTransition.value);
-    ReaderKeys.longPressPageActionsEnabled.set(longPressPageActionsEnabled.value);
+    ReaderKeys.alwaysShowChapterTransition
+        .set(alwaysShowChapterTransition.value);
+    ReaderKeys.longPressPageActionsEnabled
+        .set(longPressPageActionsEnabled.value);
     ReaderKeys.autoWebtoonMode.set(autoWebtoonMode.value);
     ReaderKeys.displayRefreshEnabled.set(displayRefreshEnabled.value);
     ReaderKeys.displayRefreshDurationMs.set(displayRefreshDurationMs.value);
@@ -1269,7 +1273,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     displayRefreshEnabled.value = !displayRefreshEnabled.value;
     savePreferences();
   }
-  
+
   void maybeShowChapterTransition(bool next) {
     final current = currentChapter.value;
     if (current == null) return;
@@ -1300,6 +1304,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       chapterNavigator(next);
     }
   }
+
   void dismissTransition() {
     showingTransition.value = false;
     chapterNavigator(transitionIsNext.value);

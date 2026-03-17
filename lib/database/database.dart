@@ -3,7 +3,8 @@ import 'dart:io';
 import 'package:anymex/database/isar_models/custom_list.dart';
 import 'package:anymex/database/isar_models/key_value.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
-import 'package:anymex_extension_bridge/anymex_extension_bridge.dart' hide isar;
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart'
+    hide isar;
 import 'package:isar_community/isar.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';

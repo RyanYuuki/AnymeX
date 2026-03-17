@@ -5,10 +5,10 @@ packages:
     dependency: transitive
     description:
       name: _fe_analyzer_shared
-      sha256: c209688d9f5a5f26b2fb47a188131a6fb9e876ae9e47af3737c0b4f58a93470d
+      sha256: da0d9209ca76bde579f2da330aeb9df62b6319c834fa7baae052021b0462401f
       url: "https://pub.dev"
     source: hosted
-    version: "91.0.0"
+    version: "85.0.0"
   _flutterfire_internals:
     dependency: transitive
     description:
@@ -29,10 +29,10 @@ packages:
     dependency: transitive
     description:
       name: analyzer
-      sha256: f51c8499b35f9b26820cfe914828a6a98a94efd5cc78b37bb7d03debae3a1d08
+      sha256: "974859dc0ff5f37bc4313244b3218c791810d03ab3470a579580279ba971a48d"
       url: "https://pub.dev"
     source: hosted
-    version: "8.4.1"
+    version: "7.7.1"
   ansicolor:
     dependency: transitive
     description:
@@ -49,13 +49,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.13.2"
-  anymex_extension_bridge:
+  anymex_extension_runtime_bridge:
     dependency: "direct main"
     description:
-      path: AnymeXExtensionBridge
-      relative: true
-    source: path
-    version: "0.0.5"
+      path: "."
+      ref: HEAD
+      resolved-ref: "4334334851d5631367a759ba23629795a834a820"
+      url: "https://github.com/RyanYuuki/AnymeXExtensionRuntimeBridge.git"
+    source: git
+    version: "1.0.0"
   app_links:
     dependency: "direct main"
     description:
@@ -272,14 +274,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.1.1"
-  chalkdart:
-    dependency: transitive
-    description:
-      name: chalkdart
-      sha256: "7ffc6bd39c81453fb9ba8dbce042a9c960219b75ea1c07196a7fa41c2fab9e86"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.5"
   change_app_package_name:
     dependency: "direct dev"
     description:
@@ -292,10 +286,10 @@ packages:
     dependency: transitive
     description:
       name: characters
-      sha256: faf38497bda5ead2a8c7615f4f7939df04333478bf32e4173fcb06d428b5716b
+      sha256: f71061c654a3380576a52b451dd5532377954cf9dbd272a78fc8479606670803
       url: "https://pub.dev"
     source: hosted
-    version: "1.4.1"
+    version: "1.4.0"
   checked_yaml:
     dependency: transitive
     description:
@@ -396,18 +390,18 @@ packages:
     dependency: transitive
     description:
       name: d4rt
-      sha256: "4c178f741141592d60e4037c3205f9c081a3b32edc1061029a43667dff409a36"
+      sha256: "1eb626145e2ed97332f9e6e842e626f973d3969ce30e2794efb4744bd8aeba63"
       url: "https://pub.dev"
     source: hosted
-    version: "0.2.2"
+    version: "0.1.7"
   dart_style:
     dependency: transitive
     description:
       name: dart_style
-      sha256: a9c30492da18ff84efe2422ba2d319a89942d93e58eb0b73d32abe822ef54b7b
+      sha256: "8a0e5fba27e8ee025d2ffb4ee820b4e6e2cf5e4246a6b1a477eb66866947e0bb"
       url: "https://pub.dev"
     source: hosted
-    version: "3.1.3"
+    version: "3.1.1"
   dartx:
     dependency: transitive
     description:
@@ -625,14 +619,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
-  fjs:
-    dependency: transitive
-    description:
-      name: fjs
-      sha256: ff2d6e72a7aec24a4464bb3bc2382bec6d8157e26370fa914a277f3133664207
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.1"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -822,10 +808,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_tts
-      sha256: cbb3fd43b946e62398560235469e6113e4fe26c40eab1b7cb5e7c417503fb3a8
+      sha256: ce5eb209b40e95f2f4a1397116c87ab2fcdff32257d04ed7a764e75894c03775
       url: "https://pub.dev"
     source: hosted
-    version: "3.8.5"
+    version: "4.2.5"
   flutter_web_auth_2:
     dependency: "direct main"
     description:
@@ -863,14 +849,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.15.2"
-  freezed_annotation:
-    dependency: transitive
-    description:
-      name: freezed_annotation
-      sha256: "7294967ff0a6d98638e7acb774aac3af2550777accd8149c90af5b014e6d44d8"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.1.0"
   frontend_server_client:
     dependency: transitive
     description:
@@ -1195,26 +1173,26 @@ packages:
     dependency: transitive
     description:
       name: leak_tracker
-      sha256: "33e2e26bdd85a0112ec15400c8cbffea70d0f9c3407491f672a2fad47915e2de"
+      sha256: "6bb818ecbdffe216e81182c2f0714a2e62b593f4a4f13098713ff1685dfb6ab0"
       url: "https://pub.dev"
     source: hosted
-    version: "11.0.2"
+    version: "10.0.9"
   leak_tracker_flutter_testing:
     dependency: transitive
     description:
       name: leak_tracker_flutter_testing
-      sha256: "1dbc140bb5a23c75ea9c4811222756104fbcd1a27173f0c34ca01e16bea473c1"
+      sha256: f8b613e7e6a13ec79cfdc0e97638fddb3ab848452eff057653abd3edba760573
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.10"
+    version: "3.0.9"
   leak_tracker_testing:
     dependency: transitive
     description:
       name: leak_tracker_testing
-      sha256: "8d5a2d49f4a66b49744b23b018848400d23e54caf9463f4eb20df3eb8acb2eb1"
+      sha256: "6ba465d5d76e67ddf503e1161d1f4a6bc42306f9d66ca1e8f079a47290fb06d3"
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.2"
+    version: "3.0.1"
   lints:
     dependency: transitive
     description:
@@ -1251,18 +1229,18 @@ packages:
     dependency: transitive
     description:
       name: matcher
-      sha256: dc0b7dc7651697ea4ff3e69ef44b0407ea32c487a39fff6a4004fa585e901861
+      sha256: dc58c723c3c24bf8d3e2d3ad3f2f9d7bd9cf43ec6feaa64181775e60190153f2
       url: "https://pub.dev"
     source: hosted
-    version: "0.12.19"
+    version: "0.12.17"
   material_color_utilities:
     dependency: transitive
     description:
       name: material_color_utilities
-      sha256: "9c337007e82b1889149c82ed242ed1cb24a66044e30979c44912381e9be4c48b"
+      sha256: f7142bb1154231d7ea5f96bc7bde4bda2a0945d2806bb11670e30b850d56bdec
       url: "https://pub.dev"
     source: hosted
-    version: "0.13.0"
+    version: "0.11.1"
   material_new_shapes:
     dependency: transitive
     description:
@@ -1275,10 +1253,10 @@ packages:
     dependency: "direct main"
     description:
       name: material_symbols_icons
-      sha256: b1342194e859b2774f920b484c46f54a37a845488e23d570385fbe3ede92ee9f
+      sha256: c62b15f2b3de98d72cbff0148812f5ef5159f05e61fc9f9a089ec2bb234df082
       url: "https://pub.dev"
     source: hosted
-    version: "4.2867.0"
+    version: "4.2906.0"
   media_kit:
     dependency: "direct main"
     description:
@@ -1292,17 +1270,17 @@ packages:
     dependency: transitive
     description:
       path: "libs/android/media_kit_libs_android_video"
-      ref: "62b08e33590cba8fba4797eaaa1e95b514adb437"
-      resolved-ref: "62b08e33590cba8fba4797eaaa1e95b514adb437"
+      ref: HEAD
+      resolved-ref: ef6279dddf85934faed673a41821c6dc5be59e5e
       url: "https://github.com/Schnitzel5/media-kit.git"
     source: git
-    version: "1.3.7"
+    version: "1.3.8"
   media_kit_libs_ios_video:
     dependency: transitive
     description:
       path: "libs/ios/media_kit_libs_ios_video"
-      ref: "62b08e33590cba8fba4797eaaa1e95b514adb437"
-      resolved-ref: "62b08e33590cba8fba4797eaaa1e95b514adb437"
+      ref: HEAD
+      resolved-ref: ef6279dddf85934faed673a41821c6dc5be59e5e
       url: "https://github.com/Schnitzel5/media-kit.git"
     source: git
     version: "1.1.4"
@@ -1310,8 +1288,8 @@ packages:
     dependency: transitive
     description:
       path: "libs/linux/media_kit_libs_linux"
-      ref: "62b08e33590cba8fba4797eaaa1e95b514adb437"
-      resolved-ref: "62b08e33590cba8fba4797eaaa1e95b514adb437"
+      ref: HEAD
+      resolved-ref: ef6279dddf85934faed673a41821c6dc5be59e5e
       url: "https://github.com/Schnitzel5/media-kit.git"
     source: git
     version: "1.2.1"
@@ -1319,8 +1297,8 @@ packages:
     dependency: transitive
     description:
       path: "libs/macos/media_kit_libs_macos_video"
-      ref: "62b08e33590cba8fba4797eaaa1e95b514adb437"
-      resolved-ref: "62b08e33590cba8fba4797eaaa1e95b514adb437"
+      ref: HEAD
+      resolved-ref: ef6279dddf85934faed673a41821c6dc5be59e5e
       url: "https://github.com/Schnitzel5/media-kit.git"
     source: git
     version: "1.1.4"
@@ -1337,8 +1315,8 @@ packages:
     dependency: transitive
     description:
       path: "libs/windows/media_kit_libs_windows_video"
-      ref: "62b08e33590cba8fba4797eaaa1e95b514adb437"
-      resolved-ref: "62b08e33590cba8fba4797eaaa1e95b514adb437"
+      ref: HEAD
+      resolved-ref: ef6279dddf85934faed673a41821c6dc5be59e5e
       url: "https://github.com/Schnitzel5/media-kit.git"
     source: git
     version: "1.0.11"
@@ -1355,10 +1333,10 @@ packages:
     dependency: transitive
     description:
       name: meta
-      sha256: "23f08335362185a5ea2ad3a4e597f1375e78bce8a040df5c600c8d3552ef2394"
+      sha256: e3641ec5d63ebf0d9b41bd43201a66e3fc79a65db5f61fc181f04cd27aab950c
       url: "https://pub.dev"
     source: hosted
-    version: "1.17.0"
+    version: "1.16.0"
   mime:
     dependency: transitive
     description:
@@ -1960,10 +1938,10 @@ packages:
     dependency: transitive
     description:
       name: test_api
-      sha256: "8161c84903fd860b26bfdefb7963b3f0b68fee7adea0f59ef805ecca346f0c7a"
+      sha256: fb31f383e2ee25fbbfe06b40fe21e1e458d14080e3c67e7ba0acfde4df4e0bbd
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.10"
+    version: "0.7.4"
   time:
     dependency: transitive
     description:
@@ -2120,10 +2098,10 @@ packages:
     dependency: transitive
     description:
       name: vector_math
-      sha256: d530bd74fea330e6e364cda7a85019c434070188383e1cd8d9777ee586914c5b
+      sha256: "80b3257d1492ce4d091729e3a67a60407d227c27241d6927be0130c98e741803"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.0"
+    version: "2.1.4"
   vibration:
     dependency: "direct main"
     description:
@@ -2365,5 +2343,5 @@ packages:
     source: hosted
     version: "3.1.3"
 sdks:
-  dart: ">=3.9.0 <4.0.0"
+  dart: ">=3.8.1 <4.0.0"
   flutter: ">=3.29.0"
