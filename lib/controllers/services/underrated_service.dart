@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/utils/logger.dart';
@@ -9,7 +8,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
 class UnderratedEntry {
-  final int anilistId;
+  final int? anilistId;
   final int? malId;
   final String? title;
   final int? anilistUserId;
@@ -18,7 +17,7 @@ class UnderratedEntry {
   final String? reason;
 
   UnderratedEntry({
-    required this.anilistId,
+    this.anilistId,
     this.malId,
     this.title,
     this.anilistUserId,
@@ -29,7 +28,7 @@ class UnderratedEntry {
 
   factory UnderratedEntry.fromJson(Map<String, dynamic> json) {
     return UnderratedEntry(
-      anilistId: json['anilist_id'] ?? json['id'] ?? 0,
+      anilistId: json['anilist_id'] ?? json['id'],
       malId: json['mal_id'],
       title: json['title'],
       anilistUserId: json['anilist_user_id'],
@@ -62,9 +61,13 @@ class UnderratedService extends GetxController {
   ServicesType? _cachedServiceType;
 
   List<UnderratedMedia> getFilteredAnimes() {
+    if (underratedAnimes.isEmpty) return [];
     try {
-      final anilistAuth = Get.find<AnilistAuth>();
-      final userList = anilistAuth.animeList;
+      final serviceHandler = Get.find<ServiceHandler>();
+      final onlineService = serviceHandler.onlineService;
+      final userList = onlineService.animeList;
+
+      if (userList.isEmpty) return underratedAnimes.toList();
 
       final filteredIds = userList
           .where((item) => _filteredStatuses.contains(item.watchingStatus?.toUpperCase()))
@@ -78,9 +81,13 @@ class UnderratedService extends GetxController {
   }
 
   List<UnderratedMedia> getFilteredMangas() {
+    if (underratedMangas.isEmpty) return [];
     try {
-      final anilistAuth = Get.find<AnilistAuth>();
-      final userList = anilistAuth.mangaList;
+      final serviceHandler = Get.find<ServiceHandler>();
+      final onlineService = serviceHandler.onlineService;
+      final userList = onlineService.mangaList;
+
+      if (userList.isEmpty) return underratedMangas.toList();
 
       final filteredIds = userList
           .where((item) => _filteredStatuses.contains(item.watchingStatus?.toUpperCase()))
@@ -255,7 +262,7 @@ class UnderratedService extends GetxController {
       if (malUserId != null) {
         fetchedAuthor = await _fetchMALUsername(malUserId);
       }
-    } else if (anilistId != null) {
+    } else if (anilistId != null && anilistId != 0) {
       media = await _fetchMediaFromAnilist(anilistId, isManga);
       if (anilistUserId != null) {
         fetchedAuthor = await _fetchAnilistUsername(anilistUserId);
@@ -349,10 +356,14 @@ class UnderratedService extends GetxController {
   }
 
   Future<void> fetchAll() async {
-    await Future.wait([
-      fetchUnderratedAnime(),
-      fetchUnderratedManga(),
-    ]);
+    try {
+      await Future.wait([
+        fetchUnderratedAnime(),
+        fetchUnderratedManga(),
+      ]);
+    } catch (e) {
+      Logger.i('Error in underrated fetchAll: $e');
+    }
   }
 
   Future<void> refresh() async {

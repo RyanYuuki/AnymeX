@@ -163,9 +163,10 @@ void initDeepLinkListener() async {
 
 
 void _initializeGetxController() async {
+  Get.put(Settings()); 
   Get.put(OfflineStorageController());
   Get.put(AnilistAuth());
-  Get.put(UnderratedService()); // Register before AnilistData
+  Get.put(UnderratedService()); 
   Get.put(AnilistData());
   Get.put(SimklService());
   Get.put(MalService());
@@ -173,7 +174,6 @@ void _initializeGetxController() async {
   if (!Get.isRegistered<SourceController>()) {
     Get.put(SourceController());
   }
-  Get.put(Settings());
   Get.put(ServiceHandler());
   Get.put(GreetingController());
   Get.put(CommentumService());
