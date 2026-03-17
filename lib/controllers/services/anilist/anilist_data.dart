@@ -33,7 +33,7 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
+import 'package:anymex_extension_bridge/anymex_extension_bridge.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -633,7 +633,8 @@ averageScore
         .removeDupes();
   }
 
-  static Future<(Map<String, List<Media>>, int)> fetchStudioDetails(int studioId) async {
+  static Future<(Map<String, List<Media>>, int)> fetchStudioDetails(
+      int studioId) async {
     const String url = 'https://graphql.anilist.co';
     final token = AuthKeys.authToken.get<String?>();
     final headers = {
@@ -695,7 +696,7 @@ averageScore
       for (final edge in edges) {
         final node = edge['node'];
         if (node == null) continue;
-        
+
         final mediaId = node['id']?.toString();
         if (mediaId == null || seenMediaIds.contains(mediaId)) continue;
         seenMediaIds.add(mediaId);
@@ -719,15 +720,13 @@ averageScore
       yearMedia['CANCELLED'] = cancelled;
     }
 
-   
     final sortedKeys = yearMedia.keys.toList()
       ..sort((a, b) {
-      
         if (a == 'TBA') return -1;
         if (b == 'TBA') return 1;
         if (a == 'CANCELLED') return 1;
         if (b == 'CANCELLED') return -1;
-        
+
         // Parse the years normally
         final yearA = int.tryParse(a) ?? 0;
         final yearB = int.tryParse(b) ?? 0;

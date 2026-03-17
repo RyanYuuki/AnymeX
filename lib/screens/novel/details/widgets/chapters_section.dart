@@ -9,7 +9,7 @@ import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/animation/animations.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
-import 'package:dartotsu_extension_bridge/Models/DEpisode.dart';
+import 'package:anymex_extension_bridge/Models/DEpisode.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

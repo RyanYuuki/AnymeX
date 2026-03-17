@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/database.dart';
 import 'package:anymex/screens/extensions/ExtensionList.dart';
 import 'package:anymex/screens/extensions/ExtensionTesting/extension_test_page.dart';
-import 'package:anymex/screens/extensions/widgets/repo_sheet.dart';
+import 'package:anymex/screens/extensions/widgets/plugin_loader.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_extensions.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/AlertDialogBuilder.dart';
@@ -12,8 +15,8 @@ import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart'
-    hide Extension, ExtensionList;
+import 'package:anymex_extension_bridge/anymex_extension_bridge.dart'
+    hide Extension;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -29,51 +32,29 @@ class ExtensionScreen extends StatefulWidget {
 }
 
 class _ExtensionScreenState extends State<ExtensionScreen>
-    with TickerProviderStateMixin {
+    with SingleTickerProviderStateMixin {
   late TabController _tabBarController;
   final _textEditingController = TextEditingController();
   final _searchQuery = ''.obs;
   final _selectedLanguage = 'all'.obs;
-  final _extensionCounts = <String, int>{}.obs;
 
   Timer? _searchDebounce;
-  List<Worker>? _workers;
+  var _lastTabIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _tabBarController = TabController(length: 6, vsync: this);
     _tabBarController.addListener(_onTabChanged);
-    _setupReactiveListeners();
-    _fetchData();
     _checkPermission();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _showPluginLoader());
   }
 
-  void _setupReactiveListeners() {
-    _workers = [
-      ever(sourceController.installedExtensions,
-          (_) => _debouncedUpdateCounts()),
-      ever(sourceController.installedMangaExtensions,
-          (_) => _debouncedUpdateCounts()),
-      ever(sourceController.installedNovelExtensions,
-          (_) => _debouncedUpdateCounts()),
-      ever(sourceController.availableExtensions,
-          (_) => _debouncedUpdateCounts()),
-      ever(sourceController.availableMangaExtensions,
-          (_) => _debouncedUpdateCounts()),
-      ever(sourceController.availableNovelExtensions,
-          (_) => _debouncedUpdateCounts()),
-      ever(_selectedLanguage, (_) => _updateExtensionCounts()),
-    ];
-    _updateExtensionCounts();
-  }
-
-  Timer? _countDebounce;
-  void _debouncedUpdateCounts() {
-    _countDebounce?.cancel();
-    _countDebounce = Timer(const Duration(milliseconds: 100), () {
-      _updateExtensionCounts();
-    });
+  void _showPluginLoader() async {
+    final status = await AnymeXRuntimeBridge.isLoaded();
+    if (Platform.isAndroid && !status) {
+      PluginInitDialog.show(context);
+    }
   }
 
   @override
@@ -82,60 +63,28 @@ class _ExtensionScreenState extends State<ExtensionScreen>
     _tabBarController.dispose();
     _textEditingController.dispose();
     _searchDebounce?.cancel();
-    _countDebounce?.cancel();
-    if (_workers != null) {
-      for (var worker in _workers!) {
-        worker.dispose();
-      }
-    }
     super.dispose();
   }
 
   void _onTabChanged() {
-    if (mounted) {
-      _textEditingController.clear();
-      _searchQuery.value = '';
-    }
-  }
+    if (!mounted) return;
 
-  void _updateExtensionCounts() {
-    final newCounts = <String, int>{};
-    final lang = _selectedLanguage.value;
+    final nextIndex = _tabBarController.index;
+    if (nextIndex == _lastTabIndex) return;
 
-    for (final itemType in [ItemType.anime, ItemType.manga, ItemType.novel]) {
-      for (final installed in [true, false]) {
-        final key = '${itemType.toString()}_$installed';
-        final extensions = installed
-            ? sourceController.getInstalledExtensions(itemType)
-            : sourceController.getAvailableExtensions(itemType);
-
-        final filteredCount = lang == 'all'
-            ? extensions.length
-            : extensions
-                .where(
-                    (e) => e.lang?.toLowerCase() == completeLanguageCode(lang))
-                .length;
-
-        newCounts[key] = filteredCount;
-      }
+    _lastTabIndex = nextIndex;
+    if (_textEditingController.text.isEmpty && _searchQuery.value.isEmpty) {
+      return;
     }
 
-    _extensionCounts.value = newCounts;
-  }
-
-  Future<void> _fetchData() async {
-    await sourceController.fetchRepos();
-    _updateExtensionCounts();
-    await sourceController.sortAllExtensions();
+    _textEditingController.clear();
+    _searchQuery.value = '';
   }
 
   Future<void> _checkPermission() async => await Database().requestPermission();
 
   void repoSheet() {
-    RepoBottomSheet.show(
-      context,
-      onSave: _fetchData,
-    );
+    navigate(() => const SettingsExtensions());
   }
 
   void _onSearchChanged(String value) {
@@ -150,25 +99,22 @@ class _ExtensionScreenState extends State<ExtensionScreen>
     final theme = context.colors;
     return Glow(
       disabled: widget.disableGlow,
-      child: DefaultTabController(
-        length: 6,
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: _buildAppBar(theme),
-          body: Column(
-            children: [
-              _buildTabBar(),
-              const SizedBox(height: 8.0),
-              CustomSearchBar(
-                disableIcons: true,
-                controller: _textEditingController,
-                onChanged: _onSearchChanged,
-                onSubmitted: (_) {},
-              ),
-              const SizedBox(height: 8.0),
-              Expanded(child: _buildTabBarView()),
-            ],
-          ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: _buildAppBar(theme),
+        body: Column(
+          children: [
+            _buildTabBar(),
+            const SizedBox(height: 8.0),
+            CustomSearchBar(
+              disableIcons: true,
+              controller: _textEditingController,
+              onChanged: _onSearchChanged,
+              onSubmitted: (_) {},
+            ),
+            const SizedBox(height: 8.0),
+            Expanded(child: _buildTabBarView()),
+          ],
         ),
       ),
     );
@@ -252,7 +198,7 @@ class _ExtensionScreenState extends State<ExtensionScreen>
 
   Widget _buildTabBar() {
     return Obx(() {
-      final _ = _extensionCounts.value;
+      final lang = _selectedLanguage.value;
       return TabBar(
         indicatorSize: TabBarIndicatorSize.label,
         isScrollable: true,
@@ -260,12 +206,30 @@ class _ExtensionScreenState extends State<ExtensionScreen>
         tabAlignment: TabAlignment.start,
         dragStartBehavior: DragStartBehavior.start,
         tabs: [
-          _buildTab(ItemType.anime, "Installed Anime", true),
-          _buildTab(ItemType.anime, "Available Anime", false),
-          _buildTab(ItemType.manga, "Installed Manga", true),
-          _buildTab(ItemType.manga, "Available Manga", false),
-          _buildTab(ItemType.novel, "Installed Novel", true),
-          _buildTab(ItemType.novel, "Available Novel", false),
+          _buildTab(
+            "Installed Anime",
+            _countFor(ItemType.anime, true, lang),
+          ),
+          _buildTab(
+            "Available Anime",
+            _countFor(ItemType.anime, false, lang),
+          ),
+          _buildTab(
+            "Installed Manga",
+            _countFor(ItemType.manga, true, lang),
+          ),
+          _buildTab(
+            "Available Manga",
+            _countFor(ItemType.manga, false, lang),
+          ),
+          _buildTab(
+            "Installed Novel",
+            _countFor(ItemType.novel, true, lang),
+          ),
+          _buildTab(
+            "Available Novel",
+            _countFor(ItemType.novel, false, lang),
+          ),
         ],
       );
     });
@@ -331,7 +295,7 @@ class _ExtensionScreenState extends State<ExtensionScreen>
     bool showRecommended = true,
   }) {
     return ExtensionList(
-      key: ValueKey('${itemType.name}_${installed}_${lang}'),
+      key: ValueKey('${itemType.name}_$installed'),
       installed: installed,
       query: query,
       itemType: itemType,
@@ -340,10 +304,29 @@ class _ExtensionScreenState extends State<ExtensionScreen>
     );
   }
 
-  Widget _buildTab(ItemType itemType, String label, bool installed) {
-    final key = '${itemType.toString()}_$installed';
-    final count = _extensionCounts[key] ?? 0;
+  List<Source> _extensionsFor(ItemType itemType, bool installed) {
+    return switch (itemType) {
+      ItemType.anime => installed
+          ? sourceController.installedExtensions
+          : sourceController.availableExtensions,
+      ItemType.manga => installed
+          ? sourceController.installedMangaExtensions
+          : sourceController.availableMangaExtensions,
+      ItemType.novel => installed
+          ? sourceController.installedNovelExtensions
+          : sourceController.availableNovelExtensions,
+    };
+  }
 
+  int _countFor(ItemType itemType, bool installed, String lang) {
+    final extensions = _extensionsFor(itemType, installed);
+    if (lang == 'all') return extensions.length;
+
+    final targetLang = completeLanguageCode(lang);
+    return extensions.where((e) => e.lang?.toLowerCase() == targetLang).length;
+  }
+
+  Widget _buildTab(String label, int count) {
     return Tab(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,

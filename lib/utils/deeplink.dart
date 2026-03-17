@@ -1,95 +1,54 @@
-import 'dart:io';
-
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/anime/watch/controls/themes/setup/player_control_theme_registry.dart';
 import 'package:anymex/screens/manga/details_page.dart';
-import 'package:anymex/utils/extensions.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
-import 'package:dartotsu_extension_bridge/Models/Source.dart';
+import 'package:anymex_extension_bridge/ExtensionManager.dart';
+import 'package:anymex_extension_bridge/Models/Source.dart';
 import 'package:get/get.dart';
 
 class Deeplink {
-  static const Set<String> _supportedCustomSchemes = {
-    'anymex',
-    'dar',
-    'sugoireads',
-    'mangayomi',
-    'tachiyomi',
-    'aniyomi',
-  };
-
   static void handleDeepLink(Uri uri) {
+    print("HANDLING DEEEPLIINK => ${uri.toString()}");
+    final illegalSchemes = Get.find<ExtensionManager>()
+        .managers
+        .expand((e) => e.schemes.toList())
+        .toList();
+
     if (_isThemeDeepLink(uri)) {
       _handleThemeDeepLink(uri);
       return;
     }
 
-    if (uri.host != 'add-repo') {
+    if (!illegalSchemes.contains(uri.scheme)) {
       final mediaTarget = _parseMediaTarget(uri);
       if (mediaTarget == null) return;
       _openMediaTarget(mediaTarget);
       return;
     }
 
-    ExtensionType extType;
-    String? repoUrl;
-    String? mangaUrl;
-    String? novelUrl;
-
-    if (Platform.isAndroid) {
-      switch (uri.scheme.toLowerCase()) {
-        case 'aniyomi':
-          extType = ExtensionType.aniyomi;
-          repoUrl = uri.queryParameters["url"]?.trim();
-          break;
-        case 'tachiyomi':
-          extType = ExtensionType.aniyomi;
-          mangaUrl = uri.queryParameters["url"]?.trim();
-          break;
-        default:
-          extType = ExtensionType.mangayomi;
-          repoUrl =
-              (uri.queryParameters["url"] ?? uri.queryParameters['anime_url'])
-                  ?.trim();
-          mangaUrl = uri.queryParameters["manga_url"]?.trim();
-          novelUrl = uri.queryParameters["novel_url"]?.trim();
+    bool isRepoAdded = false;
+    snackBar("Adding repo... please wait.");
+    final manager = Get.find<ExtensionManager>().managers;
+    for (final handler in manager) {
+      print('Matching ${uri.scheme} with ${handler.schemes.toString()}');
+      if (handler.schemes.contains(uri.scheme.toLowerCase())) {
+        handler.handleSchemes(uri);
+        isRepoAdded = true;
+        break;
       }
-    } else {
-      extType = ExtensionType.mangayomi;
-      repoUrl = (uri.queryParameters["url"] ?? uri.queryParameters['anime_url'])
-          ?.trim();
-      mangaUrl = uri.queryParameters["manga_url"]?.trim();
-      novelUrl = uri.queryParameters["novel_url"]?.trim();
     }
-
-    if (repoUrl != null) {
-      Extensions().addRepo(ItemType.anime, repoUrl, extType);
-    }
-
-    if (mangaUrl != null) {
-      Extensions().addRepo(ItemType.manga, mangaUrl, extType);
-    }
-
-    if (novelUrl != null) {
-      Extensions().addRepo(ItemType.novel, novelUrl, extType);
-    }
-
-    if (repoUrl != null || mangaUrl != null || novelUrl != null) {
-      snackBar("Added Repo Links Successfully!");
-    } else {
-      snackBar("Missing required parameters in the link.");
-    }
+    snackBar(
+      isRepoAdded
+          ? "Added Repo Links Successfully!"
+          : "Missing or invalid parameters in the link.",
+    );
   }
 
   static bool _isThemeDeepLink(Uri uri) {
-    if (!_supportedCustomSchemes.contains(uri.scheme.toLowerCase())) {
-      return false;
-    }
     if (uri.host.toLowerCase() == 'theme') return true;
     final segments = _compactSegments(uri.pathSegments);
     return segments.isNotEmpty && segments.first.toLowerCase() == 'theme';
@@ -129,7 +88,8 @@ class Deeplink {
       final more = result.warnings.length > 1
           ? ' (+${result.warnings.length - 1} more warning(s))'
           : '';
-      warningSnackBar('Theme imported with warning: ${result.warnings.first}$more');
+      warningSnackBar(
+          'Theme imported with warning: ${result.warnings.first}$more');
     } else {
       successSnackBar('Theme JSON is valid. Imported $imported $label.');
     }
@@ -172,10 +132,6 @@ class Deeplink {
   }
 
   static _MediaDeepLinkTarget? _parseCustomTarget(Uri uri) {
-    if (!_supportedCustomSchemes.contains(uri.scheme.toLowerCase())) {
-      return null;
-    }
-
     if (uri.host.toLowerCase() == 'callback' ||
         uri.host.toLowerCase() == 'add-repo') {
       return null;

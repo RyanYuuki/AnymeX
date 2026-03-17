@@ -16,14 +16,13 @@ import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/no_source.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_dropdown.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
-import 'package:anymex/widgets/header.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
-import 'package:dartotsu_extension_bridge/Models/Source.dart';
+import 'package:anymex_extension_bridge/Services/Aniyomi/Models/Source.dart';
+import 'package:anymex_extension_bridge/anymex_extension_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -184,7 +183,8 @@ class _EpisodeSectionState extends State<EpisodeSection> {
             ),
           ]
         : sourceController.installedExtensions.map<DropdownItem>((source) {
-            final isMangayomi = source.extensionType == ExtensionType.mangayomi;
+            final isMangayomi = source is MSource;
+            final isAniyomi = source is ASource;
 
             return DropdownItem(
               value: '${source.name} (${source.lang?.toUpperCase()})',
@@ -194,7 +194,9 @@ class _EpisodeSectionState extends State<EpisodeSection> {
                 radius: 16,
                 imageUrl: isMangayomi
                     ? "https://raw.githubusercontent.com/kodjodevf/mangayomi/main/assets/app_icons/icon-red.png"
-                    : 'https://aniyomi.org/img/logo-128px.png',
+                    : isAniyomi
+                        ? 'https://aniyomi.org/img/logo-128px.png'
+                        : 'https://static.everythingmoe.com/icons/sora.png',
                 height: 24,
                 width: 24,
               ),
@@ -207,8 +209,8 @@ class _EpisodeSectionState extends State<EpisodeSection> {
     } else {
       final activeSource = sourceController.activeSource.value;
       if (activeSource != null) {
-        final isMangayomi =
-            activeSource.extensionType == ExtensionType.mangayomi;
+        final isMangayomi = activeSource is MSource;
+        final isAniyomi = activeSource is ASource;
 
         selectedItem = DropdownItem(
           value: '${activeSource.name} (${activeSource.lang?.toUpperCase()})',
@@ -218,7 +220,9 @@ class _EpisodeSectionState extends State<EpisodeSection> {
             radius: 12,
             imageUrl: isMangayomi
                 ? "https://raw.githubusercontent.com/kodjodevf/mangayomi/main/assets/app_icons/icon-red.png"
-                : 'https://aniyomi.org/img/logo-128px.png',
+                : isAniyomi
+                    ? 'https://aniyomi.org/img/logo-128px.png'
+                    : 'https://static.everythingmoe.com/icons/sora.png',
             height: 20,
             width: 20,
           ),

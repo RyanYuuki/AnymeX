@@ -224,7 +224,7 @@ class _DynamicBottomSheetState extends State<DynamicBottomSheet>
           final isSelected = widget.selectedIndex == widget.items.indexOf(item);
 
           return TweenAnimationBuilder<double>(
-            duration: Duration(milliseconds: 300 + (index * 50)),
+            duration: const Duration(milliseconds: 300),
             tween: Tween(begin: 0.0, end: 1.0),
             builder: (context, value, child) {
               return Transform.translate(

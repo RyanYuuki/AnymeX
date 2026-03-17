@@ -2,7 +2,7 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/logger.dart';
-import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
+import 'package:anymex_extension_bridge/anymex_extension_bridge.dart';
 import 'package:fuzzywuzzy/fuzzywuzzy.dart';
 import 'package:get/get.dart';
 
@@ -127,9 +127,6 @@ Future<Media?> mapMedia(
         sourceSeason,
         resultSeason,
       );
-
-      print("Score: ${score.toStringAsFixed(3)} for '$resultTitle' "
-          "(Heavy normalized: $isHeavyNormalized)");
 
       if (score >= 0.95) {
         bestScore = score;

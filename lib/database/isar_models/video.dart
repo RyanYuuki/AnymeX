@@ -1,4 +1,4 @@
-import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart' as d;
+import 'package:anymex_extension_bridge/anymex_extension_bridge.dart' as d;
 import 'package:isar_community/isar.dart';
 
 import 'track.dart';

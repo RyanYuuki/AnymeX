@@ -12,7 +12,7 @@ import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/models/models_convertor/carousel_mapper.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
+import 'package:anymex_extension_bridge/anymex_extension_bridge.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -306,22 +306,23 @@ int findChunkIndexFromProgress(
 }) {
   if (chunks.isEmpty || chunks.length <= 1) return 0;
   if (userProgress <= 0) return 1;
-  
+
   for (int i = 1; i < chunks.length; i++) {
     final chunk = chunks[i];
     if (chunk.isEmpty) continue;
-    
-    final firstEp = double.tryParse(chunk.first.number.toString())?.toInt() ?? 0;
+
+    final firstEp =
+        double.tryParse(chunk.first.number.toString())?.toInt() ?? 0;
     final lastEp = double.tryParse(chunk.last.number.toString())?.toInt() ?? 0;
-    
+
     final minEp = firstEp < lastEp ? firstEp : lastEp;
     final maxEp = firstEp > lastEp ? firstEp : lastEp;
-    
+
     if (userProgress >= minEp && userProgress <= maxEp) {
       return i;
     }
   }
-  
+
   return chunks.length - 1;
 }
 
@@ -331,22 +332,22 @@ int findChapterChunkIndexFromProgress(
 ) {
   if (chunks.isEmpty || chunks.length <= 1) return 0;
   if (userProgress <= 0) return 1;
-  
+
   for (int i = 1; i < chunks.length; i++) {
     final chunk = chunks[i];
     if (chunk.isEmpty) continue;
-    
+
     final firstChapter = chunk.first.number?.toInt() ?? 0;
     final lastChapter = chunk.last.number?.toInt() ?? 0;
-    
+
     final minCh = firstChapter < lastChapter ? firstChapter : lastChapter;
     final maxCh = firstChapter > lastChapter ? firstChapter : lastChapter;
-    
+
     if (userProgress >= minCh && userProgress <= maxCh) {
       return i;
     }
   }
-  
+
   return chunks.length - 1;
 }
 

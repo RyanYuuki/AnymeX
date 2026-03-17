@@ -38,7 +38,7 @@ import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
+import 'package:anymex_extension_bridge/anymex_extension_bridge.dart';
 import 'package:expandable_page_view/expandable_page_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -666,14 +666,11 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
           children: [
             Text(label,
                 style: TextStyle(
-                    fontSize: 11,
-                    color: context.colors.onSurface.opaque(0.5))),
+                    fontSize: 11, color: context.colors.onSurface.opaque(0.5))),
             const SizedBox(height: 2),
             Text(value,
                 style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: color)),
+                    fontSize: 14, fontWeight: FontWeight.w500, color: color)),
           ],
         ),
       ),
@@ -681,13 +678,16 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   }
 
   Widget _buildProgressContainer(BuildContext context) {
-    final int totalEps = int.tryParse(anilistData?.totalEpisodes?.toString() ?? '0') ?? 0;
+    final int totalEps =
+        int.tryParse(anilistData?.totalEpisodes?.toString() ?? '0') ?? 0;
     final int airedEps = (anilistData?.nextAiringEpisode?.episode ?? 1) - 1;
     final int displayTotal = totalEps > 0 ? totalEps : airedEps;
     final int watchedEps =
         int.tryParse(currentAnime.value?.episodeCount?.toString() ?? '0') ?? 0;
     final int remainingEps = (displayTotal - watchedEps).clamp(0, displayTotal);
-    final int? epDuration = int.tryParse((anilistData?.duration?.toString() ?? '').replaceAll(RegExp(r'[^0-9]'), ''));
+    final int? epDuration = int.tryParse(
+        (anilistData?.duration?.toString() ?? '')
+            .replaceAll(RegExp(r'[^0-9]'), ''));
     final int totalMins = displayTotal * (epDuration ?? 0);
     final int watchedMins = watchedEps * (epDuration ?? 0);
     final int remainingMins = remainingEps * (epDuration ?? 0);
@@ -737,7 +737,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
-                  color: context.colors.primary.opaque(0.1, iReallyMeanIt: true),
+                  color:
+                      context.colors.primary.opaque(0.1, iReallyMeanIt: true),
                 ),
                 child: Text(
                   '${formatProgress(currentChapter: currentAnime.value?.episodeCount ?? 0, totalChapters: anilistData?.totalEpisodes ?? 0, altLength: 0)}%',
@@ -750,7 +751,6 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
               ),
             ],
           ),
-
           if (displayTotal > 0 && epDuration != null && epDuration > 0) ...[
             const SizedBox(height: 10),
             Row(
@@ -942,7 +942,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
           animeProgress: animeProgress,
           currentAnime: currentAnime,
           media: anilistData ?? widget.media,
-          onUpdate: (id, score, status, progress, startedAt, completedAt, isPrivate) async {
+          onUpdate: (id, score, status, progress, startedAt, completedAt,
+              isPrivate) async {
             final fetcher = widget.media.serviceType;
             final id = fetcher.onlineService.currentMedia.value.id;
             await fetcher.onlineService.updateListEntry(UpdateListEntryParams(

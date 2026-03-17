@@ -19,7 +19,6 @@ import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/controllers/ui/greeting.dart';
 import 'package:anymex/database/database.dart';
 import 'package:anymex/firebase_options.dart';
-
 import 'package:anymex/screens/anime/home_page.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
 import 'package:anymex/screens/extensions/ExtensionScreen.dart';
@@ -48,7 +47,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';
-
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
@@ -81,6 +79,22 @@ class MyCustomScrollBehavior extends MaterialScrollBehavior {
         PointerDeviceKind.trackpad,
         PointerDeviceKind.stylus
       };
+}
+
+void initDeepLinkListener() async {
+  if (Platform.isLinux) return;
+
+  try {
+    final initialUri = await appLinks.getInitialLink();
+    if (initialUri != null) Deeplink.handleDeepLink(initialUri);
+  } catch (err) {
+    errorSnackBar('Error getting initial deep link: $err');
+  }
+
+  appLinks.uriLinkStream.listen(
+    (uri) => Deeplink.handleDeepLink(uri),
+    onError: (err) => errorSnackBar('Error Opening link: $err'),
+  );
 }
 
 void main(List<String> args) async {
@@ -143,24 +157,6 @@ void main(List<String> args) async {
     },
   ));
 }
-
-void initDeepLinkListener() async {
-  if (Platform.isLinux) return;
-
-  try {
-    final initialUri = await appLinks.getInitialLink();
-    if (initialUri != null) Deeplink.handleDeepLink(initialUri);
-  } catch (err) {
-    errorSnackBar('Error getting initial deep link: $err');
-  }
-
-  appLinks.uriLinkStream.listen(
-    (uri) => Deeplink.handleDeepLink(uri),
-    onError: (err) => errorSnackBar('Error Opening link: $err'),
-  );
-}
-
-
 
 void _initializeGetxController() async {
   Get.put(Settings()); 
