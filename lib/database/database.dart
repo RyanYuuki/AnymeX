@@ -40,7 +40,7 @@ class Database {
         bool useCustomPath = false,
         bool useSystemPath = false,
       }) async {
-        final d = Directory('$dir/$subPath');
+        final d = Directory(path.join(dir!.path, subPath ?? ''));
 
         if (!await d.exists()) {
           await d.create(recursive: true);

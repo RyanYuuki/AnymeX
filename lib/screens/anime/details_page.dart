@@ -184,15 +184,24 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   }
 
   void _applyFillerInfo() {
-    if (fillerEpisodes.isEmpty || episodeList.isEmpty) return;
+    if (fillerEpisodes.isEmpty ||
+        (episodeList.isEmpty && rawEpisodes.isEmpty)) {
+      return;
+    }
 
     bool updated = false;
-    for (var ep in episodeList) {
-      if (fillerEpisodes.containsKey(ep.number)) {
-        ep.filler = true;
-        updated = true;
+
+    void markFillers(List<Episode> episodes) {
+      for (final ep in episodes) {
+        if (fillerEpisodes.containsKey(ep.number) && ep.filler != true) {
+          ep.filler = true;
+          updated = true;
+        }
       }
     }
+
+    markFillers(episodeList);
+    markFillers(rawEpisodes);
 
     if (updated && mounted) setState(() {});
   }
@@ -319,8 +328,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   void _processExtensionData(Media tempData) async {
     final episodes = tempData.mediaContent!.reversed.toList();
     final convertedEpisodes = _convertEpisodes(episodes, tempData.title);
-    rawEpisodes.value = _createRawEpisodes(convertedEpisodes);
-    episodeList.value = _renewEpisodeData(convertedEpisodes);
+    rawEpisodes.assignAll(_cloneEpisodes(convertedEpisodes));
+    episodeList.assignAll(_renewEpisodeData(_cloneEpisodes(convertedEpisodes)));
     setState(() {});
   }
 
@@ -341,8 +350,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         episodeFuture.title ?? '',
       );
 
-      rawEpisodes.value = _createRawEpisodes(episodes);
-      episodeList.value = _renewEpisodeData(episodes);
+      rawEpisodes.assignAll(_cloneEpisodes(episodes));
+      episodeList.assignAll(_renewEpisodeData(_cloneEpisodes(episodes)));
       searchedTitle.value = media.title;
       _applyFillerInfo();
       if (mounted) {
@@ -382,11 +391,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     }
   }
 
-  List<Episode> _createRawEpisodes(List<Episode> eps) {
-    final newEps = eps
-        .map((e) => Episode(title: e.title, number: e.number, link: e.link))
-        .toList();
-    return newEps;
+  List<Episode> _cloneEpisodes(List<Episode> episodes) {
+    return episodes.map((episode) => Episode.fromJson(episode.toJson())).toList();
   }
 
   List<Episode> _convertEpisodes(List<dynamic> episodes, String title) {
