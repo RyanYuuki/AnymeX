@@ -9,7 +9,7 @@ import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/animation/animations.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
-import 'package:anymex_extension_bridge/Models/DEpisode.dart';
+import 'package:anymex_extension_runtime_bridge/Models/DEpisode.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -62,16 +62,15 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
 
       if (chunkedChapters.isNotEmpty && !_initializedChunk) {
         final auth = Get.find<ServiceHandler>();
-        final userProgress = _getUserProgress(auth, widget.controller.media.value.id);
-        
+        final userProgress =
+            _getUserProgress(auth, widget.controller.media.value.id);
+
         final chunkIndex = findChapterChunkIndexFromProgress(
           userProgress,
           chunkedChapters.value,
         );
-        selectedChunkIndex.value = chunkIndex.clamp(
-          1,
-          chunkedChapters.value.length - 1
-        );
+        selectedChunkIndex.value =
+            chunkIndex.clamp(1, chunkedChapters.value.length - 1);
         _initializedChunk = true;
       }
 
@@ -82,10 +81,10 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
   }
 
   int _getUserProgress(ServiceHandler auth, String mediaId) {
-    if (auth.isLoggedIn.value && 
+    if (auth.isLoggedIn.value &&
         auth.serviceType.value != ServicesType.extensions) {
-      final tracked = auth.onlineService.mangaList
-          .firstWhereOrNull((e) => e.id == mediaId);
+      final tracked =
+          auth.onlineService.mangaList.firstWhereOrNull((e) => e.id == mediaId);
       return tracked?.chapterCount?.toInt() ?? 1;
     } else {
       final offlineStorage = Get.find<OfflineStorageController>();

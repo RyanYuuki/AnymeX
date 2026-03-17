@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:anymex/utils/extensions.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex_extension_bridge/Models/Source.dart';
+import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';

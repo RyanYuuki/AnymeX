@@ -8,9 +8,10 @@ import 'package:anymex/screens/local_source/controller/tmdb_api.dart';
 import 'package:anymex/screens/local_source/model/detail_result.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:anymex_extension_bridge/ExtensionManager.dart';
-import 'package:anymex_extension_bridge/Models/DEpisode.dart';
-import 'package:anymex_extension_bridge/anymex_extension_bridge.dart' as d;
+import 'package:anymex_extension_runtime_bridge/ExtensionManager.dart';
+import 'package:anymex_extension_runtime_bridge/Models/DEpisode.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart'
+    as d;
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';

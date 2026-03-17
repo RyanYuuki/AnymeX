@@ -16,7 +16,7 @@ import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:anymex_extension_bridge/Models/Source.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -213,20 +213,14 @@ class ChapterSection extends StatelessWidget {
             ),
           ]
         : sourceController.installedMangaExtensions.map<DropdownItem>((source) {
-            final isMangayomi = source.managerId == 'mangayomi';
-            final isAniyomi = source.managerId == 'aniyomi';
-
             return DropdownItem(
-              value: '${source.name} (${source.lang?.toUpperCase()})',
+              value:
+                  '${source.name}-${source.lang?.toUpperCase()}-${source.runtimeType}',
               text: source.name?.toUpperCase() ?? 'Unknown Source',
               subtitle: source.lang?.toUpperCase() ?? 'Unknown',
               leadingIcon: AnymeXImage(
                 radius: 16,
-                imageUrl: isMangayomi
-                    ? "https://raw.githubusercontent.com/kodjodevf/mangayomi/main/assets/app_icons/icon-red.png"
-                    : isAniyomi
-                        ? 'https://aniyomi.org/img/logo-128px.png'
-                        : 'https://raw.githubusercontent.com/Sora-Extension/Sora/main/icon.png',
+                imageUrl: source.managerIcon,
                 height: 24,
                 width: 24,
               ),
@@ -239,20 +233,14 @@ class ChapterSection extends StatelessWidget {
     } else {
       final activeSource = sourceController.activeMangaSource.value;
       if (activeSource != null) {
-        final isMangayomi = activeSource.managerId == 'mangayomi';
-        final isAniyomi = activeSource.managerId == 'aniyomi';
-
         selectedItem = DropdownItem(
-          value: '${activeSource.name} (${activeSource.lang?.toUpperCase()})',
+          value:
+              '${activeSource.name}-${activeSource.lang?.toUpperCase()}-${activeSource.runtimeType}',
           text: activeSource.name?.toUpperCase() ?? 'Unknown Source',
           subtitle: 'Manga • ${activeSource.lang?.toUpperCase() ?? 'Unknown'}',
           leadingIcon: AnymeXImage(
             radius: 12,
-            imageUrl: isMangayomi
-                ? "https://raw.githubusercontent.com/kodjodevf/mangayomi/main/assets/app_icons/icon-red.png"
-                : isAniyomi
-                    ? 'https://aniyomi.org/img/logo-128px.png'
-                    : 'https://raw.githubusercontent.com/Sora-Extension/Sora/main/icon.png',
+            imageUrl: activeSource.managerIcon,
             height: 20,
             width: 20,
           ),

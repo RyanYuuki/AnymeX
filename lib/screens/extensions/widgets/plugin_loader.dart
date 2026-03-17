@@ -1,8 +1,11 @@
 import 'dart:io';
 
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex_extension_bridge/AnymeXBridge.dart';
+import 'package:anymex_extension_runtime_bridge/AnymeXBridge.dart';
+import 'package:anymex_extension_runtime_bridge/ExtensionManager.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
@@ -40,7 +43,7 @@ class _PluginInitDialogState extends State<PluginInitDialog>
   String? _errorMsg;
 
   String get pluginUrl =>
-      "https://github.com/RyanYuuki/AnymeX/raw/refs/heads/main/assets/apk/anymex_bridge_host.apk";
+      "https://github.com/RyanYuuki/AnymeXExtensionRuntimeBridge/releases/download/v1.0.0/anymex_runtime_host.apk";
 
   late final AnimationController _pulseCtrl;
   late final Animation<double> _pulse;
@@ -120,15 +123,42 @@ class _PluginInitDialogState extends State<PluginInitDialog>
   }
 
   Future<void> _runPostDownloadSteps(File downloadedFile) async {
-    AnymeXRuntimeBridge.loadAnymeXRuntimeHost(downloadedFile.path);
-    for (final step in _steps) {
-      if (!mounted) return;
-      setState(() => _stage = step.stage);
-      await Future.delayed(const Duration(milliseconds: 900));
-    }
+    if (!mounted) return;
 
-    if (mounted) {
-      _checkCtrl.forward();
+    setState(() => _stage = _InitStage.moving);
+
+    try {
+      if (kDebugMode) {
+        await AnymeXRuntimeBridge.loadRuntimeHostFromPicker();
+      } else {
+        await AnymeXRuntimeBridge.loadAnymeXRuntimeHost(downloadedFile.path);
+      }
+
+      if (!mounted) return;
+
+      await Get.find<ExtensionManager>().onRuntimeBridgeInitialization(
+        onManagerInitializing: (managerId) {
+          if (!mounted) return;
+
+          if (managerId == 'aniyomi') {
+            setState(() => _stage = _InitStage.initAniyomi);
+          } else if (managerId == 'cloudstream') {
+            setState(() => _stage = _InitStage.initCloudstream);
+          }
+        },
+      );
+
+      if (mounted) {
+        setState(() => _stage = _InitStage.done);
+        _checkCtrl.forward();
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _stage = _InitStage.idle;
+          _errorMsg = 'Initialization failed: ${e.toString()}';
+        });
+      }
     }
   }
 

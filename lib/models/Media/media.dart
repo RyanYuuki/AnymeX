@@ -8,7 +8,7 @@ import 'package:anymex/models/Media/staff.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/screens/novel/details/widgets/chapters_section.dart';
 import 'package:anymex/utils/logger.dart';
-import 'package:anymex_extension_bridge/anymex_extension_bridge.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 
 class Media {
   String id;
@@ -272,18 +272,19 @@ class Media {
         posterUrl = 'https://simkl.in/posters/${json['poster']}_m.jpg';
       }
     }
-    
+
     String releaseDate = json['release_date'] ?? json['date'] ?? '';
-    
+
     return Media(
       id: '${json['ids']?['simkl_id']?.toString() ?? json['ids']?['simkl']?.toString() ?? DateTime.now().millisecondsSinceEpoch.toString()}*${isMovie ? "MOVIE" : "SERIES"}',
       title: json['title'] ?? 'Unknown Title',
       romajiTitle: json['title'] ?? 'Unknown Title',
-      description: json['overview'] ?? json['plot'] ?? 'No description available.',
+      description:
+          json['overview'] ?? json['plot'] ?? 'No description available.',
       poster: posterUrl,
       largePoster: posterUrl,
-      cover: json['fanart'] != null 
-          ? 'https://simkl.in/fanart/${json['fanart']}_medium.jpg' 
+      cover: json['fanart'] != null
+          ? 'https://simkl.in/fanart/${json['fanart']}_medium.jpg'
           : posterUrl,
       totalEpisodes: json['total_episodes']?.toString() ?? '1',
       type: isMovie ? 'MOVIE' : 'TV',

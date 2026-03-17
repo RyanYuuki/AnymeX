@@ -15,12 +15,12 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/media_items/media_item.dart';
+import 'package:anymex/widgets/media_items/media_peek_popup.dart';
+import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:anymex/widgets/media_items/media_peek_popup.dart';
-import 'package:anymex_extension_bridge/Models/Source.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 

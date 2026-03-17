@@ -15,7 +15,7 @@ import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:anymex_extension_bridge/anymex_extension_bridge.dart'
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart'
     hide Extension;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';

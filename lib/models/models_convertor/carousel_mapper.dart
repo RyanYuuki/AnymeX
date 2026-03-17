@@ -6,7 +6,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Media/relation.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/utils/function.dart';
-import 'package:anymex_extension_bridge/anymex_extension_bridge.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 
 extension DMediaMapper on DMedia {
   CarouselData toCarouselData({

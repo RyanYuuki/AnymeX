@@ -9,7 +9,7 @@ import 'package:anymex/screens/manga/widgets/reader/reader_page_actions_dialog.d
 import 'package:anymex/utils/image_cropper.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
-import 'package:anymex_extension_bridge/anymex_extension_bridge.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -291,93 +291,123 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
         _ => Colors.black,
       };
 
-    return Stack(
-      children: [
-        Container(color: bgColor),
-        
-        PhotoViewGallery.builder(
-          itemCount: 1,
-          builder: (_, e) => PhotoViewGalleryPageOptions.customChild(
-            controller: _photoViewController,
-            scaleStateController: _photoViewScaleStateController,
-            basePosition: _scalePosition,
-            minScale: PhotoViewComputedScale.contained * 1.0,
-            maxScale: PhotoViewComputedScale.covered * 5.0,
-            onScaleEnd: _onScaleEnd,
-            gestureDetectorBehavior: HitTestBehavior.translucent,
-            child: GestureDetector(
-              onTapDown: (details) =>
-                  _lastTapPosition = details.globalPosition,
-              onTap: () {
-                if (_lastTapPosition != null) {
-                  widget.controller.handleTap(_lastTapPosition!);
-                }
-              },
-              onLongPressStart: (details) {
-                if (widget.controller.longPressPageActionsEnabled.value) {
-                  showReaderPageActionsDialog(context, widget.controller);
-                }
-              },
-              onDoubleTapDown: (details) {
-                _toggleScale(details.globalPosition);
-              },
-              onDoubleTap: () {},
-              child: widget.controller.readingLayout.value ==
-                      MangaPageViewMode.continuous
-                  ? _buildContinuousView()
-                  : _buildPagedView(),
-            ),
-          ),
-          scrollPhysics: const NeverScrollableScrollPhysics(),
-          enableRotation: false,
-          backgroundDecoration:
-              const BoxDecoration(color: Colors.transparent),
-        ),
-        
-        ReaderContentOverlay(controller: widget.controller),
-        
-          if (widget.controller.grayscaleEnabled.value || widget.controller.invertColorsEnabled.value)
-          IgnorePointer(
-            child: ColorFiltered(
-              colorFilter: ColorFilter.matrix(
-                widget.controller.grayscaleEnabled.value ? [
-                  0.2126, 0.7152, 0.0722, 0, 0,
-                  0.2126, 0.7152, 0.0722, 0, 0,
-                  0.2126, 0.7152, 0.0722, 0, 0,
-                  0,      0,      0,      1, 0,
-                ] : [
-                  -1, 0,  0,  0, 255,
-                  0,  -1, 0,  0, 255,
-                  0,  0,  -1, 0, 255,
-                  0,  0,  0,  1, 0,
-                ],
-              ),
-              child: Container(color: Colors.transparent),
-            ),
-          ),
-
-        DisplayRefreshOverlay(host: _displayRefreshHost),
-        
-        Obx(() {
-          final c = widget.controller;
-          if (!c.showingTransition.value) return const SizedBox.shrink();
-          final current = c.currentChapter.value;
-          if (current == null) return const SizedBox.shrink();
-
-          return Material(
-            color: Theme.of(context).colorScheme.surface.withOpacity(0.96),
-            child: GestureDetector(
-              onTap: c.dismissTransition,
-              child: ReaderChapterTransition(
-                isNext: c.transitionIsNext.value,
-                currentChapter: current,
-                targetChapter: c.transitionTargetChapter.value,
+      return Stack(
+        children: [
+          Container(color: bgColor),
+          PhotoViewGallery.builder(
+            itemCount: 1,
+            builder: (_, e) => PhotoViewGalleryPageOptions.customChild(
+              controller: _photoViewController,
+              scaleStateController: _photoViewScaleStateController,
+              basePosition: _scalePosition,
+              minScale: PhotoViewComputedScale.contained * 1.0,
+              maxScale: PhotoViewComputedScale.covered * 5.0,
+              onScaleEnd: _onScaleEnd,
+              gestureDetectorBehavior: HitTestBehavior.translucent,
+              child: GestureDetector(
+                onTapDown: (details) =>
+                    _lastTapPosition = details.globalPosition,
+                onTap: () {
+                  if (_lastTapPosition != null) {
+                    widget.controller.handleTap(_lastTapPosition!);
+                  }
+                },
+                onLongPressStart: (details) {
+                  if (widget.controller.longPressPageActionsEnabled.value) {
+                    showReaderPageActionsDialog(context, widget.controller);
+                  }
+                },
+                onDoubleTapDown: (details) {
+                  _toggleScale(details.globalPosition);
+                },
+                onDoubleTap: () {},
+                child: widget.controller.readingLayout.value ==
+                        MangaPageViewMode.continuous
+                    ? _buildContinuousView()
+                    : _buildPagedView(),
               ),
             ),
-          );
-        }),
-      ],
-    );
+            scrollPhysics: const NeverScrollableScrollPhysics(),
+            enableRotation: false,
+            backgroundDecoration:
+                const BoxDecoration(color: Colors.transparent),
+          ),
+          ReaderContentOverlay(controller: widget.controller),
+          if (widget.controller.grayscaleEnabled.value ||
+              widget.controller.invertColorsEnabled.value)
+            IgnorePointer(
+              child: ColorFiltered(
+                colorFilter: ColorFilter.matrix(
+                  widget.controller.grayscaleEnabled.value
+                      ? [
+                          0.2126,
+                          0.7152,
+                          0.0722,
+                          0,
+                          0,
+                          0.2126,
+                          0.7152,
+                          0.0722,
+                          0,
+                          0,
+                          0.2126,
+                          0.7152,
+                          0.0722,
+                          0,
+                          0,
+                          0,
+                          0,
+                          0,
+                          1,
+                          0,
+                        ]
+                      : [
+                          -1,
+                          0,
+                          0,
+                          0,
+                          255,
+                          0,
+                          -1,
+                          0,
+                          0,
+                          255,
+                          0,
+                          0,
+                          -1,
+                          0,
+                          255,
+                          0,
+                          0,
+                          0,
+                          1,
+                          0,
+                        ],
+                ),
+                child: Container(color: Colors.transparent),
+              ),
+            ),
+          DisplayRefreshOverlay(host: _displayRefreshHost),
+          Obx(() {
+            final c = widget.controller;
+            if (!c.showingTransition.value) return const SizedBox.shrink();
+            final current = c.currentChapter.value;
+            if (current == null) return const SizedBox.shrink();
+
+            return Material(
+              color: Theme.of(context).colorScheme.surface.withOpacity(0.96),
+              child: GestureDetector(
+                onTap: c.dismissTransition,
+                child: ReaderChapterTransition(
+                  isNext: c.transitionIsNext.value,
+                  currentChapter: current,
+                  targetChapter: c.transitionTargetChapter.value,
+                ),
+              ),
+            );
+          }),
+        ],
+      );
     });
   }
 
@@ -459,8 +489,8 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                 )
               : ExtendedImage.network(
                   page.url,
-                  cacheMaxAge: Duration(
-                      days: PlayerUiKeys.cacheDays.get<int>(7)),
+                  cacheMaxAge:
+                      Duration(days: PlayerUiKeys.cacheDays.get<int>(7)),
                   mode: ExtendedImageMode.none,
                   gaplessPlayback: true,
                   headers: (page.headers?.isEmpty ?? true)
@@ -473,8 +503,8 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                   fit: BoxFit.contain,
                   constraints: isContinuous
                       ? BoxConstraints(
-                          maxWidth: 500 *
-                              widget.controller.pageWidthMultiplier.value)
+                          maxWidth:
+                              500 * widget.controller.pageWidthMultiplier.value)
                       : null,
                   cache: true,
                   alignment: Alignment.center,
@@ -506,8 +536,7 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                                 const SizedBox(height: 8),
                                 Text(
                                   'Failed to load page ${index + 1}',
-                                  style:
-                                      const TextStyle(color: Colors.grey),
+                                  style: const TextStyle(color: Colors.grey),
                                 ),
                                 const SizedBox(height: 8),
                                 ElevatedButton.icon(
@@ -519,8 +548,7 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                                   style: ElevatedButton.styleFrom(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 12, vertical: 6),
-                                    textStyle:
-                                        const TextStyle(fontSize: 12),
+                                    textStyle: const TextStyle(fontSize: 12),
                                   ),
                                 ),
                               ],
