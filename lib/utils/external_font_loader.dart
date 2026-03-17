@@ -60,7 +60,7 @@ class ExternalFontLoader {
       fontLoader.addFont(Future.value(ByteData.view(fontData.buffer)));
       await fontLoader.load();
     } catch (e) {
-        print("external font loader broke => $e")
+        print("external font loader broke => $e");
     }
   }
 }
