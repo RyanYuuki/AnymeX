@@ -25,7 +25,7 @@ import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/my_library.dart';
 import 'package:anymex/screens/manga/home_page.dart';
 import 'package:anymex/services/commentum_service.dart';
-import 'package:anymex/utils/deeplink.dart';
+import 'package:anymex/utils/external_font_loader.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/register_protocol/register_protocol.dart';
 import 'package:anymex/widgets/adaptive_wrapper.dart';
@@ -99,6 +99,7 @@ void initDeepLinkListener() async {
 void main(List<String> args) async {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
+    ExternalFontLoader.loadAllFonts();
 
     await Logger.init();
     await dotenv.load(fileName: ".env");
