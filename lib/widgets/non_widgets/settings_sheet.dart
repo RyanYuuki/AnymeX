@@ -1,5 +1,4 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/screens/extensions/ExtensionScreen.dart';
 import 'package:anymex/screens/local_source/local_source_view.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
@@ -14,7 +13,6 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 
 class SettingsSheet extends StatelessWidget {
@@ -310,20 +308,14 @@ class SettingsSheet extends StatelessWidget {
                   },
                 ),
               ),
-            Obx(() {
-              final shouldShowExts =
-                  sourceController.shouldShowExtensions.value;
-              return isMobile && shouldShowExts
-                  ? ListTile(
-                      leading: const Icon(Icons.extension),
-                      title: const Text('Extensions'),
-                      onTap: () {
-                        Get.back();
-                        navigate(() => const ExtensionScreen());
-                      },
-                    )
-                  : const SizedBox.shrink();
-            }),
+            ListTile(
+              leading: const Icon(Icons.extension),
+              title: const Text('Extensions'),
+              onTap: () {
+                Get.back();
+                navigate(() => const ExtensionScreen());
+              },
+            ),
             AnymexOnTap(
               child: ListTile(
                 leading: const Icon(HugeIcons.strokeRoundedAiSetting),

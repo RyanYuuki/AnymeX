@@ -236,7 +236,7 @@ Future<void> _handleAnimeTap(OfflineMedia media) async {
     return;
   }
 
-  final source = Get.find<SourceController>().getExtensionByName(sourceName);
+  final source = Get.find<SourceController>().getExtensionByValue(sourceName);
   if (source == null) {
     snackBar("Install $sourceName First, Then Click");
     return;
@@ -247,8 +247,8 @@ Future<void> _handleAnimeTap(OfflineMedia media) async {
   logSession.log("Preparing playback...");
   logSession.log("Checking saved stream URL...");
   try {
-    final playbackData =
-        await _resolveAnimePlaybackData(media: media, source: source, log: logSession.log);
+    final playbackData = await _resolveAnimePlaybackData(
+        media: media, source: source, log: logSession.log);
     if (playbackData == null) {
       logSession.log("Playback preparation failed.");
       return;
@@ -566,7 +566,8 @@ class _LoaderLogSession {
       WillPopScope(
         onWillPop: () async => false,
         child: Dialog(
-          insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+          insetPadding:
+              const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
           child: Container(
             constraints: const BoxConstraints(maxHeight: 360),
             padding: const EdgeInsets.all(16),

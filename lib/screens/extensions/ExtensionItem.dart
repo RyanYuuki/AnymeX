@@ -307,38 +307,8 @@ class _ExtensionIcon extends StatelessWidget {
     }
   }
 
-  String? _managerBadgeUrl() {
-    switch (source) {
-      case MSource _:
-        return 'https://raw.githubusercontent.com/kodjodevf/mangayomi/main/assets/app_icons/icon-red.png';
-      case ASource _:
-        return 'https://aniyomi.org/img/logo-128px.png';
-      case CloudStreamSource _:
-        return 'https://static.everythingmoe.com/icons/cloudstream.png';
-      case SSource _:
-        return 'https://static.everythingmoe.com/icons/sora.png';
-      default:
-        return 'https://aniyomi.org/img/logo-128px.png';
-    }
-  }
-
   Widget _buildManagerBadge(Color accentColor) {
-    final badgeUrl = _managerBadgeUrl();
-    if (badgeUrl == null) {
-      return Container(
-        height: 13,
-        width: 13,
-        decoration: BoxDecoration(
-          color: accentColor,
-          shape: BoxShape.circle,
-        ),
-        child: const Icon(
-          Icons.extension_rounded,
-          size: 9,
-          color: Colors.white,
-        ),
-      );
-    }
+    final badgeUrl = source.managerIcon;
 
     return Container(
       height: 13,

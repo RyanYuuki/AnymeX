@@ -277,9 +277,9 @@ class SourceController extends GetxController implements BaseService {
     lastUpdatedSource.value = tag;
   }
 
-  Source? getExtensionByName(String name) => _activateByName(
+  Source? getExtensionByValue(String value) => _activateByName(
       installedExtensions,
-      name,
+      value,
       activeSource,
       SourceKeys.activeSourceId,
       'ANIME');
@@ -305,9 +305,13 @@ class SourceController extends GetxController implements BaseService {
     SourceKeys key,
     String tag,
   ) {
+    print('Activating extension by name: $name');
     final match = sources.firstWhereOrNull(
-      (s) => '${s.name} (${s.lang?.toUpperCase()})' == name || s.name == name,
+      (s) =>
+          '${s.name}-${s.lang?.toUpperCase()}-${s.runtimeType}' == name ||
+          s.name == name,
     );
+
     if (match != null) {
       rx.value = match;
       KvHelper.set(key.name, match.id.toString());
