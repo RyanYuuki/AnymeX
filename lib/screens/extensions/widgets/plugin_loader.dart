@@ -43,7 +43,7 @@ class _PluginInitDialogState extends State<PluginInitDialog>
   String? _errorMsg;
 
   String get pluginUrl =>
-      "https://github.com/RyanYuuki/AnymeX/raw/refs/heads/main/assets/apk/anymex_bridge_host.apk";
+      "https://github.com/RyanYuuki/AnymeXExtensionRuntimeBridge/releases/download/v1.0.0/anymex_runtime_host.apk";
 
   late final AnimationController _pulseCtrl;
   late final Animation<double> _pulse;
