@@ -26,6 +26,7 @@ enum ThemeKeys {
 enum PlayerKeys { useLibass, useMediaKit }
 
 enum PlayerUiKeys {
+  playerExperimentalEnabled,
   bottomControlsSettings,
   playerControlTheme,
   playerControlThemesJson,

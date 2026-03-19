@@ -311,7 +311,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         '${sourceController.activeSource.value?.id}-${anilistData?.id}-${anilistData?.serviceType.index}';
     final savedTitle = DynamicKeys.mappedMediaTitle.get<String?>(key, null);
     final mappedData = await mapMedia(
-        formatTitles(widget.media) ?? [], searchedTitle,
+        formatTitles(anilistData ?? widget.media) ?? [], searchedTitle,
         savedTitle: savedTitle);
     if (_isStaleSourceRequest(activeRequestId) || !mounted) {
       return;
@@ -322,7 +322,35 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   }
 
   List<String>? formatTitles(Media media) {
-    return ['${media.title}*ANIME', media.romajiTitle];
+    String sanitize(String value) {
+      final trimmed = value.trim();
+      if (trimmed.isEmpty || trimmed == '?' || trimmed == '??') return '';
+      return trimmed;
+    }
+
+    final englishCandidates = [
+      sanitize(anilistData?.title ?? ''),
+      sanitize(media.title),
+      sanitize(widget.media.title),
+    ];
+    final romajiCandidates = [
+      sanitize(anilistData?.romajiTitle ?? ''),
+      sanitize(media.romajiTitle),
+      sanitize(widget.media.romajiTitle),
+    ];
+
+    final englishTitle =
+        englishCandidates.firstWhere((title) => title.isNotEmpty, orElse: () {
+      return romajiCandidates.firstWhere((title) => title.isNotEmpty,
+          orElse: () => 'Unknown Title');
+    });
+
+    final romajiTitle =
+        romajiCandidates.firstWhere((title) => title.isNotEmpty, orElse: () {
+      return englishTitle;
+    });
+
+    return ['$englishTitle*ANIME', romajiTitle];
   }
 
   void _processExtensionData(Media tempData) async {
@@ -330,6 +358,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     final convertedEpisodes = _convertEpisodes(episodes, tempData.title);
     rawEpisodes.assignAll(_cloneEpisodes(convertedEpisodes));
     episodeList.assignAll(_renewEpisodeData(_cloneEpisodes(convertedEpisodes)));
+    searchedTitle.value = "Found: ${tempData.title}";
     setState(() {});
   }
 
@@ -352,7 +381,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
       rawEpisodes.assignAll(_cloneEpisodes(episodes));
       episodeList.assignAll(_renewEpisodeData(_cloneEpisodes(episodes)));
-      searchedTitle.value = media.title;
+      searchedTitle.value = "Found: ${media.title}";
       _applyFillerInfo();
       if (mounted) {
         setState(() {});

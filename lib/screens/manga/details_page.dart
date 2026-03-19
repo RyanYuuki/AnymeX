@@ -250,7 +250,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
     final convertedEpisodes = _convertChapters(chapters, tempData.title);
 
     chapterList?.value = convertedEpisodes;
-    searchedTitle.value = tempData.title;
+    searchedTitle.value = "Found: ${tempData.title}";
     setState(() {});
   }
 
@@ -276,14 +276,14 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
         episodeFuture.title ?? '',
       );
       chapterList?.value = episodes;
-      searchedTitle.value = media.title;
+      searchedTitle.value = "Found: ${media.title}";
 
       setState(() {});
-    } catch (e) {
+    } catch (e, s) {
       if (_isStaleChapterRequest(activeRequestId) || !mounted) {
         return;
       }
-      Logger.i(e.toString());
+      Logger.e(e.toString(), stackTrace: s);
     }
   }
 

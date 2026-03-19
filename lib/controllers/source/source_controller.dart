@@ -309,6 +309,7 @@ class SourceController extends GetxController implements BaseService {
     print('Activating extension by name: $name');
     final match = sources.firstWhereOrNull(
       (s) =>
+          s.id.toString() == name ||
           '${s.name}-${s.lang?.toUpperCase()}-${s.runtimeType}' == name ||
           s.name == name,
     );

@@ -44,6 +44,7 @@ class EpisodeListBuilder extends StatefulWidget {
 
 class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   final selectedChunkIndex = 1.obs;
+  final RxnString selectedSortKey = RxnString();
   final RxList<hive.Video> streamList = <hive.Video>[].obs;
   final sourceController = Get.find<SourceController>();
   final auth = Get.find<ServiceHandler>();
@@ -64,6 +65,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   @override
   void initState() {
     super.initState();
+    _initSortGrouping();
     _initUserProgress();
     _initEpisodes();
     _updateChunkIndex();
@@ -107,6 +109,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
         oldLen != newLen || oldFirst != newFirst || oldLast != newLast;
 
     if (contentChanged) {
+      _initSortGrouping();
       _initEpisodes();
       _updateChunkIndex();
     }
@@ -128,8 +131,9 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       if (!mounted || _isUpdatingChunk) return;
       _isUpdatingChunk = true;
       try {
+        final episodesToChunk = _episodesForSelectedSortKey();
         final chunkedEpisodes = chunkEpisodes(
-            widget.episodeList, calculateChunkSize(widget.episodeList));
+            episodesToChunk, calculateChunkSize(episodesToChunk));
 
         if (chunkedEpisodes.length > 1) {
           final progress =
@@ -209,6 +213,38 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     }
   }
 
+  Set<String> _extractSortKeys() {
+    return widget.episodeList
+        .map((episode) => episode.sortKey?.trim())
+        .whereType<String>()
+        .where((sortKey) => sortKey.isNotEmpty)
+        .toSet();
+  }
+
+  void _initSortGrouping() {
+    final sortKeys = _extractSortKeys();
+    if (sortKeys.length <= 1) {
+      selectedSortKey.value = null;
+      return;
+    }
+
+    if (selectedSortKey.value == null ||
+        !sortKeys.contains(selectedSortKey.value)) {
+      selectedSortKey.value = sortKeys.first;
+    }
+  }
+
+  List<Episode> _episodesForSelectedSortKey() {
+    final sortKeys = _extractSortKeys();
+    if (sortKeys.length <= 1 || selectedSortKey.value == null) {
+      return widget.episodeList;
+    }
+
+    return widget.episodeList
+        .where((episode) => episode.sortKey?.trim() == selectedSortKey.value)
+        .toList();
+  }
+
   void _handleEpisodeSelection(Episode episode) async {
     selectedEpisode.value = episode;
     streamList.clear();
@@ -219,7 +255,11 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     if (widget.episodeList.isEmpty) {
       return Episode(number: "1", title: "Episode 1");
     }
-    return widget.episodeList
+    return widget.episodeList.firstWhereOrNull((e) {
+          return e.number == episode.number &&
+              (episode.sortKey == null || e.sortKey == episode.sortKey);
+        }) ??
+        widget.episodeList
             .firstWhereOrNull((e) => e.number == episode.number) ??
         widget.episodeList.first;
   }
@@ -250,8 +290,11 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       );
     }
 
+    _initSortGrouping();
+    final sortKeys = _extractSortKeys().toList()..sort();
+    final episodesToShow = _episodesForSelectedSortKey();
     final chunkedEpisodes = chunkEpisodes(
-        widget.episodeList, calculateChunkSize(widget.episodeList));
+        episodesToShow, calculateChunkSize(episodesToShow));
     final hasAnifyThumbs = widget.episodeList.isNotEmpty &&
         (widget.episodeList[0].thumbnail?.isNotEmpty ?? false);
 
@@ -262,6 +305,17 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
           padding: const EdgeInsets.symmetric(vertical: 10.0),
           child: Obx(() => _buildContinueButton()),
         ),
+        if (sortKeys.length > 1)
+          EpisodeSortKeySelector(
+            sortKeys: sortKeys,
+            selectedSortKey: selectedSortKey,
+            onSortKeySelected: (sortKey) {
+              if (selectedSortKey.value != sortKey) {
+                selectedSortKey.value = sortKey;
+                selectedChunkIndex.value = 1;
+              }
+            },
+          ),
         if (chunkedEpisodes.isNotEmpty)
           EpisodeChunkSelector(
             chunks: chunkedEpisodes,
