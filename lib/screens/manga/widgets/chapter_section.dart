@@ -7,6 +7,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/extensions/ExtensionSettings/ExtensionSettings.dart';
 import 'package:anymex/screens/manga/widgets/chapter_list_builder.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/no_source.dart';
@@ -16,6 +17,7 @@ import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
+import 'package:anymex_extension_runtime_bridge/Services/Aniyomi/Models/Source.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -44,6 +46,8 @@ class ChapterSection extends StatelessWidget {
     required this.getDetailsFromSource,
     required this.showWrongTitleModal,
   });
+
+  String _sourceDropdownValue(Source source) => source.id.toString();
 
   @override
   Widget build(BuildContext context) {
@@ -82,16 +86,6 @@ class ChapterSection extends StatelessWidget {
                     Expanded(
                       child: AnymexTextSpans(
                         spans: [
-                          if (!searchedTitle.value.contains('Searching') &&
-                              !searchedTitle.value.contains('No Match Found'))
-                            AnymexTextSpan(
-                              text: "Found: ",
-                              size: 14,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurface
-                                  .opaque(0.6),
-                            ),
                           AnymexTextSpan(
                             text: searchedTitle.value,
                             variant: TextVariant.semiBold,
@@ -161,6 +155,7 @@ class ChapterSection extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Obx(() => buildMangaSourceDropdown()),
+              Obx(() => buildLanguageDropdown()),
               const SizedBox(height: 20),
               const Row(
                 children: [
@@ -172,14 +167,20 @@ class ChapterSection extends StatelessWidget {
                 ],
               ),
               if (sourceController.activeMangaSource.value == null)
-                const NoSourceSelectedWidget()
+                const Padding(
+                  padding: EdgeInsets.only(top: 20),
+                  child: SizedBox(
+                    height: 320,
+                    child: NoSourceSelectedWidget(),
+                  ),
+                )
               else if (chapterList.value.isEmpty)
                 const SizedBox(
                   height: 500,
                   child: Center(child: AnymexProgressIndicator()),
                 )
               else
-                searchedTitle.value != "No match found"
+                searchedTitle.value.toLowerCase() != "no match found"
                     ? ChapterListBuilder(
                         chapters: chapterList,
                         anilistData: anilistData,
@@ -214,8 +215,7 @@ class ChapterSection extends StatelessWidget {
           ]
         : sourceController.installedMangaExtensions.map<DropdownItem>((source) {
             return DropdownItem(
-              value:
-                  '${source.name}-${source.lang?.toUpperCase()}-${source.runtimeType}',
+              value: _sourceDropdownValue(source),
               text: source.name?.toUpperCase() ?? 'Unknown Source',
               subtitle: source.lang?.toUpperCase() ?? 'Unknown',
               leadingIcon: AnymeXImage(
@@ -234,8 +234,7 @@ class ChapterSection extends StatelessWidget {
       final activeSource = sourceController.activeMangaSource.value;
       if (activeSource != null) {
         selectedItem = DropdownItem(
-          value:
-              '${activeSource.name}-${activeSource.lang?.toUpperCase()}-${activeSource.runtimeType}',
+          value: _sourceDropdownValue(activeSource),
           text: activeSource.name?.toUpperCase() ?? 'Unknown Source',
           subtitle: 'Manga • ${activeSource.lang?.toUpperCase() ?? 'Unknown'}',
           leadingIcon: AnymeXImage(
@@ -266,6 +265,60 @@ class ChapterSection extends StatelessWidget {
           Logger.i(e.toString());
         }
       },
+    );
+  }
+
+  void handleLanguageChange(String? value) async {
+    if (value == null) return;
+
+    final activeSource = sourceController.activeMangaSource.value as ASource?;
+    if (activeSource == null || activeSource.langs == null) return;
+
+    final newSubSource =
+        activeSource.langs!.firstWhere((s) => s.id.toString() == value);
+    sourceController.setActiveSource(newSubSource);
+
+    chapterList.value = [];
+    try {
+      await mapToAnilist();
+    } catch (e) {
+      Logger.i(e.toString());
+    }
+  }
+
+  Widget buildLanguageDropdown() {
+    final activeSource = sourceController.activeMangaSource.value;
+    if (activeSource is! ASource ||
+        activeSource.langs == null ||
+        activeSource.langs!.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    List<DropdownItem> items = activeSource.langs!.map<DropdownItem>((source) {
+      return DropdownItem(
+        value: source.id.toString(),
+        text: extensionLanguageName(source.lang),
+        subtitle: source.name ?? 'Unknown Source',
+        leadingIcon: AnymeXImage(
+          radius: 0,
+          imageUrl: extensionLanguageFlagUrl(source.lang),
+          height: 20,
+          width: 20,
+        ),
+      );
+    }).toList();
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: AnymexDropdown(
+        items: items,
+        selectedItem: items.firstWhere(
+            (item) => item.value == activeSource.id.toString(),
+            orElse: () => items.first),
+        label: "SELECT SUB-LANGUAGE",
+        icon: Icons.language_rounded,
+        onChanged: (DropdownItem item) => handleLanguageChange(item.value),
+      ),
     );
   }
 }

@@ -5,8 +5,11 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+enum AutoScrollTheme { material, ios }
+
 class ReaderAutoScrollMenu extends StatelessWidget {
-  const ReaderAutoScrollMenu({super.key});
+  final AutoScrollTheme theme;
+  const ReaderAutoScrollMenu({super.key, this.theme = AutoScrollTheme.ios});
 
   static const double _minAutoScrollSpeed = 1.0;
   static const double _maxAutoScrollSpeed = 10.0;
@@ -17,6 +20,7 @@ class ReaderAutoScrollMenu extends StatelessWidget {
     final controller = Get.find<ReaderController>();
     final mediaQuery = MediaQuery.of(context);
     final rightInset = mediaQuery.padding.right + 10;
+    final isMaterial = theme == AutoScrollTheme.material;
 
     return Obx(() {
       return Positioned(
@@ -38,12 +42,16 @@ class ReaderAutoScrollMenu extends StatelessWidget {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(28),
                   child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+                    filter: ImageFilter.blur(
+                        sigmaX: isMaterial ? 0 : 14,
+                        sigmaY: isMaterial ? 0 : 14),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                           vertical: 8, horizontal: 6),
                       decoration: BoxDecoration(
-                        color: Colors.white.opaque(0.4, iReallyMeanIt: true),
+                        color: isMaterial
+                            ? context.colors.surfaceContainer
+                            : Colors.white.opaque(0.4, iReallyMeanIt: true),
                         borderRadius: BorderRadius.circular(28),
                         border: Border.all(
                             color: context.colors.onSurface.opaque(0.18)),

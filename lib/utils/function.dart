@@ -10,6 +10,7 @@ import 'package:anymex/models/Media/relation.dart';
 import 'package:anymex/models/mangaupdates/news_item.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/models/models_convertor/carousel_mapper.dart';
+import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
@@ -185,10 +186,11 @@ Episode DEpisodeToEpisode(DEpisode chapter) {
   return Episode(
     number: chapter.episodeNumber,
     link: chapter.url,
+    sortKey: chapter.sortKey,
     title: chapter.name,
-    thumbnail: null,
-    desc: null,
-    filler: false,
+    thumbnail: chapter.thumbnail,
+    desc: chapter.description,
+    filler: chapter.filler,
   );
 }
 
@@ -217,13 +219,20 @@ String dateFormatHour(String timestamp) {
 
 List<Chapter> DEpisodeToChapter(List<DEpisode> chapters, String title) {
   return chapters.map((e) {
+    print(e.toJson());
     return Chapter(
-        title: e.name,
-        link: e.url,
-        scanlator: e.scanlator,
-        number:
-            ChapterRecognition.parseChapterNumber(title, e.name!).toDouble(),
-        releaseDate: calcTime(e.dateUpload ?? ''));
+      title: e.name,
+      link: e.url,
+      scanlator: e.scanlator,
+
+      /// so previously i was using this, now trying to extract from episode itself
+      // number:
+      //     ChapterRecognition.parseChapterNumber(title, e.name!).toDouble(),
+      number: e.episodeNumber.toDouble(),
+      releaseDate: e.dateUpload != null && e.dateUpload!.isNotEmpty
+          ? calcTime(e.dateUpload!)
+          : DateFormat('dd-MM-yyyy').format(DateTime.now()),
+    );
   }).toList();
 }
 
