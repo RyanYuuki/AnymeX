@@ -526,17 +526,38 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AnymexExpansionTile(
-                          title: 'Core',
+                          title: 'Experimental',
                           initialExpanded: false,
                           content: Builder(builder: (context) {
+                            final experimentalEnabled =
+                                PlayerUiKeys.playerExperimentalEnabled
+                                    .get<bool>(false);
                             final usingMpv = _isUsingMpvEngine();
                             final mpvCore =
                                 PlayerCoreVisualSettings.getMpvCoreSettings();
                             final betterCore = PlayerCoreVisualSettings
                                 .getBetterPlayerCoreSettings();
 
-                            if (usingMpv) {
-                              return Column(
+                            return Column(
+                              children: [
+                                CustomSwitchTile(
+                                  padding: const EdgeInsets.all(10),
+                                  icon: Icons.science_outlined,
+                                  title: 'Enable Experimental Settings',
+                                  description:
+                                      'Required for Core and Visual tuning. Keep off on low-end devices.',
+                                  switchValue: experimentalEnabled,
+                                  onChanged: (val) {
+                                    PlayerUiKeys.playerExperimentalEnabled
+                                        .set<bool>(val);
+                                    setState(() {});
+                                  },
+                                ),
+                                if (!experimentalEnabled)
+                                  _buildExperimentalGateMessage(
+                                      'Core and Visual settings are disabled. Enable Experimental to use them.'),
+                                if (experimentalEnabled && usingMpv)
+                                  Column(
                                 children: [
                                   CustomTile(
                                     padding: 10,
@@ -719,11 +740,10 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                     },
                                   ),
                                 ],
-                              );
-                            }
-
-                            return Column(
-                              children: [
+                              ),
+                                if (experimentalEnabled && !usingMpv)
+                                  Column(
+                                    children: [
                                 CustomSliderTile(
                                   icon: Icons.storage_rounded,
                                   title: 'Buffer Size',
@@ -778,6 +798,8 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                     setState(() {});
                                   },
                                 ),
+                              ],
+                                  ),
                               ],
                             );
                           })),
@@ -1297,6 +1319,37 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
               .textTheme
               .titleMedium
               ?.copyWith(fontFamily: 'Poppins-SemiBold')),
+    );
+  }
+
+  Widget _buildExperimentalGateMessage(String text) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.fromLTRB(10, 4, 10, 10),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: context.colors.primaryContainer.opaque(0.2),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: context.colors.primary.opaque(0.35),
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.info_outline_rounded, size: 18, color: context.colors.primary),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                color: context.colors.onSurface,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

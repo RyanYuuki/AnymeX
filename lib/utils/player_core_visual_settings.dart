@@ -2,6 +2,9 @@ import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/logger.dart';
 
 class PlayerCoreVisualSettings {
+  static bool get isExperimentalEnabled =>
+      PlayerUiKeys.playerExperimentalEnabled.get<bool>(false);
+
   static const Map<String, dynamic> mpvCoreDefaults = {
     'hwdec': 'auto-safe',
     'videoSync': 'audio',
@@ -51,24 +54,28 @@ class PlayerCoreVisualSettings {
   }
 
   static void setMpvCoreSetting(String key, dynamic value) {
+    if (!isExperimentalEnabled) return;
     final next = getMpvCoreSettings();
     next[key] = value;
     PlayerUiKeys.mpvCoreSettings.set(next);
   }
 
   static void setBetterPlayerCoreSetting(String key, dynamic value) {
+    if (!isExperimentalEnabled) return;
     final next = getBetterPlayerCoreSettings();
     next[key] = value;
     PlayerUiKeys.betterPlayerCoreSettings.set(next);
   }
 
   static void setMpvVisualSetting(String key, dynamic value) {
+    if (!isExperimentalEnabled) return;
     final next = getMpvVisualSettings();
     next[key] = value;
     PlayerUiKeys.mpvVisualSettings.set(next);
   }
 
   static Future<void> applyMpvCoreSettings(dynamic player) async {
+    if (!isExperimentalEnabled) return;
     if (player?.platform == null) return;
     final settings = getMpvCoreSettings();
     final mpv = player.platform as dynamic;
@@ -95,6 +102,7 @@ class PlayerCoreVisualSettings {
   }
 
   static Future<void> applyMpvVisualSettings(dynamic player) async {
+    if (!isExperimentalEnabled) return;
     if (player?.platform == null) return;
     final settings = getMpvVisualSettings();
     final mpv = player.platform as dynamic;
