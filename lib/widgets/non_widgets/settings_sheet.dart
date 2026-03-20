@@ -52,7 +52,7 @@ class SettingsSheet extends StatelessWidget {
         'type': ServicesType.mangabaka,
         'name': "MangaBaka",
         'icon': 'mangabaka-icon.png',
-        'desc': 'Manga tracking'
+        'desc': 'The largest database of manga & light novel'
       },
       if (serviceHandler.extensionService.installedExtensions.isNotEmpty &&
           serviceHandler.extensionService.installedMangaExtensions.isNotEmpty)
