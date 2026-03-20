@@ -60,6 +60,12 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
         'title': "Simkl",
         'color': const Color(0xFF000000),
       },
+      {
+        'service': serviceHandler.mangaBakaService,
+        'icon': 'assets/icons/mangabaka-icon.png',
+        'title': "MangaBaka",
+        'color': const Color(0xFFE8593C),
+      },
     ];
 
     services.sort((a, b) =>
@@ -414,7 +420,7 @@ class TrackingServiceCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Image.asset(
-        'assets/icons/$serviceIcon',
+        serviceIcon,
         errorBuilder: (c, o, s) => const Icon(IconlyBold.danger),
       ),
     );
