@@ -7,12 +7,10 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
     
-    <!-- New permissions for downloading and installing APKs -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
     <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES"/>
     <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION"/>
     
-    <!-- For Android 13+ (API 33+) - Granular media permissions -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
 
@@ -22,7 +20,6 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-feature android:name="android.hardware.sensor.accelerometer" android:required="false" />
     
-    <!-- TV app permissions and features -->
     <uses-feature android:name="android.software.leanback" android:required="false" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
 
@@ -49,114 +46,113 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
-                <!-- Add LEANBACK_LAUNCHER for TV -->
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER"/>
             </intent-filter>
 
-        <intent-filter android:label="Add Repo">
-            <action android:name="android.intent.action.VIEW" />
-            <category android:name="android.intent.category.DEFAULT" />
-            <category android:name="android.intent.category.BROWSABLE" />
-            <data android:scheme="anymex" android:host="add-repo" />
-        </intent-filter>  
+            <intent-filter android:label="Add Repo">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="anymex" android:host="add-repo" />
+            </intent-filter>  
 
-        <intent-filter android:label="Add Repo">
-            <action android:name="android.intent.action.VIEW" />
-            <category android:name="android.intent.category.DEFAULT" />
-            <category android:name="android.intent.category.BROWSABLE" />
-            <data android:scheme="dar" android:host="add-repo" />
-        </intent-filter>  
+            <intent-filter android:label="Add Repo">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="dar" android:host="add-repo" />
+            </intent-filter>  
 
-        <intent-filter android:label="Add Repo">
-            <action android:name="android.intent.action.VIEW" />
-            <category android:name="android.intent.category.DEFAULT" />
-            <category android:name="android.intent.category.BROWSABLE" />
-            <data android:scheme="sugoireads" android:host="add-repo" />
-        </intent-filter>  
+            <intent-filter android:label="Add Repo">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="sugoireads" android:host="add-repo" />
+            </intent-filter>  
 
-        <intent-filter android:label="Add Repo">
-            <action android:name="android.intent.action.VIEW" />
-            <category android:name="android.intent.category.DEFAULT" />
-            <category android:name="android.intent.category.BROWSABLE" />
-            <data android:scheme="mangayomi" android:host="add-repo" />
-        </intent-filter>  
+            <intent-filter android:label="Add Repo">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="mangayomi" android:host="add-repo" />
+            </intent-filter>  
 
-        <intent-filter android:label="Add Repo">
-            <action android:name="android.intent.action.VIEW" />
-            <category android:name="android.intent.category.DEFAULT" />
-            <category android:name="android.intent.category.BROWSABLE" />
-            <data android:scheme="tachiyomi" android:host="add-repo" />
-        </intent-filter>  
+            <intent-filter android:label="Add Repo">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="tachiyomi" android:host="add-repo" />
+            </intent-filter>  
 
-        <intent-filter android:label="Add Repo">
-            <action android:name="android.intent.action.VIEW" />
-            <category android:name="android.intent.category.DEFAULT" />
-            <category android:name="android.intent.category.BROWSABLE" />
-            <data android:scheme="aniyomi" android:host="add-repo" />
-        </intent-filter>  
+            <intent-filter android:label="Add Repo">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="aniyomi" android:host="add-repo" />
+            </intent-filter>  
 
-        <intent-filter android:label="Add Repo">
-            <action android:name="android.intent.action.VIEW" />
-            <category android:name="android.intent.category.DEFAULT" />
-            <category android:name="android.intent.category.BROWSABLE" />
-            <data android:scheme="cloudstreamrepo" />
-        </intent-filter>  
+            <intent-filter android:label="Add Repo">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="cloudstreamrepo" />
+            </intent-filter>  
 
-        <intent-filter android:label="Add Repo">
-            <action android:name="android.intent.action.VIEW" />
-            <category android:name="android.intent.category.DEFAULT" />
-            <category android:name="android.intent.category.BROWSABLE" />
-            <data android:scheme="sora" />
-        </intent-filter>  
+            <intent-filter android:label="Add Repo">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="sora" />
+            </intent-filter>  
 
-        <intent-filter android:label="Add Player Theme">
-            <action android:name="android.intent.action.VIEW" />
-            <category android:name="android.intent.category.DEFAULT" />
-            <category android:name="android.intent.category.BROWSABLE" />
-            <data android:scheme="anymex" android:host="theme" />
-        </intent-filter>
+            <intent-filter android:label="Add Player Theme">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="anymex" android:host="theme" />
+            </intent-filter>
 
-        <intent-filter android:label="Open AniList Link">
-            <action android:name="android.intent.action.VIEW" />
-            <category android:name="android.intent.category.DEFAULT" />
-            <category android:name="android.intent.category.BROWSABLE" />
-            <data android:scheme="https" />
-            <data android:scheme="anymex" />
-            <data android:host="anilist.co" />
-            <data android:host="www.anilist.co" />
-            <data android:host="anilist" />
-            <data android:pathPrefix="/anime/" />
-            <data android:pathPrefix="/manga/" />
-        </intent-filter>
+            <intent-filter android:label="Open AniList Link">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" />
+                <data android:scheme="anymex" />
+                <data android:host="anilist.co" />
+                <data android:host="www.anilist.co" />
+                <data android:host="anilist" />
+                <data android:pathPrefix="/anime/" />
+                <data android:pathPrefix="/manga/" />
+            </intent-filter>
 
-        <intent-filter android:label="Open MAL Link">
-            <action android:name="android.intent.action.VIEW" />
-            <category android:name="android.intent.category.DEFAULT" />
-            <category android:name="android.intent.category.BROWSABLE" />
-            <data android:scheme="https" />
-            <data android:scheme="anymex" />
-            <data android:host="myanimelist.net" />
-            <data android:host="www.myanimelist.net" />
-            <data android:host="myanimelist" />
-            <data android:host="mal" />
-            <data android:pathPrefix="/anime/" />
-            <data android:pathPrefix="/manga/" />
-        </intent-filter>
+            <intent-filter android:label="Open MAL Link">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" />
+                <data android:scheme="anymex" />
+                <data android:host="myanimelist.net" />
+                <data android:host="www.myanimelist.net" />
+                <data android:host="myanimelist" />
+                <data android:host="mal" />
+                <data android:pathPrefix="/anime/" />
+                <data android:pathPrefix="/manga/" />
+            </intent-filter>
 
-        <intent-filter android:label="Open Simkl Link">
-            <action android:name="android.intent.action.VIEW" />
-            <category android:name="android.intent.category.DEFAULT" />
-            <category android:name="android.intent.category.BROWSABLE" />
-            <data android:scheme="https" />
-            <data android:scheme="anymex" />
-            <data android:host="simkl.com" />
-            <data android:host="www.simkl.com" />
-            <data android:host="simkl" />
-            <data android:pathPrefix="/anime/" />
-            <data android:pathPrefix="/tv/" />
-            <data android:pathPrefix="/movie/" />
-            <data android:pathPrefix="/movies/" />
-        </intent-filter>
+            <intent-filter android:label="Open Simkl Link">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" />
+                <data android:scheme="anymex" />
+                <data android:host="simkl.com" />
+                <data android:host="www.simkl.com" />
+                <data android:host="simkl" />
+                <data android:pathPrefix="/anime/" />
+                <data android:pathPrefix="/tv/" />
+                <data android:pathPrefix="/movie/" />
+                <data android:pathPrefix="/movies/" />
+            </intent-filter>
         
         </activity>
 
@@ -174,9 +170,14 @@
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data android:scheme="anymex" android:host="oauth" android:pathPrefix="/github"/>
             </intent-filter>
+            <intent-filter android:label="Login MangaBaka">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="anymex" android:host="mangabaka-auth"/>
+            </intent-filter>
         </activity>
 
-        <!-- FileProvider for sharing downloaded APK files -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -208,7 +209,6 @@
         <intent>
             <action android:name="android.support.customtabs.action.CustomTabsService"/>
         </intent>
-        <!-- Add package installer query -->
         <intent>
             <action android:name="android.intent.action.INSTALL_PACKAGE"/>
         </intent>
