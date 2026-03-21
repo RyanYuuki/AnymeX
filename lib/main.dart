@@ -211,7 +211,10 @@ class _MainAppState extends State<MainApp> {
       onKeyEvent: (KeyEvent event) async {
         if (event is KeyDownEvent) {
           if (event.logicalKey == LogicalKeyboardKey.escape) {
-            Navigator.pop(Get.context!);
+            BuildContext escapeContext = Get.context!;
+            if (Navigator.of(escapeContext).canPop()) {
+              Navigator.pop(escapeContext);
+            }
           } else if (event.logicalKey == LogicalKeyboardKey.f11) {
             bool isFullScreen = await windowManager.isFullScreen();
             AnymexTitleBar.setFullScreen(!isFullScreen);

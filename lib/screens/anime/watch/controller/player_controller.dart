@@ -366,10 +366,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   Future<void> _initOrientations() async {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-    if (!Platform.isMacOS) {
       ever(isFullScreen,
-          (isFullScreen) => AnymexTitleBar.setFullScreen(isFullScreen));
-    }
+        (isFullScreen) => AnymexTitleBar.setFullScreen(isFullScreen));
 
     if (Platform.isAndroid || Platform.isIOS) {
       final orientation = await _getClosestLandscapeOrientation();
