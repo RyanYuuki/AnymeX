@@ -23,7 +23,7 @@ import 'package:http/http.dart' as http;
 
 const _kBaseApi = 'https://api.mangabaka.dev';
 const _kBaseAuth = 'https://mangabaka.org/auth/oauth2';
-const _kClientId = 'rhqyADkXfqdmFVZcslegTvgLvLeOpFdz';
+const _kClientId = 'TpsJLfZWOXJgqTlzYRFMQJHeZXXFnCyq';
 const _kRedirectUri = 'anymex://mangabaka-auth';
 const _kCallbackScheme = 'anymex';
 
