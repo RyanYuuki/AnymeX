@@ -26,7 +26,7 @@ import 'package:http/http.dart' as http;
 const _kBaseApi = 'https://api.mangabaka.dev';
 const _kBaseAuth = 'https://mangabaka.org/auth/oauth2';
 const _kClientId = 'TpsJLfZWOXJgqTlzYRFMQJHeZXXFnCyq';
-const _kRedirectUri = 'anymex://';
+const _kRedirectUri = 'anymex://callback';
 const _kCallbackScheme = 'anymex';
 
 class MangaBakaService extends GetxController
