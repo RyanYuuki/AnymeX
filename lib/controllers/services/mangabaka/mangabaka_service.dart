@@ -31,20 +31,22 @@ class MangaBakaService extends GetxController
     implements BaseService, OnlineService {
   @override
   RxBool isLoggedIn = false.obs;
-
   @override
   Rx<Profile> profileData = Profile().obs;
-
   @override
   RxList<TrackedMedia> animeList = <TrackedMedia>[].obs;
-
   @override
   RxList<TrackedMedia> mangaList = <TrackedMedia>[].obs;
-
   @override
   Rx<TrackedMedia> currentMedia = TrackedMedia().obs;
-
-  RxList<Media> trendingManga = <Media>[].obs;
+  RxList<Media> recentlyAddedManga = <Media>[].obs;
+  RxList<Media> popularManga = <Media>[].obs;
+  RxList<Media> popularManhwa = <Media>[].obs;
+  RxList<Media> popularManhua = <Media>[].obs;
+  RxList<Media> popularOel = <Media>[].obs;
+  RxList<Media> popularOther = <Media>[].obs;
+  RxList<Media> recentlyAddedNovels = <Media>[].obs;
+  RxList<Media> popularNovels = <Media>[].obs;
 
   String? _codeVerifier;
 
@@ -136,8 +138,8 @@ class MangaBakaService extends GetxController
     return response;
   }
 
-  Future<http.Response> _send(String method, String path,
-      Map<String, dynamic> body) async {
+  Future<http.Response> _send(
+      String method, String path, Map<String, dynamic> body) async {
     final uri = Uri.parse('$_kBaseApi$path');
     Future<http.Response> doRequest() async {
       final req = http.Request(method, uri)
@@ -236,8 +238,8 @@ class MangaBakaService extends GetxController
     try {
       final resp = await _get('/v1/my/profile');
       if (resp.statusCode != 200) return;
-      final data =
-          (jsonDecode(resp.body) as Map<String, dynamic>)['data'] as Map<String, dynamic>?;
+      final data = (jsonDecode(resp.body) as Map<String, dynamic>)['data']
+          as Map<String, dynamic>?;
       if (data != null) {
         profileData.value = Profile(
           id: data['id']?.toString(),
@@ -337,15 +339,26 @@ class MangaBakaService extends GetxController
     }
   }
 
-  Future<List<MangaBakaSeries>> searchSeries(String query,
-      {bool nsfw = false}) async {
+  Future<List<MangaBakaSeries>> _fetchSeries({
+    String? query,
+    List<MangaBakaType> types = const [],
+    String sortBy = 'popularity_desc',
+    bool nsfw = false,
+    int limit = 15,
+  }) async {
     try {
-      final parts = ['q=${Uri.encodeComponent(query)}'];
+      final parts = <String>[];
+      if (query != null && query.isNotEmpty) {
+        parts.add('q=${Uri.encodeComponent(query)}');
+      }
+      for (final t in types) {
+        parts.add('type=${t.apiValue}');
+      }
+      parts.add('sort_by=$sortBy');
+      parts.add('limit=$limit');
       if (!nsfw) {
-        parts.addAll([
-          'not_content_rating=erotica',
-          'not_content_rating=pornographic',
-        ]);
+        parts.add('not_content_rating=erotica');
+        parts.add('not_content_rating=pornographic');
       }
       final resp =
           await _get('/v1/series/search', rawQuery: parts.join('&'));
@@ -358,9 +371,14 @@ class MangaBakaService extends GetxController
       );
       return envelope.data ?? [];
     } catch (e) {
-      Logger.i('[MangaBaka] searchSeries error: $e');
+      Logger.i('[MangaBaka] _fetchSeries error: $e');
       return [];
     }
+  }
+
+  Future<List<MangaBakaSeries>> searchSeries(String query,
+      {bool nsfw = false}) async {
+    return _fetchSeries(query: query, nsfw: nsfw, limit: 25);
   }
 
   Future<bool> _writeLibraryEntry({
@@ -501,12 +519,57 @@ class MangaBakaService extends GetxController
 
   @override
   Future<void> fetchHomePage() async {
-    try {
-      final results = await searchSeries('', nsfw: false);
-      trendingManga.value = results.take(15).map((s) => s.toMedia()).toList();
-    } catch (e) {
-      Logger.i('[MangaBaka] fetchHomePage error: $e');
-    }
+    await Future.wait([
+      _loadMangaPageSections(),
+      _loadNovelPageSections(),
+    ]);
+  }
+
+  Future<void> _loadMangaPageSections() async {
+    final mangaTypes = [
+      MangaBakaType.manga,
+      MangaBakaType.manhwa,
+      MangaBakaType.manhua,
+      MangaBakaType.oel,
+      MangaBakaType.other,
+    ];
+
+    final results = await Future.wait([
+      // TODO: swap sortBy to 'latest' once MangaBaka API adds a latest/updated sort option.
+      // Currently using popularity_desc as a placeholder for the "Recently Added" section.
+      _fetchSeries(types: mangaTypes, sortBy: 'popularity_desc', limit: 15),
+      _fetchSeries(
+          types: [MangaBakaType.manga], sortBy: 'popularity_desc', limit: 15),
+      _fetchSeries(
+          types: [MangaBakaType.manhwa], sortBy: 'popularity_desc', limit: 15),
+      _fetchSeries(
+          types: [MangaBakaType.manhua], sortBy: 'popularity_desc', limit: 15),
+      _fetchSeries(
+          types: [MangaBakaType.oel], sortBy: 'popularity_desc', limit: 15),
+      _fetchSeries(
+          types: [MangaBakaType.other], sortBy: 'popularity_desc', limit: 15),
+    ]);
+
+    recentlyAddedManga.value = results[0].map((s) => s.toMedia()).toList();
+    popularManga.value = results[1].map((s) => s.toMedia()).toList();
+    popularManhwa.value = results[2].map((s) => s.toMedia()).toList();
+    popularManhua.value = results[3].map((s) => s.toMedia()).toList();
+    popularOel.value = results[4].map((s) => s.toMedia()).toList();
+    popularOther.value = results[5].map((s) => s.toMedia()).toList();
+  }
+
+  Future<void> _loadNovelPageSections() async {
+    final results = await Future.wait([
+      // TODO: swap sortBy to 'latest' once MangaBaka API adds a latest/updated sort option.
+      // Currently using popularity_desc as a placeholder for the "Recently Added" section.
+      _fetchSeries(
+          types: [MangaBakaType.novel], sortBy: 'popularity_desc', limit: 15),
+      _fetchSeries(
+          types: [MangaBakaType.novel], sortBy: 'popularity_desc', limit: 15),
+    ]);
+
+    recentlyAddedNovels.value = results[0].map((s) => s.toMedia()).toList();
+    popularNovels.value = results[1].map((s) => s.toMedia()).toList();
   }
 
   @override
@@ -537,32 +600,96 @@ class MangaBakaService extends GetxController
           type: ItemType.manga,
         );
       }),
-      Obx(() => trendingManga.isEmpty
+      Obx(() => recentlyAddedManga.isEmpty
           ? const Center(child: AnymexProgressIndicator())
           : ReusableCarousel(
-              data: trendingManga.value,
-              title: 'Trending on MangaBaka',
+              data: recentlyAddedManga.value,
+              title: 'Popular on MangaBaka',
               type: ItemType.manga,
+            )),
+      Obx(() => popularNovels.isEmpty
+          ? const SizedBox.shrink()
+          : ReusableCarousel(
+              data: popularNovels.value,
+              title: 'Popular Novels',
+              type: ItemType.novel,
             )),
     ].obs;
   }
 
+  // Manga page: trending manga, manhwa, manhua, oel, other
   @override
-  RxList<Widget> animeWidgets(BuildContext context) => <Widget>[].obs;
+  RxList<Widget> animeWidgets(BuildContext context) {
+    return [
+      Obx(() {
+        if (recentlyAddedManga.isEmpty) {
+          return const Center(child: AnymexProgressIndicator());
+        }
+        return Column(children: [
+          buildBigCarousel(recentlyAddedManga, false),
+          ReusableCarousel(
+            data: recentlyAddedManga.value,
+            title: 'Recently Added',
+            type: ItemType.manga,
+          ),
+          if (popularManga.isNotEmpty)
+            ReusableCarousel(
+              data: popularManga.value,
+              title: 'Popular Manga',
+              type: ItemType.manga,
+            ),
+          if (popularManhwa.isNotEmpty)
+            ReusableCarousel(
+              data: popularManhwa.value,
+              title: 'Popular Manhwa',
+              type: ItemType.manga,
+            ),
+          if (popularManhua.isNotEmpty)
+            ReusableCarousel(
+              data: popularManhua.value,
+              title: 'Popular Manhua',
+              type: ItemType.manga,
+            ),
+          if (popularOel.isNotEmpty)
+            ReusableCarousel(
+              data: popularOel.value,
+              title: 'OEL Comics',
+              type: ItemType.manga,
+            ),
+          if (popularOther.isNotEmpty)
+            ReusableCarousel(
+              data: popularOther.value,
+              title: 'Other',
+              type: ItemType.manga,
+            ),
+        ]);
+      }),
+    ].obs;
+  }
 
+  // Novel page: recently added + popular novels
   @override
   RxList<Widget> mangaWidgets(BuildContext context) {
     return [
-      Obx(() => trendingManga.isEmpty
-          ? const Center(child: AnymexProgressIndicator())
-          : Column(children: [
-              buildBigCarousel(trendingManga, true),
-              ReusableCarousel(
-                data: trendingManga.value,
-                title: 'Trending on MangaBaka',
-                type: ItemType.manga,
-              ),
-            ])),
+      Obx(() {
+        if (recentlyAddedNovels.isEmpty) {
+          return const Center(child: AnymexProgressIndicator());
+        }
+        return Column(children: [
+          buildBigCarousel(recentlyAddedNovels, true),
+          ReusableCarousel(
+            data: recentlyAddedNovels.value,
+            title: 'Recently Added Novels',
+            type: ItemType.novel,
+          ),
+          if (popularNovels.isNotEmpty)
+            ReusableCarousel(
+              data: popularNovels.value,
+              title: 'Popular Novels',
+              type: ItemType.novel,
+            ),
+        ]);
+      }),
     ].obs;
   }
 }
