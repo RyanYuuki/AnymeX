@@ -11,10 +11,12 @@ import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Service/base_service.dart';
 import 'package:anymex/models/Service/online_service.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
@@ -550,12 +552,12 @@ class MangaBakaService extends GetxController
           types: [MangaBakaType.other], sortBy: 'popularity_desc', limit: 15),
     ]);
 
-    recentlyAddedManga.value = results[0].map((s) => s.toMedia()).toList();
-    popularManga.value = results[1].map((s) => s.toMedia()).toList();
-    popularManhwa.value = results[2].map((s) => s.toMedia()).toList();
-    popularManhua.value = results[3].map((s) => s.toMedia()).toList();
-    popularOel.value = results[4].map((s) => s.toMedia()).toList();
-    popularOther.value = results[5].map((s) => s.toMedia()).toList();
+    recentlyAddedManga.assignAll(results[0].map((s) => s.toMedia()).toList());
+    popularManga.assignAll(results[1].map((s) => s.toMedia()).toList());
+    popularManhwa.assignAll(results[2].map((s) => s.toMedia()).toList());
+    popularManhua.assignAll(results[3].map((s) => s.toMedia()).toList());
+    popularOel.assignAll(results[4].map((s) => s.toMedia()).toList());
+    popularOther.assignAll(results[5].map((s) => s.toMedia()).toList());
   }
 
   Future<void> _loadNovelPageSections() async {
@@ -568,8 +570,8 @@ class MangaBakaService extends GetxController
           types: [MangaBakaType.novel], sortBy: 'popularity_desc', limit: 15),
     ]);
 
-    recentlyAddedNovels.value = results[0].map((s) => s.toMedia()).toList();
-    popularNovels.value = results[1].map((s) => s.toMedia()).toList();
+    recentlyAddedNovels.assignAll(results[0].map((s) => s.toMedia()).toList());
+    popularNovels.assignAll(results[1].map((s) => s.toMedia()).toList());
   }
 
   @override
@@ -587,7 +589,8 @@ class MangaBakaService extends GetxController
             .map((e) => Media(
                   id: e.id ?? '',
                   title: e.title ?? '',
-                  cover: e.coverImage,
+                  cover: e.poster,
+                  poster: e.poster ?? '?',
                   serviceType: ServicesType.mangabaka,
                   mediaType: ItemType.manga,
                 ))
@@ -603,14 +606,14 @@ class MangaBakaService extends GetxController
       Obx(() => recentlyAddedManga.isEmpty
           ? const Center(child: AnymexProgressIndicator())
           : ReusableCarousel(
-              data: recentlyAddedManga.value,
+              data: recentlyAddedManga,
               title: 'Popular on MangaBaka',
               type: ItemType.manga,
             )),
       Obx(() => popularNovels.isEmpty
           ? const SizedBox.shrink()
           : ReusableCarousel(
-              data: popularNovels.value,
+              data: popularNovels,
               title: 'Popular Novels',
               type: ItemType.novel,
             )),
@@ -628,37 +631,37 @@ class MangaBakaService extends GetxController
         return Column(children: [
           buildBigCarousel(recentlyAddedManga, false),
           ReusableCarousel(
-            data: recentlyAddedManga.value,
+            data: recentlyAddedManga,
             title: 'Recently Added',
             type: ItemType.manga,
           ),
           if (popularManga.isNotEmpty)
             ReusableCarousel(
-              data: popularManga.value,
+              data: popularManga,
               title: 'Popular Manga',
               type: ItemType.manga,
             ),
           if (popularManhwa.isNotEmpty)
             ReusableCarousel(
-              data: popularManhwa.value,
+              data: popularManhwa,
               title: 'Popular Manhwa',
               type: ItemType.manga,
             ),
           if (popularManhua.isNotEmpty)
             ReusableCarousel(
-              data: popularManhua.value,
+              data: popularManhua,
               title: 'Popular Manhua',
               type: ItemType.manga,
             ),
           if (popularOel.isNotEmpty)
             ReusableCarousel(
-              data: popularOel.value,
+              data: popularOel,
               title: 'OEL Comics',
               type: ItemType.manga,
             ),
           if (popularOther.isNotEmpty)
             ReusableCarousel(
-              data: popularOther.value,
+              data: popularOther,
               title: 'Other',
               type: ItemType.manga,
             ),
@@ -678,13 +681,13 @@ class MangaBakaService extends GetxController
         return Column(children: [
           buildBigCarousel(recentlyAddedNovels, true),
           ReusableCarousel(
-            data: recentlyAddedNovels.value,
+            data: recentlyAddedNovels,
             title: 'Recently Added Novels',
             type: ItemType.novel,
           ),
           if (popularNovels.isNotEmpty)
             ReusableCarousel(
-              data: popularNovels.value,
+              data: popularNovels,
               title: 'Popular Novels',
               type: ItemType.novel,
             ),

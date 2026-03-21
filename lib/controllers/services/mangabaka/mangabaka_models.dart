@@ -1,5 +1,6 @@
-import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 
 class MangaBakaResponse<T> {
   final int status;
@@ -226,8 +227,8 @@ class MangaBakaSeries {
       id: id.toString(),
       title: title,
       cover: coverUrl,
-      poster: coverUrl,
-      description: description,
+      poster: coverUrl ?? '?',
+      description: description ?? '?',
       totalChapters: totalChapters,
       mediaType: type == MangaBakaType.novel ? ItemType.novel : ItemType.manga,
       serviceType: ServicesType.mangabaka,
