@@ -162,7 +162,7 @@
             <action android:name="android.intent.action.VIEW"/>
             <category android:name="android.intent.category.DEFAULT"/>
             <category android:name="android.intent.category.BROWSABLE"/>
-            <data android:scheme="anymex" android:host="mangabaka-auth"/>
+            <data android:scheme="anymex"/>
         </intent-filter>
         
         </activity>
