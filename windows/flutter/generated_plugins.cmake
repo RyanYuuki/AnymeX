@@ -3,8 +3,8 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  anymex_extension_runtime_bridge
   app_links
-  dartotsu_extension_bridge
   desktop_webview_window
   dynamic_color
   firebase_core

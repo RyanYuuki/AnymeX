@@ -2,17 +2,16 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:anymex/controllers/settings/settings.dart';
-import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/video.dart';
 import 'package:anymex/screens/local_source/controller/tmdb_api.dart';
 import 'package:anymex/screens/local_source/model/detail_result.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
-import 'package:dartotsu_extension_bridge/Models/DEpisode.dart';
-import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart' as d;
+import 'package:anymex_extension_runtime_bridge/ExtensionManager.dart';
+import 'package:anymex_extension_runtime_bridge/Models/DEpisode.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart'
+    as d;
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -67,11 +66,10 @@ class LocalSourceController extends GetxController
   void onInit() {
     super.onInit();
     // Initialize local path
-    currentPath.value =
-        LocalSourceKeys.watchOfflinePath.get<String>('');
+    currentPath.value = LocalSourceKeys.watchOfflinePath.get<String>('');
 
-    List<String>? savedHistory = LocalSourceKeys.watchOfflinePathHistory
-        .get<List<String>>(<String>[]);
+    List<String>? savedHistory =
+        LocalSourceKeys.watchOfflinePathHistory.get<List<String>>(<String>[]);
     if (savedHistory != null) {
       pathHistory.value = savedHistory;
     }
@@ -93,10 +91,7 @@ class LocalSourceController extends GetxController
     ever(downloadPathHistory, (_) => _saveDownloadPathHistory());
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      selectedSource.value =
-          sourceController.installedDownloaderExtensions.isNotEmpty
-              ? sourceController.installedDownloaderExtensions.first
-              : null;
+      selectedSource.value = null;
 
       // supportsDownloads.value =
       //     sourceController.installedDownloaderExtensions.isNotEmpty;

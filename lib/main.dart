@@ -18,7 +18,6 @@ import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/controllers/ui/greeting.dart';
 import 'package:anymex/database/database.dart';
 import 'package:anymex/firebase_options.dart';
-
 import 'package:anymex/screens/anime/home_page.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
 import 'package:anymex/screens/extensions/ExtensionScreen.dart';
@@ -26,8 +25,9 @@ import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/my_library.dart';
 import 'package:anymex/screens/manga/home_page.dart';
 import 'package:anymex/services/commentum_service.dart';
-import 'package:anymex/utils/deeplink.dart';
+import 'package:anymex/utils/external_font_loader.dart';
 import 'package:anymex/utils/logger.dart';
+import 'package:anymex/utils/deeplink.dart';
 import 'package:anymex/utils/register_protocol/register_protocol.dart';
 import 'package:anymex/widgets/adaptive_wrapper.dart';
 import 'package:anymex/widgets/animation/more_page_transitions.dart';
@@ -47,7 +47,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';
-
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
@@ -82,9 +81,26 @@ class MyCustomScrollBehavior extends MaterialScrollBehavior {
       };
 }
 
+void initDeepLinkListener() async {
+  if (Platform.isLinux) return;
+
+  try {
+    final initialUri = await appLinks.getInitialLink();
+    if (initialUri != null) Deeplink.handleDeepLink(initialUri);
+  } catch (err) {
+    errorSnackBar('Error getting initial deep link: $err');
+  }
+
+  appLinks.uriLinkStream.listen(
+    (uri) => Deeplink.handleDeepLink(uri),
+    onError: (err) => errorSnackBar('Error Opening link: $err'),
+  );
+}
+
 void main(List<String> args) async {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
+    ExternalFontLoader.loadAllFonts();
 
     await Logger.init();
     await dotenv.load(fileName: ".env");
@@ -142,24 +158,6 @@ void main(List<String> args) async {
     },
   ));
 }
-
-void initDeepLinkListener() async {
-  if (Platform.isLinux) return;
-
-  try {
-    final initialUri = await appLinks.getInitialLink();
-    if (initialUri != null) Deeplink.handleDeepLink(initialUri);
-  } catch (err) {
-    errorSnackBar('Error getting initial deep link: $err');
-  }
-
-  appLinks.uriLinkStream.listen(
-    (uri) => Deeplink.handleDeepLink(uri),
-    onError: (err) => errorSnackBar('Error Opening link: $err'),
-  );
-}
-
-
 
 void _initializeGetxController() async {
   Get.put(OfflineStorageController());

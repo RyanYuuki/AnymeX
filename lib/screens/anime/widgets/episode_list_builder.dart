@@ -18,11 +18,10 @@ import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_chip.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
-import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -45,6 +44,7 @@ class EpisodeListBuilder extends StatefulWidget {
 
 class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   final selectedChunkIndex = 1.obs;
+  final RxnString selectedSortKey = RxnString();
   final RxList<hive.Video> streamList = <hive.Video>[].obs;
   final sourceController = Get.find<SourceController>();
   final auth = Get.find<ServiceHandler>();
@@ -56,7 +56,6 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   final Rx<Episode> continueEpisode = Episode(number: "1").obs;
   final Rx<Episode> savedEpisode = Episode(number: "1").obs;
   List<Episode> offlineEpisodes = [];
-  bool _initializedChunk = false;
   Worker? _authLoginWorker;
   Worker? _userProgressWorker;
   Worker? _currentMediaWorker;
@@ -66,6 +65,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   @override
   void initState() {
     super.initState();
+    _initSortGrouping();
     _initUserProgress();
     _initEpisodes();
     _updateChunkIndex();
@@ -109,7 +109,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
         oldLen != newLen || oldFirst != newFirst || oldLast != newLast;
 
     if (contentChanged) {
-      _initializedChunk = false;
+      _initSortGrouping();
       _initEpisodes();
       _updateChunkIndex();
     }
@@ -131,8 +131,9 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       if (!mounted || _isUpdatingChunk) return;
       _isUpdatingChunk = true;
       try {
+        final episodesToChunk = _episodesForSelectedSortKey();
         final chunkedEpisodes = chunkEpisodes(
-            widget.episodeList, calculateChunkSize(widget.episodeList));
+            episodesToChunk, calculateChunkSize(episodesToChunk));
 
         if (chunkedEpisodes.length > 1) {
           final progress =
@@ -147,7 +148,6 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
           if (selectedChunkIndex.value != nextIndex) {
             selectedChunkIndex.value = nextIndex;
           }
-          _initializedChunk = true;
         } else {
           if (selectedChunkIndex.value != 0) {
             selectedChunkIndex.value = 0;
@@ -213,6 +213,38 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     }
   }
 
+  Set<String> _extractSortKeys() {
+    return widget.episodeList
+        .map((episode) => episode.sortKey?.trim())
+        .whereType<String>()
+        .where((sortKey) => sortKey.isNotEmpty)
+        .toSet();
+  }
+
+  void _initSortGrouping() {
+    final sortKeys = _extractSortKeys();
+    if (sortKeys.length <= 1) {
+      selectedSortKey.value = null;
+      return;
+    }
+
+    if (selectedSortKey.value == null ||
+        !sortKeys.contains(selectedSortKey.value)) {
+      selectedSortKey.value = sortKeys.first;
+    }
+  }
+
+  List<Episode> _episodesForSelectedSortKey() {
+    final sortKeys = _extractSortKeys();
+    if (sortKeys.length <= 1 || selectedSortKey.value == null) {
+      return widget.episodeList;
+    }
+
+    return widget.episodeList
+        .where((episode) => episode.sortKey?.trim() == selectedSortKey.value)
+        .toList();
+  }
+
   void _handleEpisodeSelection(Episode episode) async {
     selectedEpisode.value = episode;
     streamList.clear();
@@ -223,7 +255,11 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     if (widget.episodeList.isEmpty) {
       return Episode(number: "1", title: "Episode 1");
     }
-    return widget.episodeList
+    return widget.episodeList.firstWhereOrNull((e) {
+          return e.number == episode.number &&
+              (episode.sortKey == null || e.sortKey == episode.sortKey);
+        }) ??
+        widget.episodeList
             .firstWhereOrNull((e) => e.number == episode.number) ??
         widget.episodeList.first;
   }
@@ -254,8 +290,11 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       );
     }
 
+    _initSortGrouping();
+    final sortKeys = _extractSortKeys().toList()..sort();
+    final episodesToShow = _episodesForSelectedSortKey();
     final chunkedEpisodes = chunkEpisodes(
-        widget.episodeList, calculateChunkSize(widget.episodeList));
+        episodesToShow, calculateChunkSize(episodesToShow));
     final hasAnifyThumbs = widget.episodeList.isNotEmpty &&
         (widget.episodeList[0].thumbnail?.isNotEmpty ?? false);
 
@@ -266,6 +305,17 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
           padding: const EdgeInsets.symmetric(vertical: 10.0),
           child: Obx(() => _buildContinueButton()),
         ),
+        if (sortKeys.length > 1)
+          EpisodeSortKeySelector(
+            sortKeys: sortKeys,
+            selectedSortKey: selectedSortKey,
+            onSortKeySelected: (sortKey) {
+              if (selectedSortKey.value != sortKey) {
+                selectedSortKey.value = sortKey;
+                selectedChunkIndex.value = 1;
+              }
+            },
+          ),
         if (chunkedEpisodes.isNotEmpty)
           EpisodeChunkSelector(
             chunks: chunkedEpisodes,
@@ -352,25 +402,50 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       builder: (context) {
         return SizedBox(
           width: double.infinity,
-          child: FutureBuilder<List<Video>>(
-            future: sourceController.activeSource.value!.methods
-                .getVideoList(DEpisode(episodeNumber: ep.number, url: ep.link)),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return _buildScrapingLoadingState(true);
-              } else if (snapshot.hasError) {
-                return _buildErrorState(snapshot.error.toString());
-              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return _buildEmptyState();
-              } else {
-                streamList.value = snapshot.data
-                        ?.map((e) => hive.Video.fromVideo(e))
-                        .toList() ??
-                    [];
-                return _buildServerList();
-              }
-            },
-          ),
+          child: sourceController.activeSource.value!.methods
+                      .getVideoListStream(
+                          DEpisode(episodeNumber: ep.number, url: ep.link)) !=
+                  null
+              ? StreamBuilder(
+                  stream: sourceController.activeSource.value!.methods
+                      .getVideoListStream(
+                          DEpisode(episodeNumber: ep.number, url: ep.link)),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return _buildScrapingLoadingState(true);
+                    } else if (snapshot.hasError) {
+                      return _buildErrorState(snapshot.error.toString());
+                    } else if (!snapshot.hasData) {
+                      return _buildEmptyState();
+                    } else {
+                      if (snapshot.data != null) {
+                        streamList.value
+                            .add(hive.Video.fromVideo(snapshot.data!));
+                      }
+                      return _buildServerList();
+                    }
+                  },
+                )
+              : FutureBuilder<List<Video>>(
+                  future: sourceController.activeSource.value!.methods
+                      .getVideoList(
+                          DEpisode(episodeNumber: ep.number, url: ep.link)),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return _buildScrapingLoadingState(true);
+                    } else if (snapshot.hasError) {
+                      return _buildErrorState(snapshot.error.toString());
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return _buildEmptyState();
+                    } else {
+                      streamList.value = snapshot.data
+                              ?.map((e) => hive.Video.fromVideo(e))
+                              .toList() ??
+                          [];
+                      return _buildServerList();
+                    }
+                  },
+                ),
         );
       },
     );

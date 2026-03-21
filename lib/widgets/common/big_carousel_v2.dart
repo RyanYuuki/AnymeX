@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'dart:ui';
-import 'package:flutter/gestures.dart';
 
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
@@ -10,10 +9,9 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/carousel/carousel_types.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -68,8 +66,7 @@ class _BigCarouselV2State extends State<BigCarouselV2> {
                   isActive: isActive,
                   carouselType: widget.carouselType,
                   onTap: () => navigateToDetailsPage(item),
-                  onShowDescription: () =>
-                      _showDescriptionSheet(context, item),
+                  onShowDescription: () => _showDescriptionSheet(context, item),
                 );
               },
               options: CarouselOptions(
@@ -81,8 +78,7 @@ class _BigCarouselV2State extends State<BigCarouselV2> {
                 enableInfiniteScroll: true,
                 autoPlay: !kDebugMode,
                 autoPlayInterval: const Duration(seconds: 6),
-                autoPlayAnimationDuration:
-                    const Duration(milliseconds: 800),
+                autoPlayAnimationDuration: const Duration(milliseconds: 800),
                 autoPlayCurve: Curves.fastOutSlowIn,
                 scrollDirection: Axis.horizontal,
                 onPageChanged: (index, reason) {
@@ -145,8 +141,8 @@ class _BigCarouselV2State extends State<BigCarouselV2> {
                     ),
                   ),
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 16),
                     decoration: BoxDecoration(
                       border: Border(
                         bottom: BorderSide(
@@ -243,7 +239,8 @@ class _BigCarouselV2State extends State<BigCarouselV2> {
                                         Icon(
                                           Icons.description_outlined,
                                           size: 48,
-                                          color: colorScheme.onSurface.opaque(0.3),
+                                          color:
+                                              colorScheme.onSurface.opaque(0.3),
                                         ),
                                         const SizedBox(height: 16),
                                         Text(
@@ -252,7 +249,8 @@ class _BigCarouselV2State extends State<BigCarouselV2> {
                                               .textTheme
                                               .titleMedium
                                               ?.copyWith(
-                                                color: colorScheme.onSurface.opaque(0.6),
+                                                color: colorScheme.onSurface
+                                                    .opaque(0.6),
                                                 fontWeight: FontWeight.w500,
                                               ),
                                         ),
@@ -263,7 +261,8 @@ class _BigCarouselV2State extends State<BigCarouselV2> {
                                               .textTheme
                                               .bodySmall
                                               ?.copyWith(
-                                                color: colorScheme.onSurface.opaque(0.4),
+                                                color: colorScheme.onSurface
+                                                    .opaque(0.4),
                                               ),
                                           textAlign: TextAlign.center,
                                         ),
@@ -272,7 +271,8 @@ class _BigCarouselV2State extends State<BigCarouselV2> {
                                   ),
                                 ] else ...[
                                   Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       ClipRRect(
                                         borderRadius: BorderRadius.circular(12),
@@ -287,7 +287,8 @@ class _BigCarouselV2State extends State<BigCarouselV2> {
                                       const SizedBox(width: 16),
                                       Expanded(
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Text(
                                               media.title,
@@ -301,19 +302,26 @@ class _BigCarouselV2State extends State<BigCarouselV2> {
                                             Wrap(
                                               spacing: 8,
                                               runSpacing: 8,
-                                              children: (media.genres ?? []).map((genre) {
+                                              children: (media.genres ?? [])
+                                                  .map((genre) {
                                                 return Container(
-                                                  padding: const EdgeInsets.symmetric(
-                                                      horizontal: 8, vertical: 4),
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 8,
+                                                      vertical: 4),
                                                   decoration: BoxDecoration(
-                                                    color: colorScheme.primary.opaque(0.1),
-                                                    borderRadius: BorderRadius.circular(8),
+                                                    color: colorScheme.primary
+                                                        .opaque(0.1),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8),
                                                   ),
                                                   child: Text(
                                                     genre,
                                                     style: TextStyle(
                                                       fontSize: 10,
-                                                      color: colorScheme.primary,
+                                                      color:
+                                                          colorScheme.primary,
                                                     ),
                                                   ),
                                                 );
@@ -325,7 +333,8 @@ class _BigCarouselV2State extends State<BigCarouselV2> {
                                     ],
                                   ),
                                   const SizedBox(height: 24),
-                                  Divider(color: colorScheme.onSurface.opaque(0.1)),
+                                  Divider(
+                                      color: colorScheme.onSurface.opaque(0.1)),
                                   const SizedBox(height: 16),
                                   Text(
                                     "Synopsis",

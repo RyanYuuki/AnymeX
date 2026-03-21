@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
@@ -28,8 +29,8 @@ import 'package:anymex/utils/subtitle_translator.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_titlebar.dart';
 import 'package:anymex/widgets/non_widgets/anymex_toast.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
-import 'package:dartotsu_extension_bridge/Models/DEpisode.dart' as d;
+import 'package:anymex_extension_runtime_bridge/ExtensionManager.dart';
+import 'package:anymex_extension_runtime_bridge/Models/DEpisode.dart' as d;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -447,7 +448,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       isLeftLandscaped = true;
     }
   }
-  
+
   void _performSegmentSkip(aniskip.SkipIntervals interval) {
     final duration = Duration(seconds: interval.end);
     currentPosition.value = duration;
@@ -488,7 +489,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       }
     });
   }
-  
+
   void _updateSkipUiState() {
     if (skipTimes == null) return;
 
@@ -639,7 +640,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     await _basePlayer.open(url, headers: headers, startPosition: startPosition);
   }
-  
+
   void _initializeAniSkip() {
     isOPSkippedOnce.value = false;
     isEDSkippedOnce.value = false;
@@ -778,7 +779,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }));
 
     _subscriptions.add(_basePlayer.errorStream.listen((e) {
-      Logger.i(e);
+      Logger.i('${e} => ${selectedVideo.value?.headers}');
       if (e.toString().contains('Failed to open')) {
         snackBar('Failed, Dont Bother..');
       }
@@ -962,7 +963,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
       selectedVideo.value = matched;
       _extractSubtitles();
-      
+
       _initializeAniSkip();
 
       final savedEpisodeData = savedEpisode;

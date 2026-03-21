@@ -38,7 +38,7 @@ import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:expandable_page_view/expandable_page_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -184,15 +184,24 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   }
 
   void _applyFillerInfo() {
-    if (fillerEpisodes.isEmpty || episodeList.isEmpty) return;
+    if (fillerEpisodes.isEmpty ||
+        (episodeList.isEmpty && rawEpisodes.isEmpty)) {
+      return;
+    }
 
     bool updated = false;
-    for (var ep in episodeList) {
-      if (fillerEpisodes.containsKey(ep.number)) {
-        ep.filler = true;
-        updated = true;
+
+    void markFillers(List<Episode> episodes) {
+      for (final ep in episodes) {
+        if (fillerEpisodes.containsKey(ep.number) && ep.filler != true) {
+          ep.filler = true;
+          updated = true;
+        }
       }
     }
+
+    markFillers(episodeList);
+    markFillers(rawEpisodes);
 
     if (updated && mounted) setState(() {});
   }
@@ -302,7 +311,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         '${sourceController.activeSource.value?.id}-${anilistData?.id}-${anilistData?.serviceType.index}';
     final savedTitle = DynamicKeys.mappedMediaTitle.get<String?>(key, null);
     final mappedData = await mapMedia(
-        formatTitles(widget.media) ?? [], searchedTitle,
+        formatTitles(anilistData ?? widget.media) ?? [], searchedTitle,
         savedTitle: savedTitle);
     if (_isStaleSourceRequest(activeRequestId) || !mounted) {
       return;
@@ -313,14 +322,43 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   }
 
   List<String>? formatTitles(Media media) {
-    return ['${media.title}*ANIME', media.romajiTitle];
+    String sanitize(String value) {
+      final trimmed = value.trim();
+      if (trimmed.isEmpty || trimmed == '?' || trimmed == '??') return '';
+      return trimmed;
+    }
+
+    final englishCandidates = [
+      sanitize(anilistData?.title ?? ''),
+      sanitize(media.title),
+      sanitize(widget.media.title),
+    ];
+    final romajiCandidates = [
+      sanitize(anilistData?.romajiTitle ?? ''),
+      sanitize(media.romajiTitle),
+      sanitize(widget.media.romajiTitle),
+    ];
+
+    final englishTitle =
+        englishCandidates.firstWhere((title) => title.isNotEmpty, orElse: () {
+      return romajiCandidates.firstWhere((title) => title.isNotEmpty,
+          orElse: () => 'Unknown Title');
+    });
+
+    final romajiTitle =
+        romajiCandidates.firstWhere((title) => title.isNotEmpty, orElse: () {
+      return englishTitle;
+    });
+
+    return ['$englishTitle*ANIME', romajiTitle];
   }
 
   void _processExtensionData(Media tempData) async {
     final episodes = tempData.mediaContent!.reversed.toList();
     final convertedEpisodes = _convertEpisodes(episodes, tempData.title);
-    rawEpisodes.value = _createRawEpisodes(convertedEpisodes);
-    episodeList.value = _renewEpisodeData(convertedEpisodes);
+    rawEpisodes.assignAll(_cloneEpisodes(convertedEpisodes));
+    episodeList.assignAll(_renewEpisodeData(_cloneEpisodes(convertedEpisodes)));
+    searchedTitle.value = "Found: ${tempData.title}";
     setState(() {});
   }
 
@@ -341,9 +379,9 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         episodeFuture.title ?? '',
       );
 
-      rawEpisodes.value = _createRawEpisodes(episodes);
-      episodeList.value = _renewEpisodeData(episodes);
-      searchedTitle.value = media.title;
+      rawEpisodes.assignAll(_cloneEpisodes(episodes));
+      episodeList.assignAll(_renewEpisodeData(_cloneEpisodes(episodes)));
+      searchedTitle.value = "Found: ${media.title}";
       _applyFillerInfo();
       if (mounted) {
         setState(() {});
@@ -382,11 +420,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     }
   }
 
-  List<Episode> _createRawEpisodes(List<Episode> eps) {
-    final newEps = eps
-        .map((e) => Episode(title: e.title, number: e.number, link: e.link))
-        .toList();
-    return newEps;
+  List<Episode> _cloneEpisodes(List<Episode> episodes) {
+    return episodes.map((episode) => Episode.fromJson(episode.toJson())).toList();
   }
 
   List<Episode> _convertEpisodes(List<dynamic> episodes, String title) {
@@ -666,14 +701,11 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
           children: [
             Text(label,
                 style: TextStyle(
-                    fontSize: 11,
-                    color: context.colors.onSurface.opaque(0.5))),
+                    fontSize: 11, color: context.colors.onSurface.opaque(0.5))),
             const SizedBox(height: 2),
             Text(value,
                 style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: color)),
+                    fontSize: 14, fontWeight: FontWeight.w500, color: color)),
           ],
         ),
       ),
@@ -681,13 +713,16 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   }
 
   Widget _buildProgressContainer(BuildContext context) {
-    final int totalEps = int.tryParse(anilistData?.totalEpisodes?.toString() ?? '0') ?? 0;
+    final int totalEps =
+        int.tryParse(anilistData?.totalEpisodes?.toString() ?? '0') ?? 0;
     final int airedEps = (anilistData?.nextAiringEpisode?.episode ?? 1) - 1;
     final int displayTotal = totalEps > 0 ? totalEps : airedEps;
     final int watchedEps =
         int.tryParse(currentAnime.value?.episodeCount?.toString() ?? '0') ?? 0;
     final int remainingEps = (displayTotal - watchedEps).clamp(0, displayTotal);
-    final int? epDuration = int.tryParse((anilistData?.duration?.toString() ?? '').replaceAll(RegExp(r'[^0-9]'), ''));
+    final int? epDuration = int.tryParse(
+        (anilistData?.duration?.toString() ?? '')
+            .replaceAll(RegExp(r'[^0-9]'), ''));
     final int totalMins = displayTotal * (epDuration ?? 0);
     final int watchedMins = watchedEps * (epDuration ?? 0);
     final int remainingMins = remainingEps * (epDuration ?? 0);
@@ -737,7 +772,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
-                  color: context.colors.primary.opaque(0.1, iReallyMeanIt: true),
+                  color:
+                      context.colors.primary.opaque(0.1, iReallyMeanIt: true),
                 ),
                 child: Text(
                   '${formatProgress(currentChapter: currentAnime.value?.episodeCount ?? 0, totalChapters: anilistData?.totalEpisodes ?? 0, altLength: 0)}%',
@@ -750,7 +786,6 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
               ),
             ],
           ),
-
           if (displayTotal > 0 && epDuration != null && epDuration > 0) ...[
             const SizedBox(height: 10),
             Row(
@@ -942,7 +977,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
           animeProgress: animeProgress,
           currentAnime: currentAnime,
           media: anilistData ?? widget.media,
-          onUpdate: (id, score, status, progress, startedAt, completedAt, isPrivate) async {
+          onUpdate: (id, score, status, progress, startedAt, completedAt,
+              isPrivate) async {
             final fetcher = widget.media.serviceType;
             final id = fetcher.onlineService.currentMedia.value.id;
             await fetcher.onlineService.updateListEntry(UpdateListEntryParams(

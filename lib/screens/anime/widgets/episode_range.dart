@@ -78,3 +78,78 @@ class EpisodeChunkSelector extends StatelessWidget {
     );
   }
 }
+
+class EpisodeSortKeySelector extends StatelessWidget {
+  final RxnString selectedSortKey;
+  final ValueChanged<String> onSortKeySelected;
+  final List<String> sortKeys;
+
+  const EpisodeSortKeySelector({
+    super.key,
+    required this.selectedSortKey,
+    required this.onSortKeySelected,
+    required this.sortKeys,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colors;
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child: Row(
+        children: List.generate(
+          sortKeys.length,
+          (index) {
+            final sortKey = sortKeys[index];
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(0, 10, 10, 5),
+              child: Obx(() {
+                final isSelected = selectedSortKey.value == sortKey;
+
+                return InkWell(
+                  onTap: () {
+                    onSortKeySelected(sortKey);
+                  },
+                  borderRadius: BorderRadius.circular(12),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? colorScheme.primary.opaque(0.4, iReallyMeanIt: true)
+                          : colorScheme.surfaceContainerHigh
+                              .opaque(0.4, iReallyMeanIt: true),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: isSelected
+                            ? colorScheme.primary.opaque(0.4)
+                            : colorScheme.outline.opaque(0.4),
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Text(
+                      sortKey,
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.bold,
+                        color: isSelected
+                            ? colorScheme.primary
+                            : colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
+                );
+              }),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}

@@ -3,7 +3,6 @@ import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/utils/subtitle_style_renderer.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 class SubtitleText extends StatelessWidget {
@@ -12,11 +11,13 @@ class SubtitleText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final subtitleAnimation = controller.settings.transitionSubtitle;
-    const animDuration = Duration(milliseconds: 200);
-    const switchDuration = Duration(milliseconds: 250);
-
     return Obx(() {
+      final subtitleAnimation = controller.playerSettings.transitionSubtitle;
+      final animDuration =
+          subtitleAnimation ? const Duration(milliseconds: 200) : Duration.zero;
+      final switchDuration =
+          subtitleAnimation ? const Duration(milliseconds: 250) : Duration.zero;
+
       if (controller.subtitleText.isEmpty) return const SizedBox.shrink();
 
       final htmlRx = RegExp(r'<[^>]*>');
@@ -102,47 +103,25 @@ class SubtitleText extends StatelessWidget {
       final finalOpacity =
           baseOpacity * controller.playerSettings.subtitleOpacity;
 
-      final opacityWidget = subtitleAnimation
-          ? AnimatedOpacity(
+      return AnimatedPositioned(
+        right: 0,
+        left: 0,
+        duration: animDuration,
+        curve: Curves.easeInOut,
+        bottom: bottomPosition.toDouble(),
+        child: IgnorePointer(
+          ignoring: true,
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: AnimatedOpacity(
               opacity: finalOpacity,
               duration: animDuration,
               curve: Curves.easeInOut,
               child: subtitleBox,
-            )
-          : Opacity(
-              opacity: finalOpacity,
-              child: subtitleBox,
-            );
-
-      final positionWidget = subtitleAnimation
-          ? AnimatedPositioned(
-              right: 0,
-              left: 0,
-              duration: animDuration,
-              curve: Curves.easeInOut,
-              bottom: bottomPosition.toDouble(),
-              child: IgnorePointer(
-                ignoring: true,
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: opacityWidget,
-                ),
-              ),
-            )
-          : Positioned(
-              right: 0,
-              left: 0,
-              bottom: bottomPosition.toDouble(),
-              child: IgnorePointer(
-                ignoring: true,
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: opacityWidget,
-                ),
-              ),
-            );
-
-      return positionWidget;
+            ),
+          ),
+        ),
+      );
     });
   }
 }
