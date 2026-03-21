@@ -77,6 +77,15 @@ enum MangaBakaType {
         _ => other,
       };
 
+  String get apiValue => switch (this) {
+        manga => 'manga',
+        novel => 'novel',
+        manhwa => 'manhwa',
+        manhua => 'manhua',
+        oel => 'oel',
+        other => 'other',
+      };
+
   String get displayName => switch (this) {
         manga => 'Manga',
         novel => 'Novel',
@@ -194,6 +203,10 @@ class MangaBakaSeries {
   factory MangaBakaSeries.fromJson(Map<String, dynamic> json) {
     final cover = json['cover'] as Map<String, dynamic>?;
     final raw = cover?['raw'] as Map<String, dynamic>?;
+    final source = json['source'] as Map<String, dynamic>?;
+    final anilistSource = source?['anilist'] as Map<String, dynamic>?;
+    final malSource = source?['my_anime_list'] as Map<String, dynamic>?;
+
     return MangaBakaSeries(
       id: json['id'] as int,
       title: json['title'] as String? ?? '',
@@ -203,8 +216,8 @@ class MangaBakaSeries {
       type: MangaBakaType.fromString(json['type'] as String?),
       totalChapters: json['total_chapters'] as String?,
       finalVolume: json['final_volume'] as String?,
-      anilistId: json['anilist_id'] as int?,
-      malId: json['mal_id'] as int?,
+      anilistId: anilistSource?['id'] as int?,
+      malId: malSource?['id'] as int?,
     );
   }
 
