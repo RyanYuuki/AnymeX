@@ -516,50 +516,48 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       builder: (context) {
         return SizedBox(
           width: double.infinity,
-          child: 
-          // sourceController.activeSource.value!.methods
-          //             .getVideoListStream(sourceEpisode) !=
-          //         null
-          //     ? StreamBuilder(
-          //         stream: sourceController.activeSource.value!.methods
-          //             .getVideoListStream(sourceEpisode),
-          //         builder: (context, snapshot) {
-          //           if (snapshot.connectionState == ConnectionState.waiting &&
-          //               streamList.isEmpty) {
-          //             isServerStreamLoading.value = true;
-          //             return _buildScrapingLoadingState(true);
-          //           } else if (snapshot.hasError) {
-          //             isServerStreamLoading.value = false;
-          //             return _buildErrorState(snapshot.error.toString());
-          //           } else if (!snapshot.hasData && streamList.isEmpty) {
-          //             isServerStreamLoading.value = false;
-          //             return _buildEmptyState();
-          //           } else {
-          //             if (snapshot.data != null) {
-          //               final nextVideo = hive.Video.fromVideo(snapshot.data!);
-          //               final alreadyExists = streamList.any((video) =>
-          //                   video.quality == nextVideo.quality &&
-          //                   video.originalUrl == nextVideo.originalUrl);
-          //               if (!alreadyExists) {
-          //                 streamList.add(nextVideo);
-          //               }
-          //             }
-          //             isServerStreamLoading.value =
-          //                 snapshot.connectionState != ConnectionState.done;
+          child: sourceController.activeSource.value!.methods
+                      .getVideoListStream(sourceEpisode) !=
+                  null
+              ? StreamBuilder(
+                  stream: sourceController.activeSource.value!.methods
+                      .getVideoListStream(sourceEpisode),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting &&
+                        streamList.isEmpty) {
+                      isServerStreamLoading.value = true;
+                      return _buildScrapingLoadingState(true);
+                    } else if (snapshot.hasError) {
+                      isServerStreamLoading.value = false;
+                      return _buildErrorState(snapshot.error.toString());
+                    } else if (!snapshot.hasData && streamList.isEmpty) {
+                      isServerStreamLoading.value = false;
+                      return _buildEmptyState();
+                    } else {
+                      if (snapshot.data != null) {
+                        final nextVideo = hive.Video.fromVideo(snapshot.data!);
+                        final alreadyExists = streamList.any((video) =>
+                            video.quality == nextVideo.quality &&
+                            video.originalUrl == nextVideo.originalUrl);
+                        if (!alreadyExists) {
+                          streamList.add(nextVideo);
+                        }
+                      }
+                      isServerStreamLoading.value =
+                          snapshot.connectionState != ConnectionState.done;
 
-          //             if (streamList.isEmpty &&
-          //                 snapshot.connectionState == ConnectionState.done) {
-          //               return _buildEmptyState();
-          //             }
+                      if (streamList.isEmpty &&
+                          snapshot.connectionState == ConnectionState.done) {
+                        return _buildEmptyState();
+                      }
 
-          //             return _buildServerList(
-          //               showBottomLoader: isServerStreamLoading.value,
-          //             );
-          //           }
-          //         },
-          //       )
-              // :
-               FutureBuilder<List<Video>>(
+                      return _buildServerList(
+                        showBottomLoader: isServerStreamLoading.value,
+                      );
+                    }
+                  },
+                )
+              : FutureBuilder<List<Video>>(
                   future: sourceController.activeSource.value!.methods
                       .getVideoList(sourceEpisode),
                   builder: (context, snapshot) {
