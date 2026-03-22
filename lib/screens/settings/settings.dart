@@ -5,6 +5,7 @@ import 'package:anymex/screens/settings/sub_settings/settings_backup.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_common.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_experimental.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_extensions.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_logs.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_reader.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_storage_manager.dart';
@@ -16,7 +17,11 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:anymex_extension_runtime_bridge/Services/Aniyomi/Models/Source.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
@@ -128,9 +133,11 @@ class _SettingsPageState extends State<SettingsPage> {
                 const SizedBox(height: 10),
                 CustomTile(
                   icon: HugeIcons.strokeRoundedFile01,
-                  title: "Share Logs",
-                  description: "Share Logs of the App",
-                  onTap: () async => await Logger.share(),
+                  title: "Logs",
+                  description: "Manage log capture and share saved logs",
+                  onTap: () {
+                    navigate(() => const SettingsLogs());
+                  },
                 ),
                 const SizedBox(height: 10),
                 CustomTile(
@@ -141,6 +148,22 @@ class _SettingsPageState extends State<SettingsPage> {
                     navigate(() => const AboutPage());
                   },
                 ),
+                if (kDebugMode) ...[
+                  const SizedBox(height: 10),
+                  CustomTile(
+                    icon: HugeIcons.strokeRoundedInformationCircle,
+                    title: "Test",
+                    description: "",
+                    onTap: () async {
+                      final list = Get.find<ExtensionManager>()
+                          .installedMangaExtensions
+                          .whereType<ASource>();
+                      for (ASource i in list) {
+                        print("${i.pkgName} - ${i.lang}");
+                      }
+                    },
+                  ),
+                ],
               ],
             ),
           ),

@@ -1134,7 +1134,9 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   }
 
   void _navigateToDetails(Media media) {
-    if (widget.isManga) {
+    final shouldOpenAnime = media.serviceType == ServicesType.simkl;
+
+    if (widget.isManga && !shouldOpenAnime) {
       navigate(() => MangaDetailsPage(
             media: media,
             tag: media.title,
