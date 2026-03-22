@@ -59,6 +59,15 @@ enum MangaBakaStatus {
         'upcoming' => upcoming,
         _ => unknown,
       };
+  
+  String get displayName => switch (this) {
+        cancelled => 'Cancelled',
+        completed => 'Completed',
+        hiatus => 'Hiatus',
+        releasing => 'Releasing',
+        unknown => 'Unknown',
+        upcoming => 'Upcoming',
+      };
 }
 
 enum MangaBakaType {
@@ -187,6 +196,7 @@ class MangaBakaSeries {
   final String? finalVolume;
   final int? anilistId;
   final int? malId;
+  final double? rating;
 
   const MangaBakaSeries({
     required this.id,
@@ -199,6 +209,7 @@ class MangaBakaSeries {
     this.finalVolume,
     this.anilistId,
     this.malId,
+    this.rating,
   });
 
   factory MangaBakaSeries.fromJson(Map<String, dynamic> json) {
@@ -219,6 +230,7 @@ class MangaBakaSeries {
       finalVolume: json['final_volume'] as String?,
       anilistId: anilistSource?['id'] as int?,
       malId: malSource?['id'] as int?,
+      rating: (json['rating'] as num?)?.toDouble(),
     );
   }
 
@@ -232,6 +244,8 @@ class MangaBakaSeries {
       totalChapters: totalChapters,
       mediaType: type == MangaBakaType.novel ? ItemType.novel : ItemType.manga,
       serviceType: ServicesType.mangabaka,
+      rating: rating?.toString(),
+      status: status.displayName,
     );
   }
 }
