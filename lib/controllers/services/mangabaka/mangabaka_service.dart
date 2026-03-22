@@ -132,6 +132,10 @@ class MangaBakaService extends GetxController
       uri = uri.replace(query: rawQuery);
     }
     var response = await http.get(uri, headers: _authHeaders);
+    if (response.statusCode == 429) {
+      await Future.delayed(const Duration(seconds: 5));
+      return _get(path, rawQuery: rawQuery);
+    }
     if (_isUnauthorized(response)) {
       if (await _tryRefreshToken()) {
         response = await http.get(uri, headers: _authHeaders);
@@ -151,6 +155,10 @@ class MangaBakaService extends GetxController
     }
 
     var response = await doRequest();
+    if (response.statusCode == 429) {
+      await Future.delayed(const Duration(seconds: 5));
+      return _send(method, path, body);
+    }
     if (_isUnauthorized(response)) {
       if (await _tryRefreshToken()) {
         response = await doRequest();
@@ -349,6 +357,9 @@ class MangaBakaService extends GetxController
     int limit = 15,
   }) async {
     try {
+      if (isLoggedIn.value && (_storedToken?.isExpired ?? false)) {
+        await _tryRefreshToken();
+      }
       final parts = <String>[];
       if (query != null && query.isNotEmpty) {
         parts.add('q=${Uri.encodeComponent(query)}');
@@ -405,7 +416,11 @@ class MangaBakaService extends GetxController
   Future<void> updateListEntry(UpdateListEntryParams params) async {
     if (!isLoggedIn.value) return;
     final seriesId = int.tryParse(params.listId);
-    if (seriesId == null) return;
+    if (seriesId == null) {
+      Logger.i('[MangaBaka] Invalid series ID: ${params.listId}');
+      errorSnackBar('Invalid series ID');
+      return;
+    }
 
     final existing = await fetchLibraryEntry(seriesId);
     final create = existing == null;
@@ -420,6 +435,7 @@ class MangaBakaService extends GetxController
       state: state,
       rating: params.score?.toInt(),
       progressChapter: params.progress,
+      progressVolume: null,
       startDate: isoDate(params.startedAt),
       finishDate: isoDate(params.completedAt),
     );
@@ -537,9 +553,7 @@ class MangaBakaService extends GetxController
     ];
 
     final results = await Future.wait([
-      // TODO: swap sortBy to 'latest' once MangaBaka API adds a latest/updated sort option.
-      // Currently using popularity_desc as a placeholder for the "Recently Added" section.
-      _fetchSeries(types: mangaTypes, sortBy: 'popularity_desc', limit: 15),
+      _fetchSeries(types: mangaTypes, sortBy: 'latest', limit: 15),
       _fetchSeries(
           types: [MangaBakaType.manga], sortBy: 'popularity_desc', limit: 15),
       _fetchSeries(
@@ -562,10 +576,8 @@ class MangaBakaService extends GetxController
 
   Future<void> _loadNovelPageSections() async {
     final results = await Future.wait([
-      // TODO: swap sortBy to 'latest' once MangaBaka API adds a latest/updated sort option.
-      // Currently using popularity_desc as a placeholder for the "Recently Added" section.
       _fetchSeries(
-          types: [MangaBakaType.novel], sortBy: 'popularity_desc', limit: 15),
+          types: [MangaBakaType.novel], sortBy: 'latest', limit: 15),
       _fetchSeries(
           types: [MangaBakaType.novel], sortBy: 'popularity_desc', limit: 15),
     ]);
@@ -620,7 +632,6 @@ class MangaBakaService extends GetxController
     ].obs;
   }
 
-  // Manga page: trending manga, manhwa, manhua, oel, other
   @override
   RxList<Widget> animeWidgets(BuildContext context) {
     return [
@@ -670,7 +681,6 @@ class MangaBakaService extends GetxController
     ].obs;
   }
 
-  // Novel page: recently added + popular novels
   @override
   RxList<Widget> mangaWidgets(BuildContext context) {
     return [
