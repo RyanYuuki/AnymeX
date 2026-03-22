@@ -9,6 +9,7 @@ enum General {
   hasAcceptedCommentRules,
   universalScrapper,
   enableBetaUpdates,
+  writeLogToFile,
   imageCacheThresholdGb,
   libraryGridAutoMigrated,
 }
