@@ -34,6 +34,7 @@ class EpisodeSection extends StatefulWidget {
   final RxBool episodeError;
   final Rx<bool> isAnify;
   final Rx<bool> showAnify;
+  final RxBool disableAnifyForCurrentSource;
   final Future<void> Function() mapToAnilist;
   final Future<void> Function(Media) getDetailsFromSource;
   // final List<SourcePreference> Function({required Source source})
@@ -50,6 +51,7 @@ class EpisodeSection extends StatefulWidget {
     // required this.getSourcePreference,
     required this.isAnify,
     required this.showAnify,
+    required this.disableAnifyForCurrentSource,
   });
 
   @override
@@ -464,16 +466,17 @@ class _EpisodeSectionState extends State<EpisodeSection> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const AnymexText(
-                    text: "Episodes",
-                    variant: TextVariant.bold,
-                    size: 18,
-                  ),
-                  Obx(() {
-                    if (widget.showAnify.value) {
-                      return Row(
-                        children: [
-                          const AnymexText(
+                    const AnymexText(
+                      text: "Episodes",
+                      variant: TextVariant.bold,
+                      size: 18,
+                    ),
+                    Obx(() {
+                      if (widget.showAnify.value &&
+                          !widget.disableAnifyForCurrentSource.value) {
+                        return Row(
+                          children: [
+                            const AnymexText(
                             text: "Anify / Kitsu",
                             variant: TextVariant.semiBold,
                             size: 16,
