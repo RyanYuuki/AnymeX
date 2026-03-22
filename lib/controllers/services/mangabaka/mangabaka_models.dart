@@ -244,7 +244,7 @@ class MangaBakaSeries {
       totalChapters: totalChapters,
       mediaType: type == MangaBakaType.novel ? ItemType.novel : ItemType.manga,
       serviceType: ServicesType.mangabaka,
-      rating: rating?.toString(),
+      rating: rating?.toString() ?? '',
       status: status.displayName,
     );
   }
