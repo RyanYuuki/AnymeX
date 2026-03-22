@@ -157,13 +157,6 @@
             <data android:pathPrefix="/movie/" />
             <data android:pathPrefix="/movies/" />
         </intent-filter>
-
-        <intent-filter android:label="Login MangaBaka">
-            <action android:name="android.intent.action.VIEW"/>
-            <category android:name="android.intent.category.DEFAULT"/>
-            <category android:name="android.intent.category.BROWSABLE"/>
-            <data android:scheme="anymex"/>
-        </intent-filter>
         
         </activity>
 
