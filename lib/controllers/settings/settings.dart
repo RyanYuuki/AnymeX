@@ -398,6 +398,13 @@ class Settings extends GetxController {
     PlayerSettingsKeys.enableScreenshot.set(value);
   }
 
+  bool get playerMenuAnimation =>
+      _getPlayerSetting((s) => s.playerMenuAnimation);
+  set playerMenuAnimation(bool value) {
+    playerSettings.update((s) => s?.playerMenuAnimation = value);
+    PlayerSettingsKeys.playerMenuAnimation.set(value);
+  }
+
   bool get enableSwipeControls =>
       _getPlayerSetting((s) => s.enableSwipeControls);
   set enableSwipeControls(bool value) {

@@ -962,6 +962,15 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                   switchValue: settings.enableScreenshot,
                                   onChanged: (val) =>
                                       settings.enableScreenshot = val),
+                              CustomSwitchTile(
+                                  padding: const EdgeInsets.all(10),
+                                  icon: Icons.animation_rounded,
+                                  title: "Player Menu Animation",
+                                  description:
+                                      "Disable to show player menu instantly without animation",
+                                  switchValue: settings.playerMenuAnimation,
+                                  onChanged: (val) =>
+                                      settings.playerMenuAnimation = val),
                               CustomSliderTile(
                                 sliderValue: settings.seekDuration.toDouble(),
                                 max: 50,

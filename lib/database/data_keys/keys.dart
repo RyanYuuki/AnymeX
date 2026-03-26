@@ -214,6 +214,7 @@ enum PlayerSettingsKeys {
   subtitleOpacity,
   subtitleBottomMargin,
   subtitleOutlineType,
+  playerMenuAnimation,
 }
 
 enum UISettingsKeys {
