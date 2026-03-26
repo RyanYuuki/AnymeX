@@ -155,7 +155,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final RxBool isPlaying = false.obs;
   final RxBool showControls = true.obs;
   final RxBool isSeeking = false.obs;
-  final RxBool isFullScreen = false.obs;
+  // final RxBool isFullScreen = false.obs;
   final RxInt skipDuration = 85.obs;
   final RxInt seekDuration = 10.obs;
   final RxList<String> subtitleText = RxList([]);
@@ -404,10 +404,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   Future<void> _initOrientations() async {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-    if (!Platform.isMacOS) {
-      ever(isFullScreen,
-          (isFullScreen) => AnymexTitleBar.setFullScreen(isFullScreen));
-    }
+
+    // ever(isFullScreen,
+    //   (isFullScreen) => AnymexTitleBar.setFullScreen(isFullScreen));
+    
+    // AnymexTitleBar.isFullScreen.addListener(() => isFullScreen.value = AnymexTitleBar.isFullScreen.value);
 
     if (Platform.isAndroid || Platform.isIOS) {
       final orientation = await _getClosestLandscapeOrientation();
@@ -1204,7 +1205,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void toggleFullScreen() {
-    isFullScreen.value = !isFullScreen.value;
+    AnymexTitleBar.toggleFullScreen();
     onUserInteraction();
   }
 

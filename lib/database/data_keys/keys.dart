@@ -9,6 +9,7 @@ enum General {
   hasAcceptedCommentRules,
   universalScrapper,
   enableBetaUpdates,
+  writeLogToFile,
   imageCacheThresholdGb,
   libraryGridAutoMigrated,
 }
@@ -213,6 +214,7 @@ enum PlayerSettingsKeys {
   subtitleOpacity,
   subtitleBottomMargin,
   subtitleOutlineType,
+  playerMenuAnimation,
 }
 
 enum UISettingsKeys {
