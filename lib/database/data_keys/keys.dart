@@ -10,6 +10,7 @@ enum General {
   universalScrapper,
   enableBetaUpdates,
   writeLogToFile,
+  customLogDirectory,
   imageCacheThresholdGb,
   libraryGridAutoMigrated,
 }
@@ -137,6 +138,11 @@ enum SourceKeys {
   animeExtensionOrder,
   mangaExtensionOrder,
   novelExtensionOrder,
+}
+
+enum PluginKeys {
+  runtimeHostInstalledVersion,
+  runtimeHostInstalledReleaseTitle,
 }
 
 enum AuthKeys {

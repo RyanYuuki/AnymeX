@@ -3,9 +3,10 @@ import 'dart:io';
 
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/database.dart';
+import 'package:flutter/foundation.dart';
 import 'package:anymex/screens/extensions/ExtensionList.dart';
 import 'package:anymex/screens/extensions/ExtensionTesting/extension_test_page.dart';
-import 'package:anymex/screens/extensions/widgets/plugin_loader.dart';
+import 'package:anymex/screens/extensions/widgets/plugin_manager.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_extensions.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/language.dart';
@@ -37,6 +38,7 @@ class _ExtensionScreenState extends State<ExtensionScreen>
   final _textEditingController = TextEditingController();
   final _searchQuery = ''.obs;
   final _selectedLanguage = 'all'.obs;
+  final _pluginManager = PluginManager();
 
   Timer? _searchDebounce;
   var _lastTabIndex = 0;
@@ -53,7 +55,7 @@ class _ExtensionScreenState extends State<ExtensionScreen>
   void _showPluginLoader() async {
     final status = await AnymeXRuntimeBridge.isLoaded();
     if (Platform.isAndroid && !status) {
-      PluginInitDialog.show(context);
+      _pluginManager.ensurePluginLoaded(context);
     }
   }
 
@@ -153,6 +155,20 @@ class _ExtensionScreenState extends State<ExtensionScreen>
       ),
       iconTheme: IconThemeData(color: theme.primary),
       actions: [
+        AnymexOnTap(
+          onTap: () => _pluginManager.checkForUpdates(
+            context,
+            showIfUpToDate: true,
+          ),
+          child: IconButton(
+            icon: Icon(Icons.system_update_alt_rounded, color: theme.primary),
+            onPressed: () => _pluginManager.checkForUpdates(
+              context,
+              showIfUpToDate: true,
+            ),
+            tooltip: "Check Plugin Updates",
+          ),
+        ),
         AnymexOnTap(
           onTap: () => Get.to(() => const ExtensionTestPage()),
           child: IconButton(

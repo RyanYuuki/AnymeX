@@ -23,6 +23,7 @@ class Settings extends GetxController {
 
   RxBool enableBetaUpdates = false.obs;
   RxBool writeLogToFile = false.obs;
+  RxString customLogDirectory = ''.obs;
 
   RxBool isTV = false.obs;
   final _selectedShader = ''.obs;
@@ -62,7 +63,9 @@ class Settings extends GetxController {
 
     enableBetaUpdates.value = General.enableBetaUpdates.get<bool>(false);
     writeLogToFile.value = General.writeLogToFile.get<bool>(false);
-    Logger.setFileLoggingEnabled(writeLogToFile.value);
+    customLogDirectory.value = General.customLogDirectory.get<String>("");
+    Logger.setFileLoggingEnabled(writeLogToFile.value,
+        customPath: customLogDirectory.value);
 
     isTv().then((e) {
       isTV.value = e;
@@ -90,6 +93,14 @@ class Settings extends GetxController {
     writeLogToFile.value = value;
     General.writeLogToFile.set(value);
     await Logger.setFileLoggingEnabled(value);
+  }
+
+  Future<void> saveCustomLogDirectory(String value) async {
+    customLogDirectory.value = value;
+    General.customLogDirectory.set(value);
+    if (writeLogToFile.value) {
+      await Logger.setFileLoggingEnabled(true, customPath: value);
+    }
   }
 
   void showWelcomeDialog(BuildContext context) {

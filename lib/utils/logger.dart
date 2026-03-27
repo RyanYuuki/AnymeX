@@ -27,6 +27,7 @@ class Logger {
       });
 
       _isInitialized = true;
+      _initMethodChannelHandler();
     } catch (exception) {
       debugPrintSynchronously('Logger init failed: $exception');
     }
@@ -34,15 +35,16 @@ class Logger {
 
   static bool get isFileLoggingEnabled => _writeToFileEnabled;
 
-  static Future<void> setFileLoggingEnabled(bool enabled) async {
+  static Future<void> setFileLoggingEnabled(bool enabled,
+      {String? customPath}) async {
     if (!_isInitialized) {
       await init();
     }
 
-    if (enabled == _writeToFileEnabled) return;
+    if (enabled == _writeToFileEnabled && customPath == null) return;
 
     if (enabled) {
-      await _ensureLogFileReady();
+      await _ensureLogFileReady(customPath: customPath);
       _writeToFileEnabled = true;
       await _logInitializationDetails();
       return;
@@ -54,19 +56,32 @@ class Logger {
     _fileSink = null;
   }
 
-  static Future<void> _ensureLogFileReady() async {
-    final documentsDirectory = await getApplicationDocumentsDirectory();
-    _logFile = File('${documentsDirectory.path}/app_logs.txt');
+  static Future<void> _ensureLogFileReady({String? customPath}) async {
+    try {
+      final documentsDirectory = customPath != null && customPath.isNotEmpty
+          ? Directory(customPath)
+          : await getApplicationDocumentsDirectory();
 
-    if (await _logFile!.exists() &&
-        await _logFile!.length() > _maxLogFileSizeBytes) {
-      await _logFile!.delete();
+      if (!await documentsDirectory.exists()) {
+        await documentsDirectory.create(recursive: true);
+      }
+
+      _logFile = File('${documentsDirectory.path}/app_logs.txt');
+
+      if (await _logFile!.exists() &&
+          await _logFile!.length() > _maxLogFileSizeBytes) {
+        await _logFile!.delete();
+      }
+
+      if (!await _logFile!.exists()) {
+        await _logFile!.create(recursive: true);
+      }
+    } catch (e) {
+      debugPrint('Logger: Failed to initialize log file at $customPath: $e');
+      if (customPath != null) {
+        await _ensureLogFileReady(customPath: null);
+      }
     }
-
-    if (!await _logFile!.exists()) {
-      await _logFile!.create(recursive: true);
-    }
-
     await _fileSink?.flush();
     await _fileSink?.close();
     _fileSink = _logFile!.openWrite(mode: FileMode.append);
@@ -150,6 +165,40 @@ Pretty Name: ${info.prettyName}
     }
 
     developer.log(message, level: logLevel, name: loggerName);
+  }
+
+  static void _initMethodChannelHandler() {
+    const channel = MethodChannel('anymexLogger');
+    channel.setMethodCallHandler((call) async {
+      if (call.method == 'log') {
+        final args = call.arguments as Map;
+        final level = args['level'] as String? ?? 'INFO';
+        final tag = args['tag'] as String? ?? 'NATIVE';
+        final msg = args['message'] as String? ?? '';
+        final fullMsg = '[NATIVE] [$tag] $msg';
+
+        switch (level) {
+          case 'DEBUG':
+          case 'VERBOSE':
+            d(fullMsg, 'NATIVE');
+            break;
+          case 'WARNING':
+            w(fullMsg, 'NATIVE');
+            break;
+          case 'ERROR':
+            e(fullMsg, loggerName: 'NATIVE');
+            break;
+          default:
+            i(fullMsg, 'NATIVE');
+            break;
+        }
+      }
+    });
+
+    // Notify native that we are ready to receive logs
+    channel.invokeMethod('ready').catchError((e) {
+      debugPrint('Logger: Failed to send ready signal: $e');
+    });
   }
 
   static void d(String message, [String? loggerName]) {

@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/logger.dart';
@@ -8,6 +10,7 @@ import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 class SettingsLogs extends StatelessWidget {
@@ -82,6 +85,32 @@ class SettingsLogs extends StatelessWidget {
                               description:
                                   'Share the saved log file or copy its contents when available.',
                               onTap: () async => Logger.share(),
+                            ),
+                            Obx(
+                              () => CustomTile(
+                                icon: HugeIcons.strokeRoundedFolder01,
+                                title: 'Log directory',
+                                description: settings
+                                        .customLogDirectory.value.isEmpty
+                                    ? 'Default (App Documents)'
+                                    : settings.customLogDirectory.value,
+                                onTap: () async {
+                                  if (Platform.isAndroid) {
+                                    final status = await Permission
+                                        .manageExternalStorage
+                                        .request();
+                                    if (!status.isGranted) {
+                                      final storageStatus = await Permission.storage.request();
+                                      if(!storageStatus.isGranted) return;
+                                    }
+                                  }
+                                  String? result = await FilePicker.platform
+                                      .getDirectoryPath();
+                                  if (result != null) {
+                                    settings.saveCustomLogDirectory(result);
+                                  }
+                                },
+                              ),
                             ),
                           ],
                         ),
