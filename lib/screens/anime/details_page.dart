@@ -943,14 +943,14 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                       20.multiplyRadius(),
                     )),
                 child: NavBarItem(
-                    isSelected: false,
-                    isVertical: true,
-                    onTap: () {
-                      Get.back();
-                    },
-                    selectedIcon: Iconsax.back_square,
-                    unselectedIcon: IconlyBold.arrow_left,
-                    label: "Back"),
+                  isSelected: false,
+                  isVertical: true,
+                  onTap: () {
+                    Get.back();
+                  },
+                  selectedIcon: Iconsax.back_square,
+                  unselectedIcon: IconlyBold.arrow_left,
+                ),
               ),
               const SizedBox(height: 10),
               ResponsiveNavBar(
