@@ -94,6 +94,8 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
   late List<String> _hiddenButtonIds;
   late Map<String, dynamic> _buttonConfigs;
   bool _shouldApplyResizeModeOnClose = false;
+  late bool _useMediaKit;
+  late bool _useLibass;
 
   @override
   void initState() {
@@ -105,6 +107,8 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
     _rightButtonIds = [];
     _hiddenButtonIds = [];
     _buttonConfigs = {};
+    _useMediaKit = PlayerKeys.useMediaKit.get<bool>(false);
+    _useLibass = PlayerKeys.useLibass.get<bool>(false);
 
     final String jsonString =
         PlayerUiKeys.bottomControlsSettings.get<String>('{}');
@@ -815,11 +819,12 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                     title: "Use LibMpv for Playback",
                                     description:
                                         "Pick wisely! (LibMpv -> FEATURES, ExoPlayer -> PERFORMANCE)",
-                                    switchValue:
-                                        PlayerKeys.useMediaKit.get<bool>(false),
+                                    switchValue: _useMediaKit,
                                     onChanged: (val) {
+                                      setState(() {
+                                        _useMediaKit = val;
+                                      });
                                       PlayerKeys.useMediaKit.set<bool>(val);
-                                      setState(() {});
                                     }),
                               CustomSwitchTile(
                                   icon: Icons.subtitles,
@@ -827,11 +832,20 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                   title: "Use Libass for Subtitles",
                                   description:
                                       "Better subtitle rendering using libass library",
-                                  switchValue:
-                                      PlayerKeys.useLibass.get<bool>(false),
-                                  onChanged: (val) {
+                                  switchValue: _useLibass,
+                                  onChanged: (val) async {
+                                    setState(() {
+                                      _useLibass = val;
+                                    });
                                     PlayerKeys.useLibass.set<bool>(val);
-                                    setState(() {});
+                                    if (Get.isRegistered<PlayerController>()) {
+                                      final controller =
+                                          Get.find<PlayerController>();
+                                      if (!controller.isClosed) {
+                                        await controller
+                                            .onLibassPreferenceChanged(val);
+                                      }
+                                    }
                                   }),
                               CustomTile(
                                 padding: 10,

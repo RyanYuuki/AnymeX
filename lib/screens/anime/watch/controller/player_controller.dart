@@ -215,6 +215,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final RxBool isLocked = false.obs;
   final Rx<int?> videoHeight = Rx<int?>(null);
   final _subscriptions = <StreamSubscription>[];
+  final _playerSubscriptions = <StreamSubscription>[];
+  final RxInt playerReloadVersion = 0.obs;
+  bool _persistentListenersInitialized = false;
+  bool _isReloadingPlayer = false;
+  bool _activeUseLibass = false;
 
   @override
   void onInit() {
@@ -223,12 +228,13 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _initDatabaseVars();
     _initOrientations();
+    _activeUseLibass = PlayerKeys.useLibass.get<bool>(false);
     _initializePlayer();
     _updateRpc();
     if (!isOffline.value) {
       _initializeAniSkip();
     }
-    _initializeListeners();
+    _initializePersistentListeners();
     if (!isOffline.value) {
       _extractSubtitles();
     }
@@ -369,7 +375,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     // ever(isFullScreen,
     //   (isFullScreen) => AnymexTitleBar.setFullScreen(isFullScreen));
-    
+
     // AnymexTitleBar.isFullScreen.addListener(() => isFullScreen.value = AnymexTitleBar.isFullScreen.value);
 
     if (Platform.isAndroid || Platform.isIOS) {
@@ -512,7 +518,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     return PlayerKeys.useMediaKit.get<bool>(false);
   }
 
-  void _initializePlayer() {
+  Future<void> _initializePlayer({
+    Duration? startPositionOverride,
+    bool? resumePlaybackOverride,
+    SubtitleTrack? subtitleToRestore,
+  }) async {
     final useMediaKit = _shouldUseMediaKit();
     final mpvCore = PlayerCoreVisualSettings.getMpvCoreSettings();
     final betterCore = PlayerCoreVisualSettings.getBetterPlayerCoreSettings();
@@ -529,6 +539,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       autoPlay: (betterCore['autoPlay'] as bool?) ?? true,
       useBuffering: (betterCore['useBuffering'] as bool?) ?? true,
     );
+    _activeUseLibass = config.useLibass;
 
     if (useMediaKit) {
       _basePlayer = MediaKitPlayer(
@@ -538,33 +549,53 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       _basePlayer = BetterPlayerImpl(configuration: config);
     }
 
-    _basePlayer.initialize().then((_) {
-      if (isOffline.value && offlineVideoPath != null) {
-        final stamp =
-            DynamicKeys.offlineVideoProgress.get<int?>(offlineVideoPath, null);
-        _basePlayer.open(
-          offlineVideoPath!,
-          startPosition: Duration(milliseconds: stamp ?? 0),
-        );
-      } else {
-        _openWithCloudFallback();
-      }
+    await _basePlayer.initialize();
+    _bindPlayerStreams();
+    playerReloadVersion.value++;
+    refresh();
 
-      _performInitialTracking();
-      applySavedProfile();
-    });
+    if (isOffline.value && offlineVideoPath != null) {
+      final stamp =
+          DynamicKeys.offlineVideoProgress.get<int?>(offlineVideoPath, null);
+      await _basePlayer.open(
+        offlineVideoPath!,
+        startPosition:
+            startPositionOverride ?? Duration(milliseconds: stamp ?? 0),
+      );
+    } else {
+      await _openWithCloudFallback(
+          startPositionOverride: startPositionOverride);
+    }
+
+    if (subtitleToRestore != null) {
+      await _applySubtitleTrack(
+        subtitleToRestore,
+        allowReload: false,
+      );
+    }
+
+    if (resumePlaybackOverride == false) {
+      await _basePlayer.pause();
+    } else if (resumePlaybackOverride == true) {
+      await _basePlayer.play();
+    }
+
+    _performInitialTracking();
+    applySavedProfile();
   }
 
-  Future<void> _openWithCloudFallback() async {
+  Future<void> _openWithCloudFallback({Duration? startPositionOverride}) async {
     final localStamp = savedEpisode?.timeStampInMilliseconds ?? 0;
     final url = selectedVideo.value?.url ?? '';
     final headers = selectedVideo.value?.headers;
     final episodeNum = currentEpisode.value.number;
 
-    Duration startPosition = Duration(milliseconds: localStamp);
+    Duration startPosition =
+        startPositionOverride ?? Duration(milliseconds: localStamp);
 
     try {
-      final ctrl = Get.isRegistered<GistSyncController>()
+      final shouldCheckCloud = startPositionOverride == null;
+      final ctrl = shouldCheckCloud && Get.isRegistered<GistSyncController>()
           ? Get.find<GistSyncController>()
           : null;
       if (ctrl != null && ctrl.isConnected.value && ctrl.syncEnabled.value) {
@@ -633,7 +664,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     return _currentProgressPercentage >= settings.markAsCompleted;
   }
 
-  void _initializeListeners() {
+  void _initializePersistentListeners() {
+    if (_persistentListenersInitialized) return;
+    _persistentListenersInitialized = true;
+
     bool? lastAutoTranslate;
     String? lastTranslateTo;
 
@@ -659,8 +693,15 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       lastAutoTranslate = autoTranslate;
       lastTranslateTo = translateTo;
     }));
+  }
 
-    _subscriptions.add(_basePlayer.positionStream
+  void _bindPlayerStreams() {
+    for (final subscription in _playerSubscriptions) {
+      subscription.cancel();
+    }
+    _playerSubscriptions.clear();
+
+    _playerSubscriptions.add(_basePlayer.positionStream
         .throttleTime(const Duration(seconds: 1))
         .listen((pos) {
       if (isSeeking.value) return;
@@ -679,19 +720,19 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       }
     }));
 
-    _subscriptions.add(_basePlayer.durationStream.listen((dur) {
+    _playerSubscriptions.add(_basePlayer.durationStream.listen((dur) {
       episodeDuration.value = dur;
       currentEpisode.value.durationInMilliseconds = dur.inMilliseconds;
       _updateRpc();
     }));
 
-    _subscriptions.add(_basePlayer.bufferStream
+    _playerSubscriptions.add(_basePlayer.bufferStream
         .throttleTime(const Duration(seconds: 1))
         .listen((buf) {
       bufferred.value = buf;
     }));
 
-    _subscriptions.add(_basePlayer.playingStream.listen((e) {
+    _playerSubscriptions.add(_basePlayer.playingStream.listen((e) {
       isPlaying.value = e;
       if (e) {
         _resetAutoHideTimer();
@@ -707,21 +748,24 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       }
     }));
 
-    _subscriptions.add(_basePlayer.bufferingStream.listen((e) {
+    _playerSubscriptions.add(_basePlayer.bufferingStream.listen((e) {
       isBuffering.value = e;
     }));
 
-    _subscriptions.add(_basePlayer.tracksStream.listen((e) {
-      embeddedAudioTracks.value = e.audio;
+    _playerSubscriptions.add(_basePlayer.tracksStream.listen((e) {
+      for (var i in e.audio) {
+        if (i.url?.isEmpty ?? true) continue;
+        embeddedAudioTracks.value.add(i);
+      }
       embeddedSubs.value = e.subtitle;
       embeddedQuality.value = e.video;
     }));
 
-    _subscriptions.add(_basePlayer.rateStream.listen((e) {
+    _playerSubscriptions.add(_basePlayer.rateStream.listen((e) {
       playbackSpeed.value = e;
     }));
 
-    _subscriptions.add(_basePlayer.errorStream.listen((e) {
+    _playerSubscriptions.add(_basePlayer.errorStream.listen((e) {
       Logger.i('${e} => ${selectedVideo.value?.headers}');
       if (e.toString().contains('Failed to open')) {
         snackBar('Failed, Dont Bother..');
@@ -730,7 +774,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     int subtitleTranslateRequestId = 0;
 
-    _subscriptions.add(_basePlayer.subtitleStream.listen((e) async {
+    _playerSubscriptions.add(_basePlayer.subtitleStream.listen((e) async {
       final sanitizedLines = e
           .map((line) => line
               .replaceAll(_htmlRx, '')
@@ -793,11 +837,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       }
     }));
 
-    _subscriptions.add(_basePlayer.heightStream.listen((height) {
+    _playerSubscriptions.add(_basePlayer.heightStream.listen((height) {
       videoHeight.value = height;
     }));
 
-    _subscriptions.add(_basePlayer.completedStream.listen((e) {
+    _playerSubscriptions.add(_basePlayer.completedStream.listen((e) {
       if (e && !isOffline.value) {
         hasNextEpisode ? navigator(true) : Get.back();
       }
@@ -1124,7 +1168,19 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void setSubtitleTrack(SubtitleTrack track) {
-    _basePlayer.setSubtitleTrack(track);
+    final effectiveTrack = (track.url != null &&
+            track.url!.isNotEmpty &&
+            (track.headers == null || track.headers!.isEmpty))
+        ? SubtitleTrack.uri(
+            track.url!,
+            title: track.title,
+            language: track.language,
+            headers: selectedVideo.value?.headers,
+          )
+        : track;
+
+    selectedSubsTrack.value = effectiveTrack.id == 'no' ? null : effectiveTrack;
+    _applySubtitleTrack(effectiveTrack);
   }
 
   void toggleControls({bool? val}) {
@@ -1252,7 +1308,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       selectedExternalSub.value = model.Track();
 
       selectedSubsTrack.value = null;
-      _basePlayer.setSubtitleTrack(SubtitleTrack.no());
+      _applySubtitleTrack(SubtitleTrack.no(), allowReload: false);
 
       subtitleText.value = [];
       translatedSubtitle.value = '';
@@ -1267,10 +1323,14 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
 
     selectedExternalSub.value = track;
-    final subtitleTrack = SubtitleTrack.uri(track.file!, title: track.label);
+    final subtitleTrack = SubtitleTrack.uri(
+      track.file!,
+      title: track.label,
+      headers: selectedVideo.value?.headers,
+    );
 
     selectedSubsTrack.value = subtitleTrack;
-    _basePlayer.setSubtitleTrack(subtitleTrack);
+    _applySubtitleTrack(subtitleTrack);
 
     if (playerSettings.autoTranslate && track.file != null) {
       startPreTranslation(track.file!);
@@ -1353,6 +1413,71 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           label: '${sub.label} (Online)',
           file: sub.url,
         ));
+  }
+
+  Future<void> onLibassPreferenceChanged(bool enabled) async {
+    if (_activeUseLibass == enabled) return;
+    await reloadActivePlayer();
+  }
+
+  Future<void> reloadActivePlayer({SubtitleTrack? subtitleOverride}) async {
+    if (_isReloadingPlayer) return;
+    _isReloadingPlayer = true;
+
+    final preservedPosition = currentPosition.value;
+    final preservedSubtitle = subtitleOverride ?? selectedSubsTrack.value;
+    final resumePlayback = isPlaying.value;
+
+    try {
+      for (final subscription in _playerSubscriptions) {
+        await subscription.cancel();
+      }
+      _playerSubscriptions.clear();
+      await _basePlayer.dispose();
+      resetListeners();
+      await _initializePlayer(
+        startPositionOverride: preservedPosition,
+        resumePlaybackOverride: resumePlayback,
+        subtitleToRestore: preservedSubtitle,
+      );
+    } finally {
+      _isReloadingPlayer = false;
+    }
+  }
+
+  Future<void> _applySubtitleTrack(
+    SubtitleTrack track, {
+    bool allowReload = true,
+  }) async {
+    if (allowReload && _shouldReloadForSubtitle(track)) {
+      await reloadActivePlayer(subtitleOverride: track);
+      return;
+    }
+
+    await _basePlayer.setSubtitleTrack(track);
+  }
+
+  bool _shouldReloadForSubtitle(SubtitleTrack track) {
+    if (track.id == 'no') return false;
+    return _isAssSubtitleTrack(track);
+  }
+
+  bool _isAssSubtitleTrack(SubtitleTrack track) {
+    final candidates = [
+      track.url ?? '',
+      track.title ?? '',
+      selectedExternalSub.value.file ?? '',
+      selectedExternalSub.value.label ?? '',
+    ];
+
+    for (final candidate in candidates) {
+      final normalized = candidate.toLowerCase();
+      if (normalized.contains('.ass') || normalized.endsWith(' ass')) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   void navigator(bool forward) {

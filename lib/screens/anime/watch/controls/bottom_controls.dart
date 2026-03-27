@@ -127,6 +127,14 @@ class BottomControls extends StatelessWidget {
     bool isVisible(String id) =>
         (buttonConfigs[id]?['visible'] as bool?) ?? true;
 
+    final serverCount = controller.episodeTracks.length;
+    final qualityCount = controller.embeddedQuality.value
+        .where((e) => e.height != null && e.width != null)
+        .length;
+    final audioCount = controller.embeddedAudioTracks.value
+        .where((e) => e.title != null && e.language != null)
+        .length;
+
     final Map<String, Widget> buttonWidgets = {
       'playlist': ControlButton(
         icon: Symbols.playlist_play_rounded,
@@ -217,6 +225,9 @@ class BottomControls extends StatelessWidget {
         if (id == 'orientation' && !(Platform.isAndroid || Platform.isIOS)) {
           continue;
         }
+        if (id == 'server' && serverCount <= 1) continue;
+        if (id == 'quality' && qualityCount <= 1) continue;
+        if (id == 'audio_track' && audioCount <= 1) continue;
 
         final widget = buttonWidgets[id];
         if (widget != null) {

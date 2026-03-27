@@ -62,11 +62,17 @@ class _WatchScreenState extends State<WatchScreen> {
         body: Stack(
       children: [
         Obx(() {
+          controller.playerReloadVersion.value;
           return controller.videoWidget;
         }),
         PlayerOverlay(controller: controller),
-        if (!PlayerKeys.useLibass.get<bool>(false))
-          SubtitleText(controller: controller),
+        Obx(() {
+          controller.playerReloadVersion.value;
+          if (PlayerKeys.useLibass.get<bool>(false)) {
+            return const SizedBox.shrink();
+          }
+          return SubtitleText(controller: controller);
+        }),
         DoubleTapSeekWidget(
           controller: controller,
         ),

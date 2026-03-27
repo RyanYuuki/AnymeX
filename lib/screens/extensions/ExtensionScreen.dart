@@ -56,6 +56,11 @@ class _ExtensionScreenState extends State<ExtensionScreen>
     final status = await AnymeXRuntimeBridge.isLoaded();
     if (Platform.isAndroid && !status) {
       _pluginManager.ensurePluginLoaded(context);
+    } else if (Platform.isAndroid && status) {
+      _pluginManager.checkForUpdates(
+        context,
+        showIfUpToDate: true,
+      );
     }
   }
 
@@ -155,20 +160,6 @@ class _ExtensionScreenState extends State<ExtensionScreen>
       ),
       iconTheme: IconThemeData(color: theme.primary),
       actions: [
-        AnymexOnTap(
-          onTap: () => _pluginManager.checkForUpdates(
-            context,
-            showIfUpToDate: true,
-          ),
-          child: IconButton(
-            icon: Icon(Icons.system_update_alt_rounded, color: theme.primary),
-            onPressed: () => _pluginManager.checkForUpdates(
-              context,
-              showIfUpToDate: true,
-            ),
-            tooltip: "Check Plugin Updates",
-          ),
-        ),
         AnymexOnTap(
           onTap: () => Get.to(() => const ExtensionTestPage()),
           child: IconButton(
