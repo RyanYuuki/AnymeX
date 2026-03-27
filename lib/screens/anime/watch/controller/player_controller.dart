@@ -195,6 +195,45 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final Rx<aniskip.SkipIntervals?> currentSkipInterval =
       Rx<aniskip.SkipIntervals?>(null);
 
+  static const int autoSkipCountdownSeconds = 5;
+  final RxInt autoSkipCountdownRemaining = 0.obs;
+  Timer? _autoSkipCountdownTimer;
+  bool _autoSkipCancelledForCurrentSegment = false;
+
+  bool get isAutoSkipCountdownActive => autoSkipCountdownRemaining.value > 0;
+
+  bool get _isAutoSkipEnabledForCurrentSegment {
+    final interval = currentSkipInterval.value;
+    if (interval == null || skipTimes == null) return false;
+    if (identical(skipTimes!.op, interval)) {
+      if (!playerSettings.autoSkipOP) return false;
+      if (playerSettings.autoSkipOnce && isOPSkippedOnce.value) return false;
+      return true;
+    }
+    if (identical(skipTimes!.ed, interval)) {
+      if (!playerSettings.autoSkipED) return false;
+      if (playerSettings.autoSkipOnce && isEDSkippedOnce.value) return false;
+      return true;
+    }
+    if (identical(skipTimes!.recap, interval)) {
+      if (!playerSettings.autoSkipRecap) return false;
+      if (playerSettings.autoSkipOnce && isRecapSkippedOnce.value) return false;
+      return true;
+    }
+    return false;
+  }
+
+  void _cancelAutoSkipTimer() {
+    _autoSkipCountdownTimer?.cancel();
+    _autoSkipCountdownTimer = null;
+    autoSkipCountdownRemaining.value = 0;
+  }
+
+  void cancelAutoSkipCountdown() {
+    _cancelAutoSkipTimer();
+    _autoSkipCancelledForCurrentSegment = true;
+  }
+
   void applySavedProfile() {
     if (_basePlayer is MediaKitPlayer) {
       ColorProfileManager().applyColorProfile(currentVisualProfile.value,
@@ -343,7 +382,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     try {
       final raw =
           PlayerUiKeys.currentVisualSettings.get<Map<String, dynamic>>({});
-      if (raw is! Map) return <String, int>{};
 
       final out = <String, int>{};
       for (final entry in raw.entries) {
@@ -418,54 +456,45 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
   }
 
+  void _performSegmentSkip(aniskip.SkipIntervals interval) {
+    final duration = Duration(seconds: interval.end);
+    currentPosition.value = duration;
+    _basePlayer.seek(duration);
+    if (identical(skipTimes?.op, interval)) {
+      isOPSkippedOnce.value = true;
+      snackBar('Skipped Opening', duration: 2000);
+    } else if (identical(skipTimes?.ed, interval)) {
+      isEDSkippedOnce.value = true;
+      snackBar('Skipped Ending', duration: 2000);
+    } else if (identical(skipTimes?.recap, interval)) {
+      isRecapSkippedOnce.value = true;
+      snackBar('Skipped Recap', duration: 2000);
+    }
+  }
+
   void _handleAutoSkip() {
-    if (skipTimes?.op != null && playerSettings.autoSkipOP) {
-      if (!(playerSettings.autoSkipOnce && isOPSkippedOnce.value)) {
-        if (currentPosition.value.inSeconds > skipTimes!.op!.start &&
-            currentPosition.value.inSeconds < skipTimes!.op!.end) {
-          final skipNeeded =
-              skipTimes!.op!.end - currentPosition.value.inSeconds;
-          final duration =
-              Duration(seconds: currentPosition.value.inSeconds + skipNeeded);
-          currentPosition.value = duration;
-          _basePlayer.seek(duration);
-          isOPSkippedOnce.value = true;
-          snackBar('Skipped Opening', duration: 2000);
-        }
-      }
+    final interval = currentSkipInterval.value;
+    if (interval == null || !_isAutoSkipEnabledForCurrentSegment ||
+        _autoSkipCancelledForCurrentSegment) {
+      _cancelAutoSkipTimer();
+      return;
     }
-
-    if (skipTimes?.ed != null && playerSettings.autoSkipED) {
-      if (!(playerSettings.autoSkipOnce && isEDSkippedOnce.value)) {
-        if (currentPosition.value.inSeconds > skipTimes!.ed!.start &&
-            currentPosition.value.inSeconds < skipTimes!.ed!.end) {
-          final skipNeeded =
-              skipTimes!.ed!.end - currentPosition.value.inSeconds;
-          final duration =
-              Duration(seconds: currentPosition.value.inSeconds + skipNeeded);
-          currentPosition.value = duration;
-          _basePlayer.seek(duration);
-          isEDSkippedOnce.value = true;
-          snackBar('Skipped Ending', duration: 2000);
-        }
+    if (_autoSkipCountdownTimer != null) return;
+    autoSkipCountdownRemaining.value = autoSkipCountdownSeconds;
+    _autoSkipCountdownTimer = Timer.periodic(const Duration(seconds: 1), (t) {
+      if (currentSkipInterval.value != interval) {
+        _cancelAutoSkipTimer();
+        return;
       }
-    }
-
-    if (skipTimes?.recap != null && playerSettings.autoSkipRecap) {
-      if (!(playerSettings.autoSkipOnce && isRecapSkippedOnce.value)) {
-        if (currentPosition.value.inSeconds > skipTimes!.recap!.start &&
-            currentPosition.value.inSeconds < skipTimes!.recap!.end) {
-          final skipNeeded =
-              skipTimes!.recap!.end - currentPosition.value.inSeconds;
-          final duration =
-              Duration(seconds: currentPosition.value.inSeconds + skipNeeded);
-          currentPosition.value = duration;
-          _basePlayer.seek(duration);
-          isRecapSkippedOnce.value = true;
-          snackBar('Skipped Recap', duration: 2000);
-        }
+      final next = autoSkipCountdownRemaining.value - 1;
+      autoSkipCountdownRemaining.value = next;
+      if (next <= 0) {
+        t.cancel();
+        _autoSkipCountdownTimer = null;
+        autoSkipCountdownRemaining.value = 0;
+        _performSegmentSkip(interval);
       }
-    }
+    });
   }
 
   void _updateSkipUiState() {
@@ -489,7 +518,34 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
 
     if (currentSkipInterval.value != foundInterval) {
+      _cancelAutoSkipTimer();
+      _autoSkipCancelledForCurrentSegment = false;
       currentSkipInterval.value = foundInterval;
+    }
+  }
+
+  String get skipButtonLabel {
+    if (isAutoSkipCountdownActive) return 'Cancel skip';
+    final interval = currentSkipInterval.value;
+    if (interval == null || skipTimes == null) {
+      return '+${playerSettings.skipDuration}';
+    }
+    if (identical(skipTimes!.op, interval)) return 'Skip intro';
+    if (identical(skipTimes!.ed, interval)) return 'Skip outro';
+    if (identical(skipTimes!.recap, interval)) return 'Skip recap';
+    return '+${playerSettings.skipDuration}';
+  }
+
+  void performSkipAction() {
+    if (isAutoSkipCountdownActive) {
+      cancelAutoSkipCountdown();
+      return;
+    }
+    final interval = currentSkipInterval.value;
+    if (interval != null) {
+      seekTo(Duration(seconds: interval.end));
+    } else {
+      megaSeek(playerSettings.skipDuration);
     }
   }
 
@@ -622,6 +678,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     isEDSkippedOnce.value = false;
     isRecapSkippedOnce.value = false;
     currentSkipInterval.value = null;
+    _cancelAutoSkipTimer();
+    _autoSkipCancelledForCurrentSegment = false;
 
     final episodeLengthSec =
         (currentEpisode.value.durationInMilliseconds ?? 0) ~/ 1000;
@@ -715,8 +773,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       }
 
       if (isPlaying.value && skipTimes != null && !isOffline.value) {
-        _handleAutoSkip();
         _updateSkipUiState();
+        _handleAutoSkip();
       }
     }));
 
@@ -1109,6 +1167,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _volumeTimer?.cancel();
     _controlsTimer?.cancel();
     _autoHideTimer?.cancel();
+    _autoSkipCountdownTimer?.cancel();
     ScreenBrightness.instance.resetApplicationScreenBrightness();
   }
 
