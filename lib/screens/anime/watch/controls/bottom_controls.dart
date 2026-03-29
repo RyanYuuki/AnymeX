@@ -69,15 +69,11 @@ class BottomControls extends StatelessWidget {
         ignoring: !bottomBarVisible,
         child: AnimatedSlide(
           offset: bottomBarVisible ? Offset.zero : const Offset(0, 1),
-          duration: controller.playerSettings.playerMenuAnimation
-              ? const Duration(milliseconds: 400)
-              : Duration.zero,
+          duration: controller.overlayAnimationDuration(400),
           curve: Curves.easeOutCubic,
           child: AnimatedOpacity(
             opacity: bottomBarVisible ? 1.0 : 0.0,
-            duration: controller.playerSettings.playerMenuAnimation
-                ? const Duration(milliseconds: 300)
-                : Duration.zero,
+            duration: controller.overlayAnimationDuration(300),
             curve: Curves.easeOut,
             child: showControls
                 ? _buildFullBar(context, isDesktop)

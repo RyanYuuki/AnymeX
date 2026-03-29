@@ -155,7 +155,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final RxBool isPlaying = false.obs;
   final RxBool showControls = true.obs;
   final RxBool isSeeking = false.obs;
-  // final RxBool isFullScreen = false.obs;
+
   final RxInt skipDuration = 85.obs;
   final RxInt seekDuration = 10.obs;
   final RxList<String> subtitleText = RxList([]);
@@ -411,49 +411,55 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   Future<void> _initOrientations() async {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
-    // ever(isFullScreen,
-    //   (isFullScreen) => AnymexTitleBar.setFullScreen(isFullScreen));
-
-    // AnymexTitleBar.isFullScreen.addListener(() => isFullScreen.value = AnymexTitleBar.isFullScreen.value);
-
     if (Platform.isAndroid || Platform.isIOS) {
       final orientation = await _getClosestLandscapeOrientation();
-      SystemChrome.setPreferredOrientations([orientation]);
+      _applyOrientation(orientation);
     }
   }
 
   Future<DeviceOrientation> _getClosestLandscapeOrientation() async {
     try {
-      final event = await accelerometerEvents.first
-          .timeout(const Duration(milliseconds: 100));
+      final samples = await accelerometerEvents
+          .take(4)
+          .timeout(
+            const Duration(milliseconds: 250),
+            onTimeout: (sink) => sink.close(),
+          )
+          .toList();
 
-      const double threshold = 0.3;
+      if (samples.isNotEmpty) {
+        final averageX =
+            samples.map((event) => event.x).reduce((a, b) => a + b) /
+                samples.length;
 
-      if (event.x > threshold) {
-        return DeviceOrientation.landscapeRight;
-      } else if (event.x < -threshold) {
-        return DeviceOrientation.landscapeLeft;
-      }
-
-      if (event.y.abs() < 0.5) {
-        final view = WidgetsBinding.instance.platformDispatcher.views.first;
-        return view.physicalSize.width > view.physicalSize.height
-            ? DeviceOrientation.landscapeLeft
-            : DeviceOrientation.landscapeLeft;
+        const double slightLeanThreshold = 0.05;
+        if (averageX >= slightLeanThreshold) {
+          return DeviceOrientation.landscapeRight;
+        }
+        if (averageX <= -slightLeanThreshold) {
+          return DeviceOrientation.landscapeLeft;
+        }
       }
     } catch (_) {}
 
     return DeviceOrientation.landscapeLeft;
   }
 
+  void _applyOrientation(DeviceOrientation orientation) {
+    SystemChrome.setPreferredOrientations([orientation]);
+    isLeftLandscaped = orientation != DeviceOrientation.landscapeRight;
+  }
+
+  Duration overlayAnimationDuration(int milliseconds) {
+    return playerSettings.playerMenuAnimation
+        ? Duration(milliseconds: milliseconds)
+        : Duration.zero;
+  }
+
   void toggleOrientation() {
-    if (isLeftLandscaped) {
-      SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeRight]);
-      isLeftLandscaped = false;
-    } else {
-      SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft]);
-      isLeftLandscaped = true;
-    }
+    _applyOrientation(isLeftLandscaped
+        ? DeviceOrientation.landscapeRight
+        : DeviceOrientation.landscapeLeft);
   }
 
   void _performSegmentSkip(aniskip.SkipIntervals interval) {
@@ -474,7 +480,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void _handleAutoSkip() {
     final interval = currentSkipInterval.value;
-    if (interval == null || !_isAutoSkipEnabledForCurrentSegment ||
+    if (interval == null ||
+        !_isAutoSkipEnabledForCurrentSegment ||
         _autoSkipCancelledForCurrentSegment) {
       _cancelAutoSkipTimer();
       return;

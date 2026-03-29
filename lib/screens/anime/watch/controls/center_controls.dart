@@ -25,15 +25,11 @@ class CenterControls extends StatelessWidget {
           alignment: Alignment.center,
           child: AnimatedScale(
             scale: controller.showControls.value ? 1.0 : 0.8,
-            duration: controller.playerSettings.playerMenuAnimation
-                ? const Duration(milliseconds: 400)
-                : Duration.zero,
+            duration: controller.overlayAnimationDuration(400),
             curve: Curves.easeOutBack,
             child: AnimatedOpacity(
               opacity: controller.showControls.value ? 1.0 : 0.0,
-              duration: controller.playerSettings.playerMenuAnimation
-                  ? const Duration(milliseconds: 300)
-                  : Duration.zero,
+              duration: controller.overlayAnimationDuration(300),
               curve: Curves.easeOut,
               child: isDesktop
                   ? _buildDesktopLayout(theme)

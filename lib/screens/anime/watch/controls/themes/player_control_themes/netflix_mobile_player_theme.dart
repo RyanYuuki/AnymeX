@@ -39,7 +39,7 @@ class NetflixMobilePlayerControlTheme extends PlayerControlTheme {
         ignoring: !controller.showControls.value,
         child: AnimatedOpacity(
           opacity: controller.showControls.value ? 1.0 : 0.0,
-          duration: const Duration(milliseconds: 200),
+          duration: controller.overlayAnimationDuration(200),
           child: VerticalScrim(
             fromTop: true,
             height: 120,
@@ -101,7 +101,7 @@ class NetflixMobilePlayerControlTheme extends PlayerControlTheme {
         ignoring: !controller.showControls.value,
         child: AnimatedOpacity(
           opacity: controller.showControls.value ? 1.0 : 0.0,
-          duration: const Duration(milliseconds: 200),
+          duration: controller.overlayAnimationDuration(200),
           child: Center(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -169,7 +169,7 @@ class NetflixMobilePlayerControlTheme extends PlayerControlTheme {
         ignoring: !controller.showControls.value,
         child: AnimatedOpacity(
           opacity: controller.showControls.value ? 1.0 : 0.0,
-          duration: const Duration(milliseconds: 200),
+          duration: controller.overlayAnimationDuration(200),
           child: VerticalScrim(
             fromTop: false,
             height: 180,

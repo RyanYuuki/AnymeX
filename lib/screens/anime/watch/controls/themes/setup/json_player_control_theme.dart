@@ -804,7 +804,7 @@ class ThemeRenderer {
             child: Center(
               child: AnimatedOpacity(
                 opacity: enabled ? 1.0 : 0.6,
-                duration: const Duration(milliseconds: 180),
+                duration: controller.overlayAnimationDuration(180),
                 child: guts,
               ),
             ),
@@ -991,11 +991,15 @@ class ThemeRenderer {
       ignoring: vibes.ignorePointerWhenHidden && !visible,
       child: AnimatedSlide(
         offset: visible ? Offset.zero : vibes.hiddenOffset,
-        duration: vibes.slideDuration,
+        duration: controller.playerSettings.playerMenuAnimation
+            ? vibes.slideDuration
+            : Duration.zero,
         curve: vibes.slideCurve,
         child: AnimatedOpacity(
           opacity: visible ? 1.0 : 0.0,
-          duration: vibes.opacityDuration,
+          duration: controller.playerSettings.playerMenuAnimation
+              ? vibes.opacityDuration
+              : Duration.zero,
           curve: vibes.opacityCurve,
           child: child,
         ),
