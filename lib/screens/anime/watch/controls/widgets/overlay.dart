@@ -9,9 +9,9 @@ class PlayerOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => Positioned.fill(
+        return Obx(() => Positioned.fill(
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 100),
+            duration: controller.overlayAnimationDuration(100),
             decoration: BoxDecoration(
                 gradient: LinearGradient(
               colors: controller.showControls.value
