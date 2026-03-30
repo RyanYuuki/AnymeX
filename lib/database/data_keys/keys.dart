@@ -9,6 +9,8 @@ enum General {
   hasAcceptedCommentRules,
   universalScrapper,
   enableBetaUpdates,
+  writeLogToFile,
+  customLogDirectory,
   imageCacheThresholdGb,
   libraryGridAutoMigrated,
 }
@@ -26,6 +28,7 @@ enum ThemeKeys {
 enum PlayerKeys { useLibass, useMediaKit }
 
 enum PlayerUiKeys {
+  playerExperimentalEnabled,
   bottomControlsSettings,
   playerControlTheme,
   playerControlThemesJson,
@@ -137,6 +140,11 @@ enum SourceKeys {
   novelExtensionOrder,
 }
 
+enum PluginKeys {
+  runtimeHostInstalledVersion,
+  runtimeHostInstalledReleaseTitle,
+}
+
 enum AuthKeys {
   authToken,
   malAuthToken,
@@ -212,6 +220,7 @@ enum PlayerSettingsKeys {
   subtitleOpacity,
   subtitleBottomMargin,
   subtitleOutlineType,
+  playerMenuAnimation,
 }
 
 enum UISettingsKeys {

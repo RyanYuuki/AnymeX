@@ -44,11 +44,11 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
         child: AnimatedSlide(
           offset:
               controller.showControls.value ? Offset.zero : const Offset(0, -1),
-          duration: const Duration(milliseconds: 360),
+          duration: controller.overlayAnimationDuration(360),
           curve: Curves.easeOutCubic,
           child: AnimatedOpacity(
             opacity: controller.showControls.value ? 1.0 : 0.0,
-            duration: const Duration(milliseconds: 280),
+            duration: controller.overlayAnimationDuration(280),
             child: SafeArea(
               bottom: false,
               left: false,
@@ -185,10 +185,10 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
           alignment: Alignment.center,
           child: AnimatedOpacity(
             opacity: controller.showControls.value ? 1 : 0,
-            duration: const Duration(milliseconds: 220),
+            duration: controller.overlayAnimationDuration(220),
             child: AnimatedScale(
               scale: controller.showControls.value ? 1 : 0.88,
-              duration: const Duration(milliseconds: 320),
+              duration: controller.overlayAnimationDuration(320),
               curve: Curves.easeOutBack,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -288,44 +288,85 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
         );
       }
 
-      return IgnorePointer(
-        ignoring: !controller.showControls.value,
-        child: AnimatedSlide(
-          offset:
-              controller.showControls.value ? Offset.zero : const Offset(0, 1),
-          duration: const Duration(milliseconds: 360),
-          curve: Curves.easeOutCubic,
-          child: AnimatedOpacity(
-            opacity: controller.showControls.value ? 1 : 0,
-            duration: const Duration(milliseconds: 240),
-            child: SafeArea(
-              top: false,
-              left: false,
-              right: false,
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: isDesktop ? 28 : 14,
-                  vertical: isDesktop ? 18 : 8,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: _GlassActionChip(
-                        icon: CupertinoIcons.forward_fill,
-                        label: '+${controller.playerSettings.skipDuration}',
-                        onTap: controller.isLocked.value
-                            ? null
-                            : () => controller.megaSeek(
-                                controller.playerSettings.skipDuration),
+      final showControls = controller.showControls.value;
+      final inSkipSegment = controller.currentSkipInterval.value != null;
+      final bottomBarVisible = showControls || inSkipSegment;
+      final horizontal = isDesktop ? 28.0 : 14.0;
+      final vertical = isDesktop ? 18.0 : 8.0;
+
+      return GestureDetector(
+        behavior: HitTestBehavior.deferToChild,
+        child: IgnorePointer(
+          ignoring: !bottomBarVisible,
+          child: AnimatedSlide(
+            offset: bottomBarVisible ? Offset.zero : const Offset(0, 1),
+            duration: controller.overlayAnimationDuration(360),
+            curve: Curves.easeOutCubic,
+            child: AnimatedOpacity(
+              opacity: bottomBarVisible ? 1 : 0,
+              duration: controller.overlayAnimationDuration(240),
+              child: showControls
+                  ? SafeArea(
+                      top: false,
+                      left: false,
+                      right: false,
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: horizontal,
+                          vertical: vertical,
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: Obx(() => _GlassActionChip(
+                                    icon: controller.isAutoSkipCountdownActive
+                                        ? CupertinoIcons.xmark
+                                        : CupertinoIcons.forward_fill,
+                                    label: controller.skipButtonLabel,
+                                    onTap: controller.isLocked.value
+                                        ? null
+                                        : controller.performSkipAction,
+                                    countdownProgress: controller
+                                            .isAutoSkipCountdownActive
+                                        ? controller.autoSkipCountdownRemaining
+                                            .value /
+                                            PlayerController
+                                                .autoSkipCountdownSeconds
+                                        : null,
+                                  )),
+                            ),
+                            const SizedBox(height: 8),
+                            _buildBottomSection(context, controller),
+                          ],
+                        ),
                       ),
+                    )
+                  : Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Positioned(
+                          right: horizontal,
+                          bottom: vertical,
+                          child: Obx(() => _GlassActionChip(
+                                icon: controller.isAutoSkipCountdownActive
+                                    ? CupertinoIcons.xmark
+                                    : CupertinoIcons.forward_fill,
+                                label: controller.skipButtonLabel,
+                                onTap: controller.isLocked.value
+                                    ? null
+                                    : controller.performSkipAction,
+                                countdownProgress: controller
+                                        .isAutoSkipCountdownActive
+                                    ? controller.autoSkipCountdownRemaining
+                                            .value /
+                                        PlayerController.autoSkipCountdownSeconds
+                                    : null,
+                              )),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 8),
-                    _buildBottomSection(context, controller),
-                  ],
-                ),
-              ),
             ),
           ),
         ),
@@ -348,6 +389,14 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
 
     bool isVisible(String id) =>
         (buttonConfigs[id]?['visible'] as bool?) ?? true;
+
+    final serverCount = controller.episodeTracks.length;
+    final qualityCount = controller.embeddedQuality.value
+        .where((e) => e.height != null && e.width != null)
+        .length;
+    final audioCount = controller.embeddedAudioTracks.value
+        .where((e) => e.title != null && e.language != null)
+        .length;
 
     final Map<String, Widget> buttonWidgets = {
       'playlist': ControlButton(
@@ -434,6 +483,9 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
         if (id == 'orientation' && !(Platform.isAndroid || Platform.isIOS)) {
           continue;
         }
+        if (id == 'server' && serverCount <= 1) continue;
+        if (id == 'quality' && qualityCount <= 1) continue;
+        if (id == 'audio_track' && audioCount <= 1) continue;
 
         final widget = buttonWidgets[id];
         if (widget == null) continue;
@@ -634,43 +686,72 @@ class _GlassActionChip extends StatelessWidget {
   final IconData icon;
   final String label;
   final VoidCallback? onTap;
+  final double? countdownProgress;
 
   const _GlassActionChip({
     required this.icon,
     required this.label,
     required this.onTap,
+    this.countdownProgress,
   });
 
   @override
   Widget build(BuildContext context) {
+    final showCountdown = countdownProgress != null;
     return _GlassPanel(
       radius: 16,
       padding: EdgeInsets.zero,
       tint: Colors.white.withValues(alpha: 0.10),
       child: Material(
         type: MaterialType.transparency,
+        borderRadius: BorderRadius.circular(16),
+        clipBehavior: Clip.antiAlias,
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(icon, color: Colors.white, size: 14),
-                const SizedBox(width: 6),
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: onTap == null
-                        ? Colors.white.withValues(alpha: 0.45)
-                        : Colors.white,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 12,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              if (showCountdown)
+                Positioned.fill(
+                  child: TweenAnimationBuilder<double>(
+                    duration: const Duration(milliseconds: 1000),
+                    curve: Curves.linear,
+                    tween: Tween<double>(begin: 0.0, end: 1.0 - countdownProgress!),
+                    builder: (context, value, child) {
+                      return FractionallySizedBox(
+                        alignment: Alignment.centerLeft,
+                        widthFactor: value,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.25),
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
-              ],
-            ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(icon, color: Colors.white, size: 14),
+                    const SizedBox(width: 6),
+                    Text(
+                      label,
+                      style: TextStyle(
+                        color: onTap == null
+                            ? Colors.white.withValues(alpha: 0.45)
+                            : Colors.white,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),

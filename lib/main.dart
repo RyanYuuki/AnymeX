@@ -26,8 +26,9 @@ import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/my_library.dart';
 import 'package:anymex/screens/manga/home_page.dart';
 import 'package:anymex/services/commentum_service.dart';
-import 'package:anymex/utils/deeplink.dart';
+import 'package:anymex/utils/external_font_loader.dart';
 import 'package:anymex/utils/logger.dart';
+import 'package:anymex/utils/deeplink.dart';
 import 'package:anymex/utils/register_protocol/register_protocol.dart';
 import 'package:anymex/widgets/adaptive_wrapper.dart';
 import 'package:anymex/widgets/animation/more_page_transitions.dart';
@@ -100,6 +101,7 @@ void initDeepLinkListener() async {
 void main(List<String> args) async {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
+    ExternalFontLoader.loadAllFonts();
 
     await Logger.init();
     await dotenv.load(fileName: ".env");
@@ -187,11 +189,46 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
+
   bool _showMainApp = false;
+  bool _isFullScreen = false;
+
+  late FocusNode focusNode;
+
+  KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+    if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.escape) {
+      if (_isFullScreen) {
+        AnymexTitleBar.setFullScreen(false);
+      } else {
+        BuildContext escapeContext = Get.context!;
+        if (Navigator.of(escapeContext).canPop()) {
+          Navigator.pop(escapeContext);
+        }
+      }
+      return KeyEventResult.handled;
+    } else if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.f11) {
+      AnymexTitleBar.toggleFullScreen();
+      return KeyEventResult.handled;
+    } else if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.enter) {
+      final isAltPressed = HardwareKeyboard.instance.logicalKeysPressed
+              .contains(LogicalKeyboardKey.altLeft) ||
+          HardwareKeyboard.instance.logicalKeysPressed
+              .contains(LogicalKeyboardKey.altRight);
+      if (isAltPressed) {
+        AnymexTitleBar.toggleFullScreen();
+      }
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
+  }
 
   @override
   void initState() {
     super.initState();
+
+    AnymexTitleBar.isFullScreen.addListener(() => _isFullScreen = AnymexTitleBar.isFullScreen.value);
+
+    focusNode = FocusNode();
 
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
@@ -203,30 +240,19 @@ class _MainAppState extends State<MainApp> {
   }
 
   @override
+  void dispose() {
+    Logger.dispose();
+    focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
 
-    return KeyboardListener(
-      focusNode: FocusNode(),
-      onKeyEvent: (KeyEvent event) async {
-        if (event is KeyDownEvent) {
-          if (event.logicalKey == LogicalKeyboardKey.escape) {
-            Navigator.pop(Get.context!);
-          } else if (event.logicalKey == LogicalKeyboardKey.f11) {
-            bool isFullScreen = await windowManager.isFullScreen();
-            AnymexTitleBar.setFullScreen(!isFullScreen);
-          } else if (event.logicalKey == LogicalKeyboardKey.enter) {
-            final isAltPressed = HardwareKeyboard.instance.logicalKeysPressed
-                    .contains(LogicalKeyboardKey.altLeft) ||
-                HardwareKeyboard.instance.logicalKeysPressed
-                    .contains(LogicalKeyboardKey.altRight);
-            if (isAltPressed) {
-              bool isFullScreen = await windowManager.isFullScreen();
-              AnymexTitleBar.setFullScreen(!isFullScreen);
-            }
-          }
-        }
-      },
+    return Focus(
+      focusNode: focusNode,
+      onKeyEvent: _handleKeyEvent,
       child: GetMaterialApp(
         scrollBehavior: MyCustomScrollBehavior(),
         debugShowCheckedModeBanner: false,

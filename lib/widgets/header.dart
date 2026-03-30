@@ -83,7 +83,17 @@ class Header extends StatelessWidget {
                               onPressed: () {
                                 final hasNovelExts = sourceController
                                     .installedNovelExtensions.isNotEmpty;
+                                final isSimkl =
+                                    profileData.serviceType.value ==
+                                        ServicesType.simkl;
                                 if (type == PageType.manga) {
+                                  if (isSimkl) {
+                                    navigate(() => const SearchPage(
+                                          searchTerm: '',
+                                          isManga: false,
+                                        ));
+                                    return;
+                                  }
                                   if (!hasNovelExts) {
                                     navigate(() => const SearchPage(
                                           searchTerm: '',

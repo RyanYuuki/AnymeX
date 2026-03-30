@@ -75,6 +75,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   RxList<Episode> rawEpisodes = <Episode>[].obs;
   Rx<bool> isAnify = true.obs;
   Rx<bool> showAnify = true.obs;
+  RxBool disableAnifyForCurrentSource = false.obs;
 
   RxDouble animeScore = 0.0.obs;
   RxInt animeProgress = 0.obs;
@@ -86,7 +87,6 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
   RxBool episodeError = false.obs;
 
-  // for fast parallel filler fetching
   Map<String, bool> fillerEpisodes = {};
 
   late final PageController controller;
@@ -97,6 +97,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
   String posterColor = '';
   int _sourceRequestVersion = 0;
+  Worker? _activeSourceWorker;
 
   int _beginSourceRequest() => ++_sourceRequestVersion;
   bool _isStaleSourceRequest(int requestId) =>
@@ -149,9 +150,10 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     final initialPage = widget.initialTabIndex.clamp(0, 2).toInt();
     selectedPage.value = initialPage;
     controller = PageController(initialPage: initialPage);
-    if (sourceController.installedExtensions.isEmpty) {
-      showAnify.value = false;
-    }
+    _updateAnifyAvailabilityForSource();
+    _activeSourceWorker = ever<Source?>(sourceController.activeSource, (_) {
+      _updateAnifyAvailabilityForSource();
+    });
     Future.delayed(const Duration(milliseconds: 500), () {
       _checkAnimePresence();
     });
@@ -184,15 +186,24 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   }
 
   void _applyFillerInfo() {
-    if (fillerEpisodes.isEmpty || episodeList.isEmpty) return;
+    if (fillerEpisodes.isEmpty ||
+        (episodeList.isEmpty && rawEpisodes.isEmpty)) {
+      return;
+    }
 
     bool updated = false;
-    for (var ep in episodeList) {
-      if (fillerEpisodes.containsKey(ep.number)) {
-        ep.filler = true;
-        updated = true;
+
+    void markFillers(List<Episode> episodes) {
+      for (final ep in episodes) {
+        if (fillerEpisodes.containsKey(ep.number) && ep.filler != true) {
+          ep.filler = true;
+          updated = true;
+        }
       }
     }
+
+    markFillers(episodeList);
+    markFillers(rawEpisodes);
 
     if (updated && mounted) setState(() {});
   }
@@ -200,10 +211,24 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   @override
   void dispose() {
     controller.dispose();
+    _activeSourceWorker?.dispose();
 
     CommentPreloader.to.removePreloadedController(widget.media.id.toString());
     DiscordRPCController.instance.updateBrowsingPresence();
     super.dispose();
+  }
+
+  void _updateAnifyAvailabilityForSource() {
+    final shouldDisable =
+        sourceController.activeSource.value is CloudStreamSource;
+    disableAnifyForCurrentSource.value = shouldDisable;
+
+    if (widget.media.serviceType == ServicesType.extensions ||
+        sourceController.installedExtensions.isEmpty ||
+        shouldDisable) {
+      showAnify.value = false;
+      isAnify.value = false;
+    }
   }
 
   void _initListVars() {
@@ -258,9 +283,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       if (timeLeft.value != 0) {
         startCountdown(tempData.nextAiringEpisode!.airingAt);
       }
-      if (isExtensions) {
-        showAnify.value = false;
-      }
+      _updateAnifyAvailabilityForSource();
       Logger.i("Data Loaded for media => ${widget.media.title}");
 
       if (isExtensions) {
@@ -302,7 +325,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         '${sourceController.activeSource.value?.id}-${anilistData?.id}-${anilistData?.serviceType.index}';
     final savedTitle = DynamicKeys.mappedMediaTitle.get<String?>(key, null);
     final mappedData = await mapMedia(
-        formatTitles(widget.media) ?? [], searchedTitle,
+        formatTitles(anilistData ?? widget.media) ?? [], searchedTitle,
         savedTitle: savedTitle);
     if (_isStaleSourceRequest(activeRequestId) || !mounted) {
       return;
@@ -313,14 +336,43 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   }
 
   List<String>? formatTitles(Media media) {
-    return ['${media.title}*ANIME', media.romajiTitle];
+    String sanitize(String value) {
+      final trimmed = value.trim();
+      if (trimmed.isEmpty || trimmed == '?' || trimmed == '??') return '';
+      return trimmed;
+    }
+
+    final englishCandidates = [
+      sanitize(anilistData?.title ?? ''),
+      sanitize(media.title),
+      sanitize(widget.media.title),
+    ];
+    final romajiCandidates = [
+      sanitize(anilistData?.romajiTitle ?? ''),
+      sanitize(media.romajiTitle),
+      sanitize(widget.media.romajiTitle),
+    ];
+
+    final englishTitle =
+        englishCandidates.firstWhere((title) => title.isNotEmpty, orElse: () {
+      return romajiCandidates.firstWhere((title) => title.isNotEmpty,
+          orElse: () => 'Unknown Title');
+    });
+
+    final romajiTitle =
+        romajiCandidates.firstWhere((title) => title.isNotEmpty, orElse: () {
+      return englishTitle;
+    });
+
+    return ['$englishTitle*ANIME', romajiTitle];
   }
 
   void _processExtensionData(Media tempData) async {
     final episodes = tempData.mediaContent!.reversed.toList();
     final convertedEpisodes = _convertEpisodes(episodes, tempData.title);
-    rawEpisodes.value = _createRawEpisodes(convertedEpisodes);
-    episodeList.value = _renewEpisodeData(convertedEpisodes);
+    rawEpisodes.assignAll(_cloneEpisodes(convertedEpisodes));
+    episodeList.assignAll(_renewEpisodeData(_cloneEpisodes(convertedEpisodes)));
+    searchedTitle.value = "Found: ${tempData.title}";
     setState(() {});
   }
 
@@ -341,12 +393,16 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         episodeFuture.title ?? '',
       );
 
-      rawEpisodes.value = _createRawEpisodes(episodes);
-      episodeList.value = _renewEpisodeData(episodes);
-      searchedTitle.value = media.title;
+      rawEpisodes.assignAll(_cloneEpisodes(episodes));
+      episodeList.assignAll(_renewEpisodeData(_cloneEpisodes(episodes)));
+      searchedTitle.value = "Found: ${media.title}";
       _applyFillerInfo();
       if (mounted) {
         setState(() {});
+      }
+      _updateAnifyAvailabilityForSource();
+      if (disableAnifyForCurrentSource.value) {
+        return;
       }
       await applyAnifyCovers(requestId: activeRequestId);
     } catch (e) {
@@ -360,8 +416,6 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
   Future<void> applyAnifyCovers({int? requestId}) async {
     final activeRequestId = requestId ?? _sourceRequestVersion;
-    // Never pass RxList directly into metadata mappers; they may return
-    // the same reference, which can cause RxList.value = RxList recursion.
     final baseEpisodes = List<Episode>.from(episodeList);
     final newEps = await AnilistData.fetchEpisodesFromAnify(
       widget.media.id.toString(),
@@ -382,15 +436,34 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     }
   }
 
-  List<Episode> _createRawEpisodes(List<Episode> eps) {
-    final newEps = eps
-        .map((e) => Episode(title: e.title, number: e.number, link: e.link))
+  List<Episode> _cloneEpisodes(List<Episode> episodes) {
+    return episodes
+        .map((episode) => Episode.fromJson(episode.toJson()))
         .toList();
-    return newEps;
   }
 
   List<Episode> _convertEpisodes(List<dynamic> episodes, String title) {
-    return episodes.map((ep) => DEpisodeToEpisode(ep)).toList();
+    final data = episodes.map((ep) => DEpisodeToEpisode(ep)).toList();
+
+    if (data.isEmpty) return data;
+
+    if (data.first.sortMap.isNotEmpty && data.first.sortMap['season'] != null) {
+      data.sort((a, b) {
+        final seasonA = int.tryParse(a.sortMap['season'] ?? '0') ?? 0;
+        final seasonB = int.tryParse(b.sortMap['season'] ?? '0') ?? 0;
+
+        if (seasonA != seasonB) {
+          return seasonA.compareTo(seasonB);
+        }
+
+        final epA = a.number;
+        final epB = b.number;
+
+        return epA.compareTo(epB);
+      });
+    }
+
+    return data;
   }
 
   List<Episode> _renewEpisodeData(List<Episode> episodes) {
@@ -782,12 +855,15 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       return EpisodeSection(
         searchedTitle: searchedTitle,
         anilistData: anilistData ?? widget.media,
-        episodeList: (isAnify.value) ? episodeList : rawEpisodes,
+        episodeList: (!disableAnifyForCurrentSource.value && isAnify.value)
+            ? episodeList
+            : rawEpisodes,
         episodeError: episodeError,
         mapToAnilist: () => _mapToService(),
         getDetailsFromSource: (media) => _fetchSourceDetails(media),
         isAnify: isAnify,
         showAnify: showAnify,
+        disableAnifyForCurrentSource: disableAnifyForCurrentSource,
       );
     });
   }
@@ -867,14 +943,14 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                       20.multiplyRadius(),
                     )),
                 child: NavBarItem(
-                    isSelected: false,
-                    isVertical: true,
-                    onTap: () {
-                      Get.back();
-                    },
-                    selectedIcon: Iconsax.back_square,
-                    unselectedIcon: IconlyBold.arrow_left,
-                    label: "Back"),
+                  isSelected: false,
+                  isVertical: true,
+                  onTap: () {
+                    Get.back();
+                  },
+                  selectedIcon: Iconsax.back_square,
+                  unselectedIcon: IconlyBold.arrow_left,
+                ),
               ),
               const SizedBox(height: 10),
               ResponsiveNavBar(

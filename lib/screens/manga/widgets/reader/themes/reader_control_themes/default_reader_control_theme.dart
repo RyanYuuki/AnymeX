@@ -26,6 +26,6 @@ class DefaultReaderControlTheme extends ReaderControlTheme {
   @override
   Widget buildCenterControls(
       BuildContext context, ReaderController controller) {
-    return const ReaderAutoScrollMenu();
+    return const ReaderAutoScrollMenu(theme: AutoScrollTheme.material);
   }
 }

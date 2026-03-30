@@ -370,11 +370,9 @@ class _ProfilePageState extends State<ProfilePage>
             ? null
             : ResponsiveNavBar(
                 isDesktop: false,
-                height: 64,
                 currentIndex: _selectedTab,
                 margin: EdgeInsets.zero,
                 borderRadius: BorderRadius.zero,
-                backgroundColor: context.theme.colorScheme.surface,
                 items: _profileNavItems,
               ),
         body: _ready

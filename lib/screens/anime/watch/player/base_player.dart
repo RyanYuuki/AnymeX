@@ -163,20 +163,28 @@ class SubtitleTrack {
   final String? title;
   final String? language;
   final String? url;
+  final Map<String, String>? headers;
 
   SubtitleTrack({
     required this.id,
     this.title,
     this.language,
     this.url,
+    this.headers,
   });
 
-  factory SubtitleTrack.uri(String uri, {String? title, String? language}) {
+  factory SubtitleTrack.uri(
+    String uri, {
+    String? title,
+    String? language,
+    Map<String, String>? headers,
+  }) {
     return SubtitleTrack(
       id: uri,
       title: title,
       language: language,
       url: uri,
+      headers: headers,
     );
   }
 

@@ -128,11 +128,9 @@ class _PluginInitDialogState extends State<PluginInitDialog>
     setState(() => _stage = _InitStage.moving);
 
     try {
-      if (kDebugMode) {
-        await AnymeXRuntimeBridge.loadRuntimeHostFromPicker();
-      } else {
-        await AnymeXRuntimeBridge.loadAnymeXRuntimeHost(downloadedFile.path);
-      }
+      await AnymeXRuntimeBridge.loadAnymeXRuntimeHost(kDebugMode
+          ? '/storage/emulated/0/AnymeX/anymex_runtime_host.apk'
+          : downloadedFile.path);
 
       if (!mounted) return;
 

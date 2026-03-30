@@ -309,6 +309,7 @@ class SourceController extends GetxController implements BaseService {
     print('Activating extension by name: $name');
     final match = sources.firstWhereOrNull(
       (s) =>
+          s.id.toString() == name ||
           '${s.name}-${s.lang?.toUpperCase()}-${s.runtimeType}' == name ||
           s.name == name,
     );
@@ -350,7 +351,7 @@ class SourceController extends GetxController implements BaseService {
     final type = source.itemType;
     if (type == null) return;
 
-    final managerId = source.managerId ?? getSourceManager(source).id;
+    final managerId = getSourceManager(source).id;
     await _bridge.refreshManagerType(managerId, type);
     await initExtensions();
   }

@@ -53,8 +53,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: HEAD
-      resolved-ref: "4334334851d5631367a759ba23629795a834a820"
+      ref: main
+      resolved-ref: "2af1a317ca1a091effb8b4437ce9b91d66f5c413"
       url: "https://github.com/RyanYuuki/AnymeXExtensionRuntimeBridge.git"
     source: git
     version: "1.0.0"

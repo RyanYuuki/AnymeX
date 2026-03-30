@@ -583,6 +583,15 @@ class ChapterListItem extends StatelessWidget {
     final progressText = savedChaps?.pageNumber != null
         ? ' (${savedChaps?.pageNumber}/${savedChaps?.totalPages})'
         : '';
+    final chapterMetaLabel = (chapter.scanlator?.isNotEmpty ?? false)
+        ? chapter.scanlator!
+        : (chapter.sourceName?.isNotEmpty ?? false)
+            ? chapter.sourceName!
+            : Get.find<SourceController>().activeMangaSource.value?.name ?? '';
+    final chapterMetaText = [
+      if (chapter.releaseDate?.isNotEmpty ?? false) chapter.releaseDate!,
+      if (chapterMetaLabel.isNotEmpty) chapterMetaLabel,
+    ].join(' • ');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -603,8 +612,7 @@ class ChapterListItem extends StatelessWidget {
           width: getResponsiveSize(context,
               mobileSize: Get.width * 0.4, desktopSize: 200),
           child: AnymexText(
-            text:
-                '${chapter.releaseDate} • ${Get.find<SourceController>().activeMangaSource.value!.name}',
+            text: chapterMetaText,
             color: context.colors.inverseSurface.opaque(0.9),
             fontStyle: FontStyle.italic,
             maxLines: 2,

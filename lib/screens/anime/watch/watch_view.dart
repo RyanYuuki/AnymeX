@@ -7,6 +7,7 @@ import 'package:anymex/screens/anime/watch/controls/themes/setup/themed_controls
 import 'package:anymex/screens/anime/watch/controls/widgets/double_tap_seek.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/overlay.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/buffering_overlay.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/subtitle_text.dart';
 import 'package:anymex/screens/anime/watch/subtitles/subtitle_view.dart';
 import 'package:anymex/screens/anime/widgets/media_indicator.dart';
@@ -62,11 +63,18 @@ class _WatchScreenState extends State<WatchScreen> {
         body: Stack(
       children: [
         Obx(() {
+          controller.playerReloadVersion.value;
           return controller.videoWidget;
         }),
         PlayerOverlay(controller: controller),
-        if (!PlayerKeys.useLibass.get<bool>(false))
-          SubtitleText(controller: controller),
+        BufferingOverlay(controller: controller),
+        Obx(() {
+          controller.playerReloadVersion.value;
+          if (PlayerKeys.useLibass.get<bool>(false)) {
+            return const SizedBox.shrink();
+          }
+          return SubtitleText(controller: controller);
+        }),
         DoubleTapSeekWidget(
           controller: controller,
         ),

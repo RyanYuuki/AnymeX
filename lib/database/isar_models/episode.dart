@@ -11,6 +11,8 @@ class Episode {
   String? title;
   String? desc;
   String? thumbnail;
+  List<String>? sortKeys;
+  List<String>? sortVals;
   bool? filler;
   int? timeStampInMilliseconds;
   int? durationInMilliseconds;
@@ -28,6 +30,8 @@ class Episode {
     this.desc,
     this.thumbnail,
     this.filler,
+    this.sortKeys,
+    this.sortVals,
     this.timeStampInMilliseconds,
     this.durationInMilliseconds,
     this.lastWatchedTime,
@@ -50,6 +54,8 @@ class Episode {
       'currentTrack': currentTrack?.toJson(),
       'videoTracks': videoTracks?.map((v) => v.toJson()).toList(),
       'source': source,
+      'sortKeys': sortKeys,
+      'sortVals': sortVals
     };
   }
 
@@ -71,6 +77,16 @@ class Episode {
           ?.map((v) => Video.fromJson(v as Map<String, dynamic>))
           .toList(),
       source: json['source'] as String?,
+      sortKeys: json['sortKeys'] as List<String>?,
+      sortVals: json['sortVals'] as List<String>?,
     );
+  }
+}
+
+extension EpisodeMap on Episode {
+  Map<String, String> get sortMap {
+    if (sortKeys == null || sortVals == null) return {};
+
+    return Map<String, String>.fromIterables(sortKeys!, sortVals!);
   }
 }
