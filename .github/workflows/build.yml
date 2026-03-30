@@ -31,24 +31,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
-      - name: Set Build Type Environment Variable
-        shell: bash
-        run: |
-          if [[ "${{ github.ref_name }}" == *"-beta" ]]; then
-            echo "IS_BETA_BUILD=true" >> $GITHUB_ENV
-            echo "This is a BETA build. Caching will be disabled."
-          else
-            echo "IS_BETA_BUILD=false" >> $GITHUB_ENV
-            echo "This is a STABLE build. Caching will be enabled."
-          fi
-      
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
       
       - name: Cache Rust
-        if: env.IS_BETA_BUILD != 'true'
         uses: actions/cache@v3
         with:
           path: |
@@ -70,381 +58,10 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
-          cache: ${{ env.IS_BETA_BUILD != 'true' }}
-
-      - name: Fix line endings (Windows)
-        if: runner.os == 'Windows'
-        shell: bash
-        run: |
-          sed -i 's/\r$//' scripts/rename_app.sh
-
-      - name: Auto rename for beta build
-        shell: bash
-        run: |
-          TAG="${GITHUB_REF_NAME}"
-
-          echo "════════════════════════════════════════════"
-          echo "  Build Type Detection"
-          echo "════════════════════════════════════════════"
-          echo "Tag: $TAG"
-          echo ""
-
-          if [[ "$TAG" == *"-beta" ]]; then
-            echo "🔵 Beta build detected"
-            echo "────────────────────────────────────────────"
-
-            # Extract version part (remove v)
-            # v3.0.4-beta → 3.0.4-beta
-            # v3.0.4+1-beta → 3.0.4+1-beta
-            VERSION_PART=$(echo "$TAG" | sed 's/^v//')
-
-            echo "Display version: v$VERSION_PART"
-
-            # For pubspec.yaml, we need only semver (before any +)
-            # 3.0.4+1-beta → 3.0.4
-            # 3.0.4-beta → 3.0.4
-            if [[ "$VERSION_PART" == *"+"* ]]; then
-              SEMVER=$(echo "$VERSION_PART" | cut -d'+' -f1 | cut -d'-' -f1)
-            else
-              SEMVER=$(echo "$VERSION_PART" | cut -d'-' -f1)
-            fi
-
-            echo "Semver: $SEMVER"
-
-            # GitHub build number
-            BUILD_NUMBER="${GITHUB_RUN_NUMBER}"
-
-            # pubspec.yaml version (valid Flutter format)
-            PUBSPEC_VERSION="${SEMVER}+${BUILD_NUMBER}"
-
-            # Display version is just tag without v (no build number)
-            DISPLAY_VERSION="v${VERSION_PART}"
-
-            echo "Pubspec version: $PUBSPEC_VERSION"
-            echo "Display version: $DISPLAY_VERSION"
-            echo ""
-
-            # Check if rename script exists
-            if [ ! -f "scripts/rename_app.sh" ]; then
-              echo "❌ Error: scripts/rename_app.sh not found"
-              echo "Expected location: scripts/rename_app.sh"
-              exit 1
-            fi
-
-            # Make script executable and run
-            chmod +x scripts/rename_app.sh
-            echo "Running rename script..."
-            echo "════════════════════════════════════════════"
-
-            if ./scripts/rename_app.sh "$PUBSPEC_VERSION" "$DISPLAY_VERSION"; then
-              echo ""
-              echo "✅ Beta rename completed successfully"
-              echo "   Package: com.ryan.anymex → com.ryan.anymexbeta"
-              echo "   App Name: AnymeX → AnymeX β"
-              echo "   Pubspec Version: $PUBSPEC_VERSION"
-              echo "   Display Version: $DISPLAY_VERSION"
-            else
-              echo ""
-              echo "❌ Beta rename failed"
-              exit 1
-            fi
-
-          else
-            echo "🟢 Stable build detected"
-            echo "────────────────────────────────────────────"
-            echo "Skipping rename (not a beta tag)"
-            echo ""
-            echo "Tag formats:"
-            echo "  • Beta:   v0.0.0-beta (triggers rename)"
-            echo "  • Beta with iteration:   v0.0.0+1-beta (triggers rename)"
-            echo "  • Stable: v0.0.0 (no rename)"
-          fi
-
-          echo "════════════════════════════════════════════"
-
-      - name: Configure Google Services for Beta
-        if: matrix.platform == 'android' && contains(github.ref_name, '-beta')
-        shell: bash
-        run: |
-          echo "🔵 Beta build detected - Disabling Google Services"
-          
-          # Remove google-services plugin from app/build.gradle
-          if [ -f "android/app/build.gradle" ]; then
-            echo "Modifying android/app/build.gradle..."
-            sed -i '/com\.google\.gms\.google-services/d' android/app/build.gradle
-            echo "✅ Removed google-services plugin from app/build.gradle"
-          fi
-          
-          # Remove google-services classpath from build.gradle
-          if [ -f "android/build.gradle" ]; then
-            echo "Modifying android/build.gradle..."
-            sed -i '/com\.google\.gms:google-services:/d' android/build.gradle
-            echo "✅ Removed google-services classpath from build.gradle"
-          fi
-          
-          # Verify changes
-          echo ""
-          echo "Verification - checking for remaining google-services references:"
-          grep -n "google-services" android/app/build.gradle android/build.gradle || echo "✅ No google-services references found"
-          echo ""
-          echo "Google Services successfully disabled for beta build"
-
-      - name: Verify beta configuration (All Platforms)
-        if: contains(github.ref_name, '-beta')
-        shell: bash
-        run: |
-          echo "════════════════════════════════════════════"
-          echo "  Verifying Beta Configuration"
-          echo "════════════════════════════════════════════"
-
-          ERRORS=0
-
-          # ==========================================
-          # DART CODE
-          # ==========================================
-          echo ""
-          echo "🎯 DART"
-          echo "────────────────────────────────────────────"
-
-          # Check main.dart for the app title
-          if grep -q 'title: "AnymeX β"' lib/main.dart 2>/dev/null; then
-            echo "✅ MaterialApp title in lib/main.dart"
-          else
-            echo "❌ MaterialApp title NOT updated in lib/main.dart"
-            ERRORS=$((ERRORS + 1))
-          fi
-
-          # ==========================================
-          # ANDROID
-          # ==========================================
-          echo ""
-          echo "📱 ANDROID"
-          echo "────────────────────────────────────────────"
-
-          # Check build.gradle package name
-          if grep -q "com.ryan.anymexbeta" android/app/build.gradle* 2>/dev/null; then
-            echo "✅ Package name in build.gradle"
-          else
-            echo "❌ Package name NOT updated in build.gradle"
-            ERRORS=$((ERRORS + 1))
-          fi
-
-          # Check AndroidManifest package
-          if grep -q 'package="com.ryan.anymexbeta"' android/app/src/main/AndroidManifest.xml 2>/dev/null; then
-            echo "✅ Package in AndroidManifest.xml"
-          else
-            echo "❌ Package NOT updated in AndroidManifest.xml"
-            ERRORS=$((ERRORS + 1))
-          fi
-
-          # Check AndroidManifest app name
-          if grep -q 'android:label="AnymeX β"' android/app/src/main/AndroidManifest.xml 2>/dev/null; then
-            echo "✅ App name in AndroidManifest.xml"
-          else
-            echo "❌ App name NOT updated in AndroidManifest.xml"
-            ERRORS=$((ERRORS + 1))
-          fi
-
-          # Check Kotlin package directory
-          if [ -d "android/app/src/main/kotlin/com/ryan/anymexbeta" ]; then
-            echo "✅ Kotlin package directory moved"
-          else
-            echo "❌ Kotlin package directory NOT found"
-            echo "   Expected: android/app/src/main/kotlin/com/ryan/anymexbeta"
-            # Show what exists
-            if [ -d "android/app/src/main/kotlin/com/ryan/anymex" ]; then
-              echo "   Found old directory still exists: android/app/src/main/kotlin/com/ryan/anymex"
-            fi
-            ls -la android/app/src/main/kotlin/com/ryan/ 2>/dev/null || echo "   Directory structure missing"
-            ERRORS=$((ERRORS + 1))
-          fi
-
-          # Check Kotlin files package declaration
-          if [ -d "android/app/src/main/kotlin/com/ryan/anymexbeta" ]; then
-            if grep -q "package com.ryan.anymexbeta" android/app/src/main/kotlin/com/ryan/anymexbeta/*.kt 2>/dev/null; then
-              echo "✅ Kotlin files package declaration"
-            else
-              echo "❌ Kotlin package declaration NOT updated"
-              echo "   Checking file contents:"
-              head -n 1 android/app/src/main/kotlin/com/ryan/anymexbeta/*.kt 2>/dev/null || echo "   No Kotlin files found"
-              ERRORS=$((ERRORS + 1))
-            fi
-          fi
-
-          # ==========================================
-          # iOS
-          # ==========================================
-          echo ""
-          echo "🍎 iOS"
-          echo "────────────────────────────────────────────"
-
-          # Check bundle identifier in project.pbxproj
-          if grep -q "PRODUCT_BUNDLE_IDENTIFIER = com.ryan.anymexbeta" ios/Runner.xcodeproj/project.pbxproj 2>/dev/null; then
-            echo "✅ Bundle identifier in project.pbxproj"
-          else
-            echo "❌ Bundle identifier NOT updated in project.pbxproj"
-            ERRORS=$((ERRORS + 1))
-          fi
-
-          # Check Info.plist app name
-          if grep -q "<string>AnymeX β</string>" ios/Runner/Info.plist 2>/dev/null; then
-            echo "✅ App name in Info.plist"
-          else
-            echo "❌ App name NOT updated in Info.plist"
-            ERRORS=$((ERRORS + 1))
-          fi
-
-          # ==========================================
-          # macOS
-          # ==========================================
-          echo ""
-          echo "🖥️  macOS"
-          echo "────────────────────────────────────────────"
-
-          # Check AppInfo.xcconfig
-          if [ -f "macos/Runner/Configs/AppInfo.xcconfig" ]; then
-            if grep -q "PRODUCT_BUNDLE_IDENTIFIER = com.ryan.anymexbeta" macos/Runner/Configs/AppInfo.xcconfig 2>/dev/null; then
-              echo "✅ Bundle identifier in AppInfo.xcconfig"
-            else
-              echo "❌ Bundle identifier NOT updated in AppInfo.xcconfig"
-              ERRORS=$((ERRORS + 1))
-            fi
-
-            if grep -q "PRODUCT_NAME = anymex_beta" macos/Runner/Configs/AppInfo.xcconfig 2>/dev/null; then
-              echo "✅ Product name in AppInfo.xcconfig"
-            else
-              echo "❌ Product name NOT updated in AppInfo.xcconfig"
-              ERRORS=$((ERRORS + 1))
-            fi
-          else
-            echo "⚠️  AppInfo.xcconfig not found (skipping)"
-          fi
-
-          # Check macOS Info.plist
-          if [ -f "macos/Runner/Info.plist" ]; then
-            if grep -q "<string>AnymeX β</string>" macos/Runner/Info.plist 2>/dev/null; then
-              echo "✅ App name in Info.plist"
-            else
-              echo "❌ App name NOT updated in Info.plist"
-              ERRORS=$((ERRORS + 1))
-            fi
-          else
-            echo "⚠️  Info.plist not found (skipping)"
-          fi
-
-          # ==========================================
-          # Linux
-          # ==========================================
-          echo ""
-          echo "🐧 LINUX"
-          echo "────────────────────────────────────────────"
-
-          # Check my_application.cc
-          if [ -f "linux/my_application.cc" ]; then
-            if grep -q '"AnymeX β"' linux/my_application.cc 2>/dev/null; then
-              echo "✅ App name in my_application.cc"
-            else
-              echo "❌ App name NOT updated in my_application.cc"
-              ERRORS=$((ERRORS + 1))
-            fi
-          else
-            echo "⚠️  my_application.cc not found (skipping)"
-          fi
-
-          # Check CMakeLists.txt
-          if [ -f "linux/CMakeLists.txt" ]; then
-            if grep -q 'set(APPLICATION_ID "com.ryan.anymexbeta")' linux/CMakeLists.txt 2>/dev/null; then
-              echo "✅ Application ID in CMakeLists.txt"
-            else
-              echo "❌ Application ID NOT updated in CMakeLists.txt"
-              ERRORS=$((ERRORS + 1))
-            fi
-          else
-            echo "⚠️  CMakeLists.txt not found (skipping)"
-          fi
-
-          # ==========================================
-          # Windows
-          # ==========================================
-          echo ""
-          echo "🪟 WINDOWS"
-          echo "────────────────────────────────────────────"
-
-          # Check Runner.rc
-          if [ -f "windows/runner/Runner.rc" ]; then
-            if grep -q '"anymex_beta"' windows/runner/Runner.rc 2>/dev/null; then
-              echo "✅ Binary name in Runner.rc"
-            else
-              echo "❌ Binary name NOT updated in Runner.rc"
-              ERRORS=$((ERRORS + 1))
-            fi
-
-            if grep -q 'VALUE "ProductName", "AnymeX β"' windows/runner/Runner.rc 2>/dev/null; then
-              echo "✅ Product name in Runner.rc"
-            else
-              echo "❌ Product name NOT updated in Runner.rc"
-              ERRORS=$((ERRORS + 1))
-            fi
-          else
-            echo "⚠️  Runner.rc not found (skipping)"
-          fi
-
-          # Check Windows CMakeLists.txt
-          if [ -f "windows/CMakeLists.txt" ]; then
-            if grep -q 'set(BINARY_NAME "anymex_beta")' windows/CMakeLists.txt 2>/dev/null; then
-              echo "✅ Binary name in CMakeLists.txt"
-            else
-              echo "❌ Binary name NOT updated in CMakeLists.txt"
-              ERRORS=$((ERRORS + 1))
-            fi
-          else
-            echo "⚠️  CMakeLists.txt not found (skipping)"
-          fi
-
-          # ==========================================
-          # Flutter pubspec.yaml
-          # ==========================================
-          echo ""
-          echo "🎯 FLUTTER"
-          echo "────────────────────────────────────────────"
-
-          TAG="${GITHUB_REF_NAME}"
-          VERSION_PART=$(echo "$TAG" | sed 's/^v//')
-          if [[ "$VERSION_PART" == *"+"* ]]; then
-            SEMVER=$(echo "$VERSION_PART" | cut -d'+' -f1 | cut -d'-' -f1)
-          else
-            SEMVER=$(echo "$VERSION_PART" | cut -d'-' -f1)
-          fi
-          BUILD_NUMBER="${GITHUB_RUN_NUMBER}"
-          VERSION="${SEMVER}+${BUILD_NUMBER}"
-
-          if grep -q "version: $VERSION" pubspec.yaml 2>/dev/null; then
-            echo "✅ Version updated in pubspec.yaml: $VERSION"
-          else
-            echo "❌ Version NOT updated in pubspec.yaml"
-            echo "   Expected: version: $VERSION"
-            echo "   Found:"
-            grep "^version:" pubspec.yaml 2>/dev/null || echo "   No version line found"
-            ERRORS=$((ERRORS + 1))
-          fi
-
-          # ==========================================
-          # Summary
-          # ==========================================
-          echo ""
-          echo "════════════════════════════════════════════"
-          if [ $ERRORS -eq 0 ]; then
-            echo "✅ ALL PLATFORMS VERIFIED SUCCESSFULLY"
-            echo "════════════════════════════════════════════"
-            exit 0
-          else
-            echo "❌ VERIFICATION FAILED: $ERRORS error(s) found"
-            echo "════════════════════════════════════════════"
-            exit 1
-          fi
+          cache: true
       
       - name: Cache Gradle
-        if: matrix.platform == 'android' && env.IS_BETA_BUILD != 'true'
+        if: matrix.platform == 'android'
         uses: actions/cache@v3
         with:
           path: |
@@ -564,10 +181,6 @@ jobs:
           GIT_CLIENT_SECRET=$GIT_CLIENT_SECRET
           GIT_CALLBACK_SCHEME=$GIT_CALLBACK_SCHEME
           EOF
-          
-      - name: Clean Flutter for Beta Build
-        if: env.IS_BETA_BUILD == 'true'
-        run: flutter clean
       
       - name: Build Android
         if: matrix.platform == 'android'
@@ -619,16 +232,9 @@ jobs:
           cp -r build/linux/x64/release/bundle/* AppDir/usr/bin/
           cp assets/images/logo.png AppDir/usr/share/icons/hicolor/256x256/apps/anymex.png
           cp assets/images/logo.png AppDir/anymex.png
-          
-          # Set the app name for the .desktop file
-          APP_NAME="AnymeX"
-          if [[ "${{ github.ref_name }}" == *"-beta" ]]; then
-            APP_NAME="AnymeX β"
-          fi
-          
-          cat > AppDir/anymex.desktop << EOF
+          cat > AppDir/anymex.desktop << 'EOF'
           [Desktop Entry]
-          Name=${APP_NAME}
+          Name=AnymeX
           Exec=usr/bin/anymex
           Icon=anymex
           Type=Application
@@ -643,10 +249,8 @@ jobs:
           exec "${HERE}/usr/bin/anymex" "$@"
           EOF
           chmod +x AppDir/AppRun
-          
-          # Explicitly set the output filename for appimagetool
-          /usr/local/bin/appimagetool AppDir build/linux/x64/release/AnymeX-Linux.AppImage
-          
+          /usr/local/bin/appimagetool AppDir
+          mv AnymeX-x86_64.AppImage build/linux/x64/release/AnymeX-Linux.AppImage
           mkdir -p rpm_build/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
           cp -r build/linux/x64/release/bundle rpm_build/SOURCES/anymex-1.0.0
           tar czf rpm_build/SOURCES/anymex-1.0.0.tar.gz -C rpm_build/SOURCES anymex-1.0.0
@@ -706,21 +310,6 @@ jobs:
               Write-Error "ISS file not found: $issFile"
               exit 1
           }
-          
-          # Fix Inno Setup script for beta builds
-          if ("${{ github.ref_name }}" -like "*-beta") {
-            Write-Host "Fixing installer for beta build..."
-            $content = Get-Content $issFile -Raw
-            # Fix the executable name the shortcut points to
-            $content = $content -replace 'AnymeX\.exe', 'anymex_beta.exe'
-            # Fix the name of the shortcut itself
-            $content = $content -replace '"AnymeX"', '"AnymeX β"'
-            # Fix the default app name in the registry
-            $content = $content -replace 'AppName=AnymeX', 'AppName=AnymeX β'
-            Set-Content $issFile -Value $content -NoNewline
-            Write-Host "Updated Inno Setup script for beta build"
-          }
-
           $content = Get-Content $issFile -Raw
           $content = $content -replace '.*Icelandic\.isl.*\r?\n', ''
           Set-Content $issFile -Value $content -NoNewline
@@ -739,45 +328,13 @@ jobs:
         run: |
           flutter pub get
           flutter build macos --release
-
-          echo "🔍 Searching for built .app..."
-
-          APP_PATH=$(find build/macos/Build/Products/Release -maxdepth 1 -name "*.app" | head -n 1)
-
-          if [ -z "$APP_PATH" ]; then
-            echo "❌ Error: No .app found!"
-            ls -R build/macos/Build/Products/Release
-            exit 1
-          fi
-
-          echo "✅ Found app: $APP_PATH"
-
-          # Prepare DMG structure
-          mkdir -p temp_dir build/macos/Release
-          cp -R "$APP_PATH" temp_dir/
-
-          # Applications shortcut (required for macOS DMGs)
+          APP_PATH="build/macos/Build/Products/Release/anymex.app"
+          [ ! -d "$APP_PATH" ] && echo "Error: anymex.app not found" && exit 1
+          mkdir -p build/macos/Release temp_dir
+          cp -r "$APP_PATH" temp_dir/
           ln -s /Applications temp_dir/Applications
-
-          # Extract the .app folder name to dynamically name the DMG
-          APP_NAME=$(basename "$APP_PATH" .app)
-          
-          # Set DMG volume name for beta builds
-          DMG_VOL_NAME="$APP_NAME"
-          if [[ "${{ github.ref_name }}" == *"-beta" ]]; then
-            DMG_VOL_NAME="AnymeX β"
-          fi
-
-          echo "📦 Creating DMG: ${APP_NAME}.dmg with volume name: ${DMG_VOL_NAME}"
-
-          hdiutil create -volname "$DMG_VOL_NAME" \
-            -srcfolder temp_dir \
-            -ov -format UDZO \
-            "build/macos/Release/${APP_NAME}.dmg"
-
+          hdiutil create -volname "AnymeX" -srcfolder temp_dir -ov -format UDZO build/macos/Release/AnymeX.dmg
           rm -rf temp_dir
-
-          echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
       
       - uses: actions/upload-artifact@v4
         if: matrix.platform == 'android'
@@ -812,7 +369,7 @@ jobs:
         if: matrix.platform == 'macos'
         with:
           name: macos
-          path: build/macos/Release/${{ env.APP_NAME }}.dmg
+          path: build/macos/Release/AnymeX.dmg
 
   release:
     needs: build-all-platforms
@@ -828,23 +385,28 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           tag: ${{ github.ref_name }}
-          
-  post-release-aur:
-    if: github.repository == 'RyanYuuki/AnymeX' && !contains(github.ref_name, '-beta')
+
+  post-release:
     needs: [build-all-platforms, release]
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        job: [aur, scoop, chocolatey]
+    runs-on: ${{ matrix.job == 'chocolatey' && 'windows-latest' || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{ github.ref }}
+          ref: ${{ matrix.job == 'chocolatey' && 'main' || github.ref }}
 
       - name: Download Linux Artifact
+        if: matrix.job == 'aur'
         uses: actions/download-artifact@v4
         with:
           name: linux
           path: .
       
       - name: Update AUR
+        if: matrix.job == 'aur'
         env:
           VERSION: ${{ github.ref_name }}
           AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
@@ -1033,23 +595,10 @@ jobs:
             git push origin master
             echo "Successfully pushed to AUR!"
           fi
-          
-  post-release-optional:
-    if: github.repository == 'RyanYuuki/AnymeX' && !contains(github.ref_name, '-beta')
-    needs: [build-all-platforms, release]
-    strategy:
-      fail-fast: false
-      matrix:
-        job: [scoop, chocolatey]
-    runs-on: ${{ matrix.job == 'chocolatey' && 'windows-latest' || 'ubuntu-latest' }}
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: ${{ matrix.job == 'chocolatey' && 'main' || github.ref }}
-
+      
       - name: Update Scoop
         if: matrix.job == 'scoop'
+        continue-on-error: true
         env:
           VERSION: ${{ github.ref_name }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -1119,6 +668,7 @@ jobs:
       
       - name: Update Chocolatey
         if: matrix.job == 'chocolatey'
+        continue-on-error: true
         env:
           CHOCO_API_KEY: ${{ secrets.CHOCO_API_KEY }}
         shell: pwsh
