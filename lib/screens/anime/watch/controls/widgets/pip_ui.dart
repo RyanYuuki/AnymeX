@@ -56,38 +56,12 @@ class PipUi extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         IconButton(
-                          iconSize: 28,
-                          onPressed: () {
-                            if (controller.hasPreviousEpisode) {
-                              controller.navigator(false);
-                            }
-                          },
-                          icon: const Icon(
-                            Icons.skip_previous_rounded,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        IconButton(
-                          iconSize: 36,
+                          iconSize: 32,
                           onPressed: () => controller.togglePlayPause(),
                           icon: Icon(
                             isPlaying
                                 ? Icons.pause_rounded
                                 : Icons.play_arrow_rounded,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        IconButton(
-                          iconSize: 28,
-                          onPressed: () {
-                            if (controller.hasNextEpisode) {
-                              controller.navigator(true);
-                            }
-                          },
-                          icon: const Icon(
-                            Icons.skip_next_rounded,
                             color: Colors.white,
                           ),
                         ),
