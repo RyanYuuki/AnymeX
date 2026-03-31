@@ -50,6 +50,7 @@ class Media {
   String? userStatus;
   String? characterRole;
   int? seasonYear;
+  List<String> synonyms;
 
   // String get uniqueId => "$id-${serviceType.name}";
   String get uniqueId => id.split('*').first;
@@ -93,6 +94,7 @@ class Media {
       this.friendsWatching,
       this.userStatus,
       this.characterRole,
+      this.synonyms = const [],
       DateTime? createdAt})
       : createdAt = DateTime.now();
 
@@ -413,6 +415,7 @@ class Media {
           [],
       mediaType: type,
       serviceType: ServicesType.anilist,
+      synonyms: (json['synonyms'] as List?)?.cast<String>() ?? [],
     );
 
     if (json['staffPreview'] != null) {
