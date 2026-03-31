@@ -1,22 +1,9 @@
 import 'dart:io';
 
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex_extension_runtime_bridge/AnymeXBridge.dart';
-import 'package:anymex_extension_runtime_bridge/ExtensionManager.dart';
-import 'package:flutter/foundation.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
-
-enum _InitStage {
-  idle,
-  downloading,
-  moving,
-  initAniyomi,
-  initCloudstream,
-  done
-}
 
 class PluginInitDialog extends StatefulWidget {
   const PluginInitDialog({super.key});
@@ -36,26 +23,19 @@ class PluginInitDialog extends StatefulWidget {
 
 class _PluginInitDialogState extends State<PluginInitDialog>
     with TickerProviderStateMixin {
-  _InitStage _stage = _InitStage.idle;
-  double _downloadProgress = 0;
-  int _downloadedBytes = 0;
-  int _totalBytes = 0;
-  String? _errorMsg;
-
-  String get pluginUrl =>
-      "https://github.com/RyanYuuki/AnymeXExtensionRuntimeBridge/releases/download/v1.0.0/anymex_runtime_host.apk";
-
+  
   late final AnimationController _pulseCtrl;
   late final Animation<double> _pulse;
   late final AnimationController _checkCtrl;
   late final Animation<double> _checkScale;
 
-  final List<({String label, _InitStage stage})> _steps = [
-    (label: 'Moving plugin to app storage', stage: _InitStage.moving),
-    (label: 'Initializing Aniyomi', stage: _InitStage.initAniyomi),
-    (label: 'Initializing Cloudstream', stage: _InitStage.initCloudstream),
-    (label: 'Plugin loaded successfully', stage: _InitStage.done),
+  final List<({String label, String id})> _steps = [
+    (label: 'Initializing Aniyomi', id: 'aniyomi'),
+    (label: 'Initializing Cloudstream', id: 'cloudstream'),
+    (label: 'Plugin loaded successfully', id: 'done'),
   ];
+
+  String _currentManager = '';
 
   @override
   void initState() {
@@ -69,6 +49,12 @@ class _PluginInitDialogState extends State<PluginInitDialog>
     _checkCtrl = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 400));
     _checkScale = CurvedAnimation(parent: _checkCtrl, curve: Curves.elasticOut);
+
+    Get.find<ExtensionManager>().onRuntimeBridgeInitialization(
+      onManagerInitializing: (managerId) {
+        if (mounted) setState(() => _currentManager = managerId);
+      },
+    );
   }
 
   @override
@@ -78,129 +64,57 @@ class _PluginInitDialogState extends State<PluginInitDialog>
     super.dispose();
   }
 
-  Future<void> _startDownload() async {
-    setState(() {
-      _stage = _InitStage.downloading;
-      _errorMsg = null;
-      _downloadProgress = 0;
-      _downloadedBytes = 0;
-      _totalBytes = 0;
-    });
-
-    try {
-      final request = http.Request('GET', Uri.parse(pluginUrl));
-      final response = await http.Client().send(request);
-
-      _totalBytes = response.contentLength ?? 0;
-
-      final dir = await getApplicationDocumentsDirectory();
-      final fileName = pluginUrl.split('/').last;
-      final file = File('${dir.path}/$fileName');
-      final sink = file.openWrite();
-
-      int received = 0;
-      await for (final chunk in response.stream) {
-        sink.add(chunk);
-        received += chunk.length;
-        _downloadedBytes = received;
-        if (_totalBytes > 0) {
-          setState(() =>
-              _downloadProgress = (received / _totalBytes).clamp(0.0, 1.0));
-        }
-      }
-      await sink.flush();
-      await sink.close();
-
-      await _runPostDownloadSteps(file);
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _stage = _InitStage.idle;
-          _errorMsg = 'Download failed: ${e.toString()}';
-        });
-      }
+  Future<void> _startSetup() async {
+    await AnymeXRuntimeBridge.setupRuntime();
+    if (AnymeXRuntimeBridge.controller.isReady.value) {
+      await Get.find<ExtensionManager>().onRuntimeBridgeInitialization();
     }
-  }
-
-  Future<void> _runPostDownloadSteps(File downloadedFile) async {
-    if (!mounted) return;
-
-    setState(() => _stage = _InitStage.moving);
-
-    try {
-      await AnymeXRuntimeBridge.loadAnymeXRuntimeHost(kDebugMode
-          ? '/storage/emulated/0/AnymeX/anymex_runtime_host.apk'
-          : downloadedFile.path);
-
-      if (!mounted) return;
-
-      await Get.find<ExtensionManager>().onRuntimeBridgeInitialization(
-        onManagerInitializing: (managerId) {
-          if (!mounted) return;
-
-          if (managerId == 'aniyomi') {
-            setState(() => _stage = _InitStage.initAniyomi);
-          } else if (managerId == 'cloudstream') {
-            setState(() => _stage = _InitStage.initCloudstream);
-          }
-        },
-      );
-
-      if (mounted) {
-        setState(() => _stage = _InitStage.done);
-        _checkCtrl.forward();
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _stage = _InitStage.idle;
-          _errorMsg = 'Initialization failed: ${e.toString()}';
-        });
-      }
-    }
-  }
-
-  String _formatBytes(int bytes) {
-    if (bytes <= 0) return '0 B';
-    if (bytes < 1024) return '$bytes B';
-    if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
-    return '${(bytes / (1024 * 1024)).toStringAsFixed(2)} MB';
   }
 
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
+    final bridge = AnymeXRuntimeBridge.controller;
 
-    return Dialog(
-      backgroundColor: c.surface,
-      surfaceTintColor: Colors.transparent,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-      insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-      child: Padding(
-        padding: const EdgeInsets.all(22),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(c),
-            const SizedBox(height: 20),
-            _buildPluginChips(c),
-            const SizedBox(height: 20),
-            if (_stage == _InitStage.idle) _buildIdleBody(c),
-            if (_stage == _InitStage.downloading) _buildDownloadBody(c),
-            if (_stage != _InitStage.idle && _stage != _InitStage.downloading)
-              _buildStepsBody(c),
-            if (_errorMsg != null) ...[
-              const SizedBox(height: 12),
-              _buildError(c),
+    return Obx(() {
+      final isDone = bridge.isReady.value;
+      if (isDone && !_checkCtrl.isAnimating && _checkCtrl.value == 0) {
+        _checkCtrl.forward();
+      }
+
+      return Dialog(
+        backgroundColor: c.surface,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+        child: Padding(
+          padding: const EdgeInsets.all(22),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(c, bridge),
+              const SizedBox(height: 20),
+              _buildPluginChips(c),
+              const SizedBox(height: 20),
+              if (!bridge.isDownloading.value && !isDone && bridge.error.isEmpty) 
+                _buildIdleBody(c),
+              if (bridge.isDownloading.value) 
+                _buildDownloadBody(c, bridge),
+              if ((isDone || bridge.status.value.contains("Finalizing")) && bridge.error.isEmpty)
+                _buildStepsBody(c, isDone),
+              if (bridge.error.value.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                _buildError(c, bridge),
+              ],
             ],
-          ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
-  Widget _buildHeader(ColorScheme c) {
+  Widget _buildHeader(ColorScheme c, dynamic bridge) {
     return Row(children: [
       Container(
         width: 42,
@@ -227,7 +141,7 @@ class _PluginInitDialogState extends State<PluginInitDialog>
           ),
         ]),
       ),
-      if (_stage == _InitStage.idle || _errorMsg != null)
+      if (!bridge.isDownloading.value)
         IconButton(
           onPressed: () => Navigator.of(context).pop(),
           icon: Icon(Icons.close_rounded, size: 20, color: c.onSurfaceVariant),
@@ -282,7 +196,9 @@ class _PluginInitDialogState extends State<PluginInitDialog>
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              'To use Aniyomi and Cloudstream extensions, you need to download and install the plugin. This is a one-time setup.',
+              Platform.isAndroid 
+                  ? 'To use Aniyomi and Cloudstream extensions, you need to download and install the plugin APK. This is a one-time setup.'
+                  : 'To enable Aniyomi support on Windows, you need to download the desktop bridge and a portable Java Runtime (JRE). Total size is approximately 65 MB.',
               style: TextStyle(fontSize: 12.5, color: c.onSurface, height: 1.5),
             ),
           ),
@@ -309,7 +225,7 @@ class _PluginInitDialogState extends State<PluginInitDialog>
         Expanded(
           flex: 2,
           child: ElevatedButton.icon(
-            onPressed: _startDownload,
+            onPressed: _startSetup,
             icon: const Icon(Icons.download_rounded, size: 18),
             label: const Text('Download & Install',
                 style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
@@ -327,8 +243,7 @@ class _PluginInitDialogState extends State<PluginInitDialog>
     ]);
   }
 
-  Widget _buildDownloadBody(ColorScheme c) {
-    final hasSize = _totalBytes > 0;
+  Widget _buildDownloadBody(ColorScheme c, dynamic bridge) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(children: [
         ScaleTransition(
@@ -347,22 +262,20 @@ class _PluginInitDialogState extends State<PluginInitDialog>
         Expanded(
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('Downloading plugin…',
+            Text(bridge.status.value,
                 style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                     color: c.onSurface)),
             const SizedBox(height: 2),
             Text(
-              hasSize
-                  ? '${_formatBytes(_downloadedBytes)} / ${_formatBytes(_totalBytes)}'
-                  : _formatBytes(_downloadedBytes),
+              bridge.sizeInfo.value,
               style: TextStyle(fontSize: 11, color: c.onSurfaceVariant),
             ),
           ]),
         ),
         Text(
-          '${(_downloadProgress * 100).toStringAsFixed(0)}%',
+          '${(bridge.downloadProgress.value * 100).toStringAsFixed(0)}%',
           style: TextStyle(
               fontSize: 13, fontWeight: FontWeight.w700, color: c.primary),
         ),
@@ -371,7 +284,7 @@ class _PluginInitDialogState extends State<PluginInitDialog>
       ClipRRect(
         borderRadius: BorderRadius.circular(8),
         child: LinearProgressIndicator(
-          value: hasSize ? _downloadProgress : null,
+          value: bridge.downloadProgress.value > 0 ? bridge.downloadProgress.value : null,
           minHeight: 6,
           backgroundColor: c.surfaceContainerHighest,
           valueColor: AlwaysStoppedAnimation<Color>(c.primary),
@@ -380,19 +293,16 @@ class _PluginInitDialogState extends State<PluginInitDialog>
     ]);
   }
 
-  Widget _buildStepsBody(ColorScheme c) {
+  Widget _buildStepsBody(ColorScheme c, bool isReady) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: _steps.map((step) {
-        final stageIndex = _steps.indexOf(step);
-        final currentIndex = _steps.indexWhere((s) => s.stage == _stage);
-        final isDone = stageIndex < currentIndex ||
-            (_stage == _InitStage.done && stageIndex <= currentIndex);
-        final isActive = step.stage == _stage;
-
+        final bool isStepDone = isReady || (_currentManager == 'cloudstream' && step.id == 'aniyomi');
+        final bool isStepActive = _currentManager == step.id || (isReady && step.id == 'done');
+        
         return Padding(
           padding: const EdgeInsets.only(bottom: 10),
-          child: _buildStepRow(c, step.label, isDone, isActive),
+          child: _buildStepRow(c, step.label, isStepDone, isStepActive),
         );
       }).toList(),
     );
@@ -485,7 +395,7 @@ class _PluginInitDialogState extends State<PluginInitDialog>
     );
   }
 
-  Widget _buildError(ColorScheme c) {
+  Widget _buildError(ColorScheme c, dynamic bridge) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -497,11 +407,11 @@ class _PluginInitDialogState extends State<PluginInitDialog>
         Icon(Icons.error_outline_rounded, size: 16, color: c.error),
         const SizedBox(width: 10),
         Expanded(
-          child: Text(_errorMsg!,
+          child: Text(bridge.error.value,
               style: TextStyle(fontSize: 12, color: c.onErrorContainer)),
         ),
         TextButton(
-          onPressed: _startDownload,
+          onPressed: _startSetup,
           style: TextButton.styleFrom(
               foregroundColor: c.error,
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
