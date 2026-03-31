@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
@@ -28,8 +29,8 @@ import 'package:anymex/utils/subtitle_translator.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_titlebar.dart';
 import 'package:anymex/widgets/non_widgets/anymex_toast.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
-import 'package:dartotsu_extension_bridge/Models/DEpisode.dart' as d;
+import 'package:anymex_extension_runtime_bridge/ExtensionManager.dart';
+import 'package:anymex_extension_runtime_bridge/Models/DEpisode.dart' as d;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -154,7 +155,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final RxBool isPlaying = false.obs;
   final RxBool showControls = true.obs;
   final RxBool isSeeking = false.obs;
-  final RxBool isFullScreen = false.obs;
+
   final RxInt skipDuration = 85.obs;
   final RxInt seekDuration = 10.obs;
   final RxList<String> subtitleText = RxList([]);
@@ -194,6 +195,45 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final Rx<aniskip.SkipIntervals?> currentSkipInterval =
       Rx<aniskip.SkipIntervals?>(null);
 
+  static const int autoSkipCountdownSeconds = 5;
+  final RxInt autoSkipCountdownRemaining = 0.obs;
+  Timer? _autoSkipCountdownTimer;
+  bool _autoSkipCancelledForCurrentSegment = false;
+
+  bool get isAutoSkipCountdownActive => autoSkipCountdownRemaining.value > 0;
+
+  bool get _isAutoSkipEnabledForCurrentSegment {
+    final interval = currentSkipInterval.value;
+    if (interval == null || skipTimes == null) return false;
+    if (identical(skipTimes!.op, interval)) {
+      if (!playerSettings.autoSkipOP) return false;
+      if (playerSettings.autoSkipOnce && isOPSkippedOnce.value) return false;
+      return true;
+    }
+    if (identical(skipTimes!.ed, interval)) {
+      if (!playerSettings.autoSkipED) return false;
+      if (playerSettings.autoSkipOnce && isEDSkippedOnce.value) return false;
+      return true;
+    }
+    if (identical(skipTimes!.recap, interval)) {
+      if (!playerSettings.autoSkipRecap) return false;
+      if (playerSettings.autoSkipOnce && isRecapSkippedOnce.value) return false;
+      return true;
+    }
+    return false;
+  }
+
+  void _cancelAutoSkipTimer() {
+    _autoSkipCountdownTimer?.cancel();
+    _autoSkipCountdownTimer = null;
+    autoSkipCountdownRemaining.value = 0;
+  }
+
+  void cancelAutoSkipCountdown() {
+    _cancelAutoSkipTimer();
+    _autoSkipCancelledForCurrentSegment = true;
+  }
+
   void applySavedProfile() {
     if (_basePlayer is MediaKitPlayer) {
       ColorProfileManager().applyColorProfile(currentVisualProfile.value,
@@ -214,6 +254,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final RxBool isLocked = false.obs;
   final Rx<int?> videoHeight = Rx<int?>(null);
   final _subscriptions = <StreamSubscription>[];
+  final _playerSubscriptions = <StreamSubscription>[];
+  final RxInt playerReloadVersion = 0.obs;
+  bool _persistentListenersInitialized = false;
+  bool _isReloadingPlayer = false;
+  bool _activeUseLibass = false;
 
   @override
   void onInit() {
@@ -222,12 +267,13 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _initDatabaseVars();
     _initOrientations();
+    _activeUseLibass = PlayerKeys.useLibass.get<bool>(false);
     _initializePlayer();
     _updateRpc();
     if (!isOffline.value) {
       _initializeAniSkip();
     }
-    _initializeListeners();
+    _initializePersistentListeners();
     if (!isOffline.value) {
       _extractSubtitles();
     }
@@ -336,7 +382,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     try {
       final raw =
           PlayerUiKeys.currentVisualSettings.get<Map<String, dynamic>>({});
-      if (raw is! Map) return <String, int>{};
 
       final out = <String, int>{};
       for (final entry in raw.entries) {
@@ -365,101 +410,100 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   Future<void> _initOrientations() async {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-    if (!Platform.isMacOS) {
-      ever(isFullScreen,
-          (isFullScreen) => AnymexTitleBar.setFullScreen(isFullScreen));
-    }
 
     if (Platform.isAndroid || Platform.isIOS) {
       final orientation = await _getClosestLandscapeOrientation();
-      SystemChrome.setPreferredOrientations([orientation]);
+      _applyOrientation(orientation);
     }
   }
 
   Future<DeviceOrientation> _getClosestLandscapeOrientation() async {
     try {
-      final event = await accelerometerEvents.first
-          .timeout(const Duration(milliseconds: 100));
+      final samples = await accelerometerEvents
+          .take(4)
+          .timeout(
+            const Duration(milliseconds: 250),
+            onTimeout: (sink) => sink.close(),
+          )
+          .toList();
 
-      const double threshold = 0.3;
+      if (samples.isNotEmpty) {
+        final averageX =
+            samples.map((event) => event.x).reduce((a, b) => a + b) /
+                samples.length;
 
-      if (event.x > threshold) {
-        return DeviceOrientation.landscapeRight;
-      } else if (event.x < -threshold) {
-        return DeviceOrientation.landscapeLeft;
-      }
-
-      if (event.y.abs() < 0.5) {
-        final view = WidgetsBinding.instance.platformDispatcher.views.first;
-        return view.physicalSize.width > view.physicalSize.height
-            ? DeviceOrientation.landscapeLeft
-            : DeviceOrientation.landscapeLeft;
+        const double slightLeanThreshold = 0.05;
+        if (averageX >= slightLeanThreshold) {
+          return DeviceOrientation.landscapeRight;
+        }
+        if (averageX <= -slightLeanThreshold) {
+          return DeviceOrientation.landscapeLeft;
+        }
       }
     } catch (_) {}
 
     return DeviceOrientation.landscapeLeft;
   }
 
+  void _applyOrientation(DeviceOrientation orientation) {
+    SystemChrome.setPreferredOrientations([orientation]);
+    isLeftLandscaped = orientation != DeviceOrientation.landscapeRight;
+  }
+
+  Duration overlayAnimationDuration(int milliseconds) {
+    return playerSettings.playerMenuAnimation
+        ? Duration(milliseconds: milliseconds)
+        : Duration.zero;
+  }
+
   void toggleOrientation() {
-    if (isLeftLandscaped) {
-      SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeRight]);
-      isLeftLandscaped = false;
-    } else {
-      SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft]);
-      isLeftLandscaped = true;
+    _applyOrientation(isLeftLandscaped
+        ? DeviceOrientation.landscapeRight
+        : DeviceOrientation.landscapeLeft);
+  }
+
+  void _performSegmentSkip(aniskip.SkipIntervals interval) {
+    final duration = Duration(seconds: interval.end);
+    currentPosition.value = duration;
+    _basePlayer.seek(duration);
+    if (identical(skipTimes?.op, interval)) {
+      isOPSkippedOnce.value = true;
+      snackBar('Skipped Opening', duration: 2000);
+    } else if (identical(skipTimes?.ed, interval)) {
+      isEDSkippedOnce.value = true;
+      snackBar('Skipped Ending', duration: 2000);
+    } else if (identical(skipTimes?.recap, interval)) {
+      isRecapSkippedOnce.value = true;
+      snackBar('Skipped Recap', duration: 2000);
     }
   }
-  
+
   void _handleAutoSkip() {
-    if (skipTimes?.op != null && playerSettings.autoSkipOP) {
-      if (!(playerSettings.autoSkipOnce && isOPSkippedOnce.value)) {
-        if (currentPosition.value.inSeconds > skipTimes!.op!.start &&
-            currentPosition.value.inSeconds < skipTimes!.op!.end) {
-          final skipNeeded =
-              skipTimes!.op!.end - currentPosition.value.inSeconds;
-          final duration =
-              Duration(seconds: currentPosition.value.inSeconds + skipNeeded);
-          currentPosition.value = duration;
-          _basePlayer.seek(duration);
-          isOPSkippedOnce.value = true;
-          snackBar('Skipped Opening', duration: 2000);
-        }
-      }
+    final interval = currentSkipInterval.value;
+    if (interval == null ||
+        !_isAutoSkipEnabledForCurrentSegment ||
+        _autoSkipCancelledForCurrentSegment) {
+      _cancelAutoSkipTimer();
+      return;
     }
-
-    if (skipTimes?.ed != null && playerSettings.autoSkipED) {
-      if (!(playerSettings.autoSkipOnce && isEDSkippedOnce.value)) {
-        if (currentPosition.value.inSeconds > skipTimes!.ed!.start &&
-            currentPosition.value.inSeconds < skipTimes!.ed!.end) {
-          final skipNeeded =
-              skipTimes!.ed!.end - currentPosition.value.inSeconds;
-          final duration =
-              Duration(seconds: currentPosition.value.inSeconds + skipNeeded);
-          currentPosition.value = duration;
-          _basePlayer.seek(duration);
-          isEDSkippedOnce.value = true;
-          snackBar('Skipped Ending', duration: 2000);
-        }
+    if (_autoSkipCountdownTimer != null) return;
+    autoSkipCountdownRemaining.value = autoSkipCountdownSeconds;
+    _autoSkipCountdownTimer = Timer.periodic(const Duration(seconds: 1), (t) {
+      if (currentSkipInterval.value != interval) {
+        _cancelAutoSkipTimer();
+        return;
       }
-    }
-
-    if (skipTimes?.recap != null && playerSettings.autoSkipRecap) {
-      if (!(playerSettings.autoSkipOnce && isRecapSkippedOnce.value)) {
-        if (currentPosition.value.inSeconds > skipTimes!.recap!.start &&
-            currentPosition.value.inSeconds < skipTimes!.recap!.end) {
-          final skipNeeded =
-              skipTimes!.recap!.end - currentPosition.value.inSeconds;
-          final duration =
-              Duration(seconds: currentPosition.value.inSeconds + skipNeeded);
-          currentPosition.value = duration;
-          _basePlayer.seek(duration);
-          isRecapSkippedOnce.value = true;
-          snackBar('Skipped Recap', duration: 2000);
-        }
+      final next = autoSkipCountdownRemaining.value - 1;
+      autoSkipCountdownRemaining.value = next;
+      if (next <= 0) {
+        t.cancel();
+        _autoSkipCountdownTimer = null;
+        autoSkipCountdownRemaining.value = 0;
+        _performSegmentSkip(interval);
       }
-    }
+    });
   }
-  
+
   void _updateSkipUiState() {
     if (skipTimes == null) return;
 
@@ -481,7 +525,34 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
 
     if (currentSkipInterval.value != foundInterval) {
+      _cancelAutoSkipTimer();
+      _autoSkipCancelledForCurrentSegment = false;
       currentSkipInterval.value = foundInterval;
+    }
+  }
+
+  String get skipButtonLabel {
+    if (isAutoSkipCountdownActive) return 'Cancel skip';
+    final interval = currentSkipInterval.value;
+    if (interval == null || skipTimes == null) {
+      return '+${playerSettings.skipDuration}';
+    }
+    if (identical(skipTimes!.op, interval)) return 'Skip intro';
+    if (identical(skipTimes!.ed, interval)) return 'Skip outro';
+    if (identical(skipTimes!.recap, interval)) return 'Skip recap';
+    return '+${playerSettings.skipDuration}';
+  }
+
+  void performSkipAction() {
+    if (isAutoSkipCountdownActive) {
+      cancelAutoSkipCountdown();
+      return;
+    }
+    final interval = currentSkipInterval.value;
+    if (interval != null) {
+      seekTo(Duration(seconds: interval.end));
+    } else {
+      megaSeek(playerSettings.skipDuration);
     }
   }
 
@@ -510,7 +581,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     return PlayerKeys.useMediaKit.get<bool>(false);
   }
 
-  void _initializePlayer() {
+  Future<void> _initializePlayer({
+    Duration? startPositionOverride,
+    bool? resumePlaybackOverride,
+    SubtitleTrack? subtitleToRestore,
+  }) async {
     final useMediaKit = _shouldUseMediaKit();
     final mpvCore = PlayerCoreVisualSettings.getMpvCoreSettings();
     final betterCore = PlayerCoreVisualSettings.getBetterPlayerCoreSettings();
@@ -527,6 +602,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       autoPlay: (betterCore['autoPlay'] as bool?) ?? true,
       useBuffering: (betterCore['useBuffering'] as bool?) ?? true,
     );
+    _activeUseLibass = config.useLibass;
 
     if (useMediaKit) {
       _basePlayer = MediaKitPlayer(
@@ -536,33 +612,53 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       _basePlayer = BetterPlayerImpl(configuration: config);
     }
 
-    _basePlayer.initialize().then((_) {
-      if (isOffline.value && offlineVideoPath != null) {
-        final stamp =
-            DynamicKeys.offlineVideoProgress.get<int?>(offlineVideoPath, null);
-        _basePlayer.open(
-          offlineVideoPath!,
-          startPosition: Duration(milliseconds: stamp ?? 0),
-        );
-      } else {
-        _openWithCloudFallback();
-      }
+    await _basePlayer.initialize();
+    _bindPlayerStreams();
+    playerReloadVersion.value++;
+    refresh();
 
-      _performInitialTracking();
-      applySavedProfile();
-    });
+    if (isOffline.value && offlineVideoPath != null) {
+      final stamp =
+          DynamicKeys.offlineVideoProgress.get<int?>(offlineVideoPath, null);
+      await _basePlayer.open(
+        offlineVideoPath!,
+        startPosition:
+            startPositionOverride ?? Duration(milliseconds: stamp ?? 0),
+      );
+    } else {
+      await _openWithCloudFallback(
+          startPositionOverride: startPositionOverride);
+    }
+
+    if (subtitleToRestore != null) {
+      await _applySubtitleTrack(
+        subtitleToRestore,
+        allowReload: false,
+      );
+    }
+
+    if (resumePlaybackOverride == false) {
+      await _basePlayer.pause();
+    } else if (resumePlaybackOverride == true) {
+      await _basePlayer.play();
+    }
+
+    _performInitialTracking();
+    applySavedProfile();
   }
 
-  Future<void> _openWithCloudFallback() async {
+  Future<void> _openWithCloudFallback({Duration? startPositionOverride}) async {
     final localStamp = savedEpisode?.timeStampInMilliseconds ?? 0;
     final url = selectedVideo.value?.url ?? '';
     final headers = selectedVideo.value?.headers;
     final episodeNum = currentEpisode.value.number;
 
-    Duration startPosition = Duration(milliseconds: localStamp);
+    Duration startPosition =
+        startPositionOverride ?? Duration(milliseconds: localStamp);
 
     try {
-      final ctrl = Get.isRegistered<GistSyncController>()
+      final shouldCheckCloud = startPositionOverride == null;
+      final ctrl = shouldCheckCloud && Get.isRegistered<GistSyncController>()
           ? Get.find<GistSyncController>()
           : null;
       if (ctrl != null && ctrl.isConnected.value && ctrl.syncEnabled.value) {
@@ -583,12 +679,14 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     await _basePlayer.open(url, headers: headers, startPosition: startPosition);
   }
-  
+
   void _initializeAniSkip() {
     isOPSkippedOnce.value = false;
     isEDSkippedOnce.value = false;
     isRecapSkippedOnce.value = false;
     currentSkipInterval.value = null;
+    _cancelAutoSkipTimer();
+    _autoSkipCancelledForCurrentSegment = false;
 
     final episodeLengthSec =
         (currentEpisode.value.durationInMilliseconds ?? 0) ~/ 1000;
@@ -631,7 +729,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     return _currentProgressPercentage >= settings.markAsCompleted;
   }
 
-  void _initializeListeners() {
+  void _initializePersistentListeners() {
+    if (_persistentListenersInitialized) return;
+    _persistentListenersInitialized = true;
+
     bool? lastAutoTranslate;
     String? lastTranslateTo;
 
@@ -657,8 +758,15 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       lastAutoTranslate = autoTranslate;
       lastTranslateTo = translateTo;
     }));
+  }
 
-    _subscriptions.add(_basePlayer.positionStream
+  void _bindPlayerStreams() {
+    for (final subscription in _playerSubscriptions) {
+      subscription.cancel();
+    }
+    _playerSubscriptions.clear();
+
+    _playerSubscriptions.add(_basePlayer.positionStream
         .throttleTime(const Duration(seconds: 1))
         .listen((pos) {
       if (isSeeking.value) return;
@@ -672,24 +780,24 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       }
 
       if (isPlaying.value && skipTimes != null && !isOffline.value) {
-        _handleAutoSkip();
         _updateSkipUiState();
+        _handleAutoSkip();
       }
     }));
 
-    _subscriptions.add(_basePlayer.durationStream.listen((dur) {
+    _playerSubscriptions.add(_basePlayer.durationStream.listen((dur) {
       episodeDuration.value = dur;
       currentEpisode.value.durationInMilliseconds = dur.inMilliseconds;
       _updateRpc();
     }));
 
-    _subscriptions.add(_basePlayer.bufferStream
+    _playerSubscriptions.add(_basePlayer.bufferStream
         .throttleTime(const Duration(seconds: 1))
         .listen((buf) {
       bufferred.value = buf;
     }));
 
-    _subscriptions.add(_basePlayer.playingStream.listen((e) {
+    _playerSubscriptions.add(_basePlayer.playingStream.listen((e) {
       isPlaying.value = e;
       if (e) {
         _resetAutoHideTimer();
@@ -705,22 +813,25 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       }
     }));
 
-    _subscriptions.add(_basePlayer.bufferingStream.listen((e) {
+    _playerSubscriptions.add(_basePlayer.bufferingStream.listen((e) {
       isBuffering.value = e;
     }));
 
-    _subscriptions.add(_basePlayer.tracksStream.listen((e) {
-      embeddedAudioTracks.value = e.audio;
+    _playerSubscriptions.add(_basePlayer.tracksStream.listen((e) {
+      for (var i in e.audio) {
+        if (i.url?.isEmpty ?? true) continue;
+        embeddedAudioTracks.value.add(i);
+      }
       embeddedSubs.value = e.subtitle;
       embeddedQuality.value = e.video;
     }));
 
-    _subscriptions.add(_basePlayer.rateStream.listen((e) {
+    _playerSubscriptions.add(_basePlayer.rateStream.listen((e) {
       playbackSpeed.value = e;
     }));
 
-    _subscriptions.add(_basePlayer.errorStream.listen((e) {
-      Logger.i(e);
+    _playerSubscriptions.add(_basePlayer.errorStream.listen((e) {
+      Logger.i('${e} => ${selectedVideo.value?.headers}');
       if (e.toString().contains('Failed to open')) {
         snackBar('Failed, Dont Bother..');
       }
@@ -728,7 +839,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     int subtitleTranslateRequestId = 0;
 
-    _subscriptions.add(_basePlayer.subtitleStream.listen((e) async {
+    _playerSubscriptions.add(_basePlayer.subtitleStream.listen((e) async {
       final sanitizedLines = e
           .map((line) => line
               .replaceAll(_htmlRx, '')
@@ -791,11 +902,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       }
     }));
 
-    _subscriptions.add(_basePlayer.heightStream.listen((height) {
+    _playerSubscriptions.add(_basePlayer.heightStream.listen((height) {
       videoHeight.value = height;
     }));
 
-    _subscriptions.add(_basePlayer.completedStream.listen((e) {
+    _playerSubscriptions.add(_basePlayer.completedStream.listen((e) {
       if (e && !isOffline.value) {
         hasNextEpisode ? navigator(true) : Get.back();
       }
@@ -904,7 +1015,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
       selectedVideo.value = matched;
       _extractSubtitles();
-      
+
       _initializeAniSkip();
 
       final savedEpisodeData = savedEpisode;
@@ -1063,6 +1174,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _volumeTimer?.cancel();
     _controlsTimer?.cancel();
     _autoHideTimer?.cancel();
+    _autoSkipCountdownTimer?.cancel();
     ScreenBrightness.instance.resetApplicationScreenBrightness();
   }
 
@@ -1122,7 +1234,19 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void setSubtitleTrack(SubtitleTrack track) {
-    _basePlayer.setSubtitleTrack(track);
+    final effectiveTrack = (track.url != null &&
+            track.url!.isNotEmpty &&
+            (track.headers == null || track.headers!.isEmpty))
+        ? SubtitleTrack.uri(
+            track.url!,
+            title: track.title,
+            language: track.language,
+            headers: selectedVideo.value?.headers,
+          )
+        : track;
+
+    selectedSubsTrack.value = effectiveTrack.id == 'no' ? null : effectiveTrack;
+    _applySubtitleTrack(effectiveTrack);
   }
 
   void toggleControls({bool? val}) {
@@ -1144,7 +1268,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void toggleFullScreen() {
-    isFullScreen.value = !isFullScreen.value;
+    AnymexTitleBar.toggleFullScreen();
     onUserInteraction();
   }
 
@@ -1250,7 +1374,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       selectedExternalSub.value = model.Track();
 
       selectedSubsTrack.value = null;
-      _basePlayer.setSubtitleTrack(SubtitleTrack.no());
+      _applySubtitleTrack(SubtitleTrack.no(), allowReload: false);
 
       subtitleText.value = [];
       translatedSubtitle.value = '';
@@ -1265,10 +1389,14 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
 
     selectedExternalSub.value = track;
-    final subtitleTrack = SubtitleTrack.uri(track.file!, title: track.label);
+    final subtitleTrack = SubtitleTrack.uri(
+      track.file!,
+      title: track.label,
+      headers: selectedVideo.value?.headers,
+    );
 
     selectedSubsTrack.value = subtitleTrack;
-    _basePlayer.setSubtitleTrack(subtitleTrack);
+    _applySubtitleTrack(subtitleTrack);
 
     if (playerSettings.autoTranslate && track.file != null) {
       startPreTranslation(track.file!);
@@ -1351,6 +1479,71 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           label: '${sub.label} (Online)',
           file: sub.url,
         ));
+  }
+
+  Future<void> onLibassPreferenceChanged(bool enabled) async {
+    if (_activeUseLibass == enabled) return;
+    await reloadActivePlayer();
+  }
+
+  Future<void> reloadActivePlayer({SubtitleTrack? subtitleOverride}) async {
+    if (_isReloadingPlayer) return;
+    _isReloadingPlayer = true;
+
+    final preservedPosition = currentPosition.value;
+    final preservedSubtitle = subtitleOverride ?? selectedSubsTrack.value;
+    final resumePlayback = isPlaying.value;
+
+    try {
+      for (final subscription in _playerSubscriptions) {
+        await subscription.cancel();
+      }
+      _playerSubscriptions.clear();
+      await _basePlayer.dispose();
+      resetListeners();
+      await _initializePlayer(
+        startPositionOverride: preservedPosition,
+        resumePlaybackOverride: resumePlayback,
+        subtitleToRestore: preservedSubtitle,
+      );
+    } finally {
+      _isReloadingPlayer = false;
+    }
+  }
+
+  Future<void> _applySubtitleTrack(
+    SubtitleTrack track, {
+    bool allowReload = true,
+  }) async {
+    if (allowReload && _shouldReloadForSubtitle(track)) {
+      await reloadActivePlayer(subtitleOverride: track);
+      return;
+    }
+
+    await _basePlayer.setSubtitleTrack(track);
+  }
+
+  bool _shouldReloadForSubtitle(SubtitleTrack track) {
+    if (track.id == 'no') return false;
+    return _isAssSubtitleTrack(track);
+  }
+
+  bool _isAssSubtitleTrack(SubtitleTrack track) {
+    final candidates = [
+      track.url ?? '',
+      track.title ?? '',
+      selectedExternalSub.value.file ?? '',
+      selectedExternalSub.value.label ?? '',
+    ];
+
+    for (final candidate in candidates) {
+      final normalized = candidate.toLowerCase();
+      if (normalized.contains('.ass') || normalized.endsWith(' ass')) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   void navigator(bool forward) {

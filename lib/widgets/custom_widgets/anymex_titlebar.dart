@@ -43,6 +43,11 @@ class AnymexTitleBar {
     await windowManager.setFullScreen(enable);
     isFullScreen.value = enable;
   }
+
+  static Future<void> toggleFullScreen() async {
+    await windowManager.setFullScreen(!isFullScreen.value);
+    isFullScreen.value = !isFullScreen.value;
+  }
 }
 
 class _TitleBarWidget extends StatelessWidget {

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:anymex/utils/logger.dart';
@@ -28,6 +29,7 @@ class MediaKitPlayer extends base.BasePlayer {
 
   base.PlayerState _state = base.PlayerState();
   final List<StreamSubscription> _subscriptions = [];
+  Map<String, String>? _currentVideoHeaders;
 
   MediaKitPlayer({base.PlayerConfiguration? configuration})
       : config = configuration ??
@@ -176,6 +178,8 @@ class MediaKitPlayer extends base.BasePlayer {
     Map<String, String>? headers,
     Duration? startPosition,
   }) async {
+    _currentVideoHeaders =
+        headers == null ? null : Map<String, String>.from(headers);
     await _player.open(
       Media(url, httpHeaders: headers, start: startPosition),
     );
@@ -249,8 +253,21 @@ class MediaKitPlayer extends base.BasePlayer {
     }
 
     if (track.url != null) {
+      final headers = track.headers ?? _currentVideoHeaders;
+      if (headers != null && headers.isNotEmpty) {
+        final content = await _fetchSubtitleContent(track.url!, headers);
+        await _player.setSubtitleTrack(
+          SubtitleTrack.data(content, title: track.title, language: track.language),
+        );
+        return;
+      }
+
       await _player.setSubtitleTrack(
-        SubtitleTrack.uri(track.url!, title: track.title),
+        SubtitleTrack.uri(
+          track.url!,
+          title: track.title,
+          language: track.language,
+        ),
       );
       return;
     }
@@ -328,5 +345,26 @@ class MediaKitPlayer extends base.BasePlayer {
   @override
   Future<void> toggleVideoFit(BoxFit fit) {
     return Future.value();
+  }
+
+  Future<String> _fetchSubtitleContent(
+    String url,
+    Map<String, String> headers,
+  ) async {
+    final client = HttpClient();
+    try {
+      final request = await client.getUrl(Uri.parse(url));
+      headers.forEach(request.headers.set);
+      final response = await request.close();
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw HttpException(
+          'Failed to load subtitle: ${response.statusCode}',
+          uri: Uri.parse(url),
+        );
+      }
+      return await response.transform(SystemEncoding().decoder).join();
+    } finally {
+      client.close(force: true);
+    }
   }
 }

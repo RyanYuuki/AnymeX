@@ -6,7 +6,7 @@ import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:iconsax/iconsax.dart';
@@ -36,10 +36,10 @@ class GridNovelCard extends StatelessWidget {
                   onTap: () {
                     if (media.type == ItemType.novel) {
                       navigate(() => NovelDetailsPage(
-                        media: media,
-                        tag: media.title,
-                        source: source!,
-                      ));
+                            media: media,
+                            tag: media.title,
+                            source: source!,
+                          ));
                     } else {
                       // Existing navigation for manga/anime
                     }

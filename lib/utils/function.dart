@@ -10,9 +10,10 @@ import 'package:anymex/models/Media/relation.dart';
 import 'package:anymex/models/mangaupdates/news_item.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/models/models_convertor/carousel_mapper.dart';
+import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -185,10 +186,12 @@ Episode DEpisodeToEpisode(DEpisode chapter) {
   return Episode(
     number: chapter.episodeNumber,
     link: chapter.url,
+    sortKeys: chapter.sortMap?.keys.toList(),
+    sortVals: chapter.sortMap?.values.toList(),
     title: chapter.name,
-    thumbnail: null,
-    desc: null,
-    filler: false,
+    thumbnail: chapter.thumbnail,
+    desc: chapter.description,
+    filler: chapter.filler,
   );
 }
 
@@ -217,13 +220,20 @@ String dateFormatHour(String timestamp) {
 
 List<Chapter> DEpisodeToChapter(List<DEpisode> chapters, String title) {
   return chapters.map((e) {
+    print(e.toJson());
     return Chapter(
-        title: e.name,
-        link: e.url,
-        scanlator: e.scanlator,
-        number:
-            ChapterRecognition.parseChapterNumber(title, e.name!).toDouble(),
-        releaseDate: calcTime(e.dateUpload ?? ''));
+      title: e.name,
+      link: e.url,
+      scanlator: e.scanlator,
+
+      /// so previously i was using this, now trying to extract from episode itself
+      // number:
+      //     ChapterRecognition.parseChapterNumber(title, e.name!).toDouble(),
+      number: e.episodeNumber.toDouble(),
+      releaseDate: e.dateUpload != null && e.dateUpload!.isNotEmpty
+          ? calcTime(e.dateUpload!)
+          : DateFormat('dd-MM-yyyy').format(DateTime.now()),
+    );
   }).toList();
 }
 
@@ -306,22 +316,23 @@ int findChunkIndexFromProgress(
 }) {
   if (chunks.isEmpty || chunks.length <= 1) return 0;
   if (userProgress <= 0) return 1;
-  
+
   for (int i = 1; i < chunks.length; i++) {
     final chunk = chunks[i];
     if (chunk.isEmpty) continue;
-    
-    final firstEp = double.tryParse(chunk.first.number.toString())?.toInt() ?? 0;
+
+    final firstEp =
+        double.tryParse(chunk.first.number.toString())?.toInt() ?? 0;
     final lastEp = double.tryParse(chunk.last.number.toString())?.toInt() ?? 0;
-    
+
     final minEp = firstEp < lastEp ? firstEp : lastEp;
     final maxEp = firstEp > lastEp ? firstEp : lastEp;
-    
+
     if (userProgress >= minEp && userProgress <= maxEp) {
       return i;
     }
   }
-  
+
   return chunks.length - 1;
 }
 
@@ -331,22 +342,22 @@ int findChapterChunkIndexFromProgress(
 ) {
   if (chunks.isEmpty || chunks.length <= 1) return 0;
   if (userProgress <= 0) return 1;
-  
+
   for (int i = 1; i < chunks.length; i++) {
     final chunk = chunks[i];
     if (chunk.isEmpty) continue;
-    
+
     final firstChapter = chunk.first.number?.toInt() ?? 0;
     final lastChapter = chunk.last.number?.toInt() ?? 0;
-    
+
     final minCh = firstChapter < lastChapter ? firstChapter : lastChapter;
     final maxCh = firstChapter > lastChapter ? firstChapter : lastChapter;
-    
+
     if (userProgress >= minCh && userProgress <= maxCh) {
       return i;
     }
   }
-  
+
   return chunks.length - 1;
 }
 

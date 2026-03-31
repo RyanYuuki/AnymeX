@@ -8,17 +8,11 @@
 -dontnote
 -ignorewarnings
 
-# ============================================================
-# Flutter
-# ============================================================
--keep class io.flutter.** { *; }
--keep class io.flutter.plugins.** { *; }
+
+-keep class io.flutter.embedding.** { *; }
 
 # ============================================================
-# Your app package
-# ============================================================
--keep class com.ryan.anymex.** { *; }
--keepclassmembers class com.ryan.anymex.** { *; }
+-keep class com.ryan.anymex.MainActivity { *; }
 
 # ============================================================
 # Google Play Core — Flutter references these for deferred

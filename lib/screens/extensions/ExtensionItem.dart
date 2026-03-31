@@ -13,7 +13,9 @@ import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
+import 'package:anymex_extension_runtime_bridge/Services/Aniyomi/Models/Source.dart';
+import 'package:anymex_extension_runtime_bridge/Services/Sora/Models/Source.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -38,29 +40,13 @@ class ExtensionListTileWidget extends StatefulWidget {
 class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
   bool _isLoading = false;
 
-  Future<void> _sortExtensions() async {
-    switch (widget.mediaType) {
-      case ItemType.manga:
-        await sourceController.sortMangaExtensions();
-        break;
-      case ItemType.anime:
-        await sourceController.sortAnimeExtensions();
-        break;
-      case ItemType.novel:
-        await sourceController.sortNovelExtensions();
-        break;
-    }
-  }
-
   Future<void> _handleInstall() async {
     if (_isLoading) return;
 
     _setLoading(true);
     try {
-      await widget.source.extensionType
-          ?.getManager()
-          .installSource(widget.source);
-      await _sortExtensions();
+      await widget.source.install();
+      await sourceController.refreshSourceState(widget.source);
       widget.onUpdate?.call();
     } catch (e) {
       Logger.i(e.toString());
@@ -74,10 +60,9 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
 
     _setLoading(true);
     try {
-      await widget.source.extensionType!
-          .getManager()
-          .updateSource(widget.source);
-      await _sortExtensions();
+      final manager = getSourceManager(widget.source);
+      await manager.updateSource(widget.source);
+      await sourceController.refreshSourceState(widget.source);
       widget.onUpdate?.call();
     } catch (e) {
       Logger.i(e.toString());
@@ -90,10 +75,8 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
     _setLoading(true);
     try {
       Logger.i("Uninstalling => ${widget.source.id}");
-      await widget.source.extensionType!
-          .getManager()
-          .uninstallSource(widget.source);
-      await _sortExtensions();
+      await widget.source.uninstall();
+      await sourceController.refreshSourceState(widget.source);
       widget.onUpdate?.call();
     } catch (e) {
       Logger.i("Uninstall Failed => ${e.toString()}");
@@ -182,7 +165,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
     }
 
     return SizedBox(
-      width: updateAvailable ? 150 : 100,
+      width: updateAvailable ? 150 : 104,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -266,23 +249,24 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
   }
 }
 
-/// Extracted stateless icon widget to avoid rebuilds
 class _ExtensionIcon extends StatelessWidget {
   final Source source;
   final ColorScheme theme;
 
   const _ExtensionIcon({required this.source, required this.theme});
 
+  static const Color _cloudStreamAccent = Color(0xFF42A5F5);
+  static const Color _soraAccent = Color(0xFF8D6E63);
+
   @override
   Widget build(BuildContext context) {
-    final isMangayomi = source.extensionType == ExtensionType.mangayomi;
+    final accentColor = _managerAccentColor();
 
     return Container(
       height: 42,
       width: 42,
       decoration: BoxDecoration(
-        color: (isMangayomi ? Colors.red : Colors.indigoAccent)
-            .withValues(alpha: 0.4),
+        color: accentColor.withValues(alpha: 0.4),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Container(
@@ -300,19 +284,47 @@ class _ExtensionIcon extends StatelessWidget {
             Positioned(
               top: 1,
               right: 1,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(50),
-                child: AnymeXImage(
-                  imageUrl: isMangayomi
-                      ? 'https://raw.githubusercontent.com/kodjodevf/mangayomi/main/assets/app_icons/icon-red.png'
-                      : 'https://aniyomi.org/img/logo-128px.png',
-                  height: 13,
-                  width: 13,
-                  radius: 0,
-                ),
-              ),
+              child: _buildManagerBadge(accentColor),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Color _managerAccentColor() {
+    switch (source) {
+      case MSource _:
+        return Colors.redAccent;
+      case ASource _:
+        return Colors.indigoAccent;
+      case CloudStreamSource _:
+        return _cloudStreamAccent;
+      case SSource _:
+        return _soraAccent;
+      default:
+        return Colors.indigoAccent;
+    }
+  }
+
+  Widget _buildManagerBadge(Color accentColor) {
+    final badgeUrl = source.managerIcon;
+
+    return Container(
+      height: 13,
+      width: 13,
+      padding: const EdgeInsets.all(1),
+      decoration: BoxDecoration(
+        color: accentColor.withValues(alpha: 0.18),
+        shape: BoxShape.circle,
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(50),
+        child: AnymeXImage(
+          imageUrl: badgeUrl,
+          height: 11,
+          width: 11,
+          radius: 0,
         ),
       ),
     );
@@ -321,7 +333,12 @@ class _ExtensionIcon extends StatelessWidget {
   Widget _buildMainIcon(BuildContext context) {
     final iconUrl = source.iconUrl ?? '';
     if (iconUrl.isEmpty) {
-      return Icon(Icons.extension_rounded, color: context.colors.primary);
+      return Container(
+        height: 42,
+        width: 42,
+        alignment: Alignment.center,
+        child: Icon(Icons.extension_rounded, color: context.colors.primary),
+      );
     }
     if (iconUrl.startsWith('http')) {
       return AnymeXImage(
@@ -362,7 +379,9 @@ class _ExtensionSubtitle extends StatelessWidget {
               theme.primary,
             ),
             _buildChip(
-              source.version ?? 'Unknown',
+              (source.version ?? 'Unknown').toLowerCase().startsWith('v')
+                  ? (source.version ?? 'Unknown')
+                  : 'v${source.version ?? 'Unknown'}',
               theme.tertiary,
             ),
             if (source.isNsfw == true) _buildChip("18+", Colors.red),

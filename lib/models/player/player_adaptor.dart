@@ -30,6 +30,7 @@ class PlayerSettings {
   double subtitleBottomMargin;
   String subtitleOutlineType;
   bool enableScreenshot;
+  bool playerMenuAnimation;
 
   PlayerSettings({
     this.speed = 1.0,
@@ -61,6 +62,7 @@ class PlayerSettings {
     this.subtitleOutlineType = "Outline",
     this.autoSkipFiller = false,
     this.enableScreenshot = true,
+    this.playerMenuAnimation = true,
   });
 
   factory PlayerSettings.fromDB() {
@@ -128,6 +130,8 @@ class PlayerSettings {
           PlayerSettingsKeys.autoSkipFiller.get<bool>(defaults.autoSkipFiller),
       enableScreenshot: PlayerSettingsKeys.enableScreenshot
           .get<bool>(defaults.enableScreenshot),
+      playerMenuAnimation: PlayerSettingsKeys.playerMenuAnimation
+          .get<bool>(defaults.playerMenuAnimation),
     );
   }
 }

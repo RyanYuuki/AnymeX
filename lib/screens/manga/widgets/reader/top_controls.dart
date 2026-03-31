@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
-import 'package:anymex/screens/manga/widgets/reader/settings_view.dart';
+import 'package:anymex/screens/manga/widgets/reader/tabbed_reader_settings.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
@@ -194,7 +194,8 @@ class ReaderTopControls extends StatelessWidget {
         border: Border.all(color: context.colors.onSurface.opaque(0.2)),
       ),
       child: IconButton(
-        onPressed: () => _showSettings(context),
+        onPressed: () =>
+            TabbedReaderSettings(controller: controller).showSettings(context),
         icon: Icon(Icons.settings_rounded,
             color: context.colors.onSurface, size: 18),
       ),
@@ -230,10 +231,6 @@ class ReaderTopControls extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  void _showSettings(BuildContext context) {
-    ReaderSettings(controller: controller).showSettings(context);
   }
 }
 

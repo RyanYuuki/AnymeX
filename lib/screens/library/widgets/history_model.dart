@@ -10,7 +10,7 @@ import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/m3u8_parser.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -236,7 +236,7 @@ Future<void> _handleAnimeTap(OfflineMedia media) async {
     return;
   }
 
-  final source = Get.find<SourceController>().getExtensionByName(sourceName);
+  final source = Get.find<SourceController>().getExtensionByValue(sourceName);
   if (source == null) {
     snackBar("Install $sourceName First, Then Click");
     return;
@@ -247,8 +247,8 @@ Future<void> _handleAnimeTap(OfflineMedia media) async {
   logSession.log("Preparing playback...");
   logSession.log("Checking saved stream URL...");
   try {
-    final playbackData =
-        await _resolveAnimePlaybackData(media: media, source: source, log: logSession.log);
+    final playbackData = await _resolveAnimePlaybackData(
+        media: media, source: source, log: logSession.log);
     if (playbackData == null) {
       logSession.log("Playback preparation failed.");
       return;
@@ -566,7 +566,8 @@ class _LoaderLogSession {
       WillPopScope(
         onWillPop: () async => false,
         child: Dialog(
-          insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+          insetPadding:
+              const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
           child: Container(
             constraints: const BoxConstraints(maxHeight: 360),
             padding: const EdgeInsets.all(16),

@@ -12,18 +12,18 @@ import 'package:anymex/screens/anime/widgets/episode_list_builder.dart';
 import 'package:anymex/screens/anime/widgets/wrongtitle_modal.dart';
 import 'package:anymex/screens/extensions/ExtensionSettings/ExtensionSettings.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/no_source.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_dropdown.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
-import 'package:anymex/widgets/header.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:dartotsu_extension_bridge/ExtensionManager.dart';
-import 'package:dartotsu_extension_bridge/Models/Source.dart';
+import 'package:anymex_extension_runtime_bridge/Services/Aniyomi/Models/Source.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -34,6 +34,7 @@ class EpisodeSection extends StatefulWidget {
   final RxBool episodeError;
   final Rx<bool> isAnify;
   final Rx<bool> showAnify;
+  final RxBool disableAnifyForCurrentSource;
   final Future<void> Function() mapToAnilist;
   final Future<void> Function(Media) getDetailsFromSource;
   // final List<SourcePreference> Function({required Source source})
@@ -50,6 +51,7 @@ class EpisodeSection extends StatefulWidget {
     // required this.getSourcePreference,
     required this.isAnify,
     required this.showAnify,
+    required this.disableAnifyForCurrentSource,
   });
 
   @override
@@ -62,6 +64,8 @@ class _EpisodeSectionState extends State<EpisodeSection> {
       Rx<Future<List<Episode>>?>(null);
   Worker? _episodeListListener;
   bool _fillerFetched = false;
+
+  String _sourceDropdownValue(Source source) => source.id.toString();
 
   @override
   void initState() {
@@ -149,7 +153,7 @@ class _EpisodeSectionState extends State<EpisodeSection> {
 
     try {
       final sourceController = Get.find<ServiceHandler>().extensionService;
-      sourceController.getExtensionByName(value);
+      sourceController.getExtensionByValue(value);
 
       _requestCounter.value++;
       int currentRequestId = _requestCounter.value;
@@ -184,17 +188,13 @@ class _EpisodeSectionState extends State<EpisodeSection> {
             ),
           ]
         : sourceController.installedExtensions.map<DropdownItem>((source) {
-            final isMangayomi = source.extensionType == ExtensionType.mangayomi;
-
             return DropdownItem(
-              value: '${source.name} (${source.lang?.toUpperCase()})',
+              value: _sourceDropdownValue(source),
               text: source.name?.toUpperCase() ?? 'Unknown Source',
               subtitle: source.lang?.toUpperCase() ?? 'Unknown',
               leadingIcon: AnymeXImage(
                 radius: 16,
-                imageUrl: isMangayomi
-                    ? "https://raw.githubusercontent.com/kodjodevf/mangayomi/main/assets/app_icons/icon-red.png"
-                    : 'https://aniyomi.org/img/logo-128px.png',
+                imageUrl: source.managerIcon,
                 height: 24,
                 width: 24,
               ),
@@ -207,18 +207,13 @@ class _EpisodeSectionState extends State<EpisodeSection> {
     } else {
       final activeSource = sourceController.activeSource.value;
       if (activeSource != null) {
-        final isMangayomi =
-            activeSource.extensionType == ExtensionType.mangayomi;
-
         selectedItem = DropdownItem(
-          value: '${activeSource.name} (${activeSource.lang?.toUpperCase()})',
+          value: _sourceDropdownValue(activeSource),
           text: activeSource.name?.toUpperCase() ?? 'Unknown Source',
           subtitle: activeSource.lang?.toUpperCase() ?? 'Unknown',
           leadingIcon: AnymeXImage(
             radius: 12,
-            imageUrl: isMangayomi
-                ? "https://raw.githubusercontent.com/kodjodevf/mangayomi/main/assets/app_icons/icon-red.png"
-                : 'https://aniyomi.org/img/logo-128px.png',
+            imageUrl: activeSource.managerIcon,
             height: 20,
             width: 20,
           ),
@@ -237,14 +232,74 @@ class _EpisodeSectionState extends State<EpisodeSection> {
     );
   }
 
-  Widget buildEpisodeContent() {
-    final sourceController = Get.find<ServiceHandler>().extensionService;
+  void handleLanguageChange(String? value) {
+    if (value == null) return;
 
-    if (sourceController.activeSource.value == null) {
-      return const NoSourceSelectedWidget();
+    final activeSource = sourceController.activeSource.value as ASource?;
+    if (activeSource == null || activeSource.langs == null) return;
+
+    final newSubSource =
+        activeSource.langs!.firstWhere((s) => s.id.toString() == value);
+    sourceController.setActiveSource(newSubSource);
+
+    widget.episodeError.value = false;
+    widget.episodeList?.value = [];
+    _requestCounter.value++;
+    int currentRequestId = _requestCounter.value;
+    _episodeFuture.value = _fetchEpisodes(currentRequestId);
+
+    setState(() {});
+  }
+
+  Widget buildLanguageDropdown() {
+    final activeSource = sourceController.activeSource.value;
+    if (activeSource is! ASource ||
+        activeSource.langs == null ||
+        activeSource.langs!.isEmpty) {
+      return const SizedBox.shrink();
     }
 
+    List<DropdownItem> items = activeSource.langs!.map<DropdownItem>((source) {
+      return DropdownItem(
+        value: source.id.toString(),
+        text: extensionLanguageName(source.lang),
+        subtitle: source.name ?? 'Unknown Source',
+        leadingIcon: AnymeXImage(
+          radius: 0,
+          imageUrl: extensionLanguageFlagUrl(source.lang),
+          height: 20,
+          width: 20,
+        ),
+      );
+    }).toList();
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: AnymexDropdown(
+        items: items,
+        selectedItem: items.firstWhere(
+            (item) => item.value == activeSource.id.toString(),
+            orElse: () => items.first),
+        label: "SELECT SUB-LANGUAGE",
+        icon: Icons.language_rounded,
+        onChanged: (DropdownItem item) => handleLanguageChange(item.value),
+      ),
+    );
+  }
+
+  Widget buildEpisodeContent() {
+    final sourceController = Get.find<ServiceHandler>().extensionService;
     return Obx(() {
+      if (sourceController.activeSource.value == null) {
+        return const Padding(
+          padding: EdgeInsets.only(top: 20),
+          child: SizedBox(
+            height: 320,
+            child: NoSourceSelectedWidget(),
+          ),
+        );
+      }
+
       return FutureBuilder<List<Episode>>(
         future: _episodeFuture.value,
         builder: (context, snapshot) {
@@ -281,7 +336,7 @@ class _EpisodeSectionState extends State<EpisodeSection> {
           }
 
           return EpisodeListBuilder(
-            episodeList: snapshot.data ?? widget.episodeList?.value ?? [],
+            episodeList: widget.episodeList?.value ?? snapshot.data ?? [],
             anilistData: widget.anilistData,
           );
         },
@@ -325,17 +380,6 @@ class _EpisodeSectionState extends State<EpisodeSection> {
                   Expanded(
                     child: AnymexTextSpans(
                       spans: [
-                        if (!widget.searchedTitle.value.contains('Searching') &&
-                            !widget.searchedTitle.value
-                                .contains('No Match Found'))
-                          AnymexTextSpan(
-                            text: "Found: ",
-                            size: 14,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .opaque(0.6),
-                          ),
                         AnymexTextSpan(
                           text: widget.searchedTitle.value,
                           variant: TextVariant.semiBold,
@@ -412,6 +456,7 @@ class _EpisodeSectionState extends State<EpisodeSection> {
                     Expanded(child: buildSourceDropdown()),
                   ],
                 )),
+            Obx(() => buildLanguageDropdown()),
           ],
           const SizedBox(height: 20),
           // Episode List
@@ -421,16 +466,17 @@ class _EpisodeSectionState extends State<EpisodeSection> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const AnymexText(
-                    text: "Episodes",
-                    variant: TextVariant.bold,
-                    size: 18,
-                  ),
-                  Obx(() {
-                    if (widget.showAnify.value) {
-                      return Row(
-                        children: [
-                          const AnymexText(
+                    const AnymexText(
+                      text: "Episodes",
+                      variant: TextVariant.bold,
+                      size: 18,
+                    ),
+                    Obx(() {
+                      if (widget.showAnify.value &&
+                          !widget.disableAnifyForCurrentSource.value) {
+                        return Row(
+                          children: [
+                            const AnymexText(
                             text: "Anify / Kitsu",
                             variant: TextVariant.semiBold,
                             size: 16,

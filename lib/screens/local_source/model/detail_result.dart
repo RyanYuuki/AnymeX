@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 
 class DetailResult {
   final String title;
