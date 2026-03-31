@@ -4,17 +4,16 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
-import 'package:anymex/widgets/header.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/media_items/media_peek_popup.dart';
+import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:blur/blur.dart';
-import 'package:dartotsu_extension_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -112,104 +111,123 @@ class GridAnimeCard extends StatelessWidget {
         }
       },
       child: SizedBox(
-      width: cardWidth,
-      height: cardHeight,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Stack(
-            children: [
-              AnymexOnTap(
-                margin: 0,
-                onTap: () {
-                  navigate(() => isManga
-                      ? MangaDetailsPage(media: media.data, tag: media.title)
-                      : AnimeDetailsPage(media: media.data, tag: media.title));
-                },
-                child: Hero(
-                  tag: media.title,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: AnymeXImage(
-                      radius: 12,
-                      imageUrl: media.poster,
-                      width: cardWidth,
-                      height: 160,
-                      errorImage:
-                          'https://s4.anilist.co/file/anilistcdn/character/large/default.jpg',
+        width: cardWidth,
+        height: cardHeight,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Stack(
+              children: [
+                AnymexOnTap(
+                  margin: 0,
+                  onTap: () {
+                    navigate(() => isManga
+                        ? MangaDetailsPage(media: media.data, tag: media.title)
+                        : AnimeDetailsPage(
+                            media: media.data, tag: media.title));
+                  },
+                  child: Hero(
+                    tag: media.title,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: AnymeXImage(
+                        radius: 12,
+                        imageUrl: media.poster,
+                        width: cardWidth,
+                        height: 160,
+                        errorImage:
+                            'https://s4.anilist.co/file/anilistcdn/character/large/default.jpg',
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Positioned(
-                bottom: 0,
-                right: 0,
-                child: _buildEpisodeChip(context, media),
-              ),
-            ],
-          ),
-          const SizedBox(height: 5),
-          if (data is Media &&
-              ((variant ?? CardVariant.onlinelist) != CardVariant.search))
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(isManga ? Iconsax.book : Icons.movie_filter_rounded,
-                    color: Colors.grey, size: 16),
-                const SizedBox(width: 2),
-                AnymexText(
-                  text: isManga ? "MANGA" : 'ANIME',
-                  maxLines: 1,
-                  variant: TextVariant.regular,
-                  fontStyle: FontStyle.italic,
-                  color: Colors.grey,
-                  size: 12,
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: _buildEpisodeChip(context, media),
                 ),
               ],
             ),
-          const SizedBox(height: 5),
-          SizedBox(
-            width: cardWidth,
-            child: AnymexText(
-              text: media.title,
-              maxLines: 2,
-              size: 14,
-              variant: TextVariant.semiBold,
-            ),
-          ),
-          const SizedBox(height: 3),
-          if (media.episodeCount != 'N/A')
-            SizedBox(
-              width: cardWidth,
-              child: AnymexTextSpans(
-                text: '  |  ~',
-                maxLines: 1,
-                fontSize: 14,
-                spans: [
-                  AnymexTextSpan(
-                      text: "${media.episodeCount} ",
-                      color: context.colors.primary,
-                      variant: TextVariant.semiBold),
-                  if (media.nextEpisode != null)
-                    AnymexTextSpan(
-                        text: "| ${media.nextEpisode} ",
-                        color: Colors.grey,
-                        variant: TextVariant.semiBold),
-                  AnymexTextSpan(
-                      text:
-                          "| ${media.totalEpisodes == '0' ? '?' : media.totalEpisodes} ",
-                      color: Colors.grey,
-                      variant: TextVariant.semiBold),
+            const SizedBox(height: 5),
+            if (data is Media &&
+                ((variant ?? CardVariant.onlinelist) != CardVariant.search))
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(isManga ? Iconsax.book : Icons.movie_filter_rounded,
+                      color: Colors.grey, size: 16),
+                  const SizedBox(width: 2),
+                  AnymexText(
+                    text: isManga ? "MANGA" : 'ANIME',
+                    maxLines: 1,
+                    variant: TextVariant.regular,
+                    fontStyle: FontStyle.italic,
+                    color: Colors.grey,
+                    size: 12,
+                  ),
                 ],
               ),
+            const SizedBox(height: 5),
+            SizedBox(
+              width: cardWidth,
+              child: AnymexText(
+                text: media.title,
+                maxLines: 2,
+                size: 14,
+                variant: TextVariant.semiBold,
+              ),
             ),
-        ],
-      ),
+            const SizedBox(height: 3),
+            if (media.episodeCount != 'N/A' && media.episodeCount != null)
+              SizedBox(
+                width: cardWidth,
+                child: AnymexTextSpans(
+                  text: '  |  ~',
+                  maxLines: 1,
+                  fontSize: 14,
+                  spans: [
+                    AnymexTextSpan(
+                        text: "${media.episodeCount} ",
+                        color: context.colors.primary,
+                        variant: TextVariant.semiBold),
+                    if (media.nextEpisode != null)
+                      AnymexTextSpan(
+                          text: "| ${media.nextEpisode} ",
+                          color: Colors.grey,
+                          variant: TextVariant.semiBold),
+                    AnymexTextSpan(
+                        text:
+                            "| ${media.totalEpisodes == '0' ? '?' : media.totalEpisodes} ",
+                        color: Colors.grey,
+                        variant: TextVariant.semiBold),
+                  ],
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildEpisodeChip(BuildContext context, CardData media) {
+    String displayScore = '0.0';
+    if (media.score != null && media.score != '0' && media.score != '0.0') {
+      final parsedScore = double.tryParse(media.score!);
+      if (parsedScore != null) {
+        if (parsedScore > 10) {
+          displayScore = (parsedScore / 10).toStringAsFixed(1);
+        } else {
+          displayScore = parsedScore.toStringAsFixed(1);
+        }
+      } else {
+        displayScore = media.score!;
+      }
+    } else if (media.rating != null &&
+        media.rating != '0' &&
+        media.rating != '0.0') {
+      displayScore = media.rating!;
+    }
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -229,7 +247,7 @@ class GridAnimeCard extends StatelessWidget {
           ),
           const SizedBox(width: 4),
           AnymexText(
-            text: media.rating ?? '0.0',
+            text: displayScore,
             color: context.colors.onPrimary,
             size: 12,
             variant: TextVariant.bold,
@@ -261,8 +279,7 @@ class BlurAnimeCard extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
           border: Border(
-              right: BorderSide(
-                  width: 2, color: context.colors.primary)),
+              right: BorderSide(width: 2, color: context.colors.primary)),
           borderRadius: BorderRadius.circular(12.multiplyRadius()),
           color: context.colors.surface.withAlpha(144),
         ),

@@ -1,6 +1,6 @@
 # AnymeX Terms of Service and Disclaimer
 
-**Last Updated: February 15, 2026**
+**Last Updated: March 12, 2026**
 
 ## Introduction
 Welcome to **AnymeX**, a multiservice tracking client designed exclusively for managing and tracking anime, manga, novels, movies, and series through integration with the official APIs of **AniList**, **MyAnimeList (MAL)**, and **Simkl**. These Terms of Service ("ToS") and Disclaimer govern your use of AnymeX. By using AnymeX, you agree to comply with these terms and conditions. If you disagree, please do not use the app.
@@ -34,20 +34,21 @@ AnymeX uses the following services to retrieve supplementary metadata and enrich
 - [**MangaUpdates**](https://mangaupdates.com): Used in conjunction with MangaBaka API for next chapter release date prediction data
 - [**Chiaki**](https://chiaki.site/): Used to retrieve anime watch order information
 - [**AnimeThemes**](https://animethemes.moe): Used to retrieve anime opening and ending theme information
+- [**AniSkip**](https://api.aniskip.com): Used to retrieve episode intro, outro, and recap timestamps
 
 ### AI Recommendations
-- [**AniBrain**](https://anibrain.ai): Used to power AI-based anime picks and personalized recommendations
+- [**Sprout Anime Recommender**](https://anime.ameo.dev): Used to power personalized anime recommendations, working in conjunction with native AniList and MyAnimeList services
 
 ### News
 - [**Kuroiru**](https://kuroiru.co/app): Used to retrieve the latest anime news
 - [**MangaBaka**](https://mangabaka.dev/): Also used to retrieve the latest manga and novel news
 
-### List Export
-- [**MALScraper**](https://malscraper.azurewebsites.net): Used to enable exporting of AniList and MyAnimeList anime and manga lists
-
 ### Book & Novel Discovery
 - [**Google Books**](https://books.google.com): Used in the barcode scanner feature to look up books and novels
 - [**OpenLibrary**](https://openlibrary.org): Used in the barcode scanner feature as a supplementary book data source
+
+### Novel Reader
+- [**Dictionary API**](https://api.dictionaryapi.dev/api/v2/entries/en/): Used in the novel reader to retrieve word definitions and linguistic information
 
 ---
 
@@ -123,7 +124,7 @@ AnymeX prioritizes your privacy and does not collect or store personal informati
   - [AniList Privacy Policy](https://anilist.co/terms)
   - [MyAnimeList Privacy Policy](https://myanimelist.net/about/privacy_policy)
   - [Simkl Privacy Policy](https://simkl.com/privacy/)
-- **Supplementary Data Services**: AnymeX integrates with additional third-party services (LiveChart, AnimeSchedule, MangaBaka API, MangaUpdates, Chiaki, AnimeThemes, AniBrain, Kuroiru, MALScraper, Google Books, and OpenLibrary) solely to retrieve informational data such as metadata, schedules, news, and recommendations. AnymeX does not transmit personal data to these services beyond what is technically necessary for the data request (e.g., a media ID or search query). Please review the privacy policies of each respective service for further information.
+- **Supplementary Data Services**: AnymeX integrates with additional third-party services (LiveChart, AnimeSchedule, MangaBaka API, MangaUpdates, Chiaki, AnimeThemes, AniSkip, Sprout Anime Recommender, Kuroiru, Google Books, OpenLibrary, and Dictionary API) solely to retrieve informational data such as metadata, schedules, news, recommendations, and word definitions. AnymeX does not transmit personal data to these services beyond what is technically necessary for the data request (e.g., a media ID or search query). Please review the privacy policies of each respective service for further information.
 - **No Interaction with Streaming Platforms**: AnymeX does not integrate with or store data related to streaming platforms like Crunchyroll, Funimation, Netflix, Hulu, or HIDIVE. Any interaction with these platforms is outside the scope of AnymeX and subject to their respective privacy policies.
 - **Crash Reports and Analytics**: AnymeX does not collect crash reports or analytics data. If this changes in the future, we will update this document and provide options to opt out where applicable.
 
@@ -131,7 +132,7 @@ We implement industry-standard security measures to ensure authentication tokens
 
 ## Disclaimer
 AnymeX is provided "as is" without warranties of any kind, express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, or non-infringement. The Developer makes no representations or warranties regarding:
-- The accuracy, availability, or reliability of third-party services (AniList, MyAnimeList, Simkl, LiveChart, AnimeSchedule, MangaBaka API, MangaUpdates, Chiaki, AnimeThemes, AniBrain, Kuroiru, MALScraper, Google Books, OpenLibrary) or licensed streaming platforms (e.g., Crunchyroll, Funimation, Netflix, Hulu, HIDIVE).
+- The accuracy, availability, or reliability of third-party services (AniList, MyAnimeList, Simkl, LiveChart, AnimeSchedule, MangaBaka API, MangaUpdates, Chiaki, AnimeThemes, AniSkip, Sprout Anime Recommender, Kuroiru, Google Books, OpenLibrary, Dictionary API) or licensed streaming platforms (e.g., Crunchyroll, Funimation, Netflix, Hulu, HIDIVE).
 - The legality, suitability, or copyright status of content accessed through third-party services, repositories, modules, or extensions.
 - The uninterrupted or error-free operation of AnymeX.
 

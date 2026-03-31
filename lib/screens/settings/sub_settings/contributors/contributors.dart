@@ -191,7 +191,7 @@ Future<List<StaffModel>> _fetchStaff() async {
   try {
     final response = await http.get(
       Uri.parse(
-          'https://github.com/Shebyyy/AnymeX/raw/refs/heads/beta/staff.json'),
+          'https://github.com/Shebyyy/AnymeX-Preview/raw/refs/heads/beta/staff.json'),
     );
     if (response.statusCode != 200) return [];
     final Map<String, dynamic> data =
@@ -612,24 +612,33 @@ class _ContributorsPageState extends State<ContributorsPage> {
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 6),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 7, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: colors.primary.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          contributor.commitCount == 1
-                              ? '1 commit • ${contributor.prCount} PRs'
-                              : '${contributor.commitCount} commits • ${contributor.prCount} PRs',
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w600,
-                            color: colors.primary,
+                      if (contributor.commitCount > 0 ||
+                          contributor.prCount > 0)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 7, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: colors.primary.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            [
+                              if (contributor.commitCount > 0)
+                                contributor.commitCount == 1
+                                    ? '1 commit'
+                                    : '${contributor.commitCount} commits',
+                              if (contributor.prCount > 0)
+                                contributor.prCount == 1
+                                    ? '1 PR'
+                                    : '${contributor.prCount} PRs',
+                            ].join(' • '),
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              color: colors.primary,
+                            ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                 ),
@@ -730,24 +739,24 @@ class _ContributorsPageState extends State<ContributorsPage> {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: colors.secondaryContainer,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      contributor.commitCount == 1
-                          ? '1 commit'
-                          : '${contributor.commitCount} commits',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        color: colors.onSecondaryContainer,
+                  if (contributor.commitCount > 0) ...[
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 9, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: colors.secondaryContainer,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        '${contributor.commitCount} commit${contributor.commitCount == 1 ? '' : 's'}',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: colors.onSecondaryContainer,
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                   if (contributor.prCount > 0) ...[
                     const SizedBox(width: 4),
                     Container(
@@ -758,7 +767,9 @@ class _ContributorsPageState extends State<ContributorsPage> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
-                        '${contributor.prCount} PRs',
+                        contributor.prCount == 1
+                            ? '1 PR'
+                            : '${contributor.prCount} PRs',
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,

@@ -32,7 +32,7 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -613,6 +613,141 @@ averageScore
         })
         .toList()
         .removeDupes();
+  }
+
+  static Future<(Map<String, List<Media>>, int)> fetchStudioDetails(
+      int studioId) async {
+    const String url = 'https://graphql.anilist.co';
+    final token = AuthKeys.authToken.get<String?>();
+    final headers = {
+      'Content-Type': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
+    final yearMedia = <String, List<Media>>{};
+    final seenMediaIds = <String>{};
+    int favouritesCount = 0;
+    bool hasNextPage = true;
+    int page = 0;
+
+    while (hasNextPage) {
+      page++;
+      final query = '''
+      {
+        Studio(id: $studioId) {
+          favourites
+          media(page: $page, perPage: 25, sort: START_DATE_DESC) {
+            pageInfo { hasNextPage }
+            edges {
+              node {
+                id
+                title { romaji english userPreferred }
+                coverImage { large }
+                type
+                format
+                status
+                averageScore
+                startDate { year }
+                mediaListEntry { status }
+              }
+            }
+          }
+        }
+      }
+      ''';
+
+      final response = await post(
+        Uri.parse(url),
+        headers: headers,
+        body: json.encode({'query': query}),
+      );
+
+      if (response.statusCode != 200) break;
+
+      final data = json.decode(response.body);
+      final studio = data['data']?['Studio'];
+      if (studio == null) break;
+
+      if (page == 1) {
+        favouritesCount = studio['favourites'] ?? 0;
+      }
+
+      final media = studio['media'];
+      hasNextPage = media?['pageInfo']?['hasNextPage'] == true;
+
+      final edges = media?['edges'] as List? ?? [];
+      for (final edge in edges) {
+        final node = edge['node'];
+        if (node == null) continue;
+
+        final mediaId = node['id']?.toString();
+        if (mediaId == null || seenMediaIds.contains(mediaId)) continue;
+        seenMediaIds.add(mediaId);
+
+        final status = node['status']?.toString() ?? '';
+        final year = node['startDate']?['year']?.toString() ?? 'TBA';
+        final title = status != 'CANCELLED' ? year : 'CANCELLED';
+
+        final mediaItem = Media.fromSmallJson(
+          node,
+          node['type'] == 'MANGA',
+        );
+
+        yearMedia.putIfAbsent(title, () => []);
+        yearMedia[title]!.add(mediaItem);
+      }
+    }
+
+    if (yearMedia.containsKey('CANCELLED')) {
+      final cancelled = yearMedia.remove('CANCELLED')!;
+      yearMedia['CANCELLED'] = cancelled;
+    }
+
+    final sortedKeys = yearMedia.keys.toList()
+      ..sort((a, b) {
+        if (a == 'TBA') return -1;
+        if (b == 'TBA') return 1;
+        if (a == 'CANCELLED') return 1;
+        if (b == 'CANCELLED') return -1;
+
+        // Parse the years normally
+        final yearA = int.tryParse(a) ?? 0;
+        final yearB = int.tryParse(b) ?? 0;
+        return yearB.compareTo(yearA);
+      });
+
+    final sortedYearMedia = <String, List<Media>>{};
+    for (var key in sortedKeys) {
+      sortedYearMedia[key] = yearMedia[key]!;
+    }
+
+    return (sortedYearMedia, favouritesCount);
+  }
+
+  static Future<int?> fetchStudioIdByName(String studioName) async {
+    const String url = 'https://graphql.anilist.co';
+    final query = '''
+    {
+      Page(page: 1, perPage: 1) {
+        studios(search: "$studioName") {
+          id
+          name
+        }
+      }
+    }
+    ''';
+
+    final response = await post(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({'query': query}),
+    );
+
+    if (response.statusCode != 200) return null;
+
+    final data = json.decode(response.body);
+    final studios = data['data']?['Page']?['studios'] as List?;
+    if (studios == null || studios.isEmpty) return null;
+    return studios.first['id'] as int?;
   }
 
   static Future<List<Episode>> fetchEpisodesFromAnify(

@@ -94,7 +94,7 @@ class LiquidMode extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final imagePath = settingsController.liquidBackgroundPath.isEmpty
-        ? 'assets/images/bg_glass.jpg'
+        ? 'assets/images/bg_glass.webp'
         : "file://${settingsController.liquidBackgroundPath}";
 
     return Stack(

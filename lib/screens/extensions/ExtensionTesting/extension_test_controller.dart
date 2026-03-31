@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'extension_test_item.dart';
 
 class ExtensionTestController extends GetxController {
@@ -66,6 +66,17 @@ class ExtensionTestController extends GetxController {
       }
     } else {
       selectedExtensions.remove(extensionName);
+    }
+  }
+
+  void toggleSelectAll(List<String> extensionNames) {
+    final names = extensionNames.where((n) => n.isNotEmpty).toList();
+    final allSelected = names.length == selectedExtensions.length &&
+        names.every((n) => selectedExtensions.contains(n));
+    if (allSelected) {
+      selectedExtensions.clear();
+    } else {
+      selectedExtensions.assignAll(names);
     }
   }
 

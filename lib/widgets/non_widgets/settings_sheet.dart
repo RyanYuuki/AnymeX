@@ -1,5 +1,4 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/screens/extensions/ExtensionScreen.dart';
 import 'package:anymex/screens/local_source/local_source_view.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
@@ -14,7 +13,6 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 
 class SettingsSheet extends StatelessWidget {
@@ -228,24 +226,34 @@ class SettingsSheet extends StatelessWidget {
           children: [
             Row(children: [
               const SizedBox(width: 5),
-              CircleAvatar(
-                radius: 24,
-                backgroundColor: context.colors.surfaceContainer,
-                child: serviceHandler.isLoggedIn.value
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(50),
-                        child: AnymeXImage(
-                            fit: BoxFit.cover,
-                            width: 45,
-                            height: 45,
-                            radius: 0,
-                            imageUrl: serviceHandler.profileData.value.avatar ??
-                                ''),
-                      )
-                    : Icon(
-                        Icons.person,
-                        color: context.colors.inverseSurface,
-                      ),
+              GestureDetector(
+                onTap: serviceHandler.isLoggedIn.value &&
+                        serviceHandler.serviceType.value == ServicesType.anilist
+                    ? () {
+                        Get.back();
+                        navigate(() => const ProfilePage());
+                      }
+                    : null,
+                child: CircleAvatar(
+                  radius: 24,
+                  backgroundColor: context.colors.surfaceContainer,
+                  child: serviceHandler.isLoggedIn.value
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(50),
+                          child: AnymeXImage(
+                              fit: BoxFit.cover,
+                              width: 45,
+                              height: 45,
+                              radius: 0,
+                              imageUrl:
+                                  serviceHandler.profileData.value.avatar ??
+                                      ''),
+                        )
+                      : Icon(
+                          Icons.person,
+                          color: context.colors.inverseSurface,
+                        ),
+                ),
               ),
               const SizedBox(width: 15),
               Column(
@@ -300,20 +308,14 @@ class SettingsSheet extends StatelessWidget {
                   },
                 ),
               ),
-            Obx(() {
-              final shouldShowExts =
-                  sourceController.shouldShowExtensions.value;
-              return isMobile && shouldShowExts
-                  ? ListTile(
-                      leading: const Icon(Icons.extension),
-                      title: const Text('Extensions'),
-                      onTap: () {
-                        Get.back();
-                        navigate(() => const ExtensionScreen());
-                      },
-                    )
-                  : const SizedBox.shrink();
-            }),
+            ListTile(
+              leading: const Icon(Icons.extension),
+              title: const Text('Extensions'),
+              onTap: () {
+                Get.back();
+                navigate(() => const ExtensionScreen());
+              },
+            ),
             AnymexOnTap(
               child: ListTile(
                 leading: const Icon(HugeIcons.strokeRoundedAiSetting),

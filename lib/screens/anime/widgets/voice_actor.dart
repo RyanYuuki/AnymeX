@@ -4,12 +4,10 @@ import 'package:anymex/models/Media/character.dart';
 import 'package:anymex/models/Media/staff.dart';
 import 'package:anymex/screens/anime/widgets/character_staff_sheet.dart';
 
-import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:iconsax/iconsax.dart';
-
 
 class CharactersCarousel extends StatelessWidget {
   final List<Character> characters;
@@ -56,9 +54,8 @@ class CharactersCarousel extends StatelessWidget {
                   child: InkWell(
                     borderRadius: BorderRadius.circular(12),
                     onTap: () {
-
                       showCharacterStaffSheet(context,
-                          item: itemData, isCharacter: true);
+                          item: itemData, isCharacter: true, heroTag: tag);
                     },
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,10 +145,10 @@ class CharactersCarousel extends StatelessWidget {
           SizedBox(
             height: isDesktop ? 290 : 230,
             child: ListView.builder(
-            itemCount: characters.length,
-            scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.only(left: 20),
+              itemCount: characters.length,
+              scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.only(left: 20),
               itemBuilder: (BuildContext context, int index) {
                 final character = characters[index];
                 final characterName = character.name;
@@ -165,12 +162,13 @@ class CharactersCarousel extends StatelessWidget {
                   onTap: () {
                     if (itemData != null) {
                       showCharacterStaffSheet(context,
-                          item: itemData, isCharacter: false);
+                          item: itemData, isCharacter: false, heroTag: tag);
                     }
                   },
                   child: Container(
                     margin: const EdgeInsets.only(right: 10),
-                    constraints: BoxConstraints(maxWidth: isDesktop ? 150 : 108),
+                    constraints:
+                        BoxConstraints(maxWidth: isDesktop ? 150 : 108),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -194,7 +192,8 @@ class CharactersCarousel extends StatelessWidget {
                                   bottom: 0,
                                   right: 0,
                                   child: Container(
-                                    padding: const EdgeInsets.fromLTRB(10, 4, 5, 2),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(10, 4, 5, 2),
                                     decoration: BoxDecoration(
                                       borderRadius: const BorderRadius.only(
                                         topLeft: Radius.circular(12),
@@ -207,8 +206,10 @@ class CharactersCarousel extends StatelessWidget {
                                     clipBehavior: Clip.antiAlias,
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
                                       children: [
                                         Icon(
                                           Iconsax.microphone5,
@@ -302,9 +303,8 @@ class StaffCarousel extends StatelessWidget {
                   child: InkWell(
                     borderRadius: BorderRadius.circular(12),
                     onTap: () {
-
                       showCharacterStaffSheet(context,
-                          item: itemData, isCharacter: false);
+                          item: itemData, isCharacter: false, heroTag: tag);
                     },
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -326,7 +326,8 @@ class StaffCarousel extends StatelessWidget {
                                 bottom: 0,
                                 right: 0,
                                 child: Container(
-                                  padding: const EdgeInsets.fromLTRB(10, 4, 5, 2),
+                                  padding:
+                                      const EdgeInsets.fromLTRB(10, 4, 5, 2),
                                   decoration: BoxDecoration(
                                     borderRadius: const BorderRadius.only(
                                       topLeft: Radius.circular(12),
@@ -368,7 +369,8 @@ class StaffCarousel extends StatelessWidget {
                             maxLines: 1,
                             style: TextStyle(
                                 fontSize: 10,
-                                color: context.colors.onSurface.withOpacity(0.7),
+                                color:
+                                    context.colors.onSurface.withOpacity(0.7),
                                 fontFamily: "Poppins"),
                             overflow: TextOverflow.ellipsis,
                           )

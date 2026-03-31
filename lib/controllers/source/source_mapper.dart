@@ -2,12 +2,17 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/logger.dart';
-import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:fuzzywuzzy/fuzzywuzzy.dart';
 import 'package:get/get.dart';
 
 String _normalizeLight(String title) {
   return title.trim().toLowerCase();
+}
+
+bool _isInvalidTitle(String? title) {
+  final value = (title ?? '').trim().toLowerCase();
+  return value.isEmpty || value == '?' || value == '??' || value == 'null';
 }
 
 String _normalizeHeavy(String title) {
@@ -76,8 +81,21 @@ Future<Media?> mapMedia(
   final isManga = animeId[0].split("*").last == "MANGA";
   final type = isManga ? ItemType.manga : ItemType.anime;
 
-  String englishTitle = animeId[0].split("*").first;
-  String romajiTitle = animeId[1] == '??' ? englishTitle : animeId[1];
+  String englishTitle = animeId[0].split("*").first.trim();
+  String romajiTitle = (animeId.length > 1 ? animeId[1] : '').trim();
+
+  if (_isInvalidTitle(englishTitle)) {
+    englishTitle = '';
+  }
+  if (_isInvalidTitle(romajiTitle)) {
+    romajiTitle = '';
+  }
+  if (englishTitle.isEmpty && romajiTitle.isNotEmpty) {
+    englishTitle = romajiTitle;
+  }
+  if (romajiTitle.isEmpty && englishTitle.isNotEmpty) {
+    romajiTitle = englishTitle;
+  }
 
   final activeSource = isManga
       ? sourceController.activeMangaSource.value
@@ -94,7 +112,7 @@ Future<Media?> mapMedia(
 
   Future<void> search(
       String query, String sourceTitle, bool isHeavyNormalized) async {
-    searchedTitle.value = "Fetching results...";
+    searchedTitle.value = "Searching: $sourceTitle";
     final results = (await activeSource.methods.search(query, 1, [])).list;
     if (results.isEmpty) return;
 
@@ -106,7 +124,8 @@ Future<Media?> mapMedia(
           ? _normalizeHeavy(resultTitle.trim())
           : _normalizeLight(resultTitle.trim());
 
-      searchedTitle.value = "Searching: $resultTitle";
+      searchedTitle.value = "Finding: $resultTitle";
+      await Future.delayed(const Duration(milliseconds: 100));
 
       if (savedTitle != null &&
           _normalizeLight(resultTitle) == _normalizeLight(savedTitle)) {
@@ -128,9 +147,6 @@ Future<Media?> mapMedia(
         resultSeason,
       );
 
-      print("Score: ${score.toStringAsFixed(3)} for '$resultTitle' "
-          "(Heavy normalized: $isHeavyNormalized)");
-
       if (score >= 0.95) {
         bestScore = score;
         bestMatch = result;
@@ -150,19 +166,23 @@ Future<Media?> mapMedia(
   if (savedTitle != null && savedTitle.isNotEmpty) {
     await search(savedTitle, savedTitle, false);
     if (bestScore >= 1.0 && bestMatch != null) {
-      searchedTitle.value = (bestMatch.title ?? '').toUpperCase();
+      searchedTitle.value = "Found: ${bestMatch.title ?? ''}";
       return Media.froDMedia(bestMatch, type);
     }
   }
 
-  await search(englishTitle, englishTitle, false);
+  if (englishTitle.isNotEmpty) {
+    await search(englishTitle, englishTitle, false);
+  }
 
-  if (bestScore < 0.95) {
+  if (bestScore < 0.95 &&
+      romajiTitle.isNotEmpty &&
+      _normalizeLight(romajiTitle) != _normalizeLight(englishTitle)) {
     await search(romajiTitle, romajiTitle, false);
   }
 
   if (bestScore > 0.9 && bestMatch != null) {
-    searchedTitle.value = (bestMatch.title ?? '').toUpperCase();
+    searchedTitle.value = "Found: ${bestMatch.title ?? ''}";
     print("Good match found: score ${bestScore.toStringAsFixed(3)}");
     return Media.froDMedia(bestMatch, type);
   }
@@ -174,19 +194,23 @@ Future<Media?> mapMedia(
   if (savedTitle != null && savedTitle.isNotEmpty) {
     await search(_normalizeHeavy(savedTitle), savedTitle, true);
     if (bestScore >= 1.0 && bestMatch != null) {
-      searchedTitle.value = (bestMatch.title ?? '').toUpperCase();
+      searchedTitle.value = "Found: ${bestMatch.title ?? ''}";
       return Media.froDMedia(bestMatch, type);
     }
   }
 
-  await search(_normalizeHeavy(englishTitle), englishTitle, true);
+  if (englishTitle.isNotEmpty) {
+    await search(_normalizeHeavy(englishTitle), englishTitle, true);
+  }
 
-  if (bestScore < 0.95) {
+  if (bestScore < 0.95 &&
+      romajiTitle.isNotEmpty &&
+      _normalizeLight(romajiTitle) != _normalizeLight(englishTitle)) {
     await search(_normalizeHeavy(romajiTitle), romajiTitle, true);
   }
 
   if (bestScore >= 0.7 && bestMatch != null) {
-    searchedTitle.value = (bestMatch.title ?? '').toUpperCase();
+    searchedTitle.value = "Found: ${bestMatch.title ?? ''}";
     print(
         "Final match with heavy normalization: score ${bestScore.toStringAsFixed(3)}");
     return Media.froDMedia(bestMatch, type);
@@ -194,8 +218,8 @@ Future<Media?> mapMedia(
 
   print("No good match. Best: ${bestScore.toStringAsFixed(3)}");
   searchedTitle.value = fallbackResults.isNotEmpty
-      ? fallbackResults.first.title ?? 'Unknown Title'
-      : "No match found";
+      ? "Found: ${fallbackResults.first.title ?? 'Unknown Title'}"
+      : "No Match Found";
 
   return fallbackResults.isNotEmpty
       ? Media.froDMedia(fallbackResults.first, type)

@@ -5,6 +5,7 @@ import 'package:anymex/models/player/player_adaptor.dart';
 import 'package:anymex/models/ui/ui_adaptor.dart';
 import 'package:anymex/screens/onboarding/welcome_dialog.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/shaders.dart';
 import 'package:anymex/utils/updater.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,8 @@ class Settings extends GetxController {
   final readerControlThemeRx = 'default'.obs;
 
   RxBool enableBetaUpdates = false.obs;
+  RxBool writeLogToFile = false.obs;
+  RxString customLogDirectory = ''.obs;
 
   RxBool isTV = false.obs;
   final _selectedShader = ''.obs;
@@ -59,6 +62,10 @@ class Settings extends GetxController {
         ReaderKeys.readerControlTheme.get<String>('default');
 
     enableBetaUpdates.value = General.enableBetaUpdates.get<bool>(false);
+    writeLogToFile.value = General.writeLogToFile.get<bool>(false);
+    customLogDirectory.value = General.customLogDirectory.get<String>("");
+    Logger.setFileLoggingEnabled(writeLogToFile.value,
+        customPath: customLogDirectory.value);
 
     isTv().then((e) {
       isTV.value = e;
@@ -80,6 +87,20 @@ class Settings extends GetxController {
   void saveBetaUpdateToggle(bool value) {
     enableBetaUpdates.value = value;
     General.enableBetaUpdates.set(value);
+  }
+
+  Future<void> saveWriteLogToFile(bool value) async {
+    writeLogToFile.value = value;
+    General.writeLogToFile.set(value);
+    await Logger.setFileLoggingEnabled(value);
+  }
+
+  Future<void> saveCustomLogDirectory(String value) async {
+    customLogDirectory.value = value;
+    General.customLogDirectory.set(value);
+    if (writeLogToFile.value) {
+      await Logger.setFileLoggingEnabled(true, customPath: value);
+    }
   }
 
   void showWelcomeDialog(BuildContext context) {
@@ -392,6 +413,13 @@ class Settings extends GetxController {
   set enablePiP(bool value) {
     playerSettings.update((s) => s?.enablePiP = value);
     PlayerSettingsKeys.enablePiP.set(value);
+  }
+
+  bool get playerMenuAnimation =>
+      _getPlayerSetting((s) => s.playerMenuAnimation);
+  set playerMenuAnimation(bool value) {
+    playerSettings.update((s) => s?.playerMenuAnimation = value);
+    PlayerSettingsKeys.playerMenuAnimation.set(value);
   }
 
   bool get enableSwipeControls =>

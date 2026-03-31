@@ -30,7 +30,7 @@ android {
 
     defaultConfig {
         applicationId = "com.ryan.anymex"
-        minSdk = 23
+        minSdkVersion = 24
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -40,6 +40,7 @@ android {
         jniLibs {
             useLegacyPackaging true
         }
+        // exclude 'META-INF/versions/9/OSGI-INF/MANIFEST.MF'
     }
 
     signingConfigs {

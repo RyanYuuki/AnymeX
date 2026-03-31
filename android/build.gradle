@@ -23,6 +23,8 @@ subprojects {
             }
         }
 
+        
+
         if (project.hasProperty("android")) {
             project.android {
                 if (namespace == null) {
@@ -47,4 +49,14 @@ subprojects {
 
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
+}
+
+configurations.all {
+    resolutionStrategy.eachDependency { details ->
+        if (details.requested.group == "io.flutter" &&
+                details.requested.name.contains("flutter_embedding")) {
+
+            details.useVersion "1.0.0-ef0cd000916d64fa0c5d09cc809fa7ad244a5767"
+        }
+    }
 }

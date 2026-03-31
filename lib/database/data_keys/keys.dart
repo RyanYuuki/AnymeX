@@ -9,6 +9,8 @@ enum General {
   hasAcceptedCommentRules,
   universalScrapper,
   enableBetaUpdates,
+  writeLogToFile,
+  customLogDirectory,
   imageCacheThresholdGb,
   libraryGridAutoMigrated,
 }
@@ -26,6 +28,7 @@ enum ThemeKeys {
 enum PlayerKeys { useLibass, useMediaKit }
 
 enum PlayerUiKeys {
+  playerExperimentalEnabled,
   bottomControlsSettings,
   playerControlTheme,
   playerControlThemesJson,
@@ -103,6 +106,7 @@ enum NovelReaderKeys {
   ttsVoice,
   ttsAutoAdvance,
   ttsEnabled,
+  overscrollToChapter,
 }
 
 enum LocalSourceKeys {
@@ -134,6 +138,11 @@ enum SourceKeys {
   animeExtensionOrder,
   mangaExtensionOrder,
   novelExtensionOrder,
+}
+
+enum PluginKeys {
+  runtimeHostInstalledVersion,
+  runtimeHostInstalledReleaseTitle,
 }
 
 enum AuthKeys {
@@ -212,6 +221,7 @@ enum PlayerSettingsKeys {
   subtitleOpacity,
   subtitleBottomMargin,
   subtitleOutlineType,
+  playerMenuAnimation,
 }
 
 enum UISettingsKeys {

@@ -4,7 +4,7 @@ import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:dartotsu_extension_bridge/dartotsu_extension_bridge.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
@@ -275,14 +275,39 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Select Extensions',
-          style: TextStyle(
-            fontFamily: 'Poppins',
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-            color: theme.onSurface,
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Select Extensions',
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: theme.onSurface,
+              ),
+            ),
+            Obx(() {
+              final extensions = _getInstalledExtensions(sourceController);
+              if (extensions.isEmpty) return const SizedBox.shrink();
+              final names =
+                  extensions.map((s) => s.name).whereType<String>().toList();
+              final allSelected = names.length ==
+                      controller.selectedExtensions.length &&
+                  names.every((n) => controller.selectedExtensions.contains(n));
+              return TextButton(
+                onPressed: () => controller.toggleSelectAll(names),
+                child: Text(
+                  allSelected ? 'Deselect all' : 'Select all',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 14,
+                    color: theme.primary,
+                  ),
+                ),
+              );
+            }),
+          ],
         ),
         const SizedBox(height: 12),
         Obx(() {
@@ -432,7 +457,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
               ),
               elevation: 0,
             ),
-            child: Text(
+            child: const Text(
               'Start Test',
               style: TextStyle(
                 fontFamily: 'Poppins',

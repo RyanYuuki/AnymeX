@@ -171,8 +171,9 @@ class _VisualsPopupState extends State<VisualsPopup> {
         final path = uri.path;
         if (path.contains('.')) {
           extension = path.split('.').last;
-          if (extension.length > 4 || extension.contains('/'))
+          if (extension.length > 4 || extension.contains('/')) {
             extension = "jpg";
+          }
         }
       } catch (_) {}
 

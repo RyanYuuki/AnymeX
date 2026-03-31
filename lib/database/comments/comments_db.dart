@@ -1,6 +1,5 @@
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/services/commentum_service.dart';
-import 'package:anymex/utils/logger.dart' as d;
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:get/get.dart';
 
@@ -9,7 +8,7 @@ import 'model/comment.dart';
 class CommentsDatabase {
   final commentumService = Get.find<CommentumService>();
 
-  void log(String msg) => d.Logger.i("[CommentsDatabase] $msg");
+  void log(String msg) => {};
 
   Future<List<Comment>> fetchComments(String mediaId) async {
     try {

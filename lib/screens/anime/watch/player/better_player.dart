@@ -12,6 +12,7 @@ class BetterPlayerImpl extends BasePlayer {
   late BetterPlayerController _controller;
   BetterPlayerDataSource? _currentDataSource;
   final PlayerConfiguration config;
+  Map<String, String>? _currentVideoHeaders;
 
   final _positionController = StreamController<Duration>.broadcast();
   final _durationController = StreamController<Duration>.broadcast();
@@ -228,6 +229,7 @@ class BetterPlayerImpl extends BasePlayer {
           title: title.substring(0, title.length - 10),
           language: t.language,
           url: t.url,
+          headers: t.headers,
         );
       }
     }
@@ -250,6 +252,7 @@ class BetterPlayerImpl extends BasePlayer {
           title: '${sub.name} (Current)',
           language: sub.name,
           url: url,
+          headers: sub.headers,
         ));
       }
     }
@@ -291,9 +294,7 @@ class BetterPlayerImpl extends BasePlayer {
       BetterPlayerDataSourceType.network,
       url,
       headers: headers,
-      videoFormat: url.contains('.mp4')
-          ? BetterPlayerVideoFormat.other
-          : BetterPlayerVideoFormat.hls,
+      videoFormat: getVideoFormat(url),
       bufferingConfiguration: config.useBuffering
           ? BetterPlayerBufferingConfiguration(
               minBufferMs: config.bufferSize ~/ 1000,
@@ -301,12 +302,35 @@ class BetterPlayerImpl extends BasePlayer {
             )
           : const BetterPlayerBufferingConfiguration(),
     );
+    _currentVideoHeaders =
+        headers == null ? null : Map<String, String>.from(headers);
 
     await _controller.setupDataSource(_currentDataSource!);
 
     if (startPosition != null && startPosition > Duration.zero) {
       await _controller.seekTo(startPosition);
     }
+  }
+
+  BetterPlayerVideoFormat getVideoFormat(String url) {
+    final uri = Uri.parse(url.toLowerCase());
+    final path = uri.path;
+
+    if (path.endsWith('.m3u8')) {
+      return BetterPlayerVideoFormat.hls;
+    }
+
+    if (path.endsWith('.mpd')) {
+      return BetterPlayerVideoFormat.dash;
+    }
+
+    if (path.endsWith('.ism') ||
+        path.contains('.ism/') ||
+        path.endsWith('manifest')) {
+      return BetterPlayerVideoFormat.ss;
+    }
+
+    return BetterPlayerVideoFormat.other;
   }
 
   @override
@@ -388,6 +412,7 @@ class BetterPlayerImpl extends BasePlayer {
           type: BetterPlayerSubtitlesSourceType.network,
           urls: [track.url!],
           name: track.title,
+          headers: track.headers ?? _currentVideoHeaders,
         ),
       );
     } else {
