@@ -39,7 +39,6 @@ import 'package:rxdart/rxdart.dart' show ThrottleExtensions;
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:volume_controller/volume_controller.dart';
-import 'package:window_manager/window_manager.dart';
 import '../../../../database/isar_models/track.dart' as model;
 
 class _PipControlsService {
@@ -50,7 +49,6 @@ class _PipControlsService {
   final VoidCallback onPause;
   final VoidCallback onNextEpisode;
   final VoidCallback onPreviousEpisode;
-  final VoidCallback onPipDidStop;
 
   _PipControlsService({
     required this.onTogglePlayPause,
@@ -58,7 +56,6 @@ class _PipControlsService {
     required this.onPause,
     required this.onNextEpisode,
     required this.onPreviousEpisode,
-    required this.onPipDidStop,
   });
 
   void init() {
@@ -88,9 +85,6 @@ class _PipControlsService {
       case 'previousEpisode':
         onPreviousEpisode();
         break;
-      case 'pipDidStop':
-        onPipDidStop();
-        break;
     }
   }
 
@@ -104,13 +98,6 @@ class _PipControlsService {
         'isPlaying': isPlaying,
         'enablePiP': enablePiP,
       });
-    } catch (_) {}
-  }
-
-  Future<void> setupNativePip() async {
-    if (!Platform.isIOS) return;
-    try {
-      await _channel.invokeMethod('setupNativePip');
     } catch (_) {}
   }
 }
@@ -206,9 +193,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   late BasePlayer _basePlayer;
   late _PipControlsService _pipControls;
 
-  Size? _savedWindowSize;
-  Offset? _savedWindowPosition;
-
   Widget get videoWidget => _basePlayer.getVideoWidget(fit: videoFit.value);
 
   Episode? get savedEpisode => offlineStorage.getWatchedEpisode(
@@ -299,14 +283,17 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   @override
   void onInit() {
     super.onInit();
-
+    
     _pipControls = _PipControlsService(
       onTogglePlayPause: togglePlayPause,
       onPlay: play,
       onPause: pause,
-      onNextEpisode: () { if (hasNextEpisode) navigator(true); },
-      onPreviousEpisode: () { if (hasPreviousEpisode) navigator(false); },
-      onPipDidStop: () { isPipActive.value = false; },
+      onNextEpisode: () {
+        if (hasNextEpisode) navigator(true);
+      },
+      onPreviousEpisode: () {
+        if (hasPreviousEpisode) navigator(false);
+      },
     );
     _pipControls.init();
 
@@ -341,25 +328,17 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> _initPip() async {
-    if (Platform.isAndroid || Platform.isIOS) {
-      try {
-        _pipSupported = await FlPiP().isAvailable;
-      } catch (_) {
-        _pipSupported = false;
-      }
-      if (Platform.isIOS) {
-        await _pipControls.setupNativePip();
-      }
-    } else if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-      _pipSupported = true;
+    if (!Platform.isAndroid && !Platform.isIOS) return;
+    try {
+      _pipSupported = await FlPiP().isAvailable;
+    } catch (_) {
+      _pipSupported = false;
     }
   }
 
   Future<void> togglePip() async {
     if (Platform.isAndroid || Platform.isIOS) {
       await _toggleMobilePip();
-    } else if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-      await _toggleDesktopPip();
     }
   }
 
@@ -376,7 +355,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         isPipActive.value = false;
       } else {
         await FlPiP().enable(
-          android: FlPiPAndroidConfig(aspectRatio: const Rational(16, 9)),
+          android: FlPiPAndroidConfig(
+            aspectRatio: const Rational(16, 9),
+          ),
           ios: FlPiPiOSConfig(),
         );
         isPipActive.value = true;
@@ -384,50 +365,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     } catch (e) {
       Logger.e('PiP toggle error: $e');
       snackBar('Failed to toggle PiP');
-    }
-  }
-
-  Future<void> _toggleDesktopPip() async {
-    if (isPipActive.value) {
-      await _exitDesktopPip();
-    } else {
-      await _enterDesktopPip();
-    }
-  }
-
-  Future<void> _enterDesktopPip() async {
-    try {
-      _savedWindowSize = await windowManager.getSize();
-      _savedWindowPosition = await windowManager.getPosition();
-      await windowManager.setSize(const Size(480, 270));
-      await windowManager.setAlwaysOnTop(true);
-      await windowManager.setTitleBarStyle(TitleBarStyle.hidden);
-      await windowManager.setResizable(false);
-      final screenSize = await windowManager.getSize();
-      await windowManager.setPosition(Offset(
-        screenSize.width - 500,
-        screenSize.height - 300,
-      ));
-      isPipActive.value = true;
-    } catch (e) {
-      Logger.e('Desktop PiP enter error: $e');
-    }
-  }
-
-  Future<void> _exitDesktopPip() async {
-    try {
-      await windowManager.setAlwaysOnTop(false);
-      await windowManager.setTitleBarStyle(TitleBarStyle.normal);
-      await windowManager.setResizable(true);
-      if (_savedWindowSize != null) {
-        await windowManager.setSize(_savedWindowSize!);
-      }
-      if (_savedWindowPosition != null) {
-        await windowManager.setPosition(_savedWindowPosition!);
-      }
-      isPipActive.value = false;
-    } catch (e) {
-      Logger.e('Desktop PiP exit error: $e');
     }
   }
 
@@ -516,12 +453,15 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     try {
       final status = await FlPiP().isActive;
       if (status?.status == PiPStatus.enabled) {
+      
         showControls.value = false;
         isPipActive.value = true;
       } else if (isPlaying.value) {
         showControls.value = false;
         await FlPiP().enable(
-          android: FlPiPAndroidConfig(aspectRatio: const Rational(16, 9)),
+          android: FlPiPAndroidConfig(
+            aspectRatio: const Rational(16, 9),
+          ),
           ios: FlPiPiOSConfig(),
         );
         isPipActive.value = true;
@@ -921,6 +861,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         isPlaying: e,
         enablePiP: settings.enablePiP,
       );
+
       if (isOffline.value) return;
       if (!e) {
         DiscordRPCController.instance.updateAnimePresencePaused(
@@ -1262,11 +1203,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   Future<void> dispose() async {
     super.dispose();
     _pipControls.dispose();
-
-    if (isPipActive.value &&
-        (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
-      await _exitDesktopPip();
-    }
 
     try {
       await _trackLocally(syncToCloud: false);
