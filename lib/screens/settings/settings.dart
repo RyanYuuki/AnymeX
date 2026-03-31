@@ -1,6 +1,7 @@
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_about.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_accounts.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_aniskip_contribute.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_backup.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_common.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_experimental.dart';
@@ -67,7 +68,14 @@ class _SettingsPageState extends State<SettingsPage> {
                     description: "Tweak Settings",
                     onTap: () {
                       navigate(() => const SettingsCommon());
-                    }),
+                }),
+                CustomTile(
+                    icon: Icons.timer,
+                    title: "Contribute Skip Times",
+                    description: "Submit opening/ending times to AniSkip database",
+                    onTap: () {
+                      navigate(() => const SettingsAniSkipContribute());
+                }),
                 CustomTile(
                     icon: HugeIcons.strokeRoundedLibraries,
                     title: "Backup & Restore",
