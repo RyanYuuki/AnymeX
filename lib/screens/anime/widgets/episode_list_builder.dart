@@ -505,6 +505,8 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       sortMap: ep.sortMap.isEmpty ? null : ep.sortMap,
     );
 
+    final scrapeToken = "scrape_${DateTime.now().millisecondsSinceEpoch}_${ep.number}";
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -514,14 +516,15 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
         ),
       ),
       builder: (context) {
+        final methods = sourceController.activeSource.value!.methods;
         return SizedBox(
           width: double.infinity,
-          child: sourceController.activeSource.value!.methods
-                      .getVideoListStream(sourceEpisode) !=
+          child: methods.getVideoListStream(sourceEpisode,
+                      parameters: SourceParams(cancelToken: scrapeToken)) !=
                   null
               ? StreamBuilder(
-                  stream: sourceController.activeSource.value!.methods
-                      .getVideoListStream(sourceEpisode),
+                  stream: methods.getVideoListStream(sourceEpisode,
+                      parameters: SourceParams(cancelToken: scrapeToken)),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting &&
                         streamList.isEmpty) {
@@ -558,14 +561,15 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                   },
                 )
               : FutureBuilder<List<Video>>(
-                  future: sourceController.activeSource.value!.methods
-                      .getVideoList(sourceEpisode),
+                  future: methods.getVideoList(sourceEpisode,
+                      parameters: SourceParams(cancelToken: scrapeToken)),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       isServerStreamLoading.value = true;
                       return _buildScrapingLoadingState(true);
                     } else if (snapshot.hasError) {
                       isServerStreamLoading.value = false;
+                      Logger.e(snapshot.error.toString());
                       return _buildErrorState(snapshot.error.toString());
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                       isServerStreamLoading.value = false;
@@ -582,7 +586,9 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                 ),
         );
       },
-    );
+    ).whenComplete(() {
+      sourceController.activeSource.value?.cancelRequest(scrapeToken);
+    });
   }
 
   Widget _buildScrapingLoadingState(bool fromSrc) {

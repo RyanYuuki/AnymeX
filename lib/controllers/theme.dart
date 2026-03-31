@@ -24,7 +24,7 @@ class ThemeProvider extends ChangeNotifier {
         isSystemMode = ThemeKeys.isSystemMode.get<bool>(false),
         isOled = ThemeKeys.isOled.get<bool>(false),
         selectedVariantIndex =
-            ThemeKeys.selectedVariantIndex.get<int>(4),
+            ThemeKeys.selectedVariantIndex.get<int>(0),
         currentThemeMode =
             ThemeKeys.themeMode.get<String>("default") {
     _determineSeedColor();
