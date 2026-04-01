@@ -69,6 +69,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
       String? password;
 
       if (isEncrypted) {
+        if (!context.mounted) return;
         password = await _showPasswordDialog(context);
         if (password == null) return;
       }
