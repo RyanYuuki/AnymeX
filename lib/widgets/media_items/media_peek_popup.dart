@@ -48,6 +48,17 @@ class MediaPeekPopup extends StatefulWidget {
     );
   }
 
+  static void showIfUntracked(
+    BuildContext context,
+    Media? media,
+    ItemType type,
+    String tag,
+  ) {
+    if (media == null) return;
+    if ((media.userStatus ?? '').isNotEmpty) return;
+    show(context, media, type, tag);
+  }
+
   @override
   State<MediaPeekPopup> createState() => _MediaPeekPopupState();
 }

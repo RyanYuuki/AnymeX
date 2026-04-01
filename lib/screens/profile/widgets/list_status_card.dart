@@ -80,35 +80,42 @@ class ListStatusCard extends StatelessWidget {
                 : (typeStr == 'COMPLETED' && isAnime)
                     ? 'COMPLETED TV'
                     : typeStr;
+            final canOpen = count > 0;
 
             return InkWell(
-              onTap: () async {
-                showDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  builder: (_) =>
-                      const Center(child: CircularProgressIndicator()),
-                );
+              onTap: canOpen
+                  ? () async {
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (_) =>
+                            const Center(child: CircularProgressIndicator()),
+                      );
 
-                final auth = Get.find<AnilistAuth>();
-                final type = isAnime ? 'ANIME' : 'MANGA';
-                final lists = await auth.fetchUserMediaList(userId, type);
+                      final auth = Get.find<AnilistAuth>();
+                      final type = isAnime ? 'ANIME' : 'MANGA';
+                      final lists = await auth.fetchUserMediaList(userId, type);
 
-                if (context.mounted) Navigator.pop(context);
+                      if (context.mounted) Navigator.pop(context);
 
-                final data = lists['All'] ?? [];
-                if (isAnime) {
-                  Get.to(() => AnimeList(
-                        data: data,
-                        title: "Anime",
-                        initialTab: mappedTabForNav,
-                      ));
-                } else {
-                  Get.to(() => AnilistMangaList(
-                        initialTab: mappedTabForNav,
-                      ));
-                }
-              },
+                      final data = lists['All'] ?? [];
+                      if (isAnime) {
+                        Get.to(() => AnimeList(
+                              data: data,
+                              title: "Anime",
+                              initialTab: mappedTabForNav,
+                              userName: userName,
+                            ));
+                      } else {
+                        Get.to(() => AnilistMangaList(
+                              data: data,
+                              title: "Manga",
+                              initialTab: mappedTabForNav,
+                              userName: userName,
+                            ));
+                      }
+                    }
+                  : null,
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: isDesktop ? 4.0 : 1.5),
                 child: Column(
