@@ -1,24 +1,28 @@
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/controllers/source/source_mapper.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
-import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
 
 class WrongTitleModal extends StatefulWidget {
-  const WrongTitleModal(
-      {super.key,
-      required this.initialText,
-      required this.onTap,
-      required this.isManga});
+  const WrongTitleModal({
+    super.key,
+    required this.initialText,
+    required this.onTap,
+    required this.isManga,
+    this.mediaId,
+  });
   final String initialText;
   final Function(DMedia) onTap;
   final bool isManga;
+  final String? mediaId;
 
   @override
   State<WrongTitleModal> createState() => _WrongTitleModalState();
@@ -26,21 +30,45 @@ class WrongTitleModal extends StatefulWidget {
 
 class _WrongTitleModalState extends State<WrongTitleModal> {
   late Future<List<DMedia?>?> searchFuture;
-  final sourceController = Get.find<SourceController>();
   late TextEditingController controller;
+  final sourceController = Get.find<SourceController>();
+  final RxString searchStatus = "".obs;
+  Worker? _sourceWorker;
 
   @override
   void initState() {
     super.initState();
     controller = TextEditingController(text: widget.initialText);
+    searchStatus.value = "Searching: ${controller.text}";
     searchFuture = performSearch();
+
+    _sourceWorker = ever<Source?>(
+        widget.isManga
+            ? sourceController.activeMangaSource
+            : sourceController.activeSource, (_) {
+      if (mounted) {
+        setState(() {
+          searchFuture = performSearch();
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _sourceWorker?.dispose();
+    controller.dispose();
+    super.dispose();
   }
 
   Future<List<DMedia?>?> performSearch() async {
+    searchStatus.value = "Searching: ${controller.text}";
     final source = widget.isManga
         ? sourceController.activeMangaSource.value
         : sourceController.activeSource.value;
-    return (await source!.methods.search(controller.text, 1, [])).list;
+    final results = (await source!.methods.search(controller.text, 1, [])).list;
+    searchStatus.value = "";
+    return results;
   }
 
   @override
@@ -67,6 +95,16 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                 },
               ),
             ),
+            Obx(() => searchStatus.value.isNotEmpty
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: AnymexText(
+                      text: searchStatus.value,
+                      variant: TextVariant.semiBold,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  )
+                : const SizedBox.shrink()),
             const SizedBox(height: 16),
             Expanded(
               child: FutureBuilder<List<DMedia?>?>(
@@ -100,6 +138,14 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                         final item = results[index];
                         return AnymexOnTap(
                           onTap: () {
+                            SourceMapper.interruptMapping();
+                            final source = widget.isManga
+                                ? sourceController.activeMangaSource.value
+                                : sourceController.activeSource.value;
+                            if (source != null && widget.mediaId != null) {
+                              sourceController.setActiveSource(source,
+                                  mediaId: widget.mediaId);
+                            }
                             widget.onTap(item);
                             Get.back();
                           },
@@ -146,7 +192,7 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
 
 Future<void> showWrongTitleModal(
     BuildContext context, String initialText, Function(DMedia) onTap,
-    {bool isManga = false}) {
+    {bool isManga = false, String? mediaId}) {
   return showModalBottomSheet(
     context: context,
     backgroundColor: context.colors.surfaceContainer,
@@ -165,7 +211,10 @@ Future<void> showWrongTitleModal(
             bottom: MediaQuery.of(context).viewInsets.bottom,
           ),
           child: WrongTitleModal(
-              initialText: initialText, onTap: onTap, isManga: isManga),
+              initialText: initialText,
+              onTap: onTap,
+              isManga: isManga,
+              mediaId: mediaId),
         ),
       );
     },

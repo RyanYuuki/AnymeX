@@ -54,13 +54,18 @@ class _ExtensionScreenState extends State<ExtensionScreen>
 
   void _showPluginLoader() async {
     final status = await AnymeXRuntimeBridge.isLoaded();
-    if (Platform.isAndroid && !status) {
-      _pluginManager.ensurePluginLoaded(context);
-    } else if (Platform.isAndroid && status) {
-      _pluginManager.checkForUpdates(
-        context,
-        showIfUpToDate: true,
-      );
+
+    if (kDebugMode) {
+      _pluginManager.forceSyncLocalApk();
+    } else {
+      if (AnymeXRuntimeBridge.isSupportedPlatform && !status) {
+        _pluginManager.ensurePluginLoaded(context);
+      } else if (AnymeXRuntimeBridge.isSupportedPlatform && status) {
+        _pluginManager.checkForUpdates(
+          context,
+          showIfUpToDate: true,
+        );
+      }
     }
   }
 

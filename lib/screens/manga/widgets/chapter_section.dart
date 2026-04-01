@@ -1,5 +1,3 @@
-// ignore_for_file: invalid_use_of_protected_member
-
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
@@ -34,6 +32,7 @@ class ChapterSection extends StatelessWidget {
     String title,
     Function(dynamic manga) onMangaSelected, {
     required bool isManga,
+    String? mediaId,
   }) showWrongTitleModal;
 
   const ChapterSection({
@@ -113,6 +112,7 @@ class ChapterSection extends StatelessWidget {
                             DynamicKeys.mappedMediaTitle.set(key, manga.title);
                           },
                           isManga: true,
+                          mediaId: anilistData.id.toString(),
                         );
                       },
                       child: Container(
@@ -259,7 +259,8 @@ class ChapterSection extends StatelessWidget {
       onChanged: (DropdownItem item) async {
         chapterList.value = [];
         try {
-          sourceController.getMangaExtensionByName(item.value);
+          sourceController.getMangaExtensionByName(item.value,
+              mediaId: anilistData.id.toString());
           await mapToAnilist();
         } catch (e) {
           Logger.i(e.toString());

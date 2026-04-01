@@ -1,5 +1,8 @@
 # Project-level configuration.
 cmake_minimum_required(VERSION 3.14)
+# Allow older third-party CMake projects (for example the Firebase C++ SDK
+# bundled by FlutterFire on Windows) to configure under newer CMake releases.
+set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 project(anymex LANGUAGES CXX)
 
 # The name of the executable created for the application. Change this to change

@@ -153,7 +153,8 @@ class _EpisodeSectionState extends State<EpisodeSection> {
 
     try {
       final sourceController = Get.find<ServiceHandler>().extensionService;
-      sourceController.getExtensionByValue(value);
+      sourceController.getExtensionByValue(value,
+          mediaId: widget.anilistData?.id?.toString());
 
       _requestCounter.value++;
       int currentRequestId = _requestCounter.value;
@@ -378,7 +379,7 @@ class _EpisodeSectionState extends State<EpisodeSection> {
               child: Row(
                 children: [
                   Expanded(
-                    child: AnymexTextSpans(
+                    child: Obx(() => AnymexTextSpans(
                       spans: [
                         AnymexTextSpan(
                           text: widget.searchedTitle.value,
@@ -390,7 +391,7 @@ class _EpisodeSectionState extends State<EpisodeSection> {
                               : context.colors.primary,
                         )
                       ],
-                    ),
+                    )),
                   ),
                   const SizedBox(width: 12),
                   AnymexOnTap(
@@ -414,6 +415,7 @@ class _EpisodeSectionState extends State<EpisodeSection> {
                               '${sourceController.activeSource.value?.id}-${widget.anilistData.id}-${widget.anilistData.serviceType.index}';
                           DynamicKeys.mappedMediaTitle.set(key, manga.title);
                         },
+                        mediaId: widget.anilistData.id.toString(),
                       );
                     },
                     child: Container(

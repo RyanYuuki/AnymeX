@@ -456,7 +456,11 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
       readChapter: chapterState.readChapter,
       continueChapter: chapterState.continueChapter,
       onTap: () => _chapterService.navigateToReading(widget.anilistData,
-          filteredFullChapters, chapter, context, () => setState(() {})),
+          filteredFullChapters, chapter, context, () {
+            if(mounted) {
+              setState(() {});
+            }
+          }),
     );
   }
 }
