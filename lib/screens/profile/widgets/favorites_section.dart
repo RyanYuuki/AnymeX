@@ -7,6 +7,7 @@ import 'package:anymex/screens/anime/widgets/character_staff_sheet.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/profile/widgets/stats_overview_cards.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/widgets/common/marquee_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -230,14 +231,14 @@ class FavoritesSection extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 5),
-            Text(
+            MarqueeText(
               item.title ?? '',
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w500,
                 color: context.theme.colorScheme.onSurface,
               ),
-              maxLines: 2,
+              maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
           ],
@@ -326,14 +327,14 @@ class FavoritesSection extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 6),
-            Text(
+            MarqueeText(
               name ?? '',
               style: TextStyle(
                 fontSize: 10.5,
                 fontWeight: FontWeight.w500,
                 color: context.theme.colorScheme.onSurface,
               ),
-              maxLines: 2,
+              maxLines: 1,
               textAlign: TextAlign.center,
               overflow: TextOverflow.ellipsis,
             ),
