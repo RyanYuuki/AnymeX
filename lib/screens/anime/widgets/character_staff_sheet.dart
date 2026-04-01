@@ -10,6 +10,7 @@ import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/fullscreen_image_viewer.dart';
 
 import 'package:anymex/screens/anime/details_page.dart';
+import 'package:anymex/widgets/media_items/media_peek_popup.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -22,6 +23,7 @@ import 'package:anymex/models/Media/voice_actor.dart';
 
 import 'package:anymex/utils/logger.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
@@ -1107,6 +1109,24 @@ class _CharacterStaffSheetContentState
           return SizedBox(
             width: 120,
             child: GestureDetector(
+              onSecondaryTap: () {
+                final isManga = item.type.toUpperCase() == 'MANGA';
+                MediaPeekPopup.showIfUntracked(
+                  context,
+                  item,
+                  isManga ? ItemType.manga : ItemType.anime,
+                  tag,
+                );
+              },
+              onLongPress: () {
+                final isManga = item.type.toUpperCase() == 'MANGA';
+                MediaPeekPopup.showIfUntracked(
+                  context,
+                  item,
+                  isManga ? ItemType.manga : ItemType.anime,
+                  tag,
+                );
+              },
               onTap: () {
                 Navigator.of(context, rootNavigator: true).push(
                   MaterialPageRoute(

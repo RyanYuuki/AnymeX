@@ -157,6 +157,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     Future.delayed(const Duration(milliseconds: 500), () {
       _checkAnimePresence();
     });
+    
     _fetchAnilistData();
   }
 
@@ -324,9 +325,12 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     final key =
         '${sourceController.activeSource.value?.id}-${anilistData?.id}-${anilistData?.serviceType.index}';
     final savedTitle = DynamicKeys.mappedMediaTitle.get<String?>(key, null);
-    final mappedData = await mapMedia(
+    final mappedData = await SourceMapper.mapMedia(
         formatTitles(anilistData ?? widget.media) ?? [], searchedTitle,
-        savedTitle: savedTitle);
+        mediaId: widget.media.id.toString(),
+        type: ItemType.anime,
+        savedTitle: savedTitle,
+        synonyms: anilistData?.synonyms ?? []);
     if (_isStaleSourceRequest(activeRequestId) || !mounted) {
       return;
     }

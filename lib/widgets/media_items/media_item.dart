@@ -105,10 +105,21 @@ class GridAnimeCard extends StatelessWidget {
     final itemType = isManga ? ItemType.manga : ItemType.anime;
 
     return GestureDetector(
+      onSecondaryTap: () {
+        MediaPeekPopup.showIfUntracked(
+          context,
+          media.data,
+          itemType,
+          media.title,
+        );
+      },
       onLongPress: () {
-        if (media.data.userStatus == null || media.data.userStatus!.isEmpty) {
-          MediaPeekPopup.show(context, media.data, itemType, media.title);
-        }
+        MediaPeekPopup.showIfUntracked(
+          context,
+          media.data,
+          itemType,
+          media.title,
+        );
       },
       child: SizedBox(
         width: cardWidth,

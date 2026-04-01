@@ -145,6 +145,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
     Future.delayed(const Duration(milliseconds: 300), () {
       _checkMangaPresence();
     });
+
     _fetchAnilistData();
   }
 
@@ -235,8 +236,12 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
         '${sourceController.activeMangaSource.value?.id}-${anilistData?.id}-${mediaService.index}';
     final savedTitle = DynamicKeys.mappedMediaTitle.get<String?>(key, null);
     final baseMedia = anilistData ?? widget.media;
-    final mappedData = await mapMedia(formatTitles(baseMedia), searchedTitle,
-        savedTitle: savedTitle);
+    final mappedData = await SourceMapper.mapMedia(
+        formatTitles(baseMedia), searchedTitle,
+        mediaId: widget.media.id.toString(),
+        type: ItemType.manga,
+        savedTitle: savedTitle,
+        synonyms: anilistData?.synonyms ?? []);
     if (_isStaleChapterRequest(activeRequestId) || !mounted) {
       return;
     }

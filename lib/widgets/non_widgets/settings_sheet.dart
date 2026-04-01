@@ -8,6 +8,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
@@ -308,13 +309,16 @@ class SettingsSheet extends StatelessWidget {
                   },
                 ),
               ),
-            ListTile(
-              leading: const Icon(Icons.extension),
-              title: const Text('Extensions'),
-              onTap: () {
-                Get.back();
-                navigate(() => const ExtensionScreen());
-              },
+            PlatformBuilder(
+              androidBuilder: ListTile(
+                leading: const Icon(Icons.extension),
+                title: const Text('Extensions'),
+                onTap: () {
+                  Get.back();
+                  navigate(() => const ExtensionScreen());
+                },
+              ),
+              desktopBuilder: const SizedBox.shrink(),
             ),
             AnymexOnTap(
               child: ListTile(

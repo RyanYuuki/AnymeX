@@ -29,9 +29,13 @@ class Video {
   });
 
   factory Video.fromVideo(d.Video episode) {
+    print('episode: ${episode.quality}');
     final video = Video(
       url: episode.url,
-      quality: episode.title ?? episode.quality,
+      quality: (episode.title?.isEmpty ?? true) ||
+              episode.title?.toLowerCase() == 'null'
+          ? episode.quality
+          : episode.title,
       originalUrl: episode.url,
       subtitles: episode.subtitles?.map((d.Track e) {
         return Track(file: e.file, label: e.label);

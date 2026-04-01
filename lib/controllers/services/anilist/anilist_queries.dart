@@ -9,6 +9,7 @@ const detailsPrimaryQuery = '''
           english
           native
         }
+        synonyms
         description
         coverImage {
           color

@@ -36,6 +36,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colors;
+    final bottomSpace = MediaQuery.of(context).size.width > 900 ? 32.0 : 120.0;
     final anime = widget.user.stats?.animeStats;
     final manga = widget.user.stats?.mangaStats;
 
@@ -145,7 +146,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
                 ),
               ),
             ),
-          const SizedBox(height: 32),
+          SizedBox(height: bottomSpace),
         ],
       ),
     );
@@ -886,7 +887,8 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
       final userId = int.tryParse(widget.user.id ?? '0') ?? 0;
       final lists = await auth.fetchUserMediaList(userId, type);
 
-      if (context.mounted) Navigator.pop(context);
+      if (!mounted) return;
+      Navigator.pop(context);
 
       final data = lists['All'] ?? [];
 
