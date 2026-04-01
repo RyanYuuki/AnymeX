@@ -722,7 +722,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
       backgroundColor: context.colors.surfaceContainer,
       context: context,
       isScrollControlled: true,
-      showDragHandle: true,
+      showDragHandle: false,
       builder: (BuildContext context) {
         return ListEditorModal(
           animeStatus: mangaStatus,

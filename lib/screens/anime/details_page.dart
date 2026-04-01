@@ -1013,7 +1013,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       backgroundColor: context.colors.surfaceContainer,
       context: context,
       isScrollControlled: true,
-      showDragHandle: true,
+      showDragHandle: false,
       builder: (BuildContext context) {
         return ListEditorModal(
           animeStatus: animeStatus,

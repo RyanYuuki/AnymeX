@@ -166,6 +166,12 @@ class Settings extends GetxController {
     UISettingsKeys.carouselStyle.set(value);
   }
 
+  String get listEditorTheme => _getUISetting((s) => s.listEditorTheme);
+  set listEditorTheme(String value) {
+    uiSettings.update((s) => s?.listEditorTheme = value);
+    UISettingsKeys.listEditorTheme.set(value);
+  }
+
   double get glowDensity => _getUISetting((s) => s.glowDensity);
   set glowDensity(double value) {
     uiSettings.update((s) => s?.glowDensity = value);

@@ -2,6 +2,7 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/settings/widgets/carousel_style_selector.dart';
 import 'package:anymex/screens/settings/widgets/card_selector.dart';
 import 'package:anymex/screens/settings/widgets/history_card_selector.dart';
+import 'package:anymex/screens/settings/widgets/list_editor_style_selector.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
@@ -92,6 +93,13 @@ class _SettingsUiState extends State<SettingsUi> {
                                     onChanged: (val) {
                                       settings.transculentBar = val;
                                     }),
+                                10.height(),
+                              ],
+                            )),
+                        AnymexExpansionTile(
+                            title: 'Styles',
+                            content: Column(
+                              children: [
                                 CustomTile(
                                   onTap: () => showCardStyleSwitcher(context),
                                   icon: Iconsax.card5,
@@ -111,6 +119,13 @@ class _SettingsUiState extends State<SettingsUi> {
                                   icon: Icons.view_carousel_rounded,
                                   title: "Carousel Style",
                                   description: "Change big carousel style",
+                                ),
+                                CustomTile(
+                                  onTap: () =>
+                                      showListEditorStyleSelector(context),
+                                  icon: Icons.tune_rounded,
+                                  title: "List Editor Style",
+                                  description: "Change list editor layout",
                                 ),
                                 10.height(),
                               ],

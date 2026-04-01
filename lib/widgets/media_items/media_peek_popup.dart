@@ -172,7 +172,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
       backgroundColor: context.colors.surfaceContainer,
       context: context,
       isScrollControlled: true,
-      showDragHandle: true,
+      showDragHandle: false,
       builder: (ctx) => ListEditorModal(
         animeStatus: _animeStatus,
         isManga: isManga,
