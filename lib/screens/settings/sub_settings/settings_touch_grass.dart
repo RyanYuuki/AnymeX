@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 
 enum _ChartPeriod { weekly, monthly }
 
@@ -38,17 +39,23 @@ class _SettingsTouchGrassState extends State<SettingsTouchGrass> {
           children: [
             const NestedHeader(title: 'Touch Grass'),
             Expanded(
-              child: Padding(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
                 padding: getResponsiveValue(context,
-                    mobileValue: const EdgeInsets.fromLTRB(10, 16, 10, 0),
-                    desktopValue: const EdgeInsets.fromLTRB(20, 16, 25, 0)),
+                    mobileValue: const EdgeInsets.fromLTRB(16, 16, 16, 20),
+                    desktopValue: const EdgeInsets.fromLTRB(20, 16, 25, 20)),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Settings toggles
+                    _buildSectionHeader(context, 'Configuration'),
+                    const SizedBox(height: 12),
                     Container(
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(16),
                         color: colorScheme.surfaceContainer.opaque(0.3),
+                        border: Border.all(
+                          color: colorScheme.outline.opaque(0.1),
+                        ),
                       ),
                       child: Obx(() => Column(
                             children: [
@@ -64,7 +71,9 @@ class _SettingsTouchGrassState extends State<SettingsTouchGrass> {
                                 },
                               ),
                               if (service.enabled.value) ...[
-                                const Divider(height: 1),
+                                Divider(
+                                    height: 1,
+                                    color: colorScheme.outline.opaque(0.1)),
                                 CustomTile(
                                   icon: Icons.timer_outlined,
                                   title: 'Reminder Interval',
@@ -76,7 +85,6 @@ class _SettingsTouchGrassState extends State<SettingsTouchGrass> {
                             ],
                           )),
                     ),
-                    // Test button
                     Obx(() {
                       if (!service.enabled.value) {
                         return const SizedBox.shrink();
@@ -85,8 +93,11 @@ class _SettingsTouchGrassState extends State<SettingsTouchGrass> {
                         padding: const EdgeInsets.only(top: 12),
                         child: Container(
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(16),
                             color: colorScheme.surfaceContainer.opaque(0.3),
+                            border: Border.all(
+                              color: colorScheme.outline.opaque(0.1),
+                            ),
                           ),
                           child: CustomTile(
                             icon: Icons.play_arrow_rounded,
@@ -97,8 +108,7 @@ class _SettingsTouchGrassState extends State<SettingsTouchGrass> {
                         ),
                       );
                     }),
-                    const SizedBox(height: 16),
-                    // Stats bubble
+                    const SizedBox(height: 24),
                     Obx(() {
                       if (!service.enabled.value) {
                         return const SizedBox.shrink();
@@ -106,95 +116,118 @@ class _SettingsTouchGrassState extends State<SettingsTouchGrass> {
                       final session = service.currentSessionMinutes;
                       final todaySaved = service.todaySavedMinutes;
                       final total = todaySaved + session;
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 14, vertical: 12),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  color:
-                                      colorScheme.surfaceContainer.opaque(0.3),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Total Today',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color:
-                                            colorScheme.onSurface.opaque(0.5),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      _formatMinutes(total),
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w700,
-                                        color: colorScheme.onSurface,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            if (session > 0) ...[
-                              const SizedBox(width: 10),
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildSectionHeader(context, 'Current Stats'),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
                               Expanded(
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 14, vertical: 12),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12),
-                                    color: colorScheme.primaryContainer
-                                        .opaque(0.4),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Current Session',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color:
-                                              colorScheme.onSurface.opaque(0.5),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        _formatMinutes(session),
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w700,
-                                          color: colorScheme.primary,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                child: _buildStatCard(
+                                  context: context,
+                                  title: 'Total Today',
+                                  value: _formatMinutes(total),
+                                  icon: Icons.today_rounded,
+                                  color: colorScheme.primary,
                                 ),
                               ),
+                              if (session > 0) ...[
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: _buildStatCard(
+                                    context: context,
+                                    title: 'Current Session',
+                                    value: _formatMinutes(session),
+                                    icon: Icons.timer_rounded,
+                                    color: colorScheme.secondary,
+                                  ),
+                                ),
+                              ],
                             ],
-                          ],
-                        ),
+                          ),
+                        ],
                       );
                     }),
-                    // Chart section
-                    Expanded(
-                      child: Obx(() => _buildChartSection(colorScheme)),
-                    ),
+                    const SizedBox(height: 24),
+                    _buildSectionHeader(context, 'Activity History'),
                     const SizedBox(height: 12),
+                    Obx(() => _buildChartSection(colorScheme)),
                   ],
                 ),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(BuildContext context, String title) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 4),
+      child: AnymexText(
+        text: title.toUpperCase(),
+        variant: TextVariant.bold,
+        size: 13,
+        color: Theme.of(context).colorScheme.onSurface.opaque(0.5),
+      ),
+    );
+  }
+
+  Widget _buildStatCard({
+    required BuildContext context,
+    required String title,
+    required String value,
+    required IconData icon,
+    required Color color,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            color.withValues(alpha: 0.15),
+            color.withValues(alpha: 0.05),
+          ],
+        ),
+        border: Border.all(
+          color: color.withValues(alpha: 0.2),
+          width: 1.5,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: colorScheme.onSurface.opaque(0.7),
+                ),
+              ),
+              Icon(icon, size: 16, color: color),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w800,
+              color: colorScheme.onSurface,
+              letterSpacing: -0.5,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -217,118 +250,147 @@ class _SettingsTouchGrassState extends State<SettingsTouchGrass> {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: colorScheme.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
       builder: (ctx) {
         return StatefulBuilder(builder: (ctx, setSheetState) {
-          return SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 36,
-                      height: 4,
+          return Container(
+            decoration: BoxDecoration(
+              color: colorScheme.surface,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.2),
+                  blurRadius: 20,
+                  offset: const Offset(0, -5),
+                ),
+              ],
+            ),
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 5,
                       decoration: BoxDecoration(
-                        color: colorScheme.onSurfaceVariant.opaque(0.3),
-                        borderRadius: BorderRadius.circular(2),
+                        color: colorScheme.onSurfaceVariant.opaque(0.2),
+                        borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    'Reminder Interval',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: colorScheme.onSurface,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _PickerColumn(
-                        label: 'HOURS',
-                        controller: hoursController,
-                        itemCount: 25,
-                        itemBuilder: (index) => '$index',
-                        onSelected: (val) {
-                          setSheetState(() => selectedHours = val);
-                        },
-                        colorScheme: colorScheme,
+                    const SizedBox(height: 24),
+                    Text(
+                      'Reminder Interval',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        color: colorScheme.onSurface,
                       ),
-                      const SizedBox(width: 8),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 28),
-                        child: Text(
-                          'h',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: colorScheme.onSurface.opaque(0.3),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Choose how often to be reminded',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: colorScheme.onSurface.opaque(0.6),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Container(
+                          height: 50,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: colorScheme.primary.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 32),
-                      _PickerColumn(
-                        label: 'MINUTES',
-                        controller: minutesController,
-                        itemCount: 12,
-                        itemBuilder: (index) =>
-                            (index * 5).toString().padLeft(2, '0'),
-                        onSelected: (val) {
-                          setSheetState(() => selectedMinutes = val * 5);
-                        },
-                        colorScheme: colorScheme,
-                      ),
-                      const SizedBox(width: 8),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 28),
-                        child: Text(
-                          'm',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: colorScheme.onSurface.opaque(0.3),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            _PickerColumn(
+                              label: 'HOURS',
+                              controller: hoursController,
+                              itemCount: 25,
+                              itemBuilder: (index) => '$index',
+                              onSelected: (val) {
+                                setSheetState(() => selectedHours = val);
+                              },
+                              colorScheme: colorScheme,
+                            ),
+                            const SizedBox(width: 40),
+                            _PickerColumn(
+                              label: 'MINUTES',
+                              controller: minutesController,
+                              itemCount: 12,
+                              itemBuilder: (index) =>
+                                  (index * 5).toString().padLeft(2, '0'),
+                              onSelected: (val) {
+                                setSheetState(() => selectedMinutes = val * 5);
+                              },
+                              colorScheme: colorScheme,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 40),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              side: BorderSide(color: colorScheme.outline.opaque(0.2)),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
+                            child: Text(
+                              'Cancel',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: colorScheme.onSurface,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 46,
-                    child: FilledButton(
-                      onPressed: () {
-                        final total = selectedHours * 60 + selectedMinutes;
-                        if (total >= 1) {
-                          service.setReminderMinutes(total);
-                          setState(() {});
-                        }
-                        Navigator.pop(ctx);
-                      },
-                      style: FilledButton.styleFrom(
-                        backgroundColor: colorScheme.primary,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: FilledButton(
+                            onPressed: () {
+                              final total = selectedHours * 60 + selectedMinutes;
+                              if (total >= 1) {
+                                service.setReminderMinutes(total);
+                                setState(() {});
+                              }
+                              Navigator.pop(ctx);
+                            },
+                            style: FilledButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              backgroundColor: colorScheme.primary,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
+                            child: const Text(
+                              'Confirm',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                      child: const Text(
-                        'Set',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 15,
-                        ),
-                      ),
+                      ],
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           );
@@ -342,20 +404,21 @@ class _SettingsTouchGrassState extends State<SettingsTouchGrass> {
   Widget _buildChartSection(ColorScheme colorScheme) {
     return Container(
       width: double.infinity,
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(24),
         color: colorScheme.surfaceContainer.opaque(0.3),
+        border: Border.all(
+          color: colorScheme.outline.opaque(0.1),
+        ),
       ),
       child: Column(
         children: [
-          const SizedBox(height: 16),
           _buildSegmentedTabs(colorScheme),
-          const SizedBox(height: 12),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-              child: _buildChart(colorScheme),
-            ),
+          const SizedBox(height: 24),
+          SizedBox(
+            height: 220,
+            child: _buildChart(colorScheme),
           ),
         ],
       ),
@@ -369,11 +432,10 @@ class _SettingsTouchGrassState extends State<SettingsTouchGrass> {
     ];
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.all(3),
+      padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.opaque(0.4),
-        borderRadius: BorderRadius.circular(10),
+        color: colorScheme.surfaceContainerHighest.opaque(0.3),
+        borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
         children: periods.map((p) {
@@ -381,18 +443,28 @@ class _SettingsTouchGrassState extends State<SettingsTouchGrass> {
           return Expanded(
             child: GestureDetector(
               onTap: () => setState(() => _selectedPeriod = p.$2),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 8),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
                   color: selected ? colorScheme.primary : Colors.transparent,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: selected
+                      ? [
+                          BoxShadow(
+                            color: colorScheme.primary.withValues(alpha: 0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          )
+                        ]
+                      : [],
                 ),
                 child: Center(
                   child: Text(
                     p.$1,
                     style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+                      fontSize: 14,
+                      fontWeight: selected ? FontWeight.bold : FontWeight.w500,
                       color: selected
                           ? colorScheme.onPrimary
                           : colorScheme.onSurface.opaque(0.5),
@@ -426,60 +498,64 @@ class _SettingsTouchGrassState extends State<SettingsTouchGrass> {
     required ColorScheme colorScheme,
   }) {
     return LayoutBuilder(builder: (context, constraints) {
-      final maxBar =
-          (constraints.maxHeight - 42).clamp(10.0, constraints.maxHeight);
+      final maxBarH = constraints.maxHeight - 50;
       final frac = displayMax > 0 ? value / displayMax : 0.0;
-      final barH = (frac * maxBar).clamp(value > 0 ? 4.0 : 0.0, maxBar);
+      final barH = (frac * maxBarH).clamp(value > 0 ? 8.0 : 0.0, maxBarH);
 
-      return ClipRect(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            if (value > 0)
-              Text(
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          if (value > 0)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Text(
                 value >= 60
                     ? '${(value / 60).toStringAsFixed(1)}h'
                     : '${value.toInt()}m',
                 style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  color: colorScheme.onSurface.opaque(0.7),
-                ),
-              ),
-            const SizedBox(height: 3),
-            Container(
-              height: barH,
-              width: constraints.maxWidth - 4,
-              decoration: BoxDecoration(
-                color: isHighlighted
-                    ? colorScheme.primary
-                    : colorScheme.primary.opaque(0.22),
-                borderRadius: BorderRadius.circular(4),
-              ),
-            ),
-            const SizedBox(height: 5),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: isHighlighted
-                    ? colorScheme.primary
-                    : colorScheme.primary.opaque(0.15),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
-                label,
-                maxLines: 1,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w800,
                   color: isHighlighted
-                      ? colorScheme.onPrimary
-                      : colorScheme.primary,
+                      ? colorScheme.primary
+                      : colorScheme.onSurface.opaque(0.5),
                 ),
               ),
             ),
-          ],
-        ),
+          Container(
+            height: barH,
+            width: 14,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: isHighlighted
+                    ? [colorScheme.primary, colorScheme.primary.withValues(alpha: 0.6)]
+                    : [colorScheme.primary.withValues(alpha: 0.3), colorScheme.primary.withValues(alpha: 0.1)],
+              ),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: isHighlighted
+                  ? [
+                      BoxShadow(
+                        color: colorScheme.primary.withValues(alpha: 0.3),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      )
+                    ]
+                  : [],
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: isHighlighted ? FontWeight.bold : FontWeight.w500,
+              color: isHighlighted
+                  ? colorScheme.onSurface
+                  : colorScheme.onSurface.opaque(0.4),
+            ),
+          ),
+        ],
       );
     });
   }
@@ -490,14 +566,13 @@ class _SettingsTouchGrassState extends State<SettingsTouchGrass> {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final days = List.generate(7, (i) => today.subtract(Duration(days: 6 - i)));
-    final labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    final labels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
     final values = days.map((d) {
       final key = DateTime(d.year, d.month, d.day).toIso8601String();
       return (service.dailyUsage[key] ?? 0).toDouble();
     }).toList();
 
-    // Include current session in today's bar
     final todayIdx = days.indexWhere((d) => d == today);
     if (todayIdx >= 0) {
       values[todayIdx] += service.currentSessionMinutes.toDouble();
@@ -507,26 +582,24 @@ class _SettingsTouchGrassState extends State<SettingsTouchGrass> {
     final displayMax = maxVal < 5 ? 5.0 : maxVal;
 
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: List.generate(7, (i) {
-        return Expanded(
-          child: _buildBar(
-            value: values[i],
-            displayMax: displayMax,
-            label: labels[days[i].weekday - 1],
-            isHighlighted: days[i] == today,
-            colorScheme: colorScheme,
-          ),
+        return _buildBar(
+          value: values[i],
+          displayMax: displayMax,
+          label: labels[days[i].weekday - 1],
+          isHighlighted: days[i] == today,
+          colorScheme: colorScheme,
         );
       }),
     );
   }
 
-  // ---- MONTHLY (12 bars for months of current year) ----
+  // ---- MONTHLY ----
 
   Widget _buildMonthlyChart(ColorScheme colorScheme) {
     final now = DateTime.now();
-
     final values = List<double>.generate(12, (m) {
       final month = m + 1;
       final daysInMonth = DateTime(now.year, month + 1, 0).day;
@@ -538,23 +611,22 @@ class _SettingsTouchGrassState extends State<SettingsTouchGrass> {
       return sum;
     });
 
-    // Include current session in current month
     values[now.month - 1] += service.currentSessionMinutes.toDouble();
 
     final maxVal = values.fold<double>(0, (m, v) => v > m ? v : m);
     final displayMax = maxVal < 5 ? 5.0 : maxVal;
+    final months = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
 
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: List.generate(12, (i) {
-        return Expanded(
-          child: _buildBar(
-            value: values[i],
-            displayMax: displayMax,
-            label: '${i + 1}',
-            isHighlighted: i + 1 == now.month,
-            colorScheme: colorScheme,
-          ),
+        return _buildBar(
+          value: values[i],
+          displayMax: displayMax,
+          label: months[i],
+          isHighlighted: i + 1 == now.month,
+          colorScheme: colorScheme,
         );
       }),
     );
@@ -588,39 +660,34 @@ class _PickerColumn extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 1,
+            fontSize: 10,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1.5,
             color: colorScheme.onSurface.opaque(0.4),
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         SizedBox(
-          width: 72,
-          height: 160,
+          width: 70,
+          height: 180,
           child: ListWheelScrollView.useDelegate(
             controller: controller,
-            itemExtent: 44,
-            perspective: 0.003,
-            diameterRatio: 1.4,
+            itemExtent: 50,
+            perspective: 0.006,
+            diameterRatio: 1.2,
             physics: const FixedExtentScrollPhysics(),
             onSelectedItemChanged: onSelected,
             childDelegate: ListWheelChildBuilderDelegate(
               builder: (context, index) {
                 if (index < 0 || index >= itemCount) return null;
-                final isSelected = index == controller.selectedItem;
                 return Center(
-                  child: AnimatedDefaultTextStyle(
-                    duration: const Duration(milliseconds: 150),
+                  child: Text(
+                    itemBuilder(index),
                     style: TextStyle(
-                      fontSize: isSelected ? 22 : 16,
-                      fontWeight:
-                          isSelected ? FontWeight.w700 : FontWeight.w400,
-                      color: isSelected
-                          ? colorScheme.primary
-                          : colorScheme.onSurface.opaque(0.35),
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.onSurface,
                     ),
-                    child: Text(itemBuilder(index)),
                   ),
                 );
               },
@@ -632,3 +699,4 @@ class _PickerColumn extends StatelessWidget {
     );
   }
 }
+

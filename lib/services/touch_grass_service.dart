@@ -183,45 +183,65 @@ class TouchGrassService extends GetxService with WidgetsBindingObserver {
 
     return Dialog(
       backgroundColor: colors.surface,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(32),
+          border: Border.all(color: colors.outline.opaque(0.1)),
+        ),
+        padding: const EdgeInsets.fromLTRB(24, 32, 24, 28),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 64,
-              height: 64,
+              width: 80,
+              height: 80,
               decoration: BoxDecoration(
-                color: colors.primaryContainer,
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    colors.primary,
+                    colors.primary.withValues(alpha: 0.7),
+                  ],
+                ),
                 shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: colors.primary.withValues(alpha: 0.3),
+                    blurRadius: 15,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
               ),
               child: Icon(
                 Icons.grass_rounded,
-                size: 32,
-                color: colors.onPrimaryContainer,
+                size: 40,
+                color: colors.onPrimary,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 28),
             Text(
               'Time to Touch Grass!',
               style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+                fontSize: 22,
+                fontWeight: FontWeight.w900,
                 color: colors.onSurface,
+                letterSpacing: -0.5,
               ),
             ),
             const SizedBox(height: 12),
             Text(
-              'You\'ve been binging for $duration.\nTake a break, stretch, drink some water!',
+              'You\'ve been binging for $duration.\nTake a break, stretch, and drink some water!',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 14,
-                color: colors.onSurfaceVariant,
+                fontSize: 15,
+                color: colors.onSurfaceVariant.withValues(alpha: 0.8),
                 height: 1.5,
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
             Row(
               children: [
                 Expanded(
@@ -231,12 +251,19 @@ class TouchGrassService extends GetxService with WidgetsBindingObserver {
                       _restart();
                     },
                     style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      side: BorderSide(color: colors.outline.opaque(0.2)),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(16),
                       ),
                     ),
-                    child: const Text('Remind Later'),
+                    child: Text(
+                      'Later',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: colors.onSurface,
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -247,12 +274,19 @@ class TouchGrassService extends GetxService with WidgetsBindingObserver {
                       _restart();
                     },
                     style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      backgroundColor: colors.primary,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(16),
                       ),
                     ),
-                    child: const Text('I\'m Good!'),
+                    child: const Text(
+                      'I\'m Good!',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                    ),
                   ),
                 ),
               ],
