@@ -60,11 +60,12 @@ class PluginManager {
         release: release,
         installedVersion: currentVersion,
       );
+      successSnackBar("Restart the App to apply the update.");
       return;
     }
 
     if (showIfUpToDate) {
-      successSnackBar('Plugin is already up to date.');
+      print('Plugin is already up to date.');
     }
   }
 
@@ -212,10 +213,11 @@ class PluginManager {
     }
 
     try {
-      await AnymeXRuntimeBridge.setupRuntime(localApkPath: localPath);
+      await AnymeXRuntimeBridge.useLocalApk(localPath);
       final bridge = AnymeXRuntimeBridge.controller;
       if (bridge.isReady.value) {
-        await Get.find<ExtensionManager>().onRuntimeBridgeInitialization();
+        await Get.find<ExtensionManager>()
+            .onRuntimeBridgeInitialization(force: true);
         successSnackBar('Plugin synced from SD Card.');
       }
     } catch (e) {
@@ -278,7 +280,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
       await AnymeXRuntimeBridge.setupRuntime();
 
       if (bridge.isReady.value) {
-        await Get.find<ExtensionManager>().onRuntimeBridgeInitialization();
+        await Get.find<ExtensionManager>().onRuntimeBridgeInitialization(force: true);
 
         widget.manager.persistInstalledRelease(widget.release);
         if (mounted) {

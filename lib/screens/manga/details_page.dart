@@ -345,7 +345,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
           ),
           if (anilistData != null) ...[
             Padding(
-              padding: const EdgeInsets.fromLTRB(20.0, 10, 20, 0),
+              padding: const EdgeInsets.fromLTRB(10.0, 10, 10, 0),
               child: Column(
                 children: [
                   Obx(() {
@@ -581,7 +581,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Column(
             children: [
               const SizedBox(height: 20),

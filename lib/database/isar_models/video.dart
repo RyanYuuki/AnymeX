@@ -29,7 +29,6 @@ class Video {
   });
 
   factory Video.fromVideo(d.Video episode) {
-    print('episode: ${episode.quality}');
     final video = Video(
       url: episode.url,
       quality: (episode.title?.isEmpty ?? true) ||
