@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:anymex/services/touch_grass_service.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
@@ -7,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:intl/intl.dart';
 
 enum _ChartPeriod { weekly, monthly }
 
@@ -60,33 +62,66 @@ class _SettingsTouchGrassState extends State<SettingsTouchGrass> {
                       child: Obx(() => Column(
                             children: [
                               CustomSwitchTile(
-                                icon: Icons.grass_rounded,
-                                title: 'Enable Reminder',
+                                icon: Icons.analytics_outlined,
+                                title: 'Enable Tracking',
                                 description:
-                                    'Get a popup reminder after extended viewing',
-                                switchValue: service.enabled.value,
+                                    'Track your usage time within the app',
+                                switchValue: service.trackingEnabled.value,
                                 onChanged: (val) {
-                                  service.setEnabled(val);
+                                  service.setTrackingEnabled(val);
                                   setState(() {});
                                 },
                               ),
-                              if (service.enabled.value) ...[
+                              if (service.trackingEnabled.value) ...[
+                                Divider(
+                                    height: 1,
+                                    color: colorScheme.outline.opaque(0.1)),
+                                CustomSwitchTile(
+                                  icon: Icons.notifications_active_outlined,
+                                  title: 'Enable Reminders',
+                                  description:
+                                      'Get a popup reminder after extended viewing',
+                                  switchValue: service.remindersEnabled.value,
+                                  onChanged: (val) {
+                                    service.setRemindersEnabled(val);
+                                    setState(() {});
+                                  },
+                                ),
+                                if (service.remindersEnabled.value) ...[
+                                  Divider(
+                                      height: 1,
+                                      color: colorScheme.outline.opaque(0.1)),
+                                  CustomTile(
+                                    icon: Icons.timer_outlined,
+                                    title: 'Reminder Interval',
+                                    description:
+                                        'Remind after ${_formatMinutes(service.reminderMinutes.value)}',
+                                    onTap: () =>
+                                        _showIntervalPicker(colorScheme),
+                                  ),
+                                ],
+                              ],
+                              if (Platform.isAndroid) ...[
                                 Divider(
                                     height: 1,
                                     color: colorScheme.outline.opaque(0.1)),
                                 CustomTile(
-                                  icon: Icons.timer_outlined,
-                                  title: 'Reminder Interval',
+                                  icon: Icons.settings_suggest_rounded,
+                                  title: 'Usage Access',
                                   description:
-                                      'Remind after ${_formatMinutes(service.reminderMinutes.value)}',
-                                  onTap: () => _showIntervalPicker(colorScheme),
+                                      'Grant permission to see device-wide screentime (Optional)',
+                                  onTap: () {
+                                    // Placeholder for Android Usage Stats permission
+                                    Get.snackbar('Coming Soon',
+                                        'Usage stats integration for Android is under development.');
+                                  },
                                 ),
                               ],
                             ],
                           )),
                     ),
                     Obx(() {
-                      if (!service.enabled.value) {
+                      if (!service.trackingEnabled.value) {
                         return const SizedBox.shrink();
                       }
                       return Padding(
@@ -110,12 +145,11 @@ class _SettingsTouchGrassState extends State<SettingsTouchGrass> {
                     }),
                     const SizedBox(height: 24),
                     Obx(() {
-                      if (!service.enabled.value) {
+                      if (!service.trackingEnabled.value) {
                         return const SizedBox.shrink();
                       }
                       final session = service.currentSessionMinutes;
-                      final todaySaved = service.todaySavedMinutes;
-                      final total = todaySaved + session;
+                      final total = service.totalAllTimeMinutes;
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -126,9 +160,9 @@ class _SettingsTouchGrassState extends State<SettingsTouchGrass> {
                               Expanded(
                                 child: _buildStatCard(
                                   context: context,
-                                  title: 'Total Today',
+                                  title: 'Total',
                                   value: _formatMinutes(total),
-                                  icon: Icons.today_rounded,
+                                  icon: Icons.history_rounded,
                                   color: colorScheme.primary,
                                 ),
                               ),
@@ -257,7 +291,8 @@ class _SettingsTouchGrassState extends State<SettingsTouchGrass> {
           return Container(
             decoration: BoxDecoration(
               color: colorScheme.surface,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(32)),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.2),
@@ -298,6 +333,41 @@ class _SettingsTouchGrassState extends State<SettingsTouchGrass> {
                       ),
                     ),
                     const SizedBox(height: 32),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 70,
+                          child: Center(
+                            child: Text(
+                              'HOURS',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 1.5,
+                                color: colorScheme.onSurface.opaque(0.4),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 40),
+                        SizedBox(
+                          width: 70,
+                          child: Center(
+                            child: Text(
+                              'MINUTES',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 1.5,
+                                color: colorScheme.onSurface.opaque(0.4),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
                     Stack(
                       alignment: Alignment.center,
                       children: [
@@ -313,7 +383,6 @@ class _SettingsTouchGrassState extends State<SettingsTouchGrass> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             _PickerColumn(
-                              label: 'HOURS',
                               controller: hoursController,
                               itemCount: 25,
                               itemBuilder: (index) => '$index',
@@ -324,7 +393,6 @@ class _SettingsTouchGrassState extends State<SettingsTouchGrass> {
                             ),
                             const SizedBox(width: 40),
                             _PickerColumn(
-                              label: 'MINUTES',
                               controller: minutesController,
                               itemCount: 12,
                               itemBuilder: (index) =>
@@ -346,7 +414,8 @@ class _SettingsTouchGrassState extends State<SettingsTouchGrass> {
                             onPressed: () => Navigator.pop(ctx),
                             style: OutlinedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 16),
-                              side: BorderSide(color: colorScheme.outline.opaque(0.2)),
+                              side: BorderSide(
+                                  color: colorScheme.outline.opaque(0.2)),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),
@@ -432,10 +501,10 @@ class _SettingsTouchGrassState extends State<SettingsTouchGrass> {
     ];
 
     return Container(
-      padding: const EdgeInsets.all(4),
+      padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerHighest.opaque(0.3),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         children: periods.map((p) {
@@ -445,10 +514,10 @@ class _SettingsTouchGrassState extends State<SettingsTouchGrass> {
               onTap: () => setState(() => _selectedPeriod = p.$2),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.symmetric(vertical: 10),
+                padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
                   color: selected ? colorScheme.primary : Colors.transparent,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(12),
                   boxShadow: selected
                       ? [
                           BoxShadow(
@@ -464,10 +533,10 @@ class _SettingsTouchGrassState extends State<SettingsTouchGrass> {
                     p.$1,
                     style: TextStyle(
                       fontSize: 14,
-                      fontWeight: selected ? FontWeight.bold : FontWeight.w500,
+                      fontWeight: selected ? FontWeight.bold : FontWeight.w600,
                       color: selected
                           ? colorScheme.onPrimary
-                          : colorScheme.onSurface.opaque(0.5),
+                          : colorScheme.onSurface.opaque(0.7),
                     ),
                   ),
                 ),
@@ -517,7 +586,7 @@ class _SettingsTouchGrassState extends State<SettingsTouchGrass> {
                   fontWeight: FontWeight.w800,
                   color: isHighlighted
                       ? colorScheme.primary
-                      : colorScheme.onSurface.opaque(0.5),
+                      : colorScheme.onSurface.opaque(0.7),
                 ),
               ),
             ),
@@ -529,8 +598,14 @@ class _SettingsTouchGrassState extends State<SettingsTouchGrass> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: isHighlighted
-                    ? [colorScheme.primary, colorScheme.primary.withValues(alpha: 0.6)]
-                    : [colorScheme.primary.withValues(alpha: 0.3), colorScheme.primary.withValues(alpha: 0.1)],
+                    ? [
+                        colorScheme.primary,
+                        colorScheme.primary.withValues(alpha: 0.6)
+                      ]
+                    : [
+                        colorScheme.primary.withValues(alpha: 0.3),
+                        colorScheme.primary.withValues(alpha: 0.1)
+                      ],
               ),
               borderRadius: BorderRadius.circular(20),
               boxShadow: isHighlighted
@@ -548,11 +623,11 @@ class _SettingsTouchGrassState extends State<SettingsTouchGrass> {
           Text(
             label,
             style: TextStyle(
-              fontSize: 11,
-              fontWeight: isHighlighted ? FontWeight.bold : FontWeight.w500,
+              fontSize: 10,
+              fontWeight: isHighlighted ? FontWeight.w900 : FontWeight.w700,
               color: isHighlighted
                   ? colorScheme.onSurface
-                  : colorScheme.onSurface.opaque(0.4),
+                  : colorScheme.onSurface.opaque(0.7),
             ),
           ),
         ],
@@ -565,11 +640,10 @@ class _SettingsTouchGrassState extends State<SettingsTouchGrass> {
   Widget _buildWeeklyChart(ColorScheme colorScheme) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final days = List.generate(7, (i) => today.subtract(Duration(days: 6 - i)));
-    final labels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    final days = List.generate(7, (i) => DateTime(today.year, today.month, today.day - (6 - i)));
 
     final values = days.map((d) {
-      final key = DateTime(d.year, d.month, d.day).toIso8601String();
+      final key = d.toIso8601String();
       return (service.dailyUsage[key] ?? 0).toDouble();
     }).toList();
 
@@ -585,11 +659,12 @@ class _SettingsTouchGrassState extends State<SettingsTouchGrass> {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: List.generate(7, (i) {
+        final date = days[i];
         return _buildBar(
           value: values[i],
           displayMax: displayMax,
-          label: labels[days[i].weekday - 1],
-          isHighlighted: days[i] == today,
+          label: DateFormat.E().format(date),
+          isHighlighted: date == today,
           colorScheme: colorScheme,
         );
       }),
@@ -615,16 +690,16 @@ class _SettingsTouchGrassState extends State<SettingsTouchGrass> {
 
     final maxVal = values.fold<double>(0, (m, v) => v > m ? v : m);
     final displayMax = maxVal < 5 ? 5.0 : maxVal;
-    final months = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: List.generate(12, (i) {
+        final monthDate = DateTime(now.year, i + 1);
         return _buildBar(
           value: values[i],
           displayMax: displayMax,
-          label: months[i],
+          label: DateFormat.MMM().format(monthDate)[0],
           isHighlighted: i + 1 == now.month,
           colorScheme: colorScheme,
         );
@@ -636,7 +711,6 @@ class _SettingsTouchGrassState extends State<SettingsTouchGrass> {
 // ---- PICKER WIDGET ----
 
 class _PickerColumn extends StatelessWidget {
-  final String label;
   final FixedExtentScrollController controller;
   final int itemCount;
   final String Function(int index) itemBuilder;
@@ -644,7 +718,6 @@ class _PickerColumn extends StatelessWidget {
   final ColorScheme colorScheme;
 
   const _PickerColumn({
-    required this.label,
     required this.controller,
     required this.itemCount,
     required this.itemBuilder,
@@ -657,16 +730,6 @@ class _PickerColumn extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 10,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 1.5,
-            color: colorScheme.onSurface.opaque(0.4),
-          ),
-        ),
-        const SizedBox(height: 12),
         SizedBox(
           width: 70,
           height: 180,
@@ -699,4 +762,5 @@ class _PickerColumn extends StatelessWidget {
     );
   }
 }
+
 

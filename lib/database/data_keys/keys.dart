@@ -224,7 +224,8 @@ enum PlayerSettingsKeys {
 }
 
 enum TouchGrassKeys {
-  enabled,
+  trackingEnabled,
+  remindersEnabled,
   reminderMinutes,
   weeklyUsage,
 }

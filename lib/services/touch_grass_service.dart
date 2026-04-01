@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class TouchGrassService extends GetxService with WidgetsBindingObserver {
-  final enabled = false.obs;
+  final trackingEnabled = false.obs;
+  final remindersEnabled = false.obs;
   final reminderMinutes = 180.obs;
   final dailyUsage = <String, int>{}.obs;
 
@@ -22,7 +23,7 @@ class TouchGrassService extends GetxService with WidgetsBindingObserver {
   void onInit() {
     super.onInit();
     _loadSettings();
-    if (enabled.value) {
+    if (trackingEnabled.value) {
       _addObserver();
       _startSession();
     }
@@ -58,14 +59,15 @@ class TouchGrassService extends GetxService with WidgetsBindingObserver {
       _endSession();
       _timer?.cancel();
     } else if (state == AppLifecycleState.resumed) {
-      if (enabled.value) {
+      if (trackingEnabled.value) {
         _startSession();
       }
     }
   }
 
   void _loadSettings() {
-    enabled.value = TouchGrassKeys.enabled.get<bool>(false);
+    trackingEnabled.value = TouchGrassKeys.trackingEnabled.get<bool>(false);
+    remindersEnabled.value = TouchGrassKeys.remindersEnabled.get<bool>(false);
     reminderMinutes.value =
         TouchGrassKeys.reminderMinutes.get<int>(_defaultMinutes);
 
@@ -96,13 +98,16 @@ class TouchGrassService extends GetxService with WidgetsBindingObserver {
 
   int get todaySavedMinutes => dailyUsage[_dateKey(DateTime.now())] ?? 0;
 
+  int get totalAllTimeMinutes =>
+      dailyUsage.values.fold(0, (sum, val) => sum + val);
+
   void _startSession() {
     _sessionStart = DateTime.now();
     _accumulatedSeconds = 0;
     _dialogShown = false;
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (!enabled.value || _sessionStart == null) return;
+      if (!trackingEnabled.value || _sessionStart == null) return;
 
       final elapsed = DateTime.now().difference(_sessionStart!).inSeconds;
 
@@ -118,10 +123,8 @@ class TouchGrassService extends GetxService with WidgetsBindingObserver {
       }
 
       final threshold = reminderMinutes.value * 60;
-      if (elapsed >= threshold && !_dialogShown) {
+      if (remindersEnabled.value && elapsed >= threshold && !_dialogShown) {
         _dialogShown = true;
-        _endSession();
-        _timer?.cancel();
         _showReminder();
       }
     });
@@ -298,12 +301,19 @@ class TouchGrassService extends GetxService with WidgetsBindingObserver {
   }
 
   void _restart() {
-    if (enabled.value) _startSession();
+    _dialogShown = false;
+    // We don't restart session entirely because trackingEnabled might still be on.
+    // We just reset _dialogShown so the timer can show it again after another interval.
+    // Wait, the timer logic says elapsed >= threshold.
+    // If we want it to remind again in 180m, we should reset _sessionStart OR use a new timer.
+    // Let's just reset _sessionStart to now to remind in another X minutes.
+    _sessionStart = DateTime.now();
+    _accumulatedSeconds = 0;
   }
 
-  void setEnabled(bool value) {
-    enabled.value = value;
-    TouchGrassKeys.enabled.set(value);
+  void setTrackingEnabled(bool value) {
+    trackingEnabled.value = value;
+    TouchGrassKeys.trackingEnabled.set(value);
     if (value) {
       _addObserver();
       _startSession();
@@ -314,10 +324,15 @@ class TouchGrassService extends GetxService with WidgetsBindingObserver {
     }
   }
 
+  void setRemindersEnabled(bool value) {
+    remindersEnabled.value = value;
+    TouchGrassKeys.remindersEnabled.set(value);
+  }
+
   void setReminderMinutes(int minutes) {
     reminderMinutes.value = minutes;
     TouchGrassKeys.reminderMinutes.set(minutes);
-    if (enabled.value) {
+    if (trackingEnabled.value) {
       _endSession();
       _startSession();
     }
