@@ -205,9 +205,10 @@ class Media {
           ?.map((studio) => studio['name']?.toString() ?? '??')
           .toList(),
       characters: [],
-      recommendations: (node['recommendations'] as List<dynamic>)
-          .map((e) => Media.fromMAL(e))
-          .toList(),
+      recommendations: (node['recommendations'] as List<dynamic>?)
+              ?.map((e) => Media.fromMAL(e))
+              .toList() ??
+          [],
       nextAiringEpisode: null,
       rankings: [],
       mediaContent: [],
@@ -535,6 +536,65 @@ class Media {
       serviceType: offline.serviceIndex != null
           ? ServicesType.values[offline.serviceIndex!]
           : ServicesType.anilist,
+    );
+  }
+
+  /// Factory for parsing underrated anime/manga from GitHub JSON
+  factory Media.fromUnderratedJson(Map<String, dynamic> json, bool isManga) {
+    return Media(
+      id: json['id']?.toString() ?? '0',
+      title: json['title'] ?? 'Unknown Title',
+      romajiTitle: json['title'] ?? 'Unknown Title',
+      description: json['reason'] ?? json['description'] ?? 'No description available.',
+      poster: json['cover'] ?? json['poster'] ?? '',
+      cover: json['cover'] ?? json['banner'] ?? '',
+      totalEpisodes: json['episodes']?.toString() ?? '?',
+      totalChapters: json['chapters']?.toString() ?? '?',
+      rating: json['score']?.toString() ?? json['averageScore']?.toString() ?? '?',
+      type: isManga ? 'MANGA' : 'ANIME',
+      mediaType: isManga ? ItemType.manga : ItemType.anime,
+      serviceType: ServicesType.anilist,
+      genres: (json['genres'] as List<dynamic>?)
+              ?.map((g) => g.toString())
+              .toList() ??
+          [],
+    );
+  }
+
+  /// Factory for parsing media from AniList API for underrated section
+  factory Media.fromUnderratedAnilist(Map<String, dynamic> json, bool isManga) {
+    ItemType type = isManga ? ItemType.manga : ItemType.anime;
+
+    return Media(
+      id: json['id']?.toString() ?? '0',
+      idMal: json['idMal']?.toString() ?? '0',
+      romajiTitle: json['title']?['romaji'] ?? '?',
+      title: json['title']?['english'] ?? json['title']?['romaji'] ?? '?',
+      description: json['description'] ?? '',
+      poster: json['coverImage']?['large'] ?? '',
+      largePoster: json['coverImage']?['extraLarge'] ?? '',
+      cover: json['bannerImage'],
+      color: json['coverImage']?['color'] ?? '',
+      totalEpisodes: json['episodes']?.toString() ?? '?',
+      totalChapters: json['chapters']?.toString() ?? '?',
+      rating: ((json['averageScore'] ?? 0) / 10).toStringAsFixed(1),
+      popularity: json['popularity']?.toString() ?? '0',
+      type: json['type'] ?? (isManga ? 'MANGA' : 'ANIME'),
+      status: (json['status'] ?? '?').replaceAll('_', ' '),
+      format: json['format'] ?? '?',
+      season: json['season'] ?? '?',
+      seasonYear: json['seasonYear'] ?? json['startDate']?['year'],
+      premiered: '${json['season'] ?? '?'} ${json['seasonYear'] ?? '?'}',
+      genres: List<String>.from(json['genres'] ?? []),
+      studios: (json['studios']?['nodes'] as List?)
+              ?.map((el) => el['name'].toString())
+              .toList() ??
+          [],
+      mediaType: type,
+      serviceType: ServicesType.anilist,
+      nextAiringEpisode: json['nextAiringEpisode'] != null
+          ? NextAiringEpisode.fromJson(json['nextAiringEpisode'])
+          : null,
     );
   }
 
