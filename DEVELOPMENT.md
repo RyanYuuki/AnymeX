@@ -42,6 +42,7 @@ SIMKL_CLIENT_SECRET=0
 MAL_CLIENT_ID=0
 MAL_CLIENT_SECRET=0
 CALLBACK_SCHEME=anymex://callback
+COMMENTS_BASE_URL=https://whzwmfxngelicmjyxwmr.supabase.co/functions/v1
 ```
 
 You can however create your own API keys and populate the values as necessary.
