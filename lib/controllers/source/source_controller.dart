@@ -23,7 +23,7 @@ import 'package:isar_community/isar.dart';
 
 import '../../main.dart';
 
-final sourceController = Get.put(SourceController());
+SourceController get sourceController => Get.find<SourceController>();
 
 class SourceController extends GetxController implements BaseService {
   ExtensionManager get _bridge => Get.find<ExtensionManager>();

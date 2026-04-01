@@ -22,7 +22,7 @@ class UpdateManager {
       'https://api.github.com/repos/RyanYuuki/AnymeX/releases/latest';
 
   static const String _betaRepoUrl =
-      'https://api.github.com/repos/Shebyyy/AnymeX/releases/latest';
+      'https://api.github.com/repos/Shebyyy/AnymeX-Preview/releases/latest';
 
   String getDownloadUrlByArch(List<dynamic> assets, String arch) {
     for (var asset in assets) {
