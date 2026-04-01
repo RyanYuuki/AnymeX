@@ -152,8 +152,9 @@ class GradientPoster extends StatelessWidget {
                           text: data?.title ?? 'Loading...',
                           variant: TextVariant.bold,
                           size: 16,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          isMarquee: true),
                     ),
                   ),
                   Padding(
