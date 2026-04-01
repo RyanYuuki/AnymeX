@@ -1,6 +1,7 @@
 // ignore_for_file: invalid_use_of_protected_member, prefer_const_constructors, unnecessary_null_comparison
 import 'dart:async';
 import 'dart:math' as math;
+import 'dart:math';
 
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -505,7 +506,14 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       sortMap: ep.sortMap.isEmpty ? null : ep.sortMap,
     );
 
-    final scrapeToken = "scrape_${DateTime.now().millisecondsSinceEpoch}_${ep.number}";
+    final scrapeToken =
+        "scrape_${DateTime.now().millisecondsSinceEpoch}_${ep.number}_${Random().nextInt(10000)}";
+
+    final methods = sourceController.activeSource.value!.methods;
+    final videoStream = methods.getVideoListStream(sourceEpisode,
+                  parameters: SourceParams(cancelToken: scrapeToken));
+    final videoFuture = videoStream == null ? methods.getVideoList(sourceEpisode,
+                  parameters: SourceParams(cancelToken: scrapeToken)) : null;
 
     showModalBottomSheet(
       context: context,
@@ -516,15 +524,11 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
         ),
       ),
       builder: (context) {
-        final methods = sourceController.activeSource.value!.methods;
         return SizedBox(
           width: double.infinity,
-          child: methods.getVideoListStream(sourceEpisode,
-                      parameters: SourceParams(cancelToken: scrapeToken)) !=
-                  null
+          child: videoStream != null
               ? StreamBuilder(
-                  stream: methods.getVideoListStream(sourceEpisode,
-                      parameters: SourceParams(cancelToken: scrapeToken)),
+                  stream: videoStream,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting &&
                         streamList.isEmpty) {
@@ -561,8 +565,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                   },
                 )
               : FutureBuilder<List<Video>>(
-                  future: methods.getVideoList(sourceEpisode,
-                      parameters: SourceParams(cancelToken: scrapeToken)),
+                  future: videoFuture,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       isServerStreamLoading.value = true;
@@ -571,7 +574,10 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                       isServerStreamLoading.value = false;
                       Logger.e(snapshot.error.toString());
                       return _buildErrorState(snapshot.error.toString());
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    } else if (snapshot.connectionState ==
+                                ConnectionState.done &&
+                            !snapshot.hasData ||
+                        snapshot.data!.isEmpty) {
                       isServerStreamLoading.value = false;
                       return _buildEmptyState();
                     } else {

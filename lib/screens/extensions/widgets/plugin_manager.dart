@@ -202,6 +202,26 @@ class PluginManager {
     PluginKeys.runtimeHostInstalledVersion.set(release.tagName);
     PluginKeys.runtimeHostInstalledReleaseTitle.set(release.title);
   }
+
+  Future<void> forceSyncLocalApk() async {
+    const localPath =
+        '/storage/emulated/0/AnymeX/anymex_runtime_host.apk';
+    if (!await File(localPath).exists()) {
+      errorSnackBar('Local APK not found at: $localPath');
+      return;
+    }
+
+    try {
+      await AnymeXRuntimeBridge.setupRuntime(localApkPath: localPath);
+      final bridge = AnymeXRuntimeBridge.controller;
+      if (bridge.isReady.value) {
+        await Get.find<ExtensionManager>().onRuntimeBridgeInitialization();
+        successSnackBar('Plugin synced from SD Card.');
+      }
+    } catch (e) {
+      errorSnackBar('Sync failed: $e');
+    }
+  }
 }
 
 enum _PluginSheetMode { install, update }
@@ -255,7 +275,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
     if (bridge.isDownloading.value) return;
 
     try {
-      await AnymeXRuntimeBridge.setupRuntime();
+      await AnymeXRuntimeBridge.setupRuntime(localApkPath: '/storage/emulated/0/AnymeX/anymex_runtime_host.apk');
 
       if (bridge.isReady.value) {
         await Get.find<ExtensionManager>().onRuntimeBridgeInitialization();
@@ -366,12 +386,18 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
               color: colors.primaryContainer,
               borderRadius: BorderRadius.circular(16),
             ),
-            child: Icon(
-              widget.mode == _PluginSheetMode.install
-                  ? Icons.extension_rounded
-                  : Icons.system_update_alt_rounded,
-              color: colors.primary,
-            ),
+            child: widget.installedVersion.isNotEmpty
+                ? IconButton(
+                    onPressed: widget.manager.forceSyncLocalApk,
+                    icon: Icon(Icons.sync_rounded, color: colors.primary),
+                    tooltip: 'Force Sync from SD Card',
+                  )
+                : Icon(
+                    widget.mode == _PluginSheetMode.install
+                        ? Icons.extension_rounded
+                        : Icons.system_update_alt_rounded,
+                    color: colors.primary,
+                  ),
           ),
         ),
         const SizedBox(width: 14),
