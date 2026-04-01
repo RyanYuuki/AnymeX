@@ -474,7 +474,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void _handleAutoSkip() {
     final interval = currentSkipInterval.value;
-    if (interval == null || !_isAutoSkipEnabledForCurrentSegment ||
+    if (interval == null ||
+        !_isAutoSkipEnabledForCurrentSegment ||
         _autoSkipCancelledForCurrentSegment) {
       _cancelAutoSkipTimer();
       return;

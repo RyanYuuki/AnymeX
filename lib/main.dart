@@ -25,6 +25,7 @@ import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/my_library.dart';
 import 'package:anymex/screens/manga/home_page.dart';
 import 'package:anymex/services/commentum_service.dart';
+import 'package:anymex/services/touch_grass_service.dart';
 import 'package:anymex/utils/external_font_loader.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/deeplink.dart';
@@ -173,6 +174,7 @@ void _initializeGetxController() async {
   Get.put(ServiceHandler());
   Get.put(GreetingController());
   Get.put(CommentumService());
+  Get.put(TouchGrassService(), permanent: true);
   Get.put(CommentPreloader());
   Get.put(GistSyncController(), permanent: true);
   Get.lazyPut(() => CacheController());
@@ -187,14 +189,14 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-
   bool _showMainApp = false;
   bool _isFullScreen = false;
 
   late FocusNode focusNode;
 
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
-    if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.escape) {
+    if (event is KeyDownEvent &&
+        event.logicalKey == LogicalKeyboardKey.escape) {
       if (_isFullScreen) {
         AnymexTitleBar.setFullScreen(false);
       } else {
@@ -204,10 +206,12 @@ class _MainAppState extends State<MainApp> {
         }
       }
       return KeyEventResult.handled;
-    } else if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.f11) {
+    } else if (event is KeyDownEvent &&
+        event.logicalKey == LogicalKeyboardKey.f11) {
       AnymexTitleBar.toggleFullScreen();
       return KeyEventResult.handled;
-    } else if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.enter) {
+    } else if (event is KeyDownEvent &&
+        event.logicalKey == LogicalKeyboardKey.enter) {
       final isAltPressed = HardwareKeyboard.instance.logicalKeysPressed
               .contains(LogicalKeyboardKey.altLeft) ||
           HardwareKeyboard.instance.logicalKeysPressed
@@ -224,7 +228,8 @@ class _MainAppState extends State<MainApp> {
   void initState() {
     super.initState();
 
-    AnymexTitleBar.isFullScreen.addListener(() => _isFullScreen = AnymexTitleBar.isFullScreen.value);
+    AnymexTitleBar.isFullScreen
+        .addListener(() => _isFullScreen = AnymexTitleBar.isFullScreen.value);
 
     focusNode = FocusNode();
 

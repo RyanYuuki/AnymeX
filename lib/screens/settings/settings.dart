@@ -10,6 +10,7 @@ import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_reader.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_storage_manager.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_theme.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_touch_grass.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_ui.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -96,6 +97,13 @@ class _SettingsPageState extends State<SettingsPage> {
                     description: "Play around with the video player",
                     onTap: () {
                       navigate(() => const SettingsPlayer());
+                    }),
+                CustomTile(
+                    icon: Icons.grass_rounded,
+                    title: "Touch Grass",
+                    description: "Reminders to take a break during long binges",
+                    onTap: () {
+                      navigate(() => const SettingsTouchGrass());
                     }),
                 CustomTile(
                     icon: Icons.menu_book_rounded,
