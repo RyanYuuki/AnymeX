@@ -365,14 +365,12 @@ class _ProfilePageState extends State<ProfilePage>
     return Glow(
       child: Scaffold(
         backgroundColor: context.theme.colorScheme.surface,
-        extendBody: false,
+        extendBody: true,
         bottomNavigationBar: isDesktop
             ? null
             : ResponsiveNavBar(
                 isDesktop: false,
                 currentIndex: _selectedTab,
-                margin: EdgeInsets.zero,
-                borderRadius: BorderRadius.zero,
                 items: _profileNavItems,
               ),
         body: _ready
@@ -383,93 +381,117 @@ class _ProfilePageState extends State<ProfilePage>
   }
 
   void _showCreateActivitySheet(BuildContext context) {
+    final composerKey = GlobalKey<ActivityComposerSheetState>();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      isDismissible: false,
+      enableDrag: false,
       backgroundColor: context.theme.colorScheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-            left: 16,
-            right: 16,
-            top: 20,
+        return WillPopScope(
+          onWillPop: () => confirmDiscardComposer(
+            context,
+            composerKey: composerKey,
+            discardTitle: 'Discard status?',
+            discardMessage:
+                'You have unsent text. Closing now will lose your status.',
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Create Status",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: context.theme.colorScheme.onSurface,
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+              left: 16,
+              right: 16,
+              top: 20,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Create Status",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: context.theme.colorScheme.onSurface,
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.only(
-                  left: 12,
-                  right: 12,
-                  top: 8,
-                  bottom: 12,
-                ),
-                decoration: BoxDecoration(
-                  color: context.theme.colorScheme.surfaceContainer,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: ActivityComposerSheet(
-                  isModal: true,
-                  hintText: "What's on your mind?",
-                  onSubmit: (text, {isPrivate = false}) async {
-                    final anilistAuth = Get.find<AnilistAuth>();
-                    try {
-                      await anilistAuth.createActivity(text);
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Status posted successfully!'),
-                            backgroundColor: Colors.green,
-                          ),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () async {
+                        final discard = await confirmDiscardComposer(
+                          context,
+                          composerKey: composerKey,
+                          discardTitle: 'Discard status?',
+                          discardMessage:
+                              'You have unsent text. Closing now will lose your status.',
                         );
-                        _fetchActivities(); // refresh listt
-                      }
-                      return true;
-                    } catch (e) {
-                      if (context.mounted) {
-                        String errorMessage = 'Failed to post status.';
-                        final errStr = e.toString();
-                        if (errStr.contains('validation')) {
-                          errorMessage =
-                              'Failed: ${errStr.split('"text":[').last.split(']').first.replaceAll('"', '')}';
+                        if (discard && context.mounted) {
+                          Navigator.pop(context);
                         }
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(errorMessage),
-                            backgroundColor: context.theme.colorScheme.error,
-                          ),
-                        );
-                      }
-                      return false;
-                    }
-                  },
+                      },
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 20),
-            ],
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.only(
+                    left: 12,
+                    right: 12,
+                    top: 8,
+                    bottom: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: context.theme.colorScheme.surfaceContainer,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: ActivityComposerSheet(
+                    key: composerKey,
+                    isModal: true,
+                    hintText: "What's on your mind?",
+                    onSubmit: (text, {isPrivate = false}) async {
+                      final anilistAuth = Get.find<AnilistAuth>();
+                      try {
+                        await anilistAuth.createActivity(text);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Status posted successfully!'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                          _fetchActivities(); // refresh listt
+                        }
+                        return true;
+                      } catch (e) {
+                        if (context.mounted) {
+                          String errorMessage = 'Failed to post status.';
+                          final errStr = e.toString();
+                          if (errStr.contains('validation')) {
+                            errorMessage =
+                                'Failed: ${errStr.split('"text":[').last.split(']').first.replaceAll('"', '')}';
+                          }
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(errorMessage),
+                              backgroundColor: context.theme.colorScheme.error,
+                            ),
+                          );
+                        }
+                        return false;
+                      }
+                    },
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
           ),
         );
       },
@@ -615,6 +637,7 @@ class _ProfilePageState extends State<ProfilePage>
                 padding: const EdgeInsets.symmetric(vertical: 2.0),
                 child: ActivityCard(
                   activity: activity,
+                  onDeleted: () => _handleActivityDeleted(activity),
                   onTap: () {
                     if (activity.type == 'ANIME_LIST') {
                       final media = Media(
@@ -709,6 +732,20 @@ class _ProfilePageState extends State<ProfilePage>
       context,
       activityFilters: _activityFilters,
       onApply: () => _fetchActivities(),
+    );
+  }
+
+  void _handleActivityDeleted(AnilistActivity activity) {
+    if (!mounted) return;
+    setState(() {
+      _activities.removeWhere((a) => a.id == activity.id);
+    });
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Activity deleted'),
+        duration: Duration(milliseconds: 1200),
+      ),
     );
   }
 
@@ -958,7 +995,7 @@ class _ProfilePageState extends State<ProfilePage>
         buildActivitySection(),
         buildAboutSection(),
         buildFavouritesSection(),
-        const SizedBox(height: 50),
+        SizedBox(height: isDesktop ? 50 : 120),
       ],
     );
   }

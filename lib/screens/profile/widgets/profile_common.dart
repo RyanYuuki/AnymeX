@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:anymex/widgets/non_widgets/activity_composer_sheet.dart';
 import 'package:get/get.dart';
 
 String getFollowLabel({bool? isFollowing, bool? isFollower}) {
@@ -7,6 +8,38 @@ String getFollowLabel({bool? isFollowing, bool? isFollower}) {
   if (isFollowing == true) return 'Following';
   if (isFollower == true) return 'Follows you';
   return 'Follow';
+}
+
+Future<bool> confirmDiscardComposer(
+  BuildContext context, {
+  required GlobalKey<ActivityComposerSheetState> composerKey,
+  required String discardTitle,
+  required String discardMessage,
+}) async {
+  final hasUnsavedText =
+      (composerKey.currentState?.text.trim().isNotEmpty ?? false);
+  if (!hasUnsavedText) return true;
+
+  final discard = await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: Text(discardTitle),
+          content: Text(discardMessage),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Keep editing'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: const Text('Discard'),
+            ),
+          ],
+        ),
+      ) ??
+      false;
+
+  return discard;
 }
 
 Widget buildProfileSheetOption(
