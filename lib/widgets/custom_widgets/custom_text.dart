@@ -147,13 +147,15 @@ class AnymexText extends StatelessWidget {
       fontStyle: fontStyle,
     );
 
+    final effectiveMaxLines = isMarquee ? 1 : maxLines;
+
     if (isMarquee) {
       return MarqueeText(
         processedText,
         style: textStyle,
         textAlign: textAlign,
         overflow: overflow,
-        maxLines: maxLines,
+        maxLines: effectiveMaxLines,
       );
     }
 
@@ -162,7 +164,7 @@ class AnymexText extends StatelessWidget {
         processedText,
         textAlign: textAlign,
         overflow: overflow,
-        maxLines: maxLines,
+        maxLines: effectiveMaxLines,
         style: textStyle,
       );
     }
@@ -170,7 +172,7 @@ class AnymexText extends StatelessWidget {
     return AutoSizeText(
       processedText,
       textAlign: textAlign,
-      maxLines: maxLines,
+      maxLines: effectiveMaxLines,
       minFontSize: minFontSize ?? 10,
       stepGranularity: stepGranularity ?? 1,
       overflow: overflow,

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:marquee/marquee.dart';
 
-
-
 class MarqueeText extends StatelessWidget {
   final String text;
   final TextStyle? style;
@@ -19,47 +17,61 @@ class MarqueeText extends StatelessWidget {
     this.maxLines,
   });
 
+  Alignment _alignmentForTextAlign(TextAlign? align) {
+    switch (align) {
+      case TextAlign.center:
+        return Alignment.center;
+      case TextAlign.right:
+      case TextAlign.end:
+        return Alignment.centerRight;
+      case TextAlign.justify:
+      case TextAlign.left:
+      case TextAlign.start:
+      case null:
+        return Alignment.centerLeft;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final effectiveStyle = style ?? DefaultTextStyle.of(context).style;
-        final textSpan = TextSpan(text: text, style: effectiveStyle);
+        final effectiveMaxLines = maxLines ?? 1;
+        final displayText = text.replaceAll('\n', ' ').trimRight();
+        final hasBoundedWidth =
+          constraints.hasBoundedWidth && constraints.maxWidth > 0;
+
+        if (!hasBoundedWidth || effectiveMaxLines != 1 || displayText.isEmpty) {
+          return Text(
+            displayText,
+            style: effectiveStyle,
+            textAlign: textAlign,
+            overflow: overflow ?? TextOverflow.ellipsis,
+            maxLines: effectiveMaxLines,
+          );
+        }
+
+        final textSpan = TextSpan(text: displayText, style: effectiveStyle);
         final textScaler = MediaQuery.textScalerOf(context);
         final direction = Directionality.of(context);
-        final effectiveMaxLines = maxLines ?? 1;
 
-        // not to overflow
-        final textPainter = TextPainter(
+        final intrinsicPainter = TextPainter(
           text: textSpan,
-          maxLines: effectiveMaxLines,
+          maxLines: 1,
           textDirection: direction,
           textScaler: textScaler,
-        )..layout(
-            maxWidth: constraints.maxWidth > 0
-                ? constraints.maxWidth
-                : double.infinity,
-          );
+        )..layout(maxWidth: double.infinity);
 
-        final bool shouldScroll = textPainter.didExceedMaxLines ||
-            (effectiveMaxLines == 1 &&
-                constraints.maxWidth > 0 &&
-                textPainter.width > constraints.maxWidth);
+        final availableWidth = constraints.maxWidth;
+        final bool shouldScroll = intrinsicPainter.width >= availableWidth - 1.5;
 
         if (shouldScroll) {
-         
-          final singleLinePainter = TextPainter(
-            text: textSpan,
-            maxLines: 1,
-            textDirection: direction,
-            textScaler: textScaler,
-          )..layout();
-
           return SizedBox(
-            height: singleLinePainter.height,
-            width: constraints.maxWidth,
+            height: intrinsicPainter.height,
+            width: availableWidth,
             child: Marquee(
-              text: text,
+              text: displayText,
               style: effectiveStyle,
               scrollAxis: Axis.horizontal,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -75,14 +87,13 @@ class MarqueeText extends StatelessWidget {
           );
         }
 
-      
         return SizedBox(
-          height: textPainter.height,
-          width: constraints.maxWidth,
+          height: intrinsicPainter.height,
+          width: availableWidth,
           child: Align(
-            alignment: Alignment.centerLeft,
+            alignment: _alignmentForTextAlign(textAlign),
             child: Text(
-              text,
+              displayText,
               style: effectiveStyle,
               textAlign: textAlign,
               overflow: overflow ?? TextOverflow.ellipsis,
