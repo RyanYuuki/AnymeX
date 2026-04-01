@@ -76,8 +76,7 @@ class _CommentSectionState extends State<CommentSection> {
   }
 
   void _handlePostComment() {
-    final bool hasAccepted =
-        General.hasAcceptedCommentRules.get<bool>(false);
+    final bool hasAccepted = General.hasAcceptedCommentRules.get<bool>(false);
 
     if (hasAccepted) {
       controller.addComment();
@@ -801,15 +800,14 @@ class _CommentSectionState extends State<CommentSection> {
               Row(
                 children: [
                   Flexible(
-                    child: Text(
-                      comment.username,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: colorScheme.onSurface,
-                        fontSize: 15,
-                      ),
-                      overflow: TextOverflow.ellipsis,
+                    child: AnymexText(
+                      text: comment.username,
+                      variant: TextVariant.bold,
+                      color: colorScheme.onSurface,
+                      size: 15,
                       maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      isMarquee: true,
                     ),
                   ),
                   if (comment.tag.isNotEmpty) ...[

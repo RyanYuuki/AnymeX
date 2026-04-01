@@ -7,7 +7,6 @@ import 'package:anymex/utils/watch_order_util.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -234,8 +233,9 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
                       text: item.nameEnglish ?? item.name,
                       variant: TextVariant.bold,
                       size: 15,
-                      maxLines: 2,
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
+                      isMarquee: true,
                     ),
                     if (item.nameEnglish != null &&
                         item.nameEnglish!.isNotEmpty)
@@ -247,6 +247,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
                           color: colorScheme.onSurfaceVariant,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
+                          isMarquee: true,
                         ),
                       ),
                     const SizedBox(height: 8),

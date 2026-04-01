@@ -148,6 +148,9 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
                           text: widget.studioName,
                           variant: TextVariant.bold,
                           size: 20,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          isMarquee: true,
                         ),
                       ),
                       Obx(() => GestureDetector(
