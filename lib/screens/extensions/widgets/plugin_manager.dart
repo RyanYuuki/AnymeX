@@ -275,7 +275,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
     if (bridge.isDownloading.value) return;
 
     try {
-      await AnymeXRuntimeBridge.setupRuntime(localApkPath: '/storage/emulated/0/AnymeX/anymex_runtime_host.apk');
+      await AnymeXRuntimeBridge.setupRuntime();
 
       if (bridge.isReady.value) {
         await Get.find<ExtensionManager>().onRuntimeBridgeInitialization();
