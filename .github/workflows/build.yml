@@ -167,6 +167,7 @@ jobs:
           GIT_CLIENT_ID: ${{ secrets.GIT_CLIENT_ID }}
           GIT_CLIENT_SECRET: ${{ secrets.GIT_CLIENT_SECRET }}
           GIT_CALLBACK_SCHEME: ${{ secrets.GIT_CALLBACK_SCHEME }}
+          COMMENTS_BASE_URL:  ${{ secrets.COMMENTS_BASE_URL }}
         run: |
           cat > .env << EOF
           AL_CLIENT_ID=$AL_CLIENT_ID
@@ -180,6 +181,7 @@ jobs:
           GIT_CLIENT_ID=$GIT_CLIENT_ID
           GIT_CLIENT_SECRET=$GIT_CLIENT_SECRET
           GIT_CALLBACK_SCHEME=$GIT_CALLBACK_SCHEME
+          COMMENTS_BASE_URL=$COMMENTS_BASE_URL
           EOF
       
       - name: Build Android
