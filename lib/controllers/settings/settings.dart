@@ -409,6 +409,12 @@ class Settings extends GetxController {
     PlayerSettingsKeys.enableScreenshot.set(value);
   }
 
+  bool get enablePiP => _getPlayerSetting((s) => s.enablePiP);
+  set enablePiP(bool value) {
+    playerSettings.update((s) => s?.enablePiP = value);
+    PlayerSettingsKeys.enablePiP.set(value);
+  }
+
   bool get playerMenuAnimation =>
       _getPlayerSetting((s) => s.playerMenuAnimation);
   set playerMenuAnimation(bool value) {

@@ -31,6 +31,7 @@ import 'package:anymex/widgets/non_widgets/anymex_toast.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/ExtensionManager.dart';
 import 'package:anymex_extension_runtime_bridge/Models/DEpisode.dart' as d;
+import 'package:fl_pip/fl_pip.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -39,8 +40,68 @@ import 'package:rxdart/rxdart.dart' show ThrottleExtensions;
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:volume_controller/volume_controller.dart';
-
 import '../../../../database/isar_models/track.dart' as model;
+
+class _PipControlsService {
+  static const _channel = MethodChannel('com.ryan.anymex/pip_controls');
+
+  final VoidCallback onTogglePlayPause;
+  final VoidCallback onPlay;
+  final VoidCallback onPause;
+  final VoidCallback onNextEpisode;
+  final VoidCallback onPreviousEpisode;
+
+  _PipControlsService({
+    required this.onTogglePlayPause,
+    required this.onPlay,
+    required this.onPause,
+    required this.onNextEpisode,
+    required this.onPreviousEpisode,
+  });
+
+  void init() {
+    if (!Platform.isAndroid && !Platform.isIOS) return;
+    _channel.setMethodCallHandler(_handle);
+  }
+
+  void dispose() {
+    if (!Platform.isAndroid && !Platform.isIOS) return;
+    _channel.setMethodCallHandler(null);
+  }
+
+  Future<void> _handle(MethodCall call) async {
+    switch (call.method) {
+      case 'togglePlayPause':
+        onTogglePlayPause();
+        break;
+      case 'play':
+        onPlay();
+        break;
+      case 'pause':
+        onPause();
+        break;
+      case 'nextEpisode':
+        onNextEpisode();
+        break;
+      case 'previousEpisode':
+        onPreviousEpisode();
+        break;
+    }
+  }
+
+  Future<void> updatePlaybackState({
+    required bool isPlaying,
+    required bool enablePiP,
+  }) async {
+    if (!Platform.isAndroid && !Platform.isIOS) return;
+    try {
+      await _channel.invokeMethod('updatePlaybackState', {
+        'isPlaying': isPlaying,
+        'enablePiP': enablePiP,
+      });
+    } catch (_) {}
+  }
+}
 
 extension PlayerControllerExtensions on PlayerController {
   bool get hasNextEpisode {
@@ -131,6 +192,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   late BasePlayer _basePlayer;
+  late _PipControlsService _pipControls;
 
   Widget get videoWidget => _basePlayer.getVideoWidget(fit: videoFit.value);
 
@@ -194,6 +256,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final isRecapSkippedOnce = false.obs;
   final Rx<aniskip.SkipIntervals?> currentSkipInterval =
       Rx<aniskip.SkipIntervals?>(null);
+
+  final RxBool isPipActive = false.obs;
+  bool _pipSupported = false;
 
   static const int autoSkipCountdownSeconds = 5;
   final RxInt autoSkipCountdownRemaining = 0.obs;
@@ -263,6 +328,20 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   @override
   void onInit() {
     super.onInit();
+    
+    _pipControls = _PipControlsService(
+      onTogglePlayPause: togglePlayPause,
+      onPlay: play,
+      onPause: pause,
+      onNextEpisode: () {
+        if (hasNextEpisode) navigator(true);
+      },
+      onPreviousEpisode: () {
+        if (hasPreviousEpisode) navigator(false);
+      },
+    );
+    _pipControls.init();
+
     PlayerController.initializePlayerControlsIfNeeded(settings);
     WidgetsBinding.instance.addObserver(this);
     _initDatabaseVars();
@@ -291,6 +370,48 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           "if subtitle is not showing up then disable libass in settings and restart",
           duration: 3000);
     }
+    _initPip();
+  }
+
+  Future<void> _initPip() async {
+    if (!Platform.isAndroid && !Platform.isIOS) return;
+    try {
+      _pipSupported = await FlPiP().isAvailable;
+    } catch (_) {
+      _pipSupported = false;
+    }
+  }
+
+  Future<void> togglePip() async {
+    if (Platform.isAndroid || Platform.isIOS) {
+      await _toggleMobilePip();
+    }
+  }
+
+  Future<void> _toggleMobilePip() async {
+    if (!_pipSupported) {
+      snackBar('PiP not supported on this device');
+      return;
+    }
+
+    try {
+      final status = await FlPiP().isActive;
+      if (status?.status == PiPStatus.enabled) {
+        await FlPiP().disable();
+        isPipActive.value = false;
+      } else {
+        await FlPiP().enable(
+          android: FlPiPAndroidConfig(
+            aspectRatio: const Rational(16, 9),
+          ),
+          ios: FlPiPiOSConfig(),
+        );
+        isPipActive.value = true;
+      }
+    } catch (e) {
+      Logger.e('PiP toggle error: $e');
+      snackBar('Failed to toggle PiP');
+    }
   }
 
   static void initializePlayerControlsIfNeeded(Settings settings) {
@@ -302,6 +423,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       final Map<String, dynamic> defaultConfig = {
         'leftButtonIds': ['playlist'],
         'rightButtonIds': [
+          'pip',
           'shaders',
           'subtitles',
           'server',
@@ -314,6 +436,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         'hiddenButtonIds': [],
         'buttonConfigs': {
           'playlist': {'visible': true},
+          'pip': {'visible': true},
           'shaders': {'visible': true},
           'subtitles': {'visible': true},
           'server': {'visible': true},
@@ -360,6 +483,46 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         _trackLocally();
       }
     }
+
+    if (Platform.isAndroid || Platform.isIOS) {
+      if (state == AppLifecycleState.inactive ||
+          state == AppLifecycleState.paused) {
+        _onAppBackgrounded();
+      } else if (state == AppLifecycleState.resumed) {
+        _onAppResumed();
+      }
+    }
+  }
+
+  Future<void> _onAppBackgrounded() async {
+    if (!_pipSupported || !settings.enablePiP) return;
+    try {
+      final status = await FlPiP().isActive;
+      if (status?.status == PiPStatus.enabled) {
+      
+        showControls.value = false;
+        isPipActive.value = true;
+      } else if (isPlaying.value) {
+        showControls.value = false;
+        await FlPiP().enable(
+          android: FlPiPAndroidConfig(
+            aspectRatio: const Rational(16, 9),
+          ),
+          ios: FlPiPiOSConfig(),
+        );
+        isPipActive.value = true;
+      }
+    } catch (_) {}
+  }
+
+  Future<void> _onAppResumed() async {
+    try {
+      final status = await FlPiP().isActive;
+      if (status?.status == PiPStatus.enabled) {
+        await FlPiP().disable();
+      }
+      isPipActive.value = false;
+    } catch (_) {}
   }
 
   void _initDatabaseVars() {
@@ -802,6 +965,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       if (e) {
         _resetAutoHideTimer();
       }
+      _pipControls.updatePlaybackState(
+        isPlaying: e,
+        enablePiP: settings.enablePiP,
+      );
+
       if (isOffline.value) return;
       if (!e) {
         DiscordRPCController.instance.updateAnimePresencePaused(
@@ -1145,6 +1313,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   @override
   Future<void> dispose() async {
     super.dispose();
+    _pipControls.dispose();
+
     try {
       await _trackLocally(syncToCloud: false);
       if (!isOffline.value) {
@@ -1158,6 +1328,13 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       }
     } catch (e) {
       Logger.e('Error saving during dispose: $e');
+    }
+
+    if (Platform.isAndroid || Platform.isIOS) {
+      try {
+        final status = await FlPiP().isActive;
+        if (status?.status == PiPStatus.enabled) await FlPiP().disable();
+      } catch (_) {}
     }
 
     _revertOrientations();
@@ -1257,8 +1434,14 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void togglePlayPause() {
-    _basePlayer.playOrPause();
-    onUserInteraction();
+    if (isPlaying.value) {
+      pause();
+    } else {
+      play();
+    }
+    if (!isPipActive.value) {
+      onUserInteraction();
+    }
   }
 
   void toggleMute() {

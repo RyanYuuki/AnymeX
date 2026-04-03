@@ -30,6 +30,7 @@ class PlayerSettings {
   double subtitleBottomMargin;
   String subtitleOutlineType;
   bool enableScreenshot;
+  bool enablePiP;
   bool playerMenuAnimation;
 
   PlayerSettings({
@@ -62,6 +63,7 @@ class PlayerSettings {
     this.subtitleOutlineType = "Outline",
     this.autoSkipFiller = false,
     this.enableScreenshot = true,
+    this.enablePiP = true,
     this.playerMenuAnimation = true,
   });
 
@@ -130,6 +132,7 @@ class PlayerSettings {
           PlayerSettingsKeys.autoSkipFiller.get<bool>(defaults.autoSkipFiller),
       enableScreenshot: PlayerSettingsKeys.enableScreenshot
           .get<bool>(defaults.enableScreenshot),
+      enablePiP: PlayerSettingsKeys.enablePiP.get<bool>(defaults.enablePiP),
       playerMenuAnimation: PlayerSettingsKeys.playerMenuAnimation
           .get<bool>(defaults.playerMenuAnimation),
     );

@@ -81,6 +81,7 @@ class BetterPlayerImpl extends BasePlayer {
     WakelockPlus.enable();
     final betterPlayerConfiguration = BetterPlayerConfiguration(
       autoPlay: config.autoPlay,
+      handleLifecycle: false,
       autoDetectFullscreenDeviceOrientation: true,
       subtitlesConfiguration: BetterPlayerSubtitlesConfiguration(
         fontSize: config.useLibass ? 14 : 0,
