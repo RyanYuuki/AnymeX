@@ -11,6 +11,7 @@ import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/controllers/services/mal/mal_service.dart';
 import 'package:anymex/controllers/services/simkl/simkl_service.dart';
 import 'package:anymex/controllers/services/storage/storage_manager_service.dart';
+import 'package:anymex/controllers/services/underrated_service.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/sync/gist_sync_controller.dart';
@@ -161,8 +162,10 @@ void main(List<String> args) async {
 }
 
 void _initializeGetxController() async {
+  Get.put(Settings()); 
   Get.put(OfflineStorageController());
   Get.put(AnilistAuth());
+  Get.put(UnderratedService()); 
   Get.put(AnilistData());
   Get.put(SimklService());
   Get.put(MalService());
@@ -170,7 +173,6 @@ void _initializeGetxController() async {
   if (!Get.isRegistered<SourceController>()) {
     Get.put(SourceController());
   }
-  Get.put(Settings());
   Get.put(ServiceHandler());
   Get.put(GreetingController());
   Get.put(CommentumService());
@@ -441,13 +443,12 @@ class _FilterScreenState extends State<FilterScreen> {
                         onTap: _onItemTapped,
                         label: 'Library',
                       ),
-                      if (sourceController.shouldShowExtensions.value)
-                        NavItem(
-                          unselectedIcon: Icons.extension_outlined,
-                          selectedIcon: Icons.extension_rounded,
-                          onTap: _onItemTapped,
-                          label: "Extensions",
-                        ),
+                      NavItem(
+                        unselectedIcon: Icons.extension_outlined,
+                        selectedIcon: Icons.extension_rounded,
+                        onTap: _onItemTapped,
+                        label: "Extensions",
+                      ),
                     ],
                   ),
                 ],

@@ -1,5 +1,6 @@
 import 'package:anymex/screens/settings/sub_settings/settings_about.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
@@ -300,45 +301,48 @@ class CustomListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return InkWell(
-      onTap: onTap ?? () {},
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-        child: Row(
-          children: [
-            IconTheme(
-              data:
-                  IconThemeData(color: theme.colorScheme.onSecondaryContainer),
-              child: leading,
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurface.opaque(0.9),
-                        fontFamily: 'Poppins-SemiBold'),
-                  ),
-                  const SizedBox(height: 1),
-                  if (subtitle != null)
-                    Text(
-                      subtitle!,
-                      style: TextStyle(
-                          fontSize: 12,
-                          color: theme.colorScheme.onSurface.opaque(0.7)),
-                    )
-                ],
-              ),
-            ),
-            if (trailing != null)
+    return HighlightDecorator(
+      title: title,
+      child: InkWell(
+        onTap: onTap ?? () {},
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+          child: Row(
+            children: [
               IconTheme(
-                data: IconThemeData(color: theme.colorScheme.onSurface),
-                child: trailing!,
+                data:
+                    IconThemeData(color: theme.colorScheme.onSecondaryContainer),
+                child: leading,
               ),
-          ],
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurface.opaque(0.9),
+                          fontFamily: 'Poppins-SemiBold'),
+                    ),
+                    const SizedBox(height: 1),
+                    if (subtitle != null)
+                      Text(
+                        subtitle!,
+                        style: TextStyle(
+                            fontSize: 12,
+                            color: theme.colorScheme.onSurface.opaque(0.7)),
+                      )
+                  ],
+                ),
+              ),
+              if (trailing != null)
+                IconTheme(
+                  data: IconThemeData(color: theme.colorScheme.onSurface),
+                  child: trailing!,
+                ),
+            ],
+          ),
         ),
       ),
     );

@@ -11,7 +11,7 @@ import 'package:anymex/utils/updater.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-final settingsController = Get.put(Settings());
+Settings get settingsController => Get.find<Settings>();
 
 class Settings extends GetxController {
   late Rx<UISettings> uiSettings;

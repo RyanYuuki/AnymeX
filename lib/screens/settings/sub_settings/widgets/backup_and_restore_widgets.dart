@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:get/get.dart';
 
@@ -660,23 +661,29 @@ class ActionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return GlassContainer(
-      child: ListTile(
-        onTap: onTap,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-        leading: Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: color.opaque(0.1),
-            borderRadius: BorderRadius.circular(14),
+    return HighlightDecorator(
+      title: title,
+      child: GlassContainer(
+        child: ListTile(
+          onTap: onTap,
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          leading: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: color.opaque(0.1),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(icon, color: color),
           ),
-          child: Icon(icon, color: color),
+          title:
+              Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+          subtitle: Text(subtitle,
+              style: TextStyle(
+                  color: theme.colorScheme.onSurfaceVariant, fontSize: 12)),
+          trailing:
+              Icon(Icons.chevron_right, color: theme.colorScheme.outline),
         ),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text(subtitle,
-            style: TextStyle(
-                color: theme.colorScheme.onSurfaceVariant, fontSize: 12)),
-        trailing: Icon(Icons.chevron_right, color: theme.colorScheme.outline),
       ),
     );
   }

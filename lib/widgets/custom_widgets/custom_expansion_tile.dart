@@ -3,23 +3,26 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/common/custom_tiles.dart';
 
 class AnymexExpansionTile extends StatelessWidget {
   final String title;
   final Widget content;
   final bool initialExpanded;
 
-  AnymexExpansionTile({
+  const AnymexExpansionTile({
     super.key,
     required this.title,
     required this.content,
     this.initialExpanded = false,
   });
 
-  final RxBool _isExpanded = false.obs;
-
   @override
   Widget build(BuildContext context) {
+    final highlightProvider = SettingsHighlightProvider.of(context);
+    final shouldExpand =
+        initialExpanded || (highlightProvider?.expansionTitle == title);
+
     return AnymexCard(
       child: ExpansionTile(
         shape: ShapeBorder.lerp(
@@ -33,10 +36,11 @@ class AnymexExpansionTile extends StatelessWidget {
           variant: TextVariant.semiBold,
           color: context.colors.primary,
         ),
-        initiallyExpanded: initialExpanded,
-        onExpansionChanged: (expanded) => _isExpanded.value = expanded,
+        initiallyExpanded: shouldExpand,
         childrenPadding: const EdgeInsets.all(8),
-        children: [content],
+        children: [
+          ExpansionSectionScope(sectionTitle: title, child: content),
+        ],
       ),
     );
   }

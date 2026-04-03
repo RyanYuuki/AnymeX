@@ -157,6 +157,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     Future.delayed(const Duration(milliseconds: 500), () {
       _checkAnimePresence();
     });
+    
     _fetchAnilistData();
   }
 
@@ -324,9 +325,12 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     final key =
         '${sourceController.activeSource.value?.id}-${anilistData?.id}-${anilistData?.serviceType.index}';
     final savedTitle = DynamicKeys.mappedMediaTitle.get<String?>(key, null);
-    final mappedData = await mapMedia(
+    final mappedData = await SourceMapper.mapMedia(
         formatTitles(anilistData ?? widget.media) ?? [], searchedTitle,
-        savedTitle: savedTitle);
+        mediaId: widget.media.id.toString(),
+        type: ItemType.anime,
+        savedTitle: savedTitle,
+        synonyms: anilistData?.synonyms ?? []);
     if (_isStaleSourceRequest(activeRequestId) || !mounted) {
       return;
     }
@@ -572,7 +576,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
           ),
           if (anilistData != null) ...[
             Padding(
-              padding: const EdgeInsets.fromLTRB(20.0, 10, 20, 0),
+              padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
               child: Column(
                 children: [
                   Obx(() {
@@ -878,7 +882,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Column(
             children: [
               const SizedBox(height: 20),

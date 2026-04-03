@@ -86,8 +86,8 @@ class _SettingsUiState extends State<SettingsUi> {
                                     }),
                                 CustomSwitchTile(
                                     icon: Icons.colorize,
-                                    title: "Transculent Nav",
-                                    description: "Enable transculent tab bar",
+                                    title: "Translucent Nav",
+                                    description: "Enable translucent tab bar",
                                     switchValue: settings.transculentBar,
                                     onChanged: (val) {
                                       settings.transculentBar = val;

@@ -18,7 +18,8 @@ class SettingsModeration extends StatefulWidget {
 
 class _SettingsModerationState extends State<SettingsModeration> {
   final commentumService = Get.find<CommentumService>();
-  final RxList<Map<String, dynamic>> moderationQueue = <Map<String, dynamic>>[].obs;
+  final RxList<Map<String, dynamic>> moderationQueue =
+      <Map<String, dynamic>>[].obs;
   final RxBool isLoadingQueue = false.obs;
 
   @override
@@ -60,58 +61,56 @@ class _SettingsModerationState extends State<SettingsModeration> {
             ],
           ),
           const SizedBox(height: 30),
-          
+
           // User Role Display
           Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                color: Theme.of(context)
-                    .colorScheme
-                    .surfaceContainer
-                    .opaque(0.3)),
+                color:
+                    Theme.of(context).colorScheme.surfaceContainer.opaque(0.3)),
             child: Column(
               children: [
                 Obx(() => CustomTile(
-                  icon: Icons.admin_panel_settings,
-                  title: "Your Role",
-                  description: commentumService.currentUserRole.value.toUpperCase(),
-                  postFix: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: _getRoleColor(),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      commentumService.currentUserRole.value.toUpperCase(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
+                      icon: Icons.admin_panel_settings,
+                      title: "Your Role",
+                      description:
+                          commentumService.currentUserRole.value.toUpperCase(),
+                      postFix: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: _getRoleColor(),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          commentumService.currentUserRole.value.toUpperCase(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                )),
+                    )),
               ],
             ),
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Moderation Actions
           Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                color: Theme.of(context)
-                    .colorScheme
-                    .surfaceContainer
-                    .opaque(0.3)),
+                color:
+                    Theme.of(context).colorScheme.surfaceContainer.opaque(0.3)),
             child: Column(
               children: [
                 CustomTile(
                     icon: Icons.report_outlined,
                     title: "Moderation Queue",
                     description: "${moderationQueue.length} pending reports",
-                    postFix: isLoadingQueue.value 
+                    postFix: isLoadingQueue.value
                         ? const SizedBox(
                             width: 20,
                             height: 20,
@@ -138,17 +137,13 @@ class _SettingsModerationState extends State<SettingsModeration> {
               ],
             ),
           ),
-          
           const SizedBox(height: 20),
-          
           // Quick Actions
           Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                color: Theme.of(context)
-                    .colorScheme
-                    .surfaceContainer
-                    .opaque(0.3)),
+                color:
+                    Theme.of(context).colorScheme.surfaceContainer.opaque(0.3)),
             child: Column(
               children: [
                 CustomTile(
@@ -175,17 +170,15 @@ class _SettingsModerationState extends State<SettingsModeration> {
               ],
             ),
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Settings
           Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                color: Theme.of(context)
-                    .colorScheme
-                    .surfaceContainer
-                    .opaque(0.3)),
+                color:
+                    Theme.of(context).colorScheme.surfaceContainer.opaque(0.3)),
             child: Column(
               children: [
                 CustomTile(
@@ -205,7 +198,7 @@ class _SettingsModerationState extends State<SettingsModeration> {
               ],
             ),
           ),
-          
+
           30.height(),
         ],
       ),
@@ -231,7 +224,7 @@ class _SettingsModerationState extends State<SettingsModeration> {
       snackBar('You need moderator permissions to access this panel');
       return;
     }
-    
+
     // Navigate to moderation queue (to be implemented)
     snackBar('Moderation queue interface coming soon!');
   }
@@ -241,7 +234,7 @@ class _SettingsModerationState extends State<SettingsModeration> {
       snackBar('You need admin permissions to access this panel');
       return;
     }
-    
+
     // Navigate to user management (to be implemented)
     snackBar('User management interface coming soon!');
   }
@@ -251,7 +244,8 @@ class _SettingsModerationState extends State<SettingsModeration> {
       snackBar('You need moderator permissions to access this panel');
       return;
     }
-    
+    if (!mounted) return;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -261,7 +255,8 @@ class _SettingsModerationState extends State<SettingsModeration> {
           children: [
             Text('Moderation history will be available in future updates.'),
             SizedBox(height: 8),
-            Text('Planned features:', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text('Planned features:',
+                style: TextStyle(fontWeight: FontWeight.bold)),
             BulletPoint(text: 'Filter by action type'),
             BulletPoint(text: 'Filter by date range'),
             BulletPoint(text: 'Filter by moderator'),
@@ -284,7 +279,8 @@ class _SettingsModerationState extends State<SettingsModeration> {
       snackBar('You need moderator permissions to access this panel');
       return;
     }
-    
+    if (!mounted) return;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -292,9 +288,11 @@ class _SettingsModerationState extends State<SettingsModeration> {
         content: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('User search functionality will be available in future updates.'),
+            Text(
+                'User search functionality will be available in future updates.'),
             SizedBox(height: 8),
-            Text('Planned features:', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text('Planned features:',
+                style: TextStyle(fontWeight: FontWeight.bold)),
             BulletPoint(text: 'Search by username'),
             BulletPoint(text: 'Search by user ID'),
             BulletPoint(text: 'Search by comment history'),
@@ -316,7 +314,7 @@ class _SettingsModerationState extends State<SettingsModeration> {
       snackBar('You need moderator permissions to access this panel');
       return;
     }
-    
+    if (!mounted) return;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -324,9 +322,11 @@ class _SettingsModerationState extends State<SettingsModeration> {
         content: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Comment search functionality will be available in future updates.'),
+            Text(
+                'Comment search functionality will be available in future updates.'),
             SizedBox(height: 8),
-            Text('Planned features:', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text('Planned features:',
+                style: TextStyle(fontWeight: FontWeight.bold)),
             BulletPoint(text: 'Search by content'),
             BulletPoint(text: 'Search by username'),
             BulletPoint(text: 'Search by date range'),
@@ -348,7 +348,7 @@ class _SettingsModerationState extends State<SettingsModeration> {
       snackBar('You need moderator permissions to access this panel');
       return;
     }
-    
+    if (!mounted) return;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -358,7 +358,8 @@ class _SettingsModerationState extends State<SettingsModeration> {
           children: [
             Text('Moderation statistics will be available in future updates.'),
             SizedBox(height: 8),
-            Text('Planned metrics:', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text('Planned metrics:',
+                style: TextStyle(fontWeight: FontWeight.bold)),
             BulletPoint(text: 'Reports resolved'),
             BulletPoint(text: 'Users warned/banned'),
             BulletPoint(text: 'Comments moderated'),
@@ -381,7 +382,7 @@ class _SettingsModerationState extends State<SettingsModeration> {
       snackBar('You need moderator permissions to access this panel');
       return;
     }
-    
+    if (!mounted) return;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -391,7 +392,8 @@ class _SettingsModerationState extends State<SettingsModeration> {
           children: [
             Text('Notification settings will be available in future updates.'),
             SizedBox(height: 8),
-            Text('Planned notifications:', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text('Planned notifications:',
+                style: TextStyle(fontWeight: FontWeight.bold)),
             BulletPoint(text: 'New reports'),
             BulletPoint(text: 'Report resolutions'),
             BulletPoint(text: 'User appeals'),
@@ -413,7 +415,7 @@ class _SettingsModerationState extends State<SettingsModeration> {
       snackBar('You need admin permissions to access this panel');
       return;
     }
-    
+    if (!mounted) return; 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -421,9 +423,11 @@ class _SettingsModerationState extends State<SettingsModeration> {
         content: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Moderation rules configuration will be available in future updates.'),
+            Text(
+                'Moderation rules configuration will be available in future updates.'),
             SizedBox(height: 8),
-            Text('Planned features:', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text('Planned features:',
+                style: TextStyle(fontWeight: FontWeight.bold)),
             BulletPoint(text: 'Custom banned keywords'),
             BulletPoint(text: 'Auto-moderation thresholds'),
             BulletPoint(text: 'Role-specific permissions'),
@@ -443,7 +447,7 @@ class _SettingsModerationState extends State<SettingsModeration> {
 
 class BulletPoint extends StatelessWidget {
   final String text;
-  
+
   const BulletPoint({super.key, required this.text});
 
   @override

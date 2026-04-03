@@ -17,6 +17,7 @@ import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/no_source.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_dropdown.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
@@ -153,7 +154,8 @@ class _EpisodeSectionState extends State<EpisodeSection> {
 
     try {
       final sourceController = Get.find<ServiceHandler>().extensionService;
-      sourceController.getExtensionByValue(value);
+      sourceController.getExtensionByValue(value,
+          mediaId: widget.anilistData?.id?.toString());
 
       _requestCounter.value++;
       int currentRequestId = _requestCounter.value;
@@ -305,12 +307,13 @@ class _EpisodeSectionState extends State<EpisodeSection> {
         builder: (context, snapshot) {
           if (widget.episodeError.value &&
               (widget.episodeList?.value.isEmpty ?? true)) {
-            return const SizedBox(
+            return SizedBox(
               height: 300,
               child: Center(
                 child: AnymexText(
-                  text:
-                      "Looks like even the episodes are avoiding your taste in shows\n:(",
+                  text: snapshot.error.toString().contains('lateinit')
+                      ? "Restart the App Gang"
+                      : "Looks like even the episodes are avoiding your taste in shows\n:(",
                   size: 20,
                   textAlign: TextAlign.center,
                   variant: TextVariant.semiBold,
@@ -344,12 +347,65 @@ class _EpisodeSectionState extends State<EpisodeSection> {
     });
   }
 
+  bool get _hasEpisodeSettingsOption =>
+      widget.showAnify.value && !widget.disableAnifyForCurrentSource.value;
+
+  void _showEpisodeSettingsDialog(BuildContext context) {
+    final tempUseAnify = widget.isAnify.value.obs;
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return Obx(
+          () => AnymexDialog(
+            title: 'Episode List Settings',
+            onConfirm: () {
+              widget.isAnify.value = tempUseAnify.value;
+            },
+            contentWidget: _ProviderOptionTile(
+              title: 'Anify / Kitsu',
+              subtitle: 'Use enhanced episode metadata and artwork.',
+              isSelected: tempUseAnify.value,
+              onTap: () => tempUseAnify.value = !tempUseAnify.value,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildListShell({
+    required BuildContext context,
+    required Widget child,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainer.opaque(0.3),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: context.colors.outline.opaque(0.2, iReallyMeanIt: true),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: context.colors.shadow.opaque(0.08, iReallyMeanIt: true),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final serviceHandler = Get.find<ServiceHandler>();
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -378,19 +434,19 @@ class _EpisodeSectionState extends State<EpisodeSection> {
               child: Row(
                 children: [
                   Expanded(
-                    child: AnymexTextSpans(
-                      spans: [
-                        AnymexTextSpan(
-                          text: widget.searchedTitle.value,
-                          variant: TextVariant.semiBold,
-                          size: 14,
-                          color: widget.searchedTitle.value
-                                  .contains('No Match Found')
-                              ? context.colors.error
-                              : context.colors.primary,
-                        )
-                      ],
-                    ),
+                    child: Obx(() => AnymexTextSpans(
+                          spans: [
+                            AnymexTextSpan(
+                              text: widget.searchedTitle.value,
+                              variant: TextVariant.semiBold,
+                              size: 14,
+                              color: widget.searchedTitle.value
+                                      .contains('No Match Found')
+                                  ? context.colors.error
+                                  : context.colors.primary,
+                            )
+                          ],
+                        )),
                   ),
                   const SizedBox(width: 12),
                   AnymexOnTap(
@@ -414,6 +470,7 @@ class _EpisodeSectionState extends State<EpisodeSection> {
                               '${sourceController.activeSource.value?.id}-${widget.anilistData.id}-${widget.anilistData.serviceType.index}';
                           DynamicKeys.mappedMediaTitle.set(key, manga.title);
                         },
+                        mediaId: widget.anilistData.id.toString(),
                       );
                     },
                     child: Container(
@@ -459,45 +516,137 @@ class _EpisodeSectionState extends State<EpisodeSection> {
             Obx(() => buildLanguageDropdown()),
           ],
           const SizedBox(height: 20),
-          // Episode List
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                    const AnymexText(
-                      text: "Episodes",
-                      variant: TextVariant.bold,
-                      size: 18,
-                    ),
-                    Obx(() {
-                      if (widget.showAnify.value &&
-                          !widget.disableAnifyForCurrentSource.value) {
-                        return Row(
-                          children: [
-                            const AnymexText(
-                            text: "Anify / Kitsu",
-                            variant: TextVariant.semiBold,
-                            size: 16,
+          _buildListShell(
+            context: context,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Obx(
+                  () => Row(
+                    children: [
+                      const Expanded(
+                        child: AnymexText(
+                          text: "Episodes",
+                          variant: TextVariant.bold,
+                          size: 18,
+                        ),
+                      ),
+                      if (_hasEpisodeSettingsOption) ...[
+                        AnymexOnTap(
+                          onTap: () => _showEpisodeSettingsDialog(context),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 10,
+                            ),
+                            decoration: BoxDecoration(
+                              color: context.colors.primaryContainer.opaque(0.3),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: context.colors.outline.opaque(0.2),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.settings_outlined,
+                                  size: 16,
+                                  color: context.colors.primary,
+                                ),
+                                const SizedBox(width: 8),
+                                AnymexText(
+                                  text: widget.isAnify.value
+                                      ? 'Anify / Kitsu'
+                                      : 'Default',
+                                  size: 13,
+                                  variant: TextVariant.semiBold,
+                                  color: context.colors.primary,
+                                ),
+                              ],
+                            ),
                           ),
-                          Switch(
-                              value: widget.isAnify.value,
-                              onChanged: (v) {
-                                widget.isAnify.value = v;
-                              }),
-                        ],
-                      );
-                    } else {
-                      return const SizedBox.shrink();
-                    }
-                  }),
-                ],
-              ),
-              buildEpisodeContent(),
-            ],
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                buildEpisodeContent(),
+              ],
+            ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ProviderOptionTile extends StatelessWidget {
+  const _ProviderOptionTile({
+    required this.title,
+    required this.subtitle,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  final String title;
+  final String subtitle;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? context.colors.primaryContainer.opaque(0.35)
+                : context.colors.surfaceContainerHighest.opaque(0.35),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: isSelected
+                  ? context.colors.primary.opaque(0.4)
+                  : context.colors.outline.opaque(0.2),
+            ),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AnymexText(
+                      text: title,
+                      variant: TextVariant.semiBold,
+                    ),
+                    const SizedBox(height: 4),
+                    AnymexText(
+                      text: subtitle,
+                      size: 12,
+                      color: context.colors.onSurface.opaque(0.7),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              Icon(
+                isSelected
+                    ? Icons.check_circle_rounded
+                    : Icons.radio_button_unchecked_rounded,
+                color: isSelected
+                    ? context.colors.primary
+                    : context.colors.onSurface.opaque(0.5),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

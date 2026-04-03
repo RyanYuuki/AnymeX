@@ -1,5 +1,3 @@
-// ignore_for_file: invalid_use_of_protected_member
-
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
@@ -34,6 +32,7 @@ class ChapterSection extends StatelessWidget {
     String title,
     Function(dynamic manga) onMangaSelected, {
     required bool isManga,
+    String? mediaId,
   }) showWrongTitleModal;
 
   const ChapterSection({
@@ -49,10 +48,39 @@ class ChapterSection extends StatelessWidget {
 
   String _sourceDropdownValue(Source source) => source.id.toString();
 
+  Widget _buildListShell({
+    required BuildContext context,
+    required Widget child,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainer.opaque(0.3),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: context.colors.outline.opaque(0.2, iReallyMeanIt: true),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context)
+                .colorScheme
+                .shadow
+                .opaque(0.08, iReallyMeanIt: true),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Obx(() => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -113,6 +141,7 @@ class ChapterSection extends StatelessWidget {
                             DynamicKeys.mappedMediaTitle.set(key, manga.title);
                           },
                           isManga: true,
+                          mediaId: anilistData.id.toString(),
                         );
                       },
                       child: Container(
@@ -157,35 +186,42 @@ class ChapterSection extends StatelessWidget {
               Obx(() => buildMangaSourceDropdown()),
               Obx(() => buildLanguageDropdown()),
               const SizedBox(height: 20),
-              const Row(
-                children: [
-                  AnymexText(
-                    text: "Chapters",
-                    variant: TextVariant.bold,
-                    size: 18,
-                  ),
-                ],
-              ),
-              if (sourceController.activeMangaSource.value == null)
-                const Padding(
-                  padding: EdgeInsets.only(top: 20),
-                  child: SizedBox(
-                    height: 320,
-                    child: NoSourceSelectedWidget(),
-                  ),
-                )
-              else if (chapterList.value.isEmpty)
-                const SizedBox(
-                  height: 500,
-                  child: Center(child: AnymexProgressIndicator()),
-                )
-              else
-                searchedTitle.value.toLowerCase() != "no match found"
-                    ? ChapterListBuilder(
+              _buildListShell(
+                context: context,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const AnymexText(
+                          text: "Chapters",
+                          variant: TextVariant.bold,
+                          size: 18,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    if (sourceController.activeMangaSource.value == null)
+                      const SizedBox(
+                        height: 320,
+                        child: NoSourceSelectedWidget(),
+                      )
+                    else if (chapterList.value.isEmpty)
+                      const SizedBox(
+                        height: 500,
+                        child: Center(child: AnymexProgressIndicator()),
+                      )
+                    else if (searchedTitle.value.toLowerCase() !=
+                        "no match found")
+                      ChapterListBuilder(
                         chapters: chapterList,
                         anilistData: anilistData,
                       )
-                    : const Center(child: AnymexText(text: "No Match Found"))
+                    else
+                      const Center(child: AnymexText(text: "No Match Found")),
+                  ],
+                ),
+              ),
             ],
           ),
         ));
@@ -259,7 +295,8 @@ class ChapterSection extends StatelessWidget {
       onChanged: (DropdownItem item) async {
         chapterList.value = [];
         try {
-          sourceController.getMangaExtensionByName(item.value);
+          sourceController.getMangaExtensionByName(item.value,
+              mediaId: anilistData.id.toString());
           await mapToAnilist();
         } catch (e) {
           Logger.i(e.toString());

@@ -44,11 +44,11 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
         child: AnimatedSlide(
           offset:
               controller.showControls.value ? Offset.zero : const Offset(0, -1),
-          duration: const Duration(milliseconds: 360),
+          duration: controller.overlayAnimationDuration(360),
           curve: Curves.easeOutCubic,
           child: AnimatedOpacity(
             opacity: controller.showControls.value ? 1.0 : 0.0,
-            duration: const Duration(milliseconds: 280),
+            duration: controller.overlayAnimationDuration(280),
             child: SafeArea(
               bottom: false,
               left: false,
@@ -185,10 +185,10 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
           alignment: Alignment.center,
           child: AnimatedOpacity(
             opacity: controller.showControls.value ? 1 : 0,
-            duration: const Duration(milliseconds: 220),
+            duration: controller.overlayAnimationDuration(220),
             child: AnimatedScale(
               scale: controller.showControls.value ? 1 : 0.88,
-              duration: const Duration(milliseconds: 320),
+              duration: controller.overlayAnimationDuration(320),
               curve: Curves.easeOutBack,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -300,11 +300,11 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
           ignoring: !bottomBarVisible,
           child: AnimatedSlide(
             offset: bottomBarVisible ? Offset.zero : const Offset(0, 1),
-            duration: const Duration(milliseconds: 360),
+            duration: controller.overlayAnimationDuration(360),
             curve: Curves.easeOutCubic,
             child: AnimatedOpacity(
               opacity: bottomBarVisible ? 1 : 0,
-              duration: const Duration(milliseconds: 240),
+              duration: controller.overlayAnimationDuration(240),
               child: showControls
                   ? SafeArea(
                       top: false,

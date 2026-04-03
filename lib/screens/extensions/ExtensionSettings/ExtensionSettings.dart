@@ -105,6 +105,8 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
                     final p = pref.switchPreferenceCompat!;
                     return SwitchListTile(
                       title: TitleText(p.title ?? ''),
+                      subtitle:
+                          p.summary != null ? SubtitleText(p.summary!) : null,
                       value: p.value ?? false,
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16.0, vertical: 0),
@@ -131,8 +133,10 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
                             p.valueIndex ?? 0,
                             (int index) {
                               p.valueIndex = index;
+                              final newValue = p.entryValues?[index];
+                              p.value = newValue;
                               widget.source.methods
-                                  .setPreference(pref, p.entryValues?[index]);
+                                  .setPreference(pref, newValue);
                               setState(() {});
                             },
                           )
