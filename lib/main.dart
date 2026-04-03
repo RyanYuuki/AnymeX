@@ -26,6 +26,7 @@ import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/my_library.dart';
 import 'package:anymex/screens/manga/home_page.dart';
 import 'package:anymex/services/commentum_service.dart';
+import 'package:anymex/services/touch_grass_service.dart';
 import 'package:anymex/utils/external_font_loader.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/deeplink.dart';
@@ -175,6 +176,7 @@ void _initializeGetxController() async {
   Get.put(ServiceHandler());
   Get.put(GreetingController());
   Get.put(CommentumService());
+  Get.put(TouchGrassService(), permanent: true);
   Get.put(CommentPreloader());
   Get.put(GistSyncController(), permanent: true);
   Get.lazyPut(() => CacheController());

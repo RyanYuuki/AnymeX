@@ -12,6 +12,7 @@ import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_reader.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_storage_manager.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_theme.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_touch_grass.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_ui.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';

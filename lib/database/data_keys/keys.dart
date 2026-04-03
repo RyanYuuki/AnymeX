@@ -224,6 +224,13 @@ enum PlayerSettingsKeys {
   playerMenuAnimation,
 }
 
+enum TouchGrassKeys {
+  trackingEnabled,
+  remindersEnabled,
+  reminderMinutes,
+  weeklyUsage,
+}
+
 enum UISettingsKeys {
   glowMultiplier,
   radiusMultiplier,
