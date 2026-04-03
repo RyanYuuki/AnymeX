@@ -5,6 +5,7 @@ import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/screens/manga/widgets/reader/tabbed_reader_settings.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -132,15 +133,14 @@ class ReaderTopControls extends StatelessWidget {
                     Row(
                       children: [
                         Expanded(
-                          child: Text(
-                            controller.currentChapter.value?.title ??
+                          child: AnymexText(
+                            text: controller.currentChapter.value?.title ??
                                 'Unknown Chapter',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            size: 12,
+                            variant: TextVariant.semiBold,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
+                            isMarquee: true,
                           ),
                         ),
                         const Icon(Icons.arrow_drop_down, size: 16),
@@ -477,15 +477,14 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                       if (chapter.title != null && chapter.title!.isNotEmpty)
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                          child: Text(
-                            chapter.title!,
+                          child: AnymexText(
+                            text: chapter.title!,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: isCurrent ? Colors.white70 : Colors.grey,
-                            ),
+                            size: 10,
+                            color: isCurrent ? Colors.white70 : Colors.grey,
                             textAlign: TextAlign.center,
+                            isMarquee: true,
                           ),
                         ),
                     ],
@@ -530,12 +529,11 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
         dense: true,
-        title: Text(
-          displayTitle,
-          style: TextStyle(
-            fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
-            color: isCurrent ? Theme.of(context).colorScheme.primary : null,
-          ),
+        title: AnymexText(
+          text: displayTitle,
+          variant: isCurrent ? TextVariant.bold : TextVariant.regular,
+          color: isCurrent ? Theme.of(context).colorScheme.primary : null,
+          isMarquee: true,
         ),
         trailing: isCurrent
             ? Icon(Icons.check_circle_rounded,

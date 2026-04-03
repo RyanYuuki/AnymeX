@@ -893,35 +893,36 @@ class ContinueEpisodeButton extends StatelessWidget {
                   border: BorderSide(color: Colors.transparent),
                   color: Colors.transparent,
                   radius: borderRadius,
-                  child: SizedBox(
-                    width: getResponsiveValue(context,
-                        mobileValue: (Get.width * 0.8), desktopValue: null),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          episodeLabel.toUpperCase(),
-                          style: textStyle ??
-                              TextStyle(
-                                color: textColor,
-                                fontFamily: 'Poppins-SemiBold',
-                              ),
-                          textAlign: TextAlign.center,
-                        ),
-                        PlatformBuilder(
-                            androidBuilder: SizedBox.shrink(),
-                            desktopBuilder: Column(
-                              children: [
-                                const SizedBox(height: 3),
-                                Container(
-                                  color: context.colors.primary,
-                                  height: 2,
-                                  width: 6 * episodeLabel.length.toDouble(),
-                                )
-                              ],
-                            ))
-                      ],
+                  child: Center(
+                    child: SizedBox(
+                      width: getResponsiveValue(context,
+                          mobileValue: (Get.width * 0.8), desktopValue: null),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          AnymexText(
+                            text: episodeLabel.toUpperCase(),
+                            variant: TextVariant.semiBold,
+                            color: textColor,
+                            textAlign: TextAlign.center,
+                            isMarquee: true,
+                          ),
+                          PlatformBuilder(
+                              androidBuilder: SizedBox.shrink(),
+                              desktopBuilder: Column(
+                                children: [
+                                  const SizedBox(height: 3),
+                                  Container(
+                                    color: context.colors.primary,
+                                    height: 2,
+                                    width: 6 * episodeLabel.length.toDouble(),
+                                  )
+                                ],
+                              ))
+                        ],
+                      ),
                     ),
                   ),
                 ),

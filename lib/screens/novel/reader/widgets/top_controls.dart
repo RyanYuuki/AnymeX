@@ -2,6 +2,7 @@ import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/screens/novel/reader/controller/reader_controller.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -104,16 +105,15 @@ class NovelTopControls extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            controller.currentChapter.value.title ??
+                          AnymexText(
+                            text: controller.currentChapter.value.title ??
                                 'Unknown Chapter',
-                            style: TextStyle(
-                              color: context.colors.onSurface,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            size: 12,
+                            variant: TextVariant.semiBold,
+                            color: context.colors.onSurface,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
+                            isMarquee: true,
                           ),
                           Text(
                             'Chapter ${controller.currentChapter.value.number?.round() ?? '-'} of ${controller.chapters.last.number?.round() ?? '-'}',

@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:anymex/screens/novel/reader/controller/reader_controller.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -184,16 +185,15 @@ class NovelBottomControls extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: Text(
-                      controller.currentChapter.value.title ??
+                    child: AnymexText(
+                      text: controller.currentChapter.value.title ??
                           'Unknown Chapter',
-                      style: TextStyle(
-                        color: context.colors.onSurface.opaque(0.8),
-                        fontSize: isDesktop ? 14 : 12,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      size: isDesktop ? 14 : 12,
+                      variant: TextVariant.regular,
+                      color: context.colors.onSurface.opaque(0.8),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
+                      isMarquee: true,
                     ),
                   ),
                   if (controller.showReadingProgress.value)
@@ -268,16 +268,15 @@ class NovelBottomControls extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: Text(
-                      controller.currentChapter.value.title ??
+                    child: AnymexText(
+                      text: controller.currentChapter.value.title ??
                           'Unknown Chapter',
-                      style: TextStyle(
-                        color: context.colors.onSurface.opaque(0.8),
-                        fontSize: isDesktop ? 14 : 12,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      size: isDesktop ? 14 : 12,
+                      variant: TextVariant.regular,
+                      color: context.colors.onSurface.opaque(0.8),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
+                      isMarquee: true,
                     ),
                   ),
                   if (controller.showReadingProgress.value)

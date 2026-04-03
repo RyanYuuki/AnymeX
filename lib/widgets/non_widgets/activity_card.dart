@@ -14,6 +14,7 @@ import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/utils/al_about_me.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/markdown.dart';
+import 'package:anymex/widgets/common/marquee_text.dart';
 import 'package:anymex/widgets/non_widgets/activity_composer_sheet.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -737,9 +738,9 @@ class _ActivityCardState extends State<ActivityCard> {
                                     ),
                                   ],
                                   const SizedBox(height: 6),
-                                  Text(
+                                  MarqueeText(
                                     activity.mediaTitle ?? '',
-                                    maxLines: 2,
+                                    maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                       fontSize: 16,

@@ -368,8 +368,9 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                 text: widget.media.title,
                 variant: TextVariant.bold,
                 size: 15,
-                maxLines: 3,
+                maxLines: 1,
                 overflow: TextOverflow.ellipsis,
+                isMarquee: true,
               ),
               if (widget.media.romajiTitle.isNotEmpty &&
                   widget.media.romajiTitle != widget.media.title &&
@@ -380,8 +381,9 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                   variant: TextVariant.regular,
                   size: 12,
                   color: colors.onSurfaceVariant,
-                  maxLines: 2,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
+                  isMarquee: true,
                 ),
               ],
               const SizedBox(height: 10),
@@ -544,17 +546,17 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                             color: colors.primary, size: 20),
                         const SizedBox(width: 8),
                         Flexible(
-                          child: Text(
-                            convertAniListStatus(
+                          child: AnymexText(
+                            text: convertAniListStatus(
                               _animeStatus.value,
                               isManga: widget.type == ItemType.manga,
                             ),
+                            size: 13,
+                            color: colors.primary,
+                            variant: TextVariant.semiBold,
+                            maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: colors.primary,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            isMarquee: true,
                           ),
                         ),
                       ],

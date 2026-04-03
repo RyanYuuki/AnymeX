@@ -8,7 +8,6 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/animation/slide_scale.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
-import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/media_items/media_item.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
@@ -287,8 +286,9 @@ class _AIRecommendationState extends State<AIRecommendation> {
                   AnymexText(
                     text: data.title,
                     variant: TextVariant.semiBold,
-                    maxLines: 2,
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
+                    isMarquee: true,
                   ),
                   const SizedBox(height: 5),
                   Flexible(
