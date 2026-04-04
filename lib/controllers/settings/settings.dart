@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/player/player_adaptor.dart';
@@ -8,7 +9,9 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/shaders.dart';
 import 'package:anymex/utils/updater.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:get/get.dart';
 
 Settings get settingsController => Get.find<Settings>();
@@ -29,6 +32,13 @@ class Settings extends GetxController {
   final _selectedShader = ''.obs;
   final _selectedProfile = 'MID-END'.obs;
   final mpvPath = ''.obs;
+  RxString bridgeMode = 'jni'.obs;
+
+  String get _defaultBridgeMode {
+    if (Platform.isMacOS) return 'sidecar';
+    if (Platform.isWindows || Platform.isLinux) return 'jni';
+    return 'sidecar';
+  }
 
   String get selectedShader => _selectedShader.value;
 
@@ -64,6 +74,12 @@ class Settings extends GetxController {
     enableBetaUpdates.value = General.enableBetaUpdates.get<bool>(false);
     writeLogToFile.value = General.writeLogToFile.get<bool>(false);
     customLogDirectory.value = General.customLogDirectory.get<String>("");
+    bridgeMode.value = PluginKeys.bridgeMode.get<String>(_defaultBridgeMode);
+    if (Platform.isMacOS && bridgeMode.value != 'sidecar') {
+      PluginKeys.bridgeMode.set('sidecar');
+      bridgeMode.value = 'sidecar';
+    }
+    _updateBridgeDispatcher();
     Logger.setFileLoggingEnabled(writeLogToFile.value,
         customPath: customLogDirectory.value);
 
@@ -74,6 +90,16 @@ class Settings extends GetxController {
     PlayerShaders.getMpvPath().then((e) {
       mpvPath.value = e;
     });
+    setHighRefreshRate();
+  }
+
+  Future<void> setHighRefreshRate() async {
+    if (!Platform.isAndroid) return;
+    try {
+      await FlutterDisplayMode.setHighRefreshRate();
+    } catch (e) {
+      Logger.e("Error setting high refresh rate: $e");
+    }
   }
 
   void checkForUpdates(BuildContext context) {
@@ -101,6 +127,19 @@ class Settings extends GetxController {
     if (writeLogToFile.value) {
       await Logger.setFileLoggingEnabled(true, customPath: value);
     }
+  }
+
+  void _updateBridgeDispatcher() {
+    final mode = bridgeMode.value == 'sidecar'
+        ? BridgeType.sidecar
+        : BridgeType.jni;
+    BridgeDispatcher().setMode(mode);
+  }
+
+  void saveBridgeMode(String value) {
+    bridgeMode.value = value;
+    PluginKeys.bridgeMode.set(value);
+    _updateBridgeDispatcher();
   }
 
   void showWelcomeDialog(BuildContext context) {

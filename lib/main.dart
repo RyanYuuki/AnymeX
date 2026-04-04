@@ -47,6 +47,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
@@ -101,6 +102,11 @@ void initDeepLinkListener() async {
 void main(List<String> args) async {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
+    if (Platform.isAndroid) {
+      FlutterDisplayMode.setHighRefreshRate().catchError((e) {
+        debugPrint("Error setting high refresh rate: $e");
+      });
+    }
     ExternalFontLoader.loadAllFonts();
 
     await Logger.init();

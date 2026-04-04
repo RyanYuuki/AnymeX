@@ -143,6 +143,7 @@ enum SourceKeys {
 enum PluginKeys {
   runtimeHostInstalledVersion,
   runtimeHostInstalledReleaseTitle,
+  bridgeMode,
 }
 
 enum AuthKeys {
