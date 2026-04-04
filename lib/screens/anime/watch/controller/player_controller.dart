@@ -833,7 +833,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _playerSubscriptions.add(_basePlayer.errorStream.listen((e) {
       Logger.i('${e} => ${selectedVideo.value?.headers}');
       if (e.toString().contains('Failed to open')) {
-        snackBar('Failed, Dont Bother..');
+        snackBar('Failed to open stream. Please try other server');
       }
     }));
 

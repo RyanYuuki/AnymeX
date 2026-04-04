@@ -178,6 +178,7 @@ class MediaKitPlayer extends base.BasePlayer {
     Map<String, String>? headers,
     Duration? startPosition,
   }) async {
+    print('Opening video: $url with headers: $headers');
     _currentVideoHeaders =
         headers == null ? null : Map<String, String>.from(headers);
     await _player.open(
