@@ -152,6 +152,7 @@ enum AuthKeys {
   malRefreshToken,
   simklAuthToken,
   malSessionId,
+  mangaBakaAuthToken,
 }
 
 enum SearchKeys { novelSearchedQueries }
