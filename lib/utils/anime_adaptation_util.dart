@@ -9,6 +9,36 @@ import 'package:http/http.dart' as http;
 class MangaAnimeUtil {
   static const String _baseUrl = 'https://api.mangabaka.dev/v1';
 
+  static const Map<String, String> _headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.5",
+    "Connection": "keep-alive",
+    "Upgrade-Insecure-Requests": "1",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "none",
+  };
+
+  static Future<String?> _fetchWithRetry(String url) async {
+    for (int i = 0; i < 4; i++) {
+      try {
+        final response = await http.get(Uri.parse(url), headers: _headers);
+        if (response.statusCode == 200) {
+          if (response.body.contains("BAILOUT_TO_CLIENT_SIDE_RENDERING")) {
+            await Future.delayed(Duration(seconds: 2 * (i + 1)));
+            continue;
+          }
+          return response.body;
+        }
+        await Future.delayed(Duration(seconds: 1 * (i + 1)));
+      } catch (e) {
+        if (i == 3) return null;
+      }
+    }
+    return null;
+  }
+
   static Future<List<NewsItem>> getMangaNovelNews(Media media) async {
     try {
       final seriesData = await _getSeriesFromId(media);
@@ -27,14 +57,12 @@ class MangaAnimeUtil {
       }
       return [];
     } catch (e) {
-      print("MangaBaka News Error: $e");
       return [];
     }
   }
 
   static Future<List<NewsItem>> getAnimeNews(Media media) async {
     try {
-      // kuroiru uses MAL ID
       final malId = media.idMal.isEmpty ? media.id : media.idMal;
       final response =
           await http.get(Uri.parse('https://kuroiru.co/api/anime/$malId'));
@@ -53,7 +81,6 @@ class MangaAnimeUtil {
     }
   }
 
-  /// Get anime adaptation details using AniList or MAL ID
   static Future<AnimeAdaptation> getAnimeAdaptation(Media media) async {
     try {
       final seriesData = await _getSeriesFromId(media);
@@ -107,36 +134,32 @@ class MangaAnimeUtil {
         return NextRelease(error: 'MangaUpdates ID missing');
       }
 
-      final url = 'https://www.mangaupdates.com/series/$muId/one-piece';
-      final detailsResponse = await http.get(Uri.parse(url));
-
-      if (detailsResponse.statusCode != 200) {
-        throw Exception('Failed to load release info');
+      final detailsHtml = await _fetchWithRetry('https://www.mangaupdates.com/series/$muId');
+      if (detailsHtml == null) {
+        return NextRelease(error: 'Failed to load MU series page');
       }
 
-      final archiveUrlRegex = RegExp(
-        r'<a\s+[^>]*href="([^"]+)"[^>]*>\s*<i>\s*<u>Search for all releases of this series<\/u>\s*<\/i>\s*<\/a>',
-        caseSensitive: false,
-        multiLine: true,
-      );
+      final archiveIdMatch = RegExp(r'releases/archive\?search=(\d+)').firstMatch(detailsHtml);
+      final numericId = archiveIdMatch?.group(1);
 
-      final match = archiveUrlRegex.firstMatch(detailsResponse.body);
+      if (numericId == null) {
+        return NextRelease(error: 'Could not find releases archive ID');
+      }
 
-      String archiveUrl = match != null
-          ? "https://www.mangaupdates.com${match.group(1)!.replaceAll('amp;', '')}"
-          : "";
-      final response = await http.get(Uri.parse(archiveUrl));
+      final archiveUrl = "https://www.mangaupdates.com/releases/archive?search=$numericId&search_type=series";
+      final archiveHtml = await _fetchWithRetry(archiveUrl);
 
-      if (response.statusCode != 200) {
-        throw Exception('Failed to load release info');
+      if (archiveHtml == null) {
+        return NextRelease(error: 'Failed to load release archive');
       }
 
       final RegExp rowRegExp = RegExp(
-        r'class="col-2 text">\s*(\d{4}-\d{2}-\d{2})\s*</div>[\s\S]*?class="col-1 text text-center">[\s\S]*?</div>\s*<div class="col-1 text text-center">\s*(.*?)\s*</div>',
+        r'class="col-2 text">\s*(\d{4}-\d{2}-\d{2})\s*</div>.*?class="col-1 text text-center">.*?</div>\s*<div class="col-1 text text-center">\s*(.*?)\s*</div>',
         caseSensitive: false,
+        dotAll: true,
       );
 
-      final matches = rowRegExp.allMatches(response.body);
+      final matches = rowRegExp.allMatches(archiveHtml);
       List<DateTime> releaseDates = [];
       String? latestChapterStr;
 
@@ -149,12 +172,10 @@ class MangaAnimeUtil {
             releaseDates.add(DateTime.parse(dateStr));
             if (latestChapterStr == null &&
                 chapterStr != null &&
-                chapterStr.isNotEmpty) {
-              latestChapterStr = chapterStr;
+                chapterStr.trim().contains(RegExp(r'\d'))) {
+              latestChapterStr = chapterStr.trim();
             }
-          } catch (e) {
-            print(e);
-          }
+          } catch (e) {}
         }
       }
 
@@ -162,7 +183,7 @@ class MangaAnimeUtil {
         return NextRelease(error: 'Insufficient data');
       }
 
-      int sampleSize = releaseDates.length > 8 ? 8 : releaseDates.length;
+      int sampleSize = releaseDates.length > 10 ? 10 : releaseDates.length;
       List<int> intervals = [];
 
       for (int i = 0; i < sampleSize - 1; i++) {
@@ -220,26 +241,23 @@ class MangaAnimeUtil {
   static Future<List<dynamic>?> _getSeriesFromId(Media media) async {
     String endpoint;
 
-    switch (media.serviceType) {
-      case ServicesType.anilist:
-        endpoint = '$_baseUrl/source/anilist/${media.id}';
-        break;
-      case ServicesType.mal:
-        endpoint = '$_baseUrl/source/my-anime-list/${media.idMal}';
-        break;
-      default:
-        endpoint = '$_baseUrl/source/anilist/${media.id}';
+    if (media.serviceType == ServicesType.mal) {
+      endpoint = '$_baseUrl/source/my-anime-list/${media.idMal}';
+    } else {
+      endpoint = '$_baseUrl/source/anilist/${media.id}';
     }
 
-    final response = await http.get(Uri.parse(endpoint));
+    try {
+      final response = await http.get(Uri.parse(endpoint));
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      return data['data']?['series'] as List<dynamic>?;
-    } else if (response.statusCode == 404) {
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data['data']?['series'] as List<dynamic>?;
+      } else {
+        return [];
+      }
+    } catch (_) {
       return [];
-    } else {
-      throw Exception('Failed to fetch series: ${response.statusCode}');
     }
   }
 }
