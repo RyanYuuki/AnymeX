@@ -147,16 +147,16 @@ class SourceMapper {
 
       if (results.isEmpty || isInterrupted()) return;
 
-      final sourceSeason = _extractSeasonNumber(sourceTitle);
+      final allTargetTitles = [
+        if (englishTitle.isNotEmpty) englishTitle,
+        if (romajiTitle.isNotEmpty) romajiTitle,
+        ...synonyms.take(3),
+      ].toSet().toList();
 
       for (final result in results) {
         if (isInterrupted()) return;
 
         final resultTitle = result.title ?? '';
-        final normalizedResultTitle = isHeavyNormalized
-            ? _normalizeHeavy(resultTitle.trim())
-            : _normalizeLight(resultTitle.trim());
-
         searchedTitle.value = "Finding: $resultTitle";
 
         await Future.delayed(const Duration(milliseconds: 5));
@@ -170,19 +170,28 @@ class SourceMapper {
         }
 
         final resultSeason = _extractSeasonNumber(resultTitle);
-        final score = _calculateMatchScore(
-          isHeavyNormalized
-              ? _normalizeHeavy(sourceTitle)
-              : _normalizeLight(sourceTitle),
-          normalizedResultTitle,
-          sourceSeason,
-          resultSeason,
-        );
 
-        if (score > bestScore) {
-          bestScore = score;
-          bestMatch = result;
-          fallbackResults = results;
+        for (final targetTitle in allTargetTitles) {
+          final normalizedTarget = isHeavyNormalized
+              ? _normalizeHeavy(targetTitle)
+              : _normalizeLight(targetTitle);
+          final normalizedResult = isHeavyNormalized
+              ? _normalizeHeavy(resultTitle)
+              : _normalizeLight(resultTitle);
+
+          final score = _calculateMatchScore(
+            normalizedTarget,
+            normalizedResult,
+            _extractSeasonNumber(targetTitle),
+            resultSeason,
+          );
+
+          if (score > bestScore) {
+            bestScore = score;
+            bestMatch = result;
+            fallbackResults = results;
+          }
+          if (bestScore >= 0.98) break;
         }
 
         if (bestScore >= 0.98) break;
@@ -223,7 +232,8 @@ class SourceMapper {
     if (bestScore < 0.9 && synonyms.isNotEmpty) {
       Logger.i(
           "Confidence low (${bestScore.toStringAsFixed(2)}). Trying synonyms...");
-      for (final synonym in synonyms) {
+      final limitedSynonyms = synonyms.take(3);
+      for (final synonym in limitedSynonyms) {
         if (isInterrupted() || bestScore >= 0.95) break;
         if (_isInvalidTitle(synonym)) continue;
         await search(synonym, synonym, false);
