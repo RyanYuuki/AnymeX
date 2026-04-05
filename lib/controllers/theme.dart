@@ -113,6 +113,10 @@ class ThemeProvider extends ChangeNotifier {
   void syncStatusBar() {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
         systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarContrastEnforced: false,
+        systemNavigationBarDividerColor: Colors.transparent,
+        systemNavigationBarIconBrightness:
+            isLightMode ? Brightness.dark : Brightness.light,
         statusBarColor: Colors.transparent,
         statusBarBrightness: isLightMode ? Brightness.dark : Brightness.light,
         statusBarIconBrightness:
