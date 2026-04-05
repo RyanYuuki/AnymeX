@@ -19,6 +19,7 @@ class BetterEpisode extends StatelessWidget {
   final String? fallbackImageUrl;
   final List<Episode>? offlineEpisodes;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
 
   const BetterEpisode({
     super.key,
@@ -28,6 +29,7 @@ class BetterEpisode extends StatelessWidget {
     this.fallbackImageUrl,
     this.offlineEpisodes,
     this.onTap,
+    this.onLongPress,
   });
 
   @override
@@ -38,6 +40,7 @@ class BetterEpisode extends StatelessWidget {
 
     return GestureDetector(
       onTap: onTap,
+      onLongPress: onLongPress,
       child: layoutType == EpisodeLayoutType.compact
           ? _buildCompactLayout(context, episodeProgress, isFiller, hasProgress)
           : _buildDetailedLayout(

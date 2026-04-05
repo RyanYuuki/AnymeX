@@ -1,15 +1,32 @@
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 
-Future<bool?> showTrackingDialog(BuildContext context) {
+Future<bool?> showTrackingDialog(BuildContext context, {String? dbId}) {
   return showDialog<bool>(
     context: context,
-    builder: (context) => const TrackingDialog(),
+    builder: (context) => TrackingDialog(dbId: dbId),
   );
 }
 
-class TrackingDialog extends StatelessWidget {
-  const TrackingDialog({super.key});
+class TrackingDialog extends StatefulWidget {
+  final String? dbId;
+  const TrackingDialog({super.key, this.dbId});
+
+  @override
+  State<TrackingDialog> createState() => _TrackingDialogState();
+}
+
+class _TrackingDialogState extends State<TrackingDialog> {
+  bool _rememberChoice = false;
+
+  void _handleChoice(bool track) {
+    if (_rememberChoice && widget.dbId != null) {
+      DynamicKeys.trackingPermission.set<bool>(widget.dbId!, track);
+    }
+    Navigator.of(context).pop(track);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,12 +71,29 @@ class TrackingDialog extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
+              if (widget.dbId != null)
+                CheckboxListTile(
+                  controlAffinity: ListTileControlAffinity.leading,
+                  title: Text(
+                    'Remember my choice',
+                    style: theme.textTheme.bodyMedium,
+                  ),
+                  value: _rememberChoice,
+                  onChanged: (val) {
+                    setState(() {
+                      _rememberChoice = val ?? false;
+                    });
+                  },
+                  contentPadding: EdgeInsets.zero,
+                  dense: true,
+                ),
+              const SizedBox(height: 16),
               Row(
                 children: [
                   Expanded(
                     child: FilledButton(
-                      onPressed: () => Navigator.of(context).pop(false),
+                      onPressed: () => _handleChoice(false),
                       style: FilledButton.styleFrom(
                         backgroundColor: theme.colorScheme.tertiary,
                         foregroundColor: theme.colorScheme.onTertiary,
@@ -79,7 +113,7 @@ class TrackingDialog extends StatelessWidget {
                   const SizedBox(width: 4),
                   Expanded(
                     child: FilledButton(
-                      onPressed: () => Navigator.of(context).pop(true),
+                      onPressed: () => _handleChoice(true),
                       style: FilledButton.styleFrom(
                         backgroundColor: theme.colorScheme.primary,
                         foregroundColor: theme.colorScheme.onPrimary,

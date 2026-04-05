@@ -20,6 +20,7 @@ import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -162,7 +163,8 @@ class ChapterService {
       List<Chapter> chapterList,
       Chapter currentChapter,
       BuildContext context,
-      VoidCallback onReturn) async {
+      VoidCallback onReturn,
+      {bool bypassDialog = false}) async {
     List<Chapter> optimizedList = chapterList;
 
     if (currentChapter.scanlator != null &&
@@ -201,6 +203,23 @@ class ChapterService {
       return;
     }
 
+    final dbId = '${anilistData.id}_${anilistData.serviceType.name}_${anilistData.type}';
+    final savedTracking = DynamicKeys.trackingPermission.get<bool?>(dbId);
+
+    if (savedTracking != null && !bypassDialog) {
+      snackBar("Long press a chapter if you wanna reset the tracker.", title: "Tracking Preference Applied");
+      await navigate(() => ReadingPage(
+            anilistData: anilistData,
+            chapterList: optimizedList,
+            currentChapter: currentChapter,
+            shouldTrack: savedTracking,
+          ));
+      Future.delayed(const Duration(seconds: 1), () {
+        onReturn();
+      });
+      return;
+    }
+
     if (General.shouldAskForTrack.get(true) == false) {
       await navigate(() => ReadingPage(
             anilistData: anilistData,
@@ -215,7 +234,7 @@ class ChapterService {
     }
     final shouldTrack = anilistData.serviceType == ServicesType.extensions
         ? false
-        : await showTrackingDialog(context);
+        : await showTrackingDialog(context, dbId: dbId);
 
     if (shouldTrack != null) {
       await navigate(() => ReadingPage(
@@ -461,6 +480,12 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
               setState(() {});
             }
           }),
+      onLongPress: () => _chapterService.navigateToReading(widget.anilistData,
+          filteredFullChapters, chapter, context, () {
+            if(mounted) {
+              setState(() {});
+            }
+          }, bypassDialog: true),
     );
   }
 }
@@ -471,6 +496,7 @@ class ChapterListItem extends StatelessWidget {
   final Chapter? readChapter;
   final Chapter? continueChapter;
   final VoidCallback onTap;
+  final VoidCallback? onLongPress;
 
   const ChapterListItem({
     super.key,
@@ -479,6 +505,7 @@ class ChapterListItem extends StatelessWidget {
     this.readChapter,
     this.continueChapter,
     required this.onTap,
+    this.onLongPress,
   });
 
   @override
@@ -492,6 +519,7 @@ class ChapterListItem extends StatelessWidget {
         ((savedChaps?.pageNumber ?? 1) == (savedChaps?.totalPages ?? 100));
     return AnymexOnTap(
         onTap: onTap,
+        onLongPress: onLongPress,
         child: Opacity(
           opacity: alreadyRead ? 0.5 : 1,
           child: Container(

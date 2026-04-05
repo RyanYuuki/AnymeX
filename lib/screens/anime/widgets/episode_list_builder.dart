@@ -23,6 +23,7 @@ import 'package:anymex/widgets/custom_widgets/anymex_chip.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/foundation.dart';
@@ -485,6 +486,12 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                             episode.thumbnail ?? widget.anilistData!.poster,
                         offlineEpisodes: offlineEpisodes,
                         onTap: () => _handleEpisodeSelection(episode),
+                        onLongPress: () {
+                          selectedEpisode.value = episode;
+                          streamList.clear();
+                          isServerStreamLoading.value = false;
+                          fetchServers(episode, bypassDialog: true);
+                        },
                       ),
                     );
                   });
@@ -497,7 +504,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     );
   }
 
-  Future<void> fetchServers(Episode ep) async {
+  Future<void> fetchServers(Episode ep, {bool bypassDialog = false}) async {
     streamList.clear();
     isServerStreamLoading.value = true;
     final sourceEpisode = DEpisode(
@@ -559,6 +566,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                       }
 
                       return _buildServerList(
+                        bypassDialog,
                         showBottomLoader: isServerStreamLoading.value,
                       );
                     }
@@ -586,7 +594,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                               ?.map((e) => hive.Video.fromVideo(e))
                               .toList() ??
                           [];
-                      return _buildServerList();
+                      return _buildServerList(bypassDialog);
                     }
                   },
                 ),
@@ -595,6 +603,12 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     ).whenComplete(() {
       sourceController.activeSource.value?.cancelRequest(scrapeToken);
     });
+
+    final dbId = '${widget.anilistData!.id}_${widget.anilistData!.serviceType.name}_${widget.anilistData!.type}';
+    final savedTracking = DynamicKeys.trackingPermission.get<bool?>(dbId);
+    if (savedTracking != null && !bypassDialog) {
+       snackBar("Long press an episode if you wanna reset the tracker.", title: "Tracking Preference Applied");
+    }
   }
 
   Widget _buildScrapingLoadingState(bool fromSrc) {
@@ -675,7 +689,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     );
   }
 
-  Widget _buildServerList({bool showBottomLoader = false}) {
+  Widget _buildServerList(bool bypassDialog, {bool showBottomLoader = false}) {
     final tileCount = streamList.length + (showBottomLoader ? 1 : 0);
     final estimatedHeight = 72 + (tileCount * 82.0);
     final maxHeight = MediaQuery.of(context).size.height * 0.6;
@@ -704,6 +718,24 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
               return InkWell(
                 onTap: () async {
                   Get.back();
+                  final dbId = '${widget.anilistData!.id}_${widget.anilistData!.serviceType.name}_${widget.anilistData!.type}';
+                  final savedTracking = DynamicKeys.trackingPermission.get<bool?>(dbId);
+
+                  if (savedTracking != null && !bypassDialog) {
+                    await navigate(() => WatchScreen(
+                          episodeSrc: e,
+                          episodeList: widget.episodeList,
+                          anilistData: widget.anilistData!,
+                          currentEpisode: selectedEpisode.value,
+                          episodeTracks: streamList,
+                          shouldTrack: savedTracking,
+                        ));
+                    Future.delayed(const Duration(seconds: 1), () {
+                      if (mounted) setState(() {});
+                    });
+                    return;
+                  }
+
                   if (General.shouldAskForTrack.get(true) == false) {
                     await navigate(() => WatchScreen(
                           episodeSrc: e,
@@ -713,14 +745,14 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                           episodeTracks: streamList,
                         ));
                     Future.delayed(const Duration(seconds: 1), () {
-                      setState(() {});
+                      if (mounted) setState(() {});
                     });
                     return;
                   }
                   final shouldTrack =
                       widget.anilistData?.serviceType == ServicesType.extensions
                           ? false
-                          : await showTrackingDialog(context);
+                          : await showTrackingDialog(context, dbId: dbId);
 
                   if (shouldTrack != null) {
                     await navigate(() => WatchScreen(
@@ -732,7 +764,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                           shouldTrack: shouldTrack,
                         ));
                     Future.delayed(const Duration(seconds: 1), () {
-                      setState(() {});
+                      if (mounted) setState(() {});
                     });
                   }
                 },
