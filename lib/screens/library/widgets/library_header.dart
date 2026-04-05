@@ -237,62 +237,77 @@ class LibraryHeader extends StatelessWidget {
                     AnymexExpansionTile(
                         title: 'Sort By',
                         initialExpanded: true,
-                        content: Column(children: [
-                          Row(
-                            children: [
-                              _SortBox(
-                                title: 'Title',
-                                currentSort: controller.currentSort,
-                                sortType: SortType.title,
-                                isAscending: controller.isAscending,
-                                onTap: () {
-                                  controller.handleSortChange(SortType.title);
-                                  setState(() {});
-                                },
-                                icon: Icons.sort_by_alpha,
+                        content: Obx(() {
+                          final isHistory =
+                              controller.selectedListIndex.value == -1;
+                          return Column(children: [
+                            Row(
+                              children: [
+                                _SortBox(
+                                  title: 'Title',
+                                  currentSort: controller.currentSort.value,
+                                  sortType: SortType.title,
+                                  isAscending: controller.isAscending.value,
+                                  onTap: () {
+                                    controller.handleSortChange(SortType.title);
+                                  },
+                                  icon: Icons.sort_by_alpha,
+                                ),
+                                if (!isHistory)
+                                  _SortBox(
+                                    title: 'Last Added',
+                                    currentSort: controller.currentSort.value,
+                                    sortType: SortType.lastAdded,
+                                    isAscending: controller.isAscending.value,
+                                    onTap: () {
+                                      controller
+                                          .handleSortChange(SortType.lastAdded);
+                                    },
+                                    icon: Icons.add_circle_outline,
+                                  ),
+                                if (isHistory)
+                                  _SortBox(
+                                    title: _getLastReadTitle(),
+                                    currentSort: controller.currentSort.value,
+                                    sortType: SortType.lastRead,
+                                    isAscending: controller.isAscending.value,
+                                    onTap: () {
+                                      controller
+                                          .handleSortChange(SortType.lastRead);
+                                    },
+                                    icon: _getLastReadIcon(),
+                                  ),
+                              ],
+                            ),
+                            if (!isHistory)
+                              Row(
+                                children: [
+                                  _SortBox(
+                                    title: _getLastReadTitle(),
+                                    currentSort: controller.currentSort.value,
+                                    sortType: SortType.lastRead,
+                                    isAscending: controller.isAscending.value,
+                                    onTap: () {
+                                      controller
+                                          .handleSortChange(SortType.lastRead);
+                                    },
+                                    icon: _getLastReadIcon(),
+                                  ),
+                                  _SortBox(
+                                    title: 'Rating',
+                                    currentSort: controller.currentSort.value,
+                                    sortType: SortType.rating,
+                                    isAscending: controller.isAscending.value,
+                                    onTap: () {
+                                      controller
+                                          .handleSortChange(SortType.rating);
+                                    },
+                                    icon: Icons.star_border,
+                                  ),
+                                ],
                               ),
-                              _SortBox(
-                                title: 'Last Added',
-                                currentSort: controller.currentSort,
-                                sortType: SortType.lastAdded,
-                                isAscending: controller.isAscending,
-                                onTap: () {
-                                  controller
-                                      .handleSortChange(SortType.lastAdded);
-                                  setState(() {});
-                                },
-                                icon: Icons.add_circle_outline,
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              _SortBox(
-                                title: _getLastReadTitle(),
-                                currentSort: controller.currentSort,
-                                sortType: SortType.lastRead,
-                                isAscending: controller.isAscending,
-                                onTap: () {
-                                  controller
-                                      .handleSortChange(SortType.lastRead);
-                                  setState(() {});
-                                },
-                                icon: _getLastReadIcon(),
-                              ),
-                              _SortBox(
-                                title: 'Rating',
-                                currentSort: controller.currentSort,
-                                sortType: SortType.rating,
-                                isAscending: controller.isAscending,
-                                onTap: () {
-                                  controller.handleSortChange(SortType.rating);
-                                  setState(() {});
-                                },
-                                icon: Icons.star_border,
-                              ),
-                            ],
-                          ),
-                        ])),
+                          ]);
+                        })),
                     AnymexExpansionTile(
                         title: 'Grid',
                         content: Column(

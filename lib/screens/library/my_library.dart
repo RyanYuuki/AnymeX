@@ -86,8 +86,8 @@ class _LibraryContent extends StatelessWidget {
 
         return Obx(() {
           final searchQuery = controller.searchQuery.value;
-          final sortType = controller.currentSort;
-          final isAscending = controller.isAscending;
+          final sortType = controller.currentSort.value;
+          final isAscending = controller.isAscending.value;
 
           return StreamBuilder<List<OfflineMedia>>(
             stream: controller.getCustomListStream(
@@ -119,6 +119,8 @@ class _LibraryContent extends StatelessWidget {
   Widget _buildHistoryView(BuildContext context) {
     return Obx(() {
       final searchQuery = controller.searchQuery.value;
+      final sortType = controller.currentSort.value;
+      final isAscending = controller.isAscending.value;
 
       return StreamBuilder<List<OfflineMedia>>(
         stream: controller.getHistoryStream(),
@@ -131,6 +133,7 @@ class _LibraryContent extends StatelessWidget {
 
           var data = snapshot.data!;
           data = controller.applySearch(data, searchQuery);
+          data = controller.applySorting(data);
 
           if (data.isEmpty) {
             return const SliverToBoxAdapter(child: EmptyLibrary());
