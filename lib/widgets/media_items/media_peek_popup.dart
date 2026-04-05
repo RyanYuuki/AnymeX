@@ -33,7 +33,10 @@ class MediaPeekPopup extends StatefulWidget {
   final String tag;
   final int? anilistUserId;
   final int? malUserId;
+  final String? anilistUsername;
+  final String? malUsername;
   final String? author;
+  final String? avatarUrl;
   final String? reason;
 
   const MediaPeekPopup({
@@ -43,13 +46,22 @@ class MediaPeekPopup extends StatefulWidget {
     required this.tag,
     this.anilistUserId,
     this.malUserId,
+    this.anilistUsername,
+    this.malUsername,
     this.author,
+    this.avatarUrl,
     this.reason,
   });
 
   static void show(
       BuildContext context, Media media, ItemType type, String tag,
-      {int? anilistUserId, int? malUserId, String? author, String? reason}) {
+      {int? anilistUserId,
+      int? malUserId,
+      String? anilistUsername,
+      String? malUsername,
+      String? author,
+      String? avatarUrl,
+      String? reason}) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -63,7 +75,10 @@ class MediaPeekPopup extends StatefulWidget {
         tag: tag,
         anilistUserId: anilistUserId,
         malUserId: malUserId,
+        anilistUsername: anilistUsername,
+        malUsername: malUsername,
         author: author,
+        avatarUrl: avatarUrl,
         reason: reason,
       ),
     );
@@ -210,7 +225,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
         animeProgress: _animeProgress,
         currentAnime: _currentMedia,
         media: widget.media,
-        onUpdate: (id, score, status, progress, startedAt, completedAt,
+        onUpdate: (id, score, status, progress, season, startedAt, completedAt,
             isPrivate) async {
           final listId =
               fetcher.onlineService.currentMedia.value.id ?? widget.media.id;
@@ -219,6 +234,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
             isAnime: !isManga,
             score: score,
             status: status,
+            season: season,
             progress: progress,
             startedAt: startedAt,
             completedAt: completedAt,
@@ -742,9 +758,8 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
   Widget _buildRecommendedBySection(ColorScheme colors) {
     final serviceHandler = Get.find<ServiceHandler>();
     final isAnilist = serviceHandler.serviceType.value == ServicesType.anilist;
-    final hasValidId = isAnilist
-        ? widget.anilistUserId != null
-        : widget.malUserId != null;
+    final username = isAnilist ? widget.anilistUsername : widget.malUsername;
+    final hasValidProfile = username != null && username.isNotEmpty;
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -757,26 +772,48 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(Iconsax.user, size: 16, color: colors.primary),
+              _PeekAuthorAvatar(
+                avatarUrl: widget.avatarUrl,
+                fallbackLabel: username ?? widget.author,
+                size: 34,
+              ),
               const SizedBox(width: 8),
-              if (hasValidId)
-                GestureDetector(
-                  onTap: () => _navigateToAuthorProfile(isAnilist),
-                  child: AnymexText(
-                    text: 'Recommended by @${widget.author}',
-                    variant: TextVariant.semiBold,
-                    size: 13,
-                    color: colors.primary,
-                  ),
-                )
-              else
-                AnymexText(
-                  text: 'Recommended by @${widget.author}',
-                  variant: TextVariant.semiBold,
-                  size: 13,
-                  color: colors.primary,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AnymexText(
+                      text: 'Recommended by',
+                      size: 11,
+                      color: colors.onSurfaceVariant,
+                    ),
+                    const SizedBox(height: 2),
+                    if (hasValidProfile)
+                      GestureDetector(
+                        onTap: () => _navigateToAuthorProfile(isAnilist),
+                        child: AnymexText(
+                          text: username!,
+                          variant: TextVariant.semiBold,
+                          size: 14,
+                          color: colors.primary,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      )
+                    else
+                      AnymexText(
+                        text: widget.author ?? 'Unknown',
+                        variant: TextVariant.semiBold,
+                        size: 14,
+                        color: colors.primary,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                  ],
                 ),
+              ),
             ],
           ),
           if (widget.reason != null && widget.reason!.isNotEmpty) ...[
@@ -795,13 +832,60 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
     );
   }
 
-  void _navigateToAuthorProfile(bool isAnilist) {
+  Future<void> _navigateToAuthorProfile(bool isAnilist) async {
     Navigator.of(context).pop();
     if (isAnilist && widget.anilistUserId != null) {
       navigate(() => UserProfilePage(userId: widget.anilistUserId!));
-    } else if (!isAnilist && widget.author != null) {
-      launchUrlString('https://myanimelist.net/profile/${widget.author}');
+    } else if (widget.malUsername != null && widget.malUsername!.isNotEmpty) {
+      launchUrlString('https://myanimelist.net/profile/${widget.malUsername}');
     }
+  }
+}
+
+class _PeekAuthorAvatar extends StatelessWidget {
+  final String? avatarUrl;
+  final String? fallbackLabel;
+  final double size;
+
+  const _PeekAuthorAvatar({
+    required this.avatarUrl,
+    required this.fallbackLabel,
+    required this.size,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final hasAvatar = avatarUrl != null && avatarUrl!.isNotEmpty;
+
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Theme.of(context).colorScheme.primaryContainer,
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: hasAvatar
+          ? AnymeXImage(
+              imageUrl: avatarUrl!,
+              width: size,
+              height: size,
+              radius: size / 2,
+            )
+          : Center(
+              child: Text(
+                (fallbackLabel?.trim().isNotEmpty == true
+                        ? fallbackLabel!.trim()[0]
+                        : '?')
+                    .toUpperCase(),
+                style: TextStyle(
+                  fontSize: size * 0.46,
+                  fontWeight: FontWeight.w700,
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                ),
+              ),
+            ),
+    );
   }
 }
 
