@@ -164,6 +164,8 @@ enum TapZoneKeys {
   tapZonesWebtoon,
   tapZonesWebtoonHorizontal,
   tapZonesEnabled,
+  tapZonesActiveIsWebtoon,
+  tapZonesActiveIsVertical,
 }
 
 enum DynamicKeys {

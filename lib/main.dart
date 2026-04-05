@@ -140,6 +140,7 @@ void main(List<String> args) async {
           systemNavigationBarDividerColor: Colors.transparent,
           systemNavigationBarContrastEnforced: false,
           systemNavigationBarColor: Colors.transparent,
+          systemNavigationBarIconBrightness: Brightness.dark,
           statusBarColor: Colors.transparent,
           statusBarBrightness: Brightness.dark));
     }

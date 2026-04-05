@@ -53,4 +53,20 @@ class TapZoneRepository {
   Future<void> saveTapZonesEnabled(bool enabled) async {
     TapZoneKeys.tapZonesEnabled.set(enabled);
   }
+
+  bool getActiveIsWebtoon() {
+    return TapZoneKeys.tapZonesActiveIsWebtoon.get<bool>(false);
+  }
+
+  Future<void> saveActiveIsWebtoon(bool value) async {
+    TapZoneKeys.tapZonesActiveIsWebtoon.set(value);
+  }
+
+  bool getActiveIsVertical() {
+    return TapZoneKeys.tapZonesActiveIsVertical.get<bool>(false);
+  }
+
+  Future<void> saveActiveIsVertical(bool value) async {
+    TapZoneKeys.tapZonesActiveIsVertical.set(value);
+  }
 }

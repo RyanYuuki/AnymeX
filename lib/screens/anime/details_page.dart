@@ -1010,10 +1010,10 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
   void showListEditorModal(BuildContext context) {
     showModalBottomSheet(
-      backgroundColor: context.colors.surfaceContainer,
+      backgroundColor: Colors.transparent,
       context: context,
       isScrollControlled: true,
-      showDragHandle: true,
+      showDragHandle: false,
       builder: (BuildContext context) {
         return ListEditorModal(
           animeStatus: animeStatus,
@@ -1022,7 +1022,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
           animeProgress: animeProgress,
           currentAnime: currentAnime,
           media: anilistData ?? widget.media,
-          onUpdate: (id, score, status, progress, startedAt, completedAt,
+          onUpdate: (id, score, status, progress, season, startedAt, completedAt,
               isPrivate) async {
             final fetcher = widget.media.serviceType;
             final id = fetcher.onlineService.currentMedia.value.id;
@@ -1033,6 +1033,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                 score: score,
                 status: status,
                 progress: progress,
+                season: season,
                 startedAt: startedAt,
                 completedAt: completedAt,
                 isPrivate: isPrivate));
