@@ -199,6 +199,7 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
       },
       onPointerUp: widget.controller.onPointerUp,
       onPointerDown: widget.controller.onPointerDown,
+      onPointerCancel: widget.controller.onPointerCancel,
       child: NotificationListener<ScrollNotification>(
         onNotification: widget.controller.onScrollNotification,
         child: NotificationListener<ScrollNotification>(
