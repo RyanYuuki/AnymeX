@@ -32,7 +32,8 @@ class _TapZoneSettingsScreenState extends State<TapZoneSettingsScreen> {
     _webtoonLayout = _repo.getWebtoonLayout();
     _webtoonHorizontalLayout = _repo.getWebtoonHorizontalLayout();
     
-    
+    _isWebtoon = _repo.getActiveIsWebtoon();
+    _isVertical = _repo.getActiveIsVertical();
   }
 
   void _savePaged(TapZoneLayout layout) {
@@ -139,7 +140,12 @@ class _TapZoneSettingsScreenState extends State<TapZoneSettingsScreen> {
                   (title: "Webtoon", icon: const Icon(Icons.view_day_rounded, size: 18)),
                 ],
                 selectedIndex: _isWebtoon ? 1 : 0,
-                onChanged: (index) => setState(() => _isWebtoon = index == 1),
+                onChanged: (index) {
+                  final val = index == 1;
+                  setState(() => _isWebtoon = val);
+                  _repo.saveActiveIsWebtoon(val);
+                  _readerController.activeTapIsWebtoon.value = val;
+                },
               ),
             ),
              
@@ -151,7 +157,12 @@ class _TapZoneSettingsScreenState extends State<TapZoneSettingsScreen> {
                   (title: "Vertical", icon: Icon(Icons.swap_vert_rounded, size: 18)),
                 ],
                 selectedIndex: _isVertical ? 1 : 0,
-                onChanged: (index) => setState(() => _isVertical = index == 1),
+                onChanged: (index) {
+                  final val = index == 1;
+                  setState(() => _isVertical = val);
+                  _repo.saveActiveIsVertical(val);
+                  _readerController.activeTapIsVertical.value = val;
+                },
               ),
             ),
             
