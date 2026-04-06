@@ -130,6 +130,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   final RxBool autoScrollEnabled = false.obs;
   final RxDouble autoScrollSpeed = 3.0.obs;
   Timer? _autoScrollTimer;
+  Timer? _autoScrollResumeTimer;
   final RxBool showControls = true.obs;
   final Rx<LoadingState> loadingState = LoadingState.loading.obs;
   final RxString errorMessage = ''.obs;
@@ -388,6 +389,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     _disableVolumeKeys();
 
     pageController?.dispose();
+    _autoScrollResumeTimer?.cancel();
     _stopAutoScroll();
     super.onClose();
   }
@@ -876,6 +878,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     overscrollProgress.value = 0.0;
     _virtualOverscrollPixels = 0.0;
     if (autoScrollEnabled.value) {
+      _autoScrollResumeTimer?.cancel();
       _stopAutoScroll();
     }
   }
@@ -894,14 +897,24 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     }
     _resetOverscroll();
     if (autoScrollEnabled.value) {
-      _startAutoScroll();
+      _autoScrollResumeTimer?.cancel();
+      _autoScrollResumeTimer = Timer(const Duration(seconds: 2), () {
+        if (autoScrollEnabled.value) {
+          _startAutoScroll();
+        }
+      });
     }
   }
 
   void onPointerCancel(PointerCancelEvent event) {
     _resetOverscroll();
     if (autoScrollEnabled.value) {
-      _startAutoScroll();
+      _autoScrollResumeTimer?.cancel();
+      _autoScrollResumeTimer = Timer(const Duration(seconds: 2), () {
+        if (autoScrollEnabled.value) {
+          _startAutoScroll();
+        }
+      });
     }
   }
 
