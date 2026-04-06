@@ -32,11 +32,9 @@ class Settings extends GetxController {
   final _selectedShader = ''.obs;
   final _selectedProfile = 'MID-END'.obs;
   final mpvPath = ''.obs;
-  RxString bridgeMode = 'jni'.obs;
+  RxString bridgeMode = 'sidecar'.obs;
 
   String get _defaultBridgeMode {
-    if (Platform.isMacOS) return 'sidecar';
-    if (Platform.isWindows || Platform.isLinux) return 'jni';
     return 'sidecar';
   }
 
@@ -130,9 +128,8 @@ class Settings extends GetxController {
   }
 
   void _updateBridgeDispatcher() {
-    final mode = bridgeMode.value == 'sidecar'
-        ? BridgeType.sidecar
-        : BridgeType.jni;
+    final mode =
+        bridgeMode.value == 'sidecar' ? BridgeType.sidecar : BridgeType.jni;
     BridgeDispatcher().setMode(mode);
   }
 
