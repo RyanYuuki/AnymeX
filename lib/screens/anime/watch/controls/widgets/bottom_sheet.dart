@@ -2,10 +2,13 @@ import 'package:anymex/database/isar_models/track.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/player/base_player.dart';
 import 'package:anymex/screens/anime/widgets/episode/normal_episode.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_segmented_button.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
@@ -115,97 +118,100 @@ class _DynamicBottomSheetState extends State<DynamicBottomSheet>
           children: [
             SlideTransition(
               position: _slideAnimation,
-              child: Container(
-                width: double.infinity,
-                constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height * 0.8,
-                ),
-                decoration: BoxDecoration(
-                  color: context.theme.colorScheme.surface,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(24),
-                    topRight: Radius.circular(24),
+              child: GestureDetector(
+                onTap: () {},
+                child: Container(
+                  width: double.infinity,
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.of(context).size.height * 0.8,
                   ),
-                  border: Border.all(
-                    color: context.theme.colorScheme.outline
-                        .opaque(0.2, iReallyMeanIt: true),
-                    width: 1,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: context.theme.colorScheme.primary
-                          .opaque(0.1, iReallyMeanIt: true),
-                      blurRadius: 20,
-                      offset: const Offset(0, -4),
+                  decoration: BoxDecoration(
+                    color: context.theme.colorScheme.surface,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(24),
+                      topRight: Radius.circular(24),
                     ),
-                    BoxShadow(
-                      color: Colors.black.opaque(0.3, iReallyMeanIt: true),
-                      blurRadius: 30,
-                      offset: const Offset(0, -8),
+                    border: Border.all(
+                      color: context.theme.colorScheme.outline
+                          .opaque(0.2, iReallyMeanIt: true),
+                      width: 1,
                     ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(top: 12, bottom: 8),
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: context.theme.colorScheme.outline
-                            .opaque(0.3, iReallyMeanIt: true),
-                        borderRadius: BorderRadius.circular(2),
+                    boxShadow: [
+                      BoxShadow(
+                        color: context.theme.colorScheme.primary
+                            .opaque(0.1, iReallyMeanIt: true),
+                        blurRadius: 20,
+                        offset: const Offset(0, -4),
                       ),
-                    ),
-                    FadeTransition(
-                      opacity: _fadeAnimation,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 8),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                widget.title,
-                                style: context.theme.textTheme.titleLarge
-                                    ?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color: context.theme.colorScheme.onSurface,
-                                ),
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: _closeBottomSheet,
-                              child: Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: context
-                                      .theme.colorScheme.surfaceVariant
-                                      .opaque(0.3),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Icon(
-                                  Icons.close,
-                                  size: 20,
-                                  color: context.theme.colorScheme.onSurface
-                                      .opaque(0.7, iReallyMeanIt: true),
-                                ),
-                              ),
-                            ),
-                          ],
+                      BoxShadow(
+                        color: Colors.black.opaque(0.3, iReallyMeanIt: true),
+                        blurRadius: 30,
+                        offset: const Offset(0, -8),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(top: 12, bottom: 8),
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: context.theme.colorScheme.outline
+                              .opaque(0.3, iReallyMeanIt: true),
+                          borderRadius: BorderRadius.circular(2),
                         ),
                       ),
-                    ),
-                    Flexible(
-                      child: widget.customContent ?? _buildItemsList(),
-                    ),
-                    SizedBox(
-                        height: MediaQuery.of(context).padding.bottom + 16),
-                  ],
+                      FadeTransition(
+                        opacity: _fadeAnimation,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 8),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  widget.title,
+                                  style: context.theme.textTheme.titleLarge
+                                      ?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: context.theme.colorScheme.onSurface,
+                                  ),
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: _closeBottomSheet,
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: context
+                                        .theme.colorScheme.surfaceVariant
+                                        .opaque(0.3),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Icon(
+                                    Icons.close,
+                                    size: 20,
+                                    color: context.theme.colorScheme.onSurface
+                                        .opaque(0.7, iReallyMeanIt: true),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Flexible(
+                        child: widget.customContent ?? _buildItemsList(),
+                      ),
+                      SizedBox(
+                          height: MediaQuery.of(context).padding.bottom + 16),
+                    ],
+                  ),
                 ),
               ),
-            ),
+            )
           ],
         ),
       ),
@@ -519,6 +525,37 @@ class PlayerBottomSheets {
     );
   }
 
+  static Future<T?> showCustom<T>({
+    required BuildContext context,
+    required String title,
+    required Widget content,
+    bool isExpanded = false,
+  }) {
+    final sheet = DynamicBottomSheet(
+      title: title,
+      customContent: content,
+    );
+    return showModalBottomSheet<T>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => isExpanded
+          ? SizedBox(
+              height: MediaQuery.of(context).size.height * 0.8, child: sheet)
+          : sheet,
+    );
+  }
+
+  static Future<int?> showUnifiedSubtitles(
+      BuildContext context, PlayerController controller) {
+    return showCustom(
+      context: context,
+      title: 'Subtitles',
+      isExpanded: true,
+      content: SubtitleUnifiedSheet(controller: controller),
+    );
+  }
+
   static Future<int?> showOfflineSubs(
       BuildContext context, PlayerController controller) {
     final tracks = controller.embeddedSubs.value;
@@ -657,8 +694,11 @@ class PlayerBottomSheets {
       BuildContext context, PlayerController controller) {
     return showCustom(
         context: context,
+        isExpanded: true,
         title: 'Playback Speed',
-        content: PlaybackSpeedSheet(controller: controller));
+        content: SizedBox(
+            height: Get.height,
+            child: PlaybackSpeedSheet(controller: controller)));
   }
 
   static Future<double?> showPlaylist(
@@ -691,22 +731,6 @@ class PlayerBottomSheets {
                 controller.anilistData.cover ?? controller.anilistData.poster,
           );
         },
-      ),
-    );
-  }
-
-  static Future<T?> showCustom<T>(
-      {required BuildContext context,
-      required String title,
-      required Widget content,
-      bool isExpanded = false}) {
-    return show<T>(
-      context: context,
-      title: title,
-      isExpanded: isExpanded,
-      customContent: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: content,
       ),
     );
   }
@@ -779,7 +803,7 @@ class _LoaderContentState extends State<_LoaderContent> {
                 ),
                 const SizedBox(height: 12),
                 TextButton.icon(
-                  onPressed: () => Get.back(), // closes bottom sheet only
+                  onPressed: () => Get.back(),
                   icon: const Icon(Icons.arrow_back_rounded),
                   label: const Text('Go Back'),
                 ),
@@ -915,10 +939,10 @@ class _PlaybackSpeedSheetState extends State<PlaybackSpeedSheet> {
     final tt = context.theme.textTheme;
     final sliderVal = _currentSpeed.clamp(_min, _max);
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 4, 20, 8),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
@@ -1137,6 +1161,357 @@ class _ActionChip extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class SubtitleUnifiedSheet extends StatefulWidget {
+  final PlayerController controller;
+  const SubtitleUnifiedSheet({super.key, required this.controller});
+
+  @override
+  State<SubtitleUnifiedSheet> createState() => _SubtitleUnifiedSheetState();
+}
+
+class _SubtitleUnifiedSheetState extends State<SubtitleUnifiedSheet> {
+  int _selectedIndex = 0;
+  final RxString _selectedServer = 'All'.obs;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.controller.isOffline.value) {
+      _selectedIndex = 1;
+    } else if (widget.controller.externalSubs.value.isNotEmpty) {
+      _selectedIndex = 0;
+    } else {
+      _selectedIndex = 1;
+    }
+
+    final selectedExternal = widget.controller.selectedExternalSub.value;
+    String? initialServer;
+
+    if (selectedExternal.label != null &&
+        selectedExternal.label!.contains('[') &&
+        selectedExternal.label!.contains(']')) {
+      final startIndex = selectedExternal.label!.lastIndexOf('[') + 1;
+      final endIndex = selectedExternal.label!.lastIndexOf(']');
+      if (startIndex < endIndex) {
+        initialServer =
+            selectedExternal.label!.substring(startIndex, endIndex).trim();
+      }
+    }
+
+    initialServer ??= widget.controller.selectedVideo.value?.quality?.trim();
+
+    if (initialServer != null) {
+      _selectedServer.value = initialServer;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {},
+      behavior: HitTestBehavior.opaque,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildSegmentedBar(),
+          const SizedBox(height: 10),
+          Flexible(
+            child: Obx(() {
+              if (_selectedIndex == 0) {
+                return Column(
+                  children: [
+                    _buildServerChips(),
+                    Expanded(child: _buildExternalList()),
+                  ],
+                );
+              } else {
+                return _buildEmbeddedList();
+              }
+            }),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSegmentedBar() {
+    final colors = context.colors;
+    final tabs = [
+      (label: 'External', icon: Icons.subtitles),
+      (label: 'Embedded', icon: Icons.audiotrack),
+    ];
+    final total = tabs.length;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: LayoutBuilder(builder: (context, constraints) {
+        final innerWidth = constraints.maxWidth - 8;
+        final tabWidth = innerWidth / total;
+
+        return Container(
+          height: 54,
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            color: colors.surfaceContainerHighest.withOpacity(0.4),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: colors.outline.withOpacity(0.1)),
+          ),
+          child: Stack(children: [
+            AnimatedPositioned(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOutQuint,
+              left: _selectedIndex * tabWidth,
+              top: 0,
+              bottom: 0,
+              width: tabWidth,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: colors.primary,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                        color: colors.primary.withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2))
+                  ],
+                ),
+              ),
+            ),
+            Row(
+              children: tabs.asMap().entries.map((entry) {
+                final index = entry.key;
+                final t = entry.value;
+                final selected = _selectedIndex == index;
+                return Expanded(
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      if (!selected) {
+                        HapticFeedback.lightImpact();
+                        setState(() => _selectedIndex = index);
+                      }
+                    },
+                    child: Container(
+                      color: Colors.transparent,
+                      child: Center(
+                        child: AnimatedScale(
+                          scale: selected ? 1.05 : 1.0,
+                          duration: const Duration(milliseconds: 250),
+                          curve: Curves.easeInOut,
+                          child: AnimatedOpacity(
+                            opacity: selected ? 1.0 : 0.7,
+                            duration: const Duration(milliseconds: 200),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Icon(t.icon,
+                                    size: 16,
+                                    color: selected
+                                        ? colors.onPrimary
+                                        : colors.onSurfaceVariant),
+                                const SizedBox(width: 8),
+                                Text(
+                                  t.label,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontFamily: 'Poppins',
+                                    fontWeight: selected
+                                        ? FontWeight.w700
+                                        : FontWeight.w400,
+                                    color: selected
+                                        ? colors.onPrimary
+                                        : colors.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ]),
+        );
+      }),
+    );
+  }
+
+  Widget _buildServerChips() {
+    return Obx(() {
+      final servers = widget.controller.episodeTracks
+          .where((v) => v.subtitles != null && v.subtitles!.isNotEmpty)
+          .map((v) => v.quality!.trim())
+          .toSet()
+          .toList();
+
+      if (servers.isEmpty) return const SizedBox.shrink();
+
+      final allOptions = ['All', ...servers];
+
+      return SizedBox(
+        height: 50,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          itemCount: allOptions.length,
+          itemBuilder: (context, index) {
+            final server = allOptions[index];
+            return Obx(() {
+              final isSelected = _selectedServer.value.trim() == server.trim();
+              return Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: ChoiceChip(
+                  label: Text(server,
+                      style: TextStyle(
+                          color: isSelected
+                              ? context.colors.onPrimary
+                              : context.colors.onSurfaceVariant,
+                          fontSize: 12)),
+                  selected: isSelected,
+                  selectedColor: context.colors.primary,
+                  backgroundColor:
+                      context.colors.surfaceContainerHighest.withOpacity(0.3),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)),
+                  showCheckmark: false,
+                  onSelected: (val) {
+                    if (val) _selectedServer.value = server;
+                  },
+                ),
+              );
+            });
+          },
+        ),
+      );
+    });
+  }
+
+  Widget _buildEmbeddedList() {
+    final tracks = widget.controller.embeddedSubs.value;
+    final selectedTrack = widget.controller.selectedSubsTrack.value;
+    final currentIndex =
+        selectedTrack == null ? 0 : tracks.indexOf(selectedTrack) + 1;
+
+    final items = [
+      const BottomSheetItem(
+          title: 'None', subtitle: 'Subtitle Track', icon: Icons.audiotrack),
+      ...tracks.map((entry) {
+        return BottomSheetItem(
+          title: (entry.title ?? entry.language ?? entry.url ?? entry.id)
+              .toUpperCase(),
+          subtitle: 'Subtitle Track',
+          icon: Icons.closed_caption_rounded,
+        );
+      })
+    ];
+
+    return ListView.builder(
+      itemCount: items.length,
+      shrinkWrap: true,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      itemBuilder: (context, index) {
+        final item = items[index];
+        final isSelected = currentIndex == index;
+
+        return _BottomSheetListItem(
+          item: item,
+          isSelected: isSelected,
+          onTap: () {
+            if (index == 0) {
+              widget.controller.setSubtitleTrack(SubtitleTrack.no());
+            } else {
+              final selectedTrack = tracks[index - 1];
+              widget.controller.setSubtitleTrack(selectedTrack);
+            }
+            Get.back();
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildExternalList() {
+    final allTracks = widget.controller.externalSubs.value;
+    final filteredTracks = _selectedServer.value == 'All'
+        ? allTracks
+        : allTracks
+            .where(
+                (t) => t.label?.contains('[${_selectedServer.value}]') ?? false)
+            .toList();
+
+    final selectedTrackIndex =
+        filteredTracks.indexOf(widget.controller.selectedExternalSub.value);
+
+    final items = [
+      if (_selectedServer.value == 'All')
+        const BottomSheetItem(
+          title: 'Search Online',
+          subtitle: 'Find subtitles online',
+          icon: Icons.cloud_download,
+        ),
+      const BottomSheetItem(
+        title: 'None',
+        subtitle: 'No subtitles',
+        icon: Icons.subtitles_off,
+      ),
+      ...filteredTracks.map((e) {
+        String displayLabel = e.label ?? 'No Title';
+        if (displayLabel.contains(' [')) {
+          displayLabel = displayLabel.split(' [').first.trim();
+        }
+        return BottomSheetItem(
+          title: displayLabel,
+          subtitle: 'External Subtitle Track',
+          icon: Icons.subtitles,
+        );
+      }),
+    ];
+
+    return ListView.builder(
+      itemCount: items.length,
+      shrinkWrap: true,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      itemBuilder: (context, index) {
+        final item = items[index];
+        final isSearchOnline = _selectedServer.value == 'All' && index == 0;
+        final isNone = _selectedServer.value == 'All' ? index == 1 : index == 0;
+
+        final isSelected = widget.controller.selectedExternalSub.value ==
+                Track()
+            ? isNone
+            : (selectedTrackIndex + (_selectedServer.value == 'All' ? 2 : 1)) ==
+                index;
+
+        return _BottomSheetListItem(
+          item: item,
+          isSelected: isSelected,
+          onTap: () {
+            if (isSearchOnline) {
+              Get.back();
+              Future.delayed(const Duration(milliseconds: 500), () {
+                widget.controller.isSubtitlePaneOpened.value = true;
+              });
+            } else if (isNone) {
+              widget.controller.setExternalSub(null);
+              Get.back();
+            } else {
+              final selectedTrack = filteredTracks[
+                  index - (_selectedServer.value == 'All' ? 2 : 1)];
+              widget.controller.setExternalSub(selectedTrack);
+              Get.back();
+            }
+          },
+        );
+      },
     );
   }
 }

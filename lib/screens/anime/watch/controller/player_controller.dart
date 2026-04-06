@@ -818,11 +818,14 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }));
 
     _playerSubscriptions.add(_basePlayer.tracksStream.listen((e) {
+      embeddedAudioTracks.value = [];
       for (var i in e.audio) {
         if (i.url?.isEmpty ?? true) continue;
         embeddedAudioTracks.value.add(i);
       }
-      embeddedSubs.value = e.subtitle;
+      embeddedSubs.value = e.subtitle
+          .where((track) => !_isExternalSubtitleTrack(track))
+          .toList();
       embeddedQuality.value = e.video;
     }));
 
@@ -840,6 +843,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     int subtitleTranslateRequestId = 0;
 
     _playerSubscriptions.add(_basePlayer.subtitleStream.listen((e) async {
+      subtitleText.value = e;
       final sanitizedLines = e
           .map((line) => line
               .replaceAll(_htmlRx, '')
@@ -848,8 +852,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
               .trim())
           .where((line) => line.isNotEmpty)
           .toList();
-
-      subtitleText.value = sanitizedLines;
       final int currentRequestId = ++subtitleTranslateRequestId;
 
       final cleanedText = sanitizedLines.join('\n');
@@ -1096,10 +1098,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     for (var track in tracks) {
       if (track.subtitles?.isEmpty ?? true) continue;
 
-      final processedSubs = track.subtitles!
-          .map((sub) =>
-              sub..label = "${sub.label ?? 'Unknown'} (${track.quality})")
-          .toList();
+      final processedSubs = track.subtitles!.map((sub) {
+        final serverName = track.quality ?? 'Unknown';
+        return model.Track(
+            file: sub.file, label: "${sub.label ?? 'Unknown'} [$serverName]");
+      }).toList();
 
       allSubtitles.addAll(processedSubs);
     }
@@ -1126,10 +1129,23 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       externalSubs.value = _processSubtitles(episodeTracks);
 
       if (externalSubs.value.isNotEmpty) {
-        final englishSub = externalSubs.value.firstWhereOrNull(
+        final currentQuality = selectedVideo.value?.quality;
+
+        final currentServerEng = externalSubs.value.firstWhereOrNull(
+          (e) =>
+              (e.label?.toLowerCase().contains('eng') ?? false) &&
+              (e.label?.contains('[$currentQuality]') ?? false),
+        );
+
+        if (currentServerEng != null) {
+          setExternalSub(currentServerEng);
+          return;
+        }
+
+        final anyEnglishSub = externalSubs.value.firstWhereOrNull(
           (e) => e.label?.toLowerCase().contains('eng') ?? false,
         );
-        setExternalSub(englishSub);
+        setExternalSub(anyEnglishSub ?? externalSubs.value.first);
       }
     });
   }
@@ -1142,19 +1158,17 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     await _basePlayer.open(url, headers: headers, startPosition: startPosition);
   }
 
-  @override
-  Future<void> dispose() async {
-    super.dispose();
+  Future<void> delete() async {
     try {
-      await _trackLocally(syncToCloud: false);
+      _trackLocally(syncToCloud: false);
       if (!isOffline.value) {
         final durationMs = episodeDuration.value.inMilliseconds;
         final hasCrossedLimit = durationMs > 0
             ? (currentPosition.value.inMilliseconds / durationMs >=
                 settings.markAsCompleted)
             : false;
-        await _trackOnline(hasCrossedLimit);
-        await _syncCloudProgressOnExit();
+        _trackOnline(hasCrossedLimit);
+        _syncCloudProgressOnExit();
       }
     } catch (e) {
       Logger.e('Error saving during dispose: $e');
@@ -1176,10 +1190,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _autoHideTimer?.cancel();
     _autoSkipCountdownTimer?.cancel();
     ScreenBrightness.instance.resetApplicationScreenBrightness();
-  }
-
-  Future<void> delete() async {
-    await dispose();
   }
 
   void _revertOrientations() {
@@ -1546,6 +1556,21 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     return false;
   }
 
+  bool _isExternalSubtitleTrack(SubtitleTrack track) {
+    if (track.url?.isEmpty ?? true) return false;
+
+    final isUrlMatch = externalSubs.value.any((sub) => sub.file == track.url);
+    if (isUrlMatch) return true;
+
+    final trackTitle = track.title?.trim().toLowerCase() ?? '';
+    final isLabelMatch = externalSubs.value.any((sub) {
+      final label = sub.label?.trim().toLowerCase() ?? '';
+      return label.contains(trackTitle) || trackTitle.contains(label);
+    });
+
+    return isLabelMatch;
+  }
+
   void navigator(bool forward) {
     if (forward) {
       if (playerSettings.autoSkipFiller) {
@@ -1760,7 +1785,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  Future<void> _syncCloudProgressOnExit() async {
+  void _syncCloudProgressOnExit() async {
     final syncCtrl = Get.isRegistered<GistSyncController>()
         ? Get.find<GistSyncController>()
         : null;
@@ -1772,7 +1797,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         _shouldMarkAsCompleted &&
         !hasNextEpisode;
 
-    await syncCtrl.syncEpisodeProgressOnExit(
+    syncCtrl.syncEpisodeProgressOnExit(
       mediaId: anilistData.id,
       malId: anilistData.idMal,
       episode: currentEpisode.value,

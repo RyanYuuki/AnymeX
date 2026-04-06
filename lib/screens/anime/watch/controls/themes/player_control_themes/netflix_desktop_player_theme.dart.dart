@@ -156,11 +156,8 @@ class NetflixDesktopPlayerControlTheme extends PlayerControlTheme {
                         NFDesktopButton(
                           icon: Symbols.subtitles_rounded,
                           size: 30,
-                          onTap: () => controller.isOffline.value
-                              ? PlayerBottomSheets.showOfflineSubs(
-                                  context, controller)
-                              : PlayerBottomSheets.showSubtitleTracks(
-                                  context, controller),
+                          onTap: () => PlayerBottomSheets.showUnifiedSubtitles(
+                              context, controller),
                         ),
                         const SizedBox(width: 20),
                         NFDesktopButton(

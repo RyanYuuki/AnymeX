@@ -129,12 +129,14 @@ class MediaKitPlayer extends base.BasePlayer {
                 ))
             .toList(),
         subtitle: tracks.subtitle
-            .map((t) => base.SubtitleTrack(
-                  id: t.id,
-                  title: t.title,
-                  language: t.language,
-                ))
-            .toList(),
+            .where((e) => e.title != null && e.language != null)
+            .map((t) {
+          return base.SubtitleTrack(
+            id: t.id,
+            title: t.title,
+            language: t.language,
+          );
+        }).toList(),
         video: tracks.video
             .map((t) => base.VideoTrack(
                   id: t.id,
@@ -258,7 +260,8 @@ class MediaKitPlayer extends base.BasePlayer {
       if (headers != null && headers.isNotEmpty) {
         final content = await _fetchSubtitleContent(track.url!, headers);
         await _player.setSubtitleTrack(
-          SubtitleTrack.data(content, title: track.title, language: track.language),
+          SubtitleTrack.data(content,
+              title: track.title, language: track.language),
         );
         return;
       }

@@ -272,7 +272,7 @@ class BottomControls extends StatelessWidget {
       'subtitles': !controller.isOffline.value
           ? ControlButton(
               icon: Symbols.subtitles_rounded,
-              onPressed: () => PlayerBottomSheets.showSubtitleTracks(
+              onPressed: () => PlayerBottomSheets.showUnifiedSubtitles(
                 context,
                 controller,
               ),
