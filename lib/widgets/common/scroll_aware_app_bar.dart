@@ -91,16 +91,7 @@ class _CustomAnimatedAppBarState extends State<CustomAnimatedAppBar>
 
     if (isVisible) {
       SystemChrome.setEnabledSystemUIMode(
-        SystemUiMode.edgeToEdge,
-        overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom],
-      );
-
-      SystemChrome.setSystemUIOverlayStyle(
-        const SystemUiOverlayStyle(
-          statusBarIconBrightness: Brightness.light,
-          statusBarBrightness: Brightness.dark,
-          statusBarColor: Colors.transparent,
-        ),
+        SystemUiMode.edgeToEdge
       );
     }
   }
