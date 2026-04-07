@@ -206,7 +206,7 @@ class LibraryHeader extends StatelessWidget {
     if (serviceHandler.serviceType.value == ServicesType.simkl) {
       switch (itemType) {
         case ItemType.anime:
-          return 'Movies & Series';
+          return 'Movies & Series & Animes';
         case ItemType.manga:
           return 'Series';
         case ItemType.novel:
@@ -747,7 +747,7 @@ class _SegmentedControl extends StatelessWidget {
     if (serviceHandler.serviceType.value == ServicesType.simkl) {
       switch (itemType) {
         case ItemType.anime:
-          return 'Movies & Series';
+          return 'Movies & Series & Animes';
         case ItemType.manga:
           return 'Series';
         case ItemType.novel:
