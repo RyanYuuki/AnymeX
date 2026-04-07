@@ -30,6 +30,7 @@ class MediaKitPlayer extends base.BasePlayer {
   base.PlayerState _state = base.PlayerState();
   final List<StreamSubscription> _subscriptions = [];
   Map<String, String>? _currentVideoHeaders;
+  bool _isDisposed = false;
 
   MediaKitPlayer({base.PlayerConfiguration? configuration})
       : config = configuration ??
@@ -310,6 +311,8 @@ class MediaKitPlayer extends base.BasePlayer {
     double? width,
     double? height,
   }) {
+    if (_isDisposed) return const SizedBox.shrink();
+
     return Video(
       filterQuality: FilterQuality.medium,
       controls: null,
@@ -323,23 +326,40 @@ class MediaKitPlayer extends base.BasePlayer {
 
   @override
   Future<void> dispose() async {
-    for (final subscription in _subscriptions) {
-      await subscription.cancel();
+    if (_isDisposed) return;
+
+    for (final s in _subscriptions) {
+      s.cancel();
+    }
+    _subscriptions.clear();
+
+    try {
+      await _player.stop();
+    } catch (_) {}
+
+    _isDisposed = true;
+
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    try {
+      await _player.dispose();
+    } catch (e) {
+      Logger.e('Error during _player.dispose(): $e');
     }
 
-    await _positionController.close();
-    await _durationController.close();
-    await _bufferController.close();
-    await _playingController.close();
-    await _bufferingController.close();
-    await _tracksController.close();
-    await _rateController.close();
-    await _errorController.close();
-    await _subtitleController.close();
-    await _heightController.close();
-    await _completedController.close();
-
-    await _player.dispose();
+    await Future.wait([
+      _positionController.close(),
+      _durationController.close(),
+      _bufferController.close(),
+      _playingController.close(),
+      _bufferingController.close(),
+      _tracksController.close(),
+      _rateController.close(),
+      _errorController.close(),
+      _subtitleController.close(),
+      _heightController.close(),
+      _completedController.close(),
+    ]);
   }
 
   Player get nativePlayer => _player;

@@ -345,7 +345,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   @override
   void onClose() {
-    WidgetsBinding.instance.removeObserver(this);
+    delete();
     super.onClose();
   }
 
@@ -1159,6 +1159,13 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> delete() async {
+    _seekDebounce?.cancel();
+    _brightnessTimer?.cancel();
+    _volumeTimer?.cancel();
+    _controlsTimer?.cancel();
+    _autoHideTimer?.cancel();
+    _autoSkipCountdownTimer?.cancel();
+
     try {
       _trackLocally(syncToCloud: false);
       if (!isOffline.value) {
@@ -1179,16 +1186,18 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     if (!isOffline.value) {
       DiscordRPCController.instance.updateMediaPresence(media: anilistData);
     }
+
     for (final subscription in _subscriptions) {
       subscription.cancel();
     }
+    _subscriptions.clear();
+
+    for (final subscription in _playerSubscriptions) {
+      subscription.cancel();
+    }
+    _playerSubscriptions.clear();
+
     await _basePlayer.dispose();
-    _seekDebounce?.cancel();
-    _brightnessTimer?.cancel();
-    _volumeTimer?.cancel();
-    _controlsTimer?.cancel();
-    _autoHideTimer?.cancel();
-    _autoSkipCountdownTimer?.cancel();
     ScreenBrightness.instance.resetApplicationScreenBrightness();
   }
 

@@ -53,17 +53,8 @@ class _WatchScreenState extends State<WatchScreen> {
 
   @override
   void dispose() {
-    disposal();
+    Get.delete<PlayerController>();
     super.dispose();
-  }
-
-  Future<void> disposal() async {
-    try {
-      await controller.delete();
-      Get.delete<PlayerController>(force: true);
-    } catch (e) {
-      Logger.e('Error during dispose: $e');
-    }
   }
 
   @override
