@@ -31,7 +31,7 @@ dependencies:
     markdown: ^7.3.0
     flutter_native_splash: ^2.4.4
     flutter_web_auth_2: 4.1.0
-    get: ^4.6.6
+    get: ^4.7.3
     grouped_list: ^6.0.0
     google_fonts: ^6.2.1
     hive: ^2.2.3
@@ -47,18 +47,21 @@ dependencies:
     kenburns_nullsafety: ^1.0.1
 
     outlined_text: ^1.0.1
-    media_kit:
-        git:
-            url: https://github.com/Schnitzel5/media-kit.git
-            path: media_kit
-    media_kit_video:
-        git:
-            url: https://github.com/Schnitzel5/media-kit.git
-            path: media_kit_video
-    media_kit_libs_video:
-        git:
-            url: https://github.com/Schnitzel5/media-kit.git
-            path: libs/universal/media_kit_libs_video
+    # media_kit:
+    #     git:
+    #         url: https://github.com/Schnitzel5/media-kit.git
+    #         path: media_kit
+    # media_kit_video:
+    #     git:
+    #         url: https://github.com/Schnitzel5/media-kit.git
+    #         path: media_kit_video
+    # media_kit_libs_video:
+    #     git:
+    #         url: https://github.com/Schnitzel5/media-kit.git
+    #         path: libs/universal/media_kit_libs_video
+    media_kit: ^1.2.6 
+    media_kit_video: ^2.0.1 
+    media_kit_libs_video: ^1.0.7 
 
     mobile_scanner: ^6.0.4
     package_info_plus: any
