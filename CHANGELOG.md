@@ -1,94 +1,198 @@
 ### 🆕 Changelog
 ### 🌟 Features
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/ac9b5a0) history editor by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/6e12308) Some manga reader  features  (#261) by @NITHINSPACETIME
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/c807870) full light mode support by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/bfd9a38) nested headers in settings (#255) by @Rieversed
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/d59637b) dynamic bottom controls (#253) by @Rieversed
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/02d051c) added dub anime episode release option in calendar by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/071bcd3) backup & restore support with password encryption by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/f99c6c5) comments fully works now! by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/90614c0) login by token added for anilist by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/ac4527b) comment (#247) by @Shebyyy
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/2863513) anime songs implementation (you can play opening and ending of anime) by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/15b1833) continue watching on home page that takes you directly to episode with episode snapshot of where you left by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/420b25e) prompt for hiding *cough* content by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/ff10567) libass support and episode snapshot for continue watching by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/6913e20) Animated logo (#231) by @Shebyyy
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/f9a498f) Manga Border Cropper (#239) by @Rieversed
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/d358867) Add Volume Button Navigation for Manga Reader (#240) by @NITHINSPACETIME
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/311a0a57) source filter based on manager type by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/eba94d6b) improved subtitles sheet to include embedded subs (not hardsub) by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/b91dec0f) sorting for history by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/2a467356) tracking dialog now remembers user's choice with an option to reset on longPress by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/52ea44aa) interrupting auto scroll is now possible by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/1188241a) High refresh rate support (in some phones atleast) by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/81a01127) add underrated anime/manga section powered by GitHub JSON (#360) by @Shebyyy
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/bca346ed) Aniyomi Extensions Support! by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/c6cc0166) cancel request support so request doesnt run in the background even though u left from the page by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/484fa3f0) improved the mapper by passing synonyms so manhwa, manhua matches becomes accurate by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/ccaa4dff) Proper skip intro/outro/recap labelled buttons (#359) by @Neoniq
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/dd661160) file based logging and custom path for logs, bridge logs support by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/24699461) added a toggle for writing logs to a file to avoid having ui stutters by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/97a0c5c9) dynamic episode sortings (sub/dub, seasons) for cs sources by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/0b745596) heavily improved mapper and optimizations on episode section by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/57bd2518) language selector for aniyomi sources (for both anime and manga) by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/317b404a) fixed kitsu jikan toggle on episode section and bad db directory err by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/0e0cde5a) impl of Aniyomi & CS External Bridge (2/2) by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/c5f95ec3) impl of Aniyomi & CS External Bridge (1/2) by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/6fe34935) Cloudstream Extensions Support by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/72bb895a) watch time calculator to anime progress container (#356) by @Shebyyy
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/42a3fc6a) Hide Others section (watch order, op/ed, news) on anime details… (#351) by @Neoniq
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/d467bdfe) Mark as Private Option In Editor for AniList by @NotSap
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/3edac256) Implement anime start and end dates to MAL and Anilist.  (#344) by @NotSap
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/a627eda4) Aniskip V2 + Skip OP/ED/Recap Buttons + Timeline highlights in the slider (#268) by @itsmechinmoy
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/681b9087) Long Press peek pop up (#340) by @NotSap
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/42bc435c) new subtitle outline types, fixed the sharp edges on outlines by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/c8ad3755) added lots of advanced visual settings for libmpv by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/bb59965b) added player's core settings by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/8060cdc1) proper stream handler for history cards so it renews streams in case its gotten old by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/c473f06a) added a toggle to enable disable the history cards on home page by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/db74e1c6) Extension Sorting Drag-and-Drop (#337) by @NotSap
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/85ea748e) added reset login state for dc and fixed ios login issue by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/2ecb5048) added support for progress slider customization by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/be768589) contributors info on about page by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/e688c883) Current Chapter Count For Novel & Manga  (#329) by @itsmechinmoy
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/64099a44) Simkl Calendar (#330) by @itsmechinmoy
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/314c77dc) global reader settings for manga & novel by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/2037717c) More Stuff For Novel Reader (#315) by @itsmechinmoy
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/49e9efd8) continuous scrollback for search results  (#318) by @Rieversed
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/04c4f313) More Manga Features (#324) by @itsmechinmoy
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/338a0829) Advanced subtitle customization (Fonts, Transparency, Bottom Margin & Outlines) (#313) by @itsmechinmoy
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/75e3137c) Github Gist Sync For Cross Platform (#314) by @itsmechinmoy
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/430828f1) More Anilist Filters  (#297) by @itsmechinmoy
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/04dba774) Better Ai Pick + List Exporter (#308) by @itsmechinmoy
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/fcbd8956) comprehensive playback speed controller by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/55da781a) Autoscroll (#312) by @itsmechinmoy
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/88131adb) json theme manager by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/35091fa7) JSON BASED PLAYER THEMES by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/23b00879) storage manager (clear cache stuff) by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/6aec20ac) manga reader theme system along with ios theme by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/7a227b7a) added manga history and novel history editor by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/4156b5bf) added gesture indicator themes support by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/760f5ff8) added new theme called netflix in player themes, refactored player theme system to be more flexible by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/b677efc3) support for player themes by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/7dc3881c) Character Details + More Staff Info + Favorite Button + Social (#285) by @itsmechinmoy
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/76d17f7f) deep links for al and mal (#292) by @Rieversed
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/5b0049f1) added tags and filters for manga and revamped the filters ui by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/fe337fc4) carousel switcher and fixed huge initia; stutters on anime, manga page by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/15315689) Anime & Manga News (#282) by @itsmechinmoy
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/4d89df0f) added support for betterplayer, fixed tracking when denied. by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/2d47d829) Subtitle Translation (#281) by @itsmechinmoy
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/637c2fff) kenburns toggle (#271) by @Rieversed
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/1630d6b3) Tap Zones + Better Crop Borders For Manga Reader (#278) by @NITHINSPACETIME
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/223ed693) Filler info in episode tiles/cards using jikan along with Auto Filler Skip (#270) by @itsmechinmoy
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/f640dbe9) Filler info in episode tiles/cards using jikan along with Auto Filler Skip (#270) by @itsmechinmoy
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/9021dc1f) Filler info in episode tiles/cards using jikan along with Auto Filler Skip (#270) by @itsmechinmoy
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/ed43caf1) High Resolution image for Big Carousel by @spongytiramisu
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/79acec76) Anime Visuals popup (#265) by @NITHINSPACETIME
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/e891f1b8) Barcode Scanner + List Exporter for Anilist & Mal  (#260) by @itsmechinmoy
 
 
 ### 🔧 Bug Fixes & Improvements
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/dc45524) remove redundant calls for sources by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/79201e1) fixed bottom controls disappearance by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/04a1035) fixed wrong type & id on simkl comments, fixed list not restoring immediately by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/604268b) fixed overflowing layout in comments by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/ac5b673) fixed backup file not saving on some devices by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/dfd3026) fixed the labels. from animes to anime by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/41682b5) fixed an grey screen issue and reverted back to old nav bar by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/38f0edf) fixed bad empty data handling for non logged in users by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/6d637c7) fixed backup and restore ext issues plus optimized the ui builds during io operations by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/41507cf) possibly fixed ios build error by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/8952b0d) fixed discord rpc for desktop users by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/71c28bf) fixed issues with watch order logic and revamped the watch order page by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/d770e13) fixed a minor issue that was causing issue when deleting comment by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/51a3bfc) fixed visibility issues on empty continue watching data by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/24a8fc4) fixed progress not saving on abrupt player exit by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/61ffdb5) fixed the next manga chapter prediction logic by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/4863376) fixed a placement issue for continue watching by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/ebe9e1f) audio track selection for local videos (#248) by @NITHINSPACETIME
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/6b33dca) fixed grey screen on common page by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/a32519d) possibly fixed issue with continue chapter (not sure :>) by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/6757923) fixed extension page not refreshing on repo change by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/35d1ff9) fixed huge margin on top for mac and linux users by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/aeb4934) shader apply fallback on linux by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/dcf6e84) fixed flash attack when opening the app by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/0e68722) probably fixed some graphical issues on ios (enabled impeller) by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/d983939) fixed empty source when 2 source have same name by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/ebb686d) fixed white screen / black screen issue on ios in dc login page by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/8938187) fixed issue with orientation when first opening the player + fixed subtitle issue when switching to next episode by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/24cfe5c) use seekDuration for double-tap seek by @Shebyyy
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/5ea3309) fixed same track dialog for both anime and manga by @Rieversed
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/9ce6d89) Fix/player resize mode (#217) by @Rieversed
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/24189a9) fixed ios back gesture override by @Rieversed
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/f36a432) reverse search terms display order in InlineSearchHistory (#219) by @Rieversed
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/d670a36e) minor fix related to overlay by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/a79a1c52) cleaning up after somebody's pr by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/af308aba) Next Chapter Prediction (#381) by @itsmechinmoy
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/ee0e8e0f) fixed some sora extensions not showing up by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/32806700) fixed player crashes on desktops by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/7bcd7471) fixed app bar overriding the system cutout mode by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/3b856c56) fixed interruption of 2 second during autoscroll by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/352be05c) should fix login for linux by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/b0f78656) somewhat full fix of simkl tracking by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/9db95734) fixed rate limit issues & improved underrated anime and manga section by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/572205dd) fixed ugly black system nav bar on old android devices by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/333ddf21) fixed subtitle margin not taking effect by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/83eb4c85) revamped list editor and added season support for simkl series by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/fe5b1a3f) fixed tap zones settings not saving and not being applied properly by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/f13a03b8) fixed manga opening anime details page by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/873ff025) fixed search spree and limited synonyms to 3 for mapping by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/8e2961e1) fixed plugin update issue, added jni setup for desktops so aniyomi exts works by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/8a2b0090) fixed faulty dropdown behaviour when items are 2 or less by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/5f51ec34) some profile fixes + tweaks (#379) by @NITHINSPACETIME
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/3f1772ff) fixed hardcoded path for runtime host by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/5d686b83) resolved multiple calls and not properly cancelling calls on sheet close / navigation by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/b49ec06b) fixed selected source per media by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/594266e7) fixed orientation issue and refactored menu animation disable toggle by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/ca97f6b9) indefinite loader when buffering by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/ebaf48f0) fixed source name showing instead of scanlator when all is selected by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/adbdf085) fixed some streams not playing, hid buttons that has 0 or 1 entries, auto .ass detection, attempt at fixing subtitles headers issue, plugin updater by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/5fb2af19) Entering and exiting full screen issues (#371) by @entityJY
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/f87e32c1) fixed other player settings not being applied when experimental is off by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/fe2f7bf6) fixed a type mismatch issue causing manga view to opened when opening movie/series by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/b988f6e5) fixed player lag tremendously for some devices by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/4c11dad1) fixed syntax issue by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/3e7ed137) cleanups and few fixes by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/08d89396) fix wrong plugin url by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/ef040640) Novel Reader by @itsmechinmoy
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/e4841369) small issues/bugs (#341) by @Rieversed
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/b73b3bd8) refresh tracker state after update/delete (#345) by @lemmesleep247
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/6c13beb5) auto scroll when hold to reorder extensions (#348) by @NotSap
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/0f4167a9) fixed the social section showing * 10 rating by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/a2082505) fixed bad dimensions of calendar button by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/c64eae16) fixed grey screen issue on details page by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/2dfd6293) fixed wrong ordered elements on different services on home page by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/7691dfef) proper fallback for manga pages progress by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/9deacf1d) fixed progress overflowing from history card by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/7dfa5c49) fixed the library disappearing issue if grid size set on Auto by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/282427a4) Dupe Entries in Simkl Calendar (#335) by @itsmechinmoy
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/50794c2d) Some Bugs (#326) by @itsmechinmoy
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/4bb61b9d) fixed broken callbacks by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/dd0871ec) probably fixed macos crash by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/4e2d21aa) fixed a crashing bug related to database by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/16d4dc2a) fixed error on manga, novel settings and cleanup up lots of bs from pr by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/be9d9f93) fixed an maybe issue with subtitles by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/1f93242d) fixed huge ass loading on anilist by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/45c22e81) fixed syntax issue in mal by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/3f97dd1d) fixed contrast to label on manga reader by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/7b82e5e2) fixed wrong order of cache by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/3ac19e1c) fixes on offline player and added a new area above bottom section for json renderer by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/eb178d67) fixed subtitle issue, online subs disappearing on track change,  removed pollers by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/b07a792d) Multiple Bugs Fixes (#295) by @itsmechinmoy
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/55eef53c) fixed issues with player (next/prev navigation issues, episode saving issues, progress issues) by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/99dae2eb) fixed unnecessary margin on linux, mac manga reader by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/1d9d063b) fixed chapter not saving on navigations by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/08d54487) fixed a issue of resize mode not applying on player initialization by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/2c5cae2a) fixed an issue related to subtitle by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/2b3e36d6) fixed grey screen on extension service by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/fb86df45) fixed an issue related to manga and anime history not properly saving by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/45551d84) fixes for stale fetch calls on source change by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/94586d8b) fixed an issue with device turning off during watching by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/2c16b400) Auto downgrading progress on tracker (#286) by @itsmechinmoy
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/bb296708) fixed an issue on mal where user would see wrong entries upon searching for an title by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/dd746be4) lag in detailed view of calendar (#284) by @NITHINSPACETIME
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/893c9fee) Dupe item + Hide Brightness + Subtitle can't set to none + Next button opens first episode + Nav for pc users + Reset to default + Added Open Current Episode Chunk (#287) by @itsmechinmoy
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/e72ab5ff) fixed ui update after episode/chapter watched/read by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/610ad769) fixed an issue where it was taking isar id instead of media id causing wrong media details to be show on details page by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/4cc3600d) fixed an issue with source settings not saving by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/d844638f) fixed profile page and revamped the entire profile page ui by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/3c8c97ed) fixed player not switching. fixed an issue where player had wrong fit size and aspect ratio by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/89ba1195) fixed another syntax issue in dub service by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/415e9524) fixed syntax issue in adaptor by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/a338e7d9) Local TimeZone For Dub Service + Livechart Added Again (#269) by @itsmechinmoy
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/d1ca69db) OLED on Player and Experimental Setting Screen and updating Docs. (#280) by @spongytiramisu
 
 
 ### 🔧 Refactors
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/1ad895d) refactored the dub calendar logic, made it faster and cleaned the redundant code by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/9de2d74) made the library list dialog dependent on media instead of manual prop by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/170b72c) added episode field for banner card by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/89c3f65) minor refactoring for cleaning up page by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/7886a9a) refactored library cuz it was messy af by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/5649171) Improve Consistency of UI elements and texts  (#216) by @Rieversed
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/0aa02f38) nav bar rewrite by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/d27c3777) added the history cards back on home page and refactored the hell out of history model and home page by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/3ed08dd0) ISAR -> HIVE Migration  (3/3) by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/e8529a0e) fixed cringe naming of player by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/ff4c9f19) Hive -> Isar Migration (2.5/3) by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/71cd8d1f) MIgrating from HIve -> Isar (2/3) by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/a4e2ce39) MIgrating from HIve -> Isar (1/3) by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/948a287c) dropped player theme support by @RyanYuuki
 
 
 ### 🎨 Style Changes
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/9a7abd3) some ui changes by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/e99a50e) some ui and responsive changes by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/a94b4b8)  revamped the banner carousel by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/1f56f10) minor ui changes on segmented tab on library page by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/719e0cd) improved the ui of chapter/episode ranges by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/0e2986f) revamped the banner carousel by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/18e8a20) some responsive changes by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/cf570ac) changed snackbar ui by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/6c7dc6a) changed nav bar for mobiles by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/c9af1ea) improved details page layout by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/4e04e83) revamped extension test page by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/c7f6b83) details page stats ui revamp by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/2735094) changed the ui of service selector by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/9cdad58) changed volume and brightness indicator from linear to circular by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/9a62630) added light mode support in player by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/f8219ea) added a toast when switching resize modes by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/985131f) fixed a responsive ui issue in ios dialogs by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/b18aacb2) revamped extension settings page by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/63353455) improved the look of chapter list and episode list by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/3ef8d307) added tabs for novel details page by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/01357020) removed divisions from progress slider of player by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/e0a1903d) improved UX of auto scroll by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/b5a5b183) improved ui of toast messages by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/134cc9a2) fixed bad colors on some elements (light mode) by @RyanYuuki
 
 
 ### 🧹 Chores & Documentation
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/1aaf56f) bump version to v3.0.4 (patch release) by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/daa4ba4) included author tag (#245) by @Shebyyy
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/7c7adac) fix AUR package update (#230) by @Shebyyy
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/32b01ed) reduced build size by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/8c98df2f) bump version to v3.0.5 (patch release) by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/ca99a376) refresh ref of bridge by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/69382d15) point dep to main by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/b61549e3) remove unused font families from pubspec.yaml by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/9a5cf3de) app size optimization by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/b504c038) imports by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/9ca83be3) Small Improvements for Simkl & Contributors List by @itsmechinmoy
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/1f7a459a) update .env file format (the most important change of this project) by @Neoniq
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/8902ca96) changed default sub transition to false by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/5c730304) minor changes on contributors page by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/9645dd5b) Small Syntax Errors by @itsmechinmoy
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/9d244cce) correct env variable (#323) by @Shebyyy
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/c5b2390c) correct env variable name and add secret by @Shebyyy
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/dd215dc2) added a toast message for dumb lambs who have libass activated by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/c2a70fc9) added more fields for json themes by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/db44176b) added deeplink for themes by @RyanYuuki
 
 
-![Total Downloads](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total?style=for-the-badge&label=TOTAL%20DOWNLOADS&labelColor=black&color=white) ![Current Release](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/v3.0.4/total?style=for-the-badge&label=CURRENT%20RELEASE&labelColor=black&color=white)
+![Total Downloads](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total?style=for-the-badge&label=TOTAL%20DOWNLOADS&labelColor=black&color=white) ![Current Release](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/v3.0.5/total?style=for-the-badge&label=CURRENT%20RELEASE&labelColor=black&color=white)
