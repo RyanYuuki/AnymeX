@@ -23,10 +23,8 @@ class ThemeProvider extends ChangeNotifier {
         isLightMode = ThemeKeys.isLightMode.get<bool>(false),
         isSystemMode = ThemeKeys.isSystemMode.get<bool>(false),
         isOled = ThemeKeys.isOled.get<bool>(false),
-        selectedVariantIndex =
-            ThemeKeys.selectedVariantIndex.get<int>(0),
-        currentThemeMode =
-            ThemeKeys.themeMode.get<String>("default") {
+        selectedVariantIndex = ThemeKeys.selectedVariantIndex.get<int>(0),
+        currentThemeMode = ThemeKeys.themeMode.get<String>("default") {
     _determineSeedColor();
     _updateTheme();
   }
@@ -111,6 +109,7 @@ class ThemeProvider extends ChangeNotifier {
   }
 
   void syncStatusBar() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
         systemNavigationBarColor: Colors.transparent,
         systemNavigationBarContrastEnforced: false,
