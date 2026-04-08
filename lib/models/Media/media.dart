@@ -51,6 +51,7 @@ class Media {
   String? characterRole;
   int? seasonYear;
   List<String> synonyms;
+  List<MediaTag> tags;
 
   // String get uniqueId => "$id-${serviceType.name}";
   String get uniqueId => id.split('*').first;
@@ -95,6 +96,7 @@ class Media {
       this.userStatus,
       this.characterRole,
       this.synonyms = const [],
+      this.tags = const [],
       DateTime? createdAt})
       : createdAt = DateTime.now();
 
@@ -417,6 +419,11 @@ class Media {
       mediaType: type,
       serviceType: ServicesType.anilist,
       synonyms: (json['synonyms'] as List?)?.cast<String>() ?? [],
+      tags: (json['tags'] as List?)
+              ?.map((t) => MediaTag.fromJson(t))
+              .where((t) => !t.isMediaSpoiler && !t.isGeneralSpoiler)
+              .toList() ??
+          [],
     );
 
     if (json['staffPreview'] != null) {
@@ -651,5 +658,28 @@ extension RemoveDupesOnTM on List<TrackedMedia> {
   List<TrackedMedia> removeDupes() {
     final seen = <String>{};
     return where((media) => seen.add(media.id!)).toList();
+  }
+}
+
+class MediaTag {
+  final String name;
+  final int rank;
+  final bool isMediaSpoiler;
+  final bool isGeneralSpoiler;
+
+  const MediaTag({
+    required this.name,
+    required this.rank,
+    this.isMediaSpoiler = false,
+    this.isGeneralSpoiler = false,
+  });
+
+  factory MediaTag.fromJson(Map<String, dynamic> json) {
+    return MediaTag(
+      name: json['name'] ?? '',
+      rank: json['rank'] ?? 0,
+      isMediaSpoiler: json['isMediaSpoiler'] ?? false,
+      isGeneralSpoiler: json['isGeneralSpoiler'] ?? false,
+    );
   }
 }
