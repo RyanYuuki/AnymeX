@@ -8,6 +8,7 @@ import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/anilist/anilist_queries.dart';
 import 'package:anymex/controllers/services/anilist/kitsu.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
+import 'package:anymex/screens/community/community_recommendations_page.dart';
 import 'package:anymex/controllers/services/underrated_service.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
@@ -254,7 +255,11 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
         if (filteredList.isEmpty) {
           return const SizedBox.shrink();
         }
-        return buildUnderratedSection('Community Recommendations', filteredList);
+        return buildUnderratedSection('Community Recommendations', filteredList,
+            onSeeAll: () => navigate(() => CommunityRecommendationsPage(
+                  data: filteredList,
+                  type: ItemType.anime,
+                )));
       }),
     ].obs;
   }
@@ -278,7 +283,11 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
         if (filteredList.isEmpty) {
           return const SizedBox.shrink();
         }
-        return buildUnderratedMangaSection('Community Recommendations', filteredList);
+        return buildUnderratedMangaSection('Community Recommendations', filteredList,
+            onSeeAll: () => navigate(() => CommunityRecommendationsPage(
+                  data: filteredList,
+                  type: ItemType.manga,
+                )));
       }),
     ].obs;
   }

@@ -59,12 +59,13 @@ Widget buildSection(String title, dynamic data,
 }
 
 Widget buildUnderratedSection(String title, List<UnderratedMedia> data,
-    {ItemType type = ItemType.anime}) {
+    {ItemType type = ItemType.anime, VoidCallback? onSeeAll}) {
   if (data.isEmpty) return const SizedBox.shrink();
   return _UnderratedCarousel(
     title: title,
     data: data,
     type: type,
+    onSeeAll: onSeeAll,
   );
 }
 
@@ -113,12 +114,14 @@ Widget buildMangaSection(String title, List<Media> data,
   );
 }
 
-Widget buildUnderratedMangaSection(String title, List<UnderratedMedia> data) {
+Widget buildUnderratedMangaSection(String title, List<UnderratedMedia> data,
+    {VoidCallback? onSeeAll}) {
   if (data.isEmpty) return const SizedBox.shrink();
   return _UnderratedCarousel(
     title: title,
     data: data,
     type: ItemType.manga,
+    onSeeAll: onSeeAll,
   );
 }
 
@@ -146,18 +149,21 @@ class _UnderratedCarousel extends StatelessWidget {
   final String title;
   final List<UnderratedMedia> data;
   final ItemType type;
+  final VoidCallback? onSeeAll;
 
   const _UnderratedCarousel({
     required this.title,
     required this.data,
     required this.type,
+    this.onSeeAll,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final cardHeight = getCardHeight(
+    final baseCardHeight = getCardHeight(
         CardStyle.values[settingsController.cardStyle], getPlatform(context));
+    final cardHeight = baseCardHeight + (UnderratedService.votingEnabled ? 28.0 : 0.0);
 
     if (data.isEmpty) return const SizedBox.shrink();
 
@@ -167,14 +173,41 @@ class _UnderratedCarousel extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 20.0),
-            child: Text(
-              title,
-              style: TextStyle(
-                fontFamily: "Poppins-SemiBold",
-                fontSize: 17,
-                color: theme.colorScheme.primary,
-              ),
+            padding: const EdgeInsets.only(left: 20.0, right: 12.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontFamily: "Poppins-SemiBold",
+                    fontSize: 17,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+                if (onSeeAll != null)
+                  GestureDetector(
+                    onTap: onSeeAll,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'See All',
+                          style: TextStyle(
+                            fontFamily: "Poppins-SemiBold",
+                            fontSize: 13,
+                            color: theme.colorScheme.primary.withOpacity(0.7),
+                          ),
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          size: 13,
+                          color: theme.colorScheme.primary.withOpacity(0.7),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
             ),
           ),
           const SizedBox(height: 10),
@@ -311,30 +344,31 @@ class _UnderratedCardState extends State<_UnderratedCard> {
       onLongPress: () => _showPeekPopup(context),
       child: SizedBox(
         width: cardWidth,
-        child: Stack(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            MediaCardGate(
-              itemData: carouselData,
-              tag: tag,
-              variant: DataVariant.underrated,
-              cardStyle: CardStyle.values[settingsController.cardStyle],
-              type: widget.type,
+            Expanded(
+              child: Stack(
+                children: [
+                  MediaCardGate(
+                    itemData: carouselData,
+                    tag: tag,
+                    variant: DataVariant.underrated,
+                    cardStyle: CardStyle.values[settingsController.cardStyle],
+                    type: widget.type,
+                  ),
+                  if (widget.item.author != null &&
+                      widget.item.author!.isNotEmpty)
+                    Positioned(
+                      top: 6,
+                      left: 6,
+                      child: _buildAuthorBadge(context, theme),
+                    ),
+                ],
+              ),
             ),
-            if (widget.item.author != null &&
-                widget.item.author!.isNotEmpty)
-              Positioned(
-                top: 6,
-                left: 6,
-                child: _buildAuthorBadge(context, theme),
-              ),
-            // Vote buttons — only shown if BOT_BASE_URL + BOT_API_SECRET are set
             if (UnderratedService.votingEnabled)
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: _buildVoteBar(theme),
-              ),
+              _buildVoteBar(theme),
           ],
         ),
       ),

@@ -8,6 +8,7 @@ import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/underrated_service.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
+import 'package:anymex/screens/community/community_recommendations_page.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
@@ -341,7 +342,11 @@ class SimklService extends GetxController
                 data: canadaMovies.value, title: "Canadian Movies"),
           Obx(() {
             final list = underratedService.getFilteredMovies();
-            return buildUnderratedSection('Community Recommendations', list);
+            return buildUnderratedSection('Community Recommendations', list,
+                onSeeAll: () => navigate(() => CommunityRecommendationsPage(
+                      data: list,
+                      type: ItemType.anime,
+                    )));
           }),
         ],
       ].obs;
@@ -382,7 +387,11 @@ class SimklService extends GetxController
             ReusableCarousel(data: canadaSeries.value, title: "Canadian Shows"),
           Obx(() {
             final list = underratedService.getFilteredShows();
-            return buildUnderratedSection('Community Recommendations', list);
+            return buildUnderratedSection('Community Recommendations', list,
+                onSeeAll: () => navigate(() => CommunityRecommendationsPage(
+                      data: list,
+                      type: ItemType.anime,
+                    )));
           }),
         ],
       ].obs;
