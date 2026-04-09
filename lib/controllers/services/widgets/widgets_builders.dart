@@ -161,9 +161,8 @@ class _UnderratedCarousel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final baseCardHeight = getCardHeight(
+    final cardHeight = getCardHeight(
         CardStyle.values[settingsController.cardStyle], getPlatform(context));
-    final cardHeight = baseCardHeight + (UnderratedService.votingEnabled ? 28.0 : 0.0);
 
     if (data.isEmpty) return const SizedBox.shrink();
 
@@ -232,7 +231,7 @@ class _UnderratedCarousel extends StatelessWidget {
   }
 }
 
-class _UnderratedCard extends StatefulWidget {
+class _UnderratedCard extends StatelessWidget {
   final UnderratedMedia item;
   final ItemType type;
 
@@ -241,92 +240,17 @@ class _UnderratedCard extends StatefulWidget {
     required this.type,
   });
 
-  @override
-  State<_UnderratedCard> createState() => _UnderratedCardState();
-}
-
-class _UnderratedCardState extends State<_UnderratedCard> {
-  VoteResult? _votes;
-  String? _userVote; // 'up', 'down', or null
-  bool _votingLoading = false;
-
-  @override
-  void initState() {
-    super.initState();
-    if (UnderratedService.votingEnabled) _loadVotes();
-  }
-
   String get _mediaType {
-    final id = widget.item.media.id;
+    final id = item.media.id;
     if (id.endsWith('*MOVIE')) return 'movie';
     if (id.endsWith('*SERIES')) return 'show';
-    return widget.type == ItemType.manga ? 'manga' : 'anime';
+    return type == ItemType.manga ? 'manga' : 'anime';
   }
 
   String get _mediaId {
-    final id = widget.item.media.id;
+    final id = item.media.id;
     if (id.contains('*')) return id.split('*').first;
     return id;
-  }
-
-  Future<void> _loadVotes() async {
-    final result =
-        await UnderratedService.fetchVotes(_mediaType, _mediaId);
-    if (mounted) setState(() => _votes = result);
-  }
-
-  Future<void> _castVote(String direction) async {
-    if (_votingLoading) return;
-    final serviceHandler = Get.find<ServiceHandler>();
-    final onlineService = serviceHandler.onlineService;
-
-    // get user identity
-    int? anilistId;
-    int? malId;
-    int? simklId;
-    String displayName = 'User';
-
-    final profile = onlineService.profileData.value;
-    final serviceType = serviceHandler.serviceType.value;
-
-    if (serviceType == ServicesType.anilist) {
-      anilistId = int.tryParse(profile.id ?? '');
-      displayName = profile.name ?? 'User';
-    } else if (serviceType == ServicesType.mal) {
-      malId = int.tryParse(profile.id ?? '');
-      displayName = profile.name ?? 'User';
-    } else if (serviceType == ServicesType.simkl) {
-      simklId = int.tryParse(profile.id ?? '');
-      displayName = profile.name ?? 'User';
-    }
-
-    if (anilistId == null && malId == null && simklId == null) return;
-
-    setState(() => _votingLoading = true);
-
-    // toggle: if already voted same direction, remove vote
-    final effectiveDirection =
-        _userVote == direction ? 'remove' : direction;
-
-    final result = await UnderratedService.castVote(
-      mediaType: _mediaType,
-      mediaId: _mediaId,
-      direction: effectiveDirection == 'remove' ? direction : direction,
-      anilistUserId: anilistId,
-      malUserId: malId,
-      simklUserId: simklId,
-      displayName: displayName,
-    );
-
-    if (mounted) {
-      setState(() {
-        _votingLoading = false;
-        if (result != null) {
-          _votes = result;
-          _userVote = _userVote == direction ? null : direction;
-        }
-      });
-    }
   }
 
   @override
@@ -335,86 +259,32 @@ class _UnderratedCardState extends State<_UnderratedCard> {
     final isDesktop = MediaQuery.of(context).size.width > 600;
     final cardWidth = isDesktop ? 160.0 : 118.0;
     final carouselData =
-        widget.item.toCarouselData(isManga: widget.type == ItemType.manga);
-    final tag =
-        'underrated-${carouselData.id}-${widget.item.media.hashCode}';
+        item.toCarouselData(isManga: type == ItemType.manga);
+    final tag = 'underrated-${carouselData.id}-${item.media.hashCode}';
 
     return GestureDetector(
       onTap: () => _navigateToDetails(context),
       onLongPress: () => _showPeekPopup(context),
       child: SizedBox(
         width: cardWidth,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+        child: Stack(
           children: [
-            Expanded(
-              child: Stack(
-                children: [
-                  MediaCardGate(
-                    itemData: carouselData,
-                    tag: tag,
-                    variant: DataVariant.underrated,
-                    cardStyle: CardStyle.values[settingsController.cardStyle],
-                    type: widget.type,
-                  ),
-                  if (widget.item.author != null &&
-                      widget.item.author!.isNotEmpty)
-                    Positioned(
-                      top: 6,
-                      left: 6,
-                      child: _buildAuthorBadge(context, theme),
-                    ),
-                ],
-              ),
+            MediaCardGate(
+              itemData: carouselData,
+              tag: tag,
+              variant: DataVariant.underrated,
+              cardStyle: CardStyle.values[settingsController.cardStyle],
+              type: type,
             ),
-            if (UnderratedService.votingEnabled)
-              _buildVoteBar(theme),
+            if (item.author != null && item.author!.isNotEmpty)
+              Positioned(
+                top: 6,
+                left: 6,
+                child: _buildAuthorBadge(context, theme),
+              ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildVoteBar(ThemeData theme) {
-    final upvotes = _votes?.upvotes ?? 0;
-    final downvotes = _votes?.downvotes ?? 0;
-
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface.withOpacity(0.88),
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(12),
-          bottomRight: Radius.circular(12),
-        ),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
-      child: _votingLoading
-          ? const Center(
-              child: SizedBox(
-                width: 14,
-                height: 14,
-                child: CircularProgressIndicator(strokeWidth: 1.5),
-              ),
-            )
-          : Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _VoteButton(
-                  icon: Icons.thumb_up_rounded,
-                  count: upvotes,
-                  active: _userVote == 'up',
-                  activeColor: Colors.green,
-                  onTap: () => _castVote('up'),
-                ),
-                _VoteButton(
-                  icon: Icons.thumb_down_rounded,
-                  count: downvotes,
-                  active: _userVote == 'down',
-                  activeColor: Colors.red,
-                  onTap: () => _castVote('down'),
-                ),
-              ],
-            ),
     );
   }
 
@@ -422,8 +292,8 @@ class _UnderratedCardState extends State<_UnderratedCard> {
     final serviceHandler = Get.find<ServiceHandler>();
     final serviceType = serviceHandler.serviceType.value;
     final isAnilist = serviceType == ServicesType.anilist;
-    final author = widget.item.usernameFor(serviceType);
-    final avatarUrl = widget.item.avatarFor(serviceType);
+    final author = item.usernameFor(serviceType);
+    final avatarUrl = item.avatarFor(serviceType);
     final hasAuthor = author != null && author.isNotEmpty;
 
     final badge = Container(
@@ -490,12 +360,12 @@ class _UnderratedCardState extends State<_UnderratedCard> {
 
   Future<void> _navigateToAuthorProfile(
       BuildContext context, bool isAnilist) async {
-    if (isAnilist && widget.item.anilistUserId != null) {
-      navigate(() => UserProfilePage(userId: widget.item.anilistUserId!));
-    } else if (widget.item.malUsername != null &&
-        widget.item.malUsername!.isNotEmpty) {
+    if (isAnilist && item.anilistUserId != null) {
+      navigate(() => UserProfilePage(userId: item.anilistUserId!));
+    } else if (item.malUsername != null &&
+        item.malUsername!.isNotEmpty) {
       launchUrlString(
-          'https://myanimelist.net/profile/${widget.item.malUsername}');
+          'https://myanimelist.net/profile/${item.malUsername}');
     }
   }
 
@@ -503,23 +373,25 @@ class _UnderratedCardState extends State<_UnderratedCard> {
     final serviceType = Get.find<ServiceHandler>().serviceType.value;
     MediaPeekPopup.show(
       context,
-      widget.item.media,
-      widget.type,
-      'underrated-${widget.item.media.id}',
-      author: widget.item.usernameFor(serviceType),
-      avatarUrl: widget.item.avatarFor(serviceType),
-      reason: widget.item.reason,
-      anilistUserId: widget.item.anilistUserId,
-      malUserId: widget.item.malUserId,
-      anilistUsername: widget.item.anilistUsername,
-      malUsername: widget.item.malUsername,
+      item.media,
+      type,
+      'underrated-${item.media.id}',
+      author: item.usernameFor(serviceType),
+      avatarUrl: item.avatarFor(serviceType),
+      reason: item.reason,
+      anilistUserId: item.anilistUserId,
+      malUserId: item.malUserId,
+      anilistUsername: item.anilistUsername,
+      malUsername: item.malUsername,
+      voteMediaType: _mediaType,
+      voteMediaId: _mediaId,
     );
   }
 
   void _navigateToDetails(BuildContext context) {
-    final media = widget.item.media;
+    final media = item.media;
     final tag = 'underrated-${media.id}';
-    if (widget.type == ItemType.manga) {
+    if (type == ItemType.manga) {
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -534,47 +406,6 @@ class _UnderratedCardState extends State<_UnderratedCard> {
         ),
       );
     }
-  }
-}
-
-class _VoteButton extends StatelessWidget {
-  final IconData icon;
-  final int count;
-  final bool active;
-  final Color activeColor;
-  final VoidCallback onTap;
-
-  const _VoteButton({
-    required this.icon,
-    required this.count,
-    required this.active,
-    required this.activeColor,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final color = active ? activeColor : theme.colorScheme.onSurface.withOpacity(0.5);
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 13, color: color),
-          const SizedBox(width: 2),
-          Text(
-            '$count',
-            style: TextStyle(
-              fontSize: 10,
-              color: color,
-              fontFamily: 'Poppins-SemiBold',
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }
 

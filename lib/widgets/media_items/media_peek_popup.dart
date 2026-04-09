@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:anymex/controllers/services/underrated_service.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
@@ -38,6 +39,8 @@ class MediaPeekPopup extends StatefulWidget {
   final String? author;
   final String? avatarUrl;
   final String? reason;
+  final String? voteMediaType; // 'anime','manga','show','movie'
+  final String? voteMediaId;
 
   const MediaPeekPopup({
     super.key,
@@ -51,6 +54,8 @@ class MediaPeekPopup extends StatefulWidget {
     this.author,
     this.avatarUrl,
     this.reason,
+    this.voteMediaType,
+    this.voteMediaId,
   });
 
   static void show(
@@ -61,7 +66,9 @@ class MediaPeekPopup extends StatefulWidget {
       String? malUsername,
       String? author,
       String? avatarUrl,
-      String? reason}) {
+      String? reason,
+      String? voteMediaType,
+      String? voteMediaId}) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -80,6 +87,8 @@ class MediaPeekPopup extends StatefulWidget {
         author: author,
         avatarUrl: avatarUrl,
         reason: reason,
+        voteMediaType: voteMediaType,
+        voteMediaId: voteMediaId,
       ),
     );
   }
@@ -105,6 +114,11 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
   bool _synopsisExpanded = false;
   static const int _synopsisMaxLines = 4;
 
+  // Vote state
+  VoteResult? _votes;
+  String? _userVote;
+  bool _voteLoading = false;
+
   late final RxString _animeStatus;
   late final RxDouble _animeScore;
   late final RxInt _animeProgress;
@@ -115,6 +129,11 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
     super.initState();
     _fetchPeekData();
     _initTrackingState();
+    if (UnderratedService.votingEnabled &&
+        widget.voteMediaType != null &&
+        widget.voteMediaId != null) {
+      _loadVotes();
+    }
   }
 
   void _initTrackingState() {
@@ -130,6 +149,59 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                 : (tracked.episodeCount ?? '')) ??
             0)
         .obs;
+  }
+
+  Future<void> _loadVotes() async {
+    final result = await UnderratedService.fetchVotes(
+        widget.voteMediaType!, widget.voteMediaId!);
+    if (mounted) setState(() => _votes = result);
+  }
+
+  Future<void> _castVote(String direction) async {
+    if (_voteLoading) return;
+    final serviceHandler = Get.find<ServiceHandler>();
+    final profile = serviceHandler.onlineService.profileData.value;
+    final serviceType = serviceHandler.serviceType.value;
+
+    int? anilistId;
+    int? malId;
+    int? simklId;
+    String displayName = 'User';
+
+    if (serviceType == ServicesType.anilist) {
+      anilistId = int.tryParse(profile.id ?? '');
+      displayName = profile.name ?? 'User';
+    } else if (serviceType == ServicesType.mal) {
+      malId = int.tryParse(profile.id ?? '');
+      displayName = profile.name ?? 'User';
+    } else if (serviceType == ServicesType.simkl) {
+      simklId = int.tryParse(profile.id ?? '');
+      displayName = profile.name ?? 'User';
+    }
+
+    if (anilistId == null && malId == null && simklId == null) return;
+
+    setState(() => _voteLoading = true);
+
+    final result = await UnderratedService.castVote(
+      mediaType: widget.voteMediaType!,
+      mediaId: widget.voteMediaId!,
+      direction: direction,
+      anilistUserId: anilistId,
+      malUserId: malId,
+      simklUserId: simklId,
+      displayName: displayName,
+    );
+
+    if (mounted) {
+      setState(() {
+        _voteLoading = false;
+        if (result != null) {
+          _votes = result;
+          _userVote = _userVote == direction ? null : direction;
+        }
+      });
+    }
   }
 
   Future<void> _fetchPeekData() async {
@@ -620,6 +692,11 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
       children: [
         if (widget.author != null && widget.author!.isNotEmpty) ...[
           _buildRecommendedBySection(colors),
+          const SizedBox(height: 16),
+          if (UnderratedService.votingEnabled &&
+              widget.voteMediaType != null &&
+              widget.voteMediaId != null)
+            _buildVoteBar(colors),
           const SizedBox(height: 20),
         ],
         if (data.description.isNotEmpty) ...[
@@ -752,6 +829,54 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
         borderRadius: BorderRadius.circular(20),
         child: chip,
       ),
+    );
+  }
+
+  Widget _buildVoteBar(ColorScheme colors) {
+    final upvotes = _votes?.upvotes ?? 0;
+    final downvotes = _votes?.downvotes ?? 0;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: colors.surfaceContainer,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: colors.outline.withOpacity(0.15)),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      child: _voteLoading
+          ? const Center(
+              child: SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            )
+          : Row(
+              children: [
+                AnymexText(
+                  text: 'Was this helpful?',
+                  size: 13,
+                  color: colors.onSurfaceVariant,
+                  variant: TextVariant.semiBold,
+                ),
+                const Spacer(),
+                _PopupVoteButton(
+                  icon: Icons.thumb_up_rounded,
+                  count: upvotes,
+                  active: _userVote == 'up',
+                  activeColor: Colors.green,
+                  onTap: () => _castVote('up'),
+                ),
+                const SizedBox(width: 16),
+                _PopupVoteButton(
+                  icon: Icons.thumb_down_rounded,
+                  count: downvotes,
+                  active: _userVote == 'down',
+                  activeColor: Colors.red,
+                  onTap: () => _castVote('down'),
+                ),
+              ],
+            ),
     );
   }
 
@@ -918,6 +1043,47 @@ class _DetailsStyleButton extends StatelessWidget {
             child: child,
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _PopupVoteButton extends StatelessWidget {
+  final IconData icon;
+  final int count;
+  final bool active;
+  final Color activeColor;
+  final VoidCallback onTap;
+
+  const _PopupVoteButton({
+    required this.icon,
+    required this.count,
+    required this.active,
+    required this.activeColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = active
+        ? activeColor
+        : Theme.of(context).colorScheme.onSurface.withOpacity(0.5);
+    return GestureDetector(
+      onTap: onTap,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 18, color: color),
+          const SizedBox(width: 4),
+          Text(
+            '$count',
+            style: TextStyle(
+              fontSize: 13,
+              color: color,
+              fontFamily: 'Poppins-SemiBold',
+            ),
+          ),
+        ],
       ),
     );
   }
