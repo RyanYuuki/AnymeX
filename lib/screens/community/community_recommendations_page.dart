@@ -192,7 +192,7 @@ class _CommunityRecommendationsPageState
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
                   mainAxisExtent: cardHeight +
-                      (UnderratedService.votingEnabled ? 32 : 0),
+                      (UnderratedService.votingEnabled ? 38 : 0),
                 ),
                 itemCount: widget.data.length,
                 itemBuilder: (context, index) {
@@ -425,46 +425,56 @@ class _VoteBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final colors = Theme.of(context).colorScheme;
 
     return Container(
-      height: 30,
+      height: 34,
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface.withOpacity(0.7),
+        color: colors.surfaceContainerLowest.opaque(0.6),
         border: Border(
-          top: BorderSide(
-              color: theme.colorScheme.outline.withOpacity(0.1)),
+          top: BorderSide(color: colors.outline.withOpacity(0.08)),
         ),
       ),
       child: isLoading
-          ? const Center(
+          ? Center(
               child: SizedBox(
                 width: 14,
                 height: 14,
-                child: CircularProgressIndicator(strokeWidth: 1.5),
+                child: CircularProgressIndicator(
+                  strokeWidth: 1.5,
+                  color: colors.primary,
+                ),
               ),
             )
-          : Row(
-              children: [
-                _VoteBtn(
-                  icon: Icons.thumb_up_rounded,
-                  count: votes?.upvotes ?? 0,
-                  active: userVote == 'up',
-                  activeColor: Colors.green,
-                  onTap: () => onVote('up'),
-                ),
-                Container(
+          : Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _VoteBtn(
+                      icon: Icons.thumb_up_rounded,
+                      count: votes?.upvotes ?? 0,
+                      active: userVote == 'up',
+                      isUpvote: true,
+                      onTap: () => onVote('up'),
+                    ),
+                  ),
+                  Container(
                     width: 1,
                     height: 14,
-                    color: theme.colorScheme.outline.withOpacity(0.2)),
-                _VoteBtn(
-                  icon: Icons.thumb_down_rounded,
-                  count: votes?.downvotes ?? 0,
-                  active: userVote == 'down',
-                  activeColor: Colors.red,
-                  onTap: () => onVote('down'),
-                ),
-              ],
+                    color: colors.outline.withOpacity(0.12),
+                  ),
+                  Expanded(
+                    child: _VoteBtn(
+                      icon: Icons.thumb_down_rounded,
+                      count: votes?.downvotes ?? 0,
+                      active: userVote == 'down',
+                      isUpvote: false,
+                      onTap: () => onVote('down'),
+                    ),
+                  ),
+                ],
+              ),
             ),
     );
   }
@@ -474,46 +484,64 @@ class _VoteBtn extends StatelessWidget {
   final IconData icon;
   final int count;
   final bool active;
-  final Color activeColor;
+  final bool isUpvote;
   final VoidCallback onTap;
 
   const _VoteBtn({
     required this.icon,
     required this.count,
     required this.active,
-    required this.activeColor,
+    required this.isUpvote,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final color = active
-        ? activeColor
-        : Theme.of(context).colorScheme.onSurface.withOpacity(0.5);
+    final colors = Theme.of(context).colorScheme;
 
-    return Expanded(
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(icon, size: 14, color: color),
-                const SizedBox(width: 3),
-                Text(
-                  '$count',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: color,
-                    fontFamily: 'Poppins-SemiBold',
-                  ),
+    final activeColor =
+        isUpvote ? colors.primary : colors.error;
+    final activeBgColor = isUpvote
+        ? colors.primary.opaque(0.12, iReallyMeanIt: true)
+        : colors.error.opaque(0.12, iReallyMeanIt: true);
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+          padding: const EdgeInsets.symmetric(vertical: 3),
+          decoration: BoxDecoration(
+            color: active ? activeBgColor : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AnimatedScale(
+                scale: active ? 1.15 : 1.0,
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeOutBack,
+                child: Icon(
+                  icon,
+                  size: 13,
+                  color: active ? activeColor : colors.onSurfaceVariant,
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(width: 3),
+              Text(
+                '$count',
+                style: TextStyle(
+                  fontSize: 10,
+                  color: active ? activeColor : colors.onSurfaceVariant,
+                  fontFamily: 'Poppins-SemiBold',
+                ),
+              ),
+            ],
           ),
         ),
       ),

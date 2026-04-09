@@ -865,17 +865,20 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
 
     return Container(
       decoration: BoxDecoration(
-        color: colors.surfaceContainer,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colors.outline.withOpacity(0.15)),
+        color: colors.surfaceContainerHighest.opaque(0.35),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: colors.outline.withOpacity(0.12)),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       child: _voteLoading
-          ? const Center(
+          ? Center(
               child: SizedBox(
                 width: 18,
                 height: 18,
-                child: CircularProgressIndicator(strokeWidth: 2),
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: colors.primary,
+                ),
               ),
             )
           : Row(
@@ -891,15 +894,15 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                   icon: Icons.thumb_up_rounded,
                   count: upvotes,
                   active: _userVote == 'up',
-                  activeColor: Colors.green,
+                  isUpvote: true,
                   onTap: () => _castVote('up'),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 12),
                 _PopupVoteButton(
                   icon: Icons.thumb_down_rounded,
                   count: downvotes,
                   active: _userVote == 'down',
-                  activeColor: Colors.red,
+                  isUpvote: false,
                   onTap: () => _castVote('down'),
                 ),
               ],
@@ -1079,38 +1082,65 @@ class _PopupVoteButton extends StatelessWidget {
   final IconData icon;
   final int count;
   final bool active;
-  final Color activeColor;
+  final bool isUpvote;
   final VoidCallback onTap;
 
   const _PopupVoteButton({
     required this.icon,
     required this.count,
     required this.active,
-    required this.activeColor,
+    required this.isUpvote,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final color = active
-        ? activeColor
-        : Theme.of(context).colorScheme.onSurface.withOpacity(0.5);
-    return GestureDetector(
-      onTap: onTap,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 18, color: color),
-          const SizedBox(width: 4),
-          Text(
-            '$count',
-            style: TextStyle(
-              fontSize: 13,
-              color: color,
-              fontFamily: 'Poppins-SemiBold',
-            ),
+    final colors = Theme.of(context).colorScheme;
+
+    final activeColor = isUpvote ? colors.primary : colors.error;
+    final activeBgColor = isUpvote
+        ? colors.primary.opaque(0.15, iReallyMeanIt: true)
+        : colors.error.opaque(0.15, iReallyMeanIt: true);
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(10),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: active ? activeBgColor : Colors.transparent,
+            borderRadius: BorderRadius.circular(10),
+            border: active
+                ? Border.all(color: activeColor.withOpacity(0.2))
+                : null,
           ),
-        ],
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AnimatedScale(
+                scale: active ? 1.1 : 1.0,
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeOutBack,
+                child: Icon(
+                  icon,
+                  size: 18,
+                  color: active ? activeColor : colors.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(width: 4),
+              AnymexText(
+                text: '$count',
+                size: 13,
+                color: active ? activeColor : colors.onSurfaceVariant,
+                variant: TextVariant.semiBold,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
