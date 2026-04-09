@@ -542,8 +542,7 @@ class PlayerBottomSheets {
       backgroundColor: Colors.transparent,
       builder: (context) => isExpanded
           ? SizedBox(
-              height:
-                  MediaQuery.of(context).size.height * expandedHeightFactor,
+              height: MediaQuery.of(context).size.height * expandedHeightFactor,
               child: sheet)
           : sheet,
     );
@@ -551,13 +550,7 @@ class PlayerBottomSheets {
 
   static Future<int?> showUnifiedSubtitles(
       BuildContext context, PlayerController controller) {
-    return showCustom(
-      context: context,
-      title: 'Subtitles',
-      isExpanded: true,
-      expandedHeightFactor: 1.0,
-      content: SubtitleUnifiedSheet(controller: controller),
-    );
+    return Future.value(null);
   }
 
   static Future<int?> showOfflineSubs(
@@ -1165,185 +1158,6 @@ class _ActionChip extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class SubtitleUnifiedSheet extends StatefulWidget {
-  final PlayerController controller;
-  const SubtitleUnifiedSheet({super.key, required this.controller});
-
-  @override
-  State<SubtitleUnifiedSheet> createState() => _SubtitleUnifiedSheetState();
-}
-
-class _SubtitleUnifiedSheetState extends State<SubtitleUnifiedSheet> {
-  final RxBool _showAllStreams = false.obs;
-
-  @override
-  void initState() {
-    super.initState();
-    widget.controller.showAllStreamSubtitles.value = false;
-    final selectedFile = widget.controller.selectedExternalSub.value.file;
-    if (selectedFile != null &&
-        selectedFile.isNotEmpty &&
-        !widget
-            .controller
-            .getCurrentStreamSubtitleOptions()
-            .any((s) => s.file == selectedFile)) {
-      _showAllStreams.value = true;
-      widget.controller.showAllStreamSubtitles.value = true;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {},
-      behavior: HitTestBehavior.opaque,
-      child: widget.controller.isOffline.value
-          ? _buildEmbeddedList()
-          : Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildAllStreamsToggle(),
-                const SizedBox(height: 10),
-                Flexible(
-                  child: Obx(() => _buildOnlineSubtitleList()),
-                ),
-              ],
-            ),
-    );
-  }
-
-  Widget _buildAllStreamsToggle() {
-    return Obx(() => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Container(
-            decoration: BoxDecoration(
-              color: context.colors.surfaceContainerHighest.withOpacity(0.3),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: SwitchListTile(
-              value: _showAllStreams.value,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-              title: const Text('Show subtitles from all streams'),
-              subtitle: Text(_showAllStreams.value
-                  ? 'Labels include server names'
-                  : 'Only subtitles from current stream'),
-              onChanged: (val) {
-                _showAllStreams.value = val;
-                widget.controller.showAllStreamSubtitles.value = val;
-              },
-            ),
-          ),
-        ));
-  }
-
-  Widget _buildEmbeddedList() {
-    final tracks = widget.controller.embeddedSubs.value;
-    final selectedTrack = widget.controller.selectedSubsTrack.value;
-    final currentIndex =
-        selectedTrack == null ? 0 : tracks.indexOf(selectedTrack) + 1;
-
-    final items = [
-      const BottomSheetItem(
-          title: 'None', subtitle: 'Subtitle Track', icon: Icons.audiotrack),
-      ...tracks.map((entry) {
-        return BottomSheetItem(
-          title: (entry.title ?? entry.language ?? entry.url ?? entry.id)
-              .toUpperCase(),
-          subtitle: 'Subtitle Track',
-          icon: Icons.closed_caption_rounded,
-        );
-      })
-    ];
-
-    return ListView.builder(
-      itemCount: items.length,
-      shrinkWrap: true,
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      itemBuilder: (context, index) {
-        final item = items[index];
-        final isSelected = currentIndex == index;
-
-        return _BottomSheetListItem(
-          item: item,
-          isSelected: isSelected,
-          onTap: () {
-            if (index == 0) {
-              widget.controller.setSubtitleTrack(SubtitleTrack.no());
-            } else {
-              final selectedTrack = tracks[index - 1];
-              widget.controller.setSubtitleTrack(selectedTrack);
-            }
-            Get.back();
-          },
-        );
-      },
-    );
-  }
-
-  Widget _buildOnlineSubtitleList() {
-    final allMode = _showAllStreams.value;
-    final tracks = allMode
-        ? widget.controller.getAllStreamSubtitleOptions()
-        : widget.controller.getCurrentStreamSubtitleOptions();
-    final selectedFile = widget.controller.selectedExternalSub.value.file;
-    final selectedTrackIndex = tracks.indexWhere((t) => t.file == selectedFile);
-
-    final items = [
-      const BottomSheetItem(
-        title: 'Search Online',
-        subtitle: 'Find subtitles online',
-        icon: Icons.cloud_download,
-      ),
-      const BottomSheetItem(
-        title: 'None',
-        subtitle: 'No subtitles',
-        icon: Icons.subtitles_off,
-      ),
-      ...tracks.map((e) {
-        return BottomSheetItem(
-          title: e.label ?? 'No Title',
-          subtitle: allMode ? 'Subtitle Track (All Streams)' : 'Subtitle Track',
-          icon: Icons.subtitles,
-        );
-      }),
-    ];
-
-    return ListView.builder(
-      itemCount: items.length,
-      shrinkWrap: true,
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      itemBuilder: (context, index) {
-        final item = items[index];
-        final isSearchOnline = index == 0;
-        final isNone = index == 1;
-        final isSelected = (selectedFile == null || selectedFile.isEmpty)
-            ? isNone
-            : (selectedTrackIndex + 2) == index;
-
-        return _BottomSheetListItem(
-          item: item,
-          isSelected: isSelected,
-          onTap: () {
-            if (isSearchOnline) {
-              Get.back();
-              Future.delayed(const Duration(milliseconds: 500), () {
-                widget.controller.isSubtitlePaneOpened.value = true;
-              });
-            } else if (isNone) {
-              widget.controller.setExternalSub(null);
-              Get.back();
-            } else {
-              final selectedTrack = tracks[index - 2];
-              widget.controller.setExternalSub(selectedTrack);
-              Get.back();
-            }
-          },
-        );
-      },
     );
   }
 }
