@@ -158,6 +158,8 @@ class _UnderratedCarousel extends StatelessWidget {
     final cardHeight = getCardHeight(
         CardStyle.values[settingsController.cardStyle], getPlatform(context));
 
+    if (data.isEmpty) return const SizedBox.shrink();
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5.0),
       child: Column(

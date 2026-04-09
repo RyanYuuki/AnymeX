@@ -1,4 +1,5 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/underrated_service.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -134,6 +135,7 @@ class _SettingsCommonState extends State<SettingsCommon> {
                                 setState(() {
                                   showCommunityRecs = e;
                                   General.showCommunityRecommendations.set(e);
+                                  Get.find<UnderratedService>().communityEnabled.value = e;
                                 });
                               },
                             ),
@@ -147,6 +149,7 @@ class _SettingsCommonState extends State<SettingsCommon> {
                                 setState(() {
                                   hideNsfwRecs = e;
                                   General.hideNsfwRecommendations.set(e);
+                                  Get.find<UnderratedService>().hideNsfw.value = e;
                                 });
                               },
                             ),

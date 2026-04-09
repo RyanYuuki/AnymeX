@@ -60,6 +60,7 @@ class UnderratedEntry {
   final String? anilistAvatar;
   final String? malAvatar;
   final String? reason;
+  final bool isNsfw;
 
   UnderratedEntry({
     this.anilistId,
@@ -74,6 +75,7 @@ class UnderratedEntry {
     this.anilistAvatar,
     this.malAvatar,
     this.reason,
+    this.isNsfw = false,
   });
 
   factory UnderratedEntry.fromJson(Map<String, dynamic> json) {
@@ -94,6 +96,7 @@ class UnderratedEntry {
       anilistAvatar: anilistUser?['avatar']?.toString(),
       malAvatar: malUser?['avatar']?.toString(),
       reason: json['reason']?.toString(),
+      isNsfw: json['nsfw'] == true,
     );
   }
 
@@ -173,9 +176,13 @@ class UnderratedService extends GetxController {
     );
   }
 
-  bool get _communityEnabled =>
-      General.showCommunityRecommendations.get<bool>(true);
-  bool get _hideNsfw => General.hideNsfwRecommendations.get<bool>(true);
+  RxBool communityEnabled =
+      RxBool(General.showCommunityRecommendations.get<bool>(true));
+  RxBool hideNsfw =
+      RxBool(General.hideNsfwRecommendations.get<bool>(true));
+
+  bool get _communityEnabled => communityEnabled.value;
+  bool get _hideNsfw => hideNsfw.value;
 
   List<UnderratedMedia> getFilteredShows() {
     if (!_communityEnabled || underratedShows.isEmpty) return [];
@@ -323,6 +330,7 @@ class UnderratedService extends GetxController {
       malAvatar: entry.malAvatar,
       reason: entry.reason,
       fallbackTitle: entry.title,
+      isNsfw: entry.isNsfw,
     );
   }
 
