@@ -187,9 +187,6 @@ class _CommunityRecommendationsPageState
   }
 }
 
-// ---------------------------------------------------------------------------
-// Card — uses the same MediaCardGate + author badge as _UnderratedCard
-// ---------------------------------------------------------------------------
 class _SeeAllCard extends StatelessWidget {
   final UnderratedMedia item;
   final ItemType type;
@@ -266,7 +263,6 @@ class _SeeAllCard extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // ── The card (same gate as carousel) ──────────────────────────
         Expanded(
           child: GestureDetector(
             onTap: _navigateToDetails,
@@ -297,7 +293,6 @@ class _SeeAllCard extends StatelessWidget {
           ),
         ),
 
-        // ── Vote bar ─────────────────────────────────────────────────
         if (UnderratedService.votingEnabled)
           _VoteBar(
             votes: votes,
@@ -310,9 +305,6 @@ class _SeeAllCard extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Author badge — identical styling to widgets_builders.dart _UnderratedCard
-// ---------------------------------------------------------------------------
 class _AuthorBadge extends StatelessWidget {
   final UnderratedMedia item;
   final String author;
@@ -390,10 +382,6 @@ class _AuthorBadge extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Vote bar — Material/InkWell so buttons get their own hit-test region
-// and are never swallowed by the parent GestureDetector on the card.
-// ---------------------------------------------------------------------------
 class _VoteBar extends StatelessWidget {
   final VoteResult? votes;
   final String? userVote;
@@ -454,8 +442,6 @@ class _VoteBar extends StatelessWidget {
   }
 }
 
-/// Uses Material + InkWell so the ripple/tap is handled in its own gesture
-/// arena — it will NOT be eaten by the parent GestureDetector on the card.
 class _VoteBtn extends StatelessWidget {
   final IconData icon;
   final int count;

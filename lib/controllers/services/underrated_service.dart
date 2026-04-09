@@ -491,8 +491,6 @@ class UnderratedService extends GetxController {
     await fetchAll();
   }
 
-  // ── Vote System ──────────────────────────────────────────────────────────────
-
   static String? get _botBaseUrl => dotenv.env['BOT_BASE_URL'];
   static String? get _botSecret => dotenv.env['BOT_API_SECRET'];
 
@@ -507,7 +505,6 @@ class UnderratedService extends GetxController {
         'Authorization': 'Bearer $_botSecret',
       };
 
-  /// Returns { upvotes, downvotes, net, userVote: 'up'|'down'|null }
   static Future<VoteResult?> fetchVotes(
       String mediaType, String mediaId) async {
     if (!votingEnabled) return null;
@@ -525,11 +522,10 @@ class UnderratedService extends GetxController {
     return null;
   }
 
-  /// Cast a vote. Returns updated VoteResult or null on failure.
   static Future<VoteResult?> castVote({
     required String mediaType,
     required String mediaId,
-    required String direction, // 'up' or 'down'
+    required String direction,
     int? anilistUserId,
     int? malUserId,
     int? simklUserId,
@@ -553,7 +549,7 @@ class UnderratedService extends GetxController {
         body['simkl_user_id'] = simklUserId;
         body['id_type'] = 'simkl';
       } else {
-        return null; // need at least one user id
+        return null;
       }
       final resp = await http.post(url,
           headers: _authHeaders, body: jsonEncode(body));
@@ -647,7 +643,7 @@ class VoteResult {
   final int upvotes;
   final int downvotes;
   final int net;
-  final String? userVote; // 'up', 'down', or null
+  final String? userVote;
 
   VoteResult({
     required this.upvotes,
