@@ -1,3 +1,4 @@
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -130,6 +131,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     );
   }
 
+  BasePlayer get basePlayer => _basePlayer;
+
   late BasePlayer _basePlayer;
 
   Widget get videoWidget => _basePlayer.getVideoWidget(fit: videoFit.value);
@@ -178,6 +181,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final Rx<List<model.Track>> externalSubs = Rx([]);
   final RxBool showAllStreamSubtitles = false.obs;
   final Rx<bool> isSubtitlePaneOpened = false.obs;
+  final Rx<bool> isSubtitleUnifiedPaneOpened = false.obs;
   final Rx<bool> isEpisodePaneOpened = false.obs;
   final RxBool canGoForward = false.obs;
   final RxBool canGoBackward = false.obs;
@@ -186,6 +190,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final brightnessIndicator = false.obs;
   final RxBool volumeIndicator = false.obs;
   final currentVisualProfile = 'natural'.obs;
+  final Rx<Duration> subtitleDelay = Duration.zero.obs;
   RxMap<String, int> customSettings = <String, int>{}.obs;
   bool _hasTrackedInitialOnline = false;
   bool _hasTrackedInitialLocal = false;
@@ -987,6 +992,24 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
   }
 
+  void toggleControls({bool? val}) {
+    showControls.value = val ?? !showControls.value;
+    if (showControls.value) {
+      _resetAutoHideTimer();
+    } else {
+      _cancelAutoHideTimer();
+    }
+  }
+
+  void setSubtitleDelay(Duration delay) {
+    if (_basePlayer is BetterPlayerImpl) {
+      snackBar('Subtitle delay is not supported in BetterPlayer');
+      return;
+    }
+    subtitleDelay.value = delay;
+    _basePlayer.setSubtitleDelay(delay);
+  }
+
   Future<void> fetchEpisode(Episode episode, {Duration? savedPosition}) async {
     if (isOffline.value) return;
 
@@ -1290,13 +1313,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   void setSubtitleTrack(SubtitleTrack track) {
     selectedSubsTrack.value = track.id == 'no' ? null : track;
     _applySubtitleTrack(track);
-  }
-
-  void toggleControls({bool? val}) {
-    showControls.value = val ?? !showControls.value;
-    if (showControls.value) {
-      _resetAutoHideTimer();
-    }
   }
 
   void togglePlayPause() {
