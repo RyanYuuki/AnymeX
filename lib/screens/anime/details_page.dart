@@ -157,7 +157,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     Future.delayed(const Duration(milliseconds: 500), () {
       _checkAnimePresence();
     });
-    
+
     _fetchAnilistData();
   }
 
@@ -736,7 +736,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
-          color: context.colors.surfaceContainer.opaque(0.5),
+          color: context.colors.surfaceContainer.opaque(0.3),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -745,9 +745,11 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                 style: TextStyle(
                     fontSize: 11, color: context.colors.onSurface.opaque(0.5))),
             const SizedBox(height: 2),
-            Text(value,
-                style: TextStyle(
-                    fontSize: 14, fontWeight: FontWeight.w500, color: color)),
+            AnymexText(
+                text: value,
+                size: 14,
+                variant: TextVariant.semiBold,
+                color: color),
           ],
         ),
       ),
@@ -840,12 +842,12 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                 _buildTimeStat(context,
                     label: 'Watched',
                     value: _formatWatchTime(watchedMins),
-                    color: Colors.green),
+                    color: context.colors.primary),
                 const SizedBox(width: 8),
                 _buildTimeStat(context,
                     label: 'Remaining',
                     value: _formatWatchTime(remainingMins),
-                    color: Colors.orange),
+                    color: context.colors.error),
               ],
             ),
           ],
@@ -1022,8 +1024,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
           animeProgress: animeProgress,
           currentAnime: currentAnime,
           media: anilistData ?? widget.media,
-          onUpdate: (id, score, status, progress, season, startedAt, completedAt,
-              isPrivate) async {
+          onUpdate: (id, score, status, progress, season, startedAt,
+              completedAt, isPrivate) async {
             final fetcher = widget.media.serviceType;
             final id = fetcher.onlineService.currentMedia.value.id;
             await fetcher.onlineService.updateListEntry(UpdateListEntryParams(
