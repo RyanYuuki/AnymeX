@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -12,7 +13,6 @@ class BetterPlayerImpl extends BasePlayer {
   late BetterPlayerController _controller;
   BetterPlayerDataSource? _currentDataSource;
   final PlayerConfiguration config;
-  Map<String, String>? _currentVideoHeaders;
 
   final _positionController = StreamController<Duration>.broadcast();
   final _durationController = StreamController<Duration>.broadcast();
@@ -34,6 +34,7 @@ class BetterPlayerImpl extends BasePlayer {
   List<String> _lastSubtitleLines = const [];
 
   final List<SubtitleTrack> _accumulatedSubtitles = [];
+  final Map<String, BetterPlayerSubtitlesSource> _subtitleSourceByTrackId = {};
 
   BetterPlayerImpl({
     PlayerConfiguration? configuration,
@@ -219,6 +220,8 @@ class BetterPlayerImpl extends BasePlayer {
   }
 
   List<SubtitleTrack> _extractSubtitleTracks() {
+    _subtitleSourceByTrackId.clear();
+
     for (var i = 0; i < _accumulatedSubtitles.length; i++) {
       final t = _accumulatedSubtitles[i];
       final title = t.title ?? '';
@@ -246,8 +249,11 @@ class BetterPlayerImpl extends BasePlayer {
 
         if (url.isEmpty || existingUrls.contains(url)) continue;
 
+        final id = 'subtitle_src_${url.hashCode}_$i';
+        _subtitleSourceByTrackId[id] = _normalizeSubtitleSource(sub);
+
         newTracks.add(SubtitleTrack(
-          id: 'subtitle_${_accumulatedSubtitles.length + newTracks.length}',
+          id: id,
           title: '${sub.name} (Current)',
           language: sub.name,
           url: url,
@@ -288,6 +294,8 @@ class BetterPlayerImpl extends BasePlayer {
     _lastPosition = Duration.zero;
     _lastBuffer = Duration.zero;
     _lastSubtitleLines = const [];
+    _accumulatedSubtitles.clear();
+    _subtitleSourceByTrackId.clear();
 
     _currentDataSource = BetterPlayerDataSource(
       BetterPlayerDataSourceType.network,
@@ -301,9 +309,6 @@ class BetterPlayerImpl extends BasePlayer {
             )
           : const BetterPlayerBufferingConfiguration(),
     );
-    _currentVideoHeaders =
-        headers == null ? null : Map<String, String>.from(headers);
-
     await _controller.setupDataSource(_currentDataSource!);
 
     if (startPosition != null && startPosition > Duration.zero) {
@@ -406,24 +411,77 @@ class BetterPlayerImpl extends BasePlayer {
     }
 
     if (track.url != null && track.url!.isNotEmpty) {
-      await _controller.setupSubtitleSource(
-        BetterPlayerSubtitlesSource(
-          type: BetterPlayerSubtitlesSourceType.network,
-          urls: [track.url!],
-          name: track.title,
-          headers: track.headers ?? _currentVideoHeaders,
-        ),
+      final source = _buildSubtitleSourceFromRawUrl(
+        track.url!,
+        name: track.title,
       );
+      await _controller.setupSubtitleSource(source);
     } else {
-      final index = int.tryParse(track.id.replaceAll('subtitle_', ''));
-      if (index != null &&
-          _currentDataSource?.subtitles != null &&
-          index < _currentDataSource!.subtitles!.length) {
-        await _controller.setupSubtitleSource(
-          _currentDataSource!.subtitles![index],
-        );
+      final source = _subtitleSourceByTrackId[track.id];
+      if (source != null) {
+        await _controller.setupSubtitleSource(source);
       }
     }
+  }
+
+  BetterPlayerSubtitlesSource _buildSubtitleSourceFromRawUrl(
+    String rawUrl, {
+    String? name,
+  }) {
+    final normalized = _normalizeSubtitleEntry(rawUrl);
+    final uri = Uri.tryParse(normalized);
+    final isNetwork = uri != null &&
+        (uri.scheme == 'http' || uri.scheme == 'https');
+
+    return BetterPlayerSubtitlesSource(
+      type: isNetwork
+          ? BetterPlayerSubtitlesSourceType.network
+          : BetterPlayerSubtitlesSourceType.file,
+      urls: [normalized],
+      name: name,
+    );
+  }
+
+  BetterPlayerSubtitlesSource _normalizeSubtitleSource(
+      BetterPlayerSubtitlesSource source) {
+    final urls = (source.urls ?? const <String>[])
+        .whereType<String>()
+        .map(_normalizeSubtitleEntry)
+        .toList();
+
+    final hasNetwork = urls.any((url) {
+      final uri = Uri.tryParse(url);
+      return uri != null && (uri.scheme == 'http' || uri.scheme == 'https');
+    });
+
+    return BetterPlayerSubtitlesSource(
+      type: hasNetwork
+          ? BetterPlayerSubtitlesSourceType.network
+          : BetterPlayerSubtitlesSourceType.file,
+      urls: urls,
+      name: source.name,
+      headers: source.headers,
+      selectedByDefault: source.selectedByDefault,
+      asmsIsSegmented: source.asmsIsSegmented,
+      asmsSegmentsTime: source.asmsSegmentsTime,
+      asmsSegments: source.asmsSegments,
+    );
+  }
+
+  String _normalizeSubtitleEntry(String raw) {
+    final input = raw.trim();
+    final uri = Uri.tryParse(input);
+    if (uri == null) return input;
+
+    if (uri.scheme == 'file') {
+      return uri.toFilePath();
+    }
+
+    if (uri.scheme.isEmpty) {
+      return input;
+    }
+
+    return input;
   }
 
   @override

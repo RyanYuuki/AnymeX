@@ -176,6 +176,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final Rx<model.Track> selectedExternalAudio = Rx(model.Track());
   final Rxn<model.Video> selectedVideo = Rxn();
   final Rx<List<model.Track>> externalSubs = Rx([]);
+  final RxBool showAllStreamSubtitles = false.obs;
   final Rx<bool> isSubtitlePaneOpened = false.obs;
   final Rx<bool> isEpisodePaneOpened = false.obs;
   final RxBool canGoForward = false.obs;
@@ -238,8 +239,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     if (_basePlayer is MediaKitPlayer) {
       ColorProfileManager().applyColorProfile(currentVisualProfile.value,
           (_basePlayer as MediaKitPlayer).nativePlayer);
-    } else {
-      snackBar('Color profiles only available with Old player');
     }
   }
 
@@ -844,6 +843,13 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     _playerSubscriptions.add(_basePlayer.subtitleStream.listen((e) async {
       subtitleText.value = e;
+      if (!playerSettings.autoTranslate) {
+        if (translatedSubtitle.value.isNotEmpty) {
+          translatedSubtitle.value = '';
+        }
+        return;
+      }
+
       final sanitizedLines = e
           .map((line) => line
               .replaceAll(_htmlRx, '')
@@ -855,11 +861,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       final int currentRequestId = ++subtitleTranslateRequestId;
 
       final cleanedText = sanitizedLines.join('\n');
-
-      if (!playerSettings.autoTranslate) {
-        translatedSubtitle.value = '';
-        return;
-      }
 
       if (cleanedText.isEmpty && playerSettings.autoTranslate) {
         translatedSubtitle.value = "";
@@ -1092,7 +1093,16 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     return scoredTracks.first['track'];
   }
 
-  List<model.Track> _processSubtitles(List<model.Video> tracks) {
+  String _stripServerSuffix(String label) {
+    final suffixIndex = label.lastIndexOf(' [');
+    if (suffixIndex == -1 || !label.endsWith(']')) return label.trim();
+    return label.substring(0, suffixIndex).trim();
+  }
+
+  List<model.Track> _processSubtitles(
+    List<model.Video> tracks, {
+    required bool includeServerSuffix,
+  }) {
     final allSubtitles = <model.Track>[];
 
     for (var track in tracks) {
@@ -1100,8 +1110,14 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
       final processedSubs = track.subtitles!.map((sub) {
         final serverName = track.quality ?? 'Unknown';
+        final baseLabel = (sub.label ?? 'Unknown').trim();
+        final label = includeServerSuffix
+            ? '$baseLabel [$serverName]'
+            : _stripServerSuffix(baseLabel);
         return model.Track(
-            file: sub.file, label: "${sub.label ?? 'Unknown'} [$serverName]");
+          file: sub.file,
+          label: label,
+        );
       }).toList();
 
       allSubtitles.addAll(processedSubs);
@@ -1117,6 +1133,24 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }).toList();
   }
 
+  List<model.Track> getCurrentStreamSubtitleOptions() {
+    final currentUrl = selectedVideo.value?.url;
+    final tracks = currentUrl == null
+        ? <model.Video>[]
+        : episodeTracks.where((v) => v.url == currentUrl).toList();
+    return _processSubtitles(
+      tracks.isNotEmpty ? tracks : [if (selectedVideo.value != null) selectedVideo.value!],
+      includeServerSuffix: false,
+    );
+  }
+
+  List<model.Track> getAllStreamSubtitleOptions() {
+    return _processSubtitles(
+      episodeTracks,
+      includeServerSuffix: true,
+    );
+  }
+
   int _subtitleComparator(model.Track a, model.Track b) {
     if (a.label == null || b.label == null) return -1;
     if (a.label == "English" && b.label != "English") return -1;
@@ -1126,27 +1160,28 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void _extractSubtitles() {
     Future.microtask(() {
-      externalSubs.value = _processSubtitles(episodeTracks);
+      externalSubs.value = getAllStreamSubtitleOptions();
 
-      if (externalSubs.value.isNotEmpty) {
-        final currentQuality = selectedVideo.value?.quality;
-
-        final currentServerEng = externalSubs.value.firstWhereOrNull(
-          (e) =>
-              (e.label?.toLowerCase().contains('eng') ?? false) &&
-              (e.label?.contains('[$currentQuality]') ?? false),
-        );
-
-        if (currentServerEng != null) {
-          setExternalSub(currentServerEng);
-          return;
-        }
-
-        final anyEnglishSub = externalSubs.value.firstWhereOrNull(
-          (e) => e.label?.toLowerCase().contains('eng') ?? false,
-        );
-        setExternalSub(anyEnglishSub ?? externalSubs.value.first);
+      final currentStreamSubs = getCurrentStreamSubtitleOptions();
+      if (currentStreamSubs.isEmpty) {
+        setExternalSub(null);
+        return;
       }
+
+      if (selectedExternalSub.value.file != null &&
+          currentStreamSubs.any((e) => e.file == selectedExternalSub.value.file)) {
+        final match = currentStreamSubs.firstWhere(
+          (e) => e.file == selectedExternalSub.value.file,
+          orElse: () => currentStreamSubs.first,
+        );
+        selectedExternalSub.value = match;
+        return;
+      }
+
+      final currentServerEng = currentStreamSubs.firstWhereOrNull(
+        (e) => e.label?.toLowerCase().contains('eng') ?? false,
+      );
+      setExternalSub(currentServerEng ?? currentStreamSubs.first);
     });
   }
 
@@ -1253,19 +1288,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void setSubtitleTrack(SubtitleTrack track) {
-    final effectiveTrack = (track.url != null &&
-            track.url!.isNotEmpty &&
-            (track.headers == null || track.headers!.isEmpty))
-        ? SubtitleTrack.uri(
-            track.url!,
-            title: track.title,
-            language: track.language,
-            headers: selectedVideo.value?.headers,
-          )
-        : track;
-
-    selectedSubsTrack.value = effectiveTrack.id == 'no' ? null : effectiveTrack;
-    _applySubtitleTrack(effectiveTrack);
+    selectedSubsTrack.value = track.id == 'no' ? null : track;
+    _applySubtitleTrack(track);
   }
 
   void toggleControls({bool? val}) {
@@ -1408,17 +1432,41 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
 
     selectedExternalSub.value = track;
+    final subtitleUrl = _resolveSubtitleUrl(track.file!);
     final subtitleTrack = SubtitleTrack.uri(
-      track.file!,
+      subtitleUrl,
       title: track.label,
-      headers: selectedVideo.value?.headers,
     );
 
     selectedSubsTrack.value = subtitleTrack;
     _applySubtitleTrack(subtitleTrack);
 
     if (playerSettings.autoTranslate && track.file != null) {
-      startPreTranslation(track.file!);
+      startPreTranslation(subtitleUrl);
+    }
+  }
+
+  String _resolveSubtitleUrl(String subtitlePath) {
+    final raw = subtitlePath.trim();
+    final uri = Uri.tryParse(raw);
+    if (uri != null && uri.hasScheme) {
+      return raw;
+    }
+
+    final baseUrl = selectedVideo.value?.url?.trim();
+    if (baseUrl == null || baseUrl.isEmpty) {
+      return raw;
+    }
+
+    final baseUri = Uri.tryParse(baseUrl);
+    if (baseUri == null) {
+      return raw;
+    }
+
+    try {
+      return baseUri.resolve(raw).toString();
+    } catch (_) {
+      return raw;
     }
   }
 

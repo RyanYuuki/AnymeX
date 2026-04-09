@@ -530,6 +530,7 @@ class PlayerBottomSheets {
     required String title,
     required Widget content,
     bool isExpanded = false,
+    double expandedHeightFactor = 0.8,
   }) {
     final sheet = DynamicBottomSheet(
       title: title,
@@ -541,7 +542,9 @@ class PlayerBottomSheets {
       backgroundColor: Colors.transparent,
       builder: (context) => isExpanded
           ? SizedBox(
-              height: MediaQuery.of(context).size.height * 0.8, child: sheet)
+              height:
+                  MediaQuery.of(context).size.height * expandedHeightFactor,
+              child: sheet)
           : sheet,
     );
   }
@@ -552,6 +555,7 @@ class PlayerBottomSheets {
       context: context,
       title: 'Subtitles',
       isExpanded: true,
+      expandedHeightFactor: 1.0,
       content: SubtitleUnifiedSheet(controller: controller),
     );
   }
@@ -1174,38 +1178,21 @@ class SubtitleUnifiedSheet extends StatefulWidget {
 }
 
 class _SubtitleUnifiedSheetState extends State<SubtitleUnifiedSheet> {
-  int _selectedIndex = 0;
-  final RxString _selectedServer = 'All'.obs;
+  final RxBool _showAllStreams = false.obs;
 
   @override
   void initState() {
     super.initState();
-    if (widget.controller.isOffline.value) {
-      _selectedIndex = 1;
-    } else if (widget.controller.externalSubs.value.isNotEmpty) {
-      _selectedIndex = 0;
-    } else {
-      _selectedIndex = 1;
-    }
-
-    final selectedExternal = widget.controller.selectedExternalSub.value;
-    String? initialServer;
-
-    if (selectedExternal.label != null &&
-        selectedExternal.label!.contains('[') &&
-        selectedExternal.label!.contains(']')) {
-      final startIndex = selectedExternal.label!.lastIndexOf('[') + 1;
-      final endIndex = selectedExternal.label!.lastIndexOf(']');
-      if (startIndex < endIndex) {
-        initialServer =
-            selectedExternal.label!.substring(startIndex, endIndex).trim();
-      }
-    }
-
-    initialServer ??= widget.controller.selectedVideo.value?.quality?.trim();
-
-    if (initialServer != null) {
-      _selectedServer.value = initialServer;
+    widget.controller.showAllStreamSubtitles.value = false;
+    final selectedFile = widget.controller.selectedExternalSub.value.file;
+    if (selectedFile != null &&
+        selectedFile.isNotEmpty &&
+        !widget
+            .controller
+            .getCurrentStreamSubtitleOptions()
+            .any((s) => s.file == selectedFile)) {
+      _showAllStreams.value = true;
+      widget.controller.showAllStreamSubtitles.value = true;
     }
   }
 
@@ -1214,185 +1201,43 @@ class _SubtitleUnifiedSheetState extends State<SubtitleUnifiedSheet> {
     return GestureDetector(
       onTap: () {},
       behavior: HitTestBehavior.opaque,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildSegmentedBar(),
-          const SizedBox(height: 10),
-          Flexible(
-            child: Obx(() {
-              if (_selectedIndex == 0) {
-                return Column(
-                  children: [
-                    _buildServerChips(),
-                    Expanded(child: _buildExternalList()),
-                  ],
-                );
-              } else {
-                return _buildEmbeddedList();
-              }
-            }),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSegmentedBar() {
-    final colors = context.colors;
-    final tabs = [
-      (label: 'External', icon: Icons.subtitles),
-      (label: 'Embedded', icon: Icons.audiotrack),
-    ];
-    final total = tabs.length;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: LayoutBuilder(builder: (context, constraints) {
-        final innerWidth = constraints.maxWidth - 8;
-        final tabWidth = innerWidth / total;
-
-        return Container(
-          height: 54,
-          padding: const EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            color: colors.surfaceContainerHighest.withOpacity(0.4),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: colors.outline.withOpacity(0.1)),
-          ),
-          child: Stack(children: [
-            AnimatedPositioned(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOutQuint,
-              left: _selectedIndex * tabWidth,
-              top: 0,
-              bottom: 0,
-              width: tabWidth,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: colors.primary,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                        color: colors.primary.withOpacity(0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2))
-                  ],
+      child: widget.controller.isOffline.value
+          ? _buildEmbeddedList()
+          : Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildAllStreamsToggle(),
+                const SizedBox(height: 10),
+                Flexible(
+                  child: Obx(() => _buildOnlineSubtitleList()),
                 ),
-              ),
+              ],
             ),
-            Row(
-              children: tabs.asMap().entries.map((entry) {
-                final index = entry.key;
-                final t = entry.value;
-                final selected = _selectedIndex == index;
-                return Expanded(
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () {
-                      if (!selected) {
-                        HapticFeedback.lightImpact();
-                        setState(() => _selectedIndex = index);
-                      }
-                    },
-                    child: Container(
-                      color: Colors.transparent,
-                      child: Center(
-                        child: AnimatedScale(
-                          scale: selected ? 1.05 : 1.0,
-                          duration: const Duration(milliseconds: 250),
-                          curve: Curves.easeInOut,
-                          child: AnimatedOpacity(
-                            opacity: selected ? 1.0 : 0.7,
-                            duration: const Duration(milliseconds: 200),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Icon(t.icon,
-                                    size: 16,
-                                    color: selected
-                                        ? colors.onPrimary
-                                        : colors.onSurfaceVariant),
-                                const SizedBox(width: 8),
-                                Text(
-                                  t.label,
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontFamily: 'Poppins',
-                                    fontWeight: selected
-                                        ? FontWeight.w700
-                                        : FontWeight.w400,
-                                    color: selected
-                                        ? colors.onPrimary
-                                        : colors.onSurfaceVariant,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-          ]),
-        );
-      }),
     );
   }
 
-  Widget _buildServerChips() {
-    return Obx(() {
-      final servers = widget.controller.episodeTracks
-          .where((v) => v.subtitles != null && v.subtitles!.isNotEmpty)
-          .map((v) => v.quality!.trim())
-          .toSet()
-          .toList();
-
-      if (servers.isEmpty) return const SizedBox.shrink();
-
-      final allOptions = ['All', ...servers];
-
-      return SizedBox(
-        height: 50,
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
+  Widget _buildAllStreamsToggle() {
+    return Obx(() => Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          itemCount: allOptions.length,
-          itemBuilder: (context, index) {
-            final server = allOptions[index];
-            return Obx(() {
-              final isSelected = _selectedServer.value.trim() == server.trim();
-              return Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: ChoiceChip(
-                  label: Text(server,
-                      style: TextStyle(
-                          color: isSelected
-                              ? context.colors.onPrimary
-                              : context.colors.onSurfaceVariant,
-                          fontSize: 12)),
-                  selected: isSelected,
-                  selectedColor: context.colors.primary,
-                  backgroundColor:
-                      context.colors.surfaceContainerHighest.withOpacity(0.3),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)),
-                  showCheckmark: false,
-                  onSelected: (val) {
-                    if (val) _selectedServer.value = server;
-                  },
-                ),
-              );
-            });
-          },
-        ),
-      );
-    });
+          child: Container(
+            decoration: BoxDecoration(
+              color: context.colors.surfaceContainerHighest.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: SwitchListTile(
+              value: _showAllStreams.value,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+              title: const Text('Show subtitles from all streams'),
+              subtitle: Text(_showAllStreams.value
+                  ? 'Labels include server names'
+                  : 'Only subtitles from current stream'),
+              onChanged: (val) {
+                _showAllStreams.value = val;
+                widget.controller.showAllStreamSubtitles.value = val;
+              },
+            ),
+          ),
+        ));
   }
 
   Widget _buildEmbeddedList() {
@@ -1439,38 +1284,29 @@ class _SubtitleUnifiedSheetState extends State<SubtitleUnifiedSheet> {
     );
   }
 
-  Widget _buildExternalList() {
-    final allTracks = widget.controller.externalSubs.value;
-    final filteredTracks = _selectedServer.value == 'All'
-        ? allTracks
-        : allTracks
-            .where(
-                (t) => t.label?.contains('[${_selectedServer.value}]') ?? false)
-            .toList();
-
-    final selectedTrackIndex =
-        filteredTracks.indexOf(widget.controller.selectedExternalSub.value);
+  Widget _buildOnlineSubtitleList() {
+    final allMode = _showAllStreams.value;
+    final tracks = allMode
+        ? widget.controller.getAllStreamSubtitleOptions()
+        : widget.controller.getCurrentStreamSubtitleOptions();
+    final selectedFile = widget.controller.selectedExternalSub.value.file;
+    final selectedTrackIndex = tracks.indexWhere((t) => t.file == selectedFile);
 
     final items = [
-      if (_selectedServer.value == 'All')
-        const BottomSheetItem(
-          title: 'Search Online',
-          subtitle: 'Find subtitles online',
-          icon: Icons.cloud_download,
-        ),
+      const BottomSheetItem(
+        title: 'Search Online',
+        subtitle: 'Find subtitles online',
+        icon: Icons.cloud_download,
+      ),
       const BottomSheetItem(
         title: 'None',
         subtitle: 'No subtitles',
         icon: Icons.subtitles_off,
       ),
-      ...filteredTracks.map((e) {
-        String displayLabel = e.label ?? 'No Title';
-        if (displayLabel.contains(' [')) {
-          displayLabel = displayLabel.split(' [').first.trim();
-        }
+      ...tracks.map((e) {
         return BottomSheetItem(
-          title: displayLabel,
-          subtitle: 'External Subtitle Track',
+          title: e.label ?? 'No Title',
+          subtitle: allMode ? 'Subtitle Track (All Streams)' : 'Subtitle Track',
           icon: Icons.subtitles,
         );
       }),
@@ -1482,14 +1318,11 @@ class _SubtitleUnifiedSheetState extends State<SubtitleUnifiedSheet> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       itemBuilder: (context, index) {
         final item = items[index];
-        final isSearchOnline = _selectedServer.value == 'All' && index == 0;
-        final isNone = _selectedServer.value == 'All' ? index == 1 : index == 0;
-
-        final isSelected = widget.controller.selectedExternalSub.value ==
-                Track()
+        final isSearchOnline = index == 0;
+        final isNone = index == 1;
+        final isSelected = (selectedFile == null || selectedFile.isEmpty)
             ? isNone
-            : (selectedTrackIndex + (_selectedServer.value == 'All' ? 2 : 1)) ==
-                index;
+            : (selectedTrackIndex + 2) == index;
 
         return _BottomSheetListItem(
           item: item,
@@ -1504,8 +1337,7 @@ class _SubtitleUnifiedSheetState extends State<SubtitleUnifiedSheet> {
               widget.controller.setExternalSub(null);
               Get.back();
             } else {
-              final selectedTrack = filteredTracks[
-                  index - (_selectedServer.value == 'All' ? 2 : 1)];
+              final selectedTrack = tracks[index - 2];
               widget.controller.setExternalSub(selectedTrack);
               Get.back();
             }
