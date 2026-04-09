@@ -152,9 +152,36 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
   }
 
   Future<void> _loadVotes() async {
+    final serviceHandler = Get.find<ServiceHandler>();
+    final profile = serviceHandler.onlineService.profileData.value;
+    final serviceType = serviceHandler.serviceType.value;
+
+    int? anilistId;
+    int? malId;
+    int? simklId;
+
+    if (serviceType == ServicesType.anilist) {
+      anilistId = int.tryParse(profile.id ?? '');
+    } else if (serviceType == ServicesType.mal) {
+      malId = int.tryParse(profile.id ?? '');
+    } else if (serviceType == ServicesType.simkl) {
+      simklId = int.tryParse(profile.id ?? '');
+    }
+
     final result = await UnderratedService.fetchVotes(
-        widget.voteMediaType!, widget.voteMediaId!);
-    if (mounted) setState(() => _votes = result);
+      widget.voteMediaType!, widget.voteMediaId!,
+      anilistUserId: anilistId,
+      malUserId: malId,
+      simklUserId: simklId,
+    );
+    if (mounted) {
+      setState(() {
+        _votes = result;
+        if (result != null) {
+          _userVote = result.userVote;
+        }
+      });
+    }
   }
 
   Future<void> _castVote(String direction) async {
@@ -198,7 +225,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
         _voteLoading = false;
         if (result != null) {
           _votes = result;
-          _userVote = _userVote == direction ? null : direction;
+          _userVote = result.userVote;
         }
       });
     }

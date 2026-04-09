@@ -506,11 +506,20 @@ class UnderratedService extends GetxController {
       };
 
   static Future<VoteResult?> fetchVotes(
-      String mediaType, String mediaId) async {
+      String mediaType, String mediaId,
+      {int? anilistUserId, int? malUserId, int? simklUserId}) async {
     if (!votingEnabled) return null;
     try {
-      final url =
-          Uri.parse('$_botBaseUrl/api/votes/$mediaType/$mediaId');
+      final queryParams = <String, String>{};
+      if (anilistUserId != null) {
+        queryParams['anilist_user_id'] = anilistUserId.toString();
+      } else if (malUserId != null) {
+        queryParams['mal_user_id'] = malUserId.toString();
+      } else if (simklUserId != null) {
+        queryParams['simkl_user_id'] = simklUserId.toString();
+      }
+      final url = Uri.parse('$_botBaseUrl/api/votes/$mediaType/$mediaId')
+          .replace(queryParameters: queryParams);
       final resp = await http.get(url, headers: _authHeaders);
       if (resp.statusCode == 200) {
         final data = jsonDecode(resp.body);
@@ -555,10 +564,22 @@ class UnderratedService extends GetxController {
           headers: _authHeaders, body: jsonEncode(body));
       if (resp.statusCode == 200) {
         final data = jsonDecode(resp.body);
+        final action = data['action'] as String?;
+        String? resolvedUserVote;
+        if (action != null) {
+          if (action == 'added_up' || action == 'switched_to_up') {
+            resolvedUserVote = 'up';
+          } else if (action == 'added_down' || action == 'switched_to_down') {
+            resolvedUserVote = 'down';
+          } else if (action == 'removed_up' || action == 'removed_down') {
+            resolvedUserVote = null;
+          }
+        }
         return VoteResult(
           upvotes: data['upvotes'] ?? 0,
           downvotes: data['downvotes'] ?? 0,
           net: data['net'] ?? 0,
+          userVote: resolvedUserVote,
         );
       }
       Logger.i('castVote ${resp.statusCode}: ${resp.body}');
@@ -657,6 +678,7 @@ class VoteResult {
       upvotes: json['total_upvotes'] ?? 0,
       downvotes: json['total_downvotes'] ?? 0,
       net: json['net'] ?? 0,
+      userVote: json['user_vote'] as String?,
     );
   }
 }

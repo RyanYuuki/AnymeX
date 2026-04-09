@@ -70,8 +70,36 @@ class _CommunityRecommendationsPageState
 
   Future<void> _loadVotes(UnderratedMedia item) async {
     final id = _mediaId(item);
-    final result = await UnderratedService.fetchVotes(_mediaType(item), id);
-    if (mounted) setState(() => _votes[id] = result);
+    final serviceHandler = Get.find<ServiceHandler>();
+    final profile = serviceHandler.onlineService.profileData.value;
+    final serviceType = serviceHandler.serviceType.value;
+
+    int? anilistId;
+    int? malId;
+    int? simklId;
+
+    if (serviceType == ServicesType.anilist) {
+      anilistId = int.tryParse(profile.id ?? '');
+    } else if (serviceType == ServicesType.mal) {
+      malId = int.tryParse(profile.id ?? '');
+    } else if (serviceType == ServicesType.simkl) {
+      simklId = int.tryParse(profile.id ?? '');
+    }
+
+    final result = await UnderratedService.fetchVotes(
+      _mediaType(item), id,
+      anilistUserId: anilistId,
+      malUserId: malId,
+      simklUserId: simklId,
+    );
+    if (mounted) {
+      setState(() {
+        _votes[id] = result;
+        if (result != null) {
+          _userVotes[id] = result.userVote;
+        }
+      });
+    }
   }
 
   Future<void> _castVote(UnderratedMedia item, String direction) async {
@@ -117,7 +145,7 @@ class _CommunityRecommendationsPageState
         _loading[id] = false;
         if (result != null) {
           _votes[id] = result;
-          _userVotes[id] = _userVotes[id] == direction ? null : direction;
+          _userVotes[id] = result.userVote;
         }
       });
     }
