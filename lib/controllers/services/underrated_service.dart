@@ -1,11 +1,51 @@
 import 'dart:convert';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+
+class SimklUnderratedEntry {
+  final int? simklId;
+  final String? title;
+  final String? poster;
+  final String? score;
+  final String? reason;
+  final String? simklUsername;
+  final String? simklAvatar;
+
+  final bool isNsfw;
+
+  SimklUnderratedEntry({
+    this.simklId,
+    this.title,
+    this.poster,
+    this.score,
+    this.reason,
+    this.simklUsername,
+    this.simklAvatar,
+    this.isNsfw = false,
+  });
+
+  factory SimklUnderratedEntry.fromJson(Map<String, dynamic> json) {
+    final user = json['user'] as Map<String, dynamic>?;
+    final simklUser = user?['simkl'] as Map<String, dynamic>?;
+
+    return SimklUnderratedEntry(
+      simklId: json['simkl_id'] as int?,
+      title: json['title']?.toString(),
+      poster: json['poster']?.toString(),
+      score: json['score']?.toString(),
+      reason: json['reason']?.toString(),
+      simklUsername: simklUser?['username']?.toString(),
+      simklAvatar: simklUser?['avatar']?.toString(),
+      isNsfw: json['nsfw'] == true,
+    );
+  }
+}
 
 class UnderratedEntry {
   final int? anilistId;
@@ -76,15 +116,25 @@ class UnderratedService extends GetxController {
       'https://raw.githubusercontent.com/Shebyyy/AnymeX-Preview/beta/underrated_anime.json';
   static const String _mangaJsonUrl =
       'https://raw.githubusercontent.com/Shebyyy/AnymeX-Preview/beta/underrated_manga.json';
+  static const String _showsJsonUrl =
+      'https://raw.githubusercontent.com/Shebyyy/AnymeX-Preview/beta/underrated_shows.json';
+  static const String _moviesJsonUrl =
+      'https://raw.githubusercontent.com/Shebyyy/AnymeX-Preview/beta/underrated_movies.json';
 
   RxList<UnderratedMedia> underratedAnimes = <UnderratedMedia>[].obs;
   RxList<UnderratedMedia> underratedMangas = <UnderratedMedia>[].obs;
+  RxList<UnderratedMedia> underratedShows = <UnderratedMedia>[].obs;
+  RxList<UnderratedMedia> underratedMovies = <UnderratedMedia>[].obs;
 
   RxBool isLoadingAnime = false.obs;
   RxBool isLoadingManga = false.obs;
+  RxBool isLoadingShows = false.obs;
+  RxBool isLoadingMovies = false.obs;
 
   RxString animeError = ''.obs;
   RxString mangaError = ''.obs;
+  RxString showsError = ''.obs;
+  RxString moviesError = ''.obs;
 
   static const Set<String> _filteredStatuses = {
     'COMPLETED',
@@ -94,14 +144,101 @@ class UnderratedService extends GetxController {
 
   ServicesType? _cachedServiceType;
 
+  UnderratedMedia? _processSimklEntry(
+    SimklUnderratedEntry entry,
+    bool isMovie,
+  ) {
+    if (entry.simklId == null || entry.simklId == 0) return null;
+
+    final idSuffix = isMovie ? 'MOVIE' : 'SERIES';
+    final media = Media(
+      id: '${entry.simklId}*$idSuffix',
+      title: entry.title ?? 'Unknown Title',
+      romajiTitle: entry.title ?? 'Unknown Title',
+      poster: entry.poster ?? '',
+      largePoster: entry.poster ?? '',
+      rating: entry.score ?? '?',
+      mediaType: isMovie ? ItemType.anime : ItemType.manga,
+      type: isMovie ? 'MOVIE' : 'SERIES',
+      serviceType: ServicesType.simkl,
+    );
+
+    return UnderratedMedia(
+      media: media,
+      simklUsername: entry.simklUsername,
+      simklAvatar: entry.simklAvatar,
+      reason: entry.reason,
+      fallbackTitle: entry.title,
+      isNsfw: entry.isNsfw,
+    );
+  }
+
+  bool get _communityEnabled =>
+      General.showCommunityRecommendations.get<bool>(true);
+  bool get _hideNsfw => General.hideNsfwRecommendations.get<bool>(true);
+
+  List<UnderratedMedia> getFilteredShows() {
+    if (!_communityEnabled || underratedShows.isEmpty) return [];
+    try {
+      final serviceHandler = Get.find<ServiceHandler>();
+      final simkl = serviceHandler.onlineService;
+      final userList = simkl.mangaList;
+
+      final filteredIds = userList
+          .where((item) =>
+              _filteredStatuses.contains(item.watchingStatus?.toUpperCase()))
+          .map((item) => item.id)
+          .toSet();
+
+      return underratedShows
+          .where((item) => !filteredIds.contains(item.media.id))
+          .where((item) => !_hideNsfw || !(item.isNsfw))
+          .toList()
+          .reversed
+          .toList();
+    } catch (e) {
+      return underratedShows
+          .where((item) => !_hideNsfw || !(item.isNsfw))
+          .toList()
+          .reversed
+          .toList();
+    }
+  }
+
+  List<UnderratedMedia> getFilteredMovies() {
+    if (!_communityEnabled || underratedMovies.isEmpty) return [];
+    try {
+      final serviceHandler = Get.find<ServiceHandler>();
+      final simkl = serviceHandler.onlineService;
+      final userList = simkl.animeList;
+
+      final filteredIds = userList
+          .where((item) =>
+              _filteredStatuses.contains(item.watchingStatus?.toUpperCase()))
+          .map((item) => item.id)
+          .toSet();
+
+      return underratedMovies
+          .where((item) => !filteredIds.contains(item.media.id))
+          .where((item) => !_hideNsfw || !(item.isNsfw))
+          .toList()
+          .reversed
+          .toList();
+    } catch (e) {
+      return underratedMovies
+          .where((item) => !_hideNsfw || !(item.isNsfw))
+          .toList()
+          .reversed
+          .toList();
+    }
+  }
+
   List<UnderratedMedia> getFilteredAnimes() {
-    if (underratedAnimes.isEmpty) return [];
+    if (!_communityEnabled || underratedAnimes.isEmpty) return [];
     try {
       final serviceHandler = Get.find<ServiceHandler>();
       final onlineService = serviceHandler.onlineService;
       final userList = onlineService.animeList;
-
-      if (userList.isEmpty) return underratedAnimes.reversed.toList();
 
       final filteredIds = userList
           .where((item) =>
@@ -111,22 +248,25 @@ class UnderratedService extends GetxController {
 
       return underratedAnimes
           .where((item) => !filteredIds.contains(item.media.id))
+          .where((item) => !_hideNsfw || !(item.isNsfw))
           .toList()
           .reversed
           .toList();
     } catch (e) {
-      return underratedAnimes.reversed.toList();
+      return underratedAnimes
+          .where((item) => !_hideNsfw || !(item.isNsfw))
+          .toList()
+          .reversed
+          .toList();
     }
   }
 
   List<UnderratedMedia> getFilteredMangas() {
-    if (underratedMangas.isEmpty) return [];
+    if (!_communityEnabled || underratedMangas.isEmpty) return [];
     try {
       final serviceHandler = Get.find<ServiceHandler>();
       final onlineService = serviceHandler.onlineService;
       final userList = onlineService.mangaList;
-
-      if (userList.isEmpty) return underratedMangas.reversed.toList();
 
       final filteredIds = userList
           .where((item) =>
@@ -136,11 +276,16 @@ class UnderratedService extends GetxController {
 
       return underratedMangas
           .where((item) => !filteredIds.contains(item.media.id))
+          .where((item) => !_hideNsfw || !(item.isNsfw))
           .toList()
           .reversed
           .toList();
     } catch (e) {
-      return underratedMangas.reversed.toList();
+      return underratedMangas
+          .where((item) => !_hideNsfw || !(item.isNsfw))
+          .toList()
+          .reversed
+          .toList();
     }
   }
 
@@ -254,11 +399,75 @@ class UnderratedService extends GetxController {
     }
   }
 
+  Future<void> fetchUnderratedShows() async {
+    if (underratedShows.isNotEmpty) return;
+
+    isLoadingShows.value = true;
+    showsError.value = '';
+
+    try {
+      final response = await http.get(Uri.parse(_showsJsonUrl));
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        final entries =
+            data.map((e) => SimklUnderratedEntry.fromJson(e)).toList();
+
+        underratedShows.value = entries
+            .map((entry) => _processSimklEntry(entry, false))
+            .whereType<UnderratedMedia>()
+            .toList();
+        Logger.i('Fetched ${underratedShows.length} underrated shows');
+      } else {
+        showsError.value = 'Failed to load: ${response.statusCode}';
+        Logger.i('Failed to fetch underrated shows: ${response.statusCode}');
+      }
+    } catch (e) {
+      showsError.value = 'Error: $e';
+      Logger.i('Error fetching underrated shows: $e');
+    } finally {
+      isLoadingShows.value = false;
+    }
+  }
+
+  Future<void> fetchUnderratedMovies() async {
+    if (underratedMovies.isNotEmpty) return;
+
+    isLoadingMovies.value = true;
+    moviesError.value = '';
+
+    try {
+      final response = await http.get(Uri.parse(_moviesJsonUrl));
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        final entries =
+            data.map((e) => SimklUnderratedEntry.fromJson(e)).toList();
+
+        underratedMovies.value = entries
+            .map((entry) => _processSimklEntry(entry, true))
+            .whereType<UnderratedMedia>()
+            .toList();
+        Logger.i('Fetched ${underratedMovies.length} underrated movies');
+      } else {
+        moviesError.value = 'Failed to load: ${response.statusCode}';
+        Logger.i('Failed to fetch underrated movies: ${response.statusCode}');
+      }
+    } catch (e) {
+      moviesError.value = 'Error: $e';
+      Logger.i('Error fetching underrated movies: $e');
+    } finally {
+      isLoadingMovies.value = false;
+    }
+  }
+
   Future<void> fetchAll() async {
     try {
       await Future.wait([
         fetchUnderratedAnime(),
         fetchUnderratedManga(),
+        fetchUnderratedShows(),
+        fetchUnderratedMovies(),
       ]);
     } catch (e) {
       Logger.i('Error in underrated fetchAll: $e');
@@ -268,6 +477,8 @@ class UnderratedService extends GetxController {
   Future<void> refresh() async {
     underratedAnimes.clear();
     underratedMangas.clear();
+    underratedShows.clear();
+    underratedMovies.clear();
     await fetchAll();
   }
 }
@@ -280,8 +491,11 @@ class UnderratedMedia {
   final String? malUsername;
   final String? anilistAvatar;
   final String? malAvatar;
+  final String? simklUsername;
+  final String? simklAvatar;
   final String? reason;
   final String? fallbackTitle;
+  final bool isNsfw;
 
   UnderratedMedia({
     required this.media,
@@ -291,8 +505,11 @@ class UnderratedMedia {
     this.malUsername,
     this.anilistAvatar,
     this.malAvatar,
+    this.simklUsername,
+    this.simklAvatar,
     this.reason,
     this.fallbackTitle,
+    this.isNsfw = false,
   });
 
   String get displayTitle =>
@@ -303,6 +520,9 @@ class UnderratedMedia {
   String? get author => usernameFor(media.serviceType);
 
   String? usernameFor(ServicesType serviceType) {
+    if (serviceType == ServicesType.simkl) {
+      return simklUsername ?? anilistUsername ?? malUsername;
+    }
     if (serviceType == ServicesType.mal) {
       return malUsername ?? anilistUsername;
     }
@@ -310,6 +530,9 @@ class UnderratedMedia {
   }
 
   String? avatarFor(ServicesType serviceType) {
+    if (serviceType == ServicesType.simkl) {
+      return simklAvatar ?? anilistAvatar ?? malAvatar;
+    }
     if (serviceType == ServicesType.mal) {
       return malAvatar ?? anilistAvatar;
     }

@@ -13,6 +13,8 @@ enum General {
   customLogDirectory,
   imageCacheThresholdGb,
   libraryGridAutoMigrated,
+  showCommunityRecommendations,
+  hideNsfwRecommendations,
 }
 
 enum ThemeKeys {

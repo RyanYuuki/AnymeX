@@ -26,6 +26,9 @@ class _SettingsCommonState extends State<SettingsCommon> {
   late bool uniScrapper;
   late bool shouldAskForPermission = General.shouldAskForTrack.get<bool>(true);
   late bool hideAdultContent = General.hideAdultContent.get<bool>(true);
+  late bool showCommunityRecs =
+      General.showCommunityRecommendations.get<bool>(true);
+  late bool hideNsfwRecs = General.hideNsfwRecommendations.get<bool>(true);
   bool get isMal => serviceHandler.serviceType.value.isMal;
   late Map<String, bool> homePageCards;
 
@@ -112,6 +115,40 @@ class _SettingsCommonState extends State<SettingsCommon> {
                                 onChanged: (e) =>
                                     settings.showContinueWatchingCard = e,
                               ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      AnymexExpansionTile(
+                        initialExpanded: true,
+                        title: 'Community Recommendations',
+                        content: Column(
+                          children: [
+                            CustomSwitchTile(
+                              icon: Icons.people_rounded,
+                              title: 'Show Community Recommendations',
+                              description:
+                                  'Display underrated anime, manga, movies and shows recommended by the community on the home page.',
+                              switchValue: showCommunityRecs,
+                              onChanged: (e) {
+                                setState(() {
+                                  showCommunityRecs = e;
+                                  General.showCommunityRecommendations.set(e);
+                                });
+                              },
+                            ),
+                            CustomSwitchTile(
+                              icon: Icons.no_adult_content_rounded,
+                              title: 'Hide NSFW Recommendations',
+                              description:
+                                  'Filter out adult/NSFW entries from community recommendations. Enabled by default.',
+                              switchValue: hideNsfwRecs,
+                              onChanged: (e) {
+                                setState(() {
+                                  hideNsfwRecs = e;
+                                  General.hideNsfwRecommendations.set(e);
+                                });
+                              },
                             ),
                           ],
                         ),

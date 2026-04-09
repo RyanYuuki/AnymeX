@@ -6,6 +6,7 @@ import 'dart:math' as math;
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/underrated_service.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/database/data_keys/keys.dart';
@@ -47,6 +48,8 @@ class SimklService extends GetxController
   RxList<Media> usMovies = <Media>[].obs;
   RxList<Media> ukMovies = <Media>[].obs;
   RxList<Media> canadaMovies = <Media>[].obs;
+
+  final underratedService = Get.find<UnderratedService>();
 
   @override
   Future<Media> fetchDetails(FetchDetailsParams params) async {
@@ -157,7 +160,9 @@ class SimklService extends GetxController
         fetchMovies(),
         fetchSeries(),
         fetchCountryMovies(),
-        fetchCountrySeries()
+        fetchCountrySeries(),
+        underratedService.fetchUnderratedShows(),
+        underratedService.fetchUnderratedMovies(),
       ]);
 
   Future<List<Media>> searchMovies(String query, {int page = 1}) async {
@@ -334,6 +339,10 @@ class SimklService extends GetxController
           if (canadaMovies.value.isNotEmpty)
             ReusableCarousel(
                 data: canadaMovies.value, title: "Canadian Movies"),
+          Obx(() {
+            final list = underratedService.getFilteredMovies();
+            return buildUnderratedSection('Community Recommendations', list);
+          }),
         ],
       ].obs;
 
@@ -371,6 +380,10 @@ class SimklService extends GetxController
             ReusableCarousel(data: ukSeries.value, title: "UK Shows"),
           if (canadaSeries.value.isNotEmpty)
             ReusableCarousel(data: canadaSeries.value, title: "Canadian Shows"),
+          Obx(() {
+            final list = underratedService.getFilteredShows();
+            return buildUnderratedSection('Community Recommendations', list);
+          }),
         ],
       ].obs;
 

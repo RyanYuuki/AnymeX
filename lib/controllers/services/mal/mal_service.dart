@@ -124,7 +124,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                     if (filteredList.isEmpty) {
                       return const SizedBox.shrink();
                     }
-                    return buildUnderratedSection('Underrated Anime', filteredList);
+                    return buildUnderratedSection('Community Recommendations', filteredList);
                   }),
                 ],
               )),
@@ -151,7 +151,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                     if (filteredList.isEmpty) {
                       return const SizedBox.shrink();
                     }
-                    return buildUnderratedMangaSection('Underrated Manga', filteredList);
+                    return buildUnderratedMangaSection('Community Recommendations', filteredList);
                   }),
                 ],
               )),
