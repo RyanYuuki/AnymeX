@@ -271,6 +271,12 @@ class MediaKitPlayer extends base.BasePlayer {
   }
 
   @override
+  Future<void> setSubtitleDelay(Duration delay) async {
+    final seconds = delay.inMicroseconds / 1000000.0;
+    (_player.platform as dynamic).setProperty('sub-delay', seconds.toString());
+  }
+
+  @override
   Future<Uint8List?> screenshot({
     bool includeSubtitles = true,
     String format = 'image/png',

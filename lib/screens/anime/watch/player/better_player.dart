@@ -430,8 +430,8 @@ class BetterPlayerImpl extends BasePlayer {
   }) {
     final normalized = _normalizeSubtitleEntry(rawUrl);
     final uri = Uri.tryParse(normalized);
-    final isNetwork = uri != null &&
-        (uri.scheme == 'http' || uri.scheme == 'https');
+    final isNetwork =
+        uri != null && (uri.scheme == 'http' || uri.scheme == 'https');
 
     return BetterPlayerSubtitlesSource(
       type: isNetwork
@@ -483,6 +483,9 @@ class BetterPlayerImpl extends BasePlayer {
 
     return input;
   }
+
+  @override
+  Future<void> setSubtitleDelay(Duration delay) async {}
 
   @override
   Future<Uint8List?> screenshot({
