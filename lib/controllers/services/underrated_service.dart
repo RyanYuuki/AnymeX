@@ -5,6 +5,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
@@ -489,6 +490,87 @@ class UnderratedService extends GetxController {
     underratedMovies.clear();
     await fetchAll();
   }
+
+  // ── Vote System ──────────────────────────────────────────────────────────────
+
+  static String? get _botBaseUrl => dotenv.env['BOT_BASE_URL'];
+  static String? get _botSecret => dotenv.env['BOT_API_SECRET'];
+
+  static bool get votingEnabled =>
+      _botBaseUrl != null &&
+      _botBaseUrl!.isNotEmpty &&
+      _botSecret != null &&
+      _botSecret!.isNotEmpty;
+
+  static Map<String, String> get _authHeaders => {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $_botSecret',
+      };
+
+  /// Returns { upvotes, downvotes, net, userVote: 'up'|'down'|null }
+  static Future<VoteResult?> fetchVotes(
+      String mediaType, String mediaId) async {
+    if (!votingEnabled) return null;
+    try {
+      final url =
+          Uri.parse('$_botBaseUrl/api/votes/$mediaType/$mediaId');
+      final resp = await http.get(url, headers: _authHeaders);
+      if (resp.statusCode == 200) {
+        final data = jsonDecode(resp.body);
+        return VoteResult.fromJson(data);
+      }
+    } catch (e) {
+      Logger.i('fetchVotes error: $e');
+    }
+    return null;
+  }
+
+  /// Cast a vote. Returns updated VoteResult or null on failure.
+  static Future<VoteResult?> castVote({
+    required String mediaType,
+    required String mediaId,
+    required String direction, // 'up' or 'down'
+    int? anilistUserId,
+    int? malUserId,
+    int? simklUserId,
+    String displayName = 'User',
+  }) async {
+    if (!votingEnabled) return null;
+    try {
+      final url =
+          Uri.parse('$_botBaseUrl/api/vote/$mediaType/$mediaId');
+      final body = <String, dynamic>{
+        'direction': direction,
+        'display_name': displayName,
+      };
+      if (anilistUserId != null) {
+        body['anilist_user_id'] = anilistUserId;
+        body['id_type'] = 'anilist';
+      } else if (malUserId != null) {
+        body['mal_user_id'] = malUserId;
+        body['id_type'] = 'mal';
+      } else if (simklUserId != null) {
+        body['simkl_user_id'] = simklUserId;
+        body['id_type'] = 'simkl';
+      } else {
+        return null; // need at least one user id
+      }
+      final resp = await http.post(url,
+          headers: _authHeaders, body: jsonEncode(body));
+      if (resp.statusCode == 200) {
+        final data = jsonDecode(resp.body);
+        return VoteResult(
+          upvotes: data['upvotes'] ?? 0,
+          downvotes: data['downvotes'] ?? 0,
+          net: data['net'] ?? 0,
+        );
+      }
+      Logger.i('castVote ${resp.statusCode}: ${resp.body}');
+    } catch (e) {
+      Logger.i('castVote error: $e');
+    }
+    return null;
+  }
 }
 
 class UnderratedMedia {
@@ -557,6 +639,28 @@ class UnderratedMedia {
       releasing: media.status == "RELEASING",
       author: usernameFor(media.serviceType),
       reason: reason,
+    );
+  }
+}
+
+class VoteResult {
+  final int upvotes;
+  final int downvotes;
+  final int net;
+  final String? userVote; // 'up', 'down', or null
+
+  VoteResult({
+    required this.upvotes,
+    required this.downvotes,
+    required this.net,
+    this.userVote,
+  });
+
+  factory VoteResult.fromJson(Map<String, dynamic> json) {
+    return VoteResult(
+      upvotes: json['total_upvotes'] ?? 0,
+      downvotes: json['total_downvotes'] ?? 0,
+      net: json['net'] ?? 0,
     );
   }
 }

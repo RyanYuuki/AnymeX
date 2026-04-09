@@ -129,7 +129,7 @@ class _SettingsCommonState extends State<SettingsCommon> {
                               icon: Icons.people_rounded,
                               title: 'Show Community Recommendations',
                               description:
-                                  'Display underrated anime, manga, movies and shows recommended by the community on the home page.',
+                                  'Display anime, manga, movies and shows recommended by the community on the home page.',
                               switchValue: showCommunityRecs,
                               onChanged: (e) {
                                 setState(() {
