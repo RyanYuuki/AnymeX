@@ -8,6 +8,7 @@ import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/profile/user_profile_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/common/cards/base_card.dart';
 import 'package:anymex/widgets/common/cards/card_gate.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
