@@ -1190,7 +1190,6 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                 sliderValue: settings.subtitleSize.toDouble(),
                                 min: 12.0,
                                 max: 90.0,
-                                divisions: 18,
                                 onChanged: (double value) {
                                   settings.subtitleSize = value.toInt();
                                 },
