@@ -31,6 +31,7 @@ class SimklUnderratedEntry {
   final String? poster;
   final String? score;
   final String? reason;
+  final int? simklUserId;
   final String? simklUsername;
   final String? simklAvatar;
 
@@ -42,6 +43,7 @@ class SimklUnderratedEntry {
     this.poster,
     this.score,
     this.reason,
+    this.simklUserId,
     this.simklUsername,
     this.simklAvatar,
     this.isNsfw = false,
@@ -57,6 +59,7 @@ class SimklUnderratedEntry {
       poster: json['poster']?.toString(),
       score: json['score']?.toString(),
       reason: json['reason']?.toString(),
+      simklUserId: simklUser?['id'] as int?,
       simklUsername: simklUser?['username']?.toString(),
       simklAvatar: simklUser?['avatar']?.toString(),
       isNsfw: json['nsfw'] == true,
@@ -210,6 +213,7 @@ class UnderratedService extends GetxController {
 
     return UnderratedMedia(
       media: media,
+      simklUserId: entry.simklUserId,
       simklUsername: entry.simklUsername,
       simklAvatar: entry.simklAvatar,
       reason: entry.reason,
