@@ -272,19 +272,19 @@ class BottomControls extends StatelessWidget {
       'subtitles': !controller.isOffline.value
           ? ControlButton(
               icon: Symbols.subtitles_rounded,
-              onPressed: () => PlayerBottomSheets.showUnifiedSubtitles(
-                context,
-                controller,
-              ),
+              onPressed: () {
+                controller.isSubtitleUnifiedPaneOpened.value =
+                    !controller.isSubtitleUnifiedPaneOpened.value;
+              },
               tooltip: 'Subtitles',
               compact: true,
             )
           : ControlButton(
               icon: Symbols.subtitles_rounded,
-              onPressed: () => PlayerBottomSheets.showOfflineSubs(
-                context,
-                controller,
-              ),
+              onPressed: () {
+                controller.isSubtitleUnifiedPaneOpened.value =
+                    !controller.isSubtitleUnifiedPaneOpened.value;
+              },
               tooltip: 'Subtitles',
               compact: true,
             ),

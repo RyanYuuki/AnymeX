@@ -100,11 +100,9 @@ class SourceMapper {
       romajiTitle = englishTitle;
     }
 
-    // Set initial search status immediately
     searchedTitle.value =
         "Searching: ${englishTitle.isNotEmpty ? englishTitle : romajiTitle}";
 
-    // Check for sticky source (selection per title)
     final stickySource = sourceController.getSavedSource(mediaId, type);
     if (stickySource != null) {
       sourceController.setActiveSource(stickySource);
@@ -147,11 +145,11 @@ class SourceMapper {
 
       if (results.isEmpty || isInterrupted()) return;
 
-      final allTargetTitles = [
+      final allTargetTitles = {
         if (englishTitle.isNotEmpty) englishTitle,
         if (romajiTitle.isNotEmpty) romajiTitle,
         ...synonyms.take(3),
-      ].toSet().toList();
+      }.toList();
 
       for (final result in results) {
         if (isInterrupted()) return;
@@ -198,7 +196,6 @@ class SourceMapper {
       }
     }
 
-    // 1. Try Saved Title
     if (savedTitle != null && savedTitle.isNotEmpty) {
       await search(savedTitle, savedTitle, false);
       if (bestScore >= 0.7 && bestMatch != null) {
@@ -207,7 +204,6 @@ class SourceMapper {
       }
     }
 
-    // 2. Try Primary Titles
     if (englishTitle.isNotEmpty) {
       await search(englishTitle, englishTitle, false);
       if (isInterrupted()) return null;
@@ -228,7 +224,6 @@ class SourceMapper {
       }
     }
 
-    // 3. Try Synonyms
     if (bestScore < 0.9 && synonyms.isNotEmpty) {
       Logger.i(
           "Confidence low (${bestScore.toStringAsFixed(2)}). Trying synonyms...");
@@ -245,7 +240,6 @@ class SourceMapper {
       }
     }
 
-    // 4. Heavy Normalization
     if (bestScore < 0.7) {
       Logger.i("No good match. Trying heavy normalization...");
       if (englishTitle.isNotEmpty) {
@@ -277,15 +271,4 @@ class SourceMapper {
     _currentMappingToken =
         "interrupted_${DateTime.now().millisecondsSinceEpoch}";
   }
-
-  // old implementation
-  /*
-  Future<Media?> mapMedia(
-    List<String> animeId,
-    RxString searchedTitle, {
-    String? savedTitle,
-  }) async {
-    // ... previous logic ...
-  }
-  */
 }

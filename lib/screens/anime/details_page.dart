@@ -39,7 +39,7 @@ import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
-import 'package:expandable_page_view/expandable_page_view.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -157,7 +157,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     Future.delayed(const Duration(milliseconds: 500), () {
       _checkAnimePresence();
     });
-    
+
     _fetchAnilistData();
   }
 
@@ -564,137 +564,179 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     );
   }
 
-  SingleChildScrollView _commonSaikouLayout(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.only(bottom: 120),
-      child: Column(
-        children: [
-          GradientPoster(
-            data: anilistData,
-            tag: widget.tag,
-            posterUrl: widget.media.poster,
-          ),
-          if (anilistData != null) ...[
-            Padding(
-              padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-              child: Column(
-                children: [
-                  Obx(() {
-                    widget.media.serviceType.onlineService.animeList.value;
-                    return Row(
+  Widget _commonSaikouLayout(BuildContext context) {
+    return NestedScrollView(
+      headerSliverBuilder: (context, innerBoxIsScrolled) {
+        return [
+          SliverToBoxAdapter(
+            child: Column(
+              children: [
+                GradientPoster(
+                  data: anilistData,
+                  tag: widget.tag,
+                  posterUrl: widget.media.poster,
+                ),
+                if (anilistData != null) ...[
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                    child: Column(
                       children: [
-                        if (widget.media.serviceType !=
-                                ServicesType.extensions &&
-                            widget.media.serviceType.onlineService.isLoggedIn
-                                .value) ...[
-                          Expanded(
-                            child: Container(
-                              height: 50,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .outline
-                                      .opaque(0.2),
-                                ),
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .surfaceContainer
-                                    .opaque(0.5),
-                              ),
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  onTap: () {
-                                    if (widget.media.serviceType.onlineService
-                                        .isLoggedIn.value) {
-                                      showListEditorModal(context);
-                                    } else {
-                                      snackBar("You aren't logged in Genius.",
-                                          duration: 1000);
-                                    }
-                                  },
-                                  borderRadius: BorderRadius.circular(16),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      AnymexText(
-                                        text: convertAniListStatus(
-                                            animeStatus.value),
-                                        variant: TextVariant.bold,
+                        Obx(() {
+                          widget.media.serviceType.onlineService.animeList
+                              .value;
+                          return Row(
+                            children: [
+                              if (widget.media.serviceType !=
+                                      ServicesType.extensions &&
+                                  widget.media.serviceType.onlineService
+                                      .isLoggedIn.value) ...[
+                                Expanded(
+                                  child: Container(
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: Border.all(
                                         color: Theme.of(context)
                                             .colorScheme
-                                            .primary,
+                                            .outline
+                                            .opaque(0.2),
                                       ),
-                                    ],
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .surfaceContainer
+                                          .opaque(0.5),
+                                    ),
+                                    child: Material(
+                                      color: Colors.transparent,
+                                      child: InkWell(
+                                        onTap: () {
+                                          if (widget.media.serviceType
+                                              .onlineService.isLoggedIn.value) {
+                                            showListEditorModal(context);
+                                          } else {
+                                            snackBar(
+                                                "You aren't logged in Genius.",
+                                                duration: 1000);
+                                          }
+                                        },
+                                        borderRadius:
+                                            BorderRadius.circular(16),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            AnymexText(
+                                              text: convertAniListStatus(
+                                                  animeStatus.value),
+                                              variant: TextVariant.bold,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 7),
-                          _buildActionIconButton(
-                            context: context,
-                            icon: Icons.share_rounded,
-                            onTap: _showShareOptions,
-                          ),
-                          const SizedBox(width: 7),
-                          _buildActionIconButton(
-                            context: context,
-                            icon: HugeIcons.strokeRoundedLibrary,
-                            onTap: () {
-                              showCustomListDialog(context, anilistData!);
-                            },
-                          ),
-                        ] else ...[
-                          _buildActionIconButton(
-                            context: context,
-                            icon: Icons.share_rounded,
-                            onTap: _showShareOptions,
-                          ),
-                          const SizedBox(width: 7),
-                          Expanded(
-                            child: AnymexButton2(
-                              onTap: () {
-                                showCustomListDialog(context, anilistData!);
-                              },
-                              label: 'Add to Library',
-                              icon: HugeIcons.strokeRoundedLibrary,
-                            ),
-                          )
-                        ]
+                                const SizedBox(width: 7),
+                                _buildActionIconButton(
+                                  context: context,
+                                  icon: Icons.share_rounded,
+                                  onTap: _showShareOptions,
+                                ),
+                                const SizedBox(width: 7),
+                                _buildActionIconButton(
+                                  context: context,
+                                  icon: HugeIcons.strokeRoundedLibrary,
+                                  onTap: () {
+                                    showCustomListDialog(context, anilistData!);
+                                  },
+                                ),
+                              ] else ...[
+                                _buildActionIconButton(
+                                  context: context,
+                                  icon: Icons.share_rounded,
+                                  onTap: _showShareOptions,
+                                ),
+                                const SizedBox(width: 7),
+                                Expanded(
+                                  child: AnymexButton2(
+                                    onTap: () {
+                                      showCustomListDialog(
+                                          context, anilistData!);
+                                    },
+                                    label: 'Add to Library',
+                                    icon: HugeIcons.strokeRoundedLibrary,
+                                  ),
+                                )
+                              ]
+                            ],
+                          );
+                        }),
+                        const SizedBox(height: 10),
+                        _buildProgressContainer(context)
                       ],
-                    );
-                  }),
-                  const SizedBox(height: 10),
-                  _buildProgressContainer(context)
+                    ),
+                  ),
+                ] else ...[
+                  const SizedBox(
+                    height: 400,
+                    child: Center(child: AnymexProgressIndicator()),
+                  )
                 ],
-              ),
+              ],
             ),
-          ] else ...[
-            const SizedBox(
-              height: 400,
-              child: Center(child: AnymexProgressIndicator()),
-            )
-          ],
-          ExpandablePageView(
-            physics: const BouncingScrollPhysics(),
-            controller: controller,
-            onPageChanged: (index) {
-              selectedPage.value = index;
-            },
-            children: [
-              if (anilistData != null)
-                _buildCommonInfo(context)
-              else
-                const SizedBox.shrink(),
-              _buildEpisodeSection(context),
-              _buildCommentsSection(context)
-            ],
-          )
+          ),
+        ];
+      },
+      body: PageView(
+        physics: const BouncingScrollPhysics(),
+        controller: controller,
+        onPageChanged: (index) {
+          selectedPage.value = index;
+        },
+        children: [
+          _buildInfoPageBody(context),
+          _buildEpisodePageBody(context),
+          _buildCommentsPageBody(context),
         ],
       ),
+    );
+  }
+
+  Widget _buildInfoPageBody(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.only(bottom: 120),
+      child: anilistData != null
+          ? _buildCommonInfo(context)
+          : const SizedBox.shrink(),
+    );
+  }
+
+  Widget _buildEpisodePageBody(BuildContext context) {
+    return CustomScrollView(
+      slivers: [
+        EpisodeSection(
+          searchedTitle: searchedTitle,
+          anilistData: anilistData ?? widget.media,
+          episodeList: episodeList,
+          episodeError: episodeError,
+          mapToAnilist: () => _mapToService(),
+          getDetailsFromSource: (media) => _fetchSourceDetails(media),
+          isAnify: isAnify,
+          showAnify: showAnify,
+          disableAnifyForCurrentSource: disableAnifyForCurrentSource,
+        ),
+        const SliverToBoxAdapter(child: SizedBox(height: 120)),
+      ],
+    );
+  }
+
+  Widget _buildCommentsPageBody(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.only(bottom: 120),
+      child: _buildCommentsSection(context),
     );
   }
 
@@ -736,7 +778,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
-          color: context.colors.surfaceContainer.opaque(0.5),
+          color: context.colors.surfaceContainer.opaque(0.3),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -745,9 +787,11 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                 style: TextStyle(
                     fontSize: 11, color: context.colors.onSurface.opaque(0.5))),
             const SizedBox(height: 2),
-            Text(value,
-                style: TextStyle(
-                    fontSize: 14, fontWeight: FontWeight.w500, color: color)),
+            AnymexText(
+                text: value,
+                size: 14,
+                variant: TextVariant.semiBold,
+                color: color),
           ],
         ),
       ),
@@ -840,12 +884,12 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                 _buildTimeStat(context,
                     label: 'Watched',
                     value: _formatWatchTime(watchedMins),
-                    color: Colors.green),
+                    color: context.colors.primary),
                 const SizedBox(width: 8),
                 _buildTimeStat(context,
                     label: 'Remaining',
                     value: _formatWatchTime(remainingMins),
-                    color: Colors.orange),
+                    color: context.colors.error),
               ],
             ),
           ],
@@ -1022,8 +1066,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
           animeProgress: animeProgress,
           currentAnime: currentAnime,
           media: anilistData ?? widget.media,
-          onUpdate: (id, score, status, progress, season, startedAt, completedAt,
-              isPrivate) async {
+          onUpdate: (id, score, status, progress, season, startedAt,
+              completedAt, isPrivate) async {
             final fetcher = widget.media.serviceType;
             final id = fetcher.onlineService.currentMedia.value.id;
             await fetcher.onlineService.updateListEntry(UpdateListEntryParams(

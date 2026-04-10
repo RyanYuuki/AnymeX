@@ -52,6 +52,8 @@ abstract class BasePlayer {
   Future<void> setAudioTrack(AudioTrack track);
 
   Future<void> setSubtitleTrack(SubtitleTrack track);
+  
+  Future<void> setSubtitleDelay(Duration delay);
 
   Future<void> toggleVideoFit(BoxFit fit);
 
