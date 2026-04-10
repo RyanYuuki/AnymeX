@@ -6,7 +6,6 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
-import 'package:anymex/screens/profile/user_profile_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/big_carousel.dart';
 import 'package:anymex/widgets/common/cards/base_card.dart';
@@ -23,7 +22,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:url_launcher/url_launcher_string.dart';
+
 
 Widget buildSection(String title, dynamic data,
     {DataVariant variant = DataVariant.regular,
@@ -360,18 +359,7 @@ class _UnderratedCard extends StatelessWidget {
 
   Future<void> _navigateToAuthorProfile(
       BuildContext context, bool isAnilist) async {
-    final serviceType = Get.find<ServiceHandler>().serviceType.value;
-    if (serviceType == ServicesType.simkl) {
-      if (item.simklUserId != null) {
-        launchUrlString('https://simkl.com/${item.simklUserId}');
-      }
-    } else if (isAnilist && item.anilistUserId != null) {
-      navigate(() => UserProfilePage(userId: item.anilistUserId!));
-    } else if (item.malUsername != null &&
-        item.malUsername!.isNotEmpty) {
-      launchUrlString(
-          'https://myanimelist.net/profile/${item.malUsername}');
-    }
+    navigateToAuthorProfile(item);
   }
 
   void _showPeekPopup(BuildContext context) {
@@ -388,6 +376,7 @@ class _UnderratedCard extends StatelessWidget {
       malUserId: item.malUserId,
       anilistUsername: item.anilistUsername,
       malUsername: item.malUsername,
+      simklUserId: item.simklUserId,
       simklUsername: item.simklUsername,
       voteMediaType: _mediaType,
       voteMediaId: _mediaId,

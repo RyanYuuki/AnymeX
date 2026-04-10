@@ -6,7 +6,6 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/models_convertor/carousel_mapper.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
-import 'package:anymex/screens/profile/user_profile_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/cards/base_card.dart';
@@ -21,7 +20,6 @@ import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 class CommunityRecommendationsPage extends StatefulWidget {
   final ItemType type;
@@ -513,17 +511,7 @@ class _AuthorBadge extends StatelessWidget {
     required this.theme,
   });
 
-  void _navigateToAuthor() {
-    if (serviceType == ServicesType.simkl) {
-      if (item.simklUserId != null) {
-        launchUrlString('https://simkl.com/${item.simklUserId}');
-      }
-    } else if (serviceType == ServicesType.anilist && item.anilistUserId != null) {
-      navigate(() => UserProfilePage(userId: item.anilistUserId!));
-    } else if (item.malUsername != null && item.malUsername!.isNotEmpty) {
-      launchUrlString('https://myanimelist.net/profile/${item.malUsername}');
-    }
-  }
+  void _navigateToAuthor() => navigateToAuthorProfile(item);
 
   @override
   Widget build(BuildContext context) {
@@ -803,18 +791,7 @@ class _SeeAllListTile extends StatelessWidget {
     }
   }
 
-  void _navigateToAuthor() {
-    final serviceType = Get.find<ServiceHandler>().serviceType.value;
-    if (serviceType == ServicesType.simkl) {
-      if (item.simklUserId != null) {
-        launchUrlString('https://simkl.com/${item.simklUserId}');
-      }
-    } else if (serviceType == ServicesType.anilist && item.anilistUserId != null) {
-      navigate(() => UserProfilePage(userId: item.anilistUserId!));
-    } else if (item.malUsername != null && item.malUsername!.isNotEmpty) {
-      launchUrlString('https://myanimelist.net/profile/${item.malUsername}');
-    }
-  }
+  void _navigateToAuthor() => navigateToAuthorProfile(item);
 
   void _showPeekPopup(BuildContext context) {
     final serviceType = Get.find<ServiceHandler>().serviceType.value;

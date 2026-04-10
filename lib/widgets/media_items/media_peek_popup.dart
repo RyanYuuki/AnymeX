@@ -12,7 +12,6 @@ import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/anime/widgets/custom_list_dialog.dart';
 import 'package:anymex/screens/anime/widgets/list_editor.dart';
 import 'package:anymex/screens/manga/details_page.dart';
-import 'package:anymex/screens/profile/user_profile_page.dart';
 import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -26,7 +25,7 @@ import 'package:html/parser.dart' show parse;
 import 'package:http/http.dart' as http;
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:url_launcher/url_launcher_string.dart';
+
 
 class MediaPeekPopup extends StatefulWidget {
   final Media media;
@@ -1007,16 +1006,14 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
 
   Future<void> _navigateToAuthorProfile(bool isAnilist) async {
     Navigator.of(context).pop();
-    final serviceType = Get.find<ServiceHandler>().serviceType.value;
-    if (serviceType == ServicesType.simkl) {
-      if (widget.simklUserId != null) {
-        launchUrlString('https://simkl.com/${widget.simklUserId}');
-      }
-    } else if (isAnilist && widget.anilistUserId != null) {
-      navigate(() => UserProfilePage(userId: widget.anilistUserId!));
-    } else if (widget.malUsername != null && widget.malUsername!.isNotEmpty) {
-      launchUrlString('https://myanimelist.net/profile/${widget.malUsername}');
-    }
+    navigateToAuthorProfile(UnderratedMedia(
+      media: widget.media,
+      simklUserId: widget.simklUserId,
+      anilistUserId: widget.anilistUserId,
+      anilistUsername: widget.anilistUsername,
+      malUsername: widget.malUsername,
+      simklUsername: widget.simklUsername,
+    ));
   }
 }
 

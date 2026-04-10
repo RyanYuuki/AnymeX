@@ -3,11 +3,27 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
+import 'package:anymex/screens/profile/user_profile_page.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher_string.dart';
+
+void navigateToAuthorProfile(UnderratedMedia item) {
+  final serviceType = Get.find<ServiceHandler>().serviceType.value;
+  if (serviceType == ServicesType.simkl) {
+    if (item.simklUserId != null) {
+      launchUrlString('https://simkl.com/${item.simklUserId}');
+    }
+  } else if (serviceType == ServicesType.anilist && item.anilistUserId != null) {
+    navigate(() => UserProfilePage(userId: item.anilistUserId!));
+  } else if (item.malUsername != null && item.malUsername!.isNotEmpty) {
+    launchUrlString('https://myanimelist.net/profile/${item.malUsername}');
+  }
+}
 
 class SimklUnderratedEntry {
   final int? simklId;
