@@ -22,6 +22,7 @@ enum General {
   filterPlanning,
   filterPaused,
   filterRepeating,
+  communityListViewIsGrid,
 }
 
 enum ThemeKeys {

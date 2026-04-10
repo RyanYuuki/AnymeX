@@ -29,7 +29,6 @@ class _SettingsCommonState extends State<SettingsCommon> {
   late bool hideAdultContent = General.hideAdultContent.get<bool>(true);
   late bool showCommunityRecs =
       General.showCommunityRecommendations.get<bool>(true);
-  late bool hideNsfwRecs = General.hideNsfwRecommendations.get<bool>(true);
   bool get isMal => serviceHandler.serviceType.value.isMal;
   late Map<String, bool> homePageCards;
 
@@ -139,20 +138,110 @@ class _SettingsCommonState extends State<SettingsCommon> {
                                 });
                               },
                             ),
-                            CustomSwitchTile(
-                              icon: Icons.no_adult_content_rounded,
-                              title: 'Hide NSFW Recommendations',
-                              description:
-                                  'Filter out adult/NSFW entries from community recommendations. Enabled by default.',
-                              switchValue: hideNsfwRecs,
-                              onChanged: (e) {
-                                setState(() {
-                                  hideNsfwRecs = e;
-                                  General.hideNsfwRecommendations.set(e);
-                                  Get.find<UnderratedService>().hideNsfw.value = e;
-                                });
-                              },
-                            ),
+                            Obx(() {
+                              final svc = Get.find<UnderratedService>();
+                              return CustomSwitchTile(
+                                icon: Icons.no_adult_content_rounded,
+                                title: 'Hide NSFW Recommendations',
+                                description:
+                                    'Filter out adult/NSFW entries from community recommendations. Enabled by default.',
+                                switchValue: svc.hideNsfw.value,
+                                onChanged: (v) {
+                                  svc.hideNsfw.value = v;
+                                  General.hideNsfwRecommendations.set(v);
+                                },
+                              );
+                            }),
+                            Obx(() {
+                              final svc = Get.find<UnderratedService>();
+                              return CustomSwitchTile(
+                                icon: Icons.filter_list_rounded,
+                                title: 'Hide by List Status',
+                                description:
+                                    'Filter out entries already in your list based on their watching/reading status.',
+                                switchValue: svc.filterByListEnabled.value,
+                                onChanged: (v) {
+                                  svc.filterByListEnabled.value = v;
+                                  General.filterByListEnabled.set(v);
+                                },
+                              );
+                            }),
+                            Obx(() {
+                              final svc = Get.find<UnderratedService>();
+                              if (!svc.filterByListEnabled.value) {
+                                return const SizedBox.shrink();
+                              }
+                              return Column(
+                                children: [
+                                  CustomSwitchTile(
+                                    icon: Icons.check_circle_outline_rounded,
+                                    title: 'Hide Completed',
+                                    description:
+                                        'Hide entries that are marked as completed in your list.',
+                                    switchValue: svc.filterCompleted.value,
+                                    onChanged: (v) {
+                                      svc.filterCompleted.value = v;
+                                      General.filterCompleted.set(v);
+                                    },
+                                  ),
+                                  CustomSwitchTile(
+                                    icon: Icons.remove_red_eye_outlined,
+                                    title: 'Hide Watching / Reading',
+                                    description:
+                                        'Hide entries that you are currently watching or reading.',
+                                    switchValue: svc.filterWatching.value,
+                                    onChanged: (v) {
+                                      svc.filterWatching.value = v;
+                                      General.filterWatching.set(v);
+                                    },
+                                  ),
+                                  CustomSwitchTile(
+                                    icon: Icons.cancel_outlined,
+                                    title: 'Hide Dropped',
+                                    description:
+                                        'Hide entries that you have dropped.',
+                                    switchValue: svc.filterDropped.value,
+                                    onChanged: (v) {
+                                      svc.filterDropped.value = v;
+                                      General.filterDropped.set(v);
+                                    },
+                                  ),
+                                  CustomSwitchTile(
+                                    icon: Icons.event_note_outlined,
+                                    title: 'Hide Planning',
+                                    description:
+                                        'Hide entries that are in your plan to watch/read list.',
+                                    switchValue: svc.filterPlanning.value,
+                                    onChanged: (v) {
+                                      svc.filterPlanning.value = v;
+                                      General.filterPlanning.set(v);
+                                    },
+                                  ),
+                                  CustomSwitchTile(
+                                    icon: Icons.pause_circle_outline_rounded,
+                                    title: 'Hide On Hold / Paused',
+                                    description:
+                                        'Hide entries that you have put on hold or paused.',
+                                    switchValue: svc.filterPaused.value,
+                                    onChanged: (v) {
+                                      svc.filterPaused.value = v;
+                                      General.filterPaused.set(v);
+                                    },
+                                  ),
+                                  CustomSwitchTile(
+                                    icon: Icons.replay_rounded,
+                                    title: 'Hide Rewatching',
+                                    description:
+                                        'Hide entries that you are rewatching or rereading.',
+                                    switchValue: svc.filterRepeating.value,
+                                    onChanged: (v) {
+                                      svc.filterRepeating.value = v;
+                                      General.filterRepeating.set(v);
+                                    },
+                                  ),
+                                ],
+                              );
+                            }),
                           ],
                         ),
                       ),

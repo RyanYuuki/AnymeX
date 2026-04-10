@@ -345,7 +345,7 @@ class SimklService extends GetxController
             final list = underratedService.getFilteredMovies();
             return buildUnderratedSection('Community Recommendations', list,
                 onSeeAll: () => navigate(() => CommunityRecommendationsPage(
-                      data: list,
+                      category: 'movies',
                       type: ItemType.anime,
                     )));
           }),
@@ -390,7 +390,7 @@ class SimklService extends GetxController
             final list = underratedService.getFilteredShows();
             return buildUnderratedSection('Community Recommendations', list,
                 onSeeAll: () => navigate(() => CommunityRecommendationsPage(
-                      data: list,
+                      category: 'shows',
                       type: ItemType.anime,
                     )));
           }),

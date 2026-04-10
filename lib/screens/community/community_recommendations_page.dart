@@ -24,13 +24,13 @@ import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class CommunityRecommendationsPage extends StatefulWidget {
-  final List<UnderratedMedia> data;
   final ItemType type;
+  final String category;
   final String title;
 
   const CommunityRecommendationsPage({
     super.key,
-    required this.data,
+    required this.category,
     required this.type,
     this.title = 'Community Recommendations',
   });
@@ -45,13 +45,21 @@ class _CommunityRecommendationsPageState
   final Map<String, VoteResult?> _votes = {};
   final Map<String, String?> _userVotes = {};
   final Map<String, bool> _loading = {};
-  bool _isGridView = true;
+  late bool _isGridView = General.communityListViewIsGrid.get<bool>(true);
 
   @override
   void initState() {
     super.initState();
     if (UnderratedService.votingEnabled) {
-      for (final item in widget.data) {
+      final svc = Get.find<UnderratedService>();
+      final sourceList = switch (widget.category) {
+        'anime' => svc.underratedAnimes,
+        'manga' => svc.underratedMangas,
+        'shows' => svc.underratedShows,
+        'movies' => svc.underratedMovies,
+        _ => <UnderratedMedia>[].obs,
+      };
+      for (final item in sourceList) {
         _loadVotes(item);
       }
     }
@@ -68,6 +76,17 @@ class _CommunityRecommendationsPageState
     final id = item.media.id;
     if (id.contains('*')) return id.split('*').first;
     return id;
+  }
+
+  List<UnderratedMedia> _getFilteredData() {
+    final svc = Get.find<UnderratedService>();
+    return switch (widget.category) {
+      'anime' => svc.getFilteredAnimes(),
+      'manga' => svc.getFilteredMangas(),
+      'shows' => svc.getFilteredShows(),
+      'movies' => svc.getFilteredMovies(),
+      _ => <UnderratedMedia>[],
+    };
   }
 
   Future<void> _loadVotes(UnderratedMedia item) async {
@@ -250,9 +269,6 @@ class _CommunityRecommendationsPageState
   @override
   Widget build(BuildContext context) {
     final isDesktop = getPlatform(context);
-    final cardStyle = CardStyle.values[settingsController.cardStyle];
-    final cardHeight = getCardHeight(cardStyle, isDesktop);
-    final crossAxisCount = isDesktop ? 4 : 3;
 
     return Glow(
       child: Scaffold(
@@ -269,7 +285,12 @@ class _CommunityRecommendationsPageState
           ),
           actions: [
             IconButton(
-              onPressed: () => setState(() => _isGridView = !_isGridView),
+              onPressed: () {
+                setState(() {
+                  _isGridView = !_isGridView;
+                  General.communityListViewIsGrid.set(_isGridView);
+                });
+              },
               icon: Icon(
                 _isGridView ? Icons.view_list_rounded : Icons.grid_view_rounded,
               ),
@@ -278,62 +299,80 @@ class _CommunityRecommendationsPageState
               onPressed: () => _showSettingsSheet(context),
               icon: const Icon(Icons.tune_rounded),
             ),
-            Padding(
-              padding: const EdgeInsets.only(right: 12),
-              child: AnymexText(
-                text: '${widget.data.length}',
-                color: context.colors.primary.withOpacity(0.6),
-                variant: TextVariant.semiBold,
-              ),
-            ),
           ],
         ),
-        body: widget.data.isEmpty
-            ? const Center(child: AnymexProgressIndicator())
-            : _isGridView
-                ? GridView.builder(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 16),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: crossAxisCount,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
-                      mainAxisExtent: cardHeight +
-                          (UnderratedService.votingEnabled ? 38 : 0),
-                    ),
-                    itemCount: widget.data.length,
-                    itemBuilder: (context, index) {
-                      final item = widget.data[index];
-                      final id = _mediaId(item);
-                      return _SeeAllCard(
-                        item: item,
-                        type: widget.type,
-                        cardStyle: cardStyle,
-                        isDesktop: isDesktop,
-                        votes: _votes[id],
-                        userVote: _userVotes[id],
-                        isLoading: _loading[id] == true,
-                        onVote: (dir) => _castVote(item, dir),
-                      );
-                    },
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 16),
-                    itemCount: widget.data.length,
-                    itemBuilder: (context, index) {
-                      final item = widget.data[index];
-                      final id = _mediaId(item);
-                      return _SeeAllListTile(
-                        item: item,
-                        type: widget.type,
-                        votes: _votes[id],
-                        userVote: _userVotes[id],
-                        isLoading: _loading[id] == true,
-                        onVote: (dir) => _castVote(item, dir),
-                      );
-                    },
+        body: Obx(() {
+          final data = _getFilteredData();
+          final cardStyle = CardStyle.values[settingsController.cardStyle];
+          final cardHeight = getCardHeight(cardStyle, isDesktop);
+          final crossAxisCount = isDesktop ? 4 : 3;
+
+          if (data.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.filter_list_off_rounded,
+                      size: 48,
+                      color: context.colors.onSurfaceVariant.withOpacity(0.5)),
+                  const SizedBox(height: 12),
+                  AnymexText(
+                    text: 'No recommendations found',
+                    color: context.colors.onSurfaceVariant.withOpacity(0.7),
+                    variant: TextVariant.semiBold,
                   ),
+                ],
+              ),
+            );
+          }
+
+          if (_isGridView) {
+            return GridView.builder(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 12, vertical: 16),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                mainAxisExtent: cardHeight +
+                    (UnderratedService.votingEnabled ? 38 : 0),
+              ),
+              itemCount: data.length,
+              itemBuilder: (context, index) {
+                final item = data[index];
+                final id = _mediaId(item);
+                return _SeeAllCard(
+                  item: item,
+                  type: widget.type,
+                  cardStyle: cardStyle,
+                  isDesktop: isDesktop,
+                  votes: _votes[id],
+                  userVote: _userVotes[id],
+                  isLoading: _loading[id] == true,
+                  onVote: (dir) => _castVote(item, dir),
+                );
+              },
+            );
+          } else {
+            return ListView.builder(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 12, vertical: 16),
+              itemCount: data.length,
+              itemBuilder: (context, index) {
+                final item = data[index];
+                final id = _mediaId(item);
+                return _SeeAllListTile(
+                  item: item,
+                  type: widget.type,
+                  votes: _votes[id],
+                  userVote: _userVotes[id],
+                  isLoading: _loading[id] == true,
+                  onVote: (dir) => _castVote(item, dir),
+                );
+              },
+            );
+          }
+        }),
       ),
     );
   }
