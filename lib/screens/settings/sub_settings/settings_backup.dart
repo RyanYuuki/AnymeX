@@ -27,6 +27,8 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
     final passwordController = TextEditingController();
     final confirmPasswordController = TextEditingController();
     bool usePassword = false;
+    bool includeSettings = true;
+    bool includeAuth = false;
 
     final result = await showDialog<bool>(
       context: context,
@@ -34,6 +36,8 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
         passwordController: passwordController,
         confirmPasswordController: confirmPasswordController,
         onUsePasswordChanged: (value) => usePassword = value,
+        onIncludeSettingsChanged: (value) => includeSettings = value,
+        onIncludeAuthChanged: (value) => includeAuth = value,
       ),
     );
 
@@ -49,7 +53,11 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
         password = passwordController.text;
       }
 
-      final path = await controller.exportBackupToExternal(password: password);
+      final path = await controller.exportBackupToExternal(
+        password: password,
+        includeSettings: includeSettings,
+        includeAuth: includeAuth,
+      );
       if (path != null && mounted) {
         snackBar("Backup saved successfully!");
       }

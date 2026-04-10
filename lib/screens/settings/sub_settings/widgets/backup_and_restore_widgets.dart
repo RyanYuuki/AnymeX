@@ -740,12 +740,16 @@ class BackupPasswordDialog extends StatefulWidget {
   final TextEditingController passwordController;
   final TextEditingController confirmPasswordController;
   final Function(bool) onUsePasswordChanged;
+  final Function(bool) onIncludeSettingsChanged;
+  final Function(bool) onIncludeAuthChanged;
 
   const BackupPasswordDialog({
     super.key,
     required this.passwordController,
     required this.confirmPasswordController,
     required this.onUsePasswordChanged,
+    required this.onIncludeSettingsChanged,
+    required this.onIncludeAuthChanged,
   });
 
   @override
@@ -754,8 +758,47 @@ class BackupPasswordDialog extends StatefulWidget {
 
 class BackupPasswordDialogState extends State<BackupPasswordDialog> {
   bool _usePassword = false;
+  bool _includeSettings = true;
+  bool _includeAuth = false;
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
+
+  Widget _buildCheckbox({
+    required bool value,
+    required ValueChanged<bool?>? onChanged,
+    required String title,
+    required String subtitle,
+  }) {
+    final theme = Theme.of(context);
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest.opaque(0.3),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: CheckboxListTile(
+        value: value,
+        onChanged: onChanged,
+        title: Text(
+          title,
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            color: theme.colorScheme.onSurface,
+          ),
+        ),
+        subtitle: Text(
+          subtitle,
+          style: TextStyle(
+            fontSize: 12,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+        controlAffinity: ListTileControlAffinity.trailing,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -763,54 +806,88 @@ class BackupPasswordDialogState extends State<BackupPasswordDialog> {
 
     return Dialog(
       backgroundColor: theme.colorScheme.surfaceContainer,
-      child: Container(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.primary.opaque(0.1),
-                    borderRadius: BorderRadius.circular(12),
+      child: SingleChildScrollView(
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primary.opaque(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(Icons.backup_rounded,
+                        color: theme.colorScheme.primary, size: 24),
                   ),
-                  child: Icon(Icons.backup_rounded,
-                      color: theme.colorScheme.primary, size: 24),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Backup Options",
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Backup Options",
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      Text(
-                        "Protect your backup",
-                        style: TextStyle(
-                          color: theme.colorScheme.onSurfaceVariant,
-                          fontSize: 13,
+                        Text(
+                          "Choose what to include",
+                          style: TextStyle(
+                            color: theme.colorScheme.onSurfaceVariant,
+                            fontSize: 13,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            Container(
-              decoration: BoxDecoration(
-                color:
-                    theme.colorScheme.surfaceContainerHighest.opaque(0.3),
-                borderRadius: BorderRadius.circular(16),
+                ],
               ),
-              child: CheckboxListTile(
+              const SizedBox(height: 24),
+              _buildCheckbox(
+                value: true,
+                onChanged: null,
+                title: "Library",
+                subtitle: "Anime, manga & novel library (always included)",
+              ),
+              const SizedBox(height: 8),
+              _buildCheckbox(
+                value: _includeSettings,
+                onChanged: (value) {
+                  setState(() {
+                    _includeSettings = value ?? true;
+                    widget.onIncludeSettingsChanged(_includeSettings);
+                    if (!_includeSettings) {
+                      _includeAuth = false;
+                      widget.onIncludeAuthChanged(false);
+                    }
+                  });
+                },
+                title: "Settings",
+                subtitle: "All app preferences, player, reader & UI settings",
+              ),
+              const SizedBox(height: 8),
+              _buildCheckbox(
+                value: _includeAuth,
+                onChanged: _includeSettings
+                    ? (value) {
+                        setState(() {
+                          _includeAuth = value ?? false;
+                          widget.onIncludeAuthChanged(_includeAuth);
+                        });
+                      }
+                    : null,
+                title: "Logins",
+                subtitle: _includeSettings
+                    ? "AniList, MAL, Simkl auth tokens"
+                    : "Enable Settings first",
+              ),
+              const SizedBox(height: 8),
+              _buildCheckbox(
                 value: _usePassword,
                 onChanged: (value) {
                   setState(() {
@@ -818,113 +895,95 @@ class BackupPasswordDialogState extends State<BackupPasswordDialog> {
                     widget.onUsePasswordChanged(_usePassword);
                   });
                 },
-                title: Text(
-                  "Password Protect",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: theme.colorScheme.onSurface,
-                  ),
-                ),
-                subtitle: Text(
-                  "Add extra security to your backup",
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                controlAffinity: ListTileControlAffinity.trailing,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
+                title: "Password Protect",
+                subtitle: "Add extra security to your backup",
               ),
-            ),
-            if (_usePassword) ...[
-              const SizedBox(height: 20),
-              TextField(
-                controller: widget.passwordController,
-                obscureText: _obscurePassword,
-                decoration: InputDecoration(
-                  labelText: "Password",
-                  hintText: "Enter password",
-                  prefixIcon: const Icon(Icons.lock_outline),
-                  suffixIcon: IconButton(
-                    icon: Icon(_obscurePassword
-                        ? Icons.visibility_outlined
-                        : Icons.visibility_off_outlined),
-                    onPressed: () {
-                      setState(() => _obscurePassword = !_obscurePassword);
-                    },
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  filled: true,
-                  fillColor: theme.colorScheme.surfaceContainerHighest
-                      .opaque(0.3),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: widget.confirmPasswordController,
-                obscureText: _obscureConfirm,
-                decoration: InputDecoration(
-                  labelText: "Confirm Password",
-                  hintText: "Re-enter password",
-                  prefixIcon: const Icon(Icons.lock_outline),
-                  suffixIcon: IconButton(
-                    icon: Icon(_obscureConfirm
-                        ? Icons.visibility_outlined
-                        : Icons.visibility_off_outlined),
-                    onPressed: () {
-                      setState(() => _obscureConfirm = !_obscureConfirm);
-                    },
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  filled: true,
-                  fillColor: theme.colorScheme.surfaceContainerHighest
-                      .opaque(0.3),
-                ),
-              ),
-            ],
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  child: TextButton(
-                    onPressed: () => Navigator.of(context).pop(false),
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+              if (_usePassword) ...[
+                const SizedBox(height: 20),
+                TextField(
+                  controller: widget.passwordController,
+                  obscureText: _obscurePassword,
+                  decoration: InputDecoration(
+                    labelText: "Password",
+                    hintText: "Enter password",
+                    prefixIcon: const Icon(Icons.lock_outline),
+                    suffixIcon: IconButton(
+                      icon: Icon(_obscurePassword
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined),
+                      onPressed: () =>
+                          setState(() => _obscurePassword = !_obscurePassword),
                     ),
-                    child: const Text("Cancel"),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    filled: true,
+                    fillColor:
+                        theme.colorScheme.surfaceContainerHighest.opaque(0.3),
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  flex: 2,
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.of(context).pop(true),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.colorScheme.primary,
-                      foregroundColor: theme.colorScheme.onPrimary,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: widget.confirmPasswordController,
+                  obscureText: _obscureConfirm,
+                  decoration: InputDecoration(
+                    labelText: "Confirm Password",
+                    hintText: "Re-enter password",
+                    prefixIcon: const Icon(Icons.lock_outline),
+                    suffixIcon: IconButton(
+                      icon: Icon(_obscureConfirm
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined),
+                      onPressed: () =>
+                          setState(() => _obscureConfirm = !_obscureConfirm),
                     ),
-                    child: const Text(
-                      "Create Backup",
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
                     ),
+                    filled: true,
+                    fillColor:
+                        theme.colorScheme.surfaceContainerHighest.opaque(0.3),
                   ),
                 ),
               ],
-            ),
-          ],
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.of(context).pop(false),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text("Cancel"),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    flex: 2,
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.of(context).pop(true),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: theme.colorScheme.primary,
+                        foregroundColor: theme.colorScheme.onPrimary,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        "Create Backup",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
