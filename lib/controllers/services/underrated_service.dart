@@ -140,13 +140,28 @@ class UnderratedService extends GetxController {
   RxString showsError = ''.obs;
   RxString moviesError = ''.obs;
 
-  static const Set<String> _filteredStatuses = {
-    'COMPLETED',
-    'CURRENT',
-    'DROPPED'
-  };
-
   ServicesType? _cachedServiceType;
+
+  RxBool filterByListEnabled =
+      RxBool(General.filterByListEnabled.get<bool>(true));
+  RxBool filterCompleted = RxBool(General.filterCompleted.get<bool>(true));
+  RxBool filterWatching = RxBool(General.filterWatching.get<bool>(true));
+  RxBool filterDropped = RxBool(General.filterDropped.get<bool>(true));
+  RxBool filterPlanning = RxBool(General.filterPlanning.get<bool>(false));
+  RxBool filterPaused = RxBool(General.filterPaused.get<bool>(false));
+  RxBool filterRepeating = RxBool(General.filterRepeating.get<bool>(false));
+
+  Set<String> get _activeFilteredStatuses {
+    if (!filterByListEnabled.value) return {};
+    return {
+      if (filterCompleted.value) 'COMPLETED',
+      if (filterWatching.value) 'CURRENT',
+      if (filterDropped.value) 'DROPPED',
+      if (filterPlanning.value) 'PLANNING',
+      if (filterPaused.value) 'PAUSED',
+      if (filterRepeating.value) 'REPEATING',
+    };
+  }
 
   UnderratedMedia? _processSimklEntry(
     SimklUnderratedEntry entry,
@@ -194,7 +209,7 @@ class UnderratedService extends GetxController {
 
       final filteredIds = userList
           .where((item) =>
-              _filteredStatuses.contains(item.watchingStatus?.toUpperCase()))
+              _activeFilteredStatuses.contains(item.watchingStatus?.toUpperCase()))
           .map((item) => item.id)
           .toSet();
 
@@ -222,7 +237,7 @@ class UnderratedService extends GetxController {
 
       final filteredIds = userList
           .where((item) =>
-              _filteredStatuses.contains(item.watchingStatus?.toUpperCase()))
+              _activeFilteredStatuses.contains(item.watchingStatus?.toUpperCase()))
           .map((item) => item.id)
           .toSet();
 
@@ -250,7 +265,7 @@ class UnderratedService extends GetxController {
 
       final filteredIds = userList
           .where((item) =>
-              _filteredStatuses.contains(item.watchingStatus?.toUpperCase()))
+              _activeFilteredStatuses.contains(item.watchingStatus?.toUpperCase()))
           .map((item) => item.id)
           .toSet();
 
@@ -278,7 +293,7 @@ class UnderratedService extends GetxController {
 
       final filteredIds = userList
           .where((item) =>
-              _filteredStatuses.contains(item.watchingStatus?.toUpperCase()))
+              _activeFilteredStatuses.contains(item.watchingStatus?.toUpperCase()))
           .map((item) => item.id)
           .toSet();
 

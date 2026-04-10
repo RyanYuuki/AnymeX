@@ -44,6 +44,7 @@ class _CommunityRecommendationsPageState
   final Map<String, VoteResult?> _votes = {};
   final Map<String, String?> _userVotes = {};
   final Map<String, bool> _loading = {};
+  bool _isGridView = true;
 
   @override
   void initState() {
@@ -151,6 +152,100 @@ class _CommunityRecommendationsPageState
     }
   }
 
+  void _showSettingsSheet(BuildContext context) {
+    final svc = Get.find<UnderratedService>();
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => Obx(() {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AnymexText(
+                  text: 'Filter Settings',
+                  variant: TextVariant.semiBold,
+                  color: context.colors.primary,
+                ),
+                const SizedBox(height: 8),
+                SwitchListTile(
+                  title: const AnymexText(text: 'Hide by List Status'),
+                  subtitle: const AnymexText(
+                      text: 'Filter out entries already in your list'),
+                  value: svc.filterByListEnabled.value,
+                  onChanged: (v) {
+                    svc.filterByListEnabled.value = v;
+                    General.filterByListEnabled.set(v);
+                  },
+                ),
+                if (svc.filterByListEnabled.value) ...[
+                  SwitchListTile(
+                    title: const AnymexText(text: 'Hide Completed'),
+                    value: svc.filterCompleted.value,
+                    onChanged: (v) {
+                      svc.filterCompleted.value = v;
+                      General.filterCompleted.set(v);
+                    },
+                  ),
+                  SwitchListTile(
+                    title: const AnymexText(text: 'Hide Watching / Reading'),
+                    value: svc.filterWatching.value,
+                    onChanged: (v) {
+                      svc.filterWatching.value = v;
+                      General.filterWatching.set(v);
+                    },
+                  ),
+                  SwitchListTile(
+                    title: const AnymexText(text: 'Hide Dropped'),
+                    value: svc.filterDropped.value,
+                    onChanged: (v) {
+                      svc.filterDropped.value = v;
+                      General.filterDropped.set(v);
+                    },
+                  ),
+                  SwitchListTile(
+                    title: const AnymexText(text: 'Hide Planning'),
+                    value: svc.filterPlanning.value,
+                    onChanged: (v) {
+                      svc.filterPlanning.value = v;
+                      General.filterPlanning.set(v);
+                    },
+                  ),
+                  SwitchListTile(
+                    title: const AnymexText(text: 'Hide On Hold / Paused'),
+                    value: svc.filterPaused.value,
+                    onChanged: (v) {
+                      svc.filterPaused.value = v;
+                      General.filterPaused.set(v);
+                    },
+                  ),
+                  SwitchListTile(
+                    title: const AnymexText(text: 'Hide Rewatching'),
+                    value: svc.filterRepeating.value,
+                    onChanged: (v) {
+                      svc.filterRepeating.value = v;
+                      General.filterRepeating.set(v);
+                    },
+                  ),
+                ],
+                SwitchListTile(
+                  title: const AnymexText(text: 'Hide NSFW'),
+                  value: svc.hideNsfw.value,
+                  onChanged: (v) {
+                    svc.hideNsfw.value = v;
+                    General.hideNsfwRecommendations.set(v);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      }),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDesktop = getPlatform(context);
@@ -172,6 +267,16 @@ class _CommunityRecommendationsPageState
             color: context.colors.primary,
           ),
           actions: [
+            IconButton(
+              onPressed: () => setState(() => _isGridView = !_isGridView),
+              icon: Icon(
+                _isGridView ? Icons.view_list_rounded : Icons.grid_view_rounded,
+              ),
+            ),
+            IconButton(
+              onPressed: () => _showSettingsSheet(context),
+              icon: const Icon(Icons.tune_rounded),
+            ),
             Padding(
               padding: const EdgeInsets.only(right: 12),
               child: AnymexText(
@@ -184,32 +289,50 @@ class _CommunityRecommendationsPageState
         ),
         body: widget.data.isEmpty
             ? const Center(child: AnymexProgressIndicator())
-            : GridView.builder(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 12, vertical: 16),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: crossAxisCount,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  mainAxisExtent: cardHeight +
-                      (UnderratedService.votingEnabled ? 38 : 0),
-                ),
-                itemCount: widget.data.length,
-                itemBuilder: (context, index) {
-                  final item = widget.data[index];
-                  final id = _mediaId(item);
-                  return _SeeAllCard(
-                    item: item,
-                    type: widget.type,
-                    cardStyle: cardStyle,
-                    isDesktop: isDesktop,
-                    votes: _votes[id],
-                    userVote: _userVotes[id],
-                    isLoading: _loading[id] == true,
-                    onVote: (dir) => _castVote(item, dir),
-                  );
-                },
-              ),
+            : _isGridView
+                ? GridView.builder(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 16),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      mainAxisExtent: cardHeight +
+                          (UnderratedService.votingEnabled ? 38 : 0),
+                    ),
+                    itemCount: widget.data.length,
+                    itemBuilder: (context, index) {
+                      final item = widget.data[index];
+                      final id = _mediaId(item);
+                      return _SeeAllCard(
+                        item: item,
+                        type: widget.type,
+                        cardStyle: cardStyle,
+                        isDesktop: isDesktop,
+                        votes: _votes[id],
+                        userVote: _userVotes[id],
+                        isLoading: _loading[id] == true,
+                        onVote: (dir) => _castVote(item, dir),
+                      );
+                    },
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 16),
+                    itemCount: widget.data.length,
+                    itemBuilder: (context, index) {
+                      final item = widget.data[index];
+                      final id = _mediaId(item);
+                      return _SeeAllListTile(
+                        item: item,
+                        type: widget.type,
+                        votes: _votes[id],
+                        userVote: _userVotes[id],
+                        isLoading: _loading[id] == true,
+                        onVote: (dir) => _castVote(item, dir),
+                      );
+                    },
+                  ),
       ),
     );
   }
@@ -591,6 +714,154 @@ class _AuthorAvatar extends StatelessWidget {
                 ),
               ),
             ),
+    );
+  }
+}
+
+class _SeeAllListTile extends StatelessWidget {
+  final UnderratedMedia item;
+  final ItemType type;
+  final VoteResult? votes;
+  final String? userVote;
+  final bool isLoading;
+  final void Function(String direction) onVote;
+
+  const _SeeAllListTile({
+    required this.item,
+    required this.type,
+    required this.votes,
+    required this.userVote,
+    required this.isLoading,
+    required this.onVote,
+  });
+
+  String get _mediaType {
+    final id = item.media.id;
+    if (id.endsWith('*MOVIE')) return 'movie';
+    if (id.endsWith('*SERIES')) return 'show';
+    return type == ItemType.manga ? 'manga' : 'anime';
+  }
+
+  String get _mediaId {
+    final id = item.media.id;
+    if (id.contains('*')) return id.split('*').first;
+    return id;
+  }
+
+  void _navigateToDetails() {
+    final media = item.media;
+    final tag = 'community-list-${media.id}';
+    if (type == ItemType.manga) {
+      navigate(() => MangaDetailsPage(media: media, tag: tag));
+    } else {
+      navigate(() => AnimeDetailsPage(media: media, tag: tag));
+    }
+  }
+
+  void _showPeekPopup(BuildContext context) {
+    final serviceType = Get.find<ServiceHandler>().serviceType.value;
+    MediaPeekPopup.show(
+      context,
+      item.media,
+      type,
+      'community-list-${item.media.id}',
+      author: item.usernameFor(serviceType),
+      avatarUrl: item.avatarFor(serviceType),
+      reason: item.reason,
+      anilistUserId: item.anilistUserId,
+      malUserId: item.malUserId,
+      anilistUsername: item.anilistUsername,
+      malUsername: item.malUsername,
+      voteMediaType: _mediaType,
+      voteMediaId: _mediaId,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final serviceType = Get.find<ServiceHandler>().serviceType.value;
+    final author = item.usernameFor(serviceType);
+    final avatarUrl = item.avatarFor(serviceType);
+    final colors = Theme.of(context).colorScheme;
+
+    return GestureDetector(
+      onTap: _navigateToDetails,
+      onLongPress: () => _showPeekPopup(context),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        decoration: BoxDecoration(
+          color: colors.surfaceContainerLow,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.horizontal(left: Radius.circular(12)),
+              child: AnymeXImage(
+                imageUrl: item.media.poster,
+                width: 70,
+                height: 100,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AnymexText(
+                      text: item.displayTitle,
+                      variant: TextVariant.semiBold,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (item.reason != null && item.reason!.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      AnymexText(
+                        text: item.reason!,
+                        variant: TextVariant.regular,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        color: colors.onSurfaceVariant,
+                      ),
+                    ],
+                    if (author != null && author.isNotEmpty) ...[
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          ClipOval(
+                            child: _AuthorAvatar(
+                                avatarUrl: avatarUrl,
+                                fallbackLabel: author,
+                                size: 18),
+                          ),
+                          const SizedBox(width: 4),
+                          AnymexText(
+                            text: author,
+                            variant: TextVariant.semiBold,
+                            color: colors.primary,
+                          ),
+                        ],
+                      ),
+                    ],
+                    if (UnderratedService.votingEnabled) ...[
+                      const SizedBox(height: 6),
+                      _VoteBar(
+                        votes: votes,
+                        userVote: userVote,
+                        isLoading: isLoading,
+                        onVote: onVote,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+          ],
+        ),
+      ),
     );
   }
 }

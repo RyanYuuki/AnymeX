@@ -15,6 +15,13 @@ enum General {
   libraryGridAutoMigrated,
   showCommunityRecommendations,
   hideNsfwRecommendations,
+  filterByListEnabled,
+  filterCompleted,
+  filterWatching,
+  filterDropped,
+  filterPlanning,
+  filterPaused,
+  filterRepeating,
 }
 
 enum ThemeKeys {
