@@ -798,6 +798,15 @@ class _SeeAllListTile extends StatelessWidget {
     }
   }
 
+  void _navigateToAuthor() {
+    final serviceType = Get.find<ServiceHandler>().serviceType.value;
+    if (serviceType == ServicesType.anilist && item.anilistUserId != null) {
+      navigate(() => UserProfilePage(userId: item.anilistUserId!));
+    } else if (item.malUsername != null && item.malUsername!.isNotEmpty) {
+      launchUrlString('https://myanimelist.net/profile/${item.malUsername}');
+    }
+  }
+
   void _showPeekPopup(BuildContext context) {
     final serviceType = Get.find<ServiceHandler>().serviceType.value;
     MediaPeekPopup.show(
@@ -868,21 +877,25 @@ class _SeeAllListTile extends StatelessWidget {
                     ],
                     if (author != null && author.isNotEmpty) ...[
                       const SizedBox(height: 6),
-                      Row(
-                        children: [
-                          ClipOval(
-                            child: _AuthorAvatar(
-                                avatarUrl: avatarUrl,
-                                fallbackLabel: author,
-                                size: 18),
-                          ),
-                          const SizedBox(width: 4),
-                          AnymexText(
-                            text: author,
-                            variant: TextVariant.semiBold,
-                            color: colors.primary,
-                          ),
-                        ],
+                      GestureDetector(
+                        onTap: _navigateToAuthor,
+                        behavior: HitTestBehavior.opaque,
+                        child: Row(
+                          children: [
+                            ClipOval(
+                              child: _AuthorAvatar(
+                                  avatarUrl: avatarUrl,
+                                  fallbackLabel: author,
+                                  size: 18),
+                            ),
+                            const SizedBox(width: 4),
+                            AnymexText(
+                              text: author,
+                              variant: TextVariant.semiBold,
+                              color: colors.primary,
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                     if (UnderratedService.votingEnabled) ...[
