@@ -36,6 +36,7 @@ class MediaPeekPopup extends StatefulWidget {
   final int? malUserId;
   final String? anilistUsername;
   final String? malUsername;
+  final String? simklUsername;
   final String? author;
   final String? avatarUrl;
   final String? reason;
@@ -51,6 +52,7 @@ class MediaPeekPopup extends StatefulWidget {
     this.malUserId,
     this.anilistUsername,
     this.malUsername,
+    this.simklUsername,
     this.author,
     this.avatarUrl,
     this.reason,
@@ -64,6 +66,7 @@ class MediaPeekPopup extends StatefulWidget {
       int? malUserId,
       String? anilistUsername,
       String? malUsername,
+      String? simklUsername,
       String? author,
       String? avatarUrl,
       String? reason,
@@ -84,6 +87,7 @@ class MediaPeekPopup extends StatefulWidget {
         malUserId: malUserId,
         anilistUsername: anilistUsername,
         malUsername: malUsername,
+        simklUsername: simklUsername,
         author: author,
         avatarUrl: avatarUrl,
         reason: reason,
@@ -916,8 +920,14 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
 
   Widget _buildRecommendedBySection(ColorScheme colors) {
     final serviceHandler = Get.find<ServiceHandler>();
-    final isAnilist = serviceHandler.serviceType.value == ServicesType.anilist;
-    final username = isAnilist ? widget.anilistUsername : widget.malUsername;
+    final serviceType = serviceHandler.serviceType.value;
+    final isSimkl = serviceType == ServicesType.simkl;
+    final isAnilist = serviceType == ServicesType.anilist;
+    final username = isSimkl
+        ? widget.simklUsername
+        : isAnilist
+            ? widget.anilistUsername
+            : widget.malUsername;
     final hasValidProfile = username != null && username.isNotEmpty;
 
     return Container(
@@ -993,7 +1003,12 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
 
   Future<void> _navigateToAuthorProfile(bool isAnilist) async {
     Navigator.of(context).pop();
-    if (isAnilist && widget.anilistUserId != null) {
+    final serviceType = Get.find<ServiceHandler>().serviceType.value;
+    if (serviceType == ServicesType.simkl) {
+      if (widget.simklUsername != null && widget.simklUsername!.isNotEmpty) {
+        launchUrlString('https://simkl.com/${widget.simklUsername}');
+      }
+    } else if (isAnilist && widget.anilistUserId != null) {
       navigate(() => UserProfilePage(userId: widget.anilistUserId!));
     } else if (widget.malUsername != null && widget.malUsername!.isNotEmpty) {
       launchUrlString('https://myanimelist.net/profile/${widget.malUsername}');
