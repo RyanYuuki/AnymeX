@@ -56,10 +56,13 @@ class UnderratedEntry {
   final String? score;
   final int? anilistUserId;
   final int? malUserId;
+  final int? simklUserId;
   final String? anilistUsername;
   final String? malUsername;
+  final String? simklUsername;
   final String? anilistAvatar;
   final String? malAvatar;
+  final String? simklAvatar;
   final String? reason;
   final bool isNsfw;
 
@@ -71,10 +74,13 @@ class UnderratedEntry {
     this.score,
     this.anilistUserId,
     this.malUserId,
+    this.simklUserId,
     this.anilistUsername,
     this.malUsername,
+    this.simklUsername,
     this.anilistAvatar,
     this.malAvatar,
+    this.simklAvatar,
     this.reason,
     this.isNsfw = false,
   });
@@ -83,6 +89,7 @@ class UnderratedEntry {
     final user = json['user'] as Map<String, dynamic>?;
     final anilistUser = user?['anilist'] as Map<String, dynamic>?;
     final malUser = user?['mal'] as Map<String, dynamic>?;
+    final simklUser = user?['simkl'] as Map<String, dynamic>?;
 
     return UnderratedEntry(
       anilistId: json['anilist_id'] ?? json['id'],
@@ -92,10 +99,13 @@ class UnderratedEntry {
       score: _normalizeScore(json['score'] ?? json['averageScore']),
       anilistUserId: anilistUser?['id'] as int?,
       malUserId: malUser?['id'] as int?,
+      simklUserId: simklUser?['id'] as int?,
       anilistUsername: anilistUser?['username']?.toString(),
       malUsername: malUser?['username']?.toString(),
+      simklUsername: simklUser?['username']?.toString(),
       anilistAvatar: anilistUser?['avatar']?.toString(),
       malAvatar: malUser?['avatar']?.toString(),
+      simklAvatar: simklUser?['avatar']?.toString(),
       reason: json['reason']?.toString(),
       isNsfw: json['nsfw'] == true,
     );
@@ -340,10 +350,13 @@ class UnderratedService extends GetxController {
       media: media,
       anilistUserId: entry.anilistUserId,
       malUserId: entry.malUserId,
+      simklUserId: entry.simklUserId,
       anilistUsername: entry.anilistUsername,
       malUsername: entry.malUsername,
+      simklUsername: entry.simklUsername,
       anilistAvatar: entry.anilistAvatar,
       malAvatar: entry.malAvatar,
+      simklAvatar: entry.simklAvatar,
       reason: entry.reason,
       fallbackTitle: entry.title,
       isNsfw: entry.isNsfw,
@@ -609,11 +622,12 @@ class UnderratedMedia {
   final Media media;
   final int? anilistUserId;
   final int? malUserId;
+  final int? simklUserId;
   final String? anilistUsername;
   final String? malUsername;
+  final String? simklUsername;
   final String? anilistAvatar;
   final String? malAvatar;
-  final String? simklUsername;
   final String? simklAvatar;
   final String? reason;
   final String? fallbackTitle;
@@ -623,11 +637,12 @@ class UnderratedMedia {
     required this.media,
     this.anilistUserId,
     this.malUserId,
+    this.simklUserId,
     this.anilistUsername,
     this.malUsername,
+    this.simklUsername,
     this.anilistAvatar,
     this.malAvatar,
-    this.simklUsername,
     this.simklAvatar,
     this.reason,
     this.fallbackTitle,

@@ -436,6 +436,7 @@ class _SeeAllCard extends StatelessWidget {
       malUserId: item.malUserId,
       anilistUsername: item.anilistUsername,
       malUsername: item.malUsername,
+      simklUsername: item.simklUsername,
       voteMediaType: _mediaType,
       voteMediaId: _mediaId,
     );
@@ -512,8 +513,11 @@ class _AuthorBadge extends StatelessWidget {
   });
 
   void _navigateToAuthor() {
-    final isAnilist = serviceType == ServicesType.anilist;
-    if (isAnilist && item.anilistUserId != null) {
+    if (serviceType == ServicesType.simkl) {
+      if (item.simklUsername != null && item.simklUsername!.isNotEmpty) {
+        launchUrlString('https://simkl.com/${item.simklUsername}');
+      }
+    } else if (serviceType == ServicesType.anilist && item.anilistUserId != null) {
       navigate(() => UserProfilePage(userId: item.anilistUserId!));
     } else if (item.malUsername != null && item.malUsername!.isNotEmpty) {
       launchUrlString('https://myanimelist.net/profile/${item.malUsername}');
@@ -800,7 +804,11 @@ class _SeeAllListTile extends StatelessWidget {
 
   void _navigateToAuthor() {
     final serviceType = Get.find<ServiceHandler>().serviceType.value;
-    if (serviceType == ServicesType.anilist && item.anilistUserId != null) {
+    if (serviceType == ServicesType.simkl) {
+      if (item.simklUsername != null && item.simklUsername!.isNotEmpty) {
+        launchUrlString('https://simkl.com/${item.simklUsername}');
+      }
+    } else if (serviceType == ServicesType.anilist && item.anilistUserId != null) {
       navigate(() => UserProfilePage(userId: item.anilistUserId!));
     } else if (item.malUsername != null && item.malUsername!.isNotEmpty) {
       launchUrlString('https://myanimelist.net/profile/${item.malUsername}');
@@ -821,6 +829,7 @@ class _SeeAllListTile extends StatelessWidget {
       malUserId: item.malUserId,
       anilistUsername: item.anilistUsername,
       malUsername: item.malUsername,
+      simklUsername: item.simklUsername,
       voteMediaType: _mediaType,
       voteMediaId: _mediaId,
     );
