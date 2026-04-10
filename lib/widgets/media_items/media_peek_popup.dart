@@ -36,6 +36,7 @@ class MediaPeekPopup extends StatefulWidget {
   final int? malUserId;
   final String? anilistUsername;
   final String? malUsername;
+  final int? simklUserId;
   final String? simklUsername;
   final String? author;
   final String? avatarUrl;
@@ -52,6 +53,7 @@ class MediaPeekPopup extends StatefulWidget {
     this.malUserId,
     this.anilistUsername,
     this.malUsername,
+    this.simklUserId,
     this.simklUsername,
     this.author,
     this.avatarUrl,
@@ -66,6 +68,7 @@ class MediaPeekPopup extends StatefulWidget {
       int? malUserId,
       String? anilistUsername,
       String? malUsername,
+      int? simklUserId,
       String? simklUsername,
       String? author,
       String? avatarUrl,
@@ -87,6 +90,7 @@ class MediaPeekPopup extends StatefulWidget {
         malUserId: malUserId,
         anilistUsername: anilistUsername,
         malUsername: malUsername,
+        simklUserId: simklUserId,
         simklUsername: simklUsername,
         author: author,
         avatarUrl: avatarUrl,
@@ -1005,8 +1009,8 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
     Navigator.of(context).pop();
     final serviceType = Get.find<ServiceHandler>().serviceType.value;
     if (serviceType == ServicesType.simkl) {
-      if (widget.simklUsername != null && widget.simklUsername!.isNotEmpty) {
-        launchUrlString('https://simkl.com/${widget.simklUsername}');
+      if (widget.simklUserId != null) {
+        launchUrlString('https://simkl.com/${widget.simklUserId}');
       }
     } else if (isAnilist && widget.anilistUserId != null) {
       navigate(() => UserProfilePage(userId: widget.anilistUserId!));

@@ -360,7 +360,12 @@ class _UnderratedCard extends StatelessWidget {
 
   Future<void> _navigateToAuthorProfile(
       BuildContext context, bool isAnilist) async {
-    if (isAnilist && item.anilistUserId != null) {
+    final serviceType = Get.find<ServiceHandler>().serviceType.value;
+    if (serviceType == ServicesType.simkl) {
+      if (item.simklUserId != null) {
+        launchUrlString('https://simkl.com/${item.simklUserId}');
+      }
+    } else if (isAnilist && item.anilistUserId != null) {
       navigate(() => UserProfilePage(userId: item.anilistUserId!));
     } else if (item.malUsername != null &&
         item.malUsername!.isNotEmpty) {
@@ -383,6 +388,7 @@ class _UnderratedCard extends StatelessWidget {
       malUserId: item.malUserId,
       anilistUsername: item.anilistUsername,
       malUsername: item.malUsername,
+      simklUsername: item.simklUsername,
       voteMediaType: _mediaType,
       voteMediaId: _mediaId,
     );

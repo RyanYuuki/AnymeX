@@ -436,6 +436,7 @@ class _SeeAllCard extends StatelessWidget {
       malUserId: item.malUserId,
       anilistUsername: item.anilistUsername,
       malUsername: item.malUsername,
+      simklUserId: item.simklUserId,
       simklUsername: item.simklUsername,
       voteMediaType: _mediaType,
       voteMediaId: _mediaId,
@@ -514,8 +515,8 @@ class _AuthorBadge extends StatelessWidget {
 
   void _navigateToAuthor() {
     if (serviceType == ServicesType.simkl) {
-      if (item.simklUsername != null && item.simklUsername!.isNotEmpty) {
-        launchUrlString('https://simkl.com/${item.simklUsername}');
+      if (item.simklUserId != null) {
+        launchUrlString('https://simkl.com/${item.simklUserId}');
       }
     } else if (serviceType == ServicesType.anilist && item.anilistUserId != null) {
       navigate(() => UserProfilePage(userId: item.anilistUserId!));
@@ -805,8 +806,8 @@ class _SeeAllListTile extends StatelessWidget {
   void _navigateToAuthor() {
     final serviceType = Get.find<ServiceHandler>().serviceType.value;
     if (serviceType == ServicesType.simkl) {
-      if (item.simklUsername != null && item.simklUsername!.isNotEmpty) {
-        launchUrlString('https://simkl.com/${item.simklUsername}');
+      if (item.simklUserId != null) {
+        launchUrlString('https://simkl.com/${item.simklUserId}');
       }
     } else if (serviceType == ServicesType.anilist && item.anilistUserId != null) {
       navigate(() => UserProfilePage(userId: item.anilistUserId!));
@@ -829,6 +830,7 @@ class _SeeAllListTile extends StatelessWidget {
       malUserId: item.malUserId,
       anilistUsername: item.anilistUsername,
       malUsername: item.malUsername,
+      simklUserId: item.simklUserId,
       simklUsername: item.simklUsername,
       voteMediaType: _mediaType,
       voteMediaId: _mediaId,
