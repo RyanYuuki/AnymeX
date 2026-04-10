@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
@@ -12,7 +14,9 @@ class ListEditorModal extends StatefulWidget {
   final RxInt animeProgress;
   final Rx<dynamic> currentAnime;
   final Media media;
-  final Function(String id, double score, String status, int progress, int season, DateTime? startedAt, DateTime? completedAt, bool? isPrivate) onUpdate;
+  final FutureOr<void> Function(String id, double score, String status,
+      int progress, int season, DateTime? startedAt, DateTime? completedAt,
+      bool? isPrivate) onUpdate;
   final Function(String) onDelete;
   final bool isManga;
 
@@ -43,6 +47,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
 
   Map<int, int> _simklSeasons = {};
   bool _isLoadingSeasons = false;
+  bool _isSaving = false;
 
   static const _statuses = [
     ('PLANNING', 'Planning'),
@@ -94,21 +99,39 @@ class _ListEditorModalState extends State<ListEditorModal> {
     if (_simklSeasons.isNotEmpty) {
       return _simklSeasons[_localSeason];
     }
-    final raw = widget.isManga
+    final tracked = widget.currentAnime.value;
+    final preferredRaw = widget.isManga
         ? widget.media.totalChapters
         : widget.media.totalEpisodes;
-    if (raw == null || raw.isEmpty || raw == '?' || raw == '??') return null;
-    return int.tryParse(raw);
+    final fallbackRaw = tracked?.totalEpisodes;
+    final parsedPreferred = _parseKnownPositiveInt(preferredRaw);
+    if (parsedPreferred != null) return parsedPreferred;
+    return _parseKnownPositiveInt(fallbackRaw);
   }
 
   String get _displayTotal {
     if (_simklSeasons.isNotEmpty) {
       return _simklSeasons[_localSeason]?.toString() ?? '??';
     }
-    final raw = widget.isManga
+    final tracked = widget.currentAnime.value;
+    final preferredRaw = widget.isManga
         ? widget.media.totalChapters
         : widget.media.totalEpisodes;
-    return (raw == null || raw.isEmpty) ? '??' : raw;
+    final fallbackRaw = tracked?.totalEpisodes;
+    final parsedPreferred = _parseKnownPositiveInt(preferredRaw);
+    if (parsedPreferred != null) return parsedPreferred.toString();
+    final parsedFallback = _parseKnownPositiveInt(fallbackRaw);
+    if (parsedFallback != null) return parsedFallback.toString();
+    return '??';
+  }
+
+  int? _parseKnownPositiveInt(String? raw) {
+    if (raw == null) return null;
+    final value = raw.trim();
+    if (value.isEmpty || value == '?' || value == '??') return null;
+    final parsed = int.tryParse(value);
+    if (parsed == null || parsed <= 0) return null;
+    return parsed;
   }
 
   void _setProgress(int value) {
@@ -479,6 +502,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
     return SizedBox(
       height: 40,
       child: TextFormField(
+        key: ValueKey('progress_$_localProgress'),
         initialValue: _localProgress.toString(),
         keyboardType: TextInputType.number,
         inputFormatters: [
@@ -695,19 +719,20 @@ class _ListEditorModalState extends State<ListEditorModal> {
 
   Widget _buildActionButtons(BuildContext context) {
     final colors = context.colors;
+    final actionsDisabled = _isLoadingSeasons || _isSaving;
     return Row(
       children: [
         Expanded(
-          child: AnymexButton(
-            onTap: _isLoadingSeasons ? null : () {
-              Navigator.pop(context);
-              widget.onDelete(widget.media.id);
-            },
-            color: colors.surfaceContainerHighest,
-            border: BorderSide.none,
-            borderRadius: BorderRadius.circular(14),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: SizedBox(
+            height: 46,
+            child: AnymexButton(
+              onTap: actionsDisabled ? null : () {
+                Navigator.pop(context);
+                widget.onDelete(widget.media.id);
+              },
+              color: colors.surfaceContainerHighest,
+              border: BorderSide.none,
+              borderRadius: BorderRadius.circular(14),
               child: Text(
                 'Delete',
                 style: TextStyle(
@@ -725,27 +750,56 @@ class _ListEditorModalState extends State<ListEditorModal> {
             height: 46,
             child: AnymexButton(
               borderRadius: BorderRadius.circular(14),
-              onTap: _isLoadingSeasons ? null : () {
-                Get.back();
-                widget.onUpdate(
-                  widget.media.id,
-                  _localScore,
-                  _localStatus,
-                  _localProgress,
-                  _localSeason,
-                  _startedAt,
-                  _completedAt,
-                  widget.media.serviceType.isAL ? _isPrivate : null,
-                );
-              },
+              onTap: () async {
+                      if (actionsDisabled) return;
+                      setState(() => _isSaving = true);
+                      try {
+                        await widget.onUpdate(
+                          widget.media.id,
+                          _localScore,
+                          _localStatus,
+                          _localProgress,
+                          _localSeason,
+                          _startedAt,
+                          _completedAt,
+                          widget.media.serviceType.isAL ? _isPrivate : null,
+                        );
+                        if (mounted) Get.back();
+                      } finally {
+                        if (mounted) {
+                          setState(() => _isSaving = false);
+                        }
+                      }
+                    },
               color: colors.primary,
               border: BorderSide.none,
-              child: Text(
-                'Save changes',
-                style: TextStyle(
-                  color: colors.onPrimary,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
+              child: SizedBox(
+                width: 102,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Opacity(
+                      opacity: _isSaving ? 0 : 1,
+                      child: Text(
+                        'Save changes',
+                        style: TextStyle(
+                          color: colors.onPrimary,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                    if (_isSaving)
+                      SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.2,
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(colors.onPrimary),
+                        ),
+                      ),
+                  ],
                 ),
               ),
             ),

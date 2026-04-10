@@ -213,11 +213,15 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
   void _openListEditor() {
     final isManga = widget.type == ItemType.manga;
     final fetcher = widget.media.serviceType;
+    final rootContext = Navigator.of(context, rootNavigator: true).context;
+
+    Navigator.of(context).pop();
+
     showModalBottomSheet(
-      backgroundColor: context.colors.surfaceContainer,
-      context: context,
+      backgroundColor: Colors.transparent,
+      context: rootContext,
       isScrollControlled: true,
-      showDragHandle: true,
+      showDragHandle: false,
       builder: (ctx) => ListEditorModal(
         animeStatus: _animeStatus,
         isManga: isManga,
@@ -229,7 +233,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
             isPrivate) async {
           final listId =
               fetcher.onlineService.currentMedia.value.id ?? widget.media.id;
-          fetcher.onlineService.updateListEntry(UpdateListEntryParams(
+          await fetcher.onlineService.updateListEntry(UpdateListEntryParams(
             listId: listId,
             isAnime: !isManga,
             score: score,

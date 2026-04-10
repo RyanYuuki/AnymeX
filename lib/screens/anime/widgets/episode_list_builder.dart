@@ -37,10 +37,12 @@ class EpisodeListBuilder extends StatefulWidget {
     super.key,
     required this.episodeList,
     required this.anilistData,
+    this.isSliverMode = false,
   });
 
   final List<Episode> episodeList;
   final Media? anilistData;
+  final bool isSliverMode;
 
   @override
   State<EpisodeListBuilder> createState() => _EpisodeListBuilderState();
@@ -362,6 +364,14 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   @override
   Widget build(BuildContext context) {
     if (widget.episodeList.isEmpty) {
+      if (widget.isSliverMode) {
+        return const SliverToBoxAdapter(
+          child: SizedBox(
+            height: 200,
+            child: Center(child: ExpressiveLoadingIndicator()),
+          ),
+        );
+      }
       return const SizedBox(
         height: 200,
         child: Center(child: ExpressiveLoadingIndicator()),
@@ -371,6 +381,10 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     final sortSections = buildEpisodeSortSections(widget.episodeList);
     final hasAnifyThumbs = widget.episodeList.isNotEmpty &&
         (widget.episodeList[0].thumbnail?.isNotEmpty ?? false);
+
+    if (widget.isSliverMode) {
+      return _buildAsSliver(context, sortSections, hasAnifyThumbs);
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -496,6 +510,148 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                     );
                   });
                 },
+              ),
+            ],
+          );
+        }),
+      ],
+    );
+  }
+
+  Widget _buildAsSliver(
+    BuildContext context,
+    List<EpisodeSortSection> sortSections,
+    bool hasAnifyThumbs,
+  ) {
+    return SliverMainAxisGroup(
+      slivers: [
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            child: Obx(() => _buildContinueButton()),
+          ),
+        ),
+        Obx(() {
+          _initSortGrouping();
+          final episodesToShow = _episodesForSelectedSortKey();
+          final chunkedEpisodes = chunkEpisodes(
+            episodesToShow,
+            calculateChunkSize(episodesToShow),
+          );
+          final safeChunkIndex = chunkedEpisodes.isEmpty
+              ? 0
+              : selectedChunkIndex.value.clamp(0, chunkedEpisodes.length - 1);
+          final selectedEpisodes = chunkedEpisodes.isNotEmpty
+              ? chunkedEpisodes[safeChunkIndex]
+              : <Episode>[];
+
+          return SliverMainAxisGroup(
+            slivers: [
+              ...sortSections.map((section) {
+                final values = _availableValuesForKey(
+                  section.key,
+                  sections: sortSections,
+                );
+                if (values.length <= 1) {
+                  return const SliverToBoxAdapter(child: SizedBox.shrink());
+                }
+                return SliverToBoxAdapter(
+                  child: EpisodeSortKeySelector(
+                    title: section.title,
+                    labelPrefix: section.labelPrefix != "Type"
+                        ? section.labelPrefix
+                        : "",
+                    sortKeys: values,
+                    selectedSortKey: RxnString(selectedSortValues[section.key]),
+                    onSortKeySelected: (sortValue) {
+                      if (selectedSortValues[section.key] == sortValue) {
+                        return;
+                      }
+                      selectedSortValues[section.key] = sortValue;
+                      _initSortGrouping();
+                      selectedChunkIndex.value = 1;
+                    },
+                  ),
+                );
+              }),
+              if (chunkedEpisodes.isNotEmpty)
+                SliverToBoxAdapter(
+                  child: EpisodeChunkSelector(
+                    chunks: chunkedEpisodes,
+                    selectedChunkIndex: selectedChunkIndex,
+                    onChunkSelected: (index) {
+                      if (index != selectedChunkIndex.value) {
+                        selectedChunkIndex.value = index;
+                      }
+                    },
+                  ),
+                ),
+              SliverPadding(
+                padding: const EdgeInsets.only(top: 15),
+                sliver: SliverGrid.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: getResponsiveCrossAxisCount(
+                      context,
+                      baseColumns: 1,
+                      maxColumns: 3,
+                      mobileItemWidth: 400,
+                      tabletItemWidth: 400,
+                      desktopItemWidth: 200,
+                    ),
+                    mainAxisSpacing: getResponsiveSize(
+                      context,
+                      mobileSize: 15,
+                      desktopSize: 10,
+                    ),
+                    crossAxisSpacing: 15,
+                    mainAxisExtent: hasAnifyThumbs
+                        ? 200
+                        : getResponsiveSize(
+                            context,
+                            mobileSize: 100,
+                            desktopSize: 130,
+                          ),
+                  ),
+                  itemCount: selectedEpisodes.length,
+                  itemBuilder: (context, index) {
+                    final episode = selectedEpisodes[index];
+                    return Obx(() {
+                      final currentEpisode =
+                          episode.number.toString().toInt() + 1 ==
+                              userProgress.value;
+                      final completedEpisode =
+                          episode.number.toString().toInt() <=
+                              userProgress.value;
+                      final isSelected = _areEpisodesEquivalent(
+                          selectedEpisode.value, episode);
+
+                      return Opacity(
+                        opacity: completedEpisode
+                            ? 0.5
+                            : currentEpisode
+                                ? 0.8
+                                : 1,
+                        child: BetterEpisode(
+                          episode: episode,
+                          isSelected: isSelected,
+                          layoutType: hasAnifyThumbs
+                              ? EpisodeLayoutType.detailed
+                              : EpisodeLayoutType.compact,
+                          fallbackImageUrl:
+                              episode.thumbnail ?? widget.anilistData!.poster,
+                          offlineEpisodes: offlineEpisodes,
+                          onTap: () => _handleEpisodeSelection(episode),
+                          onLongPress: () {
+                            selectedEpisode.value = episode;
+                            streamList.clear();
+                            isServerStreamLoading.value = false;
+                            fetchServers(episode, bypassDialog: true);
+                          },
+                        ),
+                      );
+                    });
+                  },
+                ),
               ),
             ],
           );

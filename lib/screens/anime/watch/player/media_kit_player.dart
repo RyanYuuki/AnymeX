@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:anymex/utils/logger.dart';
@@ -29,7 +28,6 @@ class MediaKitPlayer extends base.BasePlayer {
 
   base.PlayerState _state = base.PlayerState();
   final List<StreamSubscription> _subscriptions = [];
-  Map<String, String>? _currentVideoHeaders;
   bool _isDisposed = false;
 
   MediaKitPlayer({base.PlayerConfiguration? configuration})
@@ -182,8 +180,6 @@ class MediaKitPlayer extends base.BasePlayer {
     Duration? startPosition,
   }) async {
     print('Opening video: $url with headers: $headers');
-    _currentVideoHeaders =
-        headers == null ? null : Map<String, String>.from(headers);
     await _player.open(
       Media(url, httpHeaders: headers, start: startPosition),
     );
@@ -257,16 +253,6 @@ class MediaKitPlayer extends base.BasePlayer {
     }
 
     if (track.url != null) {
-      final headers = track.headers ?? _currentVideoHeaders;
-      if (headers != null && headers.isNotEmpty) {
-        final content = await _fetchSubtitleContent(track.url!, headers);
-        await _player.setSubtitleTrack(
-          SubtitleTrack.data(content,
-              title: track.title, language: track.language),
-        );
-        return;
-      }
-
       await _player.setSubtitleTrack(
         SubtitleTrack.uri(
           track.url!,
@@ -282,6 +268,12 @@ class MediaKitPlayer extends base.BasePlayer {
       orElse: () => _player.state.tracks.subtitle.first,
     );
     await _player.setSubtitleTrack(mediaKitTrack);
+  }
+
+  @override
+  Future<void> setSubtitleDelay(Duration delay) async {
+    final seconds = delay.inMicroseconds / 1000000.0;
+    (_player.platform as dynamic).setProperty('sub-delay', seconds.toString());
   }
 
   @override
@@ -320,7 +312,7 @@ class MediaKitPlayer extends base.BasePlayer {
       fit: fit ?? BoxFit.contain,
       resumeUponEnteringForegroundMode: true,
       subtitleViewConfiguration:
-          const SubtitleViewConfiguration(visible: false),
+          SubtitleViewConfiguration(visible: config.useLibass),
     );
   }
 
@@ -369,26 +361,5 @@ class MediaKitPlayer extends base.BasePlayer {
   @override
   Future<void> toggleVideoFit(BoxFit fit) {
     return Future.value();
-  }
-
-  Future<String> _fetchSubtitleContent(
-    String url,
-    Map<String, String> headers,
-  ) async {
-    final client = HttpClient();
-    try {
-      final request = await client.getUrl(Uri.parse(url));
-      headers.forEach(request.headers.set);
-      final response = await request.close();
-      if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw HttpException(
-          'Failed to load subtitle: ${response.statusCode}',
-          uri: Uri.parse(url),
-        );
-      }
-      return await response.transform(SystemEncoding().decoder).join();
-    } finally {
-      client.close(force: true);
-    }
   }
 }

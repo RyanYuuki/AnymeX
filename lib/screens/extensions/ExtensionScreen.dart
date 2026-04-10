@@ -201,59 +201,64 @@ class _ExtensionScreenState extends State<ExtensionScreen>
 
     showDialog(
       context: context,
-      builder: (context) => Obx(() => AnymexDialog(
-            title: 'Sort & Filter',
-            onConfirm: () {},
-            contentWidget: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AnymexExpansionTile(
-                    title: "Source Type",
-                    initialExpanded: true,
-                    content: Column(
-                      children: sourceTypes
-                          .map((type) => Padding(
-                                padding: const EdgeInsets.only(bottom: 8),
-                                child: _SortOptionTile(
-                                  title: type == 'all' ? 'All Sources' : type,
-                                  subtitle: _getSourceSubtitle(type),
-                                  isSelected: _selectedSourceType.value == type,
-                                  onTap: () => _selectedSourceType.value = type,
-                                ),
-                              ))
-                          .toList(),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  AnymexExpansionTile(
-                    title: "Language",
-                    content: SizedBox(
-                      height: 250,
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: languages.length,
-                        itemBuilder: (context, index) {
-                          final lang = languages[index];
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 8),
-                            child: _SortOptionTile(
-                              title: lang,
-                              subtitle:
-                                  "Filter by ${lang == 'all' ? 'all languages' : lang}",
-                              isSelected: _selectedLanguage.value == lang,
-                              onTap: () => _selectedLanguage.value = lang,
-                            ),
-                          );
-                        },
+      builder: (context) => Obx(() {
+            final selectedSourceType = _selectedSourceType.value;
+            final selectedLanguage = _selectedLanguage.value;
+
+            return AnymexDialog(
+              title: 'Sort & Filter',
+              onConfirm: () {},
+              contentWidget: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AnymexExpansionTile(
+                      title: "Source Type",
+                      initialExpanded: true,
+                      content: Column(
+                        children: sourceTypes
+                            .map((type) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 8),
+                                  child: _SortOptionTile(
+                                    title: type == 'all' ? 'All Sources' : type,
+                                    subtitle: _getSourceSubtitle(type),
+                                    isSelected: selectedSourceType == type,
+                                    onTap: () => _selectedSourceType.value = type,
+                                  ),
+                                ))
+                            .toList(),
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 16),
+                    AnymexExpansionTile(
+                      title: "Language",
+                      content: SizedBox(
+                        height: 250,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: languages.length,
+                          itemBuilder: (context, index) {
+                            final lang = languages[index];
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: _SortOptionTile(
+                                title: lang,
+                                subtitle:
+                                    "Filter by ${lang == 'all' ? 'all languages' : lang}",
+                                isSelected: selectedLanguage == lang,
+                                onTap: () => _selectedLanguage.value = lang,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          )),
+            );
+          }),
     );
   }
 

@@ -528,7 +528,6 @@ class OfflineStorageController extends GetxController {
     Source? source,
     bool syncToCloud = true,
   }) async {
-    print(chapter.toJson());
     OfflineMedia? existingManga = getMangaById(mangaId);
     existingManga ??= getNovelById(mangaId);
 
