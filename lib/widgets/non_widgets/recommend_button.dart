@@ -1,7 +1,9 @@
 import 'package:anymex/controllers/services/underrated_service.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/widgets/non_widgets/recommend_sheet.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class RecommendIconButton extends StatelessWidget {
   final Media media;
@@ -36,6 +38,9 @@ class RecommendIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!UnderratedService.votingEnabled) return const SizedBox.shrink();
+
+    final sh = Get.find<ServiceHandler>();
+    if (!sh.isLoggedIn.value) return const SizedBox.shrink();
 
     final icon = Icon(
       Icons.recommend_rounded,
