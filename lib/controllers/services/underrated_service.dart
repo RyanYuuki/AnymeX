@@ -35,7 +35,6 @@ class SimklUnderratedEntry {
   final int? simklUserId;
   final String? simklUsername;
   final String? simklAvatar;
-
   final bool isNsfw;
 
   SimklUnderratedEntry({
@@ -554,6 +553,25 @@ class UnderratedService extends GetxController {
         'Authorization': 'Bearer $_botSecret',
       };
 
+  static Future<bool> checkIsAdmin({
+    required ServicesType serviceType,
+    required Profile profile,
+  }) async {
+    if (!votingEnabled) return false;
+    try {
+      final body = _buildUserIdentityBody(serviceType: serviceType, profile: profile);
+      final url = Uri.parse('$_botBaseUrl/api/is_admin');
+      final resp = await http.post(url, headers: _authHeaders, body: jsonEncode(body));
+      if (resp.statusCode == 200) {
+        final data = jsonDecode(resp.body) as Map<String, dynamic>;
+        return data['is_admin'] == true;
+      }
+    } catch (e) {
+      Logger.i('checkIsAdmin error: $e');
+    }
+    return false;
+  }
+
   static Future<VoteResult?> fetchVotes(
       String mediaType, String mediaId,
       {int? anilistUserId, int? malUserId, int? simklUserId}) async {
@@ -639,9 +657,9 @@ class UnderratedService extends GetxController {
   }
 
   static Future<Map<String, dynamic>?> checkIfExists({
-    required String mediaType, // anime | manga | show | movie
+    required String mediaType,
     required String id,
-    required String idType,   // anilist | mal | simkl
+    required String idType,
   }) async {
     if (!votingEnabled) return null;
     try {
@@ -653,7 +671,7 @@ class UnderratedService extends GetxController {
         if (data['exists'] == true) {
           return data['entry'] as Map<String, dynamic>?;
         }
-        return null; // explicitly not in list
+        return null;
       }
     } catch (e) {
       Logger.i('UnderratedService.checkIfExists error: $e');
@@ -691,7 +709,7 @@ class UnderratedService extends GetxController {
       final resp = await http.post(url,
           headers: _authHeaders, body: jsonEncode(body));
 
-      if (resp.statusCode == 201) return null; // success
+      if (resp.statusCode == 201) return null;
       final decoded = jsonDecode(resp.body) as Map<String, dynamic>;
       return decoded['error']?.toString() ?? 'Unknown error (${resp.statusCode})';
     } catch (e) {
@@ -744,8 +762,6 @@ class UnderratedService extends GetxController {
     return body;
   }
 
-  /// Edit the reason for an existing entry.
-  /// Returns null on success, or an error string on failure.
   static Future<String?> editReason({
     required String mediaType,
     required String mediaId,
@@ -768,9 +784,6 @@ class UnderratedService extends GetxController {
     }
   }
 
-  /// Request deletion of an entry.
-  /// Non-admins: sends a log request to admins. Admins: deletes immediately.
-  /// Returns null on success, or an error string on failure.
   static Future<String?> deleteEntry({
     required String mediaType,
     required String mediaId,
@@ -791,7 +804,6 @@ class UnderratedService extends GetxController {
     }
   }
 
-  /// Same as deleteEntry but also returns whether the request is pending admin review.
   static Future<(String? error, bool pending)> deleteEntryWithStatus({
     required String mediaType,
     required String mediaId,

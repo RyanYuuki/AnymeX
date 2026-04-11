@@ -9,7 +9,7 @@ import 'package:get/get.dart';
 
 class RecommendSheet extends StatefulWidget {
   final Media media;
-  final ItemType mediaItemType; // anime or manga
+  final ItemType mediaItemType;
 
   const RecommendSheet({
     super.key,
@@ -22,8 +22,8 @@ class RecommendSheet extends StatefulWidget {
 }
 
 class _RecommendSheetState extends State<RecommendSheet> {
-  Object? _checkResult; // null | false | Map<String,dynamic>
-
+  Object? _checkResult;
+  bool _isAdmin = false;
   bool _submitting = false;
   final _reasonController = TextEditingController();
 
@@ -53,6 +53,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
   void initState() {
     super.initState();
     _runCheck();
+    _runAdminCheck();
   }
 
   @override
@@ -71,6 +72,17 @@ class _RecommendSheetState extends State<RecommendSheet> {
     if (!mounted) return;
     setState(() {
       _checkResult = entry ?? false;
+    });
+  }
+
+  Future<void> _runAdminCheck() async {
+    final isAdmin = await UnderratedService.checkIsAdmin(
+      serviceType: _sh.serviceType.value,
+      profile: _sh.profileData.value,
+    );
+    if (!mounted) return;
+    setState(() {
+      _isAdmin = isAdmin;
     });
   }
 
@@ -165,7 +177,6 @@ class _RecommendSheetState extends State<RecommendSheet> {
     return _buildSubmitForm(colors);
   }
 
-  /// Check if the logged-in user owns this entry
   bool _isOwner(Map<String, dynamic> entry) {
     final user = entry['user'] as Map<String, dynamic>? ?? {};
     final serviceType = _sh.serviceType.value;
@@ -270,7 +281,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                       );
                       if (error == null) {
                         successSnackBar('Reason updated!');
-                        _runCheck(); // refresh the sheet
+                        _runCheck();
                       } else {
                         errorSnackBar(error);
                       }
@@ -295,12 +306,15 @@ class _RecommendSheetState extends State<RecommendSheet> {
 
   Future<void> _deleteEntry() async {
     final colors = Theme.of(context).colorScheme;
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Delete Recommendation?'),
-        content: const Text(
-          'Your deletion request will be sent to admins for review.',
+        content: Text(
+          _isAdmin
+              ? 'This entry will be deleted immediately.'
+              : 'Your deletion request will be sent to admins for review.',
         ),
         actions: [
           TextButton(
@@ -359,6 +373,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
     final poster = entry['poster']?.toString() ?? widget.media.poster;
     final title = entry['title']?.toString() ?? widget.media.title;
     final isOwner = _isOwner(entry);
+    final canEditOrDelete = isOwner || _isAdmin;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -401,6 +416,24 @@ class _RecommendSheetState extends State<RecommendSheet> {
                       Text('Already recommended',
                           style: TextStyle(
                               fontSize: 12, color: colors.primary)),
+                      if (_isAdmin && !isOwner) ...[ 
+                        const SizedBox(width: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: colors.errorContainer,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            'Admin',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              color: colors.onErrorContainer,
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ],
@@ -453,8 +486,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
           ),
         ],
 
-        // Edit / Delete — only visible to the owner
-        if (isOwner) ...[
+        if (canEditOrDelete) ...[
           const SizedBox(height: 16),
           Row(
             children: [

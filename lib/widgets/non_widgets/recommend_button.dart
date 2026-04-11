@@ -9,7 +9,6 @@ import 'package:get/get.dart';
 class RecommendIconButton extends StatelessWidget {
   final Media media;
   final ItemType mediaItemType;
-
   final Widget Function(VoidCallback onTap, Widget child)? buttonBuilder;
 
   const RecommendIconButton({
@@ -29,7 +28,6 @@ class RecommendIconButton extends StatelessWidget {
       ),
       builder: (ctx) {
         return Padding(
-          // Pushes the sheet up above the keyboard
           padding: MediaQuery.of(ctx).viewInsets,
           child: SingleChildScrollView(
             child: RecommendSheet(
