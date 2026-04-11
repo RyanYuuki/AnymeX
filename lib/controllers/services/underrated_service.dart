@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/database/data_keys/keys.dart';
+import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/screens/profile/user_profile_page.dart';
@@ -635,6 +636,112 @@ class UnderratedService extends GetxController {
       Logger.i('castVote error: $e');
     }
     return null;
+  }
+
+  static Future<Map<String, dynamic>?> checkIfExists({
+    required String mediaType, // anime | manga | show | movie
+    required String id,
+    required String idType,   // anilist | mal | simkl
+  }) async {
+    if (!votingEnabled) return null;
+    try {
+      final url = Uri.parse('$_botBaseUrl/api/check/$mediaType/$id')
+          .replace(queryParameters: {'id_type': idType});
+      final resp = await http.get(url, headers: _authHeaders);
+      if (resp.statusCode == 200) {
+        final data = jsonDecode(resp.body) as Map<String, dynamic>;
+        if (data['exists'] == true) {
+          return data['entry'] as Map<String, dynamic>?;
+        }
+        return null; // explicitly not in list
+      }
+    } catch (e) {
+      Logger.i('UnderratedService.checkIfExists error: $e');
+    }
+    return null;
+  }
+
+  static Future<String?> submitRecommendation({
+    required Media media,
+    required String reason,
+    required ServicesType serviceType,
+    required Profile profile,
+  }) async {
+    if (!votingEnabled) return 'Bot URL not configured';
+    try {
+      final body = _buildSubmitBody(
+        media: media,
+        reason: reason,
+        serviceType: serviceType,
+        profile: profile,
+      );
+
+      String endpoint;
+      if (media.type == 'MANGA') {
+        endpoint = '/api/add_manga';
+      } else if (media.type == 'MOVIE') {
+        endpoint = '/api/add_movie';
+      } else if (media.type == 'SERIES') {
+        endpoint = '/api/add_show';
+      } else {
+        endpoint = '/api/add_anime';
+      }
+
+      final url = Uri.parse('$_botBaseUrl$endpoint');
+      final resp = await http.post(url,
+          headers: _authHeaders, body: jsonEncode(body));
+
+      if (resp.statusCode == 201) return null; // success
+      final decoded = jsonDecode(resp.body) as Map<String, dynamic>;
+      return decoded['error']?.toString() ?? 'Unknown error (${resp.statusCode})';
+    } catch (e) {
+      Logger.i('UnderratedService.submitRecommendation error: $e');
+      return 'Network error: $e';
+    }
+  }
+
+  static Map<String, dynamic> _buildSubmitBody({
+    required Media media,
+    required String reason,
+    required ServicesType serviceType,
+    required Profile profile,
+  }) {
+    final body = <String, dynamic>{'reason': reason};
+
+    final idInt = int.tryParse(media.id);
+    final malInt = int.tryParse(media.idMal ?? '');
+
+    if (serviceType == ServicesType.simkl) {
+      final rawId = media.id.split('*').first;
+      body['simkl_id'] = int.tryParse(rawId);
+    } else if (serviceType == ServicesType.mal) {
+      body['mal_id'] = idInt;
+      if (malInt != null) body['anilist_id'] = null;
+    } else {
+      body['anilist_id'] = idInt;
+      if (malInt != null && malInt != 0) body['mal_id'] = malInt;
+    }
+
+    final userId = int.tryParse(profile.id ?? '');
+    final username = profile.userName ?? profile.name ?? '';
+    final avatar = profile.avatar;
+
+    if (serviceType == ServicesType.anilist) {
+      if (userId != null) body['anilist_user_id'] = userId;
+      if (username.isNotEmpty) body['anilist_username'] = username;
+      if (avatar != null) body['anilist_avatar'] = avatar;
+    } else if (serviceType == ServicesType.mal) {
+      if (userId != null) body['mal_user_id'] = userId;
+      if (username.isNotEmpty) body['mal_username'] = username;
+      if (avatar != null) body['mal_avatar'] = avatar;
+    } else if (serviceType == ServicesType.simkl) {
+      if (userId != null) body['simkl_user_id'] = userId;
+      if (username.isNotEmpty) body['simkl_username'] = username;
+      if (avatar != null) body['simkl_avatar'] = avatar;
+    }
+
+    body['author'] = username.isNotEmpty ? username : 'Unknown';
+    return body;
   }
 }
 

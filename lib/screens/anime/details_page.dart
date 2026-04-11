@@ -46,6 +46,8 @@ import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:anymex/controllers/services/underrated_service.dart';
+import 'package:anymex/widgets/non_widgets/recommend_button.dart';
 
 class AnimeDetailsPage extends StatefulWidget {
   final Media media;
@@ -646,6 +648,19 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                                   onTap: _showShareOptions,
                                 ),
                                 const SizedBox(width: 7),
+                                if (UnderratedService.votingEnabled)
+                                  RecommendIconButton(
+                                    media: anilistData!,
+                                    mediaItemType: ItemType.anime,
+                                    buttonBuilder: (onTap, icon) =>
+                                        _buildActionIconButton(
+                                      context: context,
+                                      icon: Icons.recommend_rounded,
+                                      onTap: onTap,
+                                    ),
+                                  ),
+                                if (UnderratedService.votingEnabled)
+                                  const SizedBox(width: 7),
                                 _buildActionIconButton(
                                   context: context,
                                   icon: HugeIcons.strokeRoundedLibrary,

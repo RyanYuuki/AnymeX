@@ -25,6 +25,7 @@ import 'package:html/parser.dart' show parse;
 import 'package:http/http.dart' as http;
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:anymex/widgets/non_widgets/recommend_button.dart';
 
 
 class MediaPeekPopup extends StatefulWidget {
@@ -609,7 +610,9 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
       const gap = 8.0;
       const iconBtnWidth = 50.0;
 
-      const fixedUsed = iconBtnWidth * 2 + gap * 2;
+      final recommendEnabled = UnderratedService.votingEnabled;
+      final extraFixed = recommendEnabled ? iconBtnWidth + gap : 0.0;
+      final fixedUsed = iconBtnWidth * 2 + gap * 2 + extraFixed;
       final listEditorW =
           _isLoggedIn ? (available - fixedUsed).clamp(0.0, available) : 0.0;
       final watchW = _isLoggedIn
@@ -697,6 +700,18 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                   color: colors.onSurface, size: 20),
             ),
           ),
+          if (UnderratedService.votingEnabled) ...[
+            const SizedBox(width: gap),
+            SizedBox(
+              width: iconBtnWidth,
+              child: RecommendIconButton(
+                media: widget.media,
+                mediaItemType: widget.type,
+                buttonBuilder: (onTap, icon) =>
+                    _DetailsStyleButton(onTap: onTap, child: icon),
+              ),
+            ),
+          ],
         ],
       );
     });
