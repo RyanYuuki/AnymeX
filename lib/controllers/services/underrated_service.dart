@@ -26,6 +26,135 @@ void navigateToAuthorProfile(UnderratedMedia item) {
   }
 }
 
+class ReasonUserProfile {
+  final String? discordId;
+  final String? discordUsername;
+  final String? discordAvatar;
+  final int? anilistId;
+  final String? anilistUsername;
+  final String? anilistAvatar;
+  final int? malId;
+  final String? malUsername;
+  final String? malAvatar;
+  final int? simklId;
+  final String? simklUsername;
+  final String? simklAvatar;
+
+  ReasonUserProfile({
+    this.discordId,
+    this.discordUsername,
+    this.discordAvatar,
+    this.anilistId,
+    this.anilistUsername,
+    this.anilistAvatar,
+    this.malId,
+    this.malUsername,
+    this.malAvatar,
+    this.simklId,
+    this.simklUsername,
+    this.simklAvatar,
+  });
+
+  factory ReasonUserProfile.fromJson(Map<String, dynamic> json) {
+    final discord = json['discord'] as Map<String, dynamic>?;
+    final anilist = json['anilist'] as Map<String, dynamic>?;
+    final mal = json['mal'] as Map<String, dynamic>?;
+    final simkl = json['simkl'] as Map<String, dynamic>?;
+
+    return ReasonUserProfile(
+      discordId: discord?['id']?.toString(),
+      discordUsername: discord?['username']?.toString(),
+      discordAvatar: discord?['avatar']?.toString(),
+      anilistId: anilist?['id'] as int?,
+      anilistUsername: anilist?['username']?.toString(),
+      anilistAvatar: anilist?['avatar']?.toString(),
+      malId: mal?['id'] as int?,
+      malUsername: mal?['username']?.toString(),
+      malAvatar: mal?['avatar']?.toString(),
+      simklId: simkl?['id'] as int?,
+      simklUsername: simkl?['username']?.toString(),
+      simklAvatar: simkl?['avatar']?.toString(),
+    );
+  }
+
+  String? usernameFor(ServicesType serviceType) {
+    if (serviceType == ServicesType.simkl) {
+      return simklUsername ?? anilistUsername ?? malUsername;
+    }
+    if (serviceType == ServicesType.mal) {
+      return malUsername ?? anilistUsername;
+    }
+    return anilistUsername ?? malUsername;
+  }
+
+  String? avatarFor(ServicesType serviceType) {
+    if (serviceType == ServicesType.simkl) {
+      return simklAvatar ?? anilistAvatar ?? malAvatar;
+    }
+    if (serviceType == ServicesType.mal) {
+      return malAvatar ?? anilistAvatar;
+    }
+    return anilistAvatar ?? malAvatar;
+    }
+
+  int? userIdFor(ServicesType serviceType) {
+    if (serviceType == ServicesType.anilist) return anilistId;
+    if (serviceType == ServicesType.mal) return malId;
+    if (serviceType == ServicesType.simkl) return simklId;
+    return anilistId;
+  }
+}
+
+class ReasonEntry {
+  final String? discordId;
+  final String? discordUsername;
+  final String? author;
+  final String text;
+  final String? addedAt;
+  final String? editedAt;
+  final ReasonUserProfile? user;
+
+  ReasonEntry({
+    this.discordId,
+    this.discordUsername,
+    this.author,
+    required this.text,
+    this.addedAt,
+    this.editedAt,
+    this.user,
+  });
+
+  factory ReasonEntry.fromJson(Map<String, dynamic> json) {
+    final userMap = json['user'] as Map<String, dynamic>?;
+    return ReasonEntry(
+      discordId: json['discord_id']?.toString(),
+      discordUsername: json['discord_username']?.toString(),
+      author: json['author']?.toString(),
+      text: json['text']?.toString() ?? json['reason']?.toString() ?? '',
+      addedAt: json['added_at']?.toString(),
+      editedAt: json['edited_at']?.toString(),
+      user: userMap != null ? ReasonUserProfile.fromJson(userMap) : null,
+    );
+  }
+
+  String? usernameFor(ServicesType serviceType) {
+    return user?.usernameFor(serviceType) ?? discordUsername ?? author;
+  }
+
+  String? avatarFor(ServicesType serviceType) {
+    return user?.avatarFor(serviceType) ?? discordAvatar;
+  }
+
+  int? userIdFor(ServicesType serviceType) {
+    return user?.userIdFor(serviceType);
+  }
+
+  String get displayText {
+    if (text.length > 150) return '${text.substring(0, 147)}...';
+    return text;
+  }
+}
+
 class SimklUnderratedEntry {
   final int? simklId;
   final String? title;
@@ -36,6 +165,7 @@ class SimklUnderratedEntry {
   final String? simklUsername;
   final String? simklAvatar;
   final bool isNsfw;
+  final List<ReasonEntry> reasons;
 
   SimklUnderratedEntry({
     this.simklId,
@@ -47,11 +177,18 @@ class SimklUnderratedEntry {
     this.simklUsername,
     this.simklAvatar,
     this.isNsfw = false,
+    this.reasons = const [],
   });
 
   factory SimklUnderratedEntry.fromJson(Map<String, dynamic> json) {
     final user = json['user'] as Map<String, dynamic>?;
     final simklUser = user?['simkl'] as Map<String, dynamic>?;
+    final reasonsList = json['reasons'] as List<dynamic>?;
+
+    final reasons = reasonsList
+            ?.map((e) => ReasonEntry.fromJson(e as Map<String, dynamic>))
+            .toList() ??
+        [];
 
     return SimklUnderratedEntry(
       simklId: json['simkl_id'] as int?,
@@ -63,6 +200,7 @@ class SimklUnderratedEntry {
       simklUsername: simklUser?['username']?.toString(),
       simklAvatar: simklUser?['avatar']?.toString(),
       isNsfw: json['nsfw'] == true,
+      reasons: reasons,
     );
   }
 }
@@ -84,6 +222,7 @@ class UnderratedEntry {
   final String? simklAvatar;
   final String? reason;
   final bool isNsfw;
+  final List<ReasonEntry> reasons;
 
   UnderratedEntry({
     this.anilistId,
@@ -102,6 +241,7 @@ class UnderratedEntry {
     this.simklAvatar,
     this.reason,
     this.isNsfw = false,
+    this.reasons = const [],
   });
 
   factory UnderratedEntry.fromJson(Map<String, dynamic> json) {
@@ -109,6 +249,12 @@ class UnderratedEntry {
     final anilistUser = user?['anilist'] as Map<String, dynamic>?;
     final malUser = user?['mal'] as Map<String, dynamic>?;
     final simklUser = user?['simkl'] as Map<String, dynamic>?;
+    final reasonsList = json['reasons'] as List<dynamic>?;
+
+    final reasons = reasonsList
+            ?.map((e) => ReasonEntry.fromJson(e as Map<String, dynamic>))
+            .toList() ??
+        [];
 
     return UnderratedEntry(
       anilistId: json['anilist_id'] ?? json['id'],
@@ -127,6 +273,7 @@ class UnderratedEntry {
       simklAvatar: simklUser?['avatar']?.toString(),
       reason: json['reason']?.toString(),
       isNsfw: json['nsfw'] == true,
+      reasons: reasons,
     );
   }
 
@@ -219,6 +366,7 @@ class UnderratedService extends GetxController {
       reason: entry.reason,
       fallbackTitle: entry.title,
       isNsfw: entry.isNsfw,
+      reasons: entry.reasons,
     );
   }
 
@@ -380,6 +528,7 @@ class UnderratedService extends GetxController {
       reason: entry.reason,
       fallbackTitle: entry.title,
       isNsfw: entry.isNsfw,
+      reasons: entry.reasons,
     );
   }
 
@@ -709,7 +858,11 @@ class UnderratedService extends GetxController {
       final resp = await http.post(url,
           headers: _authHeaders, body: jsonEncode(body));
 
-      if (resp.statusCode == 201) return null;
+      if (resp.statusCode == 201) return null; // new entry created
+      if (resp.statusCode == 200) return null; // reason appended to existing entry
+      if (resp.statusCode == 409) {
+        return 'You already have a reason on this entry. Use edit instead.';
+      }
       final decoded = jsonDecode(resp.body) as Map<String, dynamic>;
       return decoded['error']?.toString() ?? 'Unknown error (${resp.statusCode})';
     } catch (e) {
@@ -772,15 +925,65 @@ class UnderratedService extends GetxController {
     if (!votingEnabled) return 'Bot URL not configured';
     try {
       final body = _buildUserIdentityBody(serviceType: serviceType, profile: profile);
-      body['new_reason'] = newReason;
+      body['reason'] = newReason;
       final url = Uri.parse('$_botBaseUrl/api/edit_reason/$mediaType/$mediaId');
-      final resp = await http.post(url, headers: _authHeaders, body: jsonEncode(body));
+      final resp = await http.patch(url, headers: _authHeaders, body: jsonEncode(body));
       if (resp.statusCode == 200) return null;
       final decoded = jsonDecode(resp.body) as Map<String, dynamic>;
       return decoded['error']?.toString() ?? 'Unknown error (${resp.statusCode})';
     } catch (e) {
       Logger.i('UnderratedService.editReason error: $e');
       return 'Network error: $e';
+    }
+  }
+
+  static Future<String?> deleteReason({
+    required String mediaType,
+    required String mediaId,
+    required ServicesType serviceType,
+    required Profile profile,
+  }) async {
+    if (!votingEnabled) return 'Bot URL not configured';
+    try {
+      final body = _buildUserIdentityBody(serviceType: serviceType, profile: profile);
+      final url = Uri.parse('$_botBaseUrl/api/delete_reason/$mediaType/$mediaId');
+      final resp = await http.delete(url, headers: _authHeaders, body: jsonEncode(body));
+      if (resp.statusCode == 200) {
+        final decoded = jsonDecode(resp.body) as Map<String, dynamic>;
+        if (decoded['pending'] == true) {
+          return null; // pending admin review
+        }
+        return null; // deleted successfully
+      }
+      final decoded = jsonDecode(resp.body) as Map<String, dynamic>;
+      return decoded['error']?.toString() ?? 'Unknown error (${resp.statusCode})';
+    } catch (e) {
+      Logger.i('UnderratedService.deleteReason error: $e');
+      return 'Network error: $e';
+    }
+  }
+
+  static Future<(String? error, bool pending)> deleteReasonWithStatus({
+    required String mediaType,
+    required String mediaId,
+    required ServicesType serviceType,
+    required Profile profile,
+  }) async {
+    if (!votingEnabled) return ('Bot URL not configured', false);
+    try {
+      final body = _buildUserIdentityBody(serviceType: serviceType, profile: profile);
+      final url = Uri.parse('$_botBaseUrl/api/delete_reason/$mediaType/$mediaId');
+      final resp = await http.delete(url, headers: _authHeaders, body: jsonEncode(body));
+      if (resp.statusCode == 200) {
+        final decoded = jsonDecode(resp.body) as Map<String, dynamic>;
+        final pending = decoded['pending'] == true;
+        return (null, pending);
+      }
+      final decoded = jsonDecode(resp.body) as Map<String, dynamic>;
+      return (decoded['error']?.toString() ?? 'Unknown error (${resp.statusCode})', false);
+    } catch (e) {
+      Logger.i('UnderratedService.deleteReasonWithStatus error: $e');
+      return ('Network error: $e', false);
     }
   }
 
@@ -860,6 +1063,7 @@ class UnderratedMedia {
   final String? reason;
   final String? fallbackTitle;
   final bool isNsfw;
+  final List<ReasonEntry> reasons;
 
   UnderratedMedia({
     required this.media,
@@ -875,6 +1079,7 @@ class UnderratedMedia {
     this.reason,
     this.fallbackTitle,
     this.isNsfw = false,
+    this.reasons = const [],
   });
 
   String get displayTitle =>
@@ -883,6 +1088,12 @@ class UnderratedMedia {
   String get displayDescription => reason ?? media.description;
 
   String? get author => usernameFor(media.serviceType);
+
+  int get reasonCount => reasons.length;
+
+  bool get hasMultipleReasons => reasons.length > 1;
+
+  ReasonEntry? get firstReason => reasons.isNotEmpty ? reasons.first : null;
 
   String? usernameFor(ServicesType serviceType) {
     if (serviceType == ServicesType.simkl) {

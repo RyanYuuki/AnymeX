@@ -26,6 +26,7 @@ import 'package:http/http.dart' as http;
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:anymex/widgets/non_widgets/recommend_button.dart';
+import 'package:anymex/widgets/non_widgets/reasons_sheet.dart';
 
 
 class MediaPeekPopup extends StatefulWidget {
@@ -43,6 +44,7 @@ class MediaPeekPopup extends StatefulWidget {
   final String? reason;
   final String? voteMediaType; // 'anime','manga','show','movie'
   final String? voteMediaId;
+  final List<ReasonEntry>? reasons;
 
   const MediaPeekPopup({
     super.key,
@@ -60,6 +62,7 @@ class MediaPeekPopup extends StatefulWidget {
     this.reason,
     this.voteMediaType,
     this.voteMediaId,
+    this.reasons,
   });
 
   static void show(
@@ -74,7 +77,8 @@ class MediaPeekPopup extends StatefulWidget {
       String? avatarUrl,
       String? reason,
       String? voteMediaType,
-      String? voteMediaId}) {
+      String? voteMediaId,
+      List<ReasonEntry>? reasons}) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -97,6 +101,7 @@ class MediaPeekPopup extends StatefulWidget {
         reason: reason,
         voteMediaType: voteMediaType,
         voteMediaId: voteMediaId,
+        reasons: reasons,
       ),
     );
   }
@@ -750,7 +755,38 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
               widget.voteMediaType != null &&
               widget.voteMediaId != null)
             _buildVoteBar(colors),
-          const SizedBox(height: 20),
+          // Show "See all reasons" if multiple reasons exist
+          if (widget.reasons != null && widget.reasons!.length > 1) ...[
+            const SizedBox(height: 12),
+            GestureDetector(
+              onTap: _openReasonsSheet,
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: colors.secondaryContainer.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: colors.outline.withOpacity(0.1)),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.forum_rounded, size: 16, color: colors.onSecondaryContainer),
+                    const SizedBox(width: 8),
+                    AnymexText(
+                      text: 'See all ${widget.reasons!.length} recommendations',
+                      variant: TextVariant.semiBold,
+                      size: 13,
+                      color: colors.onSecondaryContainer,
+                    ),
+                    const Spacer(),
+                    Icon(Icons.chevron_right_rounded, size: 18, color: colors.onSecondaryContainer),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+          ] else
+            const SizedBox(height: 20),
         ],
         if (data.description.isNotEmpty) ...[
           _sectionLabel('Synopsis', colors),
@@ -1014,8 +1050,37 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
               ),
             ),
           ],
+          if (widget.reasons != null && widget.reasons!.length > 1) ...[
+            const SizedBox(height: 6),
+            AnymexText(
+              text: '+ ${widget.reasons!.length - 1} more recommendation${widget.reasons!.length > 2 ? 's' : ''}',
+              size: 11,
+              color: colors.onSurfaceVariant,
+              variant: TextVariant.regular,
+            ),
+          ],
         ],
       ),
+    );
+  }
+
+  void _openReasonsSheet() {
+    Navigator.of(context).pop();
+    ReasonsSheet.show(
+      context,
+      item: UnderratedMedia(
+        media: widget.media,
+        anilistUserId: widget.anilistUserId,
+        malUserId: widget.malUserId,
+        anilistUsername: widget.anilistUsername,
+        malUsername: widget.malUsername,
+        simklUserId: widget.simklUserId,
+        simklUsername: widget.simklUsername,
+        reasons: widget.reasons ?? [],
+      ),
+      mediaItemType: widget.type,
+      voteMediaType: widget.voteMediaType,
+      voteMediaId: widget.voteMediaId,
     );
   }
 

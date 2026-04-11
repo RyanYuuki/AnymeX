@@ -16,6 +16,7 @@ import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/media_items/media_peek_popup.dart';
+import 'package:anymex/widgets/non_widgets/reasons_sheet.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
@@ -430,6 +431,7 @@ class _SeeAllCard extends StatelessWidget {
       author: item.usernameFor(serviceType),
       avatarUrl: item.avatarFor(serviceType),
       reason: item.reason,
+      reasons: item.reasons,
       anilistUserId: item.anilistUserId,
       malUserId: item.malUserId,
       anilistUsername: item.anilistUsername,
@@ -467,7 +469,13 @@ class _SeeAllCard extends StatelessWidget {
                   cardStyle: cardStyle,
                   type: type,
                 ),
-                if (author != null && author.isNotEmpty)
+                if (item.hasMultipleReasons)
+                  Positioned(
+                    top: 6,
+                    left: 6,
+                    child: _ReasonCountBadge(count: item.reasonCount),
+                  )
+                else if (author != null && author.isNotEmpty)
                   Positioned(
                     top: 6,
                     left: 6,
@@ -751,6 +759,52 @@ class _AuthorAvatar extends StatelessWidget {
   }
 }
 
+class _ReasonCountBadge extends StatelessWidget {
+  final int count;
+  const _ReasonCountBadge({required this.count});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.only(left: 4, right: 8, top: 4, bottom: 4),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.tertiaryContainer.withOpacity(0.9),
+        borderRadius: BorderRadius.circular(50),
+        border: Border.all(
+          color: theme.colorScheme.outline.withOpacity(0.15),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.people_rounded, size: 12, color: theme.colorScheme.onTertiaryContainer),
+          const SizedBox(width: 3),
+          Flexible(
+            child: Text(
+              '$count',
+              maxLines: 1,
+              style: TextStyle(
+                fontSize: 10,
+                fontFamily: 'Poppins-SemiBold',
+                color: theme.colorScheme.onTertiaryContainer,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _SeeAllListTile extends StatelessWidget {
   final UnderratedMedia item;
   final ItemType type;
@@ -883,6 +937,38 @@ class _SeeAllListTile extends StatelessWidget {
                               color: colors.primary,
                             ),
                           ],
+                        ),
+                      ),
+                    ],
+                    if (item.hasMultipleReasons) ...[
+                      const SizedBox(height: 6),
+                      GestureDetector(
+                        onTap: () => ReasonsSheet.show(
+                          context,
+                          item: item,
+                          mediaItemType: type,
+                          voteMediaType: _mediaType,
+                          voteMediaId: _mediaId,
+                        ),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: colors.secondaryContainer.withOpacity(0.7),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.people_rounded, size: 12, color: colors.onSecondaryContainer),
+                              const SizedBox(width: 4),
+                              AnymexText(
+                                text: '${item.reasonCount} recommendations',
+                                size: 11,
+                                color: colors.onSecondaryContainer,
+                                variant: TextVariant.semiBold,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],
