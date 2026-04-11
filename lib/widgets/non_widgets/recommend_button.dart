@@ -23,16 +23,22 @@ class RecommendIconButton extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      useRootNavigator: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) => Padding(
-        padding: MediaQuery.of(context).viewInsets,
-        child: RecommendSheet(
-          media: media,
-          mediaItemType: mediaItemType,
-        ),
-      ),
+      builder: (ctx) {
+        return Padding(
+          // Pushes the sheet up above the keyboard
+          padding: MediaQuery.of(ctx).viewInsets,
+          child: SingleChildScrollView(
+            child: RecommendSheet(
+              media: media,
+              mediaItemType: mediaItemType,
+            ),
+          ),
+        );
+      },
     );
   }
 

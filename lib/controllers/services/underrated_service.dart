@@ -743,6 +743,95 @@ class UnderratedService extends GetxController {
     body['author'] = username.isNotEmpty ? username : 'Unknown';
     return body;
   }
+
+  /// Edit the reason for an existing entry.
+  /// Returns null on success, or an error string on failure.
+  static Future<String?> editReason({
+    required String mediaType,
+    required String mediaId,
+    required String newReason,
+    required ServicesType serviceType,
+    required Profile profile,
+  }) async {
+    if (!votingEnabled) return 'Bot URL not configured';
+    try {
+      final body = _buildUserIdentityBody(serviceType: serviceType, profile: profile);
+      body['new_reason'] = newReason;
+      final url = Uri.parse('$_botBaseUrl/api/edit_reason/$mediaType/$mediaId');
+      final resp = await http.post(url, headers: _authHeaders, body: jsonEncode(body));
+      if (resp.statusCode == 200) return null;
+      final decoded = jsonDecode(resp.body) as Map<String, dynamic>;
+      return decoded['error']?.toString() ?? 'Unknown error (${resp.statusCode})';
+    } catch (e) {
+      Logger.i('UnderratedService.editReason error: $e');
+      return 'Network error: $e';
+    }
+  }
+
+  /// Request deletion of an entry.
+  /// Non-admins: sends a log request to admins. Admins: deletes immediately.
+  /// Returns null on success, or an error string on failure.
+  static Future<String?> deleteEntry({
+    required String mediaType,
+    required String mediaId,
+    required ServicesType serviceType,
+    required Profile profile,
+  }) async {
+    if (!votingEnabled) return 'Bot URL not configured';
+    try {
+      final body = _buildUserIdentityBody(serviceType: serviceType, profile: profile);
+      final url = Uri.parse('$_botBaseUrl/api/delete/$mediaType/$mediaId');
+      final resp = await http.delete(url, headers: _authHeaders, body: jsonEncode(body));
+      if (resp.statusCode == 200 || resp.statusCode == 202) return null;
+      final decoded = jsonDecode(resp.body) as Map<String, dynamic>;
+      return decoded['error']?.toString() ?? 'Unknown error (${resp.statusCode})';
+    } catch (e) {
+      Logger.i('UnderratedService.deleteEntry error: $e');
+      return 'Network error: $e';
+    }
+  }
+
+  /// Same as deleteEntry but also returns whether the request is pending admin review.
+  static Future<(String? error, bool pending)> deleteEntryWithStatus({
+    required String mediaType,
+    required String mediaId,
+    required ServicesType serviceType,
+    required Profile profile,
+  }) async {
+    if (!votingEnabled) return ('Bot URL not configured', false);
+    try {
+      final body = _buildUserIdentityBody(serviceType: serviceType, profile: profile);
+      final url = Uri.parse('$_botBaseUrl/api/delete/$mediaType/$mediaId');
+      final resp = await http.delete(url, headers: _authHeaders, body: jsonEncode(body));
+      if (resp.statusCode == 200) return (null, false);
+      if (resp.statusCode == 202) return (null, true);
+      final decoded = jsonDecode(resp.body) as Map<String, dynamic>;
+      return (decoded['error']?.toString() ?? 'Unknown error (${resp.statusCode})', false);
+    } catch (e) {
+      Logger.i('UnderratedService.deleteEntryWithStatus error: $e');
+      return ('Network error: $e', false);
+    }
+  }
+
+  static Map<String, dynamic> _buildUserIdentityBody({
+    required ServicesType serviceType,
+    required Profile profile,
+  }) {
+    final body = <String, dynamic>{};
+    final userId = int.tryParse(profile.id ?? '');
+    final username = profile.userName ?? profile.name ?? '';
+    if (serviceType == ServicesType.anilist) {
+      if (userId != null) body['anilist_user_id'] = userId;
+      if (username.isNotEmpty) body['anilist_username'] = username;
+    } else if (serviceType == ServicesType.mal) {
+      if (userId != null) body['mal_user_id'] = userId;
+      if (username.isNotEmpty) body['mal_username'] = username;
+    } else if (serviceType == ServicesType.simkl) {
+      if (userId != null) body['simkl_user_id'] = userId;
+      if (username.isNotEmpty) body['simkl_username'] = username;
+    }
+    return body;
+  }
 }
 
 class UnderratedMedia {

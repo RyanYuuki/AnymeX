@@ -165,6 +165,177 @@ class _RecommendSheetState extends State<RecommendSheet> {
     return _buildSubmitForm(colors);
   }
 
+  /// Check if the logged-in user owns this entry
+  bool _isOwner(Map<String, dynamic> entry) {
+    final user = entry['user'] as Map<String, dynamic>? ?? {};
+    final serviceType = _sh.serviceType.value;
+    final profile = _sh.profileData.value;
+    final myId = int.tryParse(profile.id ?? '');
+    if (myId == null) return false;
+
+    if (serviceType == ServicesType.anilist) {
+      final al = user['anilist'] as Map<String, dynamic>?;
+      return al != null && al['id'] == myId;
+    } else if (serviceType == ServicesType.mal) {
+      final mal = user['mal'] as Map<String, dynamic>?;
+      return mal != null && mal['id'] == myId;
+    } else if (serviceType == ServicesType.simkl) {
+      final simkl = user['simkl'] as Map<String, dynamic>?;
+      return simkl != null && simkl['id'] == myId;
+    }
+    return false;
+  }
+
+  Future<void> _editReason(String currentReason) async {
+    final controller = TextEditingController(text: currentReason);
+    final colors = Theme.of(context).colorScheme;
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useRootNavigator: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => Padding(
+        padding: MediaQuery.of(ctx).viewInsets,
+        child: SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+            color: colors.surface,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40, height: 4,
+                    margin: const EdgeInsets.only(bottom: 16),
+                    decoration: BoxDecoration(
+                      color: colors.onSurfaceVariant.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                Row(children: [
+                  Icon(Icons.edit_rounded, color: colors.primary, size: 20),
+                  const SizedBox(width: 8),
+                  Text('Edit Reason', style: TextStyle(
+                    fontWeight: FontWeight.w600, fontSize: 15,
+                    color: colors.onSurface,
+                  )),
+                ]),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: controller,
+                  minLines: 3,
+                  maxLines: 6,
+                  maxLength: 700,
+                  autofocus: true,
+                  decoration: InputDecoration(
+                    hintText: 'Why is this underrated? (min 30 chars)',
+                    filled: true,
+                    fillColor: colors.surfaceContainerLow,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: colors.outlineVariant),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: colors.outlineVariant),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: colors.primary, width: 1.5),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    onPressed: () async {
+                      final newReason = controller.text.trim();
+                      if (newReason.length < 30) {
+                        warningSnackBar('Please write at least 30 characters');
+                        return;
+                      }
+                      Navigator.of(ctx).pop();
+                      final error = await UnderratedService.editReason(
+                        mediaType: _botMediaType,
+                        mediaId: _idAndType.$1,
+                        newReason: newReason,
+                        serviceType: _sh.serviceType.value,
+                        profile: _sh.profileData.value,
+                      );
+                      if (error == null) {
+                        successSnackBar('Reason updated!');
+                        _runCheck(); // refresh the sheet
+                      } else {
+                        errorSnackBar(error);
+                      }
+                    },
+                    icon: const Icon(Icons.save_rounded, size: 18),
+                    label: const Text('Save Changes'),
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _deleteEntry() async {
+    final colors = Theme.of(context).colorScheme;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete Recommendation?'),
+        content: const Text(
+          'Your deletion request will be sent to admins for review.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: colors.error),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    final (error, pending) = await UnderratedService.deleteEntryWithStatus(
+      mediaType: _botMediaType,
+      mediaId: _idAndType.$1,
+      serviceType: _sh.serviceType.value,
+      profile: _sh.profileData.value,
+    );
+
+    if (error == null) {
+      if (pending) {
+        successSnackBar('Deletion request sent to admins for review.');
+      } else {
+        successSnackBar('Entry deleted.');
+      }
+      if (mounted) Navigator.of(context).pop();
+    } else {
+      errorSnackBar(error);
+    }
+  }
+
   Widget _buildAlreadyAdded(ColorScheme colors, Map<String, dynamic> entry) {
     final user = entry['user'] as Map<String, dynamic>? ?? {};
     final serviceType = widget.media.serviceType;
@@ -187,6 +358,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
     final reason = entry['reason']?.toString() ?? '';
     final poster = entry['poster']?.toString() ?? widget.media.poster;
     final title = entry['title']?.toString() ?? widget.media.title;
+    final isOwner = _isOwner(entry);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -250,11 +422,13 @@ class _RecommendSheetState extends State<RecommendSheet> {
                   : null,
             ),
             const SizedBox(width: 8),
-            Text(username,
-                style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 13,
-                    color: colors.onSurface)),
+            Expanded(
+              child: Text(username,
+                  style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 13,
+                      color: colors.onSurface)),
+            ),
           ],
         ),
 
@@ -276,6 +450,44 @@ class _RecommendSheetState extends State<RecommendSheet> {
                   fontStyle: FontStyle.italic,
                   height: 1.5),
             ),
+          ),
+        ],
+
+        // Edit / Delete — only visible to the owner
+        if (isOwner) ...[
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () => _editReason(reason),
+                  icon: const Icon(Icons.edit_rounded, size: 16),
+                  label: const Text('Edit Reason'),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: FilledButton.icon(
+                  onPressed: _deleteEntry,
+                  icon: const Icon(Icons.delete_outline_rounded, size: 16),
+                  label: const Text('Delete'),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: colors.error,
+                    foregroundColor: colors.onError,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
         const SizedBox(height: 8),
