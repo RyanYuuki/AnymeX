@@ -418,6 +418,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
       mediaId: _idAndType.$1,
       serviceType: _sh.serviceType.value,
       profile: _sh.profileData.value,
+      isAdmin: _isAdmin,
     );
 
     if (error == null) {
@@ -464,6 +465,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
       mediaId: _idAndType.$1,
       serviceType: _sh.serviceType.value,
       profile: _sh.profileData.value,
+      isAdmin: _isAdmin,
     );
 
     if (error == null) {
@@ -479,38 +481,52 @@ class _RecommendSheetState extends State<RecommendSheet> {
   }
 
   Widget _buildAlreadyAdded(ColorScheme colors, Map<String, dynamic> entry) {
-    final user = entry['user'] as Map<String, dynamic>? ?? {};
     final serviceType = widget.media.serviceType;
-
-    Map<String, dynamic>? userService;
-    if (serviceType == ServicesType.simkl) {
-      userService = user['simkl'] as Map<String, dynamic>?;
-    } else if (serviceType == ServicesType.mal) {
-      userService = user['mal'] as Map<String, dynamic>?
-          ?? user['anilist'] as Map<String, dynamic>?;
-    } else {
-      userService = user['anilist'] as Map<String, dynamic>?
-          ?? user['mal'] as Map<String, dynamic>?;
-    }
-
-    final avatar = userService?['avatar']?.toString();
-    final username = userService?['username']?.toString()
-        ?? entry['author']?.toString()
-        ?? 'Unknown';
     final reason = entry['reason']?.toString() ?? '';
-    final poster = entry['poster']?.toString() ?? widget.media.poster;
-    final title = entry['title']?.toString() ?? widget.media.title;
 
+    // Current user's info
+    final profile = _sh.profileData.value;
+    final myAvatar = profile.avatar;
+    final myId = int.tryParse(profile.id ?? '');
+
+    // Check user state
     final userHasReason = _userHasReason(entry);
     final userReason = _findUserReason(entry);
     final isOwner = _isOwner(entry);
     final canEditOrDelete = isOwner || _isAdmin;
 
-    // Get other users' reasons
+    // User reason's avatar (if available from reason's own user block)
+    String? userReasonAvatar;
+    if (userReason != null) {
+      final rUser = userReason['user'] as Map<String, dynamic>? ?? {};
+      final rService = serviceType == ServicesType.simkl
+          ? rUser['simkl'] as Map<String, dynamic>?
+          : serviceType == ServicesType.mal
+              ? (rUser['mal'] as Map<String, dynamic>? ?? rUser['anilist'] as Map<String, dynamic>?)
+              : (rUser['anilist'] as Map<String, dynamic>? ?? rUser['mal'] as Map<String, dynamic>?);
+      userReasonAvatar = rService?['avatar']?.toString();
+    }
+    // Prefer avatar from the reason's own user block, then current profile
+    final myDisplayAvatar = userReasonAvatar ?? myAvatar;
+    final poster = entry['poster']?.toString() ?? widget.media.poster;
+    final title = entry['title']?.toString() ?? widget.media.title;
+
+    // Get other users' reasons (filter by user ID, not text)
     final reasonsList = (entry['reasons'] as List<dynamic>?) ?? [];
     final otherReasons = reasonsList.where((r) {
-      if (userReason == null) return true;
-      return (r as Map<String, dynamic>)['text'] != userReason['text'];
+      final reasonMap = r as Map<String, dynamic>;
+      final rUser = reasonMap['user'] as Map<String, dynamic>? ?? {};
+      if (serviceType == ServicesType.anilist) {
+        final al = rUser['anilist'] as Map<String, dynamic>?;
+        if (al != null && al['id'] == myId) return false;
+      } else if (serviceType == ServicesType.mal) {
+        final mal = rUser['mal'] as Map<String, dynamic>?;
+        if (mal != null && mal['id'] == myId) return false;
+      } else if (serviceType == ServicesType.simkl) {
+        final simkl = rUser['simkl'] as Map<String, dynamic>?;
+        if (simkl != null && simkl['id'] == myId) return false;
+      }
+      return true;
     }).toList();
 
     return SingleChildScrollView(
@@ -588,8 +604,8 @@ class _RecommendSheetState extends State<RecommendSheet> {
                       CircleAvatar(
                         radius: 14,
                         backgroundColor: colors.primaryContainer,
-                        backgroundImage: avatar != null ? CachedNetworkImageProvider(avatar) : null,
-                        child: avatar == null ? Icon(Icons.person, size: 14, color: colors.onPrimaryContainer) : null,
+                        backgroundImage: myDisplayAvatar != null ? CachedNetworkImageProvider(myDisplayAvatar) : null,
+                        child: myDisplayAvatar == null ? Icon(Icons.person, size: 14, color: colors.onPrimaryContainer) : null,
                       ),
                       const SizedBox(width: 8),
                       Text('Your Recommendation', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: colors.onSurface)),

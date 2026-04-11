@@ -345,6 +345,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
           widget.voteMediaId ?? widget.item.media.id.toString(),
       serviceType: _serviceType,
       profile: profile,
+      isAdmin: _isAdmin,
     );
 
     if (!mounted) return;
@@ -530,17 +531,14 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
     final avatarUrl = reason.avatarFor(serviceType);
     final fallbackLetter = username.trim().isNotEmpty ? username.trim()[0] : '?';
 
-    // Navigate profile helper
+    // Navigate to THIS reason author's profile (not the entry-level author)
     void navigateProfile() {
-      navigateToAuthorProfile(widget.item);
+      if (reason.user != null) {
+        navigateToReasonAuthorProfile(reason, serviceType);
+      }
     }
 
-    final hasValidProfile =
-        (reason.user?.userIdFor(serviceType) != null) ||
-        (widget.item.anilistUserId != null) ||
-        (widget.item.malUsername != null &&
-            widget.item.malUsername!.isNotEmpty) ||
-        (widget.item.simklUserId != null);
+    final hasValidProfile = reason.user?.userIdFor(serviceType) != null;
 
     return Container(
       padding: const EdgeInsets.all(12),

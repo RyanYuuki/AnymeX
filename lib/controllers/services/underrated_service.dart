@@ -26,10 +26,28 @@ void navigateToAuthorProfile(UnderratedMedia item) {
   }
 }
 
+void navigateToReasonAuthorProfile(ReasonEntry reason, ServicesType serviceType) {
+  if (reason.user == null) return;
+  final user = reason.user!;
+  if (serviceType == ServicesType.simkl && user.simklId != null) {
+    launchUrlString('https://simkl.com/${user.simklId}');
+  } else if (serviceType == ServicesType.anilist && user.anilistId != null) {
+    navigate(() => UserProfilePage(userId: user.anilistId!));
+  } else if (serviceType == ServicesType.mal && user.malId != null) {
+    launchUrlString('https://myanimelist.net/profile/${user.malUsername ?? ''}');
+  } else {
+    // Fallback: try any available service
+    if (user.anilistId != null) {
+      navigate(() => UserProfilePage(userId: user.anilistId!));
+    } else if (user.simklId != null) {
+      launchUrlString('https://simkl.com/${user.simklId}');
+    } else if (user.malUsername != null && user.malUsername!.isNotEmpty) {
+      launchUrlString('https://myanimelist.net/profile/${user.malUsername}');
+    }
+  }
+}
+
 class ReasonUserProfile {
-  final String? discordId;
-  final String? discordUsername;
-  final String? discordAvatar;
   final int? anilistId;
   final String? anilistUsername;
   final String? anilistAvatar;
@@ -41,9 +59,6 @@ class ReasonUserProfile {
   final String? simklAvatar;
 
   ReasonUserProfile({
-    this.discordId,
-    this.discordUsername,
-    this.discordAvatar,
     this.anilistId,
     this.anilistUsername,
     this.anilistAvatar,
@@ -56,15 +71,11 @@ class ReasonUserProfile {
   });
 
   factory ReasonUserProfile.fromJson(Map<String, dynamic> json) {
-    final discord = json['discord'] as Map<String, dynamic>?;
     final anilist = json['anilist'] as Map<String, dynamic>?;
     final mal = json['mal'] as Map<String, dynamic>?;
     final simkl = json['simkl'] as Map<String, dynamic>?;
 
     return ReasonUserProfile(
-      discordId: discord?['id']?.toString(),
-      discordUsername: discord?['username']?.toString(),
-      discordAvatar: discord?['avatar']?.toString(),
       anilistId: anilist?['id'] as int?,
       anilistUsername: anilist?['username']?.toString(),
       anilistAvatar: anilist?['avatar']?.toString(),
@@ -106,8 +117,6 @@ class ReasonUserProfile {
 }
 
 class ReasonEntry {
-  final String? discordId;
-  final String? discordUsername;
   final String? author;
   final String text;
   final String? addedAt;
@@ -115,8 +124,6 @@ class ReasonEntry {
   final ReasonUserProfile? user;
 
   ReasonEntry({
-    this.discordId,
-    this.discordUsername,
     this.author,
     required this.text,
     this.addedAt,
@@ -127,8 +134,6 @@ class ReasonEntry {
   factory ReasonEntry.fromJson(Map<String, dynamic> json) {
     final userMap = json['user'] as Map<String, dynamic>?;
     return ReasonEntry(
-      discordId: json['discord_id']?.toString(),
-      discordUsername: json['discord_username']?.toString(),
       author: json['author']?.toString(),
       text: json['text']?.toString() ?? json['reason']?.toString() ?? '',
       addedAt: json['added_at']?.toString(),
@@ -138,11 +143,11 @@ class ReasonEntry {
   }
 
   String? usernameFor(ServicesType serviceType) {
-    return user?.usernameFor(serviceType) ?? discordUsername ?? author;
+    return user?.usernameFor(serviceType) ?? author;
   }
 
   String? avatarFor(ServicesType serviceType) {
-    return user?.avatarFor(serviceType) ?? discordAvatar;
+    return user?.avatarFor(serviceType);
   }
 
   int? userIdFor(ServicesType serviceType) {
@@ -942,10 +947,11 @@ class UnderratedService extends GetxController {
     required String mediaId,
     required ServicesType serviceType,
     required Profile profile,
+    bool isAdmin = false,
   }) async {
     if (!votingEnabled) return 'Bot URL not configured';
     try {
-      final body = _buildUserIdentityBody(serviceType: serviceType, profile: profile);
+      final body = _buildUserIdentityBody(serviceType: serviceType, profile: profile, isAdmin: isAdmin);
       final url = Uri.parse('$_botBaseUrl/api/delete_reason/$mediaType/$mediaId');
       final resp = await http.delete(url, headers: _authHeaders, body: jsonEncode(body));
       if (resp.statusCode == 200) {
@@ -968,10 +974,11 @@ class UnderratedService extends GetxController {
     required String mediaId,
     required ServicesType serviceType,
     required Profile profile,
+    bool isAdmin = false,
   }) async {
     if (!votingEnabled) return ('Bot URL not configured', false);
     try {
-      final body = _buildUserIdentityBody(serviceType: serviceType, profile: profile);
+      final body = _buildUserIdentityBody(serviceType: serviceType, profile: profile, isAdmin: isAdmin);
       final url = Uri.parse('$_botBaseUrl/api/delete_reason/$mediaType/$mediaId');
       final resp = await http.delete(url, headers: _authHeaders, body: jsonEncode(body));
       if (resp.statusCode == 200) {
@@ -992,10 +999,11 @@ class UnderratedService extends GetxController {
     required String mediaId,
     required ServicesType serviceType,
     required Profile profile,
+    bool isAdmin = false,
   }) async {
     if (!votingEnabled) return 'Bot URL not configured';
     try {
-      final body = _buildUserIdentityBody(serviceType: serviceType, profile: profile);
+      final body = _buildUserIdentityBody(serviceType: serviceType, profile: profile, isAdmin: isAdmin);
       final url = Uri.parse('$_botBaseUrl/api/delete/$mediaType/$mediaId');
       final resp = await http.delete(url, headers: _authHeaders, body: jsonEncode(body));
       if (resp.statusCode == 200 || resp.statusCode == 202) return null;
@@ -1012,10 +1020,11 @@ class UnderratedService extends GetxController {
     required String mediaId,
     required ServicesType serviceType,
     required Profile profile,
+    bool isAdmin = false,
   }) async {
     if (!votingEnabled) return ('Bot URL not configured', false);
     try {
-      final body = _buildUserIdentityBody(serviceType: serviceType, profile: profile);
+      final body = _buildUserIdentityBody(serviceType: serviceType, profile: profile, isAdmin: isAdmin);
       final url = Uri.parse('$_botBaseUrl/api/delete/$mediaType/$mediaId');
       final resp = await http.delete(url, headers: _authHeaders, body: jsonEncode(body));
       if (resp.statusCode == 200) return (null, false);
@@ -1031,6 +1040,7 @@ class UnderratedService extends GetxController {
   static Map<String, dynamic> _buildUserIdentityBody({
     required ServicesType serviceType,
     required Profile profile,
+    bool isAdmin = false,
   }) {
     final body = <String, dynamic>{};
     final userId = int.tryParse(profile.id ?? '');
@@ -1045,6 +1055,7 @@ class UnderratedService extends GetxController {
       if (userId != null) body['simkl_user_id'] = userId;
       if (username.isNotEmpty) body['simkl_username'] = username;
     }
+    if (isAdmin) body['admin'] = true;
     return body;
   }
 }
