@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:anymex/controllers/services/community_service.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
@@ -10,8 +11,8 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/anime/widgets/custom_list_dialog.dart';
 import 'package:anymex/screens/anime/widgets/list_editor.dart';
+import 'package:anymex/screens/community/user_recommendations_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
-import 'package:anymex/screens/profile/user_profile_page.dart';
 import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -25,7 +26,8 @@ import 'package:html/parser.dart' show parse;
 import 'package:http/http.dart' as http;
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:url_launcher/url_launcher_string.dart';
+import 'package:anymex/widgets/non_widgets/recommend_button.dart';
+import 'package:anymex/widgets/non_widgets/reasons_sheet.dart';
 
 class MediaPeekPopup extends StatefulWidget {
   final Media media;
@@ -35,9 +37,17 @@ class MediaPeekPopup extends StatefulWidget {
   final int? malUserId;
   final String? anilistUsername;
   final String? malUsername;
+  final int? simklUserId;
+  final String? simklUsername;
   final String? author;
   final String? avatarUrl;
   final String? reason;
+  final String? voteMediaType; // 'anime','manga','show','movie'
+  final String? voteMediaId;
+  final List<ReasonEntry>? reasons;
+
+  /// Raw JSON entry for passing to recommend sheet (skips API check).
+  final Map<String, dynamic>? rawJson;
 
   const MediaPeekPopup({
     super.key,
@@ -48,20 +58,31 @@ class MediaPeekPopup extends StatefulWidget {
     this.malUserId,
     this.anilistUsername,
     this.malUsername,
+    this.simklUserId,
+    this.simklUsername,
     this.author,
     this.avatarUrl,
     this.reason,
+    this.voteMediaType,
+    this.voteMediaId,
+    this.reasons,
+    this.rawJson,
   });
 
-  static void show(
-      BuildContext context, Media media, ItemType type, String tag,
+  static void show(BuildContext context, Media media, ItemType type, String tag,
       {int? anilistUserId,
       int? malUserId,
       String? anilistUsername,
       String? malUsername,
+      int? simklUserId,
+      String? simklUsername,
       String? author,
       String? avatarUrl,
-      String? reason}) {
+      String? reason,
+      String? voteMediaType,
+      String? voteMediaId,
+      List<ReasonEntry>? reasons,
+      Map<String, dynamic>? rawJson}) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -77,9 +98,15 @@ class MediaPeekPopup extends StatefulWidget {
         malUserId: malUserId,
         anilistUsername: anilistUsername,
         malUsername: malUsername,
+        simklUserId: simklUserId,
+        simklUsername: simklUsername,
         author: author,
         avatarUrl: avatarUrl,
         reason: reason,
+        voteMediaType: voteMediaType,
+        voteMediaId: voteMediaId,
+        reasons: reasons,
+        rawJson: rawJson,
       ),
     );
   }
@@ -105,6 +132,11 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
   bool _synopsisExpanded = false;
   static const int _synopsisMaxLines = 4;
 
+  // Vote state
+  VoteResult? _votes;
+  String? _userVote;
+  bool _voteLoading = false;
+
   late final RxString _animeStatus;
   late final RxDouble _animeScore;
   late final RxInt _animeProgress;
@@ -115,6 +147,11 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
     super.initState();
     _fetchPeekData();
     _initTrackingState();
+    if (CommunityService.votingEnabled &&
+        widget.voteMediaType != null &&
+        widget.voteMediaId != null) {
+      _loadVotes();
+    }
   }
 
   void _initTrackingState() {
@@ -130,6 +167,87 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                 : (tracked.episodeCount ?? '')) ??
             0)
         .obs;
+  }
+
+  Future<void> _loadVotes() async {
+    final serviceHandler = Get.find<ServiceHandler>();
+    final profile = serviceHandler.onlineService.profileData.value;
+    final serviceType = serviceHandler.serviceType.value;
+
+    int? anilistId;
+    int? malId;
+    int? simklId;
+
+    if (serviceType == ServicesType.anilist) {
+      anilistId = int.tryParse(profile.id ?? '');
+    } else if (serviceType == ServicesType.mal) {
+      malId = int.tryParse(profile.id ?? '');
+    } else if (serviceType == ServicesType.simkl) {
+      simklId = int.tryParse(profile.id ?? '');
+    }
+
+    final result = await CommunityService.fetchVotes(
+      widget.voteMediaType!,
+      widget.voteMediaId!,
+      anilistUserId: anilistId,
+      malUserId: malId,
+      simklUserId: simklId,
+    );
+    if (mounted) {
+      setState(() {
+        _votes = result;
+        if (result != null) {
+          _userVote = result.userVote;
+        }
+      });
+    }
+  }
+
+  Future<void> _castVote(String direction) async {
+    if (_voteLoading) return;
+    final serviceHandler = Get.find<ServiceHandler>();
+    final profile = serviceHandler.onlineService.profileData.value;
+    final serviceType = serviceHandler.serviceType.value;
+
+    int? anilistId;
+    int? malId;
+    int? simklId;
+    String displayName = 'User';
+
+    if (serviceType == ServicesType.anilist) {
+      anilistId = int.tryParse(profile.id ?? '');
+      displayName = profile.name ?? 'User';
+    } else if (serviceType == ServicesType.mal) {
+      malId = int.tryParse(profile.id ?? '');
+      displayName = profile.name ?? 'User';
+    } else if (serviceType == ServicesType.simkl) {
+      simklId = int.tryParse(profile.id ?? '');
+      displayName = profile.name ?? 'User';
+    }
+
+    if (anilistId == null && malId == null && simklId == null) return;
+
+    setState(() => _voteLoading = true);
+
+    final result = await CommunityService.castVote(
+      mediaType: widget.voteMediaType!,
+      mediaId: widget.voteMediaId!,
+      direction: direction,
+      anilistUserId: anilistId,
+      malUserId: malId,
+      simklUserId: simklId,
+      displayName: displayName,
+    );
+
+    if (mounted) {
+      setState(() {
+        _voteLoading = false;
+        if (result != null) {
+          _votes = result;
+          _userVote = result.userVote;
+        }
+      });
+    }
   }
 
   Future<void> _fetchPeekData() async {
@@ -505,7 +623,9 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
       const gap = 8.0;
       const iconBtnWidth = 50.0;
 
-      const fixedUsed = iconBtnWidth * 2 + gap * 2;
+      final recommendEnabled = CommunityService.votingEnabled;
+      final extraFixed = recommendEnabled ? iconBtnWidth + gap : 0.0;
+      final fixedUsed = iconBtnWidth * 2 + gap * 2 + extraFixed;
       final listEditorW =
           _isLoggedIn ? (available - fixedUsed).clamp(0.0, available) : 0.0;
       final watchW = _isLoggedIn
@@ -593,6 +713,19 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                   color: colors.onSurface, size: 20),
             ),
           ),
+          if (CommunityService.votingEnabled) ...[
+            const SizedBox(width: gap),
+            SizedBox(
+              width: iconBtnWidth,
+              child: RecommendIconButton(
+                media: widget.media,
+                mediaItemType: widget.type,
+                existingEntry: widget.rawJson,
+                buttonBuilder: (onTap, icon) =>
+                    _DetailsStyleButton(onTap: onTap, child: icon),
+              ),
+            ),
+          ],
         ],
       );
     });
@@ -626,7 +759,48 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
       children: [
         if (widget.author != null && widget.author!.isNotEmpty) ...[
           _buildRecommendedBySection(colors),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
+          if (CommunityService.votingEnabled &&
+              widget.voteMediaType != null &&
+              widget.voteMediaId != null)
+            _buildVoteBar(colors),
+          // Show "See all reasons" if there are any reasons
+          if (widget.reasons != null && widget.reasons!.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            GestureDetector(
+              onTap: _openReasonsSheet,
+              child: Container(
+                width: double.infinity,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: colors.secondaryContainer.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: colors.outline.withOpacity(0.1)),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.forum_rounded,
+                        size: 16, color: colors.onSecondaryContainer),
+                    const SizedBox(width: 8),
+                    AnymexText(
+                      text: widget.reasons!.length == 1
+                          ? 'View recommendation'
+                          : 'View all ${widget.reasons!.length} recommendations',
+                      variant: TextVariant.semiBold,
+                      size: 13,
+                      color: colors.onSecondaryContainer,
+                    ),
+                    const Spacer(),
+                    Icon(Icons.chevron_right_rounded,
+                        size: 18, color: colors.onSecondaryContainer),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+          ] else
+            const SizedBox(height: 20),
         ],
         if (data.description.isNotEmpty) ...[
           _sectionLabel('Synopsis', colors),
@@ -761,10 +935,67 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
     );
   }
 
+  Widget _buildVoteBar(ColorScheme colors) {
+    final upvotes = _votes?.upvotes ?? 0;
+    final downvotes = _votes?.downvotes ?? 0;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: colors.surfaceContainerHighest.opaque(0.35),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: colors.outline.withOpacity(0.12)),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      child: _voteLoading
+          ? Center(
+              child: SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: colors.primary,
+                ),
+              ),
+            )
+          : Row(
+              children: [
+                AnymexText(
+                  text: 'Was this helpful?',
+                  size: 13,
+                  color: colors.onSurfaceVariant,
+                  variant: TextVariant.semiBold,
+                ),
+                const Spacer(),
+                _PopupVoteButton(
+                  icon: Icons.thumb_up_rounded,
+                  count: upvotes,
+                  active: _userVote == 'up',
+                  isUpvote: true,
+                  onTap: () => _castVote('up'),
+                ),
+                const SizedBox(width: 12),
+                _PopupVoteButton(
+                  icon: Icons.thumb_down_rounded,
+                  count: downvotes,
+                  active: _userVote == 'down',
+                  isUpvote: false,
+                  onTap: () => _castVote('down'),
+                ),
+              ],
+            ),
+    );
+  }
+
   Widget _buildRecommendedBySection(ColorScheme colors) {
     final serviceHandler = Get.find<ServiceHandler>();
-    final isAnilist = serviceHandler.serviceType.value == ServicesType.anilist;
-    final username = isAnilist ? widget.anilistUsername : widget.malUsername;
+    final serviceType = serviceHandler.serviceType.value;
+    final isSimkl = serviceType == ServicesType.simkl;
+    final isAnilist = serviceType == ServicesType.anilist;
+    final username = isSimkl
+        ? widget.simklUsername
+        : isAnilist
+            ? widget.anilistUsername
+            : widget.malUsername;
     final hasValidProfile = username != null && username.isNotEmpty;
 
     return Container(
@@ -799,13 +1030,29 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                     if (hasValidProfile)
                       GestureDetector(
                         onTap: () => _navigateToAuthorProfile(isAnilist),
-                        child: AnymexText(
-                          text: username!,
-                          variant: TextVariant.semiBold,
-                          size: 14,
-                          color: colors.primary,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                        onLongPress: widget.reasons?.firstOrNull?.user != null
+                            ? _navigateToUserRecs
+                            : null,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Flexible(
+                              child: AnymexText(
+                                text: username!,
+                                variant: TextVariant.semiBold,
+                                size: 14,
+                                color: colors.primary,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            if (widget.reasons?.isNotEmpty == true &&
+                                widget.reasons!.first.user?.isAdmin == true) ...[
+                              const SizedBox(width: 4),
+                              Icon(Icons.verified_rounded,
+                                  size: 14, color: colors.primary),
+                            ],
+                          ],
                         ),
                       )
                     else
@@ -833,17 +1080,64 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
               ),
             ),
           ],
+          if (widget.reasons != null && widget.reasons!.length > 1) ...[
+            const SizedBox(height: 6),
+            AnymexText(
+              text:
+                  '+ ${widget.reasons!.length - 1} more recommendation${widget.reasons!.length > 2 ? 's' : ''}',
+              size: 11,
+              color: colors.onSurfaceVariant,
+              variant: TextVariant.regular,
+            ),
+          ],
         ],
       ),
     );
   }
 
+  void _openReasonsSheet() {
+    Navigator.of(context).pop();
+    ReasonsSheet.show(
+      context,
+      item: CommunityMedia(
+        media: widget.media,
+        anilistUserId: widget.anilistUserId,
+        malUserId: widget.malUserId,
+        anilistUsername: widget.anilistUsername,
+        malUsername: widget.malUsername,
+        simklUserId: widget.simklUserId,
+        simklUsername: widget.simklUsername,
+        anilistAvatar: null,
+        malAvatar: null,
+        simklAvatar: null,
+        reason: widget.reason,
+        fallbackTitle: widget.media.title,
+        reasons: widget.reasons ?? [],
+        rawJson: widget.rawJson,
+      ),
+      mediaItemType: widget.type,
+      voteMediaType: widget.voteMediaType,
+      voteMediaId: widget.voteMediaId,
+    );
+  }
+
   Future<void> _navigateToAuthorProfile(bool isAnilist) async {
     Navigator.of(context).pop();
-    if (isAnilist && widget.anilistUserId != null) {
-      navigate(() => UserProfilePage(userId: widget.anilistUserId!));
-    } else if (widget.malUsername != null && widget.malUsername!.isNotEmpty) {
-      launchUrlString('https://myanimelist.net/profile/${widget.malUsername}');
+    navigateToAuthorProfile(CommunityMedia(
+      media: widget.media,
+      simklUserId: widget.simklUserId,
+      anilistUserId: widget.anilistUserId,
+      anilistUsername: widget.anilistUsername,
+      malUsername: widget.malUsername,
+      simklUsername: widget.simklUsername,
+    ));
+  }
+
+  void _navigateToUserRecs() {
+    final firstUser = widget.reasons?.firstOrNull?.user;
+    if (firstUser != null) {
+      Navigator.of(context).pop();
+      navigate(() => UserRecommendationsPage(user: firstUser));
     }
   }
 }
@@ -922,6 +1216,73 @@ class _DetailsStyleButton extends StatelessWidget {
             ),
             alignment: Alignment.center,
             child: child,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PopupVoteButton extends StatelessWidget {
+  final IconData icon;
+  final int count;
+  final bool active;
+  final bool isUpvote;
+  final VoidCallback onTap;
+
+  const _PopupVoteButton({
+    required this.icon,
+    required this.count,
+    required this.active,
+    required this.isUpvote,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
+    final activeColor = isUpvote ? colors.primary : colors.error;
+    final activeBgColor = isUpvote
+        ? colors.primary.opaque(0.15, iReallyMeanIt: true)
+        : colors.error.opaque(0.15, iReallyMeanIt: true);
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(10),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: active ? activeBgColor : Colors.transparent,
+            borderRadius: BorderRadius.circular(10),
+            border:
+                active ? Border.all(color: activeColor.withOpacity(0.2)) : null,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AnimatedScale(
+                scale: active ? 1.1 : 1.0,
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeOutBack,
+                child: Icon(
+                  icon,
+                  size: 18,
+                  color: active ? activeColor : colors.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(width: 4),
+              AnymexText(
+                text: '$count',
+                size: 13,
+                color: active ? activeColor : colors.onSurfaceVariant,
+                variant: TextVariant.semiBold,
+              ),
+            ],
           ),
         ),
       ),

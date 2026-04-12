@@ -1,4 +1,5 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/community_service.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -26,6 +27,8 @@ class _SettingsCommonState extends State<SettingsCommon> {
   late bool uniScrapper;
   late bool shouldAskForPermission = General.shouldAskForTrack.get<bool>(true);
   late bool hideAdultContent = General.hideAdultContent.get<bool>(true);
+  late bool showCommunityRecs =
+      General.showCommunityRecommendations.get<bool>(true);
   bool get isMal => serviceHandler.serviceType.value.isMal;
   late Map<String, bool> homePageCards;
 
@@ -63,9 +66,11 @@ class _SettingsCommonState extends State<SettingsCommon> {
                           content: Column(
                             children: [
                               Obx(() => CustomTile(
-                                    icon: Icons.settings_input_component_rounded,
+                                    icon:
+                                        Icons.settings_input_component_rounded,
                                     title: 'Bridge Mode (Requires Restart)',
-                                    description: settings.bridgeMode.value == 'jni'
+                                    description: settings.bridgeMode.value ==
+                                            'jni'
                                         ? 'JNI Mode is on. its okay ig might crash here & there.'
                                         : 'Sidecar Mode is on. might be a lil slow than Jni but its reliable.',
                                     onTap: () => _showBridgeModeDialog(),
@@ -113,6 +118,134 @@ class _SettingsCommonState extends State<SettingsCommon> {
                                     settings.showContinueWatchingCard = e,
                               ),
                             ),
+                          ],
+                        ),
+                      ),
+                      AnymexExpansionTile(
+                        initialExpanded: true,
+                        title: 'Community Recommendations',
+                        content: Column(
+                          children: [
+                            CustomSwitchTile(
+                              icon: Icons.people_rounded,
+                              title: 'Show Community Recommendations',
+                              description:
+                                  'Display anime, manga, movies and shows recommended by the community on the home page.',
+                              switchValue: showCommunityRecs,
+                              onChanged: (e) {
+                                setState(() {
+                                  showCommunityRecs = e;
+                                  General.showCommunityRecommendations.set(e);
+                                  Get.find<CommunityService>()
+                                      .communityEnabled
+                                      .value = e;
+                                });
+                              },
+                            ),
+                            Obx(() {
+                              final svc = Get.find<CommunityService>();
+                              return CustomSwitchTile(
+                                icon: Icons.no_adult_content_rounded,
+                                title: 'Hide NSFW Recommendations',
+                                description:
+                                    'Filter out adult/NSFW entries from community recommendations. Enabled by default.',
+                                switchValue: svc.hideNsfw.value,
+                                onChanged: (v) {
+                                  svc.hideNsfw.value = v;
+                                  General.hideNsfwRecommendations.set(v);
+                                },
+                              );
+                            }),
+                            Obx(() {
+                              final svc = Get.find<CommunityService>();
+                              return CustomSwitchTile(
+                                icon: Icons.filter_list_rounded,
+                                title: 'Hide by List Status',
+                                description:
+                                    'Filter out entries already in your list based on their watching/reading status.',
+                                switchValue: svc.filterByListEnabled.value,
+                                onChanged: (v) {
+                                  svc.filterByListEnabled.value = v;
+                                  General.filterByListEnabled.set(v);
+                                },
+                              );
+                            }),
+                            Obx(() {
+                              final svc = Get.find<CommunityService>();
+                              if (!svc.filterByListEnabled.value) {
+                                return const SizedBox.shrink();
+                              }
+                              return Column(
+                                children: [
+                                  CustomSwitchTile(
+                                    icon: Icons.check_circle_outline_rounded,
+                                    title: 'Hide Completed',
+                                    description:
+                                        'Hide entries that are marked as completed in your list.',
+                                    switchValue: svc.filterCompleted.value,
+                                    onChanged: (v) {
+                                      svc.filterCompleted.value = v;
+                                      General.filterCompleted.set(v);
+                                    },
+                                  ),
+                                  CustomSwitchTile(
+                                    icon: Icons.remove_red_eye_outlined,
+                                    title: 'Hide Watching / Reading',
+                                    description:
+                                        'Hide entries that you are currently watching or reading.',
+                                    switchValue: svc.filterWatching.value,
+                                    onChanged: (v) {
+                                      svc.filterWatching.value = v;
+                                      General.filterWatching.set(v);
+                                    },
+                                  ),
+                                  CustomSwitchTile(
+                                    icon: Icons.cancel_outlined,
+                                    title: 'Hide Dropped',
+                                    description:
+                                        'Hide entries that you have dropped.',
+                                    switchValue: svc.filterDropped.value,
+                                    onChanged: (v) {
+                                      svc.filterDropped.value = v;
+                                      General.filterDropped.set(v);
+                                    },
+                                  ),
+                                  CustomSwitchTile(
+                                    icon: Icons.event_note_outlined,
+                                    title: 'Hide Planning',
+                                    description:
+                                        'Hide entries that are in your plan to watch/read list.',
+                                    switchValue: svc.filterPlanning.value,
+                                    onChanged: (v) {
+                                      svc.filterPlanning.value = v;
+                                      General.filterPlanning.set(v);
+                                    },
+                                  ),
+                                  CustomSwitchTile(
+                                    icon: Icons.pause_circle_outline_rounded,
+                                    title: 'Hide On Hold / Paused',
+                                    description:
+                                        'Hide entries that you have put on hold or paused.',
+                                    switchValue: svc.filterPaused.value,
+                                    onChanged: (v) {
+                                      svc.filterPaused.value = v;
+                                      General.filterPaused.set(v);
+                                    },
+                                  ),
+                                  CustomSwitchTile(
+                                    icon: Icons.replay_rounded,
+                                    title: 'Hide Rewatching',
+                                    description:
+                                        'Hide entries that you are rewatching or rereading.',
+                                    switchValue: svc.filterRepeating.value,
+                                    onChanged: (v) {
+                                      svc.filterRepeating.value = v;
+                                      General.filterRepeating.set(v);
+                                    },
+                                  ),
+                                ],
+                              );
+                            }),
                           ],
                         ),
                       ),
@@ -199,15 +332,15 @@ class _SettingsCommonState extends State<SettingsCommon> {
       builder: (dialogContext) {
         return Obx(
           () => AnymexDialog(
-            title: 'Bridge Mode (If selecting one, dont forget to restart gang)',
+            title:
+                'Bridge Mode (If selecting one, dont forget to restart gang)',
             onConfirm: () => settings.saveBridgeMode(tempBridgeMode.value),
             contentWidget: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 _BridgeModeOptionTile(
                   title: 'JNI Mode',
-                  subtitle:
-                      'Runs Java in the same process as the app.',
+                  subtitle: 'Runs Java in the same process as the app.',
                   isSelected: tempBridgeMode.value == 'jni',
                   onTap: () => tempBridgeMode.value = 'jni',
                 ),
