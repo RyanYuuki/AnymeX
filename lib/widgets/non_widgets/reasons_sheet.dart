@@ -245,7 +245,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
                   maxLength: 700,
                   autofocus: true,
                   decoration: InputDecoration(
-                    hintText: 'Why is this underrated? (min 30 chars)',
+                    hintText: 'Why are you recommending this? (min 30 chars)',
                     filled: true,
                     fillColor: colors.surfaceContainerLow,
                     border: OutlineInputBorder(

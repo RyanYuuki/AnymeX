@@ -387,7 +387,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                   maxLength: 700,
                   autofocus: true,
                   decoration: InputDecoration(
-                    hintText: 'Why is this underrated? (min 30 chars)',
+                    hintText: 'Why are you recommending this? (min 30 chars)',
                     filled: true,
                     fillColor: colors.surfaceContainerLow,
                     border: OutlineInputBorder(
@@ -818,7 +818,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
             maxLines: 5,
             maxLength: 700,
             decoration: InputDecoration(
-              hintText: 'Why is this underrated? (min 30 chars)',
+              hintText: 'Why are you recommending this? (min 30 chars)',
               hintStyle: TextStyle(color: colors.onSurfaceVariant, fontSize: 12),
               filled: true,
               fillColor: colors.surfaceContainerHighest.withOpacity(0.3),
