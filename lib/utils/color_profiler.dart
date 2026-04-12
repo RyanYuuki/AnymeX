@@ -19,8 +19,6 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
 class ColorProfileManager {
-  static bool get _experimentalEnabled =>
-      PlayerUiKeys.playerExperimentalEnabled.get<bool>(false);
 
   static const Map<String, Map<String, int>> profiles = {
     "cinema": {
@@ -176,10 +174,6 @@ class ColorProfileManager {
   };
 
   Future<void> applyColorProfile(String profile, dynamic player) async {
-    if (!_experimentalEnabled) {
-      Logger.i('Skipped color profile apply (experimental disabled)');
-      return;
-    }
     final settings = profiles[profile.toLowerCase()];
     if (settings != null && player.platform != null) {
       try {
@@ -196,10 +190,6 @@ class ColorProfileManager {
 
   Future<void> applyCustomSettings(
       Map<String, int> customSettings, dynamic player) async {
-    if (!_experimentalEnabled) {
-      Logger.i('Skipped custom visual settings apply (experimental disabled)');
-      return;
-    }
     if (player.platform != null) {
       try {
         for (final entry in customSettings.entries) {
@@ -213,15 +203,10 @@ class ColorProfileManager {
   }
 
   Future<void> resetToNatural(dynamic player) async {
-    if (!_experimentalEnabled) return;
     await applyColorProfile('natural', player);
   }
 
   Future<void> resetShader(dynamic player) async {
-    if (!_experimentalEnabled) {
-      Logger.i('Skipped shader reset (experimental disabled)');
-      return;
-    }
     try {
       if (player.platform != null) {
         await PlayerShaders.setShaders(player, "Default");
@@ -751,7 +736,6 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
   }
 
   Future<void> setShaders(String message, {bool backOut = true}) async {
-    if (!_experimentalEnabled) return;
     await PlayerShaders.setShaders(widget.player, message);
     settingsController.selectedShader = message == "Default" ? "" : message;
     PlayerUiKeys.selectedShader.set(message == "Default" ? "" : message);
