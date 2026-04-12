@@ -1,3 +1,4 @@
+import 'package:anymex/screens/downloads/download_screen.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/screens/settings/search/settings_registry.dart';
 import 'package:anymex/screens/settings/search/settings_search_icons.dart';
@@ -5,6 +6,7 @@ import 'package:anymex/screens/settings/sub_settings/settings_about.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_accounts.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_backup.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_common.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_downloads.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_experimental.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_extensions.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_logs.dart';
@@ -20,7 +22,6 @@ import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
-import 'package:anymex_extension_runtime_bridge/Services/Aniyomi/Models/Source.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -295,6 +296,12 @@ class _SettingsPageState extends State<SettingsPage> {
           description: "Personalize the look and make it yours",
           destination: () => const SettingsTheme()),
       _CategoryItem(
+          icon: Icons.settings_suggest_rounded,
+          title: "Download Settings",
+          description: "Configure parallel downloads and directory",
+          destination: () => const SettingsDownloads()),
+
+      _CategoryItem(
           icon: Icons.extension_rounded,
           title: "Extensions",
           description: "Extensions tailored to your needs",
@@ -324,12 +331,16 @@ class _SettingsPageState extends State<SettingsPage> {
         description: "Debug extensions",
         isDebugOnly: true,
         addDividerAbove: true,
-        customTap: () {
+        customTap: () async {
           final list = Get.find<ExtensionManager>()
-              .installedMangaExtensions
-              .whereType<ASource>();
-          for (ASource i in list) {
-            debugPrint("${i.pkgName} - ${i.lang}");
+              .installedAnimeExtensions
+              .whereType<CloudStreamSource>()
+              .toList();
+          for (CloudStreamSource i in list) {
+            debugPrint("${i.id} - ${i.internalName} - ${i.jarUrl}");
+            final search =
+                await i.methods.search("Attack on titan", 1, []);
+            print(search.toJson());
           }
         },
       ),

@@ -60,11 +60,12 @@ class PluginManager {
         release: release,
         installedVersion: currentVersion,
       );
+      successSnackBar("Restart the App to apply the update.");
       return;
     }
 
     if (showIfUpToDate) {
-      successSnackBar('Plugin is already up to date.');
+      print('Plugin is already up to date.');
     }
   }
 
@@ -212,10 +213,11 @@ class PluginManager {
     }
 
     try {
-      await AnymeXRuntimeBridge.setupRuntime(localApkPath: localPath);
+      await AnymeXRuntimeBridge.useLocalApk(localPath);
       final bridge = AnymeXRuntimeBridge.controller;
       if (bridge.isReady.value) {
-        await Get.find<ExtensionManager>().onRuntimeBridgeInitialization();
+        await Get.find<ExtensionManager>()
+            .onRuntimeBridgeInitialization(force: true);
         successSnackBar('Plugin synced from SD Card.');
       }
     } catch (e) {
@@ -247,6 +249,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
     with TickerProviderStateMixin {
   late final AnimationController _pulseController;
   late final Animation<double> _pulseAnimation;
+  bool _installFinished = false;
 
   @override
   void initState() {
@@ -275,13 +278,18 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
     if (bridge.isDownloading.value) return;
 
     try {
-      await AnymeXRuntimeBridge.setupRuntime();
+      await AnymeXRuntimeBridge.setupRuntime(
+        force: widget.mode == _PluginSheetMode.update,
+      );
 
       if (bridge.isReady.value) {
-        await Get.find<ExtensionManager>().onRuntimeBridgeInitialization();
-
+        await Get.find<ExtensionManager>()
+            .onRuntimeBridgeInitialization(force: true);
         widget.manager.persistInstalledRelease(widget.release);
         if (mounted) {
+          setState(() {
+            _installFinished = true;
+          });
           successSnackBar(
             widget.mode == _PluginSheetMode.install
                 ? 'Plugin installed successfully.'
@@ -315,7 +323,8 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
               !bridge.isReady.value &&
               (bridge.status.value.contains("Extracting") ||
                   bridge.status.value.contains("Finalizing")));
-      final bool isComplete = bridge.isReady.value;
+      final bool isComplete = _installFinished ||
+          (widget.mode == _PluginSheetMode.install && bridge.isReady.value);
 
       return SafeArea(
         top: false,
@@ -476,7 +485,9 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
             'Plugin size',
             Platform.isAndroid
                 ? _formatBytes(widget.release.asset.sizeBytes)
-                : '${_formatBytes(widget.release.asset.sizeBytes)} + ~60 MB JRE',
+                : (widget.mode == _PluginSheetMode.install
+                    ? '${_formatBytes(widget.release.asset.sizeBytes)} + ~60 MB JRE'
+                    : _formatBytes(widget.release.asset.sizeBytes)),
           ),
           const SizedBox(height: 14),
           Row(

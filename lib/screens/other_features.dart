@@ -158,7 +158,8 @@ class OtherFeaturesPage extends StatelessWidget {
 
 class NestedHeader extends StatelessWidget {
   final String title;
-  const NestedHeader({super.key, required this.title});
+  final Widget? action;
+  const NestedHeader({super.key, required this.title, this.action});
 
   @override
   Widget build(BuildContext context) {
@@ -199,6 +200,10 @@ class NestedHeader extends StatelessWidget {
               ),
             ),
           ),
+          if (action != null) ...[
+            const SizedBox(width: 12),
+            action!,
+          ],
         ],
       ),
     );

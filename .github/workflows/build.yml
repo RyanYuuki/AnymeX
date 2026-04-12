@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  FLUTTER_VERSION: "3.32.8"
+  FLUTTER_VERSION: "3.41.6"
   ZSIGN_VERSION: "0.7"
 
 jobs:
@@ -50,7 +50,7 @@ jobs:
             ${{ runner.os }}-cargo-
       
       - uses: actions/setup-java@v3
-        if: matrix.platform == 'android'
+        if: matrix.platform == 'android' || matrix.platform == 'linux' || matrix.platform == 'windows' || matrix.platform == 'macos'
         with:
           distribution: "adopt"
           java-version: "17"
@@ -106,7 +106,7 @@ jobs:
         if: matrix.platform == 'linux'
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq ninja-build cmake clang mpv libgtk-3-dev libblkid-dev liblzma-dev pkg-config libmpv-dev webkit2gtk-4.1 fuse rpm
+          sudo apt-get install -y -qq ninja-build cmake maven clang mpv libgtk-3-dev libblkid-dev liblzma-dev pkg-config libmpv-dev webkit2gtk-4.1 fuse rpm
           wget -qO appimagetool "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"
           chmod +x appimagetool && sudo mv appimagetool /usr/local/bin/
       
@@ -229,9 +229,13 @@ jobs:
         if: matrix.platform == 'linux'
         run: |
           flutter pub get
+          dart run jni:setup
           flutter build linux --release
-          rm -rf AppDir && mkdir -p AppDir/usr/{bin,share/icons/hicolor/256x256/apps}
+          rm -rf AppDir && mkdir -p AppDir/usr/{bin,share/icons/hicolor/256x256/apps,lib}
           cp -r build/linux/x64/release/bundle/* AppDir/usr/bin/
+          if [ -d "build/jni_libs" ]; then
+            cp build/jni_libs/*.so AppDir/usr/bin/lib/ 2>/dev/null || true
+          fi
           cp assets/images/logo.png AppDir/usr/share/icons/hicolor/256x256/apps/anymex.png
           cp assets/images/logo.png AppDir/anymex.png
           cat > AppDir/anymex.desktop << 'EOF'
@@ -247,7 +251,7 @@ jobs:
           SELF=$(readlink -f "$0")
           HERE=${SELF%/*}
           export PATH="${HERE}/usr/bin/:${PATH}"
-          export LD_LIBRARY_PATH="${HERE}/usr/lib/:${LD_LIBRARY_PATH}"
+          export LD_LIBRARY_PATH="${HERE}/usr/bin/lib/:${HERE}/usr/lib/:${LD_LIBRARY_PATH}"
           exec "${HERE}/usr/bin/anymex" "$@"
           EOF
           chmod +x AppDir/AppRun
@@ -306,6 +310,7 @@ jobs:
             exit 1
           }
           flutter pub get
+          dart run jni:setup
           dart run inno_bundle:build --release 2>&1 | Select-String -Pattern "Compile aborted" -NotMatch
           $issFile = "build\windows\x64\installer\Release\inno-script.iss"
           if (-not (Test-Path $issFile)) {
@@ -328,7 +333,11 @@ jobs:
       - name: Build macOS
         if: matrix.platform == 'macos'
         run: |
+          if ! command -v mvn &> /dev/null; then
+            brew install maven
+          fi
           flutter pub get
+          dart run jni:setup
           flutter build macos --release
           APP_PATH="build/macos/Build/Products/Release/anymex.app"
           [ ! -d "$APP_PATH" ] && echo "Error: anymex.app not found" && exit 1

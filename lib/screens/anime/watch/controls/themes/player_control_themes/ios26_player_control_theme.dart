@@ -418,14 +418,14 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
           ? ControlButton(
               icon: Symbols.subtitles_rounded,
               onPressed: () =>
-                  PlayerBottomSheets.showSubtitleTracks(context, controller),
+                  PlayerBottomSheets.showUnifiedSubtitles(context, controller),
               tooltip: 'Subtitles',
               compact: true,
             )
           : ControlButton(
               icon: Symbols.subtitles_rounded,
               onPressed: () =>
-                  PlayerBottomSheets.showOfflineSubs(context, controller),
+                  PlayerBottomSheets.showUnifiedSubtitles(context, controller),
               tooltip: 'Subtitles',
               compact: true,
             ),

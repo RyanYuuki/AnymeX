@@ -9,8 +9,10 @@ import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/overlay.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/buffering_overlay.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/subtitle_text.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/unified_subtitle_pane.dart';
 import 'package:anymex/screens/anime/watch/subtitles/subtitle_view.dart';
 import 'package:anymex/screens/anime/widgets/media_indicator.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -52,8 +54,7 @@ class _WatchScreenState extends State<WatchScreen> {
 
   @override
   void dispose() {
-    controller.delete();
-    Get.delete<PlayerController>(force: true);
+    Get.delete<PlayerController>();
     super.dispose();
   }
 
@@ -104,6 +105,13 @@ class _WatchScreenState extends State<WatchScreen> {
           bottom: 0,
           left: 0,
           child: SubtitleSearchBottomSheet(controller: controller),
+        ),
+        Positioned(
+          right: 0,
+          top: 0,
+          bottom: 0,
+          left: 0,
+          child: UnifiedSubtitlePane(controller: controller),
         ),
         Positioned(
           right: 0,

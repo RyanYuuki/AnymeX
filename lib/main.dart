@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:anymex/controllers/cacher/cache_controller.dart';
+import 'package:anymex/screens/downloads/controller/download_controller.dart';
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -47,6 +48,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
@@ -101,6 +103,11 @@ void initDeepLinkListener() async {
 void main(List<String> args) async {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
+    if (Platform.isAndroid) {
+      FlutterDisplayMode.setHighRefreshRate().catchError((e) {
+        debugPrint("Error setting high refresh rate: $e");
+      });
+    }
     ExternalFontLoader.loadAllFonts();
 
     await Logger.init();
@@ -134,6 +141,7 @@ void main(List<String> args) async {
           systemNavigationBarDividerColor: Colors.transparent,
           systemNavigationBarContrastEnforced: false,
           systemNavigationBarColor: Colors.transparent,
+          systemNavigationBarIconBrightness: Brightness.dark,
           statusBarColor: Colors.transparent,
           statusBarBrightness: Brightness.dark));
     }
@@ -147,7 +155,7 @@ void main(List<String> args) async {
     runApp(
       ChangeNotifierProvider(
         create: (context) => ThemeProvider(),
-        child: const MyAdaptiveWrapper(child: MainApp()),
+        child: const MainApp(),
       ),
     );
   }, (error, stackTrace) async {
@@ -177,6 +185,7 @@ void _initializeGetxController() async {
   Get.put(CommentumService());
   Get.put(CommentPreloader());
   Get.put(GistSyncController(), permanent: true);
+  Get.put(DownloadController(), permanent: true);
   Get.lazyPut(() => CacheController());
   await StorageManagerService().enforceImageCacheLimit();
 }

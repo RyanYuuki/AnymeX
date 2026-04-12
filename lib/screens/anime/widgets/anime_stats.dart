@@ -4,6 +4,7 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
+import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/anime/studio_details_page.dart';
 import 'package:anymex/screens/anime/themes/anime_theme_view.dart';
 import 'package:anymex/screens/anime/widgets/watch_order_page.dart';
@@ -19,6 +20,7 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -411,15 +413,29 @@ class AnimeStats extends StatelessWidget {
                                   mobileSize: 60, desktopSize: 80),
                               buttonText: relation.relationType,
                               onPressed: () {
+                                final isMangaRelation = relation.type == 'MANGA';
+                                final media = Media(
+                                  id: relation.id.toString(),
+                                  title: relation.title,
+                                  poster: relation.poster,
+                                  cover: relation.cover,
+                                  type: relation.type,
+                                  mediaType: isMangaRelation
+                                      ? ItemType.manga
+                                      : ItemType.anime,
+                                  serviceType: ServicesType.anilist,
+                                );
+
                                 navigate(
-                                  () => AnimeDetailsPage(
-                                      media: Media(
-                                          id: relation.id.toString(),
-                                          title: relation.title,
-                                          poster: relation.poster,
-                                          cover: relation.cover,
-                                          serviceType: ServicesType.anilist),
-                                      tag: relation.id.toString()),
+                                  () => isMangaRelation
+                                      ? MangaDetailsPage(
+                                          media: media,
+                                          tag: relation.id.toString(),
+                                        )
+                                      : AnimeDetailsPage(
+                                          media: media,
+                                          tag: relation.id.toString(),
+                                        ),
                                 );
                               },
                               backgroundImage: relation.cover.isNotEmpty

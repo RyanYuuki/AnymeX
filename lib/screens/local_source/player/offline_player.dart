@@ -55,8 +55,7 @@ class _OfflineWatchPageState extends State<OfflineWatchPage> {
 
   @override
   void dispose() {
-    controller.delete();
-    Get.delete<PlayerController>(force: true);
+    Get.delete<PlayerController>();
     super.dispose();
   }
 

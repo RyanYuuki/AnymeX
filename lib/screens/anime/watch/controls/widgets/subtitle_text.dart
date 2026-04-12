@@ -24,9 +24,8 @@ class SubtitleText extends StatelessWidget {
       final assRx = RegExp(r'\{[^}]*\}');
       final newlineRx = RegExp(r'\\[nN]');
 
-      final bottomPosition = controller.showControls.value
-          ? 100
-          : (30 + controller.playerSettings.subtitleBottomMargin);
+      final bottomPosition = (controller.showControls.value ? 100 : 30) +
+          controller.playerSettings.subtitleBottomMargin;
 
       final useTranslation = controller.playerSettings.autoTranslate &&
           controller.translatedSubtitle.value.isNotEmpty;

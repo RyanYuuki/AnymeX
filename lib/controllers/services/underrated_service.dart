@@ -3,7 +3,7 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/utils/logger.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
@@ -11,31 +11,63 @@ class UnderratedEntry {
   final int? anilistId;
   final int? malId;
   final String? title;
+  final String? poster;
+  final String? score;
   final int? anilistUserId;
   final int? malUserId;
-  final String? author;
+  final String? anilistUsername;
+  final String? malUsername;
+  final String? anilistAvatar;
+  final String? malAvatar;
   final String? reason;
 
   UnderratedEntry({
     this.anilistId,
     this.malId,
     this.title,
+    this.poster,
+    this.score,
     this.anilistUserId,
     this.malUserId,
-    this.author,
+    this.anilistUsername,
+    this.malUsername,
+    this.anilistAvatar,
+    this.malAvatar,
     this.reason,
   });
 
   factory UnderratedEntry.fromJson(Map<String, dynamic> json) {
+    final user = json['user'] as Map<String, dynamic>?;
+    final anilistUser = user?['anilist'] as Map<String, dynamic>?;
+    final malUser = user?['mal'] as Map<String, dynamic>?;
+
     return UnderratedEntry(
       anilistId: json['anilist_id'] ?? json['id'],
       malId: json['mal_id'],
-      title: json['title'],
-      anilistUserId: json['anilist_user_id'],
-      malUserId: json['mal_user_id'],
-      author: json['author'],
-      reason: json['reason'],
+      title: json['title']?.toString(),
+      poster: json['poster']?.toString(),
+      score: _normalizeScore(json['score'] ?? json['averageScore']),
+      anilistUserId: anilistUser?['id'] as int?,
+      malUserId: malUser?['id'] as int?,
+      anilistUsername: anilistUser?['username']?.toString(),
+      malUsername: malUser?['username']?.toString(),
+      anilistAvatar: anilistUser?['avatar']?.toString(),
+      malAvatar: malUser?['avatar']?.toString(),
+      reason: json['reason']?.toString(),
     );
+  }
+
+  static String? _normalizeScore(dynamic rawScore) {
+    final numericScore = switch (rawScore) {
+      num value => value.toDouble(),
+      String value => double.tryParse(value),
+      _ => null,
+    };
+
+    if (numericScore == null) return null;
+
+    final normalized = numericScore > 10 ? numericScore / 10 : numericScore;
+    return normalized.toStringAsFixed(1);
   }
 }
 
@@ -44,8 +76,6 @@ class UnderratedService extends GetxController {
       'https://raw.githubusercontent.com/Shebyyy/AnymeX-Preview/beta/underrated_anime.json';
   static const String _mangaJsonUrl =
       'https://raw.githubusercontent.com/Shebyyy/AnymeX-Preview/beta/underrated_manga.json';
-
-  static const String _anilistApi = 'https://graphql.anilist.co';
 
   RxList<UnderratedMedia> underratedAnimes = <UnderratedMedia>[].obs;
   RxList<UnderratedMedia> underratedMangas = <UnderratedMedia>[].obs;
@@ -56,7 +86,11 @@ class UnderratedService extends GetxController {
   RxString animeError = ''.obs;
   RxString mangaError = ''.obs;
 
-  static const Set<String> _filteredStatuses = {'COMPLETED', 'CURRENT', 'DROPPED'};
+  static const Set<String> _filteredStatuses = {
+    'COMPLETED',
+    'CURRENT',
+    'DROPPED'
+  };
 
   ServicesType? _cachedServiceType;
 
@@ -67,16 +101,21 @@ class UnderratedService extends GetxController {
       final onlineService = serviceHandler.onlineService;
       final userList = onlineService.animeList;
 
-      if (userList.isEmpty) return underratedAnimes.toList();
+      if (userList.isEmpty) return underratedAnimes.reversed.toList();
 
       final filteredIds = userList
-          .where((item) => _filteredStatuses.contains(item.watchingStatus?.toUpperCase()))
+          .where((item) =>
+              _filteredStatuses.contains(item.watchingStatus?.toUpperCase()))
           .map((item) => item.id)
           .toSet();
 
-      return underratedAnimes.where((item) => !filteredIds.contains(item.media.id)).toList();
+      return underratedAnimes
+          .where((item) => !filteredIds.contains(item.media.id))
+          .toList()
+          .reversed
+          .toList();
     } catch (e) {
-      return underratedAnimes.toList();
+      return underratedAnimes.reversed.toList();
     }
   }
 
@@ -87,205 +126,66 @@ class UnderratedService extends GetxController {
       final onlineService = serviceHandler.onlineService;
       final userList = onlineService.mangaList;
 
-      if (userList.isEmpty) return underratedMangas.toList();
+      if (userList.isEmpty) return underratedMangas.reversed.toList();
 
       final filteredIds = userList
-          .where((item) => _filteredStatuses.contains(item.watchingStatus?.toUpperCase()))
+          .where((item) =>
+              _filteredStatuses.contains(item.watchingStatus?.toUpperCase()))
           .map((item) => item.id)
           .toSet();
 
-      return underratedMangas.where((item) => !filteredIds.contains(item.media.id)).toList();
+      return underratedMangas
+          .where((item) => !filteredIds.contains(item.media.id))
+          .toList()
+          .reversed
+          .toList();
     } catch (e) {
-      return underratedMangas.toList();
+      return underratedMangas.reversed.toList();
     }
   }
 
-  Future<Media?> _fetchMediaFromAnilist(int anilistId, bool isManga) async {
-    final String mediaType = isManga ? 'MANGA' : 'ANIME';
-    final String query = '''
-      query (\$id: Int, \$type: MediaType) {
-        Media(id: \$id, type: \$type) {
-          id
-          idMal
-          title {
-            romaji
-            english
-            native
-          }
-          description(asHtml: false)
-          coverImage {
-            large
-            extraLarge
-            color
-          }
-          bannerImage
-          episodes
-          chapters
-          status
-          averageScore
-          popularity
-          genres
-          format
-          season
-          seasonYear
-          studios(isMain: true) {
-            nodes {
-              name
-            }
-          }
-          nextAiringEpisode {
-            airingAt
-            timeUntilAiring
-            episode
-          }
-        }
-      }
-    ''';
-
-    try {
-      final response = await http.post(
-        Uri.parse(_anilistApi),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          'query': query,
-          'variables': {
-            'id': anilistId,
-            'type': mediaType,
-          },
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final mediaData = data['data']?['Media'];
-        if (mediaData != null) {
-          return Media.fromUnderratedAnilist(mediaData, isManga);
-        }
-      } else {
-        Logger.i('Failed to fetch media $anilistId: ${response.statusCode}');
-      }
-    } catch (e) {
-      Logger.i('Error fetching media $anilistId: $e');
-    }
-    return null;
-  }
-
-  Future<Media?> _fetchMediaFromMAL(int malId, bool isManga) async {
-    try {
-      final clientId = dotenv.env['MAL_CLIENT_ID'] ?? '';
-      if (clientId.isEmpty) return null;
-
-      final endpoint = isManga ? 'manga' : 'anime';
-      final fields = "fields=main_picture,mean,status,media_type,synopsis,genres,num_episodes,num_chapters,rank,popularity";
-
-      final response = await http.get(
-        Uri.parse('https://api.myanimelist.net/v2/$endpoint/$malId?$fields'),
-        headers: {'X-MAL-CLIENT-ID': clientId},
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        return Media.fromFullMAL(data);
-      } else {
-        Logger.i('Failed to fetch MAL media $malId: ${response.statusCode}');
-      }
-    } catch (e) {
-      Logger.i('Error fetching MAL media $malId: $e');
-    }
-    return null;
-  }
-
-  Future<String?> _fetchAnilistUsername(int userId) async {
-    const String query = '''
-      query (\$id: Int) {
-        User(id: \$id) {
-          name
-        }
-      }
-    ''';
-
-    try {
-      final response = await http.post(
-        Uri.parse(_anilistApi),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          'query': query,
-          'variables': {'id': userId},
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        return data['data']?['User']?['name'];
-      }
-    } catch (e) {
-      Logger.i('Error fetching AniList username for $userId: $e');
-    }
-    return null;
-  }
-
-  Future<String?> _fetchMALUsername(int userId) async {
-    try {
-      final clientId = dotenv.env['MAL_CLIENT_ID'] ?? '';
-      if (clientId.isEmpty) return null;
-
-      final response = await http.get(
-        Uri.parse('https://api.myanimelist.net/v2/users/$userId'),
-        headers: {'X-MAL-CLIENT-ID': clientId},
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        return data['name'];
-      }
-    } catch (e) {
-      Logger.i('Error fetching MAL username for $userId: $e');
-    }
-    return null;
-  }
-
-  Future<UnderratedMedia?> _processEntry(
+  UnderratedMedia? _processEntry(
     UnderratedEntry entry,
     bool isManga,
     ServicesType serviceType,
-  ) async {
-    Media? media;
-    String? fetchedAuthor;
-
-    final malId = entry.malId;
-    final anilistId = entry.anilistId;
-    final malUserId = entry.malUserId;
-    final anilistUserId = entry.anilistUserId;
-
-    if (serviceType == ServicesType.mal && malId != null) {
-      media = await _fetchMediaFromMAL(malId, isManga);
-      if (malUserId != null) {
-        fetchedAuthor = await _fetchMALUsername(malUserId);
-      }
-    } else if (anilistId != null && anilistId != 0) {
-      media = await _fetchMediaFromAnilist(anilistId, isManga);
-      if (anilistUserId != null) {
-        fetchedAuthor = await _fetchAnilistUsername(anilistUserId);
-      }
+  ) {
+    final primaryId =
+        serviceType == ServicesType.mal ? entry.malId : entry.anilistId;
+    if (primaryId == null || primaryId == 0) {
+      return null;
     }
 
-    if (media != null) {
-      return UnderratedMedia(
-        media: media,
-        anilistUserId: entry.anilistUserId,
-        malUserId: entry.malUserId,
-        author: fetchedAuthor ?? entry.author,
-        reason: entry.reason,
-        fallbackTitle: entry.title,
-      );
-    }
-    return null;
+    final media = Media(
+      id: primaryId.toString(),
+      idMal: (entry.malId ?? 0).toString(),
+      title: entry.title ?? 'Unknown Title',
+      romajiTitle: entry.title ?? 'Unknown Title',
+      poster: entry.poster ?? '',
+      largePoster: entry.poster ?? '',
+      rating: entry.score ?? '?',
+      mediaType: isManga ? ItemType.manga : ItemType.anime,
+      type: isManga ? 'MANGA' : 'ANIME',
+      serviceType: serviceType,
+    );
+
+    return UnderratedMedia(
+      media: media,
+      anilistUserId: entry.anilistUserId,
+      malUserId: entry.malUserId,
+      anilistUsername: entry.anilistUsername,
+      malUsername: entry.malUsername,
+      anilistAvatar: entry.anilistAvatar,
+      malAvatar: entry.malAvatar,
+      reason: entry.reason,
+      fallbackTitle: entry.title,
+    );
   }
 
   Future<void> fetchUnderratedAnime() async {
     final serviceType = Get.find<ServiceHandler>().serviceType.value;
 
-    if (underratedAnimes.isNotEmpty && _cachedServiceType == serviceType) return;
+    if (underratedAnimes.isNotEmpty && _cachedServiceType == serviceType)
+      return;
 
     if (_cachedServiceType != serviceType) {
       underratedAnimes.clear();
@@ -302,11 +202,10 @@ class UnderratedService extends GetxController {
         final List<dynamic> data = json.decode(response.body);
         final entries = data.map((e) => UnderratedEntry.fromJson(e)).toList();
 
-        final results = await Future.wait(
-          entries.map((entry) => _processEntry(entry, false, serviceType)),
-        );
-
-        underratedAnimes.value = results.whereType<UnderratedMedia>().toList();
+        underratedAnimes.value = entries
+            .map((entry) => _processEntry(entry, false, serviceType))
+            .whereType<UnderratedMedia>()
+            .toList();
         _cachedServiceType = serviceType;
         Logger.i('Fetched ${underratedAnimes.length} underrated anime');
       } else {
@@ -324,7 +223,8 @@ class UnderratedService extends GetxController {
   Future<void> fetchUnderratedManga() async {
     final serviceType = Get.find<ServiceHandler>().serviceType.value;
 
-    if (underratedMangas.isNotEmpty && _cachedServiceType == serviceType) return;
+    if (underratedMangas.isNotEmpty && _cachedServiceType == serviceType)
+      return;
 
     isLoadingManga.value = true;
     mangaError.value = '';
@@ -336,11 +236,10 @@ class UnderratedService extends GetxController {
         final List<dynamic> data = json.decode(response.body);
         final entries = data.map((e) => UnderratedEntry.fromJson(e)).toList();
 
-        final results = await Future.wait(
-          entries.map((entry) => _processEntry(entry, true, serviceType)),
-        );
-
-        underratedMangas.value = results.whereType<UnderratedMedia>().toList();
+        underratedMangas.value = entries
+            .map((entry) => _processEntry(entry, true, serviceType))
+            .whereType<UnderratedMedia>()
+            .toList();
         _cachedServiceType = serviceType;
         Logger.i('Fetched ${underratedMangas.length} underrated manga');
       } else {
@@ -377,7 +276,10 @@ class UnderratedMedia {
   final Media media;
   final int? anilistUserId;
   final int? malUserId;
-  final String? author;
+  final String? anilistUsername;
+  final String? malUsername;
+  final String? anilistAvatar;
+  final String? malAvatar;
   final String? reason;
   final String? fallbackTitle;
 
@@ -385,14 +287,34 @@ class UnderratedMedia {
     required this.media,
     this.anilistUserId,
     this.malUserId,
-    this.author,
+    this.anilistUsername,
+    this.malUsername,
+    this.anilistAvatar,
+    this.malAvatar,
     this.reason,
     this.fallbackTitle,
   });
 
-  String get displayTitle => media.title.isNotEmpty ? media.title : (fallbackTitle ?? 'Unknown');
+  String get displayTitle =>
+      media.title.isNotEmpty ? media.title : (fallbackTitle ?? 'Unknown');
 
   String get displayDescription => reason ?? media.description;
+
+  String? get author => usernameFor(media.serviceType);
+
+  String? usernameFor(ServicesType serviceType) {
+    if (serviceType == ServicesType.mal) {
+      return malUsername ?? anilistUsername;
+    }
+    return anilistUsername ?? malUsername;
+  }
+
+  String? avatarFor(ServicesType serviceType) {
+    if (serviceType == ServicesType.mal) {
+      return malAvatar ?? anilistAvatar;
+    }
+    return anilistAvatar ?? malAvatar;
+  }
 
   CarouselData toCarouselData({bool isManga = false}) {
     return CarouselData(
@@ -402,9 +324,7 @@ class UnderratedMedia {
       extraData: media.rating.toString(),
       servicesType: media.serviceType,
       releasing: media.status == "RELEASING",
-      anilistUserId: anilistUserId,
-      malUserId: malUserId,
-      author: author,
+      author: usernameFor(media.serviceType),
       reason: reason,
     );
   }

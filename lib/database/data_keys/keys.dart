@@ -143,6 +143,7 @@ enum SourceKeys {
 enum PluginKeys {
   runtimeHostInstalledVersion,
   runtimeHostInstalledReleaseTitle,
+  bridgeMode,
 }
 
 enum AuthKeys {
@@ -163,6 +164,8 @@ enum TapZoneKeys {
   tapZonesWebtoon,
   tapZonesWebtoonHorizontal,
   tapZonesEnabled,
+  tapZonesActiveIsWebtoon,
+  tapZonesActiveIsVertical,
 }
 
 enum DynamicKeys {
@@ -251,3 +254,12 @@ enum UISettingsKeys {
   carouselStyle,
   showContinueWatchingCard,
 }
+
+enum DownloadKeys {
+  downloadPath,
+  concurrentDownloads,
+  saveActiveTasks,
+  downloadChunks,
+  hlsParallelSegments,
+}
+

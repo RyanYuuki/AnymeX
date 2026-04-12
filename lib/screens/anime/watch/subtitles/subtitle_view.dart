@@ -74,7 +74,6 @@ class _SubtitleSearchBottomSheetState extends State<SubtitleSearchBottomSheet> {
       _searchResults.assignAll(results);
     } catch (e) {
       Logger.e('Search error: ${e.toString()}');
-      _showError('Search failed: ${e.toString()}');
     } finally {
       _isLoadingSearch.value = false;
     }
