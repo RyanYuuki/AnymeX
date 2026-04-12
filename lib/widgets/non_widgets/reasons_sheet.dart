@@ -1,5 +1,5 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/controllers/services/underrated_service.dart';
+import 'package:anymex/controllers/services/community_service.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
@@ -12,7 +12,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class ReasonsSheet extends StatefulWidget {
-  final UnderratedMedia item;
+  final CommunityMedia item;
   final ItemType mediaItemType;
   final String? voteMediaType;
   final String? voteMediaId;
@@ -27,7 +27,7 @@ class ReasonsSheet extends StatefulWidget {
 
   static void show(
     BuildContext context, {
-    required UnderratedMedia item,
+    required CommunityMedia item,
     required ItemType mediaItemType,
     String? voteMediaType,
     String? voteMediaId,
@@ -66,7 +66,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
   void initState() {
     super.initState();
     _runAdminCheck();
-    if (UnderratedService.votingEnabled &&
+    if (CommunityService.votingEnabled &&
         widget.voteMediaType != null &&
         widget.voteMediaId != null) {
       _loadVotes();
@@ -100,7 +100,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
 
   Future<void> _runAdminCheck() async {
     final profile = _sh.profileData.value;
-    final isAdmin = await UnderratedService.checkIsAdmin(
+    final isAdmin = await CommunityService.checkIsAdmin(
       serviceType: _serviceType,
       profile: profile,
     );
@@ -129,7 +129,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
       simklId = int.tryParse(profile.id ?? '');
     }
 
-    final result = await UnderratedService.fetchVotes(
+    final result = await CommunityService.fetchVotes(
       widget.voteMediaType!,
       widget.voteMediaId!,
       anilistUserId: anilistId,
@@ -168,7 +168,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
 
     setState(() => _voteLoading = true);
 
-    final result = await UnderratedService.castVote(
+    final result = await CommunityService.castVote(
       mediaType: widget.voteMediaType!,
       mediaId: widget.voteMediaId!,
       direction: direction,
@@ -258,8 +258,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide:
-                          BorderSide(color: colors.primary, width: 1.5),
+                      borderSide: BorderSide(color: colors.primary, width: 1.5),
                     ),
                   ),
                 ),
@@ -276,7 +275,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
                       Navigator.of(ctx).pop();
 
                       final profile = _sh.profileData.value;
-                      final error = await UnderratedService.editReason(
+                      final error = await CommunityService.editReason(
                         mediaType: widget.voteMediaType ?? 'anime',
                         mediaId: widget.voteMediaId ??
                             widget.item.media.id.toString(),
@@ -339,10 +338,9 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
     if (confirmed != true) return;
 
     final profile = _sh.profileData.value;
-    final (error, pending) = await UnderratedService.deleteReasonWithStatus(
+    final (error, pending) = await CommunityService.deleteReasonWithStatus(
       mediaType: widget.voteMediaType ?? 'anime',
-      mediaId:
-          widget.voteMediaId ?? widget.item.media.id.toString(),
+      mediaId: widget.voteMediaId ?? widget.item.media.id.toString(),
       serviceType: _serviceType,
       profile: profile,
       isAdmin: _isAdmin,
@@ -370,7 +368,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
     final colors = context.colors;
     final bottomPadding = MediaQuery.of(context).padding.bottom;
     final reasons = widget.item.reasons;
-    final showVoteBar = UnderratedService.votingEnabled &&
+    final showVoteBar = CommunityService.votingEnabled &&
         widget.voteMediaType != null &&
         widget.voteMediaId != null;
 
@@ -383,8 +381,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
         return Container(
           decoration: BoxDecoration(
             color: colors.surface,
-            borderRadius:
-                const BorderRadius.vertical(top: Radius.circular(20)),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -409,8 +406,8 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
                           return Padding(
                             padding: EdgeInsets.only(
                                 bottom: index < reasons.length - 1 ? 10 : 0),
-                            child: _buildReasonCard(
-                                colors, reasons[index], index),
+                            child:
+                                _buildReasonCard(colors, reasons[index], index),
                           );
                         },
                       ),
@@ -480,9 +477,8 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
               ),
               const SizedBox(height: 4),
               AnymexText(
-                text: count == 1
-                    ? '1 Recommendation'
-                    : '$count Recommendations',
+                text:
+                    count == 1 ? '1 Recommendation' : '$count Recommendations',
                 size: 12,
                 color: colors.onSurfaceVariant,
                 variant: TextVariant.semiBold,
@@ -521,15 +517,15 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
     );
   }
 
-  Widget _buildReasonCard(
-      ColorScheme colors, ReasonEntry reason, int index) {
+  Widget _buildReasonCard(ColorScheme colors, ReasonEntry reason, int index) {
     final isMine = _isMyReason(reason);
     final canEditOrDelete = isMine || (_isAdmin && !_adminLoading);
 
     final serviceType = _serviceType;
     final username = reason.usernameFor(serviceType) ?? 'Unknown';
     final avatarUrl = reason.avatarFor(serviceType);
-    final fallbackLetter = username.trim().isNotEmpty ? username.trim()[0] : '?';
+    final fallbackLetter =
+        username.trim().isNotEmpty ? username.trim()[0] : '?';
 
     // Navigate to THIS reason author's profile (not the entry-level author)
     void navigateProfile() {
@@ -547,9 +543,8 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
             ? colors.primaryContainer.withOpacity(0.25)
             : colors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(12),
-        border: isMine
-            ? Border.all(color: colors.primary.withOpacity(0.2))
-            : null,
+        border:
+            isMine ? Border.all(color: colors.primary.withOpacity(0.2)) : null,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -575,9 +570,8 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
                         text: username,
                         variant: TextVariant.semiBold,
                         size: 13,
-                        color: hasValidProfile
-                            ? colors.primary
-                            : colors.onSurface,
+                        color:
+                            hasValidProfile ? colors.primary : colors.onSurface,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -593,8 +587,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
                           ),
                         ],
                         if (reason.editedAt != null) ...[
-                          if (reason.addedAt != null)
-                            const SizedBox(width: 6),
+                          if (reason.addedAt != null) const SizedBox(width: 6),
                           Container(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 5, vertical: 1),
@@ -617,8 +610,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 5, vertical: 1),
                             decoration: BoxDecoration(
-                              color: colors.primaryContainer
-                                  .withOpacity(0.4),
+                              color: colors.primaryContainer.withOpacity(0.4),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: AnymexText(
@@ -657,8 +649,8 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
               children: [
                 if (_isAdmin && !isMine)
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 5, vertical: 1),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
                     margin: const EdgeInsets.only(right: 6),
                     decoration: BoxDecoration(
                       color: colors.errorContainer,
@@ -927,9 +919,8 @@ class _ReasonsVoteButton extends StatelessWidget {
           decoration: BoxDecoration(
             color: active ? activeBgColor : Colors.transparent,
             borderRadius: BorderRadius.circular(10),
-            border: active
-                ? Border.all(color: activeColor.withOpacity(0.2))
-                : null,
+            border:
+                active ? Border.all(color: activeColor.withOpacity(0.2)) : null,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,

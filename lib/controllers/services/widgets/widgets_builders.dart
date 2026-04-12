@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/controllers/services/underrated_service.dart';
+import 'package:anymex/controllers/services/community_service.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
@@ -22,7 +22,6 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-
 
 Widget buildSection(String title, dynamic data,
     {DataVariant variant = DataVariant.regular,
@@ -57,7 +56,7 @@ Widget buildSection(String title, dynamic data,
   );
 }
 
-Widget buildUnderratedSection(String title, List<UnderratedMedia> data,
+Widget buildUnderratedSection(String title, List<CommunityMedia> data,
     {ItemType type = ItemType.anime, VoidCallback? onSeeAll}) {
   if (data.isEmpty) return const SizedBox.shrink();
   return _UnderratedCarousel(
@@ -113,7 +112,7 @@ Widget buildMangaSection(String title, List<Media> data,
   );
 }
 
-Widget buildUnderratedMangaSection(String title, List<UnderratedMedia> data,
+Widget buildUnderratedMangaSection(String title, List<CommunityMedia> data,
     {VoidCallback? onSeeAll}) {
   if (data.isEmpty) return const SizedBox.shrink();
   return _UnderratedCarousel(
@@ -146,7 +145,7 @@ Widget buildFutureSection(
 
 class _UnderratedCarousel extends StatelessWidget {
   final String title;
-  final List<UnderratedMedia> data;
+  final List<CommunityMedia> data;
   final ItemType type;
   final VoidCallback? onSeeAll;
 
@@ -231,7 +230,7 @@ class _UnderratedCarousel extends StatelessWidget {
 }
 
 class _UnderratedCard extends StatelessWidget {
-  final UnderratedMedia item;
+  final CommunityMedia item;
   final ItemType type;
 
   const _UnderratedCard({
@@ -257,8 +256,7 @@ class _UnderratedCard extends StatelessWidget {
     final theme = Theme.of(context);
     final isDesktop = MediaQuery.of(context).size.width > 600;
     final cardWidth = isDesktop ? 160.0 : 118.0;
-    final carouselData =
-        item.toCarouselData(isManga: type == ItemType.manga);
+    final carouselData = item.toCarouselData(isManga: type == ItemType.manga);
     final tag = 'underrated-${carouselData.id}-${item.media.hashCode}';
 
     return GestureDetector(

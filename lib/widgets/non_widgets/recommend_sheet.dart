@@ -1,5 +1,5 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/controllers/services/underrated_service.dart';
+import 'package:anymex/controllers/services/community_service.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
@@ -10,6 +10,7 @@ import 'package:get/get.dart';
 class RecommendSheet extends StatefulWidget {
   final Media media;
   final ItemType mediaItemType;
+
   /// Pre-existing entry data from the media peek popup (skips API check).
   final Map<String, dynamic>? existingEntry;
 
@@ -20,7 +21,8 @@ class RecommendSheet extends StatefulWidget {
     this.existingEntry,
   });
 
-  static void show(BuildContext context, Media media, ItemType mediaItemType, {Map<String, dynamic>? existingEntry}) {
+  static void show(BuildContext context, Media media, ItemType mediaItemType,
+      {Map<String, dynamic>? existingEntry}) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -56,7 +58,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
   ServiceHandler get _sh => Get.find<ServiceHandler>();
 
   String get _botMediaType {
-    final t = widget.media.type?.toUpperCase() ?? '';
+    final t = widget.media.type.toUpperCase();
     if (t == 'MANGA') return 'manga';
     if (t == 'MOVIE') return 'movie';
     if (t == 'SERIES') return 'show';
@@ -95,7 +97,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
 
   Future<void> _runCheck() async {
     final (id, idType) = _idAndType;
-    final entry = await UnderratedService.checkIfExists(
+    final entry = await CommunityService.checkIfExists(
       mediaType: _botMediaType,
       id: id,
       idType: idType,
@@ -107,7 +109,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
   }
 
   Future<void> _runAdminCheck() async {
-    final isAdmin = await UnderratedService.checkIsAdmin(
+    final isAdmin = await CommunityService.checkIsAdmin(
       serviceType: _sh.serviceType.value,
       profile: _sh.profileData.value,
     );
@@ -129,7 +131,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
     final serviceType = _sh.serviceType.value;
     final profile = _sh.profileData.value;
 
-    final error = await UnderratedService.submitRecommendation(
+    final error = await CommunityService.submitRecommendation(
       media: widget.media,
       reason: reason,
       serviceType: serviceType,
@@ -175,7 +177,6 @@ class _RecommendSheetState extends State<RecommendSheet> {
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-
           _buildBody(colors),
         ],
       ),
@@ -183,7 +184,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
   }
 
   Widget _buildBody(ColorScheme colors) {
-    if (!UnderratedService.votingEnabled) {
+    if (!CommunityService.votingEnabled) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 24),
         child: Column(
@@ -238,7 +239,9 @@ class _RecommendSheetState extends State<RecommendSheet> {
   /// Old format has top-level `reason` + `user`; new format has `reasons[]` array.
   static Map<String, dynamic> _ensureMigrated(Map<String, dynamic> entry) {
     final reasons = entry['reasons'] as List<dynamic>?;
-    if (reasons != null && reasons.isNotEmpty) return entry; // already new format
+    if (reasons != null && reasons.isNotEmpty) {
+      return entry; // already new format
+    }
 
     final text = entry['reason']?.toString() ?? '';
     final user = entry['user'] as Map<String, dynamic>?;
@@ -328,13 +331,19 @@ class _RecommendSheetState extends State<RecommendSheet> {
       final topUser = entry['user'] as Map<String, dynamic>;
       if (serviceType == ServicesType.anilist) {
         final al = topUser['anilist'] as Map<String, dynamic>?;
-        if (al != null && al['id'] == myId) return reasonsList[0] as Map<String, dynamic>;
+        if (al != null && al['id'] == myId) {
+          return reasonsList[0] as Map<String, dynamic>;
+        }
       } else if (serviceType == ServicesType.mal) {
         final mal = topUser['mal'] as Map<String, dynamic>?;
-        if (mal != null && mal['id'] == myId) return reasonsList[0] as Map<String, dynamic>;
+        if (mal != null && mal['id'] == myId) {
+          return reasonsList[0] as Map<String, dynamic>;
+        }
       } else if (serviceType == ServicesType.simkl) {
         final simkl = topUser['simkl'] as Map<String, dynamic>?;
-        if (simkl != null && simkl['id'] == myId) return reasonsList[0] as Map<String, dynamic>;
+        if (simkl != null && simkl['id'] == myId) {
+          return reasonsList[0] as Map<String, dynamic>;
+        }
       }
     }
     return null;
@@ -363,7 +372,8 @@ class _RecommendSheetState extends State<RecommendSheet> {
               children: [
                 Center(
                   child: Container(
-                    width: 40, height: 4,
+                    width: 40,
+                    height: 4,
                     margin: const EdgeInsets.only(bottom: 16),
                     decoration: BoxDecoration(
                       color: colors.onSurfaceVariant.withOpacity(0.3),
@@ -374,10 +384,12 @@ class _RecommendSheetState extends State<RecommendSheet> {
                 Row(children: [
                   Icon(Icons.edit_rounded, color: colors.primary, size: 20),
                   const SizedBox(width: 8),
-                  Text('Edit Reason', style: TextStyle(
-                    fontWeight: FontWeight.w600, fontSize: 15,
-                    color: colors.onSurface,
-                  )),
+                  Text('Edit Reason',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                        color: colors.onSurface,
+                      )),
                 ]),
                 const SizedBox(height: 16),
                 TextField(
@@ -415,7 +427,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                         return;
                       }
                       Navigator.of(ctx).pop();
-                      final error = await UnderratedService.editReason(
+                      final error = await CommunityService.editReason(
                         mediaType: _botMediaType,
                         mediaId: _idAndType.$1,
                         newReason: newReason,
@@ -474,7 +486,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
     );
     if (confirmed != true) return;
 
-    final (error, pending) = await UnderratedService.deleteEntryWithStatus(
+    final (error, pending) = await CommunityService.deleteEntryWithStatus(
       mediaType: _botMediaType,
       mediaId: _idAndType.$1,
       serviceType: _sh.serviceType.value,
@@ -521,7 +533,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
     );
     if (confirmed != true) return;
 
-    final (error, pending) = await UnderratedService.deleteReasonWithStatus(
+    final (error, pending) = await CommunityService.deleteReasonWithStatus(
       mediaType: _botMediaType,
       mediaId: _idAndType.$1,
       serviceType: _sh.serviceType.value,
@@ -564,8 +576,10 @@ class _RecommendSheetState extends State<RecommendSheet> {
       final rService = serviceType == ServicesType.simkl
           ? rUser['simkl'] as Map<String, dynamic>?
           : serviceType == ServicesType.mal
-              ? (rUser['mal'] as Map<String, dynamic>? ?? rUser['anilist'] as Map<String, dynamic>?)
-              : (rUser['anilist'] as Map<String, dynamic>? ?? rUser['mal'] as Map<String, dynamic>?);
+              ? (rUser['mal'] as Map<String, dynamic>? ??
+                  rUser['anilist'] as Map<String, dynamic>?)
+              : (rUser['anilist'] as Map<String, dynamic>? ??
+                  rUser['mal'] as Map<String, dynamic>?);
       userReasonAvatar = rService?['avatar']?.toString();
     }
     // For old format: also check entry-level user for avatar
@@ -574,8 +588,10 @@ class _RecommendSheetState extends State<RecommendSheet> {
       final tService = serviceType == ServicesType.simkl
           ? topUser['simkl'] as Map<String, dynamic>?
           : serviceType == ServicesType.mal
-              ? (topUser['mal'] as Map<String, dynamic>? ?? topUser['anilist'] as Map<String, dynamic>?)
-              : (topUser['anilist'] as Map<String, dynamic>? ?? topUser['mal'] as Map<String, dynamic>?);
+              ? (topUser['mal'] as Map<String, dynamic>? ??
+                  topUser['anilist'] as Map<String, dynamic>?)
+              : (topUser['anilist'] as Map<String, dynamic>? ??
+                  topUser['mal'] as Map<String, dynamic>?);
       userReasonAvatar = tService?['avatar']?.toString();
     }
     // Prefer avatar from the reason's own user block, then current profile
@@ -617,7 +633,8 @@ class _RecommendSheetState extends State<RecommendSheet> {
                   height: 68,
                   fit: BoxFit.cover,
                   errorWidget: (_, __, ___) => Container(
-                    width: 48, height: 68,
+                    width: 48,
+                    height: 68,
                     color: colors.surfaceContainerHigh,
                     child: const Icon(Icons.image_not_supported_rounded),
                   ),
@@ -629,23 +646,35 @@ class _RecommendSheetState extends State<RecommendSheet> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(title,
-                        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: colors.onSurface),
-                        maxLines: 2, overflow: TextOverflow.ellipsis),
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                            color: colors.onSurface),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis),
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Icon(Icons.check_circle_rounded, size: 14, color: colors.primary),
+                        Icon(Icons.check_circle_rounded,
+                            size: 14, color: colors.primary),
                         const SizedBox(width: 4),
-                        Text('Already recommended', style: TextStyle(fontSize: 12, color: colors.primary)),
+                        Text('Already recommended',
+                            style:
+                                TextStyle(fontSize: 12, color: colors.primary)),
                         if (_isAdmin && !isOwner) ...[
                           const SizedBox(width: 6),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
                               color: colors.errorContainer,
                               borderRadius: BorderRadius.circular(4),
                             ),
-                            child: Text('Admin', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: colors.onErrorContainer)),
+                            child: Text('Admin',
+                                style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w600,
+                                    color: colors.onErrorContainer)),
                           ),
                         ],
                       ],
@@ -676,18 +705,31 @@ class _RecommendSheetState extends State<RecommendSheet> {
                       CircleAvatar(
                         radius: 14,
                         backgroundColor: colors.primaryContainer,
-                        backgroundImage: myDisplayAvatar != null ? CachedNetworkImageProvider(myDisplayAvatar) : null,
-                        child: myDisplayAvatar == null ? Icon(Icons.person, size: 14, color: colors.onPrimaryContainer) : null,
+                        backgroundImage: myDisplayAvatar != null
+                            ? CachedNetworkImageProvider(myDisplayAvatar)
+                            : null,
+                        child: myDisplayAvatar == null
+                            ? Icon(Icons.person,
+                                size: 14, color: colors.onPrimaryContainer)
+                            : null,
                       ),
                       const SizedBox(width: 8),
-                      Text('Your Recommendation', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: colors.onSurface)),
+                      Text('Your Recommendation',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                              color: colors.onSurface)),
                     ],
                   ),
                   if (userReason['text']?.toString().isNotEmpty == true) ...[
                     const SizedBox(height: 8),
                     Text(
                       '"${userReason['text']}"',
-                      style: TextStyle(fontSize: 13, color: colors.onSurfaceVariant, fontStyle: FontStyle.italic, height: 1.5),
+                      style: TextStyle(
+                          fontSize: 13,
+                          color: colors.onSurfaceVariant,
+                          fontStyle: FontStyle.italic,
+                          height: 1.5),
                     ),
                   ],
                   if (canEditOrDelete) ...[
@@ -696,12 +738,14 @@ class _RecommendSheetState extends State<RecommendSheet> {
                       children: [
                         Expanded(
                           child: OutlinedButton.icon(
-                            onPressed: () => _editReason(userReason['text']?.toString() ?? ''),
+                            onPressed: () => _editReason(
+                                userReason['text']?.toString() ?? ''),
                             icon: const Icon(Icons.edit_rounded, size: 16),
                             label: const Text('Edit Reason'),
                             style: OutlinedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 10),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
                             ),
                           ),
                         ),
@@ -709,13 +753,15 @@ class _RecommendSheetState extends State<RecommendSheet> {
                         Expanded(
                           child: FilledButton.icon(
                             onPressed: _deleteReason,
-                            icon: const Icon(Icons.delete_outline_rounded, size: 16),
+                            icon: const Icon(Icons.delete_outline_rounded,
+                                size: 16),
                             label: const Text('Remove'),
                             style: FilledButton.styleFrom(
                               backgroundColor: colors.error,
                               foregroundColor: colors.onError,
                               padding: const EdgeInsets.symmetric(vertical: 10),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
                             ),
                           ),
                         ),
@@ -733,7 +779,11 @@ class _RecommendSheetState extends State<RecommendSheet> {
           // Other users' recommendations
           if (otherReasons.isNotEmpty) ...[
             const SizedBox(height: 16),
-            Text('Other Recommendations', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: colors.onSurfaceVariant)),
+            Text('Other Recommendations',
+                style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                    color: colors.onSurfaceVariant)),
             const SizedBox(height: 8),
             ...otherReasons.map((r) {
               final reason = r as Map<String, dynamic>;
@@ -741,10 +791,14 @@ class _RecommendSheetState extends State<RecommendSheet> {
               final rService = serviceType == ServicesType.simkl
                   ? reasonUser['simkl'] as Map<String, dynamic>?
                   : serviceType == ServicesType.mal
-                      ? (reasonUser['mal'] as Map<String, dynamic>? ?? reasonUser['anilist'] as Map<String, dynamic>?)
-                      : (reasonUser['anilist'] as Map<String, dynamic>? ?? reasonUser['mal'] as Map<String, dynamic>?);
+                      ? (reasonUser['mal'] as Map<String, dynamic>? ??
+                          reasonUser['anilist'] as Map<String, dynamic>?)
+                      : (reasonUser['anilist'] as Map<String, dynamic>? ??
+                          reasonUser['mal'] as Map<String, dynamic>?);
               final rAvatar = rService?['avatar']?.toString();
-              final rUsername = rService?['username']?.toString() ?? reason['author']?.toString() ?? 'Unknown';
+              final rUsername = rService?['username']?.toString() ??
+                  reason['author']?.toString() ??
+                  'Unknown';
               final rText = reason['text']?.toString() ?? '';
 
               return Padding(
@@ -755,7 +809,8 @@ class _RecommendSheetState extends State<RecommendSheet> {
                   decoration: BoxDecoration(
                     color: colors.surfaceContainerLow,
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: colors.outlineVariant.withOpacity(0.5)),
+                    border: Border.all(
+                        color: colors.outlineVariant.withOpacity(0.5)),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -765,18 +820,31 @@ class _RecommendSheetState extends State<RecommendSheet> {
                           CircleAvatar(
                             radius: 12,
                             backgroundColor: colors.surfaceContainerHigh,
-                            backgroundImage: rAvatar != null ? CachedNetworkImageProvider(rAvatar) : null,
-                            child: rAvatar == null ? Icon(Icons.person, size: 12, color: colors.onSurfaceVariant) : null,
+                            backgroundImage: rAvatar != null
+                                ? CachedNetworkImageProvider(rAvatar)
+                                : null,
+                            child: rAvatar == null
+                                ? Icon(Icons.person,
+                                    size: 12, color: colors.onSurfaceVariant)
+                                : null,
                           ),
                           const SizedBox(width: 6),
-                          Text(rUsername, style: TextStyle(fontWeight: FontWeight.w500, fontSize: 12, color: colors.onSurface)),
+                          Text(rUsername,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 12,
+                                  color: colors.onSurface)),
                         ],
                       ),
                       if (rText.isNotEmpty) ...[
                         const SizedBox(height: 6),
                         Text(
                           '"$rText"',
-                          style: TextStyle(fontSize: 12, color: colors.onSurfaceVariant, fontStyle: FontStyle.italic, height: 1.4),
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: colors.onSurfaceVariant,
+                              fontStyle: FontStyle.italic,
+                              height: 1.4),
                           maxLines: 4,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -808,7 +876,11 @@ class _RecommendSheetState extends State<RecommendSheet> {
             children: [
               Icon(Icons.add_comment_rounded, color: colors.primary, size: 18),
               const SizedBox(width: 8),
-              Text('Add Your Recommendation', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: colors.onSurface)),
+              Text('Add Your Recommendation',
+                  style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                      color: colors.onSurface)),
             ],
           ),
           const SizedBox(height: 10),
@@ -819,7 +891,8 @@ class _RecommendSheetState extends State<RecommendSheet> {
             maxLength: 700,
             decoration: InputDecoration(
               hintText: 'Why are you recommending this? (min 30 chars)',
-              hintStyle: TextStyle(color: colors.onSurfaceVariant, fontSize: 12),
+              hintStyle:
+                  TextStyle(color: colors.onSurfaceVariant, fontSize: 12),
               filled: true,
               fillColor: colors.surfaceContainerHighest.withOpacity(0.3),
               border: OutlineInputBorder(
@@ -834,7 +907,8 @@ class _RecommendSheetState extends State<RecommendSheet> {
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide(color: colors.primary, width: 1.5),
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             ),
             style: TextStyle(fontSize: 13, color: colors.onSurface),
           ),
@@ -844,12 +918,17 @@ class _RecommendSheetState extends State<RecommendSheet> {
             child: FilledButton.icon(
               onPressed: _submitting ? null : _submit,
               icon: _submitting
-                  ? SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: colors.onPrimary))
+                  ? SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: colors.onPrimary))
                   : const Icon(Icons.send_rounded, size: 16),
               label: Text(_submitting ? 'Submitting…' : 'Add Recommendation'),
               style: FilledButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
               ),
             ),
           ),
@@ -882,11 +961,9 @@ class _RecommendSheetState extends State<RecommendSheet> {
         const SizedBox(height: 4),
         Text(
           'Tell the community why this deserves more attention.',
-          style:
-              TextStyle(fontSize: 12, color: colors.onSurfaceVariant),
+          style: TextStyle(fontSize: 12, color: colors.onSurfaceVariant),
         ),
         const SizedBox(height: 16),
-
         TextField(
           controller: _reasonController,
           minLines: 3,
@@ -894,8 +971,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
           maxLength: 700,
           decoration: InputDecoration(
             hintText: 'Why is this underrated? (min 30 chars)',
-            hintStyle:
-                TextStyle(color: colors.onSurfaceVariant, fontSize: 13),
+            hintStyle: TextStyle(color: colors.onSurfaceVariant, fontSize: 13),
             filled: true,
             fillColor: colors.surfaceContainerLow,
             border: OutlineInputBorder(
@@ -916,7 +992,6 @@ class _RecommendSheetState extends State<RecommendSheet> {
           style: TextStyle(fontSize: 13, color: colors.onSurface),
         ),
         const SizedBox(height: 16),
-
         SizedBox(
           width: double.infinity,
           child: FilledButton.icon(
@@ -926,8 +1001,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                     width: 16,
                     height: 16,
                     child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: colors.onPrimary))
+                        strokeWidth: 2, color: colors.onPrimary))
                 : const Icon(Icons.send_rounded, size: 18),
             label: Text(_submitting ? 'Submitting…' : 'Submit Recommendation'),
             style: FilledButton.styleFrom(

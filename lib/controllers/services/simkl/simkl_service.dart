@@ -6,7 +6,7 @@ import 'dart:math' as math;
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/controllers/services/underrated_service.dart';
+import 'package:anymex/controllers/services/community_service.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
 import 'package:anymex/screens/community/community_recommendations_page.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
@@ -51,7 +51,7 @@ class SimklService extends GetxController
   RxList<Media> ukMovies = <Media>[].obs;
   RxList<Media> canadaMovies = <Media>[].obs;
 
-  final underratedService = Get.find<UnderratedService>();
+  final communityService = Get.find<CommunityService>();
 
   @override
   Future<Media> fetchDetails(FetchDetailsParams params) async {
@@ -163,8 +163,8 @@ class SimklService extends GetxController
         fetchSeries(),
         fetchCountryMovies(),
         fetchCountrySeries(),
-        underratedService.fetchUnderratedShows(),
-        underratedService.fetchUnderratedMovies(),
+        communityService.fetchCommunityShows(),
+        communityService.fetchCommunityMovies(),
       ]);
 
   Future<List<Media>> searchMovies(String query, {int page = 1}) async {
@@ -342,7 +342,7 @@ class SimklService extends GetxController
             ReusableCarousel(
                 data: canadaMovies.value, title: "Canadian Movies"),
           Obx(() {
-            final list = underratedService.getFilteredMovies();
+            final list = communityService.getFilteredCommunityMovies();
             return buildUnderratedSection('Community Recommendations', list,
                 onSeeAll: () => navigate(() => CommunityRecommendationsPage(
                       category: 'movies',
@@ -387,7 +387,7 @@ class SimklService extends GetxController
           if (canadaSeries.value.isNotEmpty)
             ReusableCarousel(data: canadaSeries.value, title: "Canadian Shows"),
           Obx(() {
-            final list = underratedService.getFilteredShows();
+            final list = communityService.getFilteredCommunityShows();
             return buildUnderratedSection('Community Recommendations', list,
                 onSeeAll: () => navigate(() => CommunityRecommendationsPage(
                       category: 'shows',
@@ -441,7 +441,8 @@ class SimklService extends GetxController
           Logger.i('[Simkl/$endpointType] Season map for $id: $seasons');
           return seasons;
         }
-        Logger.i('[Simkl/$endpointType] HTTP ${response.statusCode} for id=$id');
+        Logger.i(
+            '[Simkl/$endpointType] HTTP ${response.statusCode} for id=$id');
       } catch (e) {
         Logger.i('[Simkl/$endpointType] Error for $id: $e');
       }

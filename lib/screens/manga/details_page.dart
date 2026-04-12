@@ -43,7 +43,7 @@ import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:anymex/controllers/services/underrated_service.dart';
+import 'package:anymex/controllers/services/community_service.dart';
 import 'package:anymex/widgets/non_widgets/recommend_button.dart';
 
 class MangaDetailsPage extends StatefulWidget {
@@ -353,8 +353,8 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                     child: Column(
                       children: [
                         Obx(() {
-                          widget.media.serviceType.onlineService.isLoggedIn
-                              .value;
+                          widget
+                              .media.serviceType.onlineService.isLoggedIn.value;
                           return Row(
                             children: [
                               if (widget.media.serviceType !=
@@ -390,8 +390,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                                                 duration: 1000);
                                           }
                                         },
-                                        borderRadius:
-                                            BorderRadius.circular(16),
+                                        borderRadius: BorderRadius.circular(16),
                                         child: Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
@@ -418,7 +417,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                                   onTap: _showShareOptions,
                                 ),
                                 const SizedBox(width: 7),
-                                if (UnderratedService.votingEnabled)
+                                if (CommunityService.votingEnabled)
                                   RecommendIconButton(
                                     media: anilistData!,
                                     mediaItemType: ItemType.manga,
@@ -429,7 +428,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                                       onTap: onTap,
                                     ),
                                   ),
-                                if (UnderratedService.votingEnabled)
+                                if (CommunityService.votingEnabled)
                                   const SizedBox(width: 7),
                                 _buildActionIconButton(
                                   context: context,

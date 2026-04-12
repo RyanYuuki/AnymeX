@@ -1,5 +1,5 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/controllers/services/underrated_service.dart';
+import 'package:anymex/controllers/services/community_service.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -49,14 +49,14 @@ class _CommunityRecommendationsPageState
   @override
   void initState() {
     super.initState();
-    if (UnderratedService.votingEnabled) {
-      final svc = Get.find<UnderratedService>();
+    if (CommunityService.votingEnabled) {
+      final svc = Get.find<CommunityService>();
       final sourceList = switch (widget.category) {
-        'anime' => svc.underratedAnimes,
-        'manga' => svc.underratedMangas,
-        'shows' => svc.underratedShows,
-        'movies' => svc.underratedMovies,
-        _ => <UnderratedMedia>[].obs,
+        'anime' => svc.communityAnimes,
+        'manga' => svc.communityMangas,
+        'shows' => svc.communityShows,
+        'movies' => svc.communityMovies,
+        _ => <CommunityMedia>[].obs,
       };
       for (final item in sourceList) {
         _loadVotes(item);
@@ -64,31 +64,31 @@ class _CommunityRecommendationsPageState
     }
   }
 
-  String _mediaType(UnderratedMedia item) {
+  String _mediaType(CommunityMedia item) {
     final id = item.media.id;
     if (id.endsWith('*MOVIE')) return 'movie';
     if (id.endsWith('*SERIES')) return 'show';
     return widget.type == ItemType.manga ? 'manga' : 'anime';
   }
 
-  String _mediaId(UnderratedMedia item) {
+  String _mediaId(CommunityMedia item) {
     final id = item.media.id;
     if (id.contains('*')) return id.split('*').first;
     return id;
   }
 
-  List<UnderratedMedia> _getFilteredData() {
-    final svc = Get.find<UnderratedService>();
+  List<CommunityMedia> _getFilteredData() {
+    final svc = Get.find<CommunityService>();
     return switch (widget.category) {
-      'anime' => svc.getFilteredAnimes(),
-      'manga' => svc.getFilteredMangas(),
-      'shows' => svc.getFilteredShows(),
-      'movies' => svc.getFilteredMovies(),
-      _ => <UnderratedMedia>[],
+      'anime' => svc.getFilteredCommunityAnimes(),
+      'manga' => svc.getFilteredCommunityMangas(),
+      'shows' => svc.getFilteredCommunityShows(),
+      'movies' => svc.getFilteredCommunityMovies(),
+      _ => <CommunityMedia>[],
     };
   }
 
-  Future<void> _loadVotes(UnderratedMedia item) async {
+  Future<void> _loadVotes(CommunityMedia item) async {
     final id = _mediaId(item);
     final serviceHandler = Get.find<ServiceHandler>();
     final profile = serviceHandler.onlineService.profileData.value;
@@ -106,8 +106,9 @@ class _CommunityRecommendationsPageState
       simklId = int.tryParse(profile.id ?? '');
     }
 
-    final result = await UnderratedService.fetchVotes(
-      _mediaType(item), id,
+    final result = await CommunityService.fetchVotes(
+      _mediaType(item),
+      id,
       anilistUserId: anilistId,
       malUserId: malId,
       simklUserId: simklId,
@@ -122,7 +123,7 @@ class _CommunityRecommendationsPageState
     }
   }
 
-  Future<void> _castVote(UnderratedMedia item, String direction) async {
+  Future<void> _castVote(CommunityMedia item, String direction) async {
     final id = _mediaId(item);
     if (_loading[id] == true) return;
 
@@ -150,7 +151,7 @@ class _CommunityRecommendationsPageState
 
     setState(() => _loading[id] = true);
 
-    final result = await UnderratedService.castVote(
+    final result = await CommunityService.castVote(
       mediaType: _mediaType(item),
       mediaId: id,
       direction: direction,
@@ -172,7 +173,7 @@ class _CommunityRecommendationsPageState
   }
 
   void _showSettingsSheet(BuildContext context) {
-    final svc = Get.find<UnderratedService>();
+    final svc = Get.find<CommunityService>();
     showModalBottomSheet(
       context: context,
       builder: (_) => Obx(() {
@@ -327,14 +328,13 @@ class _CommunityRecommendationsPageState
 
           if (_isGridView) {
             return GridView.builder(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 12, vertical: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: crossAxisCount,
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
-                mainAxisExtent: cardHeight +
-                    (UnderratedService.votingEnabled ? 38 : 0),
+                mainAxisExtent:
+                    cardHeight + (CommunityService.votingEnabled ? 38 : 0),
               ),
               itemCount: data.length,
               itemBuilder: (context, index) {
@@ -354,8 +354,7 @@ class _CommunityRecommendationsPageState
             );
           } else {
             return ListView.builder(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 12, vertical: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
               itemCount: data.length,
               itemBuilder: (context, index) {
                 final item = data[index];
@@ -378,7 +377,7 @@ class _CommunityRecommendationsPageState
 }
 
 class _SeeAllCard extends StatelessWidget {
-  final UnderratedMedia item;
+  final CommunityMedia item;
   final ItemType type;
   final CardStyle cardStyle;
   final bool isDesktop;
@@ -492,8 +491,7 @@ class _SeeAllCard extends StatelessWidget {
             ),
           ),
         ),
-
-        if (UnderratedService.votingEnabled)
+        if (CommunityService.votingEnabled)
           _VoteBar(
             votes: votes,
             userVote: userVote,
@@ -506,7 +504,7 @@ class _SeeAllCard extends StatelessWidget {
 }
 
 class _AuthorBadge extends StatelessWidget {
-  final UnderratedMedia item;
+  final CommunityMedia item;
   final String author;
   final String? avatarUrl;
   final ServicesType serviceType;
@@ -529,8 +527,7 @@ class _AuthorBadge extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       child: Container(
         constraints: const BoxConstraints(maxWidth: 100),
-        padding:
-            const EdgeInsets.only(left: 3, right: 10, top: 3, bottom: 3),
+        padding: const EdgeInsets.only(left: 3, right: 10, top: 3, bottom: 3),
         decoration: BoxDecoration(
           color: theme.colorScheme.secondaryContainer.withOpacity(0.85),
           borderRadius: BorderRadius.circular(50),
@@ -664,8 +661,7 @@ class _VoteBtn extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
 
-    final activeColor =
-        isUpvote ? colors.primary : colors.error;
+    final activeColor = isUpvote ? colors.primary : colors.error;
     final activeBgColor = isUpvote
         ? colors.primary.opaque(0.12, iReallyMeanIt: true)
         : colors.error.opaque(0.12, iReallyMeanIt: true);
@@ -787,7 +783,8 @@ class _ReasonCountBadge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.people_rounded, size: 12, color: theme.colorScheme.onTertiaryContainer),
+          Icon(Icons.people_rounded,
+              size: 12, color: theme.colorScheme.onTertiaryContainer),
           const SizedBox(width: 3),
           Flexible(
             child: Text(
@@ -807,7 +804,7 @@ class _ReasonCountBadge extends StatelessWidget {
 }
 
 class _SeeAllListTile extends StatelessWidget {
-  final UnderratedMedia item;
+  final CommunityMedia item;
   final ItemType type;
   final VoteResult? votes;
   final String? userVote;
@@ -889,7 +886,8 @@ class _SeeAllListTile extends StatelessWidget {
         child: Row(
           children: [
             ClipRRect(
-              borderRadius: const BorderRadius.horizontal(left: Radius.circular(12)),
+              borderRadius:
+                  const BorderRadius.horizontal(left: Radius.circular(12)),
               child: AnymeXImage(
                 imageUrl: item.media.poster,
                 width: 70,
@@ -953,7 +951,8 @@ class _SeeAllListTile extends StatelessWidget {
                           voteMediaId: _mediaId,
                         ),
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
                             color: colors.secondaryContainer.withOpacity(0.7),
                             borderRadius: BorderRadius.circular(12),
@@ -961,7 +960,8 @@ class _SeeAllListTile extends StatelessWidget {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.people_rounded, size: 12, color: colors.onSecondaryContainer),
+                              Icon(Icons.people_rounded,
+                                  size: 12, color: colors.onSecondaryContainer),
                               const SizedBox(width: 4),
                               AnymexText(
                                 text: '${item.reasonCount} recommendations',
@@ -974,7 +974,7 @@ class _SeeAllListTile extends StatelessWidget {
                         ),
                       ),
                     ],
-                    if (UnderratedService.votingEnabled) ...[
+                    if (CommunityService.votingEnabled) ...[
                       const SizedBox(height: 6),
                       _VoteBar(
                         votes: votes,

@@ -1,5 +1,5 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/controllers/services/underrated_service.dart';
+import 'package:anymex/controllers/services/community_service.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -66,9 +66,11 @@ class _SettingsCommonState extends State<SettingsCommon> {
                           content: Column(
                             children: [
                               Obx(() => CustomTile(
-                                    icon: Icons.settings_input_component_rounded,
+                                    icon:
+                                        Icons.settings_input_component_rounded,
                                     title: 'Bridge Mode (Requires Restart)',
-                                    description: settings.bridgeMode.value == 'jni'
+                                    description: settings.bridgeMode.value ==
+                                            'jni'
                                         ? 'JNI Mode is on. its okay ig might crash here & there.'
                                         : 'Sidecar Mode is on. might be a lil slow than Jni but its reliable.',
                                     onTap: () => _showBridgeModeDialog(),
@@ -134,12 +136,14 @@ class _SettingsCommonState extends State<SettingsCommon> {
                                 setState(() {
                                   showCommunityRecs = e;
                                   General.showCommunityRecommendations.set(e);
-                                  Get.find<UnderratedService>().communityEnabled.value = e;
+                                  Get.find<CommunityService>()
+                                      .communityEnabled
+                                      .value = e;
                                 });
                               },
                             ),
                             Obx(() {
-                              final svc = Get.find<UnderratedService>();
+                              final svc = Get.find<CommunityService>();
                               return CustomSwitchTile(
                                 icon: Icons.no_adult_content_rounded,
                                 title: 'Hide NSFW Recommendations',
@@ -153,7 +157,7 @@ class _SettingsCommonState extends State<SettingsCommon> {
                               );
                             }),
                             Obx(() {
-                              final svc = Get.find<UnderratedService>();
+                              final svc = Get.find<CommunityService>();
                               return CustomSwitchTile(
                                 icon: Icons.filter_list_rounded,
                                 title: 'Hide by List Status',
@@ -167,7 +171,7 @@ class _SettingsCommonState extends State<SettingsCommon> {
                               );
                             }),
                             Obx(() {
-                              final svc = Get.find<UnderratedService>();
+                              final svc = Get.find<CommunityService>();
                               if (!svc.filterByListEnabled.value) {
                                 return const SizedBox.shrink();
                               }
@@ -328,15 +332,15 @@ class _SettingsCommonState extends State<SettingsCommon> {
       builder: (dialogContext) {
         return Obx(
           () => AnymexDialog(
-            title: 'Bridge Mode (If selecting one, dont forget to restart gang)',
+            title:
+                'Bridge Mode (If selecting one, dont forget to restart gang)',
             onConfirm: () => settings.saveBridgeMode(tempBridgeMode.value),
             contentWidget: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 _BridgeModeOptionTile(
                   title: 'JNI Mode',
-                  subtitle:
-                      'Runs Java in the same process as the app.',
+                  subtitle: 'Runs Java in the same process as the app.',
                   isSelected: tempBridgeMode.value == 'jni',
                   onTap: () => tempBridgeMode.value = 'jni',
                 ),

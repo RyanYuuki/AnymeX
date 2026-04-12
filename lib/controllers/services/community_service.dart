@@ -13,20 +13,22 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher_string.dart';
 
-void navigateToAuthorProfile(UnderratedMedia item) {
+void navigateToAuthorProfile(CommunityMedia item) {
   final serviceType = Get.find<ServiceHandler>().serviceType.value;
   if (serviceType == ServicesType.simkl) {
     if (item.simklUserId != null) {
       launchUrlString('https://simkl.com/${item.simklUserId}');
     }
-  } else if (serviceType == ServicesType.anilist && item.anilistUserId != null) {
+  } else if (serviceType == ServicesType.anilist &&
+      item.anilistUserId != null) {
     navigate(() => UserProfilePage(userId: item.anilistUserId!));
   } else if (item.malUsername != null && item.malUsername!.isNotEmpty) {
     launchUrlString('https://myanimelist.net/profile/${item.malUsername}');
   }
 }
 
-void navigateToReasonAuthorProfile(ReasonEntry reason, ServicesType serviceType) {
+void navigateToReasonAuthorProfile(
+    ReasonEntry reason, ServicesType serviceType) {
   if (reason.user == null) return;
   final user = reason.user!;
   if (serviceType == ServicesType.simkl && user.simklId != null) {
@@ -34,7 +36,8 @@ void navigateToReasonAuthorProfile(ReasonEntry reason, ServicesType serviceType)
   } else if (serviceType == ServicesType.anilist && user.anilistId != null) {
     navigate(() => UserProfilePage(userId: user.anilistId!));
   } else if (serviceType == ServicesType.mal && user.malId != null) {
-    launchUrlString('https://myanimelist.net/profile/${user.malUsername ?? ''}');
+    launchUrlString(
+        'https://myanimelist.net/profile/${user.malUsername ?? ''}');
   } else {
     // Fallback: try any available service
     if (user.anilistId != null) {
@@ -106,7 +109,7 @@ class ReasonUserProfile {
       return malAvatar ?? anilistAvatar;
     }
     return anilistAvatar ?? malAvatar;
-    }
+  }
 
   int? userIdFor(ServicesType serviceType) {
     if (serviceType == ServicesType.anilist) return anilistId;
@@ -160,7 +163,7 @@ class ReasonEntry {
   }
 }
 
-class SimklUnderratedEntry {
+class SimklCommunityEntry {
   final int? simklId;
   final String? title;
   final String? poster;
@@ -173,7 +176,7 @@ class SimklUnderratedEntry {
   final List<ReasonEntry> reasons;
   final Map<String, dynamic> rawJson;
 
-  SimklUnderratedEntry({
+  SimklCommunityEntry({
     this.simklId,
     this.title,
     this.poster,
@@ -187,7 +190,7 @@ class SimklUnderratedEntry {
     required this.rawJson,
   });
 
-  factory SimklUnderratedEntry.fromJson(Map<String, dynamic> json) {
+  factory SimklCommunityEntry.fromJson(Map<String, dynamic> json) {
     final user = json['user'] as Map<String, dynamic>?;
     final simklUser = user?['simkl'] as Map<String, dynamic>?;
     var reasonsList = json['reasons'] as List<dynamic>?;
@@ -197,7 +200,12 @@ class SimklUnderratedEntry {
       final text = json['reason']?.toString() ?? '';
       if (text.isNotEmpty || user != null) {
         reasonsList = [
-          {'user': user ?? {}, 'author': json['author']?.toString(), 'text': text, 'added_at': null},
+          {
+            'user': user ?? {},
+            'author': json['author']?.toString(),
+            'text': text,
+            'added_at': null
+          },
         ];
       }
     }
@@ -207,7 +215,7 @@ class SimklUnderratedEntry {
             .toList() ??
         [];
 
-    return SimklUnderratedEntry(
+    return SimklCommunityEntry(
       simklId: json['simkl_id'] as int?,
       title: json['title']?.toString(),
       poster: json['poster']?.toString(),
@@ -223,7 +231,7 @@ class SimklUnderratedEntry {
   }
 }
 
-class UnderratedEntry {
+class CommunityEntry {
   final int? anilistId;
   final int? malId;
   final String? title;
@@ -243,7 +251,7 @@ class UnderratedEntry {
   final List<ReasonEntry> reasons;
   final Map<String, dynamic> rawJson;
 
-  UnderratedEntry({
+  CommunityEntry({
     this.anilistId,
     this.malId,
     this.title,
@@ -264,7 +272,7 @@ class UnderratedEntry {
     required this.rawJson,
   });
 
-  factory UnderratedEntry.fromJson(Map<String, dynamic> json) {
+  factory CommunityEntry.fromJson(Map<String, dynamic> json) {
     final user = json['user'] as Map<String, dynamic>?;
     final anilistUser = user?['anilist'] as Map<String, dynamic>?;
     final malUser = user?['mal'] as Map<String, dynamic>?;
@@ -276,7 +284,12 @@ class UnderratedEntry {
       final text = json['reason']?.toString() ?? '';
       if (text.isNotEmpty || user != null) {
         reasonsList = [
-          {'user': user ?? {}, 'author': json['author']?.toString(), 'text': text, 'added_at': null},
+          {
+            'user': user ?? {},
+            'author': json['author']?.toString(),
+            'text': text,
+            'added_at': null
+          },
         ];
       }
     }
@@ -286,7 +299,7 @@ class UnderratedEntry {
             .toList() ??
         [];
 
-    return UnderratedEntry(
+    return CommunityEntry(
       anilistId: json['anilist_id'] ?? json['id'],
       malId: json['mal_id'],
       title: json['title']?.toString(),
@@ -322,20 +335,20 @@ class UnderratedEntry {
   }
 }
 
-class UnderratedService extends GetxController {
+class CommunityService extends GetxController {
   static const String _animeJsonUrl =
-      'https://raw.githubusercontent.com/Shebyyy/AnymeX-Preview/beta/underrated_anime.json';
+      'https://raw.githubusercontent.com/Shebyyy/AnymeX-Preview/beta/community_anime.json';
   static const String _mangaJsonUrl =
-      'https://raw.githubusercontent.com/Shebyyy/AnymeX-Preview/beta/underrated_manga.json';
+      'https://raw.githubusercontent.com/Shebyyy/AnymeX-Preview/beta/community_manga.json';
   static const String _showsJsonUrl =
-      'https://raw.githubusercontent.com/Shebyyy/AnymeX-Preview/beta/underrated_shows.json';
+      'https://raw.githubusercontent.com/Shebyyy/AnymeX-Preview/beta/community_shows.json';
   static const String _moviesJsonUrl =
-      'https://raw.githubusercontent.com/Shebyyy/AnymeX-Preview/beta/underrated_movies.json';
+      'https://raw.githubusercontent.com/Shebyyy/AnymeX-Preview/beta/community_movies.json';
 
-  RxList<UnderratedMedia> underratedAnimes = <UnderratedMedia>[].obs;
-  RxList<UnderratedMedia> underratedMangas = <UnderratedMedia>[].obs;
-  RxList<UnderratedMedia> underratedShows = <UnderratedMedia>[].obs;
-  RxList<UnderratedMedia> underratedMovies = <UnderratedMedia>[].obs;
+  RxList<CommunityMedia> communityAnimes = <CommunityMedia>[].obs;
+  RxList<CommunityMedia> communityMangas = <CommunityMedia>[].obs;
+  RxList<CommunityMedia> communityShows = <CommunityMedia>[].obs;
+  RxList<CommunityMedia> communityMovies = <CommunityMedia>[].obs;
 
   RxBool isLoadingAnime = false.obs;
   RxBool isLoadingManga = false.obs;
@@ -370,8 +383,8 @@ class UnderratedService extends GetxController {
     };
   }
 
-  UnderratedMedia? _processSimklEntry(
-    SimklUnderratedEntry entry,
+  CommunityMedia? _processSimklCommunityEntry(
+    SimklCommunityEntry entry,
     bool isMovie,
   ) {
     if (entry.simklId == null || entry.simklId == 0) return null;
@@ -389,7 +402,7 @@ class UnderratedService extends GetxController {
       serviceType: ServicesType.simkl,
     );
 
-    return UnderratedMedia(
+    return CommunityMedia(
       media: media,
       simklUserId: entry.simklUserId,
       simklUsername: entry.simklUsername,
@@ -404,33 +417,32 @@ class UnderratedService extends GetxController {
 
   RxBool communityEnabled =
       RxBool(General.showCommunityRecommendations.get<bool>(true));
-  RxBool hideNsfw =
-      RxBool(General.hideNsfwRecommendations.get<bool>(true));
+  RxBool hideNsfw = RxBool(General.hideNsfwRecommendations.get<bool>(true));
 
   bool get _communityEnabled => communityEnabled.value;
   bool get _hideNsfw => hideNsfw.value;
 
-  List<UnderratedMedia> getFilteredShows() {
-    if (!_communityEnabled || underratedShows.isEmpty) return [];
+  List<CommunityMedia> getFilteredCommunityShows() {
+    if (!_communityEnabled || communityShows.isEmpty) return [];
     try {
       final serviceHandler = Get.find<ServiceHandler>();
       final simkl = serviceHandler.onlineService;
       final userList = simkl.mangaList;
 
       final filteredIds = userList
-          .where((item) =>
-              _activeFilteredStatuses.contains(item.watchingStatus?.toUpperCase()))
+          .where((item) => _activeFilteredStatuses
+              .contains(item.watchingStatus?.toUpperCase()))
           .map((item) => item.id)
           .toSet();
 
-      return underratedShows
+      return communityShows
           .where((item) => !filteredIds.contains(item.media.id))
           .where((item) => !_hideNsfw || !(item.isNsfw))
           .toList()
           .reversed
           .toList();
     } catch (e) {
-      return underratedShows
+      return communityShows
           .where((item) => !_hideNsfw || !(item.isNsfw))
           .toList()
           .reversed
@@ -438,27 +450,27 @@ class UnderratedService extends GetxController {
     }
   }
 
-  List<UnderratedMedia> getFilteredMovies() {
-    if (!_communityEnabled || underratedMovies.isEmpty) return [];
+  List<CommunityMedia> getFilteredCommunityMovies() {
+    if (!_communityEnabled || communityMovies.isEmpty) return [];
     try {
       final serviceHandler = Get.find<ServiceHandler>();
       final simkl = serviceHandler.onlineService;
       final userList = simkl.animeList;
 
       final filteredIds = userList
-          .where((item) =>
-              _activeFilteredStatuses.contains(item.watchingStatus?.toUpperCase()))
+          .where((item) => _activeFilteredStatuses
+              .contains(item.watchingStatus?.toUpperCase()))
           .map((item) => item.id)
           .toSet();
 
-      return underratedMovies
+      return communityMovies
           .where((item) => !filteredIds.contains(item.media.id))
           .where((item) => !_hideNsfw || !(item.isNsfw))
           .toList()
           .reversed
           .toList();
     } catch (e) {
-      return underratedMovies
+      return communityMovies
           .where((item) => !_hideNsfw || !(item.isNsfw))
           .toList()
           .reversed
@@ -466,27 +478,27 @@ class UnderratedService extends GetxController {
     }
   }
 
-  List<UnderratedMedia> getFilteredAnimes() {
-    if (!_communityEnabled || underratedAnimes.isEmpty) return [];
+  List<CommunityMedia> getFilteredCommunityAnimes() {
+    if (!_communityEnabled || communityAnimes.isEmpty) return [];
     try {
       final serviceHandler = Get.find<ServiceHandler>();
       final onlineService = serviceHandler.onlineService;
       final userList = onlineService.animeList;
 
       final filteredIds = userList
-          .where((item) =>
-              _activeFilteredStatuses.contains(item.watchingStatus?.toUpperCase()))
+          .where((item) => _activeFilteredStatuses
+              .contains(item.watchingStatus?.toUpperCase()))
           .map((item) => item.id)
           .toSet();
 
-      return underratedAnimes
+      return communityAnimes
           .where((item) => !filteredIds.contains(item.media.id))
           .where((item) => !_hideNsfw || !(item.isNsfw))
           .toList()
           .reversed
           .toList();
     } catch (e) {
-      return underratedAnimes
+      return communityAnimes
           .where((item) => !_hideNsfw || !(item.isNsfw))
           .toList()
           .reversed
@@ -494,27 +506,27 @@ class UnderratedService extends GetxController {
     }
   }
 
-  List<UnderratedMedia> getFilteredMangas() {
-    if (!_communityEnabled || underratedMangas.isEmpty) return [];
+  List<CommunityMedia> getFilteredCommunityMangas() {
+    if (!_communityEnabled || communityMangas.isEmpty) return [];
     try {
       final serviceHandler = Get.find<ServiceHandler>();
       final onlineService = serviceHandler.onlineService;
       final userList = onlineService.mangaList;
 
       final filteredIds = userList
-          .where((item) =>
-              _activeFilteredStatuses.contains(item.watchingStatus?.toUpperCase()))
+          .where((item) => _activeFilteredStatuses
+              .contains(item.watchingStatus?.toUpperCase()))
           .map((item) => item.id)
           .toSet();
 
-      return underratedMangas
+      return communityMangas
           .where((item) => !filteredIds.contains(item.media.id))
           .where((item) => !_hideNsfw || !(item.isNsfw))
           .toList()
           .reversed
           .toList();
     } catch (e) {
-      return underratedMangas
+      return communityMangas
           .where((item) => !_hideNsfw || !(item.isNsfw))
           .toList()
           .reversed
@@ -522,8 +534,8 @@ class UnderratedService extends GetxController {
     }
   }
 
-  UnderratedMedia? _processEntry(
-    UnderratedEntry entry,
+  CommunityMedia? _processEntry(
+    CommunityEntry entry,
     bool isManga,
     ServicesType serviceType,
   ) {
@@ -546,7 +558,7 @@ class UnderratedService extends GetxController {
       serviceType: serviceType,
     );
 
-    return UnderratedMedia(
+    return CommunityMedia(
       media: media,
       anilistUserId: entry.anilistUserId,
       malUserId: entry.malUserId,
@@ -565,15 +577,14 @@ class UnderratedService extends GetxController {
     );
   }
 
-  Future<void> fetchUnderratedAnime() async {
+  Future<void> fetchCommunityAnime() async {
     final serviceType = Get.find<ServiceHandler>().serviceType.value;
 
-    if (underratedAnimes.isNotEmpty && _cachedServiceType == serviceType)
-      return;
+    if (communityAnimes.isNotEmpty && _cachedServiceType == serviceType) return;
 
     if (_cachedServiceType != serviceType) {
-      underratedAnimes.clear();
-      underratedMangas.clear();
+      communityAnimes.clear();
+      communityMangas.clear();
     }
 
     isLoadingAnime.value = true;
@@ -584,31 +595,30 @@ class UnderratedService extends GetxController {
 
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
-        final entries = data.map((e) => UnderratedEntry.fromJson(e)).toList();
+        final entries = data.map((e) => CommunityEntry.fromJson(e)).toList();
 
-        underratedAnimes.value = entries
+        communityAnimes.value = entries
             .map((entry) => _processEntry(entry, false, serviceType))
-            .whereType<UnderratedMedia>()
+            .whereType<CommunityMedia>()
             .toList();
         _cachedServiceType = serviceType;
-        Logger.i('Fetched ${underratedAnimes.length} underrated anime');
+        Logger.i('Fetched ${communityAnimes.length} community anime');
       } else {
         animeError.value = 'Failed to load: ${response.statusCode}';
-        Logger.i('Failed to fetch underrated anime: ${response.statusCode}');
+        Logger.i('Failed to fetch community anime: ${response.statusCode}');
       }
     } catch (e) {
       animeError.value = 'Error: $e';
-      Logger.i('Error fetching underrated anime: $e');
+      Logger.i('Error fetching community anime: $e');
     } finally {
       isLoadingAnime.value = false;
     }
   }
 
-  Future<void> fetchUnderratedManga() async {
+  Future<void> fetchCommunityManga() async {
     final serviceType = Get.find<ServiceHandler>().serviceType.value;
 
-    if (underratedMangas.isNotEmpty && _cachedServiceType == serviceType)
-      return;
+    if (communityMangas.isNotEmpty && _cachedServiceType == serviceType) return;
 
     isLoadingManga.value = true;
     mangaError.value = '';
@@ -618,28 +628,28 @@ class UnderratedService extends GetxController {
 
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
-        final entries = data.map((e) => UnderratedEntry.fromJson(e)).toList();
+        final entries = data.map((e) => CommunityEntry.fromJson(e)).toList();
 
-        underratedMangas.value = entries
+        communityMangas.value = entries
             .map((entry) => _processEntry(entry, true, serviceType))
-            .whereType<UnderratedMedia>()
+            .whereType<CommunityMedia>()
             .toList();
         _cachedServiceType = serviceType;
-        Logger.i('Fetched ${underratedMangas.length} underrated manga');
+        Logger.i('Fetched ${communityMangas.length} community manga');
       } else {
         mangaError.value = 'Failed to load: ${response.statusCode}';
-        Logger.i('Failed to fetch underrated manga: ${response.statusCode}');
+        Logger.i('Failed to fetch community manga: ${response.statusCode}');
       }
     } catch (e) {
       mangaError.value = 'Error: $e';
-      Logger.i('Error fetching underrated manga: $e');
+      Logger.i('Error fetching community manga: $e');
     } finally {
       isLoadingManga.value = false;
     }
   }
 
-  Future<void> fetchUnderratedShows() async {
-    if (underratedShows.isNotEmpty) return;
+  Future<void> fetchCommunityShows() async {
+    if (communityShows.isNotEmpty) return;
 
     isLoadingShows.value = true;
     showsError.value = '';
@@ -650,27 +660,27 @@ class UnderratedService extends GetxController {
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         final entries =
-            data.map((e) => SimklUnderratedEntry.fromJson(e)).toList();
+            data.map((e) => SimklCommunityEntry.fromJson(e)).toList();
 
-        underratedShows.value = entries
-            .map((entry) => _processSimklEntry(entry, false))
-            .whereType<UnderratedMedia>()
+        communityShows.value = entries
+            .map((entry) => _processSimklCommunityEntry(entry, false))
+            .whereType<CommunityMedia>()
             .toList();
-        Logger.i('Fetched ${underratedShows.length} underrated shows');
+        Logger.i('Fetched ${communityShows.length} community shows');
       } else {
         showsError.value = 'Failed to load: ${response.statusCode}';
-        Logger.i('Failed to fetch underrated shows: ${response.statusCode}');
+        Logger.i('Failed to fetch community shows: ${response.statusCode}');
       }
     } catch (e) {
       showsError.value = 'Error: $e';
-      Logger.i('Error fetching underrated shows: $e');
+      Logger.i('Error fetching community shows: $e');
     } finally {
       isLoadingShows.value = false;
     }
   }
 
-  Future<void> fetchUnderratedMovies() async {
-    if (underratedMovies.isNotEmpty) return;
+  Future<void> fetchCommunityMovies() async {
+    if (communityMovies.isNotEmpty) return;
 
     isLoadingMovies.value = true;
     moviesError.value = '';
@@ -681,20 +691,20 @@ class UnderratedService extends GetxController {
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         final entries =
-            data.map((e) => SimklUnderratedEntry.fromJson(e)).toList();
+            data.map((e) => SimklCommunityEntry.fromJson(e)).toList();
 
-        underratedMovies.value = entries
-            .map((entry) => _processSimklEntry(entry, true))
-            .whereType<UnderratedMedia>()
+        communityMovies.value = entries
+            .map((entry) => _processSimklCommunityEntry(entry, true))
+            .whereType<CommunityMedia>()
             .toList();
-        Logger.i('Fetched ${underratedMovies.length} underrated movies');
+        Logger.i('Fetched ${communityMovies.length} community movies');
       } else {
         moviesError.value = 'Failed to load: ${response.statusCode}';
-        Logger.i('Failed to fetch underrated movies: ${response.statusCode}');
+        Logger.i('Failed to fetch community movies: ${response.statusCode}');
       }
     } catch (e) {
       moviesError.value = 'Error: $e';
-      Logger.i('Error fetching underrated movies: $e');
+      Logger.i('Error fetching community movies: $e');
     } finally {
       isLoadingMovies.value = false;
     }
@@ -703,21 +713,21 @@ class UnderratedService extends GetxController {
   Future<void> fetchAll() async {
     try {
       await Future.wait([
-        fetchUnderratedAnime(),
-        fetchUnderratedManga(),
-        fetchUnderratedShows(),
-        fetchUnderratedMovies(),
+        fetchCommunityAnime(),
+        fetchCommunityManga(),
+        fetchCommunityShows(),
+        fetchCommunityMovies(),
       ]);
     } catch (e) {
-      Logger.i('Error in underrated fetchAll: $e');
+      Logger.i('Error in community fetchAll: $e');
     }
   }
 
   Future<void> refresh() async {
-    underratedAnimes.clear();
-    underratedMangas.clear();
-    underratedShows.clear();
-    underratedMovies.clear();
+    communityAnimes.clear();
+    communityMangas.clear();
+    communityShows.clear();
+    communityMovies.clear();
     await fetchAll();
   }
 
@@ -741,9 +751,11 @@ class UnderratedService extends GetxController {
   }) async {
     if (!votingEnabled) return false;
     try {
-      final body = _buildUserIdentityBody(serviceType: serviceType, profile: profile);
+      final body =
+          _buildUserIdentityBody(serviceType: serviceType, profile: profile);
       final url = Uri.parse('$_botBaseUrl/api/is_admin');
-      final resp = await http.post(url, headers: _authHeaders, body: jsonEncode(body));
+      final resp =
+          await http.post(url, headers: _authHeaders, body: jsonEncode(body));
       if (resp.statusCode == 200) {
         final data = jsonDecode(resp.body) as Map<String, dynamic>;
         return data['is_admin'] == true;
@@ -754,8 +766,7 @@ class UnderratedService extends GetxController {
     return false;
   }
 
-  static Future<VoteResult?> fetchVotes(
-      String mediaType, String mediaId,
+  static Future<VoteResult?> fetchVotes(String mediaType, String mediaId,
       {int? anilistUserId, int? malUserId, int? simklUserId}) async {
     if (!votingEnabled) return null;
     try {
@@ -791,8 +802,7 @@ class UnderratedService extends GetxController {
   }) async {
     if (!votingEnabled) return null;
     try {
-      final url =
-          Uri.parse('$_botBaseUrl/api/vote/$mediaType/$mediaId');
+      final url = Uri.parse('$_botBaseUrl/api/vote/$mediaType/$mediaId');
       final body = <String, dynamic>{
         'direction': direction,
         'display_name': displayName,
@@ -809,8 +819,8 @@ class UnderratedService extends GetxController {
       } else {
         return null;
       }
-      final resp = await http.post(url,
-          headers: _authHeaders, body: jsonEncode(body));
+      final resp =
+          await http.post(url, headers: _authHeaders, body: jsonEncode(body));
       if (resp.statusCode == 200) {
         final data = jsonDecode(resp.body);
         final action = data['action'] as String?;
@@ -856,7 +866,7 @@ class UnderratedService extends GetxController {
         return null;
       }
     } catch (e) {
-      Logger.i('UnderratedService.checkIfExists error: $e');
+      Logger.i('CommunityService.checkIfExists error: $e');
     }
     return null;
   }
@@ -888,18 +898,20 @@ class UnderratedService extends GetxController {
       }
 
       final url = Uri.parse('$_botBaseUrl$endpoint');
-      final resp = await http.post(url,
-          headers: _authHeaders, body: jsonEncode(body));
+      final resp =
+          await http.post(url, headers: _authHeaders, body: jsonEncode(body));
 
       if (resp.statusCode == 201) return null; // new entry created
-      if (resp.statusCode == 200) return null; // reason appended to existing entry
+      if (resp.statusCode == 200)
+        return null; // reason appended to existing entry
       if (resp.statusCode == 409) {
         return 'You already have a reason on this entry. Use edit instead.';
       }
       final decoded = jsonDecode(resp.body) as Map<String, dynamic>;
-      return decoded['error']?.toString() ?? 'Unknown error (${resp.statusCode})';
+      return decoded['error']?.toString() ??
+          'Unknown error (${resp.statusCode})';
     } catch (e) {
-      Logger.i('UnderratedService.submitRecommendation error: $e');
+      Logger.i('CommunityService.submitRecommendation error: $e');
       return 'Network error: $e';
     }
   }
@@ -957,15 +969,18 @@ class UnderratedService extends GetxController {
   }) async {
     if (!votingEnabled) return 'Bot URL not configured';
     try {
-      final body = _buildUserIdentityBody(serviceType: serviceType, profile: profile);
+      final body =
+          _buildUserIdentityBody(serviceType: serviceType, profile: profile);
       body['reason'] = newReason;
       final url = Uri.parse('$_botBaseUrl/api/edit_reason/$mediaType/$mediaId');
-      final resp = await http.patch(url, headers: _authHeaders, body: jsonEncode(body));
+      final resp =
+          await http.patch(url, headers: _authHeaders, body: jsonEncode(body));
       if (resp.statusCode == 200) return null;
       final decoded = jsonDecode(resp.body) as Map<String, dynamic>;
-      return decoded['error']?.toString() ?? 'Unknown error (${resp.statusCode})';
+      return decoded['error']?.toString() ??
+          'Unknown error (${resp.statusCode})';
     } catch (e) {
-      Logger.i('UnderratedService.editReason error: $e');
+      Logger.i('CommunityService.editReason error: $e');
       return 'Network error: $e';
     }
   }
@@ -979,9 +994,12 @@ class UnderratedService extends GetxController {
   }) async {
     if (!votingEnabled) return 'Bot URL not configured';
     try {
-      final body = _buildUserIdentityBody(serviceType: serviceType, profile: profile, isAdmin: isAdmin);
-      final url = Uri.parse('$_botBaseUrl/api/delete_reason/$mediaType/$mediaId');
-      final resp = await http.delete(url, headers: _authHeaders, body: jsonEncode(body));
+      final body = _buildUserIdentityBody(
+          serviceType: serviceType, profile: profile, isAdmin: isAdmin);
+      final url =
+          Uri.parse('$_botBaseUrl/api/delete_reason/$mediaType/$mediaId');
+      final resp =
+          await http.delete(url, headers: _authHeaders, body: jsonEncode(body));
       if (resp.statusCode == 200) {
         final decoded = jsonDecode(resp.body) as Map<String, dynamic>;
         if (decoded['pending'] == true) {
@@ -990,9 +1008,10 @@ class UnderratedService extends GetxController {
         return null; // deleted successfully
       }
       final decoded = jsonDecode(resp.body) as Map<String, dynamic>;
-      return decoded['error']?.toString() ?? 'Unknown error (${resp.statusCode})';
+      return decoded['error']?.toString() ??
+          'Unknown error (${resp.statusCode})';
     } catch (e) {
-      Logger.i('UnderratedService.deleteReason error: $e');
+      Logger.i('CommunityService.deleteReason error: $e');
       return 'Network error: $e';
     }
   }
@@ -1006,18 +1025,24 @@ class UnderratedService extends GetxController {
   }) async {
     if (!votingEnabled) return ('Bot URL not configured', false);
     try {
-      final body = _buildUserIdentityBody(serviceType: serviceType, profile: profile, isAdmin: isAdmin);
-      final url = Uri.parse('$_botBaseUrl/api/delete_reason/$mediaType/$mediaId');
-      final resp = await http.delete(url, headers: _authHeaders, body: jsonEncode(body));
+      final body = _buildUserIdentityBody(
+          serviceType: serviceType, profile: profile, isAdmin: isAdmin);
+      final url =
+          Uri.parse('$_botBaseUrl/api/delete_reason/$mediaType/$mediaId');
+      final resp =
+          await http.delete(url, headers: _authHeaders, body: jsonEncode(body));
       if (resp.statusCode == 200) {
         final decoded = jsonDecode(resp.body) as Map<String, dynamic>;
         final pending = decoded['pending'] == true;
         return (null, pending);
       }
       final decoded = jsonDecode(resp.body) as Map<String, dynamic>;
-      return (decoded['error']?.toString() ?? 'Unknown error (${resp.statusCode})', false);
+      return (
+        decoded['error']?.toString() ?? 'Unknown error (${resp.statusCode})',
+        false
+      );
     } catch (e) {
-      Logger.i('UnderratedService.deleteReasonWithStatus error: $e');
+      Logger.i('CommunityService.deleteReasonWithStatus error: $e');
       return ('Network error: $e', false);
     }
   }
@@ -1031,14 +1056,17 @@ class UnderratedService extends GetxController {
   }) async {
     if (!votingEnabled) return 'Bot URL not configured';
     try {
-      final body = _buildUserIdentityBody(serviceType: serviceType, profile: profile, isAdmin: isAdmin);
+      final body = _buildUserIdentityBody(
+          serviceType: serviceType, profile: profile, isAdmin: isAdmin);
       final url = Uri.parse('$_botBaseUrl/api/delete/$mediaType/$mediaId');
-      final resp = await http.delete(url, headers: _authHeaders, body: jsonEncode(body));
+      final resp =
+          await http.delete(url, headers: _authHeaders, body: jsonEncode(body));
       if (resp.statusCode == 200 || resp.statusCode == 202) return null;
       final decoded = jsonDecode(resp.body) as Map<String, dynamic>;
-      return decoded['error']?.toString() ?? 'Unknown error (${resp.statusCode})';
+      return decoded['error']?.toString() ??
+          'Unknown error (${resp.statusCode})';
     } catch (e) {
-      Logger.i('UnderratedService.deleteEntry error: $e');
+      Logger.i('CommunityService.deleteEntry error: $e');
       return 'Network error: $e';
     }
   }
@@ -1052,15 +1080,20 @@ class UnderratedService extends GetxController {
   }) async {
     if (!votingEnabled) return ('Bot URL not configured', false);
     try {
-      final body = _buildUserIdentityBody(serviceType: serviceType, profile: profile, isAdmin: isAdmin);
+      final body = _buildUserIdentityBody(
+          serviceType: serviceType, profile: profile, isAdmin: isAdmin);
       final url = Uri.parse('$_botBaseUrl/api/delete/$mediaType/$mediaId');
-      final resp = await http.delete(url, headers: _authHeaders, body: jsonEncode(body));
+      final resp =
+          await http.delete(url, headers: _authHeaders, body: jsonEncode(body));
       if (resp.statusCode == 200) return (null, false);
       if (resp.statusCode == 202) return (null, true);
       final decoded = jsonDecode(resp.body) as Map<String, dynamic>;
-      return (decoded['error']?.toString() ?? 'Unknown error (${resp.statusCode})', false);
+      return (
+        decoded['error']?.toString() ?? 'Unknown error (${resp.statusCode})',
+        false
+      );
     } catch (e) {
-      Logger.i('UnderratedService.deleteEntryWithStatus error: $e');
+      Logger.i('CommunityService.deleteEntryWithStatus error: $e');
       return ('Network error: $e', false);
     }
   }
@@ -1088,7 +1121,7 @@ class UnderratedService extends GetxController {
   }
 }
 
-class UnderratedMedia {
+class CommunityMedia {
   final Media media;
   final int? anilistUserId;
   final int? malUserId;
@@ -1103,10 +1136,11 @@ class UnderratedMedia {
   final String? fallbackTitle;
   final bool isNsfw;
   final List<ReasonEntry> reasons;
+
   /// Raw JSON entry from the database (for passing to recommend sheet).
   final Map<String, dynamic>? rawJson;
 
-  UnderratedMedia({
+  CommunityMedia({
     required this.media,
     this.anilistUserId,
     this.malUserId,

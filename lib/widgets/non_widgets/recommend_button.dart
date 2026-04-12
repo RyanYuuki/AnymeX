@@ -1,4 +1,4 @@
-import 'package:anymex/controllers/services/underrated_service.dart';
+import 'package:anymex/controllers/services/community_service.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/widgets/non_widgets/recommend_sheet.dart';
@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 class RecommendIconButton extends StatelessWidget {
   final Media media;
   final ItemType mediaItemType;
+
   /// Pre-existing entry data — if provided, skips API check in the sheet.
   final Map<String, dynamic>? existingEntry;
   final Widget Function(VoidCallback onTap, Widget child)? buttonBuilder;
@@ -46,7 +47,7 @@ class RecommendIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!UnderratedService.votingEnabled) return const SizedBox.shrink();
+    if (!CommunityService.votingEnabled) return const SizedBox.shrink();
 
     final sh = Get.find<ServiceHandler>();
     if (!sh.isLoggedIn.value) return const SizedBox.shrink();

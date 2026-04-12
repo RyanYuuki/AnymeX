@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:anymex/controllers/services/underrated_service.dart';
+import 'package:anymex/controllers/services/community_service.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
@@ -28,7 +28,6 @@ import 'package:iconsax/iconsax.dart';
 import 'package:anymex/widgets/non_widgets/recommend_button.dart';
 import 'package:anymex/widgets/non_widgets/reasons_sheet.dart';
 
-
 class MediaPeekPopup extends StatefulWidget {
   final Media media;
   final ItemType type;
@@ -45,6 +44,7 @@ class MediaPeekPopup extends StatefulWidget {
   final String? voteMediaType; // 'anime','manga','show','movie'
   final String? voteMediaId;
   final List<ReasonEntry>? reasons;
+
   /// Raw JSON entry for passing to recommend sheet (skips API check).
   final Map<String, dynamic>? rawJson;
 
@@ -68,8 +68,7 @@ class MediaPeekPopup extends StatefulWidget {
     this.rawJson,
   });
 
-  static void show(
-      BuildContext context, Media media, ItemType type, String tag,
+  static void show(BuildContext context, Media media, ItemType type, String tag,
       {int? anilistUserId,
       int? malUserId,
       String? anilistUsername,
@@ -147,7 +146,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
     super.initState();
     _fetchPeekData();
     _initTrackingState();
-    if (UnderratedService.votingEnabled &&
+    if (CommunityService.votingEnabled &&
         widget.voteMediaType != null &&
         widget.voteMediaId != null) {
       _loadVotes();
@@ -186,8 +185,9 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
       simklId = int.tryParse(profile.id ?? '');
     }
 
-    final result = await UnderratedService.fetchVotes(
-      widget.voteMediaType!, widget.voteMediaId!,
+    final result = await CommunityService.fetchVotes(
+      widget.voteMediaType!,
+      widget.voteMediaId!,
       anilistUserId: anilistId,
       malUserId: malId,
       simklUserId: simklId,
@@ -228,7 +228,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
 
     setState(() => _voteLoading = true);
 
-    final result = await UnderratedService.castVote(
+    final result = await CommunityService.castVote(
       mediaType: widget.voteMediaType!,
       mediaId: widget.voteMediaId!,
       direction: direction,
@@ -620,7 +620,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
       const gap = 8.0;
       const iconBtnWidth = 50.0;
 
-      final recommendEnabled = UnderratedService.votingEnabled;
+      final recommendEnabled = CommunityService.votingEnabled;
       final extraFixed = recommendEnabled ? iconBtnWidth + gap : 0.0;
       final fixedUsed = iconBtnWidth * 2 + gap * 2 + extraFixed;
       final listEditorW =
@@ -710,7 +710,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                   color: colors.onSurface, size: 20),
             ),
           ),
-          if (UnderratedService.votingEnabled) ...[
+          if (CommunityService.votingEnabled) ...[
             const SizedBox(width: gap),
             SizedBox(
               width: iconBtnWidth,
@@ -757,18 +757,19 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
         if (widget.author != null && widget.author!.isNotEmpty) ...[
           _buildRecommendedBySection(colors),
           const SizedBox(height: 16),
-          if (UnderratedService.votingEnabled &&
+          if (CommunityService.votingEnabled &&
               widget.voteMediaType != null &&
               widget.voteMediaId != null)
             _buildVoteBar(colors),
-          // Show "See all reasons" if multiple reasons exist
-          if (widget.reasons != null && widget.reasons!.length > 1) ...[
+          // Show "See all reasons" if there are any reasons
+          if (widget.reasons != null && widget.reasons!.isNotEmpty) ...[
             const SizedBox(height: 12),
             GestureDetector(
               onTap: _openReasonsSheet,
               child: Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                 decoration: BoxDecoration(
                   color: colors.secondaryContainer.withOpacity(0.5),
                   borderRadius: BorderRadius.circular(12),
@@ -776,16 +777,20 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.forum_rounded, size: 16, color: colors.onSecondaryContainer),
+                    Icon(Icons.forum_rounded,
+                        size: 16, color: colors.onSecondaryContainer),
                     const SizedBox(width: 8),
                     AnymexText(
-                      text: 'See all ${widget.reasons!.length} recommendations',
+                      text: widget.reasons!.length == 1
+                          ? 'View recommendation'
+                          : 'View all ${widget.reasons!.length} recommendations',
                       variant: TextVariant.semiBold,
                       size: 13,
                       color: colors.onSecondaryContainer,
                     ),
                     const Spacer(),
-                    Icon(Icons.chevron_right_rounded, size: 18, color: colors.onSecondaryContainer),
+                    Icon(Icons.chevron_right_rounded,
+                        size: 18, color: colors.onSecondaryContainer),
                   ],
                 ),
               ),
@@ -1059,7 +1064,8 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
           if (widget.reasons != null && widget.reasons!.length > 1) ...[
             const SizedBox(height: 6),
             AnymexText(
-              text: '+ ${widget.reasons!.length - 1} more recommendation${widget.reasons!.length > 2 ? 's' : ''}',
+              text:
+                  '+ ${widget.reasons!.length - 1} more recommendation${widget.reasons!.length > 2 ? 's' : ''}',
               size: 11,
               color: colors.onSurfaceVariant,
               variant: TextVariant.regular,
@@ -1074,7 +1080,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
     Navigator.of(context).pop();
     ReasonsSheet.show(
       context,
-      item: UnderratedMedia(
+      item: CommunityMedia(
         media: widget.media,
         anilistUserId: widget.anilistUserId,
         malUserId: widget.malUserId,
@@ -1092,7 +1098,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
 
   Future<void> _navigateToAuthorProfile(bool isAnilist) async {
     Navigator.of(context).pop();
-    navigateToAuthorProfile(UnderratedMedia(
+    navigateToAuthorProfile(CommunityMedia(
       media: widget.media,
       simklUserId: widget.simklUserId,
       anilistUserId: widget.anilistUserId,
@@ -1220,9 +1226,8 @@ class _PopupVoteButton extends StatelessWidget {
           decoration: BoxDecoration(
             color: active ? activeBgColor : Colors.transparent,
             borderRadius: BorderRadius.circular(10),
-            border: active
-                ? Border.all(color: activeColor.withOpacity(0.2))
-                : null,
+            border:
+                active ? Border.all(color: activeColor.withOpacity(0.2)) : null,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
