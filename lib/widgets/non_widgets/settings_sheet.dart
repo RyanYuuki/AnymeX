@@ -1,4 +1,5 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/screens/downloads/download_screen.dart';
 import 'package:anymex/screens/extensions/ExtensionScreen.dart';
 import 'package:anymex/screens/local_source/local_source_view.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
@@ -14,6 +15,7 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:iconly/iconly.dart';
 import 'package:iconsax/iconsax.dart';
 
 class SettingsSheet extends StatelessWidget {
@@ -22,9 +24,12 @@ class SettingsSheet extends StatelessWidget {
   final serviceHandler = Get.find<ServiceHandler>();
 
   static void show(BuildContext context) {
-    AnymexSheet(
-      customWidget: SettingsSheet(),
-    ).show(context);
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => SettingsSheet(),
+    );
   }
 
   void showServiceSelector(BuildContext context) {
@@ -218,141 +223,307 @@ class SettingsSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isMobile = MediaQuery.of(context).size.width < 600;
-    return SafeArea(
+    final theme = context.colors;
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    return Padding(
+      padding: EdgeInsets.fromLTRB(12, 0, 12, 16 + bottomInset),
       child: Container(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(children: [
-              const SizedBox(width: 5),
-              GestureDetector(
-                onTap: serviceHandler.isLoggedIn.value &&
-                        serviceHandler.serviceType.value == ServicesType.anilist
-                    ? () {
-                        Get.back();
-                        navigate(() => const ProfilePage());
-                      }
-                    : null,
-                child: CircleAvatar(
-                  radius: 24,
-                  backgroundColor: context.colors.surfaceContainer,
-                  child: serviceHandler.isLoggedIn.value
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(50),
-                          child: AnymeXImage(
-                              fit: BoxFit.cover,
-                              width: 45,
-                              height: 45,
-                              radius: 0,
-                              imageUrl:
-                                  serviceHandler.profileData.value.avatar ??
-                                      ''),
-                        )
-                      : Icon(
-                          Icons.person,
-                          color: context.colors.inverseSurface,
-                        ),
+        decoration: BoxDecoration(
+          color: theme.surface,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: theme.outline.opaque(0.1)),
+        ),
+        padding: const EdgeInsets.fromLTRB(14, 16, 14, 10),
+        child: SafeArea(
+          top: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 36,
+                height: 3.5,
+                margin: const EdgeInsets.only(bottom: 14),
+                decoration: BoxDecoration(
+                  color: theme.onSurface.opaque(0.15),
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              const SizedBox(width: 15),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(serviceHandler.profileData.value.name ?? 'Guest'),
-                  if (serviceHandler.serviceType.value !=
-                      ServicesType.extensions)
-                    AnymexOnTap(
-                      onTap: () async {
-                        if (serviceHandler.isLoggedIn.value) {
-                          serviceHandler.logout();
-                        } else {
-                          await serviceHandler.login(context);
-                        }
-                        Get.back();
-                      },
-                      child: Text(
-                        serviceHandler.isLoggedIn.value ? 'Logout' : 'Login',
-                        style: TextStyle(
-                            color: context.colors.primary,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                ],
-              ),
-              const Expanded(
-                child: SizedBox.shrink(),
-              ),
-              AnymexOnTap(
-                child: IconButton(
-                    onPressed: () {
-                      snackBar('This feature is not available yet.');
-                    },
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: context.colors.surfaceContainerHighest,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20))),
-                    icon: const Icon(Iconsax.notification)),
-              )
-            ]),
-            const SizedBox(height: 10),
-            if (serviceHandler.isLoggedIn.value &&
-                serviceHandler.serviceType.value == ServicesType.anilist)
-              AnymexOnTap(
-                child: ListTile(
-                  leading: const Icon(Iconsax.user),
-                  title: const Text('View Profile'),
-                  onTap: () {
+              _buildProfileHeader(context, theme),
+              const SizedBox(height: 10),
+              _buildMenuSection(context, theme),
+              const SizedBox(height: 4),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileHeader(BuildContext context, ColorScheme theme) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: theme.surfaceContainer.opaque(0.35),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.outline.opaque(0.12)),
+      ),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: serviceHandler.isLoggedIn.value &&
+                    serviceHandler.serviceType.value == ServicesType.anilist
+                ? () {
                     Get.back();
                     navigate(() => const ProfilePage());
-                  },
+                  }
+                : null,
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: theme.primary.opaque(0.3),
+                  width: 2,
                 ),
               ),
-            PlatformBuilder(
-              androidBuilder: ListTile(
-                leading: const Icon(Icons.extension),
-                title: const Text('Extensions'),
-                onTap: () {
-                  Get.back();
-                  navigate(() => const ExtensionScreen());
-                },
-              ),
-              desktopBuilder: const SizedBox.shrink(),
-            ),
-            AnymexOnTap(
-              child: ListTile(
-                leading: const Icon(HugeIcons.strokeRoundedAiSetting),
-                title: const Text('Change Service'),
-                onTap: () {
-                  Get.back();
-                  showServiceSelector(context);
-                },
-              ),
-            ),
-            AnymexOnTap(
-              child: ListTile(
-                leading: const Icon(Iconsax.document_download),
-                title: const Text('Local Media'),
-                onTap: () {
-                  Get.back();
-                  navigate(() => const WatchOffline());
-                },
+              child: CircleAvatar(
+                radius: 22,
+                backgroundColor: theme.surfaceContainer,
+                child: serviceHandler.isLoggedIn.value
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(50),
+                        child: AnymeXImage(
+                          fit: BoxFit.cover,
+                          width: 40,
+                          height: 40,
+                          radius: 0,
+                          imageUrl:
+                              serviceHandler.profileData.value.avatar ?? ''),
+                      )
+                    : Icon(
+                        Icons.person_rounded,
+                        color: theme.onSurface.opaque(0.7),
+                        size: 24,
+                      ),
               ),
             ),
-            AnymexOnTap(
-              child: ListTile(
-                leading: const Icon(Iconsax.setting),
-                title: const Text('Settings'),
-                onTap: () {
-                  Get.back();
-                  navigate(() => const SettingsPage());
-                },
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AnymexText(
+                  text: serviceHandler.profileData.value.name ?? 'Guest',
+                  variant: TextVariant.semiBold,
+                  size: 14,
+                ),
+                if (serviceHandler.serviceType.value != ServicesType.extensions)
+                  AnymexOnTap(
+                    onTap: () async {
+                      if (serviceHandler.isLoggedIn.value) {
+                        serviceHandler.logout();
+                      } else {
+                        await serviceHandler.login(context);
+                      }
+                      Get.back();
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        AnymexText(
+                          text: serviceHandler.isLoggedIn.value
+                              ? 'Tap to logout'
+                              : 'Tap to login',
+                          size: 12,
+                          color: theme.primary,
+                        ),
+                        const SizedBox(width: 3),
+                        Icon(
+                          serviceHandler.isLoggedIn.value
+                              ? Icons.logout_rounded
+                              : Icons.login_rounded,
+                          size: 12,
+                          color: theme.primary,
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          AnymexOnTap(
+            onTap: () => snackBar('This feature is not available yet.'),
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: theme.surfaceContainerHighest.opaque(0.5),
+                borderRadius: BorderRadius.circular(10),
               ),
+              child: Icon(Iconsax.notification,
+                  size: 18, color: theme.onSurface.opaque(0.7)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMenuSection(BuildContext context, ColorScheme theme) {
+    final items = <_SheetMenuItem>[
+      if (serviceHandler.isLoggedIn.value &&
+          serviceHandler.serviceType.value == ServicesType.anilist)
+        _SheetMenuItem(
+          icon: IconlyLight.profile,
+          label: 'View Profile',
+          onTap: () {
+            Get.back();
+            navigate(() => const ProfilePage());
+          },
+        ),
+      _SheetMenuItem(
+        icon: HugeIcons.strokeRoundedAiSetting,
+        label: 'Change Service',
+        onTap: () {
+          Get.back();
+          showServiceSelector(context);
+        },
+      ),
+      _SheetMenuItem(
+        icon: HugeIcons.strokeRoundedDownload04,
+        label: 'Downloads',
+        onTap: () {
+          Get.back();
+          navigate(() => const DownloadScreen());
+        },
+      ),
+      _SheetMenuItem(
+        icon: Iconsax.document_download,
+        label: 'Local Media',
+        onTap: () {
+          Get.back();
+          navigate(() => const WatchOffline());
+        },
+      ),
+      _SheetMenuItem(
+        icon: Iconsax.setting,
+        label: 'Settings',
+        onTap: () {
+          Get.back();
+          navigate(() => const SettingsPage());
+        },
+      ),
+    ];
+
+    final mobileExtensionItem = _SheetMenuItem(
+      icon: Icons.extension_rounded,
+      label: 'Extensions',
+      onTap: () {
+        Get.back();
+        navigate(() => const ExtensionScreen());
+      },
+    );
+
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.surfaceContainer.opaque(0.25),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.outline.opaque(0.1)),
+      ),
+      child: Column(
+        children: [
+          PlatformBuilder(
+            androidBuilder: _buildMenuItem(
+              context,
+              theme,
+              mobileExtensionItem,
+              isFirst: true,
+              isLast: false,
+            ),
+            desktopBuilder: const SizedBox.shrink(),
+          ),
+          ...items.asMap().entries.map((entry) {
+            final index = entry.key;
+            final item = entry.value;
+            final isMobile = MediaQuery.of(context).size.width < 600;
+            final effectiveFirst = isMobile ? false : index == 0;
+            final isLast = index == items.length - 1;
+            return _buildMenuItem(
+              context,
+              theme,
+              item,
+              isFirst: effectiveFirst,
+              isLast: isLast,
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMenuItem(
+    BuildContext context,
+    ColorScheme theme,
+    _SheetMenuItem item, {
+    required bool isFirst,
+    required bool isLast,
+  }) {
+    return AnymexOnTap(
+      onTap: item.onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          border: isLast
+              ? null
+              : Border(
+                  bottom: BorderSide(
+                    color: theme.outline.opaque(0.08),
+                    width: 1,
+                  ),
+                ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: theme.primaryContainer.opaque(0.3),
+                borderRadius: BorderRadius.circular(9),
+              ),
+              child: Icon(
+                item.icon,
+                size: 16,
+                color: theme.primary,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: AnymexText(
+                text: item.label,
+                size: 13.5,
+                variant: TextVariant.semiBold,
+              ),
+            ),
+            Icon(
+              IconlyLight.arrow_right_2,
+              size: 14,
+              color: theme.onSurface.opaque(0.25),
             ),
           ],
         ),
       ),
     );
   }
+}
+
+class _SheetMenuItem {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const _SheetMenuItem({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
 }
