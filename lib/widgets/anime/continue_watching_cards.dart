@@ -141,7 +141,7 @@ class ContinueWatchingCard extends StatelessWidget {
                           variant: TextVariant.bold,
                           color: colorScheme.onPrimary,
                           overflow: TextOverflow.ellipsis,
-                          isMarquee: true,
+                          isMarquee: false,
                         ),
                       ),
                     ],
@@ -162,7 +162,7 @@ class ContinueWatchingCard extends StatelessWidget {
               ],
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
+              padding: const EdgeInsets.fromLTRB(10, 8, 10, 9),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

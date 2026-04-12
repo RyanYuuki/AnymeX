@@ -80,7 +80,7 @@ class _HomePageState extends State<HomePage> {
             Padding(
               padding: const EdgeInsets.only(left: 20.0),
               child: Text(
-                "Continue Watching",
+                "Local History",
                 style: TextStyle(
                   fontFamily: "Poppins-SemiBold",
                   fontSize: 17,

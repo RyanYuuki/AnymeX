@@ -696,7 +696,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                             variant: TextVariant.semiBold,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            isMarquee: true,
+                            isMarquee: false,
                           ),
                         ),
                       ],
