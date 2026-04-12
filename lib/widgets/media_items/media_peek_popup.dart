@@ -11,6 +11,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/anime/widgets/custom_list_dialog.dart';
 import 'package:anymex/screens/anime/widgets/list_editor.dart';
+import 'package:anymex/screens/community/user_recommendations_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/utils/function.dart';
@@ -1027,13 +1028,29 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                     if (hasValidProfile)
                       GestureDetector(
                         onTap: () => _navigateToAuthorProfile(isAnilist),
-                        child: AnymexText(
-                          text: username!,
-                          variant: TextVariant.semiBold,
-                          size: 14,
-                          color: colors.primary,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                        onLongPress: widget.reasons?.firstOrNull?.user != null
+                            ? _navigateToUserRecs
+                            : null,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Flexible(
+                              child: AnymexText(
+                                text: username!,
+                                variant: TextVariant.semiBold,
+                                size: 14,
+                                color: colors.primary,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            if (widget.reasons?.isNotEmpty == true &&
+                                widget.reasons!.first.user?.isAdmin == true) ...[
+                              const SizedBox(width: 4),
+                              Icon(Icons.verified_rounded,
+                                  size: 14, color: colors.primary),
+                            ],
+                          ],
                         ),
                       )
                     else
@@ -1106,6 +1123,14 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
       malUsername: widget.malUsername,
       simklUsername: widget.simklUsername,
     ));
+  }
+
+  void _navigateToUserRecs() {
+    final firstUser = widget.reasons?.firstOrNull?.user;
+    if (firstUser != null) {
+      Navigator.of(context).pop();
+      navigate(() => UserRecommendationsPage(user: firstUser));
+    }
   }
 }
 

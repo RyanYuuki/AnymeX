@@ -1,6 +1,8 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/community_service.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
+import 'package:anymex/screens/community/user_recommendations_page.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
@@ -534,6 +536,12 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
       }
     }
 
+    void navigateUserRecs() {
+      if (reason.user != null) {
+        navigate(() => UserRecommendationsPage(user: reason.user!));
+      }
+    }
+
     final hasValidProfile = reason.user?.userIdFor(serviceType) != null;
 
     return Container(
@@ -566,14 +574,27 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
                   children: [
                     GestureDetector(
                       onTap: hasValidProfile ? navigateProfile : null,
-                      child: AnymexText(
-                        text: username,
-                        variant: TextVariant.semiBold,
-                        size: 13,
-                        color:
-                            hasValidProfile ? colors.primary : colors.onSurface,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      onLongPress: reason.user != null ? navigateUserRecs : null,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Flexible(
+                            child: AnymexText(
+                              text: username,
+                              variant: TextVariant.semiBold,
+                              size: 13,
+                              color:
+                                  hasValidProfile ? colors.primary : colors.onSurface,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (reason.user?.isAdmin == true) ...[
+                            const SizedBox(width: 4),
+                            Icon(Icons.verified_rounded,
+                                size: 14, color: colors.primary),
+                          ],
+                        ],
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -647,22 +668,6 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                if (_isAdmin && !isMine)
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-                    margin: const EdgeInsets.only(right: 6),
-                    decoration: BoxDecoration(
-                      color: colors.errorContainer,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: AnymexText(
-                      text: 'Admin',
-                      size: 9,
-                      color: colors.onErrorContainer,
-                      variant: TextVariant.semiBold,
-                    ),
-                  ),
                 Material(
                   color: Colors.transparent,
                   child: InkWell(

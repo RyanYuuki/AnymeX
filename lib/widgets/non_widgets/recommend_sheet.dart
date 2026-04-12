@@ -433,6 +433,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                         newReason: newReason,
                         serviceType: _sh.serviceType.value,
                         profile: _sh.profileData.value,
+                        isAdmin: _isAdmin,
                       );
                       if (error == null) {
                         successSnackBar('Reason updated!');
@@ -553,6 +554,157 @@ class _RecommendSheetState extends State<RecommendSheet> {
     }
   }
 
+  Future<void> _editOtherReason(Map<String, dynamic> reason) async {
+    final currentText = reason['text']?.toString() ?? '';
+    final controller = TextEditingController(text: currentText);
+    final colors = Theme.of(context).colorScheme;
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useRootNavigator: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => Padding(
+        padding: MediaQuery.of(ctx).viewInsets,
+        child: SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+            color: colors.surface,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 16),
+                    decoration: BoxDecoration(
+                      color: colors.onSurfaceVariant.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                Row(children: [
+                  Icon(Icons.edit_rounded, color: colors.primary, size: 20),
+                  const SizedBox(width: 8),
+                  Text('Edit Reason',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                        color: colors.onSurface,
+                      )),
+                ]),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: controller,
+                  minLines: 3,
+                  maxLines: 6,
+                  maxLength: 700,
+                  autofocus: true,
+                  decoration: InputDecoration(
+                    hintText: 'Edit recommendation reason (min 30 chars)',
+                    filled: true,
+                    fillColor: colors.surfaceContainerLow,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: colors.outlineVariant),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: colors.outlineVariant),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: colors.primary, width: 1.5),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    onPressed: () async {
+                      final newReason = controller.text.trim();
+                      if (newReason.length < 30) {
+                        warningSnackBar('Please write at least 30 characters');
+                        return;
+                      }
+                      Navigator.of(ctx).pop();
+                      final error = await CommunityService.editReason(
+                        mediaType: _botMediaType,
+                        mediaId: _idAndType.$1,
+                        newReason: newReason,
+                        serviceType: _sh.serviceType.value,
+                        profile: _sh.profileData.value,
+                        isAdmin: true,
+                      );
+                      if (error == null) {
+                        successSnackBar('Reason updated!');
+                        _runCheck();
+                      } else {
+                        errorSnackBar(error);
+                      }
+                    },
+                    icon: const Icon(Icons.save_rounded, size: 18),
+                    label: const Text('Save Changes'),
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _deleteOtherReason(Map<String, dynamic> reason) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete Reason?'),
+        content: const Text('This reason will be deleted immediately.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+                backgroundColor: Theme.of(ctx).colorScheme.error),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    final error = await CommunityService.deleteReason(
+      mediaType: _botMediaType,
+      mediaId: _idAndType.$1,
+      serviceType: _sh.serviceType.value,
+      profile: _sh.profileData.value,
+      isAdmin: true,
+    );
+
+    if (error == null) {
+      successSnackBar('Reason deleted.');
+      _runCheck();
+    } else {
+      errorSnackBar(error);
+    }
+  }
+
   Widget _buildAlreadyAdded(ColorScheme colors, Map<String, dynamic> entry) {
     // Migrate old format (no reasons[]) → new format in-memory for uniform handling
     final migrated = _ensureMigrated(entry);
@@ -661,22 +813,6 @@ class _RecommendSheetState extends State<RecommendSheet> {
                         Text('Already recommended',
                             style:
                                 TextStyle(fontSize: 12, color: colors.primary)),
-                        if (_isAdmin && !isOwner) ...[
-                          const SizedBox(width: 6),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: colors.errorContainer,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text('Admin',
-                                style: TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w600,
-                                    color: colors.onErrorContainer)),
-                          ),
-                        ],
                       ],
                     ),
                   ],
@@ -800,6 +936,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                   reason['author']?.toString() ??
                   'Unknown';
               final rText = reason['text']?.toString() ?? '';
+              final rIsAdmin = reasonUser['isAdmin'] == true;
 
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8),
@@ -834,6 +971,64 @@ class _RecommendSheetState extends State<RecommendSheet> {
                                   fontWeight: FontWeight.w500,
                                   fontSize: 12,
                                   color: colors.onSurface)),
+                          if (rIsAdmin) ...[
+                            const SizedBox(width: 4),
+                            Icon(Icons.verified_rounded,
+                                size: 13, color: colors.primary),
+                          ],
+                          const Spacer(),
+                          if (_isAdmin) ...[
+                            Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () => _editOtherReason(reason),
+                                borderRadius: BorderRadius.circular(6),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 6, vertical: 3),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.edit_rounded,
+                                          size: 13,
+                                          color: colors.onSurfaceVariant),
+                                      const SizedBox(width: 2),
+                                      Text('Edit',
+                                          style: TextStyle(
+                                              fontSize: 10,
+                                              color: colors.onSurfaceVariant,
+                                              fontWeight: FontWeight.w600)),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () => _deleteOtherReason(reason),
+                                borderRadius: BorderRadius.circular(6),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 6, vertical: 3),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.delete_outline_rounded,
+                                          size: 13, color: colors.error),
+                                      const SizedBox(width: 2),
+                                      Text('Delete',
+                                          style: TextStyle(
+                                              fontSize: 10,
+                                              color: colors.error,
+                                              fontWeight: FontWeight.w600)),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ],
                       ),
                       if (rText.isNotEmpty) ...[

@@ -5,6 +5,7 @@ import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/models_convertor/carousel_mapper.dart';
 import 'package:anymex/screens/anime/details_page.dart';
+import 'package:anymex/screens/community/user_recommendations_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -485,6 +486,8 @@ class _SeeAllCard extends StatelessWidget {
                       avatarUrl: avatarUrl,
                       serviceType: serviceType,
                       theme: theme,
+                      isAdmin: item.isFirstReasonAdmin,
+                      userProfile: item.firstReason?.user,
                     ),
                   ),
               ],
@@ -509,6 +512,8 @@ class _AuthorBadge extends StatelessWidget {
   final String? avatarUrl;
   final ServicesType serviceType;
   final ThemeData theme;
+  final bool isAdmin;
+  final ReasonUserProfile? userProfile;
 
   const _AuthorBadge({
     required this.item,
@@ -516,14 +521,23 @@ class _AuthorBadge extends StatelessWidget {
     required this.avatarUrl,
     required this.serviceType,
     required this.theme,
+    this.isAdmin = false,
+    this.userProfile,
   });
 
   void _navigateToAuthor() => navigateToAuthorProfile(item);
+
+  void _navigateToUserRecs() {
+    if (userProfile != null) {
+      navigate(() => UserRecommendationsPage(user: userProfile!));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: _navigateToAuthor,
+      onLongPress: userProfile != null ? _navigateToUserRecs : null,
       behavior: HitTestBehavior.opaque,
       child: Container(
         constraints: const BoxConstraints(maxWidth: 100),
@@ -565,6 +579,12 @@ class _AuthorBadge extends StatelessWidget {
                 ),
               ),
             ),
+            if (isAdmin)
+              Padding(
+                padding: const EdgeInsets.only(left: 2),
+                child: Icon(Icons.verified_rounded,
+                    size: 11, color: theme.colorScheme.onSecondaryContainer),
+              ),
           ],
         ),
       ),
@@ -845,6 +865,13 @@ class _SeeAllListTile extends StatelessWidget {
 
   void _navigateToAuthor() => navigateToAuthorProfile(item);
 
+  void _navigateToUserRecs() {
+    final user = item.firstReason?.user;
+    if (user != null) {
+      navigate(() => UserRecommendationsPage(user: user));
+    }
+  }
+
   void _showPeekPopup(BuildContext context) {
     final serviceType = Get.find<ServiceHandler>().serviceType.value;
     MediaPeekPopup.show(
@@ -921,6 +948,9 @@ class _SeeAllListTile extends StatelessWidget {
                       const SizedBox(height: 6),
                       GestureDetector(
                         onTap: _navigateToAuthor,
+                        onLongPress: item.firstReason?.user != null
+                            ? _navigateToUserRecs
+                            : null,
                         behavior: HitTestBehavior.opaque,
                         child: Row(
                           children: [
@@ -936,6 +966,11 @@ class _SeeAllListTile extends StatelessWidget {
                               variant: TextVariant.semiBold,
                               color: colors.primary,
                             ),
+                            if (item.isFirstReasonAdmin) ...[
+                              const SizedBox(width: 3),
+                              Icon(Icons.verified_rounded,
+                                  size: 12, color: colors.primary),
+                            ],
                           ],
                         ),
                       ),

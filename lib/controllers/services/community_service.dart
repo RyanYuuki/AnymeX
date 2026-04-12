@@ -60,6 +60,7 @@ class ReasonUserProfile {
   final int? simklId;
   final String? simklUsername;
   final String? simklAvatar;
+  final bool isAdmin;
 
   ReasonUserProfile({
     this.anilistId,
@@ -71,6 +72,7 @@ class ReasonUserProfile {
     this.simklId,
     this.simklUsername,
     this.simklAvatar,
+    this.isAdmin = false,
   });
 
   factory ReasonUserProfile.fromJson(Map<String, dynamic> json) {
@@ -88,6 +90,7 @@ class ReasonUserProfile {
       simklId: simkl?['id'] as int?,
       simklUsername: simkl?['username']?.toString(),
       simklAvatar: simkl?['avatar']?.toString(),
+      isAdmin: json['isAdmin'] == true,
     );
   }
 
@@ -117,6 +120,29 @@ class ReasonUserProfile {
     if (serviceType == ServicesType.simkl) return simklId;
     return anilistId;
   }
+
+  bool matchesUser(ReasonUserProfile? other) {
+    if (other == null) return false;
+    if (anilistId != null && anilistId! > 0 && anilistId == other.anilistId) return true;
+    if (malId != null && malId! > 0 && malId == other.malId) return true;
+    if (simklId != null && simklId! > 0 && simklId == other.simklId) return true;
+    if (anilistUsername != null &&
+        anilistUsername!.isNotEmpty &&
+        anilistUsername == other.anilistUsername) return true;
+    if (malUsername != null &&
+        malUsername!.isNotEmpty &&
+        malUsername == other.malUsername) return true;
+    if (simklUsername != null &&
+        simklUsername!.isNotEmpty &&
+        simklUsername == other.simklUsername) return true;
+    return false;
+  }
+
+  String? get displayName =>
+      anilistUsername ?? malUsername ?? simklUsername;
+
+  String? get displayAvatar =>
+      anilistAvatar ?? malAvatar ?? simklAvatar;
 }
 
 class ReasonEntry {
@@ -966,11 +992,12 @@ class CommunityService extends GetxController {
     required String newReason,
     required ServicesType serviceType,
     required Profile profile,
+    bool isAdmin = false,
   }) async {
     if (!votingEnabled) return 'Bot URL not configured';
     try {
-      final body =
-          _buildUserIdentityBody(serviceType: serviceType, profile: profile);
+      final body = _buildUserIdentityBody(
+          serviceType: serviceType, profile: profile, isAdmin: isAdmin);
       body['reason'] = newReason;
       final url = Uri.parse('$_botBaseUrl/api/edit_reason/$mediaType/$mediaId');
       final resp =
@@ -1170,6 +1197,23 @@ class CommunityMedia {
   bool get hasMultipleReasons => reasons.length > 1;
 
   ReasonEntry? get firstReason => reasons.isNotEmpty ? reasons.first : null;
+
+  bool get isFirstReasonAdmin =>
+      reasons.isNotEmpty && reasons.first.user?.isAdmin == true;
+
+  bool hasRecommendationFrom(ReasonUserProfile? user) {
+    if (user == null) return false;
+    return reasons.any((r) => r.user?.matchesUser(user) == true);
+  }
+
+  ReasonEntry? recommendationFrom(ReasonUserProfile? user) {
+    if (user == null) return null;
+    try {
+      return reasons.firstWhere((r) => r.user?.matchesUser(user) == true);
+    } catch (_) {
+      return null;
+    }
+  }
 
   String? usernameFor(ServicesType serviceType) {
     if (serviceType == ServicesType.simkl) {
