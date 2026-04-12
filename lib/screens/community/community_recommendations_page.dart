@@ -7,6 +7,7 @@ import 'package:anymex/models/models_convertor/carousel_mapper.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/community/user_recommendations_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/cards/base_card.dart';
@@ -181,85 +182,87 @@ class _CommunityRecommendationsPageState
         return SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AnymexText(
-                  text: 'Filter Settings',
-                  variant: TextVariant.semiBold,
-                  color: context.colors.primary,
-                ),
-                const SizedBox(height: 8),
-                SwitchListTile(
-                  title: const AnymexText(text: 'Hide by List Status'),
-                  subtitle: const AnymexText(
-                      text: 'Filter out entries already in your list'),
-                  value: svc.filterByListEnabled.value,
-                  onChanged: (v) {
-                    svc.filterByListEnabled.value = v;
-                    General.filterByListEnabled.set(v);
-                  },
-                ),
-                if (svc.filterByListEnabled.value) ...[
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AnymexText(
+                    text: 'Filter Settings',
+                    variant: TextVariant.semiBold,
+                    color: context.colors.primary,
+                  ),
+                  const SizedBox(height: 8),
                   SwitchListTile(
-                    title: const AnymexText(text: 'Hide Completed'),
-                    value: svc.filterCompleted.value,
+                    title: const AnymexText(text: 'Hide by List Status'),
+                    subtitle: const AnymexText(
+                        text: 'Filter out entries already in your list'),
+                    value: svc.filterByListEnabled.value,
                     onChanged: (v) {
-                      svc.filterCompleted.value = v;
-                      General.filterCompleted.set(v);
+                      svc.filterByListEnabled.value = v;
+                      General.filterByListEnabled.set(v);
                     },
                   ),
+                  if (svc.filterByListEnabled.value) ...[
+                    SwitchListTile(
+                      title: const AnymexText(text: 'Hide Completed'),
+                      value: svc.filterCompleted.value,
+                      onChanged: (v) {
+                        svc.filterCompleted.value = v;
+                        General.filterCompleted.set(v);
+                      },
+                    ),
+                    SwitchListTile(
+                      title: const AnymexText(text: 'Hide Watching / Reading'),
+                      value: svc.filterWatching.value,
+                      onChanged: (v) {
+                        svc.filterWatching.value = v;
+                        General.filterWatching.set(v);
+                      },
+                    ),
+                    SwitchListTile(
+                      title: const AnymexText(text: 'Hide Dropped'),
+                      value: svc.filterDropped.value,
+                      onChanged: (v) {
+                        svc.filterDropped.value = v;
+                        General.filterDropped.set(v);
+                      },
+                    ),
+                    SwitchListTile(
+                      title: const AnymexText(text: 'Hide Planning'),
+                      value: svc.filterPlanning.value,
+                      onChanged: (v) {
+                        svc.filterPlanning.value = v;
+                        General.filterPlanning.set(v);
+                      },
+                    ),
+                    SwitchListTile(
+                      title: const AnymexText(text: 'Hide On Hold / Paused'),
+                      value: svc.filterPaused.value,
+                      onChanged: (v) {
+                        svc.filterPaused.value = v;
+                        General.filterPaused.set(v);
+                      },
+                    ),
+                    SwitchListTile(
+                      title: const AnymexText(text: 'Hide Rewatching'),
+                      value: svc.filterRepeating.value,
+                      onChanged: (v) {
+                        svc.filterRepeating.value = v;
+                        General.filterRepeating.set(v);
+                      },
+                    ),
+                  ],
                   SwitchListTile(
-                    title: const AnymexText(text: 'Hide Watching / Reading'),
-                    value: svc.filterWatching.value,
+                    title: const AnymexText(text: 'Hide NSFW'),
+                    value: svc.hideNsfw.value,
                     onChanged: (v) {
-                      svc.filterWatching.value = v;
-                      General.filterWatching.set(v);
-                    },
-                  ),
-                  SwitchListTile(
-                    title: const AnymexText(text: 'Hide Dropped'),
-                    value: svc.filterDropped.value,
-                    onChanged: (v) {
-                      svc.filterDropped.value = v;
-                      General.filterDropped.set(v);
-                    },
-                  ),
-                  SwitchListTile(
-                    title: const AnymexText(text: 'Hide Planning'),
-                    value: svc.filterPlanning.value,
-                    onChanged: (v) {
-                      svc.filterPlanning.value = v;
-                      General.filterPlanning.set(v);
-                    },
-                  ),
-                  SwitchListTile(
-                    title: const AnymexText(text: 'Hide On Hold / Paused'),
-                    value: svc.filterPaused.value,
-                    onChanged: (v) {
-                      svc.filterPaused.value = v;
-                      General.filterPaused.set(v);
-                    },
-                  ),
-                  SwitchListTile(
-                    title: const AnymexText(text: 'Hide Rewatching'),
-                    value: svc.filterRepeating.value,
-                    onChanged: (v) {
-                      svc.filterRepeating.value = v;
-                      General.filterRepeating.set(v);
+                      svc.hideNsfw.value = v;
+                      General.hideNsfwRecommendations.set(v);
                     },
                   ),
                 ],
-                SwitchListTile(
-                  title: const AnymexText(text: 'Hide NSFW'),
-                  value: svc.hideNsfw.value,
-                  onChanged: (v) {
-                    svc.hideNsfw.value = v;
-                    General.hideNsfwRecommendations.set(v);
-                  },
-                ),
-              ],
+              ),
             ),
           ),
         );
@@ -273,105 +276,109 @@ class _CommunityRecommendationsPageState
 
     return Glow(
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          leading: IconButton(
-            onPressed: () => Get.back(),
-            icon: const Icon(Icons.arrow_back_ios_new),
-          ),
-          title: AnymexText(
-            text: widget.title,
-            variant: TextVariant.semiBold,
-            color: context.colors.primary,
-          ),
-          actions: [
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  _isGridView = !_isGridView;
-                  General.communityListViewIsGrid.set(_isGridView);
-                });
-              },
-              icon: Icon(
-                _isGridView ? Icons.view_list_rounded : Icons.grid_view_rounded,
-              ),
+        body: Column(
+          children: [
+            NestedHeader(
+              title: 'Community Recommendations',
+              action: Row(children: [
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _isGridView = !_isGridView;
+                      General.communityListViewIsGrid.set(_isGridView);
+                    });
+                  },
+                  icon: Icon(
+                    _isGridView
+                        ? Icons.view_list_rounded
+                        : Icons.grid_view_rounded,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () => _showSettingsSheet(context),
+                  icon: const Icon(Icons.tune_rounded),
+                ),
+              ]),
             ),
-            IconButton(
-              onPressed: () => _showSettingsSheet(context),
-              icon: const Icon(Icons.tune_rounded),
+            Expanded(
+              child: Obx(() {
+                final data = _getFilteredData();
+                final cardStyle =
+                    CardStyle.values[settingsController.cardStyle];
+                final cardHeight = getCardHeight(cardStyle, isDesktop);
+                final crossAxisCount = isDesktop ? 4 : 3;
+
+                if (data.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.filter_list_off_rounded,
+                            size: 48,
+                            color: context.colors.onSurfaceVariant
+                                .withOpacity(0.5)),
+                        const SizedBox(height: 12),
+                        AnymexText(
+                          text: 'No recommendations found',
+                          color:
+                              context.colors.onSurfaceVariant.withOpacity(0.7),
+                          variant: TextVariant.semiBold,
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                if (_isGridView) {
+                  return GridView.builder(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 16),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      mainAxisExtent: cardHeight +
+                          (CommunityService.votingEnabled ? 38 : 0),
+                    ),
+                    itemCount: data.length,
+                    itemBuilder: (context, index) {
+                      final item = data[index];
+                      final id = _mediaId(item);
+                      return _SeeAllCard(
+                        item: item,
+                        type: widget.type,
+                        cardStyle: cardStyle,
+                        isDesktop: isDesktop,
+                        votes: _votes[id],
+                        userVote: _userVotes[id],
+                        isLoading: _loading[id] == true,
+                        onVote: (dir) => _castVote(item, dir),
+                      );
+                    },
+                  );
+                } else {
+                  return ListView.builder(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 16),
+                    itemCount: data.length,
+                    itemBuilder: (context, index) {
+                      final item = data[index];
+                      final id = _mediaId(item);
+                      return _SeeAllListTile(
+                        item: item,
+                        type: widget.type,
+                        votes: _votes[id],
+                        userVote: _userVotes[id],
+                        isLoading: _loading[id] == true,
+                        onVote: (dir) => _castVote(item, dir),
+                      );
+                    },
+                  );
+                }
+              }),
             ),
           ],
         ),
-        body: Obx(() {
-          final data = _getFilteredData();
-          final cardStyle = CardStyle.values[settingsController.cardStyle];
-          final cardHeight = getCardHeight(cardStyle, isDesktop);
-          final crossAxisCount = isDesktop ? 4 : 3;
-
-          if (data.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.filter_list_off_rounded,
-                      size: 48,
-                      color: context.colors.onSurfaceVariant.withOpacity(0.5)),
-                  const SizedBox(height: 12),
-                  AnymexText(
-                    text: 'No recommendations found',
-                    color: context.colors.onSurfaceVariant.withOpacity(0.7),
-                    variant: TextVariant.semiBold,
-                  ),
-                ],
-              ),
-            );
-          }
-
-          if (_isGridView) {
-            return GridView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: crossAxisCount,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                mainAxisExtent:
-                    cardHeight + (CommunityService.votingEnabled ? 38 : 0),
-              ),
-              itemCount: data.length,
-              itemBuilder: (context, index) {
-                final item = data[index];
-                final id = _mediaId(item);
-                return _SeeAllCard(
-                  item: item,
-                  type: widget.type,
-                  cardStyle: cardStyle,
-                  isDesktop: isDesktop,
-                  votes: _votes[id],
-                  userVote: _userVotes[id],
-                  isLoading: _loading[id] == true,
-                  onVote: (dir) => _castVote(item, dir),
-                );
-              },
-            );
-          } else {
-            return ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-              itemCount: data.length,
-              itemBuilder: (context, index) {
-                final item = data[index];
-                final id = _mediaId(item);
-                return _SeeAllListTile(
-                  item: item,
-                  type: widget.type,
-                  votes: _votes[id],
-                  userVote: _userVotes[id],
-                  isLoading: _loading[id] == true,
-                  onVote: (dir) => _castVote(item, dir),
-                );
-              },
-            );
-          }
-        }),
       ),
     );
   }
@@ -479,7 +486,7 @@ class _SeeAllCard extends StatelessWidget {
                 else if (author != null && author.isNotEmpty)
                   Positioned(
                     top: 6,
-                    left: 6,
+                    left: 10,
                     child: _AuthorBadge(
                       item: item,
                       author: author,
@@ -908,19 +915,15 @@ class _SeeAllListTile extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.only(bottom: 10),
         decoration: BoxDecoration(
-          color: colors.surfaceContainerLow,
+          color: colors.surfaceContainer.opaque(0.4),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           children: [
-            ClipRRect(
-              borderRadius:
-                  const BorderRadius.horizontal(left: Radius.circular(12)),
-              child: AnymeXImage(
-                imageUrl: item.media.poster,
-                width: 70,
-                height: 100,
-              ),
+            AnymeXImage(
+              imageUrl: item.media.poster,
+              width: 70,
+              height: 100,
             ),
             const SizedBox(width: 12),
             Expanded(
