@@ -113,6 +113,7 @@ class RecentlyOpenedAnimeCard extends StatelessWidget {
                                         variant: TextVariant.bold,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
+                                        isMarquee: true,
                                       ),
                                     ),
                                     if (media.rating != '?') ...[

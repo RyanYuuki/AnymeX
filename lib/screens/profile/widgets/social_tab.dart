@@ -4,6 +4,7 @@ import 'package:anymex/screens/profile/user_profile_page.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -44,7 +45,6 @@ class SocialTabState extends State<SocialTab> {
       !_socialLoadingMore &&
       _socialFetched &&
       _activeSocialHasMore;
-
 
   Future<void> _fetchSocial({bool refresh = false}) async {
     if (_socialFetched && !refresh) return;
@@ -127,10 +127,8 @@ class SocialTabState extends State<SocialTab> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
-   
     if (!_socialFetched && !_socialLoading) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _fetchSocial());
     }
@@ -235,7 +233,7 @@ class SocialTabState extends State<SocialTab> {
             ),
           )
         else if (_socialListMode)
-          // List view 
+          // List view
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Column(
@@ -244,11 +242,13 @@ class SocialTabState extends State<SocialTab> {
                   padding: const EdgeInsets.only(bottom: 10),
                   child: GestureDetector(
                     onTap: () {
-                      final currentUserId = Get.find<ServiceHandler>().profileData.value.id;
+                      final currentUserId =
+                          Get.find<ServiceHandler>().profileData.value.id;
                       if (user.id.toString() == currentUserId) {
                         navigateWithSlide(() => const ProfilePage());
                       } else {
-                        navigateWithSlide(() => UserProfilePage(userId: user.id));
+                        navigateWithSlide(
+                            () => UserProfilePage(userId: user.id));
                       }
                     },
                     child: ClipRRect(
@@ -314,7 +314,8 @@ class SocialTabState extends State<SocialTab> {
                                         width: 56,
                                         height: 56,
                                         fit: BoxFit.cover,
-                                        errorWidget: (context, url, error) => const CircleAvatar(
+                                        errorWidget: (context, url, error) =>
+                                            const CircleAvatar(
                                           radius: 28,
                                           backgroundColor: Colors.transparent,
                                           child: Icon(Icons.person, size: 24),
@@ -329,17 +330,15 @@ class SocialTabState extends State<SocialTab> {
                                     ),
                                   const SizedBox(width: 12),
                                   Expanded(
-                                    child: Text(
-                                      user.name,
+                                    child: AnymexText(
+                                      text: user.name,
+                                      size: 15,
+                                      variant: TextVariant.bold,
+                                      color:
+                                          context.theme.colorScheme.onSurface,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontFamily: 'Poppins-Bold',
-                                        fontWeight: FontWeight.w600,
-                                        color:
-                                            context.theme.colorScheme.onSurface,
-                                      ),
+                                      isMarquee: true,
                                     ),
                                   ),
                                 ],
@@ -355,7 +354,7 @@ class SocialTabState extends State<SocialTab> {
             ),
           )
         else
-          // Grid view 
+          // Grid view
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: LayoutBuilder(
@@ -380,11 +379,13 @@ class SocialTabState extends State<SocialTab> {
                     final user = list[index];
                     return GestureDetector(
                       onTap: () {
-                        final currentUserId = Get.find<ServiceHandler>().profileData.value.id;
+                        final currentUserId =
+                            Get.find<ServiceHandler>().profileData.value.id;
                         if (user.id.toString() == currentUserId) {
                           navigateWithSlide(() => const ProfilePage());
                         } else {
-                          navigateWithSlide(() => UserProfilePage(userId: user.id));
+                          navigateWithSlide(
+                              () => UserProfilePage(userId: user.id));
                         }
                       },
                       child: Container(
@@ -405,10 +406,12 @@ class SocialTabState extends State<SocialTab> {
                                   width: avatarRadius * 2,
                                   height: avatarRadius * 2,
                                   fit: BoxFit.cover,
-                                  errorWidget: (context, url, error) => CircleAvatar(
+                                  errorWidget: (context, url, error) =>
+                                      CircleAvatar(
                                     radius: avatarRadius,
                                     backgroundColor: Colors.transparent,
-                                    child: Icon(Icons.person, size: avatarRadius * 0.7),
+                                    child: Icon(Icons.person,
+                                        size: avatarRadius * 0.7),
                                   ),
                                 ),
                               )
@@ -416,23 +419,22 @@ class SocialTabState extends State<SocialTab> {
                               CircleAvatar(
                                 radius: avatarRadius,
                                 backgroundColor: Colors.transparent,
-                                child: Icon(Icons.person, size: avatarRadius * 0.7),
+                                child: Icon(Icons.person,
+                                    size: avatarRadius * 0.7),
                               ),
                             const SizedBox(height: 6),
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 4),
-                              child: Text(
-                                user.name,
+                              child: AnymexText(
+                                text: user.name,
+                                size: 11.5,
+                                variant: TextVariant.bold,
+                                color: context.theme.colorScheme.onSurface,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 11.5,
-                                  fontFamily: 'Poppins-Bold',
-                                  fontWeight: FontWeight.w600,
-                                  color: context.theme.colorScheme.onSurface,
-                                ),
+                                isMarquee: true,
                               ),
                             ),
                           ],

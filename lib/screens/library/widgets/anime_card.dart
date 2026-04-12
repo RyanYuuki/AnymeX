@@ -112,13 +112,12 @@ class AnimeCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8),
               width: double.infinity,
-              child: Text(
-                data.name ?? '??',
-                style: const TextStyle(
-                  fontSize: 13,
-                ),
+              child: AnymexText(
+                text: data.name ?? '??',
+                size: 13,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
+                isMarquee: true,
               ),
             ),
           ],

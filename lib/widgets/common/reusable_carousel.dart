@@ -78,13 +78,12 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
   Widget _buildHeaderTitle() {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0),
-      child: Text(
-        widget.title,
-        style: TextStyle(
-          fontFamily: "Poppins-SemiBold",
-          fontSize: 17,
-          color: context.colors.primary,
-        ),
+      child: AnymexText(
+        text: widget.title,
+        variant: TextVariant.semiBold,
+        size: 17,
+        color: context.colors.primary,
+        isMarquee: true,
       ),
     );
   }
