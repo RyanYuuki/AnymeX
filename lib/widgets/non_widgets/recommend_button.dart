@@ -9,12 +9,15 @@ import 'package:get/get.dart';
 class RecommendIconButton extends StatelessWidget {
   final Media media;
   final ItemType mediaItemType;
+  /// Pre-existing entry data — if provided, skips API check in the sheet.
+  final Map<String, dynamic>? existingEntry;
   final Widget Function(VoidCallback onTap, Widget child)? buttonBuilder;
 
   const RecommendIconButton({
     super.key,
     required this.media,
     required this.mediaItemType,
+    this.existingEntry,
     this.buttonBuilder,
   });
 
@@ -33,6 +36,7 @@ class RecommendIconButton extends StatelessWidget {
             child: RecommendSheet(
               media: media,
               mediaItemType: mediaItemType,
+              existingEntry: existingEntry,
             ),
           ),
         );

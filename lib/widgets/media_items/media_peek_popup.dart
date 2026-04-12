@@ -45,6 +45,8 @@ class MediaPeekPopup extends StatefulWidget {
   final String? voteMediaType; // 'anime','manga','show','movie'
   final String? voteMediaId;
   final List<ReasonEntry>? reasons;
+  /// Raw JSON entry for passing to recommend sheet (skips API check).
+  final Map<String, dynamic>? rawJson;
 
   const MediaPeekPopup({
     super.key,
@@ -63,6 +65,7 @@ class MediaPeekPopup extends StatefulWidget {
     this.voteMediaType,
     this.voteMediaId,
     this.reasons,
+    this.rawJson,
   });
 
   static void show(
@@ -78,7 +81,8 @@ class MediaPeekPopup extends StatefulWidget {
       String? reason,
       String? voteMediaType,
       String? voteMediaId,
-      List<ReasonEntry>? reasons}) {
+      List<ReasonEntry>? reasons,
+      Map<String, dynamic>? rawJson}) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -102,6 +106,7 @@ class MediaPeekPopup extends StatefulWidget {
         voteMediaType: voteMediaType,
         voteMediaId: voteMediaId,
         reasons: reasons,
+        rawJson: rawJson,
       ),
     );
   }
@@ -712,6 +717,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
               child: RecommendIconButton(
                 media: widget.media,
                 mediaItemType: widget.type,
+                existingEntry: widget.rawJson,
                 buttonBuilder: (onTap, icon) =>
                     _DetailsStyleButton(onTap: onTap, child: icon),
               ),

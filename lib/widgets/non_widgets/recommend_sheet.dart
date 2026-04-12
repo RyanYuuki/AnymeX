@@ -10,14 +10,17 @@ import 'package:get/get.dart';
 class RecommendSheet extends StatefulWidget {
   final Media media;
   final ItemType mediaItemType;
+  /// Pre-existing entry data from the media peek popup (skips API check).
+  final Map<String, dynamic>? existingEntry;
 
   const RecommendSheet({
     super.key,
     required this.media,
     required this.mediaItemType,
+    this.existingEntry,
   });
 
-  static void show(BuildContext context, Media media, ItemType mediaItemType) {
+  static void show(BuildContext context, Media media, ItemType mediaItemType, {Map<String, dynamic>? existingEntry}) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -32,6 +35,7 @@ class RecommendSheet extends StatefulWidget {
             child: RecommendSheet(
               media: media,
               mediaItemType: mediaItemType,
+              existingEntry: existingEntry,
             ),
           ),
         );
@@ -74,7 +78,12 @@ class _RecommendSheetState extends State<RecommendSheet> {
   @override
   void initState() {
     super.initState();
-    _runCheck();
+    if (widget.existingEntry != null) {
+      // Use pre-existing entry data — skip API check
+      _checkResult = widget.existingEntry;
+    } else {
+      _runCheck();
+    }
     _runAdminCheck();
   }
 
@@ -225,8 +234,31 @@ class _RecommendSheetState extends State<RecommendSheet> {
     return false;
   }
 
+  /// Normalize old-format entries (no `reasons[]` array) into new format in-memory.
+  /// Old format has top-level `reason` + `user`; new format has `reasons[]` array.
+  static Map<String, dynamic> _ensureMigrated(Map<String, dynamic> entry) {
+    final reasons = entry['reasons'] as List<dynamic>?;
+    if (reasons != null && reasons.isNotEmpty) return entry; // already new format
+
+    final text = entry['reason']?.toString() ?? '';
+    final user = entry['user'] as Map<String, dynamic>?;
+    if (text.isEmpty && user == null) return entry; // nothing to migrate
+
+    final migrated = Map<String, dynamic>.from(entry);
+    migrated['reasons'] = [
+      {
+        'user': user ?? {},
+        'author': entry['author']?.toString(),
+        'text': text,
+        'added_at': null,
+      },
+    ];
+    return migrated;
+  }
+
   bool _userHasReason(Map<String, dynamic> entry) {
-    final reasonsList = entry['reasons'] as List<dynamic>?;
+    final migrated = _ensureMigrated(entry);
+    final reasonsList = migrated['reasons'] as List<dynamic>?;
     if (reasonsList == null || reasonsList.isEmpty) return false;
 
     final serviceType = _sh.serviceType.value;
@@ -249,11 +281,26 @@ class _RecommendSheetState extends State<RecommendSheet> {
         if (simkl != null && simkl['id'] == myId) return true;
       }
     }
+    // Old format: if reasons has one entry and no user matched, check entry-level user as fallback
+    if (reasonsList.length == 1 && entry['user'] != null) {
+      final topUser = entry['user'] as Map<String, dynamic>;
+      if (serviceType == ServicesType.anilist) {
+        final al = topUser['anilist'] as Map<String, dynamic>?;
+        if (al != null && al['id'] == myId) return true;
+      } else if (serviceType == ServicesType.mal) {
+        final mal = topUser['mal'] as Map<String, dynamic>?;
+        if (mal != null && mal['id'] == myId) return true;
+      } else if (serviceType == ServicesType.simkl) {
+        final simkl = topUser['simkl'] as Map<String, dynamic>?;
+        if (simkl != null && simkl['id'] == myId) return true;
+      }
+    }
     return false;
   }
 
   Map<String, dynamic>? _findUserReason(Map<String, dynamic> entry) {
-    final reasonsList = entry['reasons'] as List<dynamic>?;
+    final migrated = _ensureMigrated(entry);
+    final reasonsList = migrated['reasons'] as List<dynamic>?;
     if (reasonsList == null || reasonsList.isEmpty) return null;
 
     final serviceType = _sh.serviceType.value;
@@ -274,6 +321,20 @@ class _RecommendSheetState extends State<RecommendSheet> {
       } else if (serviceType == ServicesType.simkl) {
         final simkl = user['simkl'] as Map<String, dynamic>?;
         if (simkl != null && simkl['id'] == myId) return reason;
+      }
+    }
+    // Old format fallback: if single reason and no per-reason user matched, use entry-level user
+    if (reasonsList.length == 1 && entry['user'] != null) {
+      final topUser = entry['user'] as Map<String, dynamic>;
+      if (serviceType == ServicesType.anilist) {
+        final al = topUser['anilist'] as Map<String, dynamic>?;
+        if (al != null && al['id'] == myId) return reasonsList[0] as Map<String, dynamic>;
+      } else if (serviceType == ServicesType.mal) {
+        final mal = topUser['mal'] as Map<String, dynamic>?;
+        if (mal != null && mal['id'] == myId) return reasonsList[0] as Map<String, dynamic>;
+      } else if (serviceType == ServicesType.simkl) {
+        final simkl = topUser['simkl'] as Map<String, dynamic>?;
+        if (simkl != null && simkl['id'] == myId) return reasonsList[0] as Map<String, dynamic>;
       }
     }
     return null;
@@ -481,8 +542,9 @@ class _RecommendSheetState extends State<RecommendSheet> {
   }
 
   Widget _buildAlreadyAdded(ColorScheme colors, Map<String, dynamic> entry) {
+    // Migrate old format (no reasons[]) → new format in-memory for uniform handling
+    final migrated = _ensureMigrated(entry);
     final serviceType = widget.media.serviceType;
-    final reason = entry['reason']?.toString() ?? '';
 
     // Current user's info
     final profile = _sh.profileData.value;
@@ -506,13 +568,23 @@ class _RecommendSheetState extends State<RecommendSheet> {
               : (rUser['anilist'] as Map<String, dynamic>? ?? rUser['mal'] as Map<String, dynamic>?);
       userReasonAvatar = rService?['avatar']?.toString();
     }
+    // For old format: also check entry-level user for avatar
+    if (userReasonAvatar == null && userReason == null && userHasReason) {
+      final topUser = entry['user'] as Map<String, dynamic>? ?? {};
+      final tService = serviceType == ServicesType.simkl
+          ? topUser['simkl'] as Map<String, dynamic>?
+          : serviceType == ServicesType.mal
+              ? (topUser['mal'] as Map<String, dynamic>? ?? topUser['anilist'] as Map<String, dynamic>?)
+              : (topUser['anilist'] as Map<String, dynamic>? ?? topUser['mal'] as Map<String, dynamic>?);
+      userReasonAvatar = tService?['avatar']?.toString();
+    }
     // Prefer avatar from the reason's own user block, then current profile
     final myDisplayAvatar = userReasonAvatar ?? myAvatar;
     final poster = entry['poster']?.toString() ?? widget.media.poster;
     final title = entry['title']?.toString() ?? widget.media.title;
 
     // Get other users' reasons (filter by user ID, not text)
-    final reasonsList = (entry['reasons'] as List<dynamic>?) ?? [];
+    final reasonsList = (migrated['reasons'] as List<dynamic>?) ?? [];
     final otherReasons = reasonsList.where((r) {
       final reasonMap = r as Map<String, dynamic>;
       final rUser = reasonMap['user'] as Map<String, dynamic>? ?? {};

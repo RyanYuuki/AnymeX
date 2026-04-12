@@ -171,6 +171,7 @@ class SimklUnderratedEntry {
   final String? simklAvatar;
   final bool isNsfw;
   final List<ReasonEntry> reasons;
+  final Map<String, dynamic> rawJson;
 
   SimklUnderratedEntry({
     this.simklId,
@@ -183,12 +184,23 @@ class SimklUnderratedEntry {
     this.simklAvatar,
     this.isNsfw = false,
     this.reasons = const [],
+    required this.rawJson,
   });
 
   factory SimklUnderratedEntry.fromJson(Map<String, dynamic> json) {
     final user = json['user'] as Map<String, dynamic>?;
     final simklUser = user?['simkl'] as Map<String, dynamic>?;
-    final reasonsList = json['reasons'] as List<dynamic>?;
+    var reasonsList = json['reasons'] as List<dynamic>?;
+
+    // Migrate old format (no reasons[]) into new format in-memory
+    if (reasonsList == null || reasonsList.isEmpty) {
+      final text = json['reason']?.toString() ?? '';
+      if (text.isNotEmpty || user != null) {
+        reasonsList = [
+          {'user': user ?? {}, 'author': json['author']?.toString(), 'text': text, 'added_at': null},
+        ];
+      }
+    }
 
     final reasons = reasonsList
             ?.map((e) => ReasonEntry.fromJson(e as Map<String, dynamic>))
@@ -206,6 +218,7 @@ class SimklUnderratedEntry {
       simklAvatar: simklUser?['avatar']?.toString(),
       isNsfw: json['nsfw'] == true,
       reasons: reasons,
+      rawJson: json,
     );
   }
 }
@@ -228,6 +241,7 @@ class UnderratedEntry {
   final String? reason;
   final bool isNsfw;
   final List<ReasonEntry> reasons;
+  final Map<String, dynamic> rawJson;
 
   UnderratedEntry({
     this.anilistId,
@@ -247,6 +261,7 @@ class UnderratedEntry {
     this.reason,
     this.isNsfw = false,
     this.reasons = const [],
+    required this.rawJson,
   });
 
   factory UnderratedEntry.fromJson(Map<String, dynamic> json) {
@@ -254,7 +269,17 @@ class UnderratedEntry {
     final anilistUser = user?['anilist'] as Map<String, dynamic>?;
     final malUser = user?['mal'] as Map<String, dynamic>?;
     final simklUser = user?['simkl'] as Map<String, dynamic>?;
-    final reasonsList = json['reasons'] as List<dynamic>?;
+    var reasonsList = json['reasons'] as List<dynamic>?;
+
+    // Migrate old format (no reasons[]) into new format in-memory
+    if (reasonsList == null || reasonsList.isEmpty) {
+      final text = json['reason']?.toString() ?? '';
+      if (text.isNotEmpty || user != null) {
+        reasonsList = [
+          {'user': user ?? {}, 'author': json['author']?.toString(), 'text': text, 'added_at': null},
+        ];
+      }
+    }
 
     final reasons = reasonsList
             ?.map((e) => ReasonEntry.fromJson(e as Map<String, dynamic>))
@@ -279,6 +304,7 @@ class UnderratedEntry {
       reason: json['reason']?.toString(),
       isNsfw: json['nsfw'] == true,
       reasons: reasons,
+      rawJson: json,
     );
   }
 
@@ -372,6 +398,7 @@ class UnderratedService extends GetxController {
       fallbackTitle: entry.title,
       isNsfw: entry.isNsfw,
       reasons: entry.reasons,
+      rawJson: entry.rawJson,
     );
   }
 
@@ -534,6 +561,7 @@ class UnderratedService extends GetxController {
       fallbackTitle: entry.title,
       isNsfw: entry.isNsfw,
       reasons: entry.reasons,
+      rawJson: entry.rawJson,
     );
   }
 
@@ -1075,6 +1103,8 @@ class UnderratedMedia {
   final String? fallbackTitle;
   final bool isNsfw;
   final List<ReasonEntry> reasons;
+  /// Raw JSON entry from the database (for passing to recommend sheet).
+  final Map<String, dynamic>? rawJson;
 
   UnderratedMedia({
     required this.media,
@@ -1091,6 +1121,7 @@ class UnderratedMedia {
     this.fallbackTitle,
     this.isNsfw = false,
     this.reasons = const [],
+    this.rawJson,
   });
 
   String get displayTitle =>

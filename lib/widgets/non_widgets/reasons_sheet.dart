@@ -759,6 +759,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
                     context,
                     widget.item.media,
                     widget.mediaItemType,
+                    existingEntry: widget.item.rawJson,
                   );
                 },
                 icon: const Icon(Icons.add_rounded, size: 18),

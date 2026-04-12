@@ -432,6 +432,7 @@ class _SeeAllCard extends StatelessWidget {
       avatarUrl: item.avatarFor(serviceType),
       reason: item.reason,
       reasons: item.reasons,
+      rawJson: item.rawJson,
       anilistUserId: item.anilistUserId,
       malUserId: item.malUserId,
       anilistUsername: item.anilistUsername,
@@ -865,6 +866,7 @@ class _SeeAllListTile extends StatelessWidget {
       simklUsername: item.simklUsername,
       voteMediaType: _mediaType,
       voteMediaId: _mediaId,
+      rawJson: item.rawJson,
     );
   }
 
