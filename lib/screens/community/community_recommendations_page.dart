@@ -890,6 +890,7 @@ class _SeeAllListTile extends StatelessWidget {
       simklUsername: item.simklUsername,
       voteMediaType: _mediaType,
       voteMediaId: _mediaId,
+      reasons: item.reasons,
       rawJson: item.rawJson,
     );
   }

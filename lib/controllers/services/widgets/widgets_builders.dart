@@ -5,6 +5,7 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/screens/anime/details_page.dart';
+import 'package:anymex/screens/community/user_recommendations_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/big_carousel.dart';
@@ -292,9 +293,10 @@ class _UnderratedCard extends StatelessWidget {
     final author = item.usernameFor(serviceType);
     final avatarUrl = item.avatarFor(serviceType);
     final hasAuthor = author != null && author.isNotEmpty;
+    final isAdmin = item.isFirstReasonAdmin;
 
     final badge = Container(
-      constraints: const BoxConstraints(maxWidth: 100),
+      constraints: BoxConstraints(maxWidth: isAdmin ? 115 : 100),
       padding: const EdgeInsets.only(
         left: 3,
         right: 10,
@@ -342,14 +344,23 @@ class _UnderratedCard extends StatelessWidget {
               ),
             ),
           ),
+          if (isAdmin)
+            Padding(
+              padding: const EdgeInsets.only(left: 2),
+              child: Icon(Icons.verified_rounded,
+                  size: 11, color: theme.colorScheme.onSecondaryContainer),
+            ),
         ],
       ),
     );
 
     if (!hasAuthor) return badge;
 
+    final hasValidProfile = item.firstReason?.user != null;
+
     return GestureDetector(
       onTap: () => _navigateToAuthorProfile(context, isAnilist),
+      onLongPress: hasValidProfile ? _navigateToUserRecs : null,
       behavior: HitTestBehavior.opaque,
       child: badge,
     );
@@ -358,6 +369,13 @@ class _UnderratedCard extends StatelessWidget {
   Future<void> _navigateToAuthorProfile(
       BuildContext context, bool isAnilist) async {
     navigateToAuthorProfile(item);
+  }
+
+  void _navigateToUserRecs() {
+    final user = item.firstReason?.user;
+    if (user != null) {
+      navigate(() => UserRecommendationsPage(user: user));
+    }
   }
 
   void _showPeekPopup(BuildContext context) {
@@ -378,6 +396,8 @@ class _UnderratedCard extends StatelessWidget {
       simklUsername: item.simklUsername,
       voteMediaType: _mediaType,
       voteMediaId: _mediaId,
+      reasons: item.reasons,
+      rawJson: item.rawJson,
     );
   }
 

@@ -96,6 +96,11 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
     return widget.item.reasons.any(_isMyReason);
   }
 
+  /// Same visibility logic as RecommendIconButton:
+  /// hidden when bot env vars not set OR user not logged in.
+  bool get _canAddRecommendation =>
+      CommunityService.votingEnabled && _sh.isLoggedIn.value;
+
   // ─────────────────────────────────────────────
   // Admin check
   // ─────────────────────────────────────────────
@@ -415,7 +420,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
                       ),
               ),
               // Bottom section: vote bar + add button
-              if (showVoteBar || !_hasMyReason)
+              if (showVoteBar || _canAddRecommendation)
                 _buildBottomSection(colors, bottomPadding, showVoteBar),
             ],
           ),
@@ -743,10 +748,10 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
           // Vote bar
           if (showVoteBar) ...[
             _buildVoteBar(colors),
-            if (!_hasMyReason) const SizedBox(height: 10),
+            if (_canAddRecommendation && !_hasMyReason) const SizedBox(height: 10),
           ],
-          // Add recommendation button
-          if (!_hasMyReason)
+          // Add recommendation button — hidden when not logged in or bot env not set
+          if (_canAddRecommendation && !_hasMyReason)
             SizedBox(
               width: double.infinity,
               child: FilledButton.icon(
