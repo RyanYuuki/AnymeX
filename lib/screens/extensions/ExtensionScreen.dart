@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/database.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
@@ -19,6 +18,7 @@ import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex_extension_runtime_bridge/Services/Aniyomi/Models/Source.dart';
 import 'package:anymex_extension_runtime_bridge/Services/Sora/Models/Source.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -57,9 +57,9 @@ class _ExtensionScreenState extends State<ExtensionScreen>
   void _showPluginLoader() async {
     final status = await AnymeXRuntimeBridge.isLoaded();
 
-    // if (kDebugMode) {
+    if (kDebugMode) {
     // _pluginManager.forceSyncLocalApk();
-    // } else {
+    } else {
     if (AnymeXRuntimeBridge.isSupportedPlatform && !status) {
       _pluginManager.ensurePluginLoaded(context);
     } else if (AnymeXRuntimeBridge.isSupportedPlatform && status) {
@@ -68,7 +68,7 @@ class _ExtensionScreenState extends State<ExtensionScreen>
         showIfUpToDate: true,
       );
     }
-    // }
+    }
   }
 
   @override

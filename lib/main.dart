@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:anymex/controllers/cacher/cache_controller.dart';
+import 'package:anymex/screens/downloads/controller/download_controller.dart';
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -154,7 +155,7 @@ void main(List<String> args) async {
     runApp(
       ChangeNotifierProvider(
         create: (context) => ThemeProvider(),
-        child: const MyAdaptiveWrapper(child: MainApp()),
+        child: const MainApp(),
       ),
     );
   }, (error, stackTrace) async {
@@ -184,6 +185,7 @@ void _initializeGetxController() async {
   Get.put(CommentumService());
   Get.put(CommentPreloader());
   Get.put(GistSyncController(), permanent: true);
+  Get.put(DownloadController(), permanent: true);
   Get.lazyPut(() => CacheController());
   await StorageManagerService().enforceImageCacheLimit();
 }

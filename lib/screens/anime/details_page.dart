@@ -460,10 +460,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
           return seasonA.compareTo(seasonB);
         }
 
-        final epA = a.number;
-        final epB = b.number;
-
-        return epA.compareTo(epB);
+        return _compareEpisodeNumberStrings(a.number, b.number);
       });
     }
 
@@ -471,6 +468,10 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   }
 
   List<Episode> _renewEpisodeData(List<Episode> episodes) {
+    if (episodes.any((episode) => episode.sortMap.isNotEmpty)) {
+      return episodes;
+    }
+
     if (episodes.length >= 3 &&
         (int.tryParse(episodes[0].number) ?? 0) > 3 &&
         (int.tryParse(episodes[1].number) ?? 0) > 3 &&
@@ -489,6 +490,18 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       seenNumbers.add(episode.number);
       return episode;
     }).toList();
+  }
+
+  int _compareEpisodeNumberStrings(String first, String second) {
+    final firstNumber = double.tryParse(first.trim());
+    final secondNumber = double.tryParse(second.trim());
+
+    if (firstNumber != null && secondNumber != null) {
+      return firstNumber.compareTo(secondNumber);
+    }
+    if (firstNumber != null) return -1;
+    if (secondNumber != null) return 1;
+    return first.compareTo(second);
   }
 
   void startCountdown(int arrivingAt) {

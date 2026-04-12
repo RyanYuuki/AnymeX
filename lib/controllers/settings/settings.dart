@@ -28,6 +28,11 @@ class Settings extends GetxController {
   RxBool writeLogToFile = false.obs;
   RxString customLogDirectory = ''.obs;
 
+  RxString downloadPath = ''.obs;
+  RxInt concurrentDownloads = 3.obs;
+  RxInt downloadChunks = 1.obs;
+  RxInt hlsParallelSegments = 3.obs;
+
   RxBool isTV = false.obs;
   final _selectedShader = ''.obs;
   final _selectedProfile = 'MID-END'.obs;
@@ -72,6 +77,12 @@ class Settings extends GetxController {
     enableBetaUpdates.value = General.enableBetaUpdates.get<bool>(false);
     writeLogToFile.value = General.writeLogToFile.get<bool>(false);
     customLogDirectory.value = General.customLogDirectory.get<String>("");
+    
+    downloadPath.value = DownloadKeys.downloadPath.get<String>("");
+    concurrentDownloads.value = DownloadKeys.concurrentDownloads.get<int>(3);
+    downloadChunks.value = DownloadKeys.downloadChunks.get<int>(1);
+    hlsParallelSegments.value = DownloadKeys.hlsParallelSegments.get<int>(3);
+
     bridgeMode.value = PluginKeys.bridgeMode.get<String>(_defaultBridgeMode);
     if (Platform.isMacOS && bridgeMode.value != 'sidecar') {
       PluginKeys.bridgeMode.set('sidecar');
@@ -130,13 +141,33 @@ class Settings extends GetxController {
   void _updateBridgeDispatcher() {
     final mode =
         bridgeMode.value == 'sidecar' ? BridgeType.sidecar : BridgeType.jni;
-    BridgeDispatcher().setMode(mode);
+    Get.find<ExtensionManager>().setBridgeType(mode);
   }
 
   void saveBridgeMode(String value) {
     bridgeMode.value = value;
     PluginKeys.bridgeMode.set(value);
     _updateBridgeDispatcher();
+  }
+
+  void saveDownloadPath(String value) {
+    downloadPath.value = value;
+    DownloadKeys.downloadPath.set(value);
+  }
+
+  void saveConcurrentDownloads(int value) {
+    concurrentDownloads.value = value;
+    DownloadKeys.concurrentDownloads.set(value);
+  }
+
+  void saveDownloadChunks(int value) {
+    downloadChunks.value = value;
+    DownloadKeys.downloadChunks.set(value);
+  }
+
+  void saveHlsParallelSegments(int value) {
+    hlsParallelSegments.value = value;
+    DownloadKeys.hlsParallelSegments.set(value);
   }
 
   void showWelcomeDialog(BuildContext context) {

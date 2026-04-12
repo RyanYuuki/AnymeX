@@ -254,3 +254,12 @@ enum UISettingsKeys {
   carouselStyle,
   showContinueWatchingCard,
 }
+
+enum DownloadKeys {
+  downloadPath,
+  concurrentDownloads,
+  saveActiveTasks,
+  downloadChunks,
+  hlsParallelSegments,
+}
+
