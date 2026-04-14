@@ -448,13 +448,9 @@ class Media {
           .toList();
     }
 
-    if (mediaJson['isFavourite'] != null) {
-      isFavourite = mediaJson['isFavourite'] as bool;
-    }
-
-    if (mediaJson['favourites'] != null) {
-      favourites = mediaJson['favourites'] as int;
-    }
+    // Always update isFavourite from secondary data (null defaults to false)
+    isFavourite = (mediaJson['isFavourite'] as bool?) ?? false;
+    favourites = (mediaJson['favourites'] as int?) ?? favourites;
 
     if (pageJson != null) {
       friendsWatching = (pageJson['mediaList'] as List?)

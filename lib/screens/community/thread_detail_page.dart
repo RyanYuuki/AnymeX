@@ -670,35 +670,46 @@ class _ThreadDetailPageState extends State<ThreadDetailPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildSingleComment(comment, colors, isOwnComment, indent: 0),
-
           if (comment.childComments.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(left: 24.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    left: BorderSide(
-                      color: colors.outlineVariant.withOpacity(0.3),
-                      width: 2,
-                    ),
-                  ),
-                ),
-                padding: const EdgeInsets.only(left: 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: comment.childComments.map((child) {
-                    final isOwnChild = currentUserIdInt != null &&
-                        child.userId == currentUserIdInt;
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 6.0),
-                      child: _buildSingleComment(
-                          child, colors, isOwnChild, indent: 1),
-                    );
-                  }).toList(),
-                ),
-              ),
-            ),
+            _buildChildComments(comment.childComments, colors, currentUserIdInt),
         ],
+      ),
+    );
+  }
+
+  Widget _buildChildComments(List<AnilistThreadComment> children,
+      ColorScheme colors, int? currentUserIdInt) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 24.0),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border(
+            left: BorderSide(
+              color: colors.outlineVariant.withOpacity(0.3),
+              width: 2,
+            ),
+          ),
+        ),
+        padding: const EdgeInsets.only(left: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: children.map((child) {
+            final isOwnChild =
+                currentUserIdInt != null && child.userId == currentUserIdInt;
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSingleComment(child, colors, isOwnChild, indent: 1),
+                  if (child.childComments.isNotEmpty)
+                    _buildChildComments(
+                        child.childComments, colors, currentUserIdInt),
+                ],
+              ),
+            );
+          }).toList(),
+        ),
       ),
     );
   }

@@ -1015,9 +1015,12 @@ averageScore
 
   @override
   Future<Media> fetchDetails(FetchDetailsParams params) async {
-    Media? data = cacheController.getCacheById(params.id);
-
-    if (data != null) return data;
+    final token = AuthKeys.authToken.get<String?>();
+    // Skip cache when logged in so isFavourite is always accurate
+    if (token == null) {
+      Media? data = cacheController.getCacheById(params.id);
+      if (data != null) return data;
+    }
 
     const String url = 'https://graphql.anilist.co/';
     final Map<String, dynamic> variables = {
@@ -1029,7 +1032,6 @@ averageScore
       'variables': variables,
     };
 
-    final token = AuthKeys.authToken.get<String?>();
     final headers = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
