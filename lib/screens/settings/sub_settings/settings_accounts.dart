@@ -9,6 +9,7 @@ import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/controllers/sync/progress_sync_section.dart';
 import 'package:anymex/models/Service/online_service.dart';
 import 'package:anymex/screens/other_features.dart';
+import 'package:anymex/screens/settings/sub_settings/anilist_account_settings.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
@@ -48,18 +49,21 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
         'icon': 'assets/images/anilist-icon.png',
         'title': "Anilist",
         'color': const Color(0xFF02A9FF),
+        'isAnilist': true,
       },
       {
         'service': serviceHandler.malService,
         'icon': 'assets/images/mal-icon.png',
         'title': "MyAnimeList",
         'color': const Color(0xFF2E51A2),
+        'isAnilist': false,
       },
       {
         'service': serviceHandler.simklService,
         'icon': 'assets/images/simkl-icon.png',
         'title': "Simkl",
         'color': const Color(0xFF000000),
+        'isAnilist': false,
       },
     ];
 
@@ -95,6 +99,7 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
                           service: s['service'] as OnlineService,
                           title: s['title'] as String,
                           brandColor: s['color'] as Color?,
+                          isAnilist: s['isAnilist'] as bool? ?? false,
                         ),
                       )),
                   const SizedBox(height: 24),
@@ -292,6 +297,7 @@ class TrackingServiceCard extends StatelessWidget {
   final OnlineService service;
   final String title;
   final Color? brandColor;
+  final bool isAnilist;
 
   const TrackingServiceCard({
     super.key,
@@ -299,6 +305,7 @@ class TrackingServiceCard extends StatelessWidget {
     required this.service,
     required this.title,
     this.brandColor,
+    this.isAnilist = false,
   });
 
   @override
@@ -420,7 +427,7 @@ class TrackingServiceCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Image.asset(
-        'assets/icons/$serviceIcon',
+        serviceIcon,
         errorBuilder: (c, o, s) => const Icon(IconlyBold.danger),
       ),
     );
@@ -438,6 +445,20 @@ class TrackingServiceCard extends StatelessWidget {
             AnymexText(
                 text: "Manage $title", variant: TextVariant.bold, size: 18),
             const SizedBox(height: 20),
+            if (isAnilist) ...[
+              ListTile(
+                leading: const Icon(IconlyLight.setting),
+                title: const Text("Settings"),
+                onTap: () {
+                  Navigator.pop(context);
+                  Get.to(() => const AnilistAccountSettings());
+                },
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                tileColor: context.colors.surfaceContainer,
+              ),
+              const SizedBox(height: 8),
+            ],
             ListTile(
               leading: const Icon(IconlyLight.logout),
               title: const Text("Log Out"),
@@ -448,7 +469,7 @@ class TrackingServiceCard extends StatelessWidget {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
               tileColor: context.colors.surfaceContainer,
-            )
+            ),
           ],
         ),
       ),

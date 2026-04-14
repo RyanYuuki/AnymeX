@@ -1556,8 +1556,8 @@ class AnilistAuth extends GetxController {
     if (token == null) return false;
 
     const mutation = r'''
-  mutation ToggleActivitySubscription($id: Int, $subscribe: Boolean) {
-    ToggleActivitySubscription(activityId: $id, subscribe: $subscribe) {
+  mutation ToggleActivitySubscription($activityId: Int, $subscribe: Boolean) {
+    ToggleActivitySubscription(activityId: $activityId, subscribe: $subscribe) {
       id
       isSubscribed
     }
@@ -1574,7 +1574,7 @@ class AnilistAuth extends GetxController {
         },
         body: json.encode({
           'query': mutation,
-          'variables': {'id': id, 'subscribe': isSubscribed},
+          'variables': {'activityId': id, 'subscribe': isSubscribed},
         }),
       );
       return response.statusCode == 200;
@@ -2245,5 +2245,195 @@ class AnilistAuth extends GetxController {
     AuthKeys.authToken.delete();
     profileData.value = Profile();
     isLoggedIn.value = false;
+  }
+
+  RxMap<String, dynamic> anilistUserSettings = <String, dynamic>{}.obs;
+  RxBool isLoadingSettings = false.obs;
+  RxBool isSavingSettings = false.obs;
+
+  Future<void> fetchAnilistSettings() async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return;
+    isLoadingSettings.value = true;
+    const query = r'''
+query {
+  Viewer {
+    options {
+      titleLanguage
+      staffNameLanguage
+      displayAdultContent
+      airingNotifications
+      activityMergeTime
+      rowOrder
+    }
+    mediaListOptions {
+      scoreFormat
+      rowOrder
+      animeList {
+        sectionOrder
+        splitCompletedSectionByFormat
+        customLists
+      }
+      mangaList {
+        sectionOrder
+        splitCompletedSectionByFormat
+        customLists
+      }
+    }
+  }
+}
+''';
+    try {
+      final response = await _anilistPost(
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: {'query': query},
+      );
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final viewer = data['data']['Viewer'] as Map<String, dynamic>;
+        final opts = viewer['options'] as Map<String, dynamic>? ?? {};
+        final mlOpts = viewer['mediaListOptions'] as Map<String, dynamic>? ?? {};
+        final animeList = mlOpts['animeList'] as Map<String, dynamic>? ?? {};
+        final mangaList = mlOpts['mangaList'] as Map<String, dynamic>? ?? {};
+        anilistUserSettings.value = {
+          'titleLanguage': opts['titleLanguage'] ?? 'ROMAJI',
+          'staffNameLanguage': opts['staffNameLanguage'] ?? 'ROMAJI_WESTERN',
+          'displayAdultContent': opts['displayAdultContent'] ?? false,
+          'airingNotifications': opts['airingNotifications'] ?? true,
+          'activityMergeTime': opts['activityMergeTime'] ?? 720,
+          'rowOrder': mlOpts['rowOrder'] ?? opts['rowOrder'] ?? 'score',
+          'scoreFormat': mlOpts['scoreFormat'] ?? 'POINT_10',
+          'animeSectionOrder': animeList['sectionOrder'] ?? [],
+          'mangaSectionOrder': mangaList['sectionOrder'] ?? [],
+          'splitCompletedAnime': animeList['splitCompletedSectionByFormat'] ?? false,
+          'splitCompletedManga': mangaList['splitCompletedSectionByFormat'] ?? false,
+          'animeCustomLists': List<String>.from(animeList['customLists'] ?? []),
+          'mangaCustomLists': List<String>.from(mangaList['customLists'] ?? []),
+        };
+      }
+    } catch (e) {
+      Logger.e('fetchAnilistSettings error: $e');
+    } finally {
+      isLoadingSettings.value = false;
+    }
+  }
+
+  Future<bool> saveAnilistSettings({
+    String? titleLanguage,
+    String? staffNameLanguage,
+    bool? displayAdultContent,
+    bool? airingNotifications,
+    int? activityMergeTime,
+    String? rowOrder,
+    String? scoreFormat,
+    bool? splitCompletedAnime,
+    bool? splitCompletedManga,
+    List<String>? animeCustomLists,
+    List<String>? mangaCustomLists,
+  }) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return false;
+    isSavingSettings.value = true;
+
+    const mutation = r'''
+mutation UpdateUser(
+  $titleLanguage: UserTitleLanguage,
+  $staffNameLanguage: UserStaffNameLanguage,
+  $displayAdultContent: Boolean,
+  $airingNotifications: Boolean,
+  $activityMergeTime: Int,
+  $rowOrder: String,
+  $scoreFormat: ScoreFormat,
+  $animeListOptions: MediaListOptionsInput,
+  $mangaListOptions: MediaListOptionsInput,
+) {
+  UpdateUser(
+    titleLanguage: $titleLanguage,
+    staffNameLanguage: $staffNameLanguage,
+    displayAdultContent: $displayAdultContent,
+    airingNotifications: $airingNotifications,
+    activityMergeTime: $activityMergeTime,
+    rowOrder: $rowOrder,
+    scoreFormat: $scoreFormat,
+    animeListOptions: $animeListOptions,
+    mangaListOptions: $mangaListOptions,
+  ) {
+    id
+    options {
+      titleLanguage
+      staffNameLanguage
+      displayAdultContent
+      airingNotifications
+      activityMergeTime
+      rowOrder
+    }
+    mediaListOptions {
+      scoreFormat
+      rowOrder
+      animeList {
+        sectionOrder
+        splitCompletedSectionByFormat
+        customLists
+      }
+      mangaList {
+        sectionOrder
+        splitCompletedSectionByFormat
+        customLists
+      }
+    }
+  }
+}
+''';
+
+    final variables = <String, dynamic>{};
+    if (titleLanguage != null) variables['titleLanguage'] = titleLanguage;
+    if (staffNameLanguage != null) variables['staffNameLanguage'] = staffNameLanguage;
+    if (displayAdultContent != null) variables['displayAdultContent'] = displayAdultContent;
+    if (airingNotifications != null) variables['airingNotifications'] = airingNotifications;
+    if (activityMergeTime != null) variables['activityMergeTime'] = activityMergeTime;
+    if (rowOrder != null) variables['rowOrder'] = rowOrder;
+    if (scoreFormat != null) variables['scoreFormat'] = scoreFormat;
+    if (splitCompletedAnime != null || animeCustomLists != null) {
+      variables['animeListOptions'] = {
+        if (splitCompletedAnime != null) 'splitCompletedSectionByFormat': splitCompletedAnime,
+        if (animeCustomLists != null) 'customLists': animeCustomLists,
+      };
+    }
+    if (splitCompletedManga != null || mangaCustomLists != null) {
+      variables['mangaListOptions'] = {
+        if (splitCompletedManga != null) 'splitCompletedSectionByFormat': splitCompletedManga,
+        if (mangaCustomLists != null) 'customLists': mangaCustomLists,
+      };
+    }
+
+    try {
+      final response = await _anilistPost(
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: {'query': mutation, 'variables': variables},
+      );
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['errors'] != null) {
+          Logger.e('saveAnilistSettings errors: ${data['errors']}');
+          isSavingSettings.value = false;
+          return false;
+        }
+        await fetchAnilistSettings();
+        isSavingSettings.value = false;
+        return true;
+      }
+    } catch (e) {
+      Logger.e('saveAnilistSettings error: $e');
+    }
+    isSavingSettings.value = false;
+    return false;
   }
 }
