@@ -7,6 +7,7 @@ import 'package:window_manager/window_manager.dart';
 
 class AnymexTitleBar {
   static final ValueNotifier<bool> isFullScreen = ValueNotifier(false);
+  static bool _isTransitioning = false;
 
   static Future<void> initialize() async {
     if (!Platform.isWindows) {
@@ -40,13 +41,26 @@ class AnymexTitleBar {
       );
 
   static Future<void> setFullScreen(bool enable) async {
-    await windowManager.setFullScreen(enable);
-    isFullScreen.value = enable;
+    if (_isTransitioning) return;
+    _isTransitioning = true;
+    try {
+      await windowManager.setFullScreen(enable);
+      isFullScreen.value = await windowManager.isFullScreen();
+    } finally {
+      _isTransitioning = false;
+    }
   }
 
   static Future<void> toggleFullScreen() async {
-    await windowManager.setFullScreen(!isFullScreen.value);
-    isFullScreen.value = !isFullScreen.value;
+    if (_isTransitioning) return;
+    _isTransitioning = true;
+    try {
+      final currentState = await windowManager.isFullScreen();
+      await windowManager.setFullScreen(!currentState);
+      isFullScreen.value = await windowManager.isFullScreen();
+    } finally {
+      _isTransitioning = false;
+    }
   }
 }
 
