@@ -2207,6 +2207,7 @@ class AnilistAuth extends GetxController {
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
         body: {
           'query': mutation,
@@ -2218,6 +2219,11 @@ class AnilistAuth extends GetxController {
         final data = json.decode(response.body);
         if (data['errors'] != null) {
           Logger.e('toggleFavorite GraphQL errors: ${data['errors']}');
+          return false;
+        }
+        final result = data['data']?['ToggleFavourite'];
+        if (result == null) {
+          Logger.e('toggleFavorite: ToggleFavourite returned null');
           return false;
         }
         return true;

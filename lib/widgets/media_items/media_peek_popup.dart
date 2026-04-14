@@ -287,10 +287,26 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
           _loading = false;
         });
         _isFavourite.value = details.isFavourite;
+
+        // Fetch secondary data for accurate isFavourite
+        if (widget.media.serviceType.service is AnilistData) {
+          _fetchSecondaryFav(details);
+        }
       }
     } catch (e) {
       if (mounted) setState(() => _loading = false);
     }
+  }
+
+  Future<void> _fetchSecondaryFav(Media details) async {
+    try {
+      final service = widget.media.serviceType.service as AnilistData;
+      await service.fetchSecondaryDetails(
+          widget.media.id.toString(), details);
+      if (mounted) {
+        _isFavourite.value = details.isFavourite;
+      }
+    } catch (_) {}
   }
 
   Future<Map<String, List<String>>> _fetchAnilistExtras(String id) async {

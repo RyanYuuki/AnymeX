@@ -73,7 +73,7 @@ class ThreadCommentUser {
 
   factory ThreadCommentUser.fromJson(Map<String, dynamic> json) {
     return ThreadCommentUser(
-      id: json['id'] as int,
+      id: json['id'] as int? ?? 0,
       name: json['name'] as String? ?? '',
       avatarUrl: json['avatar']?['large'] as String?,
     );

@@ -110,6 +110,8 @@ const detailsPrimaryQuery = '''
           timeUntilAiring
           episode
         }
+        isFavourite
+        favourites
         rankings {
           rank
           type

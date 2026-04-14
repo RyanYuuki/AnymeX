@@ -363,6 +363,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         await anilistService.fetchSecondaryDetails(
             widget.media.id.toString(), tempData);
         if (mounted) {
+          isFavourite.value = tempData.isFavourite;
           setState(() {});
         }
       }
