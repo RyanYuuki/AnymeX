@@ -2,10 +2,16 @@
 
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/database/data_keys/keys.dart';
+import 'package:anymex/models/Anilist/anilist_search_results.dart';
+import 'package:anymex/models/Media/character.dart';
 import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/models/Media/staff.dart';
 import 'package:anymex/screens/anime/details_page.dart';
+import 'package:anymex/screens/anime/widgets/character_staff_sheet.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex/screens/profile/user_profile_page.dart';
 import 'package:anymex/screens/search/widgets/inline_search_history.dart';
 import 'package:anymex/screens/search/widgets/search_widgets.dart';
 import 'package:anymex/screens/settings/misc/sauce_finder_view.dart';
@@ -28,6 +34,8 @@ import 'package:iconsax/iconsax.dart';
 enum ViewMode { grid, list }
 
 enum SearchState { initial, loading, success, error, empty }
+
+enum SearchCategory { media, users, staff, characters }
 
 class SearchPage extends StatefulWidget {
   final String searchTerm;
@@ -65,6 +73,16 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   String _lastSearchQuery = '';
   Map<String, dynamic> _lastApiFilters = {};
 
+  SearchCategory _category = SearchCategory.media;
+
+  // Social search state
+  List<dynamic> _socialResults = [];
+  bool _socialLoading = false;
+  bool _socialHasMore = false;
+  int _socialPage = 1;
+  String _socialLastQuery = '';
+  final ScrollController _socialScrollController = ScrollController();
+
   final FocusNode _searchFocusNode = FocusNode();
 
   @override
@@ -79,6 +97,9 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       setState(() {});
     });
     _resultsScrollController.addListener(_onResultsScroll);
+    try {
+      _socialScrollController.addListener(_onSocialScroll);
+    } catch (_) {}
   }
 
   void _initializeData() {
@@ -134,6 +155,20 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     final position = _resultsScrollController.position;
     if (position.pixels >= position.maxScrollExtent - 250) {
       _loadMoreResults();
+    }
+  }
+
+  void _onSocialScroll() {
+    if (!_socialScrollController.hasClients ||
+        _socialLoading ||
+        _socialHasMore == false ||
+        _socialResults.isEmpty) {
+      return;
+    }
+
+    final position = _socialScrollController.position;
+    if (position.pixels >= position.maxScrollExtent - 250) {
+      _loadMoreSocial();
     }
   }
 
@@ -312,6 +347,691 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     }
   }
 
+  // ── Social search methods ──
+
+  Future<void> _performSocialSearch(String query) async {
+    if (query.isEmpty) return;
+    setState(() {
+      _socialLoading = true;
+      _socialPage = 1;
+      _socialResults.clear();
+      _socialHasMore = true;
+      _socialLastQuery = query;
+    });
+
+    final anilistAuth = Get.find<AnilistAuth>();
+    try {
+      switch (_category) {
+        case SearchCategory.users:
+          final (results, hasNext) = await anilistAuth.searchUsers(query: query, page: 1);
+          if (mounted) setState(() { _socialResults = results; _socialHasMore = hasNext; _socialLoading = false; });
+          break;
+        case SearchCategory.staff:
+          final (results, hasNext) = await anilistAuth.searchStaff(query: query, page: 1);
+          if (mounted) setState(() { _socialResults = results; _socialHasMore = hasNext; _socialLoading = false; });
+          break;
+        case SearchCategory.characters:
+          final (results, hasNext) = await anilistAuth.searchCharacters(query: query, page: 1);
+          if (mounted) setState(() { _socialResults = results; _socialHasMore = hasNext; _socialLoading = false; });
+          break;
+        default:
+          setState(() => _socialLoading = false);
+      }
+    } catch (e) {
+      if (mounted) setState(() => _socialLoading = false);
+    }
+  }
+
+  Future<void> _loadMoreSocial() async {
+    if (_socialLoading || !_socialHasMore || _socialResults.isEmpty) return;
+
+    setState(() {
+      _socialLoading = true;
+    });
+
+    final nextPage = _socialPage + 1;
+    final anilistAuth = Get.find<AnilistAuth>();
+
+    try {
+      switch (_category) {
+        case SearchCategory.users:
+          final (results, hasNext) = await anilistAuth.searchUsers(query: _socialLastQuery, page: nextPage);
+          if (mounted) setState(() { _socialResults.addAll(results); _socialHasMore = hasNext; _socialPage = nextPage; });
+          break;
+        case SearchCategory.staff:
+          final (results, hasNext) = await anilistAuth.searchStaff(query: _socialLastQuery, page: nextPage);
+          if (mounted) setState(() { _socialResults.addAll(results); _socialHasMore = hasNext; _socialPage = nextPage; });
+          break;
+        case SearchCategory.characters:
+          final (results, hasNext) = await anilistAuth.searchCharacters(query: _socialLastQuery, page: nextPage);
+          if (mounted) setState(() { _socialResults.addAll(results); _socialHasMore = hasNext; _socialPage = nextPage; });
+          break;
+        default:
+          break;
+      }
+    } catch (e) {
+      Logger.i('Failed to load more social results: $e');
+      if (mounted) setState(() { _socialHasMore = false; });
+    } finally {
+      if (mounted) setState(() { _socialLoading = false; });
+    }
+  }
+
+  // ── Social result builders ──
+
+  Widget _buildSocialContent() {
+    if (_socialLoading && _socialResults.isEmpty) {
+      return Expanded(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: context.colors.primary.opaque(0.1, iReallyMeanIt: true),
+                  shape: BoxShape.circle,
+                ),
+                child: const ExpressiveLoadingIndicator(),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Searching...',
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface.opaque(0.7, iReallyMeanIt: true),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (_socialResults.isEmpty && _socialLastQuery.isNotEmpty) {
+      return Expanded(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceVariant.opaque(0.5),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Iconsax.search_normal,
+                  size: 48,
+                  color: context.colors.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'No results found',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Try adjusting your search terms',
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Expanded(
+      child: _buildSocialResults(),
+    );
+  }
+
+  Widget _buildSocialResults() {
+    if (_socialResults.isEmpty) {
+      return Expanded(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceVariant.opaque(0.5),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Iconsax.search_normal,
+                  size: 48,
+                  color: context.colors.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Search ${_category == SearchCategory.users ? "users" : _category == SearchCategory.staff ? "staff" : "characters"}',
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    switch (_category) {
+      case SearchCategory.users:
+        return _buildUserResults();
+      case SearchCategory.staff:
+        return _buildStaffResults();
+      case SearchCategory.characters:
+        return _buildCharacterResults();
+      default:
+        return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildUserResults() {
+    final users = _socialResults.cast<SearchUser>();
+    final itemCount = users.length + (_socialLoading ? 1 : 0);
+
+    return ListView.builder(
+      controller: _socialScrollController,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      physics: const BouncingScrollPhysics(),
+      itemCount: itemCount,
+      itemBuilder: (context, index) {
+        if (_socialLoading && index == users.length) {
+          return const Padding(
+            padding: EdgeInsets.all(20),
+            child: Center(child: ExpressiveLoadingIndicator()),
+          );
+        }
+
+        final user = users[index];
+        return AnimationConfiguration.staggeredList(
+          position: index,
+          child: ScaleAnimation(
+            duration: const Duration(milliseconds: 100),
+            child: _buildUserCard(user),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildUserCard(SearchUser user) {
+    return GestureDetector(
+      onTap: () {
+        navigate(() => UserProfilePage(userId: user.id));
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          color: Theme.of(context).colorScheme.surfaceContainerHighest.opaque(0.3),
+          border: Border.all(
+            color: context.colors.outline.opaque(0.1, iReallyMeanIt: true),
+          ),
+        ),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 26,
+              backgroundImage: user.avatarUrl != null
+                  ? CachedNetworkImageProvider(user.avatarUrl!)
+                  : null,
+              backgroundColor: context.colors.surfaceContainer,
+              child: user.avatarUrl == null
+                  ? Icon(Iconsax.user, color: context.colors.onSurfaceVariant, size: 24)
+                  : null,
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  AnymexText(
+                    text: user.name,
+                    size: 15,
+                    variant: TextVariant.semiBold,
+                    maxLines: 1,
+                  ),
+                  if (user.animeStats != null || user.mangaStats != null) ...[
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        if (user.animeStats != null) ...[
+                          Icon(Iconsax.play_circle, size: 13, color: context.colors.onSurface.opaque(0.5)),
+                          const SizedBox(width: 3),
+                          Text(
+                            '${user.animeStats!.count} anime',
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              color: context.colors.onSurface.opaque(0.5),
+                            ),
+                          ),
+                        ],
+                        if (user.animeStats != null && user.mangaStats != null) ...[
+                          const SizedBox(width: 10),
+                        ],
+                        if (user.mangaStats != null) ...[
+                          Icon(Iconsax.book, size: 13, color: context.colors.onSurface.opaque(0.5)),
+                          const SizedBox(width: 3),
+                          Text(
+                            '${user.mangaStats!.count} manga',
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              color: context.colors.onSurface.opaque(0.5),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            if (user.isFollowing) ...[
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: context.colors.primary.opaque(0.1, iReallyMeanIt: true),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: context.colors.primary.opaque(0.3, iReallyMeanIt: true),
+                  ),
+                ),
+                child: Text(
+                  'Following',
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: context.colors.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+            ],
+            Icon(
+              Iconsax.arrow_right_3,
+              color: context.colors.onSurface.opaque(0.5, iReallyMeanIt: true),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStaffResults() {
+    final staffList = _socialResults.cast<SearchStaff>();
+    final itemCount = staffList.length + (_socialLoading ? 1 : 0);
+
+    return GridView.builder(
+      controller: _socialScrollController,
+      padding: const EdgeInsets.all(20),
+      physics: const BouncingScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: getResponsiveValue(context,
+            mobileValue: 3,
+            desktopValue: getResponsiveCrossAxisVal(
+                MediaQuery.of(context).size.width,
+                itemWidth: 120)),
+        crossAxisSpacing: 12.0,
+        mainAxisSpacing: 12.0,
+        mainAxisExtent: 210,
+      ),
+      itemCount: itemCount,
+      itemBuilder: (context, index) {
+        if (_socialLoading && index == staffList.length) {
+          return const Center(child: ExpressiveLoadingIndicator());
+        }
+
+        final staff = staffList[index];
+        return AnimationConfiguration.staggeredGrid(
+          position: index,
+          columnCount: getResponsiveValue(context,
+              mobileValue: 3,
+              desktopValue: getResponsiveCrossAxisVal(
+                  MediaQuery.of(context).size.width,
+                  itemWidth: 120)),
+          child: ScaleAnimation(
+            duration: const Duration(milliseconds: 100),
+            child: _buildStaffCard(staff),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildStaffCard(SearchStaff staff) {
+    return GestureDetector(
+      onTap: () {
+        showCharacterStaffSheet(
+          context,
+          item: _convertToStaff(staff),
+          isCharacter: false,
+          heroTag: 'search-staff-${staff.id}',
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          color: Theme.of(context).colorScheme.surfaceContainerHighest.opaque(0.3),
+          border: Border.all(
+            color: context.colors.outline.opaque(0.1, iReallyMeanIt: true),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                    child: staff.imageUrl != null
+                        ? CachedNetworkImage(
+                            imageUrl: staff.imageUrl!,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Container(
+                              color: context.colors.surfaceVariant,
+                              child: Center(
+                                child: Icon(Iconsax.user, color: context.colors.onSurfaceVariant),
+                              ),
+                            ),
+                            errorWidget: (context, url, error) => Container(
+                              color: context.colors.surfaceVariant,
+                              child: Center(
+                                child: Icon(Iconsax.warning_2, color: context.colors.error),
+                              ),
+                            ),
+                          )
+                        : Container(
+                            color: context.colors.surfaceVariant,
+                            child: Center(
+                              child: Icon(Iconsax.user, color: context.colors.onSurfaceVariant, size: 40),
+                            ),
+                          ),
+                  ),
+                  if (staff.favourites > 0)
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.red.withOpacity(0.8),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.favorite, color: Colors.white, size: 12),
+                            const SizedBox(width: 3),
+                            Text(
+                              '${staff.favourites}',
+                              style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AnymexText(
+                    text: staff.name,
+                    size: 13,
+                    variant: TextVariant.semiBold,
+                    maxLines: 2,
+                  ),
+                  if (staff.occupations.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      staff.occupations.take(2).join(', '),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: context.colors.primary,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCharacterResults() {
+    final characterList = _socialResults.cast<SearchCharacter>();
+    final itemCount = characterList.length + (_socialLoading ? 1 : 0);
+
+    return GridView.builder(
+      controller: _socialScrollController,
+      padding: const EdgeInsets.all(20),
+      physics: const BouncingScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: getResponsiveValue(context,
+            mobileValue: 3,
+            desktopValue: getResponsiveCrossAxisVal(
+                MediaQuery.of(context).size.width,
+                itemWidth: 120)),
+        crossAxisSpacing: 12.0,
+        mainAxisSpacing: 12.0,
+        mainAxisExtent: 210,
+      ),
+      itemCount: itemCount,
+      itemBuilder: (context, index) {
+        if (_socialLoading && index == characterList.length) {
+          return const Center(child: ExpressiveLoadingIndicator());
+        }
+
+        final character = characterList[index];
+        return AnimationConfiguration.staggeredGrid(
+          position: index,
+          columnCount: getResponsiveValue(context,
+              mobileValue: 3,
+              desktopValue: getResponsiveCrossAxisVal(
+                  MediaQuery.of(context).size.width,
+                  itemWidth: 120)),
+          child: ScaleAnimation(
+            duration: const Duration(milliseconds: 100),
+            child: _buildCharacterCard(character),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildCharacterCard(SearchCharacter character) {
+    return GestureDetector(
+      onTap: () {
+        showCharacterStaffSheet(
+          context,
+          item: _convertToCharacter(character),
+          isCharacter: true,
+          heroTag: 'search-char-${character.id}',
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          color: Theme.of(context).colorScheme.surfaceContainerHighest.opaque(0.3),
+          border: Border.all(
+            color: context.colors.outline.opaque(0.1, iReallyMeanIt: true),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                    child: character.imageUrl != null
+                        ? CachedNetworkImage(
+                            imageUrl: character.imageUrl!,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Container(
+                              color: context.colors.surfaceVariant,
+                              child: Center(
+                                child: Icon(Iconsax.user, color: context.colors.onSurfaceVariant),
+                              ),
+                            ),
+                            errorWidget: (context, url, error) => Container(
+                              color: context.colors.surfaceVariant,
+                              child: Center(
+                                child: Icon(Iconsax.warning_2, color: context.colors.error),
+                              ),
+                            ),
+                          )
+                        : Container(
+                            color: context.colors.surfaceVariant,
+                            child: Center(
+                              child: Icon(Iconsax.user, color: context.colors.onSurfaceVariant, size: 40),
+                            ),
+                          ),
+                  ),
+                  if (character.favourites > 0)
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.red.withOpacity(0.8),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.favorite, color: Colors.white, size: 12),
+                            const SizedBox(width: 3),
+                            Text(
+                              '${character.favourites}',
+                              style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AnymexText(
+                    text: character.name,
+                    size: 13,
+                    variant: TextVariant.semiBold,
+                    maxLines: 2,
+                  ),
+                  if (character.media.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      character.media.first.title ?? '',
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: context.colors.primary,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── Conversion helpers ──
+
+  Staff _convertToStaff(SearchStaff s) => Staff(
+    id: s.id.toString(),
+    name: s.name,
+    nativeName: s.nativeName,
+    image: s.imageUrl,
+    primaryOccupations: s.occupations,
+    favourites: s.favourites,
+    isFavourite: s.isFavourite,
+  );
+
+  Character _convertToCharacter(SearchCharacter c) => Character(
+    id: c.id.toString(),
+    name: c.name,
+    nativeName: c.nativeName,
+    image: c.imageUrl,
+    favourites: c.favourites,
+    isFavourite: c.isFavourite,
+    gender: c.gender,
+    age: c.age,
+  );
+
+  // ── Category tabs ──
+
+  Widget _buildCategoryTabs() {
+    if (serviceHandler.serviceType.value != ServicesType.anilist) {
+      return const SizedBox.shrink();
+    }
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: SearchCategory.values.map((cat) {
+            final isSelected = _category == cat;
+            return Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: FilterChip(
+                label: Text(cat.name.toUpperCase(), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: isSelected ? context.colors.onPrimaryContainer : context.colors.onSurfaceVariant)),
+                selected: isSelected,
+                onSelected: (_) {
+                  if (cat != _category) {
+                    setState(() {
+                      _category = cat;
+                      _socialResults.clear();
+                      _socialLastQuery = '';
+                    });
+                    final query = _searchController.text.trim();
+                    if (query.isNotEmpty) {
+                      _performSocialSearch(query);
+                    }
+                  }
+                },
+                backgroundColor: context.colors.surfaceContainer,
+                selectedColor: context.colors.primaryContainer,
+                showCheckmark: false,
+                visualDensity: VisualDensity.compact,
+              ),
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+
   String _getErrorMessage(dynamic error) {
     if (error.toString().contains('network') ||
         error.toString().contains('connection')) {
@@ -330,12 +1050,28 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     _resultsScrollController
       ..removeListener(_onResultsScroll)
       ..dispose();
+    try {
+      _socialScrollController
+        ..removeListener(_onSocialScroll)
+        ..dispose();
+    } catch (_) {}
     _searchController.dispose();
     _searchFocusNode.dispose();
     super.dispose();
   }
 
   Widget _buildModernSearchBar() {
+    String hintText;
+    if (_category == SearchCategory.users) {
+      hintText = 'Search users...';
+    } else if (_category == SearchCategory.staff) {
+      hintText = 'Search staff...';
+    } else if (_category == SearchCategory.characters) {
+      hintText = 'Search characters...';
+    } else {
+      hintText = 'Search ${serviceHandler.serviceType.value == ServicesType.simkl ? 'movie or series' : widget.isManga ? 'manga' : 'anime'}...';
+    }
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
@@ -359,8 +1095,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         decoration: InputDecoration(
           filled: true,
           fillColor: context.colors.surfaceContainer.opaque(.5),
-          hintText:
-              'Search ${serviceHandler.serviceType.value == ServicesType.simkl ? 'movie or series' : widget.isManga ? 'manga' : 'anime'}...',
+          hintText: hintText,
           hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: context.colors.onSurface.opaque(0.5),
               ),
@@ -382,6 +1117,8 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                       _hasMoreResults = false;
                       _lastSearchQuery = '';
                       _lastApiFilters = {};
+                      _socialResults.clear();
+                      _socialLastQuery = '';
                     });
                   },
                   icon: Icon(
@@ -389,30 +1126,41 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                     color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
                   ),
                 )
-              : serviceHandler.serviceType.value != ServicesType.anilist
+              : (_category != SearchCategory.media)
                   ? null
-                  : IconButton(
-                      onPressed: _showFilterBottomSheet,
-                      icon: Icon(
-                        Iconsax.setting_4,
-                        color: _activeFilters.isNotEmpty
-                            ? context.colors.primary
-                            : Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .opaque(0.7),
-                      ),
-                    ),
+                  : serviceHandler.serviceType.value != ServicesType.anilist
+                      ? null
+                      : IconButton(
+                          onPressed: _showFilterBottomSheet,
+                          icon: Icon(
+                            Iconsax.setting_4,
+                            color: _activeFilters.isNotEmpty
+                                ? context.colors.primary
+                                : Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .opaque(0.7),
+                          ),
+                        ),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         ),
-        onSubmitted: (query) => _performSearch(query: query),
+        onSubmitted: (query) {
+          if (_category != SearchCategory.media) {
+            _performSocialSearch(query);
+            return;
+          }
+          _performSearch(query: query);
+        },
         onChanged: (value) => setState(() {}),
       ),
     );
   }
 
   Widget _buildControlsSection() {
+    if (_category != SearchCategory.media) {
+      return const SizedBox.shrink();
+    }
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
@@ -605,6 +1353,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   }
 
   Widget _buildActiveFilters() {
+    if (_category != SearchCategory.media) return const SizedBox.shrink();
     if (_activeFilters.isEmpty) return const SizedBox.shrink();
 
     return Container(
@@ -765,7 +1514,11 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         searchTerms: _searchedTerms,
         onTermSelected: (term) {
           _searchController.text = term;
-          _performSearch(query: term);
+          if (_category != SearchCategory.media) {
+            _performSocialSearch(term);
+          } else {
+            _performSearch(query: term);
+          }
         },
         onHistoryUpdated: (updatedTerms) {
           setState(() {
@@ -1182,52 +1935,57 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                   ],
                 ),
               ),
+              _buildCategoryTabs(),
               _buildControlsSection(),
               const SizedBox(height: 16),
               _buildActiveFilters(),
-              if (_searchState == SearchState.success &&
-                  _searchResults!.isNotEmpty) ...[
-                Container(
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                  child: Row(
-                    children: [
-                      Text(
-                        'Search Results',
-                        style:
-                            Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .primary
-                              .opaque(0.1, iReallyMeanIt: true),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          '${_searchResults!.length}',
+              if (_category != SearchCategory.media) ...[
+                _buildSocialContent(),
+              ] else ...[
+                if (_searchState == SearchState.success &&
+                    _searchResults!.isNotEmpty) ...[
+                  Container(
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                    child: Row(
+                      children: [
+                        Text(
+                          'Search Results',
                           style:
-                              Theme.of(context).textTheme.labelSmall?.copyWith(
-                                    color: context.colors.primary,
+                              Theme.of(context).textTheme.headlineSmall?.copyWith(
                                     fontWeight: FontWeight.bold,
                                   ),
                         ),
-                      ),
-                      if (_searchState == SearchState.success) ...[
-                        const Spacer(),
-                        _buildViewModeToggle(),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .opaque(0.1, iReallyMeanIt: true),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            '${_searchResults!.length}',
+                            style:
+                                Theme.of(context).textTheme.labelSmall?.copyWith(
+                                      color: context.colors.primary,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                          ),
+                        ),
+                        if (_searchState == SearchState.success) ...[
+                          const Spacer(),
+                          _buildViewModeToggle(),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
-                ),
+                ],
+                _buildMainContent(),
               ],
-              _buildMainContent(),
             ],
           ),
         ),
