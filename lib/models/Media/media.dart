@@ -51,6 +51,8 @@ class Media {
   String? characterRole;
   int? seasonYear;
   List<String> synonyms;
+  bool isFavourite;
+  int favourites;
 
   // String get uniqueId => "$id-${serviceType.name}";
   String get uniqueId => id.split('*').first;
@@ -95,6 +97,8 @@ class Media {
       this.userStatus,
       this.characterRole,
       this.synonyms = const [],
+      this.isFavourite = false,
+      this.favourites = 0,
       DateTime? createdAt})
       : createdAt = DateTime.now();
 
@@ -417,6 +421,8 @@ class Media {
       mediaType: type,
       serviceType: ServicesType.anilist,
       synonyms: (json['synonyms'] as List?)?.cast<String>() ?? [],
+      isFavourite: json['isFavourite'] ?? false,
+      favourites: json['favourites'] ?? 0,
     );
 
     if (json['staffPreview'] != null) {
@@ -440,6 +446,14 @@ class Media {
       staff = (mediaJson['staffPreview']['edges'] as List?)
           ?.map((e) => Staff.fromJson(e))
           .toList();
+    }
+
+    if (mediaJson['isFavourite'] != null) {
+      isFavourite = mediaJson['isFavourite'] as bool;
+    }
+
+    if (mediaJson['favourites'] != null) {
+      favourites = mediaJson['favourites'] as int;
     }
 
     if (pageJson != null) {

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:anymex/controllers/services/community_service.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/database/data_keys/keys.dart';
@@ -28,6 +29,7 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:anymex/widgets/non_widgets/recommend_button.dart';
 import 'package:anymex/widgets/non_widgets/reasons_sheet.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 
 class MediaPeekPopup extends StatefulWidget {
   final Media media;
@@ -141,6 +143,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
   late final RxDouble _animeScore;
   late final RxInt _animeProgress;
   late final Rx<TrackedMedia?> _currentMedia;
+  late final RxBool _isFavourite;
 
   @override
   void initState() {
@@ -167,6 +170,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                 : (tracked.episodeCount ?? '')) ??
             0)
         .obs;
+    _isFavourite = (widget.media.isFavourite).obs;
   }
 
   Future<void> _loadVotes() async {
@@ -282,6 +286,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
           );
           _loading = false;
         });
+        _isFavourite.value = details.isFavourite;
       }
     } catch (e) {
       if (mounted) setState(() => _loading = false);
@@ -625,7 +630,8 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
 
       final recommendEnabled = CommunityService.votingEnabled;
       final extraFixed = recommendEnabled ? iconBtnWidth + gap : 0.0;
-      final fixedUsed = iconBtnWidth * 2 + gap * 2 + extraFixed;
+      final favFixed = iconBtnWidth + gap;
+      final fixedUsed = iconBtnWidth * 2 + gap * 2 + extraFixed + favFixed;
       final listEditorW =
           _isLoggedIn ? (available - fixedUsed).clamp(0.0, available) : 0.0;
       final watchW = _isLoggedIn
@@ -713,6 +719,11 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                   color: colors.onSurface, size: 20),
             ),
           ),
+          const SizedBox(width: gap),
+          SizedBox(
+            width: iconBtnWidth,
+            child: Obx(() => _buildPeekFavoriteButton(colors)),
+          ),
           if (CommunityService.votingEnabled) ...[
             const SizedBox(width: gap),
             SizedBox(
@@ -729,6 +740,38 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
         ],
       );
     });
+  }
+
+  Widget _buildPeekFavoriteButton(ColorScheme colors) {
+    final fav = _isFavourite.value;
+    return _DetailsStyleButton(
+      onTap: () async {
+        if (!_isLoggedIn) {
+          snackBar("Please login to favorite!");
+          return;
+        }
+        final previousState = _isFavourite.value;
+        _isFavourite.value = !previousState;
+        final anilistAuth = Get.find<AnilistAuth>();
+        final success = await anilistAuth.toggleFavorite(
+          id: int.parse(widget.media.id),
+          type: widget.type == ItemType.manga ? "MANGA" : "ANIME",
+        );
+        if (!success) {
+          _isFavourite.value = previousState;
+          snackBar("Failed to update AniList");
+        } else {
+          snackBar(_isFavourite.value
+              ? "Added to Favorites"
+              : "Removed from Favorites");
+        }
+      },
+      child: Icon(
+        fav ? Icons.favorite : Icons.favorite_border,
+        color: fav ? Colors.red : colors.onSurface,
+        size: 20,
+      ),
+    );
   }
 
   Widget _buildSkeleton(ColorScheme colors) {

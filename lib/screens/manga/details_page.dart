@@ -84,6 +84,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   RxDouble mangaScore = 0.0.obs;
   RxInt mangaProgress = 0.obs;
   RxString mangaStatus = "".obs;
+  RxBool isFavourite = false.obs;
 
   // Tracker's Controller
   late final PageController controller;
@@ -124,6 +125,55 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
           onTap: onTap,
           borderRadius: BorderRadius.circular(16),
           child: Icon(icon),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFavoriteButton(BuildContext context) {
+    final fav = isFavourite.value;
+    return Container(
+      height: 50,
+      width: 60,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: fav
+              ? Colors.red.withOpacity(0.5)
+              : Theme.of(context).colorScheme.outline.opaque(0.2),
+        ),
+        color: fav
+            ? Colors.red.withOpacity(0.15)
+            : Theme.of(context).colorScheme.surfaceContainer.opaque(0.5),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () async {
+            if (!anilist.isLoggedIn.value) {
+              snackBar("Please login to favorite!");
+              return;
+            }
+            final previousState = isFavourite.value;
+            isFavourite.value = !previousState;
+            final success = await anilist.toggleFavorite(
+              id: int.parse(anilistData?.id ?? widget.media.id),
+              type: "MANGA",
+            );
+            if (!success) {
+              isFavourite.value = previousState;
+              snackBar("Failed to update AniList");
+            } else {
+              snackBar(isFavourite.value
+                  ? "Added to Favorites"
+                  : "Removed from Favorites");
+            }
+          },
+          borderRadius: BorderRadius.circular(16),
+          child: Icon(
+            fav ? Icons.favorite : Icons.favorite_border,
+            color: fav ? Colors.red : null,
+          ),
         ),
       ),
     );
@@ -202,6 +252,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
       });
       DiscordRPCController.instance
           .updateMediaPresence(media: anilistData ?? widget.media);
+      isFavourite.value = anilistData?.isFavourite ?? false;
       CommentPreloader.to.removePreloadedController(widget.media.id.toString());
       CommentPreloader.to.preloadComments(anilistData!);
       if (isExtensions) {
@@ -441,6 +492,8 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                                     );
                                   },
                                 ),
+                                const SizedBox(width: 7),
+                                Obx(() => _buildFavoriteButton(context)),
                               ] else ...[
                                 _buildActionIconButton(
                                   context: context,

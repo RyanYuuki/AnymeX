@@ -14,6 +14,7 @@ import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/models/Anilist/anilist_review.dart';
 import 'package:anymex/models/Anilist/anilist_thread.dart';
 import 'package:anymex/models/Anilist/anilist_thread_comment.dart';
+import 'package:anymex/models/Anilist/anilist_search_results.dart';
 import 'package:anymex/models/Anilist/social_user.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/services/commentum_service.dart';
@@ -1170,6 +1171,8 @@ class AnilistAuth extends GetxController {
       ... on TextActivity { likeCount isLiked }
       ... on MessageActivity { likeCount isLiked }
       ... on ActivityReply { likeCount isLiked }
+      ... on Thread { likeCount isLiked }
+      ... on ThreadComment { likeCount isLiked }
     }
   }
   ''';
@@ -2165,7 +2168,11 @@ class AnilistAuth extends GetxController {
     if (token == null) return false;
 
     String idField;
-    if (type == "CHARACTER") {
+    if (type == "ANIME") {
+      idField = "animeId";
+    } else if (type == "MANGA") {
+      idField = "mangaId";
+    } else if (type == "CHARACTER") {
       idField = "characterId";
     } else if (type == "STUDIO") {
       idField = "studioId";
@@ -2176,6 +2183,12 @@ class AnilistAuth extends GetxController {
     final mutation = '''
     mutation (\$id: Int) {
       ToggleFavourite($idField: \$id) {
+        anime {
+          nodes { id }
+        }
+        manga {
+          nodes { id }
+        }
         characters {
           nodes { id }
         }
@@ -2190,16 +2203,15 @@ class AnilistAuth extends GetxController {
   ''';
 
     try {
-      final response = await http.post(
-        Uri.parse('https://graphql.anilist.co'),
+      final response = await _anilistPost(
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
-        body: json.encode({
+        body: {
           'query': mutation,
           'variables': {'id': id},
-        }),
+        },
       );
 
       if (response.statusCode == 200) {
@@ -2446,14 +2458,14 @@ mutation UpdateUser(
     return false;
   }
 
-  Future<List<AnilistReview>> fetchReviews({
+  Future<(List<AnilistReview>, bool)> fetchReviews({
     required int mediaId,
     int page = 1,
     int perPage = 25,
     String sort = 'RATING_DESC',
   }) async {
     final token = AuthKeys.authToken.get<String?>();
-    if (token == null) return [];
+    if (token == null) return (<AnilistReview>[], false);
 
     try {
       final response = await _anilistPost(
@@ -2475,16 +2487,25 @@ mutation UpdateUser(
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
+        if (data['errors'] != null) {
+          Logger.e('fetchReviews GraphQL errors: ${data['errors']}');
+          return (<AnilistReview>[], false);
+        }
         final reviewsJson =
             data['data']?['Page']?['reviews'] as List<dynamic>? ?? [];
-        return reviewsJson
-            .map((e) => AnilistReview.fromJson(e as Map<String, dynamic>))
-            .toList();
+        final hasNextPage =
+            data['data']?['Page']?['pageInfo']?['hasNextPage'] as bool? ?? false;
+        return (
+          reviewsJson
+              .map((e) => AnilistReview.fromJson(e as Map<String, dynamic>))
+              .toList(),
+          hasNextPage,
+        );
       }
     } catch (e) {
       Logger.e('fetchReviews error: $e');
     }
-    return [];
+    return (<AnilistReview>[], false);
   }
 
   Future<AnilistReview?> fetchReviewDetail(int reviewId) async {
@@ -2615,7 +2636,14 @@ mutation UpdateUser(
         },
       );
 
-      return response.statusCode == 200;
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['errors'] != null) {
+          Logger.e('rateReview GraphQL errors: ${data['errors']}');
+          return false;
+        }
+        return data['data']?['RateReview']?['id'] != null;
+      }
     } catch (e) {
       Logger.e('rateReview error: $e');
     }
@@ -2832,12 +2860,18 @@ mutation UpdateUser(
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
+        if (data['errors'] != null) {
+          Logger.e('fetchThreadComments GraphQL errors: ${data['errors']}');
+          return [];
+        }
         final commentsJson =
             data['data']?['Page']?['threadComments'] as List<dynamic>? ?? [];
         return commentsJson
             .map((e) =>
                 AnilistThreadComment.fromJson(e as Map<String, dynamic>))
             .toList();
+      } else {
+        Logger.e('fetchThreadComments HTTP error: ${response.statusCode}');
       }
     } catch (e) {
       Logger.e('fetchThreadComments error: $e');
@@ -2915,6 +2949,261 @@ mutation UpdateUser(
       }
     } catch (e) {
       Logger.e('deleteThreadComment error: $e');
+    }
+    return false;
+  }
+
+  Future<(List<SearchUser>, bool)> searchUsers({
+    required String query,
+    int page = 1,
+    int perPage = 25,
+  }) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return (<SearchUser>[], false);
+
+    try {
+      final response = await _anilistPost(
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: {
+          'query': userSearchQuery,
+          'variables': {
+            'search': query,
+            'page': page,
+            'perPage': perPage,
+          },
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['errors'] != null) {
+          Logger.e('searchUsers GraphQL errors: ${data['errors']}');
+          return (<SearchUser>[], false);
+        }
+        final usersJson =
+            data['data']?['Page']?['users'] as List<dynamic>? ?? [];
+        final hasNextPage =
+            data['data']?['Page']?['pageInfo']?['hasNextPage'] as bool? ??
+                false;
+        return (
+          usersJson
+              .map((e) => SearchUser.fromJson(e as Map<String, dynamic>))
+              .toList(),
+          hasNextPage,
+        );
+      }
+    } catch (e) {
+      Logger.e('searchUsers error: $e');
+    }
+    return (<SearchUser>[], false);
+  }
+
+  Future<(List<SearchStaff>, bool)> searchStaff({
+    required String query,
+    int page = 1,
+    int perPage = 25,
+  }) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return (<SearchStaff>[], false);
+
+    try {
+      final response = await _anilistPost(
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: {
+          'query': staffSearchQuery,
+          'variables': {
+            'search': query,
+            'page': page,
+            'perPage': perPage,
+          },
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['errors'] != null) {
+          Logger.e('searchStaff GraphQL errors: ${data['errors']}');
+          return (<SearchStaff>[], false);
+        }
+        final staffJson =
+            data['data']?['Page']?['staff'] as List<dynamic>? ?? [];
+        final hasNextPage =
+            data['data']?['Page']?['pageInfo']?['hasNextPage'] as bool? ??
+                false;
+        return (
+          staffJson
+              .map((e) => SearchStaff.fromJson(e as Map<String, dynamic>))
+              .toList(),
+          hasNextPage,
+        );
+      }
+    } catch (e) {
+      Logger.e('searchStaff error: $e');
+    }
+    return (<SearchStaff>[], false);
+  }
+
+  Future<(List<SearchCharacter>, bool)> searchCharacters({
+    required String query,
+    int page = 1,
+    int perPage = 25,
+  }) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return (<SearchCharacter>[], false);
+
+    try {
+      final response = await _anilistPost(
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: {
+          'query': characterSearchQuery,
+          'variables': {
+            'search': query,
+            'page': page,
+            'perPage': perPage,
+          },
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['errors'] != null) {
+          Logger.e('searchCharacters GraphQL errors: ${data['errors']}');
+          return (<SearchCharacter>[], false);
+        }
+        final charsJson =
+            data['data']?['Page']?['characters'] as List<dynamic>? ?? [];
+        final hasNextPage =
+            data['data']?['Page']?['pageInfo']?['hasNextPage'] as bool? ??
+                false;
+        return (
+          charsJson
+              .map((e) => SearchCharacter.fromJson(e as Map<String, dynamic>))
+              .toList(),
+          hasNextPage,
+        );
+      }
+    } catch (e) {
+      Logger.e('searchCharacters error: $e');
+    }
+    return (<SearchCharacter>[], false);
+  }
+
+  Future<(List<SearchMediaResult>, bool)> searchMedia({
+    required String query,
+    String type = 'ANIME',
+    int page = 1,
+    int perPage = 25,
+  }) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return (<SearchMediaResult>[], false);
+
+    try {
+      final response = await _anilistPost(
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: {
+          'query': mediaSearchQuery,
+          'variables': {
+            'search': query,
+            'type': type,
+            'page': page,
+            'perPage': perPage,
+          },
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['errors'] != null) {
+          Logger.e('searchMedia GraphQL errors: ${data['errors']}');
+          return (<SearchMediaResult>[], false);
+        }
+        final mediaJson =
+            data['data']?['Page']?['media'] as List<dynamic>? ?? [];
+        final hasNextPage =
+            data['data']?['Page']?['pageInfo']?['hasNextPage'] as bool? ??
+                false;
+        return (
+          mediaJson
+              .map(
+                  (e) => SearchMediaResult.fromJson(e as Map<String, dynamic>))
+              .toList(),
+          hasNextPage,
+        );
+      }
+    } catch (e) {
+      Logger.e('searchMedia error: $e');
+    }
+    return (<SearchMediaResult>[], false);
+  }
+
+  Future<bool> toggleFavoriteAnime(int animeId) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return false;
+
+    try {
+      final response = await _anilistPost(
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: {
+          'query': toggleFavouriteAnimeMutation,
+          'variables': {'id': animeId},
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['errors'] != null) return false;
+        return true;
+      }
+    } catch (e) {
+      Logger.e('toggleFavoriteAnime error: $e');
+    }
+    return false;
+  }
+
+  Future<bool> toggleFavoriteManga(int mangaId) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return false;
+
+    try {
+      final response = await _anilistPost(
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: {
+          'query': toggleFavouriteMangaMutation,
+          'variables': {'id': mangaId},
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['errors'] != null) return false;
+        return true;
+      }
+    } catch (e) {
+      Logger.e('toggleFavoriteManga error: $e');
     }
     return false;
   }

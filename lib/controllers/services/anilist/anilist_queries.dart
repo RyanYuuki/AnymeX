@@ -123,6 +123,7 @@ const detailsSecondaryQuery = '''
     query (\$id: Int) {
       Media(id: \$id) {
         id
+        isFavourite
         favourites
         staffPreview: staff(perPage: 25, sort: [RELEVANCE, ID]) {
           edges {
@@ -670,6 +671,151 @@ const String deleteThreadCommentMutation = r'''
 mutation DeleteThreadComment($id: Int) {
   DeleteThreadComment(id: $id) {
     deleted
+  }
+}
+''';
+
+const String userSearchQuery = r'''
+query ($search: String, $page: Int, $perPage: Int) {
+  Page(page: $page, perPage: $perPage) {
+    pageInfo {
+      hasNextPage
+      currentPage
+    }
+    users(search: $search, sort: [SEARCH_MATCH]) {
+      id
+      name
+      avatar {
+        large
+      }
+      bannerImage
+      isFollowing
+      isFollower
+      about(asHtml: true)
+      favourites {
+        anime { nodes { id title { userPreferred } coverImage { large } } }
+        manga { nodes { id title { userPreferred } coverImage { large } } }
+        characters { nodes { id name { full } image { large } } }
+      }
+      statistics {
+        anime { count episodesWatched minutesWatched }
+        manga { count chaptersRead volumesRead }
+      }
+    }
+  }
+}
+''';
+
+const String staffSearchQuery = r'''
+query ($search: String, $page: Int, $perPage: Int) {
+  Page(page: $page, perPage: $perPage) {
+    pageInfo {
+      hasNextPage
+      currentPage
+    }
+    staff(search: $search, sort: [SEARCH_MATCH, FAVOURITES_DESC]) {
+      id
+      name {
+        full
+        native
+      }
+      image {
+        large
+      }
+      primaryOccupations
+      gender
+      dateOfBirth {
+        year
+      }
+      favourites
+      isFavourite
+    }
+  }
+}
+''';
+
+const String characterSearchQuery = r'''
+query ($search: String, $page: Int, $perPage: Int) {
+  Page(page: $page, perPage: $perPage) {
+    pageInfo {
+      hasNextPage
+      currentPage
+    }
+    characters(search: $search, sort: [SEARCH_MATCH, FAVOURITES_DESC]) {
+      id
+      name {
+        full
+        native
+      }
+      image {
+        large
+      }
+      gender
+      age
+      favourites
+      isFavourite
+      media(sort: POPULARITY_DESC, perPage: 3) {
+        nodes {
+          id
+          title {
+            userPreferred
+          }
+          coverImage {
+            large
+          }
+          type
+        }
+      }
+    }
+  }
+}
+''';
+
+const String mediaSearchQuery = r'''
+query ($search: String, $type: MediaType, $page: Int, $perPage: Int) {
+  Page(page: $page, perPage: $perPage) {
+    pageInfo {
+      hasNextPage
+      currentPage
+    }
+    media(search: $search, type: $type, sort: [SEARCH_MATCH, POPULARITY_DESC]) {
+      id
+      title {
+        userPreferred
+        english
+        romaji
+      }
+      coverImage {
+        large
+        color
+      }
+      type
+      format
+      averageScore
+      popularity
+      episodes
+      chapters
+      status
+      seasonYear
+      genres
+      isFavourite
+    }
+  }
+}
+''';
+
+const String toggleFavouriteAnimeMutation = r'''
+mutation ($id: Int) {
+  ToggleFavourite(animeId: $id) {
+    anime { nodes { id } }
+  }
+}
+''';
+
+const String toggleFavouriteMangaMutation = r'''
+mutation ($id: Int) {
+  ToggleFavourite(mangaId: $id) {
+    manga { nodes { id } }
   }
 }
 ''';

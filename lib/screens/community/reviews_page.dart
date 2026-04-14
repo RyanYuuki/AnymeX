@@ -1,10 +1,11 @@
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/models/Anilist/anilist_review.dart';
+import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/screens/profile/user_profile_page.dart';
-import 'package:anymex/screens/community/reviews_page.dart';
 import 'package:anymex/utils/al_about_me.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/non_widgets/review_composer_sheet.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -13,12 +14,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-class ReviewsSection extends StatefulWidget {
+class ReviewsPage extends StatefulWidget {
   final int mediaId;
   final String mediaType;
   final String? mediaTitle;
 
-  const ReviewsSection({
+  const ReviewsPage({
     super.key,
     required this.mediaId,
     this.mediaType = 'ANIME',
@@ -26,10 +27,10 @@ class ReviewsSection extends StatefulWidget {
   });
 
   @override
-  State<ReviewsSection> createState() => _ReviewsSectionState();
+  State<ReviewsPage> createState() => _ReviewsPageState();
 }
 
-class _ReviewsSectionState extends State<ReviewsSection> {
+class _ReviewsPageState extends State<ReviewsPage> {
   final _auth = Get.find<AnilistAuth>();
   List<AnilistReview> _reviews = [];
   bool _isLoading = true;
@@ -54,7 +55,7 @@ class _ReviewsSectionState extends State<ReviewsSection> {
 
   void _onScroll() {
     if (_scrollController.position.pixels >=
-            _scrollController.position.maxScrollExtent - 100 &&
+            _scrollController.position.maxScrollExtent - 200 &&
         !_isLoadingMore &&
         _hasNextPage &&
         !_isLoading) {
@@ -309,7 +310,6 @@ class _ReviewsSectionState extends State<ReviewsSection> {
                       ],
                     ),
                     const SizedBox(height: 16),
-
                     if (review.summary.isNotEmpty) ...[
                       AnymexText(
                         text: review.summary,
@@ -318,10 +318,8 @@ class _ReviewsSectionState extends State<ReviewsSection> {
                       ),
                       const SizedBox(height: 12),
                     ],
-
                     AnilistAboutMe(about: review.body),
                     const SizedBox(height: 16),
-
                     Divider(color: theme.outline.withOpacity(0.1)),
                     const SizedBox(height: 8),
                     Row(
@@ -336,8 +334,8 @@ class _ReviewsSectionState extends State<ReviewsSection> {
                                 ? 'NO_VOTE'
                                 : 'UP_VOTE';
                             setModalState(() => userRating = newRating);
-                            final success = await _auth.rateReview(
-                                review.id, newRating);
+                            final success =
+                                await _auth.rateReview(review.id, newRating);
                             if (!success) {
                               setModalState(() =>
                                   userRating = review.userRating);
@@ -358,8 +356,8 @@ class _ReviewsSectionState extends State<ReviewsSection> {
                                 ? 'NO_VOTE'
                                 : 'DOWN_VOTE';
                             setModalState(() => userRating = newRating);
-                            final success = await _auth.rateReview(
-                                review.id, newRating);
+                            final success =
+                                await _auth.rateReview(review.id, newRating);
                             if (!success) {
                               setModalState(() =>
                                   userRating = review.userRating);
@@ -410,171 +408,96 @@ class _ReviewsSectionState extends State<ReviewsSection> {
     );
   }
 
-  void _navigateToReviewsPage() {
-    navigate(() => ReviewsPage(
-          mediaId: widget.mediaId,
-          mediaType: widget.mediaType,
-          mediaTitle: widget.mediaTitle,
-        ));
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = context.colors;
-    final isDesktop = MediaQuery.of(context).size.width > 600;
 
-    if (_isLoading) {
-      return _buildLoadingState(theme);
-    }
-
-    if (_hasError) {
-      return _buildErrorState(theme);
-    }
-
-    if (_reviews.isEmpty) {
-      return _buildEmptyState(theme);
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 20.0),
-          child: Row(
-            children: [
-              Text(
-                'Reviews',
-                style: TextStyle(
-                  fontFamily: "Poppins-SemiBold",
-                  fontSize: isDesktop ? 20 : 17,
-                  color: theme.primary,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: theme.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  '${_reviews.length}',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontFamily: "Poppins-Bold",
-                    color: theme.primary,
-                  ),
-                ),
-              ),
-              const Spacer(),
-              TextButton.icon(
-                onPressed: _navigateToReviewsPage,
-                icon: const Icon(Icons.arrow_forward_rounded, size: 16),
-                label: const Text('See All', style: TextStyle(fontSize: 13)),
-                style: TextButton.styleFrom(
-                  foregroundColor: theme.primary,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                ),
-              ),
-              if (_auth.isLoggedIn.value)
-                Padding(
-                  padding: const EdgeInsets.only(right: 16),
-                  child: TextButton.icon(
-                    onPressed: _writeReview,
-                    icon: const Icon(Icons.rate_review_rounded, size: 18),
-                    label:
-                        const Text('Write', style: TextStyle(fontSize: 13)),
-                    style: TextButton.styleFrom(
-                      foregroundColor: theme.primary,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 2),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 10),
-
-        SizedBox(
-          height: isDesktop ? 200 : 170,
-          child: ListView.builder(
-            controller: _scrollController,
-            itemCount: _reviews.length + (_hasNextPage ? 1 : 0),
-            scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.only(left: 15, top: 5, bottom: 10),
-            itemBuilder: (context, index) {
-              if (index == _reviews.length && _hasNextPage) {
-                return _buildLoadMoreCard(theme, isDesktop);
-              }
-              return _buildReviewCard(_reviews[index], theme, isDesktop);
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildLoadMoreCard(ColorScheme theme, bool isDesktop) {
-    final cardWidth = isDesktop ? 280.0 : 220.0;
-    return Container(
-      width: cardWidth,
-      margin: const EdgeInsets.symmetric(horizontal: 5),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: _isLoadingMore ? null : _loadMoreReviews,
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: theme.surfaceContainer.withOpacity(0.35),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: theme.outline.withOpacity(0.08)),
+    return Glow(
+      child: Scaffold(
+        body: Column(
+          children: [
+            NestedHeader(
+              title: widget.mediaTitle != null
+                  ? '${widget.mediaTitle} Reviews'
+                  : 'Reviews',
+              action: _auth.isLoggedIn.value
+                  ? TextButton.icon(
+                      onPressed: _writeReview,
+                      icon: const Icon(Icons.rate_review_rounded, size: 18),
+                      label: const Text('Write',
+                          style: TextStyle(fontSize: 13)),
+                      style: TextButton.styleFrom(
+                        foregroundColor: theme.primary,
+                      ),
+                    )
+                  : null,
             ),
-            child: Center(
-              child: _isLoadingMore
-                  ? CircularProgressIndicator(
-                      color: theme.primary, strokeWidth: 2)
-                  : Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.arrow_forward_rounded,
-                            size: 24, color: theme.primary),
-                        const SizedBox(height: 8),
-                        AnymexText(
-                          text: 'Load More',
-                          size: 12,
-                          color: theme.primary,
-                          variant: TextVariant.semiBold,
-                        ),
-                      ],
-                    ),
+            Expanded(
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _hasError
+                      ? _buildErrorWidget(theme)
+                      : _reviews.isEmpty
+                          ? _buildEmptyWidget(theme)
+                          : RefreshIndicator(
+                              onRefresh: _loadReviews,
+                              child: ListView.builder(
+                                controller: _scrollController,
+                                physics:
+                                    const AlwaysScrollableScrollPhysics(
+                                        parent: BouncingScrollPhysics()),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 8),
+                                itemCount:
+                                    _reviews.length + (_hasNextPage ? 1 : 0),
+                                itemBuilder: (context, index) {
+                                  if (index == _reviews.length &&
+                                      _hasNextPage) {
+                                    return Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Center(
+                                        child: _isLoadingMore
+                                            ? CircularProgressIndicator(
+                                                color: theme.primary,
+                                                strokeWidth: 2)
+                                            : TextButton(
+                                                onPressed: _loadMoreReviews,
+                                                child: AnymexText(
+                                                  text: 'Load More',
+                                                  color: theme.primary,
+                                                  variant:
+                                                      TextVariant.semiBold,
+                                                ),
+                                              ),
+                                      ),
+                                    );
+                                  }
+                                  return _buildFullReviewCard(
+                                      _reviews[index], theme);
+                                },
+                              ),
+                            ),
             ),
-          ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildReviewCard(
-      AnilistReview review, ColorScheme theme, bool isDesktop) {
-    final cardWidth = isDesktop ? 280.0 : 220.0;
+  Widget _buildFullReviewCard(AnilistReview review, ColorScheme theme) {
+    final currentUserId = _auth.profileData.value.id;
+    final isOwnReview = review.userId.toString() == currentUserId;
     final scoreColor = _getScoreColor(review.score);
 
-    return Container(
-      width: cardWidth,
-      margin: const EdgeInsets.symmetric(horizontal: 5),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: () => _showReviewDetail(review),
           child: Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               color: theme.surfaceContainer.withOpacity(0.35),
               borderRadius: BorderRadius.circular(16),
@@ -593,17 +516,17 @@ class _ReviewsSectionState extends State<ReviewsSection> {
                         }
                       },
                       child: CircleAvatar(
-                        radius: 14,
+                        radius: 16,
                         backgroundImage: review.user?.avatarUrl != null
                             ? CachedNetworkImageProvider(
                                 review.user!.avatarUrl!)
                             : null,
                         child: review.user?.avatarUrl == null
-                            ? const Icon(Icons.person, size: 14)
+                            ? const Icon(Icons.person, size: 16)
                             : null,
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -611,13 +534,13 @@ class _ReviewsSectionState extends State<ReviewsSection> {
                           AnymexText(
                             text: review.user?.name ?? 'Unknown',
                             variant: TextVariant.semiBold,
-                            size: 12,
+                            size: 14,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                           AnymexText(
                             text: review.timeAgo,
-                            size: 10,
+                            size: 11,
                             color: theme.onSurfaceVariant,
                           ),
                         ],
@@ -625,61 +548,97 @@ class _ReviewsSectionState extends State<ReviewsSection> {
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 3),
+                          horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
                         color: scoreColor.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(10),
                         border:
                             Border.all(color: scoreColor.withOpacity(0.3)),
                       ),
                       child: AnymexText(
                         text: '${review.score}',
-                        size: 13,
+                        size: 15,
                         variant: TextVariant.bold,
                         color: scoreColor,
                       ),
                     ),
+                    if (review.isPrivate)
+                      Padding(
+                        padding: const EdgeInsets.only(left: 6),
+                        child: Icon(Icons.lock_rounded,
+                            size: 14, color: theme.onSurfaceVariant),
+                      ),
                   ],
                 ),
-                const SizedBox(height: 8),
-
-                if (review.summary.isNotEmpty)
+                if (review.summary.isNotEmpty) ...[
+                  const SizedBox(height: 10),
                   AnymexText(
                     text: review.summary,
                     variant: TextVariant.semiBold,
-                    size: 13,
+                    size: 14,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-
-                const SizedBox(height: 4),
-
-                Expanded(
-                  child: AnymexText(
-                    text: review.body.replaceAll(RegExp(r'[\n\r]+'), ' ').replaceAll(RegExp(r'~!.*?!~'), '[spoiler]'),
-                    size: 11,
-                    color: theme.onSurfaceVariant,
-                    maxLines: isDesktop ? 5 : 4,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                ],
+                const SizedBox(height: 8),
+                AnymexText(
+                  text: review.body
+                      .replaceAll(RegExp(r'[\n\r]+'), ' ')
+                      .replaceAll(RegExp(r'~!.*?!~'), '[spoiler]'),
+                  size: 12,
+                  color: theme.onSurfaceVariant,
+                  maxLines: 4,
+                  overflow: TextOverflow.ellipsis,
                 ),
-
-                const SizedBox(height: 4),
-
+                const SizedBox(height: 10),
                 Row(
                   children: [
                     Icon(Icons.thumb_up_rounded,
-                        size: 12, color: theme.onSurfaceVariant.withOpacity(0.6)),
+                        size: 14,
+                        color: theme.onSurfaceVariant.withOpacity(0.6)),
                     const SizedBox(width: 4),
                     AnymexText(
                       text: '${review.rating}',
-                      size: 10,
+                      size: 11,
                       color: theme.onSurfaceVariant.withOpacity(0.6),
                     ),
+                    const SizedBox(width: 12),
+                    if (review.siteUrl != null)
+                      GestureDetector(
+                        onTap: () => launchUrlString(review.siteUrl!),
+                        child: Row(
+                          children: [
+                            Icon(Icons.open_in_new_rounded,
+                                size: 14, color: theme.primary),
+                            const SizedBox(width: 4),
+                            AnymexText(
+                              text: 'AniList',
+                              size: 11,
+                              color: theme.primary,
+                              variant: TextVariant.semiBold,
+                            ),
+                          ],
+                        ),
+                      ),
                     const Spacer(),
-                    if (review.isPrivate)
-                      Icon(Icons.lock_rounded,
-                          size: 12, color: theme.onSurfaceVariant.withOpacity(0.5)),
+                    if (isOwnReview) ...[
+                      GestureDetector(
+                        onTap: () => _editReview(review),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                          child: Icon(Icons.edit_rounded,
+                              size: 16, color: theme.primary),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () => _deleteReview(review.id),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                          child: Icon(Icons.delete_rounded,
+                              size: 16, color: theme.error),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ],
@@ -730,112 +689,58 @@ class _ReviewsSectionState extends State<ReviewsSection> {
     return Colors.red;
   }
 
-  Widget _buildLoadingState(ColorScheme theme) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 20.0),
-          child: Text(
-            'Reviews',
-            style: TextStyle(
-              fontFamily: "Poppins-SemiBold",
-              fontSize: 17,
-              color: theme.primary,
-            ),
-          ),
-        ),
-        const SizedBox(height: 10),
-        SizedBox(
-          height: 170,
-          child: Center(
-            child: CircularProgressIndicator(
-                color: theme.primary, strokeWidth: 2),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildErrorState(ColorScheme theme) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 20.0),
-          child: Row(
-            children: [
-              Text(
-                'Reviews',
-                style: TextStyle(
-                  fontFamily: "Poppins-SemiBold",
-                  fontSize: 17,
-                  color: theme.primary,
-                ),
-              ),
-              const Spacer(),
-              if (_auth.isLoggedIn.value)
-                Padding(
-                  padding: const EdgeInsets.only(right: 16),
-                  child: TextButton.icon(
-                    onPressed: _writeReview,
-                    icon: const Icon(Icons.rate_review_rounded, size: 18),
-                    label:
-                        const Text('Write', style: TextStyle(fontSize: 13)),
-                    style: TextButton.styleFrom(
-                      foregroundColor: theme.primary,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 2),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 10),
-        SizedBox(
-          height: 80,
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.error_outline_rounded,
-                    size: 28, color: theme.onSurfaceVariant),
-                const SizedBox(height: 8),
-                GestureDetector(
-                  onTap: _loadReviews,
-                  child: AnymexText(
-                    text: 'Tap to retry',
-                    size: 12,
-                    color: theme.primary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildEmptyState(ColorScheme theme) {
-    if (!_auth.isLoggedIn.value) return const SizedBox.shrink();
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: Row(
+  Widget _buildErrorWidget(ColorScheme theme) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          TextButton.icon(
-            onPressed: _writeReview,
-            icon: const Icon(Icons.rate_review_rounded, size: 18),
-            label: const Text('Write a Review',
-                style: TextStyle(fontSize: 13)),
-            style: TextButton.styleFrom(
-              foregroundColor: theme.primary,
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 12, vertical: 2),
+          Icon(Icons.error_outline_rounded,
+              size: 40, color: theme.onSurfaceVariant),
+          const SizedBox(height: 12),
+          AnymexText(
+            text: 'Failed to load reviews',
+            size: 14,
+            color: theme.onSurfaceVariant,
+          ),
+          const SizedBox(height: 12),
+          TextButton(
+            onPressed: _loadReviews,
+            child: AnymexText(
+              text: 'Retry',
+              color: theme.primary,
+              variant: TextVariant.semiBold,
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyWidget(ColorScheme theme) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.rate_review_outlined,
+              size: 48, color: theme.onSurfaceVariant),
+          const SizedBox(height: 12),
+          AnymexText(
+            text: 'No reviews yet',
+            size: 16,
+            color: theme.onSurfaceVariant,
+          ),
+          if (_auth.isLoggedIn.value) ...[
+            const SizedBox(height: 16),
+            TextButton.icon(
+              onPressed: _writeReview,
+              icon: const Icon(Icons.rate_review_rounded, size: 20),
+              label: const Text('Write the first review',
+                  style: TextStyle(fontSize: 14)),
+              style: TextButton.styleFrom(
+                foregroundColor: theme.primary,
+              ),
+            ),
+          ],
         ],
       ),
     );
