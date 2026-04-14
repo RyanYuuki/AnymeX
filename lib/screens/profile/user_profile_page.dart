@@ -272,7 +272,45 @@ class _UserProfilePageState extends State<UserProfilePage>
       return const Center(child: CircularProgressIndicator());
     }
     if (_userProfile == null) {
-      return const Center(child: Text('Failed to load profile'));
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: context.theme.colorScheme.errorContainer.withOpacity(0.5),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.person_off_rounded,
+                size: 48,
+                color: context.theme.colorScheme.onErrorContainer,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'User not found',
+              style: context.theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'This user may have been deleted or their profile is private.',
+              style: context.theme.textTheme.bodyLarge?.copyWith(
+                color: context.theme.colorScheme.onSurface.withOpacity(0.6),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            FilledButton.tonal(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Go Back'),
+            ),
+          ],
+        ),
+      );
     }
 
     final user = _userProfile!;

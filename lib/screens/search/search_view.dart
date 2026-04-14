@@ -359,25 +359,27 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       _socialLastQuery = query;
     });
 
-    final anilistAuth = Get.find<AnilistAuth>();
     try {
+      final anilistAuth = Get.find<AnilistAuth>();
       switch (_category) {
         case SearchCategory.users:
           final (results, hasNext) = await anilistAuth.searchUsers(query: query, page: 1);
-          if (mounted) setState(() { _socialResults = results; _socialHasMore = hasNext; _socialLoading = false; });
+          if (mounted) setState(() { _socialResults = results; _socialHasMore = hasNext; });
           break;
         case SearchCategory.staff:
           final (results, hasNext) = await anilistAuth.searchStaff(query: query, page: 1);
-          if (mounted) setState(() { _socialResults = results; _socialHasMore = hasNext; _socialLoading = false; });
+          if (mounted) setState(() { _socialResults = results; _socialHasMore = hasNext; });
           break;
         case SearchCategory.characters:
           final (results, hasNext) = await anilistAuth.searchCharacters(query: query, page: 1);
-          if (mounted) setState(() { _socialResults = results; _socialHasMore = hasNext; _socialLoading = false; });
+          if (mounted) setState(() { _socialResults = results; _socialHasMore = hasNext; });
           break;
         default:
-          setState(() => _socialLoading = false);
+          break;
       }
     } catch (e) {
+      Logger.i('Social search error: $e');
+    } finally {
       if (mounted) setState(() => _socialLoading = false);
     }
   }
@@ -494,33 +496,31 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
 
   Widget _buildSocialResults() {
     if (_socialResults.isEmpty) {
-      return Expanded(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceVariant.opaque(0.5),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Iconsax.search_normal,
-                  size: 48,
-                  color: context.colors.onSurfaceVariant,
-                ),
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceVariant.opaque(0.5),
+                shape: BoxShape.circle,
               ),
-              const SizedBox(height: 24),
-              Text(
-                'Search ${_category == SearchCategory.users ? "users" : _category == SearchCategory.staff ? "staff" : "characters"}',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
-                  fontWeight: FontWeight.w500,
-                ),
+              child: Icon(
+                Iconsax.search_normal,
+                size: 48,
+                color: context.colors.onSurfaceVariant,
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Search ${_category == SearchCategory.users ? "users" : _category == SearchCategory.staff ? "staff" : "characters"}',
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
         ),
       );
     }

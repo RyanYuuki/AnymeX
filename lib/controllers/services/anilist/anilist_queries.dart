@@ -451,6 +451,7 @@ query ($page: Int, $perPage: Int, $categoryId: Int, $mediaCategoryId: Int, $sear
     threads(categoryId: $categoryId, mediaCategoryId: $mediaCategoryId, search: $search, sort: $sort, userId: $userId) {
       id
       title
+      body
       userId
       replyUserId
       replyCommentId
@@ -573,13 +574,13 @@ mutation ToggleThreadSubscription($threadId: Int, $subscribe: Boolean) {
 
 
 const String threadCommentsQuery = r'''
-query ($threadId: Int, $page: Int, $perPage: Int) {
+query ($threadId: Int, $page: Int, $perPage: Int, $sort: [ThreadCommentSort]) {
   Page(page: $page, perPage: $perPage) {
     pageInfo {
       hasNextPage
       currentPage
     }
-    threadComments(threadId: $threadId) {
+    threadComments(threadId: $threadId, sort: $sort) {
       id
       userId
       threadId
@@ -596,23 +597,7 @@ query ($threadId: Int, $page: Int, $perPage: Int) {
           large
         }
       }
-      childComments {
-        id
-        userId
-        threadId
-        comment(asHtml: true)
-        likeCount
-        isLiked
-        createdAt
-        updatedAt
-        user {
-          id
-          name
-          avatar {
-            large
-          }
-        }
-      }
+      childComments
       isLocked
     }
   }

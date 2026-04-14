@@ -150,6 +150,17 @@ class _ForumsPageState extends State<ForumsPage> {
     );
   }
 
+  String _stripHtml(String html) {
+    return html
+        .replaceAll(RegExp(r'<[^>]*>'), '')
+        .replaceAll('&nbsp;', ' ')
+        .replaceAll('&amp;', '&')
+        .replaceAll('&lt;', '<')
+        .replaceAll('&gt;', '>')
+        .replaceAll('&quot;', '"')
+        .trim();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Glow(
@@ -272,6 +283,7 @@ class _ForumsPageState extends State<ForumsPage> {
                               }
                               return _ThreadCard(
                                 thread: _threads[index],
+                                bodyPreview: _stripHtml(_threads[index].body),
                               );
                             },
                           ),
@@ -291,9 +303,11 @@ class _ForumsPageState extends State<ForumsPage> {
 
 class _ThreadCard extends StatelessWidget {
   final AnilistThread thread;
+  final String bodyPreview;
 
   const _ThreadCard({
     required this.thread,
+    required this.bodyPreview,
   });
 
   @override
@@ -382,6 +396,18 @@ class _ThreadCard extends StatelessWidget {
                 size: 15,
                 maxLines: 2,
               ),
+
+              if (bodyPreview.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                AnymexText(
+                  text: bodyPreview.length > 120
+                      ? '${bodyPreview.substring(0, 120)}...'
+                      : bodyPreview,
+                  size: 13,
+                  color: colors.onSurfaceVariant,
+                  maxLines: 2,
+                ),
+              ],
 
               if (thread.categories.isNotEmpty ||
                   thread.mediaCategories.isNotEmpty) ...[

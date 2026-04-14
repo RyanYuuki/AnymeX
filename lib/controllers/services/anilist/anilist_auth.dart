@@ -2844,15 +2844,18 @@ mutation UpdateUser(
     int perPage = 25,
   }) async {
     final token = AuthKeys.authToken.get<String?>();
-    if (token == null) return [];
 
     try {
+      final headers = <String, String>{
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+      if (token != null) {
+        headers['Authorization'] = 'Bearer $token';
+      }
+
       final response = await _anilistPost(
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
+        headers: headers,
         body: {
           'query': threadCommentsQuery,
           'variables': {
@@ -2964,15 +2967,18 @@ mutation UpdateUser(
     int perPage = 25,
   }) async {
     final token = AuthKeys.authToken.get<String?>();
-    if (token == null) return (<SearchUser>[], false);
 
     try {
+      final headers = <String, String>{
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+      if (token != null) {
+        headers['Authorization'] = 'Bearer $token';
+      }
+
       final response = await _anilistPost(
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
+        headers: headers,
         body: {
           'query': userSearchQuery,
           'variables': {
@@ -3013,15 +3019,18 @@ mutation UpdateUser(
     int perPage = 25,
   }) async {
     final token = AuthKeys.authToken.get<String?>();
-    if (token == null) return (<SearchStaff>[], false);
 
     try {
+      final headers = <String, String>{
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+      if (token != null) {
+        headers['Authorization'] = 'Bearer $token';
+      }
+
       final response = await _anilistPost(
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
+        headers: headers,
         body: {
           'query': staffSearchQuery,
           'variables': {
@@ -3062,15 +3071,18 @@ mutation UpdateUser(
     int perPage = 25,
   }) async {
     final token = AuthKeys.authToken.get<String?>();
-    if (token == null) return (<SearchCharacter>[], false);
 
     try {
+      final headers = <String, String>{
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+      if (token != null) {
+        headers['Authorization'] = 'Bearer $token';
+      }
+
       final response = await _anilistPost(
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
+        headers: headers,
         body: {
           'query': characterSearchQuery,
           'variables': {
