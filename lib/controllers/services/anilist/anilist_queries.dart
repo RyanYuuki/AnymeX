@@ -317,7 +317,6 @@ const staffDetailsQuery = '''
   }
 ''';
 
-// ==================== REVIEWS ====================
 
 const String reviewsQuery = r'''
 query ($mediaId: Int, $page: Int, $perPage: Int, $sort: [ReviewSort]) {
@@ -440,7 +439,6 @@ mutation RateReview($reviewId: Int, $rating: ReviewRating) {
 }
 ''';
 
-// ==================== THREADS ====================
 
 const String threadsQuery = r'''
 query ($page: Int, $perPage: Int, $categoryId: Int, $mediaCategoryId: Int, $search: String, $sort: [ThreadSort], $userId: Int) {
@@ -587,7 +585,6 @@ mutation ToggleThreadSubscription($threadId: Int, $subscribe: Boolean) {
 }
 ''';
 
-// ==================== THREAD COMMENTS ====================
 
 const String threadCommentsQuery = r'''
 query ($threadId: Int, $page: Int, $perPage: Int, $sort: [ThreadCommentSort]) {

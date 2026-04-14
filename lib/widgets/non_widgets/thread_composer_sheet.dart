@@ -196,7 +196,6 @@ class _ThreadComposerSheetState extends State<ThreadComposerSheet> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Handle
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 8, 8, 0),
               child: Row(
@@ -221,7 +220,6 @@ class _ThreadComposerSheetState extends State<ThreadComposerSheet> {
               ),
             ),
 
-            // Title
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: TextField(
@@ -250,7 +248,6 @@ class _ThreadComposerSheetState extends State<ThreadComposerSheet> {
 
             const Divider(height: 1, indent: 16, endIndent: 16),
 
-            // Compose/Preview toggle
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(
@@ -311,7 +308,6 @@ class _ThreadComposerSheetState extends State<ThreadComposerSheet> {
               ),
             ),
 
-            // Format toolbar
             if (!_previewMode)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -347,7 +343,6 @@ class _ThreadComposerSheetState extends State<ThreadComposerSheet> {
                 ),
               ),
 
-            // Body editor or preview
             Flexible(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -390,7 +385,6 @@ class _ThreadComposerSheetState extends State<ThreadComposerSheet> {
               ),
             ),
 
-            // Action buttons
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
               child: Row(

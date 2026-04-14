@@ -91,7 +91,6 @@ class _ForumsPageState extends State<ForumsPage> {
           _threads.clear();
         }
         _threads.addAll(results);
-        // Heuristic: if we got fewer than perPage results, no more pages
         _hasNextPage = results.length >= 25;
       });
     }
@@ -182,7 +181,6 @@ class _ForumsPageState extends State<ForumsPage> {
               ),
             ),
 
-            // Search bar
             if (_showSearchBar)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -205,7 +203,6 @@ class _ForumsPageState extends State<ForumsPage> {
                 ),
               ),
 
-            // Sort chips
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
               child: SingleChildScrollView(
@@ -237,7 +234,6 @@ class _ForumsPageState extends State<ForumsPage> {
               ),
             ),
 
-            // Thread list
             Expanded(
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
@@ -337,7 +333,6 @@ class _ThreadCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Badges row
               if (thread.isSticky || thread.isLocked)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
@@ -395,7 +390,6 @@ class _ThreadCard extends StatelessWidget {
                   ),
                 ),
 
-              // Title
               AnymexText(
                 text: thread.title,
                 variant: TextVariant.bold,
@@ -403,7 +397,6 @@ class _ThreadCard extends StatelessWidget {
                 maxLines: 2,
               ),
 
-              // Body preview
               if (bodyPreview.isNotEmpty) ...[
                 const SizedBox(height: 6),
                 AnymexText(
@@ -416,7 +409,6 @@ class _ThreadCard extends StatelessWidget {
                 ),
               ],
 
-              // Category chips
               if (thread.categories.isNotEmpty ||
                   thread.mediaCategories.isNotEmpty) ...[
                 const SizedBox(height: 8),
@@ -456,11 +448,9 @@ class _ThreadCard extends StatelessWidget {
                 ),
               ],
 
-              // Author row
               const SizedBox(height: 10),
               Row(
                 children: [
-                  // Avatar
                   if (thread.user?.avatarUrl != null)
                     ClipOval(
                       child: CachedNetworkImage(
@@ -499,7 +489,6 @@ class _ThreadCard extends StatelessWidget {
                 ],
               ),
 
-              // Stats row
               const SizedBox(height: 8),
               Row(
                 children: [

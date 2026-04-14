@@ -230,7 +230,6 @@ class _ThreadDetailPageState extends State<ThreadDetailPage> {
           _replyingToCommentId = null;
           _replyingToUsername = null;
         });
-        // Refresh comments
         await _fetchComments(reset: true);
       }
     }
@@ -410,14 +409,12 @@ class _ThreadDetailPageState extends State<ThreadDetailPage> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 12),
                         children: [
-                          // Thread header
                           if (_thread != null) ...[
                             _buildThreadHeader(colors, currentUserIdInt),
                           ],
 
                           const Divider(indent: 16, endIndent: 16, height: 32),
 
-                          // Comments section
                           AnymexText(
                             text: 'Comments (${_thread?.replyCount ?? 0})',
                             variant: TextVariant.semiBold,
@@ -464,7 +461,6 @@ class _ThreadDetailPageState extends State<ThreadDetailPage> {
                     ),
             ),
 
-            // Bottom composer
             if (_thread?.isLocked != true)
               _buildCommentComposer(colors),
           ],
@@ -481,7 +477,6 @@ class _ThreadDetailPageState extends State<ThreadDetailPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Title
         AnymexText(
           text: thread.title,
           variant: TextVariant.bold,
@@ -490,7 +485,6 @@ class _ThreadDetailPageState extends State<ThreadDetailPage> {
         ),
         const SizedBox(height: 12),
 
-        // Author row
         Row(
           children: [
             GestureDetector(
@@ -538,7 +532,6 @@ class _ThreadDetailPageState extends State<ThreadDetailPage> {
           ],
         ),
 
-        // Locked notice
         if (thread.isLocked) ...[
           const SizedBox(height: 12),
           Container(
@@ -563,7 +556,6 @@ class _ThreadDetailPageState extends State<ThreadDetailPage> {
           ),
         ],
 
-        // Category chips
         if (thread.categories.isNotEmpty ||
             thread.mediaCategories.isNotEmpty) ...[
           const SizedBox(height: 12),
@@ -601,7 +593,6 @@ class _ThreadDetailPageState extends State<ThreadDetailPage> {
           ),
         ],
 
-        // Body
         if (thread.body.isNotEmpty) ...[
           const SizedBox(height: 16),
           AnilistAboutMe(about: thread.body),
@@ -609,10 +600,8 @@ class _ThreadDetailPageState extends State<ThreadDetailPage> {
 
         const SizedBox(height: 16),
 
-        // Action row
         Row(
           children: [
-            // Like button
             _ActionChip(
               icon: thread.isLiked ? Icons.favorite : Icons.favorite_outline,
               label: '${thread.likeCount}',
@@ -621,7 +610,6 @@ class _ThreadDetailPageState extends State<ThreadDetailPage> {
             ),
             const SizedBox(width: 12),
 
-            // Subscribe button
             _ActionChip(
               icon: thread.isSubscribed
                   ? Icons.notifications_active
@@ -634,7 +622,6 @@ class _ThreadDetailPageState extends State<ThreadDetailPage> {
             ),
             const SizedBox(width: 12),
 
-            // Open in browser
             _ActionChip(
               icon: Icons.open_in_browser,
               label: 'Browser',
@@ -650,7 +637,6 @@ class _ThreadDetailPageState extends State<ThreadDetailPage> {
 
         const SizedBox(height: 12),
 
-        // Stats
         Row(
           children: [
             _StatChip(
@@ -685,7 +671,6 @@ class _ThreadDetailPageState extends State<ThreadDetailPage> {
         children: [
           _buildSingleComment(comment, colors, isOwnComment, indent: 0),
 
-          // Child comments (nested replies)
           if (comment.childComments.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(left: 24.0),
@@ -738,7 +723,6 @@ class _ThreadDetailPageState extends State<ThreadDetailPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Author row
           Row(
             children: [
               GestureDetector(
@@ -786,18 +770,15 @@ class _ThreadDetailPageState extends State<ThreadDetailPage> {
             ],
           ),
 
-          // Comment body
           const SizedBox(height: 8),
           AnilistAboutMe(about: comment.comment),
 
-          // Action row
           const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
                 children: [
-                  // Reply button
                   InkWell(
                     onTap: () => _setReplyTo(comment),
                     borderRadius: BorderRadius.circular(16),
@@ -812,7 +793,6 @@ class _ThreadDetailPageState extends State<ThreadDetailPage> {
                       ),
                     ),
                   ),
-                  // Delete button (own comments only)
                   if (isOwnComment)
                     InkWell(
                       onTap: () => _deleteComment(comment),
@@ -830,7 +810,6 @@ class _ThreadDetailPageState extends State<ThreadDetailPage> {
                     ),
                 ],
               ),
-              // Like button
               InkWell(
                 onTap: () => _toggleCommentLike(comment),
                 borderRadius: BorderRadius.circular(16),
@@ -882,7 +861,6 @@ class _ThreadDetailPageState extends State<ThreadDetailPage> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Reply indicator
           if (_replyingToCommentId != null)
             Container(
               margin: const EdgeInsets.only(bottom: 8),
@@ -908,7 +886,6 @@ class _ThreadDetailPageState extends State<ThreadDetailPage> {
               ),
             ),
 
-          // Input row
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [

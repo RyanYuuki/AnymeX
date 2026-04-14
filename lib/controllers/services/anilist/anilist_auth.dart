@@ -93,7 +93,6 @@ class AnilistAuth extends GetxController {
         return response;
       }
 
-      // Parse Retry After header
       final retryAfter = response.headers['retry-after'];
       final waitSeconds = retryAfter != null
           ? (int.tryParse(retryAfter) ?? (2 << attempt))
@@ -588,7 +587,6 @@ class AnilistAuth extends GetxController {
         Logger.i(
             'User profile fetched: ${userProfile.name} (ID: ${userProfile.id})');
 
-        // fetchFollowersAndFollowing(userProfile.id ?? '');
         CommentsDatabase().login();
       } else if (response.statusCode == 403) {
         _handle403(response);
@@ -2271,7 +2269,6 @@ query {
       displayAdultContent
       airingNotifications
       activityMergeTime
-      rowOrder
     }
     mediaListOptions {
       scoreFormat
@@ -2301,26 +2298,32 @@ query {
       );
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final viewer = data['data']['Viewer'] as Map<String, dynamic>;
-        final opts = viewer['options'] as Map<String, dynamic>? ?? {};
-        final mlOpts = viewer['mediaListOptions'] as Map<String, dynamic>? ?? {};
-        final animeList = mlOpts['animeList'] as Map<String, dynamic>? ?? {};
-        final mangaList = mlOpts['mangaList'] as Map<String, dynamic>? ?? {};
-        anilistUserSettings.value = {
-          'titleLanguage': opts['titleLanguage'] ?? 'ROMAJI',
-          'staffNameLanguage': opts['staffNameLanguage'] ?? 'ROMAJI_WESTERN',
-          'displayAdultContent': opts['displayAdultContent'] ?? false,
-          'airingNotifications': opts['airingNotifications'] ?? true,
-          'activityMergeTime': opts['activityMergeTime'] ?? 720,
-          'rowOrder': mlOpts['rowOrder'] ?? opts['rowOrder'] ?? 'score',
-          'scoreFormat': mlOpts['scoreFormat'] ?? 'POINT_10',
-          'animeSectionOrder': animeList['sectionOrder'] ?? [],
-          'mangaSectionOrder': mangaList['sectionOrder'] ?? [],
-          'splitCompletedAnime': animeList['splitCompletedSectionByFormat'] ?? false,
-          'splitCompletedManga': mangaList['splitCompletedSectionByFormat'] ?? false,
-          'animeCustomLists': List<String>.from(animeList['customLists'] ?? []),
-          'mangaCustomLists': List<String>.from(mangaList['customLists'] ?? []),
-        };
+        if (data['errors'] != null) {
+          Logger.e('fetchAnilistSettings GraphQL errors: ${data['errors']}');
+        } else {
+          final viewer = data['data']['Viewer'] as Map<String, dynamic>;
+          final opts = viewer['options'] as Map<String, dynamic>? ?? {};
+          final mlOpts = viewer['mediaListOptions'] as Map<String, dynamic>? ?? {};
+          final animeList = mlOpts['animeList'] as Map<String, dynamic>? ?? {};
+          final mangaList = mlOpts['mangaList'] as Map<String, dynamic>? ?? {};
+          anilistUserSettings.value = {
+            'titleLanguage': opts['titleLanguage'] ?? 'ROMAJI',
+            'staffNameLanguage': opts['staffNameLanguage'] ?? 'ROMAJI_WESTERN',
+            'displayAdultContent': opts['displayAdultContent'] ?? false,
+            'airingNotifications': opts['airingNotifications'] ?? true,
+            'activityMergeTime': opts['activityMergeTime'] ?? 720,
+            'rowOrder': mlOpts['rowOrder'] ?? 'score',
+            'scoreFormat': mlOpts['scoreFormat'] ?? 'POINT_10',
+            'animeSectionOrder': animeList['sectionOrder'] ?? [],
+            'mangaSectionOrder': mangaList['sectionOrder'] ?? [],
+            'splitCompletedAnime': animeList['splitCompletedSectionByFormat'] ?? false,
+            'splitCompletedManga': mangaList['splitCompletedSectionByFormat'] ?? false,
+            'animeCustomLists': List<String>.from(animeList['customLists'] ?? []),
+            'mangaCustomLists': List<String>.from(mangaList['customLists'] ?? []),
+          };
+        }
+      } else {
+        Logger.e('fetchAnilistSettings HTTP error: ${response.statusCode} body: ${response.body}');
       }
     } catch (e) {
       Logger.e('fetchAnilistSettings error: $e');
@@ -2376,7 +2379,6 @@ mutation UpdateUser(
       displayAdultContent
       airingNotifications
       activityMergeTime
-      rowOrder
     }
     mediaListOptions {
       scoreFormat
@@ -2443,8 +2445,6 @@ mutation UpdateUser(
     isSavingSettings.value = false;
     return false;
   }
-
-  // ==================== REVIEWS ====================
 
   Future<List<AnilistReview>> fetchReviews({
     required int mediaId,
@@ -2621,8 +2621,6 @@ mutation UpdateUser(
     }
     return false;
   }
-
-  // ==================== THREADS ====================
 
   Future<List<AnilistThread>> fetchThreads({
     int page = 1,
@@ -2806,8 +2804,6 @@ mutation UpdateUser(
     }
     return false;
   }
-
-  // ==================== THREAD COMMENTS ====================
 
   Future<List<AnilistThreadComment>> fetchThreadComments({
     required int threadId,

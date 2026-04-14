@@ -185,7 +185,6 @@ class _ReviewsSectionState extends State<ReviewsSection> {
                   ),
                 ),
               ),
-              // Header row
               Row(
                 children: [
                   GestureDetector(
@@ -251,7 +250,6 @@ class _ReviewsSectionState extends State<ReviewsSection> {
               ),
               const SizedBox(height: 16),
 
-              // Summary
               if (review.summary.isNotEmpty) ...[
                 AnymexText(
                   text: review.summary,
@@ -261,11 +259,9 @@ class _ReviewsSectionState extends State<ReviewsSection> {
                 const SizedBox(height: 12),
               ],
 
-              // Full body
               AnilistAboutMe(about: review.body),
               const SizedBox(height: 16),
 
-              // Rating row
               Divider(color: theme.outline.withOpacity(0.1)),
               const SizedBox(height: 8),
               Row(
@@ -316,7 +312,6 @@ class _ReviewsSectionState extends State<ReviewsSection> {
                       icon: Icon(Icons.open_in_new_rounded,
                           size: 20, color: theme.onSurfaceVariant),
                       onPressed: () {
-                        // Open in browser
                       },
                       tooltip: 'Open on AniList',
                     ),
@@ -349,7 +344,6 @@ class _ReviewsSectionState extends State<ReviewsSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Header row: "Reviews" + count + Write Review button
         Padding(
           padding: const EdgeInsets.only(left: 20.0),
           child: Row(
@@ -399,7 +393,6 @@ class _ReviewsSectionState extends State<ReviewsSection> {
         ),
         const SizedBox(height: 10),
 
-        // Horizontal carousel of review cards
         SizedBox(
           height: isDesktop ? 200 : 170,
           child: ListView.builder(
@@ -439,10 +432,8 @@ class _ReviewsSectionState extends State<ReviewsSection> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Top row: avatar + name + score
                 Row(
                   children: [
-                    // Avatar
                     GestureDetector(
                       onTap: () {
                         if (review.user != null) {
@@ -462,7 +453,6 @@ class _ReviewsSectionState extends State<ReviewsSection> {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    // Name + time
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -482,7 +472,6 @@ class _ReviewsSectionState extends State<ReviewsSection> {
                         ],
                       ),
                     ),
-                    // Score badge
                     Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 3),
@@ -503,7 +492,6 @@ class _ReviewsSectionState extends State<ReviewsSection> {
                 ),
                 const SizedBox(height: 8),
 
-                // Summary
                 if (review.summary.isNotEmpty)
                   AnymexText(
                     text: review.summary,
@@ -515,7 +503,6 @@ class _ReviewsSectionState extends State<ReviewsSection> {
 
                 const SizedBox(height: 4),
 
-                // Body preview (plain text snippet)
                 Expanded(
                   child: AnymexText(
                     text: review.body.replaceAll(RegExp(r'[\n\r]+'), ' ').replaceAll(RegExp(r'~!.*?!~'), '[spoiler]'),
@@ -528,7 +515,6 @@ class _ReviewsSectionState extends State<ReviewsSection> {
 
                 const SizedBox(height: 4),
 
-                // Bottom row: upvote count + private icon
                 Row(
                   children: [
                     Icon(Icons.thumb_up_rounded,

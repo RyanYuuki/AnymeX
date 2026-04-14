@@ -4,13 +4,13 @@ class AnilistReview {
   final int id;
   final int userId;
   final int mediaId;
-  final String mediaType; // ANIME or MANGA
+  final String mediaType;
   final String summary;
   final String body;
-  final int score; // 0-100
-  final int rating; // total upvote/downvote count
+  final int score;
+  final int rating;
   final int ratingAmount;
-  final String userRating; // NO_VOTE, UP_VOTE, DOWN_VOTE
+  final String userRating;
   final bool isPrivate;
   final String? siteUrl;
   final int createdAt;

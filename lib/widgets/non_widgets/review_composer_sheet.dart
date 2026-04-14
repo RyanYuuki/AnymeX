@@ -21,9 +21,6 @@ class ReviewComposerSheet extends StatefulWidget {
     this.initialPrivate,
   });
 
-  /// Convenience static method to show this sheet as a modal bottom sheet.
-  /// Returns `true` if the review was submitted successfully, `false` if it
-  /// failed, or `null` if the user dismissed the sheet.
   static Future<bool?> show(
     BuildContext context, {
     required Future<bool> Function(String summary, String body, int score, bool isPrivate) onSubmit,
@@ -260,7 +257,6 @@ class _ReviewComposerSheetState extends State<ReviewComposerSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Drag handle
           Center(
             child: Container(
               margin: const EdgeInsets.only(top: 12, bottom: 8),
@@ -273,7 +269,6 @@ class _ReviewComposerSheetState extends State<ReviewComposerSheet> {
             ),
           ),
 
-          // Header row: title + close
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
@@ -296,7 +291,6 @@ class _ReviewComposerSheetState extends State<ReviewComposerSheet> {
             ),
           ),
 
-          // Compose / Preview segmented toggle
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: SegmentedButton<int>(
@@ -354,7 +348,6 @@ class _ReviewComposerSheetState extends State<ReviewComposerSheet> {
 
           const SizedBox(height: 16),
 
-          // Scrollable content area
           Flexible(
             child: SingleChildScrollView(
               padding: EdgeInsets.only(
@@ -374,7 +367,6 @@ class _ReviewComposerSheetState extends State<ReviewComposerSheet> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Summary field
         Text(
           'Summary',
           style: TextStyle(
@@ -414,7 +406,6 @@ class _ReviewComposerSheetState extends State<ReviewComposerSheet> {
 
         const SizedBox(height: 12),
 
-        // Score slider row
         Row(
           children: [
             Text(
@@ -456,7 +447,6 @@ class _ReviewComposerSheetState extends State<ReviewComposerSheet> {
 
         const SizedBox(height: 12),
 
-        // Private toggle + label
         Row(
           children: [
             Icon(
@@ -490,7 +480,6 @@ class _ReviewComposerSheetState extends State<ReviewComposerSheet> {
 
         const SizedBox(height: 12),
 
-        // Formatting toolbar
         Text(
           'Body',
           style: TextStyle(
@@ -525,7 +514,6 @@ class _ReviewComposerSheetState extends State<ReviewComposerSheet> {
         ),
         const SizedBox(height: 8),
 
-        // Body text field
         TextField(
           controller: _bodyController,
           focusNode: _bodyFocusNode,
@@ -553,7 +541,6 @@ class _ReviewComposerSheetState extends State<ReviewComposerSheet> {
 
         const SizedBox(height: 4),
 
-        // Character counter for body
         ValueListenableBuilder<TextEditingValue>(
           valueListenable: _bodyController,
           builder: (context, value, child) {
@@ -577,7 +564,6 @@ class _ReviewComposerSheetState extends State<ReviewComposerSheet> {
 
         const SizedBox(height: 16),
 
-        // Submit button
         ValueListenableBuilder<TextEditingValue>(
           valueListenable: _bodyController,
           builder: (context, bodyValue, child) {
@@ -637,7 +623,6 @@ class _ReviewComposerSheetState extends State<ReviewComposerSheet> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Summary preview
         if (summary.isNotEmpty)
           Container(
             padding: const EdgeInsets.all(12),
@@ -666,7 +651,6 @@ class _ReviewComposerSheetState extends State<ReviewComposerSheet> {
                       ),
                     ),
                     const Spacer(),
-                    // Score badge
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                       decoration: BoxDecoration(
@@ -699,7 +683,6 @@ class _ReviewComposerSheetState extends State<ReviewComposerSheet> {
 
         if (summary.isNotEmpty) const SizedBox(height: 12),
 
-        // Body preview
         Container(
           constraints: const BoxConstraints(minHeight: 80),
           padding: const EdgeInsets.all(12),
@@ -718,7 +701,6 @@ class _ReviewComposerSheetState extends State<ReviewComposerSheet> {
 
         const SizedBox(height: 16),
 
-        // Submit button (also shown in preview)
         SizedBox(
           width: double.infinity,
           height: 48,
@@ -753,7 +735,6 @@ class _ReviewComposerSheetState extends State<ReviewComposerSheet> {
     );
   }
 
-  /// Color for the score value — green for high, amber for mid, red for low.
   Color get _scoreColor {
     if (_score >= 70) return Colors.green;
     if (_score >= 40) return Colors.amber.shade700;
