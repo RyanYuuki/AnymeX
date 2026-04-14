@@ -2880,6 +2880,7 @@ mutation UpdateUser(
         }
         final commentsJson =
             data['data']?['Page']?['threadComments'] as List<dynamic>? ?? [];
+
         return commentsJson
             .map((e) =>
                 AnilistThreadComment.fromJson(e as Map<String, dynamic>))

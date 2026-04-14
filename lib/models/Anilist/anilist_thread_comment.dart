@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:anymex/models/Anilist/anilist_activity.dart';
+import 'package:anymex/utils/logger.dart';
 
 class AnilistThreadComment {
   final int id;
@@ -33,7 +36,42 @@ class AnilistThreadComment {
 
   factory AnilistThreadComment.fromJson(Map<String, dynamic> json) {
     final likesJson = json['likes'] as List<dynamic>? ?? [];
-    final childrenJson = json['childComments'] as List<dynamic>?;
+
+    // childComments is AniList Json type - can come back as List or as JSON string
+    List<dynamic>? childrenJson;
+    final rawChildren = json['childComments'];
+    if (rawChildren != null) {
+      if (rawChildren is String && rawChildren.isNotEmpty) {
+        try {
+          childrenJson = jsonDecode(rawChildren) as List<dynamic>;
+        } catch (e) {
+          Logger.e('Failed to decode childComments JSON string: $e');
+          childrenJson = [];
+        }
+      } else if (rawChildren is List) {
+        childrenJson = rawChildren;
+      } else {
+        Logger.w('childComments unexpected type: ${rawChildren.runtimeType}');
+        childrenJson = [];
+      }
+    }
+
+    List<AnilistThreadComment> parsedChildren = [];
+    if (childrenJson != null && childrenJson.isNotEmpty) {
+      for (final e in childrenJson) {
+        try {
+          if (e is Map<String, dynamic>) {
+            parsedChildren
+                .add(AnilistThreadComment.fromJson(e));
+          } else if (e is Map) {
+            parsedChildren.add(
+                AnilistThreadComment.fromJson(Map<String, dynamic>.from(e)));
+          }
+        } catch (e) {
+          Logger.e('Failed to parse child comment: $e');
+        }
+      }
+    }
 
     return AnilistThreadComment(
       id: json['id'] as int,
@@ -51,12 +89,7 @@ class AnilistThreadComment {
       likes: likesJson
           .map((e) => ActivityLiker.fromJson(e as Map<String, dynamic>))
           .toList(),
-      childComments: childrenJson != null
-          ? childrenJson
-              .map((e) =>
-                  AnilistThreadComment.fromJson(e as Map<String, dynamic>))
-              .toList()
-          : [],
+      childComments: parsedChildren,
       isLocked: json['isLocked'] as bool? ?? false,
     );
   }
