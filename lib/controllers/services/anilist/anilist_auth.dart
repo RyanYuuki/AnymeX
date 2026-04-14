@@ -2215,6 +2215,11 @@ class AnilistAuth extends GetxController {
       );
 
       if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['errors'] != null) {
+          Logger.e('toggleFavorite GraphQL errors: ${data['errors']}');
+          return false;
+        }
         return true;
       } else if (response.statusCode == 403) {
         _handle403(response);

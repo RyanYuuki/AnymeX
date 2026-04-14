@@ -1,6 +1,6 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/screens/community/forums_page.dart';
-import 'package:anymex/screens/community/social_search_page.dart';
+
 import 'package:anymex/screens/downloads/download_screen.dart';
 import 'package:anymex/screens/extensions/ExtensionScreen.dart';
 import 'package:anymex/screens/local_source/local_source_view.dart';
@@ -392,16 +392,7 @@ class SettingsSheet extends StatelessWidget {
             navigate(() => const ForumsPage());
           },
         ),
-      if (serviceHandler.isLoggedIn.value &&
-          serviceHandler.serviceType.value == ServicesType.anilist)
-        _SheetMenuItem(
-          icon: Icons.search_rounded,
-          label: 'Search',
-          onTap: () {
-            Get.back();
-            navigate(() => const SocialSearchPage());
-          },
-        ),
+
       _SheetMenuItem(
         icon: HugeIcons.strokeRoundedAiSetting,
         label: 'Change Service',

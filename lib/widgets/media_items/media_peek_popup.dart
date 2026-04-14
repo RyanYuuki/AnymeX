@@ -417,7 +417,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
 
   bool get _isLoggedIn {
     try {
-      return Get.find<AnilistData>().isLoggedIn.value;
+      return Get.find<AnilistAuth>().isLoggedIn.value;
     } catch (_) {
       return false;
     }
