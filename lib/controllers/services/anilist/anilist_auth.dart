@@ -5,11 +5,15 @@ import 'dart:convert';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/anilist/anilist_queries.dart';
 import 'package:anymex/database/comments/comments_db.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Anilist/anilist_activity.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
+import 'package:anymex/models/Anilist/anilist_review.dart';
+import 'package:anymex/models/Anilist/anilist_thread.dart';
+import 'package:anymex/models/Anilist/anilist_thread_comment.dart';
 import 'package:anymex/models/Anilist/social_user.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/services/commentum_service.dart';
@@ -2253,7 +2257,10 @@ class AnilistAuth extends GetxController {
 
   Future<void> fetchAnilistSettings() async {
     final token = AuthKeys.authToken.get<String?>();
-    if (token == null) return;
+    if (token == null) {
+      isLoadingSettings.value = false;
+      return;
+    }
     isLoadingSettings.value = true;
     const query = r'''
 query {
@@ -2434,6 +2441,485 @@ mutation UpdateUser(
       Logger.e('saveAnilistSettings error: $e');
     }
     isSavingSettings.value = false;
+    return false;
+  }
+
+  // ==================== REVIEWS ====================
+
+  Future<List<AnilistReview>> fetchReviews({
+    required int mediaId,
+    int page = 1,
+    int perPage = 25,
+    String sort = 'RATING_DESC',
+  }) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return [];
+
+    try {
+      final response = await _anilistPost(
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: {
+          'query': reviewsQuery,
+          'variables': {
+            'mediaId': mediaId,
+            'page': page,
+            'perPage': perPage,
+            'sort': [sort],
+          },
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final reviewsJson =
+            data['data']?['Page']?['reviews'] as List<dynamic>? ?? [];
+        return reviewsJson
+            .map((e) => AnilistReview.fromJson(e as Map<String, dynamic>))
+            .toList();
+      }
+    } catch (e) {
+      Logger.e('fetchReviews error: $e');
+    }
+    return [];
+  }
+
+  Future<AnilistReview?> fetchReviewDetail(int reviewId) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return null;
+
+    try {
+      final response = await _anilistPost(
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: {
+          'query': reviewDetailQuery,
+          'variables': {'id': reviewId},
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final reviewJson = data['data']?['Review'] as Map<String, dynamic>?;
+        if (reviewJson != null) {
+          return AnilistReview.fromJson(reviewJson);
+        }
+      }
+    } catch (e) {
+      Logger.e('fetchReviewDetail error: $e');
+    }
+    return null;
+  }
+
+  Future<AnilistReview?> saveReview({
+    int? reviewId,
+    required int mediaId,
+    required String body,
+    required String summary,
+    required int score,
+    bool isPrivate = false,
+  }) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return null;
+
+    final variables = <String, dynamic>{
+      'mediaId': mediaId,
+      'body': body,
+      'summary': summary,
+      'score': score,
+      'private': isPrivate,
+    };
+    if (reviewId != null) variables['id'] = reviewId;
+
+    try {
+      final response = await _anilistPost(
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: {
+          'query': saveReviewMutation,
+          'variables': variables,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['errors'] != null) {
+          Logger.e('saveReview errors: ${data['errors']}');
+          return null;
+        }
+        final reviewJson =
+            data['data']?['SaveReview'] as Map<String, dynamic>?;
+        if (reviewJson != null) {
+          return AnilistReview.fromJson(reviewJson);
+        }
+      }
+    } catch (e) {
+      Logger.e('saveReview error: $e');
+    }
+    return null;
+  }
+
+  Future<bool> deleteReview(int reviewId) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return false;
+
+    try {
+      final response = await _anilistPost(
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: {
+          'query': deleteReviewMutation,
+          'variables': {'id': reviewId},
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data['data']?['DeleteReview']?['deleted'] == true;
+      }
+    } catch (e) {
+      Logger.e('deleteReview error: $e');
+    }
+    return false;
+  }
+
+  Future<bool> rateReview(int reviewId, String rating) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return false;
+
+    try {
+      final response = await _anilistPost(
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: {
+          'query': rateReviewMutation,
+          'variables': {
+            'reviewId': reviewId,
+            'rating': rating,
+          },
+        },
+      );
+
+      return response.statusCode == 200;
+    } catch (e) {
+      Logger.e('rateReview error: $e');
+    }
+    return false;
+  }
+
+  // ==================== THREADS ====================
+
+  Future<List<AnilistThread>> fetchThreads({
+    int page = 1,
+    int perPage = 25,
+    int? categoryId,
+    int? mediaCategoryId,
+    String? search,
+    String sort = 'UPDATED_AT_DESC',
+    int? userId,
+  }) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return [];
+
+    final variables = <String, dynamic>{
+      'page': page,
+      'perPage': perPage,
+      'sort': [sort],
+    };
+    if (categoryId != null) variables['categoryId'] = categoryId;
+    if (mediaCategoryId != null) variables['mediaCategoryId'] = mediaCategoryId;
+    if (search != null) variables['search'] = search;
+    if (userId != null) variables['userId'] = userId;
+
+    try {
+      final response = await _anilistPost(
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: {
+          'query': threadsQuery,
+          'variables': variables,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final threadsJson =
+            data['data']?['Page']?['threads'] as List<dynamic>? ?? [];
+        return threadsJson
+            .map((e) => AnilistThread.fromJson(e as Map<String, dynamic>))
+            .toList();
+      }
+    } catch (e) {
+      Logger.e('fetchThreads error: $e');
+    }
+    return [];
+  }
+
+  Future<AnilistThread?> fetchThreadDetail(int threadId) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return null;
+
+    try {
+      final response = await _anilistPost(
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: {
+          'query': threadDetailQuery,
+          'variables': {'id': threadId},
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final threadJson = data['data']?['Thread'] as Map<String, dynamic>?;
+        if (threadJson != null) {
+          return AnilistThread.fromJson(threadJson);
+        }
+      }
+    } catch (e) {
+      Logger.e('fetchThreadDetail error: $e');
+    }
+    return null;
+  }
+
+  Future<AnilistThread?> saveThread({
+    int? threadId,
+    required String title,
+    required String body,
+    List<int>? categories,
+    List<int>? mediaCategories,
+  }) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return null;
+
+    final variables = <String, dynamic>{
+      'title': title,
+      'body': body,
+    };
+    if (threadId != null) variables['id'] = threadId;
+    if (categories != null) variables['categories'] = categories;
+    if (mediaCategories != null) variables['mediaCategories'] = mediaCategories;
+
+    try {
+      final response = await _anilistPost(
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: {
+          'query': saveThreadMutation,
+          'variables': variables,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['errors'] != null) {
+          Logger.e('saveThread errors: ${data['errors']}');
+          return null;
+        }
+        final threadJson =
+            data['data']?['SaveThread'] as Map<String, dynamic>?;
+        if (threadJson != null) {
+          return AnilistThread.fromJson(threadJson);
+        }
+      }
+    } catch (e) {
+      Logger.e('saveThread error: $e');
+    }
+    return null;
+  }
+
+  Future<bool> deleteThread(int threadId) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return false;
+
+    try {
+      final response = await _anilistPost(
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: {
+          'query': deleteThreadMutation,
+          'variables': {'id': threadId},
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data['data']?['DeleteThread']?['deleted'] == true;
+      }
+    } catch (e) {
+      Logger.e('deleteThread error: $e');
+    }
+    return false;
+  }
+
+  Future<bool> toggleThreadSubscription(
+      int threadId, bool subscribe) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return false;
+
+    try {
+      final response = await _anilistPost(
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: {
+          'query': toggleThreadSubscriptionMutation,
+          'variables': {
+            'threadId': threadId,
+            'subscribe': subscribe,
+          },
+        },
+      );
+
+      return response.statusCode == 200;
+    } catch (e) {
+      Logger.e('toggleThreadSubscription error: $e');
+    }
+    return false;
+  }
+
+  // ==================== THREAD COMMENTS ====================
+
+  Future<List<AnilistThreadComment>> fetchThreadComments({
+    required int threadId,
+    int page = 1,
+    int perPage = 25,
+  }) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return [];
+
+    try {
+      final response = await _anilistPost(
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: {
+          'query': threadCommentsQuery,
+          'variables': {
+            'threadId': threadId,
+            'page': page,
+            'perPage': perPage,
+          },
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final commentsJson =
+            data['data']?['Page']?['threadComments'] as List<dynamic>? ?? [];
+        return commentsJson
+            .map((e) =>
+                AnilistThreadComment.fromJson(e as Map<String, dynamic>))
+            .toList();
+      }
+    } catch (e) {
+      Logger.e('fetchThreadComments error: $e');
+    }
+    return [];
+  }
+
+  Future<AnilistThreadComment?> saveThreadComment({
+    int? commentId,
+    required int threadId,
+    int? parentCommentId,
+    required String comment,
+  }) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return null;
+
+    final variables = <String, dynamic>{
+      'threadId': threadId,
+      'comment': comment,
+    };
+    if (commentId != null) variables['id'] = commentId;
+    if (parentCommentId != null) variables['parentCommentId'] = parentCommentId;
+
+    try {
+      final response = await _anilistPost(
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: {
+          'query': saveThreadCommentMutation,
+          'variables': variables,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['errors'] != null) {
+          Logger.e('saveThreadComment errors: ${data['errors']}');
+          return null;
+        }
+        final commentJson =
+            data['data']?['SaveThreadComment'] as Map<String, dynamic>?;
+        if (commentJson != null) {
+          return AnilistThreadComment.fromJson(commentJson);
+        }
+      }
+    } catch (e) {
+      Logger.e('saveThreadComment error: $e');
+    }
+    return null;
+  }
+
+  Future<bool> deleteThreadComment(int commentId) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return false;
+
+    try {
+      final response = await _anilistPost(
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: {
+          'query': deleteThreadCommentMutation,
+          'variables': {'id': commentId},
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data['data']?['DeleteThreadComment']?['deleted'] == true;
+      }
+    } catch (e) {
+      Logger.e('deleteThreadComment error: $e');
+    }
     return false;
   }
 }

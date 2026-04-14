@@ -1,4 +1,5 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/screens/community/forums_page.dart';
 import 'package:anymex/screens/downloads/download_screen.dart';
 import 'package:anymex/screens/extensions/ExtensionScreen.dart';
 import 'package:anymex/screens/local_source/local_source_view.dart';
@@ -378,6 +379,16 @@ class SettingsSheet extends StatelessWidget {
           onTap: () {
             Get.back();
             navigate(() => const ProfilePage());
+          },
+        ),
+      if (serviceHandler.isLoggedIn.value &&
+          serviceHandler.serviceType.value == ServicesType.anilist)
+        _SheetMenuItem(
+          icon: Icons.forum_rounded,
+          label: 'Forums',
+          onTap: () {
+            Get.back();
+            navigate(() => const ForumsPage());
           },
         ),
       _SheetMenuItem(

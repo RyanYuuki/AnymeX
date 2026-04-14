@@ -17,6 +17,7 @@ import 'package:anymex/screens/anime/widgets/comments/controller/comment_preload
 import 'package:anymex/screens/anime/widgets/custom_list_dialog.dart';
 import 'package:anymex/screens/anime/widgets/list_editor.dart';
 import 'package:anymex/screens/anime/widgets/voice_actor.dart';
+import 'package:anymex/screens/anime/widgets/reviews_section.dart';
 import 'package:anymex/screens/anime/widgets/wrongtitle_modal.dart';
 import 'package:anymex/screens/manga/widgets/chapter_section.dart';
 import 'package:anymex/screens/manga/widgets/manga_stats.dart';
@@ -655,6 +656,12 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
           title: "Relations",
           variant: DataVariant.relation,
         ),
+        if (int.tryParse(anilistData!.id) != null)
+          ReviewsSection(
+            mediaId: int.parse(anilistData!.id),
+            mediaType: 'MANGA',
+            mediaTitle: anilistData!.title,
+          ),
         ReusableCarousel(
           data: anilistData!.recommendations,
           title: "Recommended Manga",

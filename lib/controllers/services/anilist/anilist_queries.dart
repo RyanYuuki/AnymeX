@@ -316,3 +316,363 @@ const staffDetailsQuery = '''
     }
   }
 ''';
+
+// ==================== REVIEWS ====================
+
+const String reviewsQuery = r'''
+query ($mediaId: Int, $page: Int, $perPage: Int, $sort: [ReviewSort]) {
+  Page(page: $page, perPage: $perPage) {
+    pageInfo {
+      hasNextPage
+      currentPage
+    }
+    reviews(mediaId: $mediaId, sort: $sort) {
+      id
+      userId
+      mediaId
+      mediaType
+      summary
+      body(asHtml: true)
+      score
+      rating
+      ratingAmount
+      userRating
+      private
+      siteUrl
+      createdAt
+      updatedAt
+      user {
+        id
+        name
+        avatar {
+          large
+        }
+      }
+      media {
+        id
+        title {
+          userPreferred
+        }
+        coverImage {
+          large
+        }
+        bannerImage
+        type
+      }
+    }
+  }
+}
+''';
+
+const String reviewDetailQuery = r'''
+query ($id: Int) {
+  Review(id: $id) {
+    id
+    userId
+    mediaId
+    mediaType
+    summary
+    body(asHtml: true)
+    score
+    rating
+    ratingAmount
+    userRating
+    private
+    siteUrl
+    createdAt
+    updatedAt
+    user {
+      id
+      name
+      avatar {
+        large
+      }
+    }
+    media {
+      id
+      title {
+        userPreferred
+      }
+      coverImage {
+        large
+      }
+      bannerImage
+      type
+    }
+  }
+}
+''';
+
+const String saveReviewMutation = r'''
+mutation SaveReview($id: Int, $mediaId: Int, $body: String, $summary: String, $score: Int, $private: Boolean) {
+  SaveReview(id: $id, mediaId: $mediaId, body: $body, summary: $summary, score: $score, private: $private) {
+    id
+    userId
+    mediaId
+    summary
+    body(asHtml: true)
+    score
+    rating
+    userRating
+    private
+    createdAt
+    updatedAt
+  }
+}
+''';
+
+const String deleteReviewMutation = r'''
+mutation DeleteReview($id: Int) {
+  DeleteReview(id: $id) {
+    deleted
+  }
+}
+''';
+
+const String rateReviewMutation = r'''
+mutation RateReview($reviewId: Int, $rating: ReviewRating) {
+  RateReview(reviewId: $reviewId, rating: $rating) {
+    id
+    userRating
+    rating
+    ratingAmount
+  }
+}
+''';
+
+// ==================== THREADS ====================
+
+const String threadsQuery = r'''
+query ($page: Int, $perPage: Int, $categoryId: Int, $mediaCategoryId: Int, $search: String, $sort: [ThreadSort], $userId: Int) {
+  Page(page: $page, perPage: $perPage) {
+    pageInfo {
+      hasNextPage
+      currentPage
+    }
+    threads(categoryId: $categoryId, mediaCategoryId: $mediaCategoryId, search: $search, sort: $sort, userId: $userId) {
+      id
+      title
+      body
+      userId
+      replyUserId
+      replyCommentId
+      replyCount
+      viewCount
+      isLocked
+      isSticky
+      isSubscribed
+      likeCount
+      isLiked
+      repliedAt
+      createdAt
+      updatedAt
+      user {
+        id
+        name
+        avatar {
+          large
+        }
+      }
+      replyUser {
+        id
+        name
+        avatar {
+          large
+        }
+      }
+      likes {
+        id
+        name
+        avatar {
+          large
+        }
+      }
+      siteUrl
+      categories {
+        id
+        name
+      }
+      mediaCategories {
+        id
+        title {
+          userPreferred
+        }
+      }
+    }
+  }
+}
+''';
+
+const String threadDetailQuery = r'''
+query ($id: Int) {
+  Thread(id: $id) {
+    id
+    title
+    body(asHtml: true)
+    userId
+    replyUserId
+    replyCommentId
+    replyCount
+    viewCount
+    isLocked
+    isSticky
+    isSubscribed
+    likeCount
+    isLiked
+    repliedAt
+    createdAt
+    updatedAt
+    user {
+      id
+      name
+      avatar {
+        large
+      }
+    }
+    replyUser {
+      id
+      name
+      avatar {
+        large
+      }
+    }
+    likes {
+      id
+      name
+      avatar {
+        large
+      }
+    }
+    siteUrl
+    categories {
+      id
+      name
+    }
+    mediaCategories {
+      id
+      title {
+        userPreferred
+      }
+    }
+  }
+}
+''';
+
+const String saveThreadMutation = r'''
+mutation SaveThread($id: Int, $title: String, $body: String, $categories: [Int], $mediaCategories: [Int]) {
+  SaveThread(id: $id, title: $title, body: $body, categories: $categories, mediaCategories: $mediaCategories) {
+    id
+    title
+    body
+    createdAt
+    updatedAt
+  }
+}
+''';
+
+const String deleteThreadMutation = r'''
+mutation DeleteThread($id: Int) {
+  DeleteThread(id: $id) {
+    deleted
+  }
+}
+''';
+
+const String toggleThreadSubscriptionMutation = r'''
+mutation ToggleThreadSubscription($threadId: Int, $subscribe: Boolean) {
+  ToggleThreadSubscription(threadId: $threadId, subscribe: $subscribe) {
+    id
+    isSubscribed
+  }
+}
+''';
+
+// ==================== THREAD COMMENTS ====================
+
+const String threadCommentsQuery = r'''
+query ($threadId: Int, $page: Int, $perPage: Int, $sort: [ThreadCommentSort]) {
+  Page(page: $page, perPage: $perPage) {
+    pageInfo {
+      hasNextPage
+      currentPage
+    }
+    threadComments(threadId: $threadId, sort: $sort) {
+      id
+      userId
+      threadId
+      comment(asHtml: true)
+      likeCount
+      isLiked
+      siteUrl
+      createdAt
+      updatedAt
+      user {
+        id
+        name
+        avatar {
+          large
+        }
+      }
+      likes {
+        id
+        name
+        avatar {
+          large
+        }
+      }
+      childComments {
+        id
+        userId
+        threadId
+        comment(asHtml: true)
+        likeCount
+        isLiked
+        createdAt
+        updatedAt
+        user {
+          id
+          name
+          avatar {
+            large
+          }
+        }
+        likes {
+          id
+          name
+          avatar {
+            large
+          }
+        }
+      }
+      isLocked
+    }
+  }
+}
+''';
+
+const String saveThreadCommentMutation = r'''
+mutation SaveThreadComment($id: Int, $threadId: Int, $parentCommentId: Int, $comment: String) {
+  SaveThreadComment(id: $id, threadId: $threadId, parentCommentId: $parentCommentId, comment: $comment) {
+    id
+    threadId
+    comment(asHtml: true)
+    createdAt
+    updatedAt
+    user {
+      id
+      name
+      avatar {
+        large
+      }
+    }
+  }
+}
+''';
+
+const String deleteThreadCommentMutation = r'''
+mutation DeleteThreadComment($id: Int) {
+  DeleteThreadComment(id: $id) {
+    deleted
+  }
+}
+''';

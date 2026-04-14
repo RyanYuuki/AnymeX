@@ -22,6 +22,7 @@ import 'package:anymex/screens/anime/widgets/custom_list_dialog.dart';
 import 'package:anymex/screens/anime/widgets/episode_section.dart';
 import 'package:anymex/screens/anime/widgets/list_editor.dart';
 import 'package:anymex/screens/anime/widgets/voice_actor.dart';
+import 'package:anymex/screens/anime/widgets/reviews_section.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/media_share.dart';
@@ -978,6 +979,12 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         CharactersCarousel(characters: anilistData!.characters ?? []),
         if (anilistData?.staff != null && anilistData!.staff!.isNotEmpty)
           StaffCarousel(staff: anilistData!.staff!),
+        if (int.tryParse(anilistData!.id) != null)
+          ReviewsSection(
+            mediaId: int.parse(anilistData!.id),
+            mediaType: 'ANIME',
+            mediaTitle: anilistData!.title,
+          ),
         ReusableCarousel(
           data: anilistData!.recommendations,
           title: widget.media.serviceType == ServicesType.simkl
