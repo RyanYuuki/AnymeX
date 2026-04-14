@@ -14,11 +14,13 @@ class CommentsDatabase {
       {String sort = 'newest', int page = 1, int limit = 50}) async {
     try {
       log("Fetching comments for media: $mediaId (sort: $sort, page: $page)");
+      // Always fetch from backend as newest (backend sorts by created_at desc)
+      // Client-side sorting handles top/controversial since backend ignores orderBy
       final comments = await commentumService.fetchComments(mediaId,
-          sort: sort, page: page, limit: limit);
+          page: page, limit: limit);
       log("Fetched ${comments.length} comments");
 
-      final organizedComments = _organizeComments(comments);
+      final organizedComments = _organizeComments(comments, sort: sort);
       log("Organized into ${organizedComments.length} top-level comments with replies");
 
       return organizedComments;
@@ -29,8 +31,8 @@ class CommentsDatabase {
     }
   }
 
-  List<Comment> _organizeComments(List<Comment> comments) {
-    log("Organizing ${comments.length} comments");
+  List<Comment> _organizeComments(List<Comment> comments, {String sort = 'newest'}) {
+    log("Organizing ${comments.length} comments with sort: $sort");
 
     final Map<int, Comment> commentMap = {};
     final List<Comment> parentComments = [];
@@ -39,34 +41,58 @@ class CommentsDatabase {
     for (final comment in comments) {
       final commentId = int.tryParse(comment.id) ?? 0;
       commentMap[commentId] = comment;
-      log("Comment ${comment.id} (ID: $commentId) - parentId: ${comment.parentId}, text: ${comment.commentText.substring(0, comment.commentText.length > 30 ? 30 : comment.commentText.length)}");
     }
 
     for (final comment in comments) {
       final parentId = comment.parentId;
       if (parentId == null || parentId == 0) {
         parentComments.add(comment);
-        log("Added parent comment: ${comment.id}");
       } else {
         final parent = commentMap[parentId];
         if (parent != null) {
           parent.replies ??= [];
           parent.replies!.add(comment);
           replyCount++;
-          log("Added reply ${comment.id} to parent ${parentId} (parent now has ${parent.replies!.length} replies)");
         } else {
+          // Parent not in this page, treat as top-level
           parentComments.add(comment);
-          log("Parent $parentId not found for comment ${comment.id}, treating as parent comment");
         }
       }
     }
 
-    parentComments.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    // Sort top-level comments based on sort option
+    switch (sort) {
+      case 'oldest':
+        parentComments.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+        break;
+      case 'top':
+        // Sort by vote score (upvotes - downvotes), newest as tiebreaker
+        parentComments.sort((a, b) {
+          final scoreA = a.likes - a.dislikes;
+          final scoreB = b.likes - b.dislikes;
+          if (scoreB != scoreA) return scoreB.compareTo(scoreA);
+          return b.createdAt.compareTo(a.createdAt);
+        });
+        break;
+      case 'controversial':
+        // Sort by total votes (most argued), newest as tiebreaker
+        parentComments.sort((a, b) {
+          final totalA = a.likes + a.dislikes;
+          final totalB = b.likes + b.dislikes;
+          if (totalB != totalA) return totalB.compareTo(totalA);
+          return b.createdAt.compareTo(a.createdAt);
+        });
+        break;
+      case 'newest':
+      default:
+        parentComments.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+        break;
+    }
 
+    // Always sort replies chronologically (oldest first)
     for (final parent in parentComments) {
-      if (parent.replies != null) {
+      if (parent.replies != null && parent.replies!.isNotEmpty) {
         parent.replies!.sort((a, b) => a.createdAt.compareTo(b.createdAt));
-        log("Parent ${parent.id} has ${parent.replies!.length} replies after sorting");
       }
     }
 

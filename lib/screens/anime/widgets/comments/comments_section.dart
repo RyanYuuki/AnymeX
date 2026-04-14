@@ -850,113 +850,117 @@ class _CommentSectionState extends State<CommentSection> {
     final colorScheme = theme.colorScheme;
     final replyController = _getReplyController(comment.id);
 
-    return Container(
-      margin: EdgeInsets.only(
-        left: depth > 0 ? 16.0 + (depth * 20.0) : 52,
-        right: 16,
-      ),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerLowest.opaque(0.5),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: colorScheme.primary.opaque(0.3, iReallyMeanIt: true),
-          width: 1.5,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.reply_rounded,
-                  size: 16, color: colorScheme.primary),
-              const SizedBox(width: 6),
-              Text(
-                'Replying to ${comment.username}',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colorScheme.primary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const Spacer(),
-              GestureDetector(
-                onTap: () {
-                  controller.toggleReply(comment.id);
-                  replyController.clear();
-                },
-                child: Icon(Icons.close_rounded,
-                    size: 18, color: colorScheme.onSurfaceVariant),
-              ),
-            ],
+    return StatefulBuilder(
+      builder: (context, setReplyState) {
+        final hasText = replyController.text.trim().isNotEmpty;
+        return Container(
+          margin: EdgeInsets.only(
+            left: depth > 0 ? 16.0 + (depth * 20.0) : 52,
+            right: 16,
           ),
-          const SizedBox(height: 8),
-          TextField(
-            controller: replyController,
-            maxLines: 3,
-            minLines: 1,
-            style: TextStyle(
-              color: colorScheme.onSurface,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-            decoration: InputDecoration(
-              hintText: 'Write a reply...',
-              hintStyle: TextStyle(
-                color: colorScheme.onSurfaceVariant.opaque(0.5),
-                fontSize: 14,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(
-                  color: colorScheme.outlineVariant.opaque(0.3),
-                ),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(
-                  color: colorScheme.outlineVariant.opaque(0.3),
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(
-                  color: colorScheme.primary.opaque(0.5),
-                  width: 1.5,
-                ),
-              ),
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainerLowest.opaque(0.5),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: colorScheme.primary.opaque(0.3, iReallyMeanIt: true),
+              width: 1.5,
             ),
           ),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Obx(() => FilledButton.tonal(
-                    onPressed: controller.isSubmitting.value ||
-                            replyController.text.trim().isEmpty
-                        ? null
-                        : () {
-                            controller.addReply(
-                                comment, replyController.text.trim());
-                            replyController.clear();
-                          },
-                    style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+              Row(
+                children: [
+                  Icon(Icons.reply_rounded,
+                      size: 16, color: colorScheme.primary),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Replying to ${comment.username}',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.primary,
+                      fontWeight: FontWeight.w600,
                     ),
-                    child: controller.isSubmitting.value
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: ExpressiveLoadingIndicator(),
-                          )
-                        : const Text(
-                            'Reply',
+                  ),
+                  const Spacer(),
+                  GestureDetector(
+                    onTap: () {
+                      controller.toggleReply(comment.id);
+                      replyController.clear();
+                    },
+                    child: Icon(Icons.close_rounded,
+                        size: 18, color: colorScheme.onSurfaceVariant),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: replyController,
+                maxLines: 3,
+                minLines: 1,
+                style: TextStyle(
+                  color: colorScheme.onSurface,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+                onChanged: (_) => setReplyState(() {}),
+                decoration: InputDecoration(
+                  hintText: 'Write a reply...',
+                  hintStyle: TextStyle(
+                    color: colorScheme.onSurfaceVariant.opaque(0.5),
+                    fontSize: 14,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: colorScheme.outlineVariant.opaque(0.3),
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: colorScheme.outlineVariant.opaque(0.3),
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: colorScheme.primary.opaque(0.5),
+                      width: 1.5,
+                    ),
+                  ),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Obx(() => FilledButton.tonal(
+                        onPressed: controller.isSubmitting.value || !hasText
+                            ? null
+                            : () {
+                                controller.addReply(
+                                    comment, replyController.text.trim());
+                                replyController.clear();
+                                setReplyState(() {});
+                              },
+                        style: FilledButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: controller.isSubmitting.value
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: ExpressiveLoadingIndicator(),
+                              )
+                            : const Text(
+                                'Reply',
                             style: TextStyle(
                               fontWeight: FontWeight.w700,
                               fontSize: 13,
@@ -967,6 +971,8 @@ class _CommentSectionState extends State<CommentSection> {
           ),
         ],
       ),
+        );
+      },
     );
   }
 
@@ -1004,19 +1010,31 @@ class _CommentSectionState extends State<CommentSection> {
               Row(
                 children: [
                   Flexible(
-                    child: AnymexText(
-                      text: comment.username,
-                      variant: TextVariant.bold,
-                      color: colorScheme.onSurface,
-                      size: 15,
-                      maxLines: 1,
+                    child: RichText(
                       overflow: TextOverflow.ellipsis,
-                      isMarquee: true,
+                      maxLines: 1,
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: comment.username,
+                            style: TextStyle(
+                              color: colorScheme.onSurface,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          if (comment.userRole != null &&
+                              comment.userRole != 'user') ...[
+                            WidgetSpan(
+                              child: _buildRoleBadge(
+                                  context, comment.userRole!),
+                              alignment: PlaceholderAlignment.middle,
+                            ),
+                          ],
+                        ],
+                      ),
                     ),
                   ),
-                  if (comment.userRole != null &&
-                      comment.userRole != 'user')
-                    _buildRoleBadge(context, comment.userRole!),
                   if (comment.tag.isNotEmpty) ...[
                     const SizedBox(width: 8),
                     _buildTag(context, comment.tag),
@@ -1219,31 +1237,23 @@ class _CommentSectionState extends State<CommentSection> {
   }
 
   Widget _buildRoleBadge(BuildContext context, String role) {
-    final colorScheme = context.colors;
-    final displayRole = role == 'super_admin' ? 'Admin' : role;
-    final badgeColor = switch (role) {
-      'super_admin' => Colors.red,
-      'admin' => Colors.orange,
-      'moderator' => Colors.teal,
-      _ => Colors.grey,
+    final emoji = switch (role) {
+      'super_admin' => '👑',
+      'admin' => '🛡️',
+      'moderator' => '⚙️',
+      'owner' => '💎',
+      _ => null,
     };
 
-    return Container(
-      margin: const EdgeInsets.only(left: 6),
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(
-        color: badgeColor.withOpacity(0.15),
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: badgeColor.withOpacity(0.3)),
-      ),
+    if (emoji == null) {
+      return const SizedBox.shrink();
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(left: 4, right: 0),
       child: Text(
-        displayRole.toUpperCase(),
-        style: TextStyle(
-          color: badgeColor,
-          fontSize: 9,
-          fontWeight: FontWeight.w800,
-          letterSpacing: 0.5,
-        ),
+        emoji,
+        style: const TextStyle(fontSize: 14, height: 1),
       ),
     );
   }

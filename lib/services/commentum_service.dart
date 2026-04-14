@@ -767,28 +767,40 @@ class CommentumService extends GetxController {
       final token = await _authToken;
       if (token == null) return 'user';
 
+      // Use get_user_info with our own ID — the response includes moderator.role
       final response = await http.post(
-        Uri.parse('$_baseUrl/users/role'),
+        Uri.parse('$_baseUrl/users'),
         headers: {
           'Content-Type': 'application/json',
         },
         body: json.encode({
+          'action': 'get_user_info',
+          'target_user_id': currentUserId,
           'client_type': _clientType,
-          'user_id': currentUserId,
-          'token': token,
+          'access_token': token,
         }),
       );
 
+      Logger.i('getUserRole response: ${response.statusCode} ${response.body}');
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final role = data['role'] ?? 'user';
-        currentUserRole.value = role;
-        return role;
+        // The backend returns moderator.role even if user has no admin rights,
+        // but only when the user IS a moderator/admin.
+        // For non-mod users, the endpoint returns 401 (insufficient permissions).
+        final role = data['moderator']?['role'];
+        if (role != null) {
+          currentUserRole.value = role;
+          return role;
+        }
       }
 
+      // If we get 401 or no role, user is a regular user
+      currentUserRole.value = 'user';
       return 'user';
     } catch (e) {
       Logger.i('Error getting user role: $e');
+      currentUserRole.value = 'user';
       return 'user';
     }
   }
