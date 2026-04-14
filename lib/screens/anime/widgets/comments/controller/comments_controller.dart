@@ -38,6 +38,8 @@ class CommentSectionController extends GetxController
   final RxBool isRefreshing = false.obs;
 
   final RxSet<String> votingComments = <String>{}.obs;
+  final RxString currentSort = 'newest'.obs;
+  final RxString replyingToCommentId = ''.obs;
 
   final RxBool isModerator = false.obs;
   final RxBool isAdmin = false.obs;
@@ -124,7 +126,8 @@ class CommentSectionController extends GetxController
 
     isLoading.value = true;
     try {
-      final fetchedComments = await commentsDB.fetchComments(media.uniqueId);
+      final fetchedComments = await commentsDB.fetchComments(media.uniqueId,
+          sort: currentSort.value);
       comments.assignAll(fetchedComments);
       print(
           'Loaded ${fetchedComments.length} comments for media: $media.uniqueId');
@@ -146,7 +149,8 @@ class CommentSectionController extends GetxController
     try {
       await _checkUserRole();
 
-      final fetchedComments = await commentsDB.fetchComments(media.uniqueId);
+      final fetchedComments = await commentsDB.fetchComments(media.uniqueId,
+          sort: currentSort.value);
 
       comments.assignAll(fetchedComments);
 
@@ -172,7 +176,8 @@ class CommentSectionController extends GetxController
     if (media.uniqueId.isEmpty) return;
 
     try {
-      final fetchedComments = await commentsDB.fetchComments(media.uniqueId);
+      final fetchedComments = await commentsDB.fetchComments(media.uniqueId,
+          sort: currentSort.value);
       comments.assignAll(fetchedComments);
       print('Background refreshed ${fetchedComments.length} comments');
     } catch (e) {
@@ -185,36 +190,39 @@ class CommentSectionController extends GetxController
     await refreshComments(silent: false);
   }
 
-  // Future<void> addReply(Comment parentComment, String replyContent) async {
-  //   if (replyContent.trim().isEmpty || isSubmitting.value) return;
+  Future<void> addReply(Comment parentComment, String replyContent) async {
+    if (replyContent.trim().isEmpty || isSubmitting.value) return;
 
-  //   isSubmitting.value = true;
-  //   try {
-  //     final parentCommentId = int.tryParse(parentComment.id) ?? 0;
-  //     if (parentCommentId == 0) {
-  //       snackBar( 'Invalid parent comment ID');
-  //       return;
-  //     }
+    isSubmitting.value = true;
+    try {
+      final parentCommentId = int.tryParse(parentComment.id) ?? 0;
+      if (parentCommentId == 0) {
+        snackBar('Invalid parent comment ID');
+        return;
+      }
 
-  //     final newComment = await commentsDB.addComment(
-  //       comment: replyContent.trim(),
-  //       mediaId: media.uniqueId,
-  //       tag: tag ?? 'General',
-  //       parentId: parentCommentId,
-  //     );
+      final newComment = await commentsDB.addComment(
+        comment: replyContent.trim(),
+        mediaId: media.uniqueId,
+        media: media,
+        tag: tagController.value.text.trim(),
+        parentId: parentCommentId,
+      );
 
-  //     if (newComment != null) {
-  //       await backgroundRefresh();
-  //       snackBar(', 'Your reply has been posted successfully');
-  //     }
+      if (newComment != null) {
+        await backgroundRefresh();
+        snackBar('Reply posted successfully');
+      } else {
+        snackBar('Failed to post reply');
+      }
 
-  //     HapticFeedback.lightImpact();
-  //   } catch (e) {
-  //     snackBar( 'Failed to post reply. Please try again.');
-  //   } finally {
-  //     isSubmitting.value = false;
-  //   }
-  // }
+      HapticFeedback.lightImpact();
+    } catch (e) {
+      snackBar('Failed to post reply. Please try again.');
+    } finally {
+      isSubmitting.value = false;
+    }
+  }
 
   Future<void> addComment() async {
     if (commentController.text.trim().isEmpty || isSubmitting.value) return;
@@ -245,9 +253,49 @@ class CommentSectionController extends GetxController
   void clearInputs() {
     commentController.clear();
     isInputExpanded.value = false;
+    replyingToCommentId.value = '';
     expandController.reverse();
     fadeController.reverse();
     commentFocusNode.unfocus();
+  }
+
+  void setSort(String sort) {
+    currentSort.value = sort;
+    refreshComments(silent: false);
+  }
+
+  void toggleReply(String commentId) {
+    if (replyingToCommentId.value == commentId) {
+      replyingToCommentId.value = '';
+    } else {
+      replyingToCommentId.value = commentId;
+    }
+  }
+
+  bool isReplyingTo(String commentId) {
+    return replyingToCommentId.value == commentId;
+  }
+
+  Comment? findCommentById(String commentId) {
+    for (final comment in comments) {
+      if (comment.id == commentId) return comment;
+      if (comment.replies != null) {
+        final found = _findReplyById(comment.replies!, commentId);
+        if (found != null) return found;
+      }
+    }
+    return null;
+  }
+
+  Comment? _findReplyById(List<Comment> replies, String commentId) {
+    for (final reply in replies) {
+      if (reply.id == commentId) return reply;
+      if (reply.replies != null) {
+        final found = _findReplyById(reply.replies!, commentId);
+        if (found != null) return found;
+      }
+    }
+    return null;
   }
 
   Future<void> handleVote(Comment comment, int newVote) async {
@@ -476,6 +524,36 @@ class CommentSectionController extends GetxController
     } catch (e) {
       snackBar('Failed to manage user');
     }
+  }
+
+  Future<List<Map<String, dynamic>>> getReportsQueue() async {
+    return await commentsDB.getReportsQueue();
+  }
+
+  Future<bool> resolveReport({
+    required int commentId,
+    required String reporterId,
+    required String resolution,
+    String? reviewNotes,
+  }) async {
+    return await commentsDB.resolveReport(
+      commentId: commentId,
+      reporterId: reporterId,
+      resolution: resolution,
+      reviewNotes: reviewNotes,
+    );
+  }
+
+  Future<Map<String, dynamic>?> getUserInfoFromDb(String targetUserId) async {
+    return await commentsDB.getUserInfo(targetUserId: targetUserId);
+  }
+
+  Future<Map<String, dynamic>?> getUserHistoryFromDb(String targetUserId) async {
+    return await commentsDB.getUserHistory(targetUserId: targetUserId);
+  }
+
+  Future<Map<String, dynamic>?> getUserStatsFromDb() async {
+    return await commentsDB.getUserStats();
   }
 
   bool canEditComment(Comment comment) {

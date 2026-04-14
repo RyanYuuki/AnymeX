@@ -10,10 +10,12 @@ class CommentsDatabase {
 
   void log(String msg) => {};
 
-  Future<List<Comment>> fetchComments(String mediaId) async {
+  Future<List<Comment>> fetchComments(String mediaId,
+      {String sort = 'newest', int page = 1, int limit = 50}) async {
     try {
-      log("Fetching comments for media: $mediaId");
-      final comments = await commentumService.fetchComments(mediaId);
+      log("Fetching comments for media: $mediaId (sort: $sort, page: $page)");
+      final comments = await commentumService.fetchComments(mediaId,
+          sort: sort, page: page, limit: limit);
       log("Fetched ${comments.length} comments");
 
       final organizedComments = _organizeComments(comments);
@@ -211,6 +213,95 @@ class CommentsDatabase {
       log("Error reporting comment: $e");
       snackBar('Error reporting comment');
       return false;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getReportsQueue() async {
+    try {
+      log("Fetching reports queue");
+      final queue = await commentumService.getReportsQueue();
+      log("Fetched ${queue.length} items in reports queue");
+      return queue;
+    } catch (e) {
+      log("Error fetching reports queue: $e");
+      snackBar('Error fetching reports queue');
+      return [];
+    }
+  }
+
+  Future<bool> resolveReport({
+    required int commentId,
+    required String reporterId,
+    required String resolution,
+    String? reviewNotes,
+  }) async {
+    try {
+      log("Resolving report for comment $commentId: $resolution");
+      final success = await commentumService.resolveReport(
+        commentId: commentId,
+        reporterId: reporterId,
+        resolution: resolution,
+        reviewNotes: reviewNotes,
+      );
+      if (success) {
+        snackBar('Report resolved successfully');
+      } else {
+        snackBar('Failed to resolve report');
+      }
+      return success;
+    } catch (e) {
+      log("Error resolving report: $e");
+      snackBar('Error resolving report');
+      return false;
+    }
+  }
+
+  Future<Map<String, dynamic>?> getUserInfo({
+    required String targetUserId,
+    String? targetClientType,
+  }) async {
+    try {
+      log("Fetching user info for: $targetUserId");
+      return await commentumService.getUserInfo(
+        targetUserId: targetUserId,
+        targetClientType: targetClientType,
+      );
+    } catch (e) {
+      log("Error fetching user info: $e");
+      snackBar('Error fetching user info');
+      return null;
+    }
+  }
+
+  Future<Map<String, dynamic>?> getUserHistory({
+    required String targetUserId,
+    String? targetClientType,
+  }) async {
+    try {
+      log("Fetching user history for: $targetUserId");
+      return await commentumService.getUserHistory(
+        targetUserId: targetUserId,
+        targetClientType: targetClientType,
+      );
+    } catch (e) {
+      log("Error fetching user history: $e");
+      snackBar('Error fetching user history');
+      return null;
+    }
+  }
+
+  Future<Map<String, dynamic>?> getUserStats({
+    String? targetClientType,
+  }) async {
+    try {
+      log("Fetching user stats");
+      return await commentumService.getUserStats(
+        targetClientType: targetClientType,
+      );
+    } catch (e) {
+      log("Error fetching user stats: $e");
+      snackBar('Error fetching user stats');
+      return null;
     }
   }
 
