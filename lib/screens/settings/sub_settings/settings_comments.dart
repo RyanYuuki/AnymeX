@@ -2,7 +2,6 @@ import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:anymex/screens/settings/settings.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -41,15 +40,6 @@ class _SettingsCommentsState extends State<SettingsComments> {
                 desktopValue:
                     const EdgeInsets.fromLTRB(20.0, 20.0, 25.0, 20.0)),
             children: [
-              const Row(
-                children: [
-                  CustomBackButton(),
-                  SizedBox(width: 10),
-                  Text("Comment System",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-                ],
-              ),
               Container(
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
@@ -275,15 +265,6 @@ class _SettingsCommentsState extends State<SettingsComments> {
         ],
       ),
     );
-  }
-
-  void _navigateToModerationPanel() {
-    if (commentumService.currentUserRole.value == 'user') {
-      snackBar('You need moderator or admin permissions to access this panel');
-      return;
-    }
-
-    navigate(() => const SettingsModeration());
   }
 
   void _navigateToReportsPanel() {

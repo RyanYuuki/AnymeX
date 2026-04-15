@@ -527,6 +527,88 @@ class CommentumService extends GetxController {
     }
   }
 
+  Future<Map<String, dynamic>?> listUsers({
+    String? targetClientType,
+    String? role,
+    bool? banned,
+    bool? muted,
+    bool? shadowBanned,
+    int page = 1,
+    int limit = 50,
+  }) async {
+    if (currentUserId == null) return null;
+    final token = await _authToken;
+    if (token == null) return null;
+
+    try {
+      final body = <String, dynamic>{
+        'action': 'list_users',
+        'client_type': _clientType,
+        'access_token': token,
+        'page': page,
+        'limit': limit,
+      };
+      if (targetClientType != null) body['target_client_type'] = targetClientType;
+      if (role != null) body['role'] = role;
+      if (banned != null) body['banned'] = banned;
+      if (muted != null) body['muted'] = muted;
+      if (shadowBanned != null) body['shadow_banned'] = shadowBanned;
+
+      final response = await http.post(
+        Uri.parse('$_baseUrl/users'),
+        headers: { 'Content-Type': 'application/json' },
+        body: json.encode(body),
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        final error = json.decode(response.body);
+        Logger.i('Failed to list users: ${error['error'] ?? 'Unknown error'}');
+        return null;
+      }
+    } catch (e) {
+      Logger.i('Error listing users: $e');
+      return null;
+    }
+  }
+
+  Future<Map<String, dynamic>?> searchUsers({
+    required String username,
+    String? targetClientType,
+  }) async {
+    if (currentUserId == null) return null;
+    final token = await _authToken;
+    if (token == null) return null;
+
+    try {
+      final body = <String, dynamic>{
+        'action': 'search_users',
+        'client_type': _clientType,
+        'access_token': token,
+        'username': username.trim(),
+      };
+      if (targetClientType != null) body['target_client_type'] = targetClientType;
+
+      final response = await http.post(
+        Uri.parse('$_baseUrl/users'),
+        headers: { 'Content-Type': 'application/json' },
+        body: json.encode(body),
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        final error = json.decode(response.body);
+        Logger.i('Failed to search users: ${error['error'] ?? 'Unknown error'}');
+        return null;
+      }
+    } catch (e) {
+      Logger.i('Error searching users: $e');
+      return null;
+    }
+  }
+
   Future<bool> moderateComment({
     required String action,
     required int commentId,

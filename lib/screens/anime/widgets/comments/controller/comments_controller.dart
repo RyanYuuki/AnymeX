@@ -545,12 +545,20 @@ class CommentSectionController extends GetxController
     );
   }
 
-  Future<Map<String, dynamic>?> getUserInfoFromDb(String targetUserId) async {
-    return await commentsDB.getUserInfo(targetUserId: targetUserId);
+  Future<Map<String, dynamic>?> getUserInfoFromDb(String targetUserId,
+      {String? targetClientType}) async {
+    return await commentsDB.getUserInfo(
+      targetUserId: targetUserId,
+      targetClientType: targetClientType ?? serviceHandler.serviceType.value.name,
+    );
   }
 
-  Future<Map<String, dynamic>?> getUserHistoryFromDb(String targetUserId) async {
-    return await commentsDB.getUserHistory(targetUserId: targetUserId);
+  Future<Map<String, dynamic>?> getUserHistoryFromDb(String targetUserId,
+      {String? targetClientType}) async {
+    return await commentsDB.getUserHistory(
+      targetUserId: targetUserId,
+      targetClientType: targetClientType ?? serviceHandler.serviceType.value.name,
+    );
   }
 
   Future<Map<String, dynamic>?> getUserStatsFromDb() async {

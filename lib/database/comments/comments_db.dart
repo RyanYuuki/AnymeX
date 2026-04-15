@@ -96,6 +96,13 @@ class CommentsDatabase {
       }
     }
 
+    final pinned = parentComments.where((c) => c.pinned == true).toList();
+    final unpinned = parentComments.where((c) => c.pinned != true).toList();
+    parentComments
+      ..clear()
+      ..addAll(pinned)
+      ..addAll(unpinned);
+
     log("Organized into ${parentComments.length} parent comments with $replyCount total replies");
     return parentComments;
   }
@@ -327,6 +334,50 @@ class CommentsDatabase {
     } catch (e) {
       log("Error fetching user stats: $e");
       snackBar('Error fetching user stats');
+      return null;
+    }
+  }
+
+  Future<Map<String, dynamic>?> listUsers({
+    String? targetClientType,
+    String? role,
+    bool? banned,
+    bool? muted,
+    bool? shadowBanned,
+    int page = 1,
+    int limit = 50,
+  }) async {
+    try {
+      log("Listing users (page: $page, limit: $limit)");
+      return await commentumService.listUsers(
+        targetClientType: targetClientType,
+        role: role,
+        banned: banned,
+        muted: muted,
+        shadowBanned: shadowBanned,
+        page: page,
+        limit: limit,
+      );
+    } catch (e) {
+      log("Error listing users: $e");
+      snackBar('Error listing users');
+      return null;
+    }
+  }
+
+  Future<Map<String, dynamic>?> searchUsers({
+    required String username,
+    String? targetClientType,
+  }) async {
+    try {
+      log("Searching users by username: $username");
+      return await commentumService.searchUsers(
+        username: username,
+        targetClientType: targetClientType,
+      );
+    } catch (e) {
+      log("Error searching users: $e");
+      snackBar('Error searching users');
       return null;
     }
   }

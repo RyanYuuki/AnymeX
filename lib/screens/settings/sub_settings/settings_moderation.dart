@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
@@ -125,6 +126,12 @@ class _SettingsModerationState extends State<SettingsModeration> {
                     title: "Search User",
                     description: "Find and manage specific users",
                     onTap: () => _showUserSearch(context)),
+                CustomTile(
+                  icon: Icons.people_outlined,
+                  title: "User List",
+                  description: "View and filter all users",
+                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const UserListPage())),
+                ),
               ],
             ),
           ),
@@ -172,81 +179,425 @@ class _SettingsModerationState extends State<SettingsModeration> {
       context: context,
       isScrollControlled: true,
       builder: (sheetContext) {
-        final colorScheme = Theme.of(sheetContext).colorScheme;
-        return Padding(
-          padding: EdgeInsets.only(
-            left: 16,
-            right: 16,
-            top: 16,
-            bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 16,
+        return _UserSearchSheet(
+          searchController: searchController,
+          commentumService: commentumService,
+        );
+      },
+    );
+  }
+}
+
+class _UserSearchSheet extends StatefulWidget {
+  final TextEditingController searchController;
+  final CommentumService commentumService;
+
+  const _UserSearchSheet({
+    required this.searchController,
+    required this.commentumService,
+  });
+
+  @override
+  State<_UserSearchSheet> createState() => _UserSearchSheetState();
+}
+
+class _UserSearchSheetState extends State<_UserSearchSheet> {
+  int _searchMode = 0; // 0 = by ID, 1 = by username
+  String _selectedClientType = 'anilist';
+  bool _isSearching = false;
+  List<Map<String, dynamic>> _searchResults = [];
+  Timer? _debounce;
+
+  final _clientTypes = [
+    ('anilist', 'AniList'),
+    ('mal', 'MAL'),
+    ('simkl', 'Simkl'),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    widget.searchController.addListener(_onSearchChanged);
+  }
+
+  void _onSearchChanged() {
+    if (_searchMode != 1) return;
+    final query = widget.searchController.text.trim();
+    if (query.length < 2) {
+      if (_searchResults.isNotEmpty) {
+        setState(() => _searchResults = []);
+      }
+      return;
+    }
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      _performSearch();
+    });
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    widget.searchController.removeListener(_onSearchChanged);
+    widget.searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _performSearch() async {
+    final query = widget.searchController.text.trim();
+    if (query.isEmpty) {
+      snackBar('Please enter a search term');
+      return;
+    }
+
+    if (_searchMode == 0) {
+      Navigator.pop(context);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => UserManagementPage(
+            targetUserId: query,
+            targetClientType: _selectedClientType,
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+        ),
+      );
+    } else {
+      if (query.length < 2) {
+        snackBar('Enter at least 2 characters');
+        return;
+      }
+
+      setState(() => _isSearching = true);
+      try {
+        final result = await widget.commentumService.searchUsers(
+          username: query,
+          targetClientType: _selectedClientType,
+        );
+
+        if (result != null) {
+          final users = List<Map<String, dynamic>>.from(result['users'] ?? []);
+          setState(() {
+            _searchResults = users;
+            _isSearching = false;
+          });
+        } else {
+          setState(() {
+            _searchResults = [];
+            _isSearching = false;
+          });
+        }
+      } catch (e) {
+        setState(() => _isSearching = false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Padding(
+      padding: EdgeInsets.only(
+        left: 16,
+        right: 16,
+        top: 16,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Center(
+            child: Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: colorScheme.outlineVariant,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Search User',
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Search mode toggle
+          Row(
             children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: colorScheme.outlineVariant,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Search User',
-                style: Theme.of(sheetContext).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: searchController,
-                decoration: InputDecoration(
-                  labelText: 'Enter User ID',
-                  hintText: 'Enter the AniList user ID',
-                  prefixIcon: const Icon(Icons.person_search_rounded),
-                  border: const OutlineInputBorder(),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: colorScheme.primary,
-                      width: 1.5,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: () {
-                    final userId = searchController.text.trim();
-                    if (userId.isEmpty) {
-                      snackBar('Please enter a user ID');
-                      return;
-                    }
-                    Navigator.pop(sheetContext);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => UserManagementPage(
-                            targetUserId: userId),
-                      ),
-                    );
+              Expanded(
+                child: ChoiceChip(
+                  label: const Text('By ID'),
+                  selected: _searchMode == 0,
+                  onSelected: (_) {
+                    widget.searchController.clear();
+                    setState(() { _searchMode = 0; _searchResults = []; });
                   },
-                  child: const Text('View User'),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: ChoiceChip(
+                  label: const Text('By Username'),
+                  selected: _searchMode == 1,
+                  onSelected: (_) {
+                    widget.searchController.clear();
+                    setState(() { _searchMode = 1; _searchResults = []; });
+                  },
                 ),
               ),
             ],
           ),
-        );
-      },
+          const SizedBox(height: 12),
+
+          // Client type selector
+          Row(
+            children: [
+              Text(
+                'Platform:',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(width: 8),
+              ..._clientTypes.map((ct) {
+                final isSelected = _selectedClientType == ct.$1;
+                return Padding(
+                  padding: const EdgeInsets.only(right: 6),
+                  child: ChoiceChip(
+                    label: Text(ct.$2),
+                    selected: isSelected,
+                    onSelected: (_) => setState(() => _selectedClientType = ct.$1),
+                    visualDensity: VisualDensity.compact,
+                  ),
+                );
+              }),
+            ],
+          ),
+          const SizedBox(height: 12),
+
+          // Search field
+          TextField(
+            controller: widget.searchController,
+            decoration: InputDecoration(
+              labelText: _searchMode == 0 ? 'Enter User ID' : 'Enter Username',
+              hintText: _searchMode == 0
+                  ? 'Enter the user ID'
+                  : 'Type a username to search',
+              prefixIcon: _isSearching && _searchMode == 1
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Icon(_searchMode == 0
+                      ? Icons.badge_outlined
+                      : Icons.person_search_rounded),
+              suffixIcon: _searchMode == 1 && widget.searchController.text.isNotEmpty
+                  ? IconButton(
+                      icon: const Icon(Icons.clear_rounded, size: 20),
+                      onPressed: () {
+                        widget.searchController.clear();
+                        setState(() => _searchResults = []);
+                      },
+                    )
+                  : null,
+              border: const OutlineInputBorder(),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: colorScheme.primary,
+                  width: 1.5,
+                ),
+              ),
+            ),
+            onSubmitted: (_) => _performSearch(),
+          ),
+
+          // For ID search mode, show the View User button
+          if (_searchMode == 0) ...[
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: _isSearching ? null : _performSearch,
+                child: _isSearching
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Text('View User'),
+              ),
+            ),
+          ],
+
+          // For username search, show hint text
+          if (_searchMode == 1 && _searchResults.isEmpty && !_isSearching && widget.searchController.text.trim().length < 2)
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: Text(
+                'Type at least 2 characters to search',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ),
+
+          // No results found
+          if (_searchMode == 1 && _searchResults.isEmpty && !_isSearching && widget.searchController.text.trim().length >= 2)
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.search_off_rounded, size: 16, color: colorScheme.onSurfaceVariant),
+                  const SizedBox(width: 6),
+                  Text(
+                    'No users found',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+          // Username search results
+          if (_searchMode == 1 && _searchResults.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            const Divider(height: 1),
+            const SizedBox(height: 8),
+            Text(
+              '${_searchResults.length} result(s)',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 8),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 250),
+              child: ListView.separated(
+                shrinkWrap: true,
+                itemCount: _searchResults.length,
+                separatorBuilder: (_, __) => const Divider(height: 1),
+                itemBuilder: (context, index) {
+                  final user = _searchResults[index];
+                  final userId = user['id']?.toString() ?? '';
+                  final username = user['username']?.toString() ?? 'Unknown';
+                  final avatar = user['avatar']?.toString();
+                  final role = user['role']?.toString() ?? 'user';
+                  final isBanned = user['banned'] == true;
+                  final clientType = user['client_type']?.toString() ?? '';
+
+                  return ListTile(
+                    dense: true,
+                    leading: CircleAvatar(
+                      radius: 18,
+                      backgroundColor: colorScheme.surfaceContainer,
+                      backgroundImage: avatar != null && avatar.isNotEmpty
+                          ? NetworkImage(avatar)
+                          : null,
+                      child: avatar == null || avatar.isEmpty
+                          ? Icon(Icons.person_rounded,
+                              size: 18, color: colorScheme.onSurfaceVariant)
+                          : null,
+                    ),
+                    title: Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            username,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (role != 'user') ...[
+                          const SizedBox(width: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: _getRoleColor(role).withOpacity(0.15),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              role.toUpperCase(),
+                              style: TextStyle(
+                                color: _getRoleColor(role),
+                                fontSize: 9,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                        if (isBanned) ...[
+                          const SizedBox(width: 4),
+                          Icon(Icons.block_rounded,
+                              size: 14, color: colorScheme.error),
+                        ],
+                      ],
+                    ),
+                    subtitle: Text(
+                      'ID: $userId${clientType.isNotEmpty ? ' · $clientType' : ''}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                        fontSize: 11,
+                      ),
+                    ),
+                    trailing: Icon(Icons.chevron_right_rounded,
+                        size: 20, color: colorScheme.onSurfaceVariant),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => UserManagementPage(
+                            targetUserId: userId,
+                            targetClientType: clientType,
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ],
+      ),
     );
+  }
+
+  Color _getRoleColor(String role) {
+    switch (role) {
+      case 'owner':
+        return Colors.purple;
+      case 'super_admin':
+        return Colors.red;
+      case 'admin':
+        return Colors.orange;
+      case 'moderator':
+        return Colors.teal;
+      default:
+        return Colors.grey;
+    }
   }
 }
 
@@ -606,10 +957,483 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
   }
 }
 
+class UserListPage extends StatefulWidget {
+  const UserListPage({super.key});
+
+  @override
+  State<UserListPage> createState() => _UserListPageState();
+}
+
+class _UserListPageState extends State<UserListPage> {
+  final commentumService = Get.find<CommentumService>();
+  final RxList<Map<String, dynamic>> users = <Map<String, dynamic>>[].obs;
+  final RxBool isLoading = false.obs;
+  final RxBool isLoadingMore = false.obs;
+  final RxInt totalPages = 0.obs;
+  final RxInt currentPage = 1.obs;
+  final RxInt totalUsers = 0.obs;
+
+  // Filters
+  final RxInt selectedStatusFilter = 0.obs; // 0=All, 1=Banned, 2=Muted, 3=Shadow Banned, 4=Warned
+  final RxString selectedRoleFilter = ''.obs; // ''=All
+  final RxString selectedClientTypeFilter = ''.obs; // ''=All
+
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUsers();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 200 &&
+        !isLoadingMore.value &&
+        currentPage.value < totalPages.value) {
+      _loadMoreUsers();
+    }
+  }
+
+  Future<void> _loadUsers() async {
+    isLoading.value = true;
+    currentPage.value = 1;
+    users.clear();
+    try {
+      final result = await commentumService.listUsers(
+        targetClientType: selectedClientTypeFilter.value.isEmpty ? null : selectedClientTypeFilter.value,
+        role: selectedRoleFilter.value.isEmpty ? null : selectedRoleFilter.value,
+        banned: selectedStatusFilter.value == 1 ? true : null,
+        muted: selectedStatusFilter.value == 2 ? true : null,
+        shadowBanned: selectedStatusFilter.value == 3 ? true : null,
+        page: 1,
+        limit: 50,
+      );
+      if (result != null) {
+        final usersList = result['users'] as List<dynamic>? ?? [];
+        users.assignAll(usersList.cast<Map<String, dynamic>>());
+        totalUsers.value = result['total'] as int? ?? 0;
+        currentPage.value = result['page'] as int? ?? 1;
+        final limit = result['limit'] as int? ?? 50;
+        totalPages.value = (totalUsers.value / limit).ceil();
+
+        if (selectedStatusFilter.value == 4) {
+          users.assignAll(users.where((u) =>
+              (u['warnings'] is int && u['warnings'] > 0) ||
+              (u['warnings'] is String && int.tryParse(u['warnings'].toString()) != null && int.parse(u['warnings'].toString()) > 0)
+          ).toList());
+        }
+      }
+    } catch (e) {
+      print('Error loading users: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> _loadMoreUsers() async {
+    if (isLoadingMore.value) return;
+    isLoadingMore.value = true;
+    final nextPage = currentPage.value + 1;
+    try {
+      final result = await commentumService.listUsers(
+        targetClientType: selectedClientTypeFilter.value.isEmpty ? null : selectedClientTypeFilter.value,
+        role: selectedRoleFilter.value.isEmpty ? null : selectedRoleFilter.value,
+        banned: selectedStatusFilter.value == 1 ? true : null,
+        muted: selectedStatusFilter.value == 2 ? true : null,
+        shadowBanned: selectedStatusFilter.value == 3 ? true : null,
+        page: nextPage,
+        limit: 50,
+      );
+      if (result != null) {
+        final usersList = result['users'] as List<dynamic>? ?? [];
+        final newUsers = usersList.cast<Map<String, dynamic>>();
+
+        if (selectedStatusFilter.value == 4) {
+          newUsers.removeWhere((u) =>
+              !((u['warnings'] is int && u['warnings'] > 0) ||
+                  (u['warnings'] is String && int.tryParse(u['warnings'].toString()) != null && int.parse(u['warnings'].toString()) > 0))
+          );
+        }
+
+        users.addAll(newUsers);
+        totalUsers.value = result['total'] as int? ?? 0;
+        currentPage.value = result['page'] as int? ?? nextPage;
+        final limit = result['limit'] as int? ?? 50;
+        totalPages.value = (totalUsers.value / limit).ceil();
+      }
+    } catch (e) {
+      print('Error loading more users: $e');
+    } finally {
+      isLoadingMore.value = false;
+    }
+  }
+
+  void _onFilterChanged() {
+    _loadUsers();
+  }
+
+  Color _getRoleColor(String role) {
+    switch (role) {
+      case 'owner':
+        return Colors.purple;
+      case 'super_admin':
+        return Colors.red;
+      case 'admin':
+        return Colors.orange;
+      case 'moderator':
+        return Colors.teal;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('User List'),
+        actions: [
+          IconButton(
+            onPressed: _loadUsers,
+            icon: const Icon(Icons.refresh),
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          // Status filter chips
+          _buildStatusFilters(colorScheme, theme),
+          // Role & Client type dropdowns
+          _buildDropdownFilters(colorScheme, theme),
+          // User count
+          Obx(() => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                '${users.length} of $totalUsers users',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          )),
+          // User list
+          Expanded(
+            child: Obx(() {
+              if (isLoading.value) {
+                return const Center(child: ExpressiveLoadingIndicator());
+              }
+
+              if (users.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.people_outline_rounded,
+                          size: 64, color: colorScheme.onSurfaceVariant),
+                      const SizedBox(height: 16),
+                      Text(
+                        'No users found',
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Try adjusting your filters',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              return ListView.builder(
+                controller: _scrollController,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                itemCount: users.length + (isLoadingMore.value ? 1 : 0),
+                itemBuilder: (context, index) {
+                  if (index == users.length) {
+                    return const Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Center(
+                        child: SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      ),
+                    );
+                  }
+                  return _buildUserCard(context, users[index]);
+                },
+              );
+            }),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatusFilters(ColorScheme colorScheme, ThemeData theme) {
+    final statusFilters = ['All', 'Banned', 'Muted', 'Shadow Banned', 'Warned'];
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      child: Obx(() => SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: List.generate(statusFilters.length, (index) {
+            return Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: ChoiceChip(
+                label: Text(statusFilters[index]),
+                selected: selectedStatusFilter.value == index,
+                onSelected: (selected) {
+                  if (selected) {
+                    selectedStatusFilter.value = index;
+                    _onFilterChanged();
+                  }
+                },
+              ),
+            );
+          }),
+        ),
+      )),
+    );
+  }
+
+  Widget _buildDropdownFilters(ColorScheme colorScheme, ThemeData theme) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Row(
+        children: [
+          Expanded(
+            child: Obx(() => _buildFilterDropdown(
+              value: selectedRoleFilter.value.isEmpty ? null : selectedRoleFilter.value,
+              hint: 'Role: All',
+              items: [
+                const DropdownMenuItem<String?>(value: null, child: Text('All')),
+                const DropdownMenuItem(value: 'user', child: Text('User')),
+                const DropdownMenuItem(value: 'moderator', child: Text('Moderator')),
+                const DropdownMenuItem(value: 'admin', child: Text('Admin')),
+                const DropdownMenuItem(value: 'super_admin', child: Text('Super Admin')),
+              ],
+              onChanged: (value) {
+                selectedRoleFilter.value = value ?? '';
+                _onFilterChanged();
+              },
+            )),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Obx(() => _buildFilterDropdown(
+              value: selectedClientTypeFilter.value.isEmpty ? null : selectedClientTypeFilter.value,
+              hint: 'Client: All',
+              items: [
+                const DropdownMenuItem<String?>(value: null, child: Text('All')),
+                const DropdownMenuItem(value: 'anilist', child: Text('AniList')),
+                const DropdownMenuItem(value: 'mal', child: Text('MAL')),
+                const DropdownMenuItem(value: 'simkl', child: Text('Simkl')),
+              ],
+              onChanged: (value) {
+                selectedClientTypeFilter.value = value ?? '';
+                _onFilterChanged();
+              },
+            )),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterDropdown({
+    required String? value,
+    required String hint,
+    required List<DropdownMenuItem<String?>> items,
+    required ValueChanged<String?> onChanged,
+  }) {
+    return DropdownButtonFormField<String?>(
+      value: value,
+      decoration: InputDecoration(
+        hintText: hint,
+        isDense: true,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      items: items,
+      onChanged: onChanged,
+    );
+  }
+
+  Widget _buildUserCard(BuildContext context, Map<String, dynamic> user) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final username = user['username']?.toString() ?? 'Unknown';
+    final avatar = user['avatar']?.toString();
+    final role = user['role']?.toString() ?? 'user';
+    final isBanned = user['banned'] == true;
+    final isMuted = user['muted'] == true;
+    final isShadowBanned = user['shadow_banned'] == true;
+    final warnings = user['warnings'];
+    final warningCount = warnings is int ? warnings : (int.tryParse(warnings?.toString() ?? '0') ?? 0);
+    final clientType = user['client_type']?.toString() ?? '';
+    final userId = user['id']?.toString() ?? '';
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => UserManagementPage(targetUserId: userId, targetClientType: clientType.isNotEmpty ? clientType : null),
+            ),
+          );
+        },
+        borderRadius: BorderRadius.circular(14),
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainerLowest.withOpacity(0.5),
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Row(
+            children: [
+              // Avatar
+              CircleAvatar(
+                radius: 22,
+                backgroundColor: colorScheme.surfaceContainer,
+                backgroundImage: avatar != null && avatar.isNotEmpty
+                    ? NetworkImage(avatar)
+                    : null,
+                child: avatar == null || avatar.isEmpty
+                    ? Icon(Icons.person_rounded, size: 22, color: colorScheme.onSurfaceVariant)
+                    : null,
+              ),
+              const SizedBox(width: 12),
+              // Info
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            username,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        // Role badge
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: _getRoleColor(role).withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: _getRoleColor(role).withOpacity(0.3),
+                            ),
+                          ),
+                          child: Text(
+                            role.toUpperCase(),
+                            style: TextStyle(
+                              color: _getRoleColor(role),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 10,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        // Status indicators
+                        if (isBanned)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 4),
+                            child: Icon(Icons.block_rounded,
+                                size: 16, color: colorScheme.error),
+                          ),
+                        if (isMuted)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 4),
+                            child: Icon(Icons.volume_off_rounded,
+                                size: 16, color: Colors.amber),
+                          ),
+                        if (isShadowBanned)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 4),
+                            child: Icon(Icons.visibility_off_rounded,
+                                size: 16, color: Colors.purple),
+                          ),
+                        if (warningCount > 0)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 4),
+                            child: Icon(Icons.warning_rounded,
+                                size: 16, color: Colors.orange),
+                          ),
+                        if (clientType.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 4),
+                            child: Text(
+                              clientType.toUpperCase(),
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Icon(Icons.chevron_right_rounded,
+                  color: colorScheme.onSurfaceVariant, size: 20),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class UserManagementPage extends StatefulWidget {
   final String targetUserId;
+  final String? targetClientType;
 
-  const UserManagementPage({super.key, required this.targetUserId});
+  const UserManagementPage({super.key, required this.targetUserId, this.targetClientType});
 
   @override
   State<UserManagementPage> createState() => _UserManagementPageState();
@@ -630,7 +1454,8 @@ class _UserManagementPageState extends State<UserManagementPage> {
   Future<void> _loadUserInfo() async {
     try {
       final data = await commentumService.getUserInfo(
-          targetUserId: widget.targetUserId);
+          targetUserId: widget.targetUserId,
+          targetClientType: widget.targetClientType);
       if (data != null) {
         final users = data['users'] as List<dynamic>? ?? [];
         if (users.isNotEmpty) {
@@ -1055,6 +1880,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
       reason: reason,
       duration: duration,
       shadowBan: shadowBan,
+      targetClientType: widget.targetClientType,
     );
 
     if (success) {
