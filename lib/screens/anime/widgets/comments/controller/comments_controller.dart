@@ -569,11 +569,11 @@ class CommentSectionController extends GetxController
   }
 
   bool canModerate() {
-    return isModerator.value || isAdmin.value;
+    return isModerator.value || isAdmin.value || isSuperAdmin.value;
   }
 
   bool canManageUsers() {
-    return isAdmin.value;
+    return isAdmin.value || isSuperAdmin.value;
   }
 
   void onMediaChanged(Media newMedia, TrackedMedia trackedMedia) {

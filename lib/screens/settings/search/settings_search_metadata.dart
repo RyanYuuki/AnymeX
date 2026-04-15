@@ -36,6 +36,7 @@ const settingsSearchCategoryIcons = <String, IconData>{
   'Experimental': HugeIcons.strokeRoundedInformationCircle,
   'Logs': HugeIcons.strokeRoundedFile01,
   'About': HugeIcons.strokeRoundedInformationCircle,
+  'Comment System': Icons.chat_bubble_outline_rounded,
 };
 
 const settingsSearchIndex = <String, Map<String?, List<String>>>{
@@ -212,6 +213,18 @@ const settingsSearchIndex = <String, Map<String?, List<String>>>{
       'Comment Policy',
     ],
   },
+  'Comment System': {
+    null: [
+      'About Commentum v2',
+      'User Role',
+      'Moderation Panel',
+      'Reported Comments',
+      'Comment Preferences',
+      'Notification Settings',
+      'Help & Support',
+      'Privacy & Safety',
+    ],
+  },
 };
 
 const settingsSearchTitleIcons = <String, IconData>{
@@ -348,6 +361,14 @@ const settingsSearchTitleIcons = <String, IconData>{
   'Ko-fi': HugeIcons.strokeRoundedCoffee01,
   'Features/Issues': Icons.bug_report,
   'Forks': Icons.call_split_rounded,
+  'About Commentum v2': Icons.info_outline,
+  'User Role': Icons.person_outline,
+  'Moderation Panel': Icons.admin_panel_settings_outlined,
+  'Reported Comments': Icons.report_outlined,
+  'Comment Preferences': Icons.settings_outlined,
+  'Notification Settings': Icons.notifications_outlined,
+  'Help & Support': Icons.help_outline,
+  'Privacy & Safety': Icons.privacy_tip_outlined,
 };
 
 const settingsSearchTitleAssetIcons = <String, String>{

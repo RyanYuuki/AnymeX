@@ -64,7 +64,6 @@ class _SettingsModerationState extends State<SettingsModeration> {
           ),
           const SizedBox(height: 30),
 
-          // User Role Display
           Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
@@ -100,7 +99,6 @@ class _SettingsModerationState extends State<SettingsModeration> {
 
           const SizedBox(height: 20),
 
-          // Moderation Actions
           Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
@@ -457,6 +455,7 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
               final reason = r['reason']?.toString() ?? '';
               final notes = r['notes']?.toString() ?? '';
               final reporterId = r['reporter_id']?.toString() ?? '';
+              final reporterUsername = r['reporter_username']?.toString() ?? '';
               return Container(
                 margin: const EdgeInsets.only(bottom: 6),
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -470,13 +469,26 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
                         size: 14, color: colorScheme.onSurfaceVariant),
                     const SizedBox(width: 6),
                     Expanded(
-                      child: Text(
-                        reason,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurface,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        overflow: TextOverflow.ellipsis,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            reason,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurface,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          if (reporterUsername.isNotEmpty || reporterId.isNotEmpty)
+                            Text(
+                              'by ${reporterUsername.isNotEmpty ? reporterUsername : reporterId}',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                                fontSize: 10,
+                              ),
+                            ),
+                        ],
                       ),
                     ),
                     if (notes.isNotEmpty)
@@ -622,8 +634,43 @@ class _UserManagementPageState extends State<UserManagementPage> {
       if (data != null) {
         final users = data['users'] as List<dynamic>? ?? [];
         if (users.isNotEmpty) {
+          final user = users.first as Map<String, dynamic>;
+          final username = user['username']?.toString() ??
+              user['commentum_username']?.toString() ?? 'Unknown';
+          final avatar = user['avatar']?.toString() ??
+              user['commentum_user_avatar']?.toString();
+          final role = user['role']?.toString() ??
+              user['commentum_user_role']?.toString() ?? 'user';
+          final banned = user['banned']?.toString() ??
+              user['commentum_user_banned']?.toString() ?? 'false';
+          final muted = user['muted']?.toString() ??
+              user['commentum_user_muted']?.toString() ?? 'false';
+          final shadowBanned = user['shadow_banned']?.toString() ??
+              user['commentum_user_shadow_banned']?.toString() ?? 'false';
+          final warnings = user['warnings']?.toString() ??
+              user['commentum_user_warnings']?.toString() ?? '0';
+          final mutedUntil = user['muted_until']?.toString() ??
+              user['commentum_user_muted_until']?.toString();
+          final notes = user['notes']?.toString() ??
+              user['commentum_user_notes']?.toString();
+          final clientType = user['client_type']?.toString() ??
+              user['commentum_client_type']?.toString() ?? '';
+          final createdAt = user['created_at']?.toString() ?? '';
           setState(() {
-            userInfo = users.first;
+            userInfo = {
+              ...user,
+              'username': username,
+              'avatar': avatar,
+              'role': role,
+              'banned': banned,
+              'muted': muted,
+              'shadow_banned': shadowBanned,
+              'warnings': warnings,
+              'muted_until': mutedUntil,
+              'notes': notes,
+              'client_type': clientType,
+              'created_at': createdAt,
+            };
             isLoading = false;
           });
           return;
@@ -666,7 +713,6 @@ class _UserManagementPageState extends State<UserManagementPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // User Info Card
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(20),
@@ -676,55 +722,106 @@ class _UserManagementPageState extends State<UserManagementPage> {
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
+                            CircleAvatar(
+                              radius: 36,
+                              backgroundColor: colorScheme.surfaceContainer,
+                              backgroundImage: userInfo?['avatar'] != null &&
+                                      userInfo!['avatar'].toString().isNotEmpty
+                                  ? NetworkImage(userInfo!['avatar'].toString())
+                                  : null,
+                              child: userInfo?['avatar'] == null ||
+                                      userInfo!['avatar'].toString().isEmpty
+                                  ? Icon(Icons.person_rounded,
+                                      size: 32,
+                                      color: colorScheme.onSurfaceVariant)
+                                  : null,
+                            ),
+                            const SizedBox(height: 12),
                             Text(
-                              'User: ${widget.targetUserId}',
-                              style: theme.textTheme.titleMedium?.copyWith(
+                              userInfo?['username']?.toString() ?? 'Unknown',
+                              style: theme.textTheme.titleLarge?.copyWith(
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
-                            const SizedBox(height: 16),
-                            _buildInfoRow(context, 'Role',
-                                userInfo?['commentum_user_role']?.toString() ??
-                                    'user'),
-                            _buildInfoRow(context, 'Banned',
-                                userInfo?['commentum_user_banned']?.toString() ??
-                                    'false'),
-                            _buildInfoRow(context, 'Shadow Banned',
-                                userInfo?['commentum_user_shadow_banned']
-                                        ?.toString() ??
-                                    'false'),
-                            _buildInfoRow(context, 'Muted',
-                                userInfo?['commentum_user_muted']?.toString() ??
-                                    'false'),
-                            _buildInfoRow(context, 'Warnings',
-                                userInfo?['commentum_user_warnings']
-                                        ?.toString() ??
-                                    '0'),
-                            if (userInfo?['commentum_user_muted_until'] !=
-                                null)
-                              _buildInfoRow(
-                                  context,
-                                  'Muted Until',
-                                  userInfo?['commentum_user_muted_until']
-                                      ?.toString() ?? 'N/A',
+                            const SizedBox(height: 4),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 14, vertical: 5),
+                              decoration: BoxDecoration(
+                                color: _getRoleColor(
+                                    userInfo?['role']?.toString() ?? 'user')
+                                    .withOpacity(0.15),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: _getRoleColor(
+                                      userInfo?['role']?.toString() ?? 'user')
+                                      .withOpacity(0.3),
                                 ),
-                            if (userInfo?['commentum_user_notes'] != null &&
-                                userInfo!['commentum_user_notes']
-                                    .toString()
-                                    .isNotEmpty)
-                              _buildInfoRow(
-                                context,
-                                'Notes',
-                                userInfo?['commentum_user_notes']?.toString() ?? '',
                               ),
+                              child: Text(
+                                (userInfo?['role']?.toString() ?? 'user')
+                                    .toUpperCase(),
+                                style: TextStyle(
+                                  color: _getRoleColor(
+                                      userInfo?['role']?.toString() ?? 'user'),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            const Divider(height: 1),
+                            const SizedBox(height: 12),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _buildInfoRow(context, 'User ID',
+                                      widget.targetUserId),
+                                  if (userInfo?['client_type'] != null &&
+                                      userInfo!['client_type'].toString().isNotEmpty)
+                                    _buildInfoRow(context, 'Client',
+                                        userInfo!['client_type'].toString().toUpperCase()),
+                                  _buildInfoRow(context, 'Banned',
+                                      userInfo?['banned']?.toString() == 'true'
+                                          ? 'Yes' : 'No'),
+                                  _buildInfoRow(context, 'Shadow Banned',
+                                      userInfo?['shadow_banned']?.toString() == 'true'
+                                          ? 'Yes' : 'No'),
+                                  _buildInfoRow(context, 'Muted',
+                                      userInfo?['muted']?.toString() == 'true'
+                                          ? 'Yes' : 'No'),
+                                  _buildInfoRow(context, 'Warnings',
+                                      userInfo?['warnings']?.toString() ?? '0'),
+                                  if (userInfo?['muted_until'] != null &&
+                                      userInfo!['muted_until'].toString().isNotEmpty &&
+                                      userInfo!['muted_until'].toString() != 'null')
+                                    _buildInfoRow(context, 'Muted Until',
+                                        userInfo?['muted_until'].toString() ?? 'N/A'),
+                                  if (userInfo?['created_at'] != null &&
+                                      userInfo!['created_at'].toString().isNotEmpty &&
+                                      userInfo!['created_at'].toString() != 'null')
+                                    _buildInfoRow(context, 'Joined',
+                                        userInfo?['created_at'].toString() ?? 'N/A'),
+                                  if (userInfo?['notes'] != null &&
+                                      userInfo!['notes'].toString().isNotEmpty &&
+                                      userInfo!['notes'].toString() != 'null')
+                                    _buildInfoRow(
+                                      context,
+                                      'Notes',
+                                      userInfo?['notes']?.toString() ?? '',
+                                    ),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ),
                       const SizedBox(height: 20),
 
-                      // Reason Input
                       TextField(
                         controller: reasonController,
                         maxLines: 2,
@@ -748,7 +845,6 @@ class _UserManagementPageState extends State<UserManagementPage> {
                       ),
                       const SizedBox(height: 20),
 
-                      // Action Buttons
                       Text(
                         'Actions',
                         style: theme.textTheme.titleSmall?.copyWith(
@@ -862,6 +958,21 @@ class _UserManagementPageState extends State<UserManagementPage> {
         ],
       ),
     );
+  }
+
+  Color _getRoleColor(String role) {
+    switch (role) {
+      case 'owner':
+        return Colors.purple;
+      case 'super_admin':
+        return Colors.red;
+      case 'admin':
+        return Colors.orange;
+      case 'moderator':
+        return Colors.teal;
+      default:
+        return Colors.grey;
+    }
   }
 
   Widget _buildActionButton({

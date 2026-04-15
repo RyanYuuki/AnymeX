@@ -1,4 +1,5 @@
 import 'package:anymex/screens/settings/sub_settings/settings_about.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_comments.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_accounts.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_backup.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_common.dart';
@@ -99,6 +100,7 @@ final categoryRoutes = <String, Widget Function()>{
   'Experimental': () => const SettingsExperimental(),
   'Logs': () => const SettingsLogs(),
   'About': () => const AboutPage(),
+  'Comment System': () => const SettingsComments(),
 };
 
 final settingsRegistry = settingsSearchMetadata

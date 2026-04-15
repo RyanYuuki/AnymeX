@@ -1141,55 +1141,8 @@ class _CommentSectionState extends State<CommentSection> {
                     ),
                   ],
                   const Spacer(),
-                  if (isOwnComment)
-                    _buildActionButton(
-                      context: context,
-                      icon: Icons.edit_outlined,
-                      tooltip: 'Edit',
-                      onTap: () =>
-                          _showEditDialog(context, comment, controller),
-                    ),
-                  if (isOwnComment) const SizedBox(width: 8),
-                  if (isOwnComment)
-                    _buildActionButton(
-                      context: context,
-                      icon: Icons.delete_outline,
-                      tooltip: 'Delete',
-                      color: colorScheme.error,
-                      onTap: () =>
-                          _showDeleteDialog(context, comment, controller),
-                    ),
-                  if (!isOwnComment) ...[
-                    _buildActionButton(
-                      context: context,
-                      icon: Icons.flag_outlined,
-                      tooltip: 'Report',
-                      onTap: () =>
-                          _showReportDialog(context, comment, controller),
-                    ),
-                    if (canModerate) ...[
-                      const SizedBox(width: 8),
-                      _buildActionButton(
-                        context: context,
-                        icon: Icons.shield_outlined,
-                        tooltip: 'Moderate',
-                        color: colorScheme.tertiary,
-                        onTap: () => _showModerationSheet(
-                            context, comment, controller),
-                      ),
-                    ],
-                  ],
-                  if (canModerate && !isOwnComment) ...[
-                    const SizedBox(width: 8),
-                    _buildActionButton(
-                      context: context,
-                      icon: Icons.admin_panel_settings_outlined,
-                      tooltip: 'User Actions',
-                      color: colorScheme.tertiary,
-                      onTap: () => _showUserManagementSheet(
-                          context, comment, controller),
-                    ),
-                  ],
+                  _buildCommentMenu(
+                      context, comment, controller, isOwnComment, canModerate),
                 ],
               ),
             ],
@@ -1286,6 +1239,128 @@ class _CommentSectionState extends State<CommentSection> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildCommentMenu(BuildContext context, Comment comment,
+      CommentSectionController controller, bool isOwnComment, bool canModerate) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return PopupMenuButton<String>(
+      onSelected: (value) {
+        switch (value) {
+          case 'edit':
+            _showEditDialog(context, comment, controller);
+            break;
+          case 'delete':
+            _showDeleteDialog(context, comment, controller);
+            break;
+          case 'report':
+            _showReportDialog(context, comment, controller);
+            break;
+          case 'moderate':
+            _showModerationSheet(context, comment, controller);
+            break;
+          case 'user_actions':
+            _showUserManagementSheet(context, comment, controller);
+            break;
+          case 'copy':
+            Clipboard.setData(ClipboardData(text: comment.commentText));
+            snackBar('Comment copied to clipboard');
+            break;
+        }
+      },
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      position: PopupMenuPosition.under,
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: colorScheme.surfaceContainer.opaque(0.3, iReallyMeanIt: true),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Icon(
+          Icons.more_horiz_rounded,
+          size: 18,
+          color: colorScheme.onSurfaceVariant,
+        ),
+      ),
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          value: 'copy',
+          height: 40,
+          child: Row(
+            children: [
+              Icon(Icons.copy_rounded, size: 18, color: colorScheme.onSurfaceVariant),
+              const SizedBox(width: 12),
+              Text('Copy', style: TextStyle(color: colorScheme.onSurface, fontSize: 14)),
+            ],
+          ),
+        ),
+        if (isOwnComment) ...[
+          const PopupMenuDivider(height: 1),
+          PopupMenuItem(
+            value: 'edit',
+            height: 40,
+            child: Row(
+              children: [
+                Icon(Icons.edit_outlined, size: 18, color: colorScheme.onSurfaceVariant),
+                const SizedBox(width: 12),
+                Text('Edit', style: TextStyle(color: colorScheme.onSurface, fontSize: 14)),
+              ],
+            ),
+          ),
+          PopupMenuItem(
+            value: 'delete',
+            height: 40,
+            child: Row(
+              children: [
+                Icon(Icons.delete_outline, size: 18, color: colorScheme.error),
+                const SizedBox(width: 12),
+                Text('Delete', style: TextStyle(color: colorScheme.error, fontSize: 14)),
+              ],
+            ),
+          ),
+        ],
+        if (!isOwnComment) ...[
+          const PopupMenuDivider(height: 1),
+          PopupMenuItem(
+            value: 'report',
+            height: 40,
+            child: Row(
+              children: [
+                Icon(Icons.flag_outlined, size: 18, color: colorScheme.onSurfaceVariant),
+                const SizedBox(width: 12),
+                Text('Report', style: TextStyle(color: colorScheme.onSurface, fontSize: 14)),
+              ],
+            ),
+          ),
+        ],
+        if (canModerate && !isOwnComment) ...[
+          const PopupMenuDivider(height: 1),
+          PopupMenuItem(
+            value: 'moderate',
+            height: 40,
+            child: Row(
+              children: [
+                Icon(Icons.shield_outlined, size: 18, color: colorScheme.tertiary),
+                const SizedBox(width: 12),
+                Text('Moderate', style: TextStyle(color: colorScheme.tertiary, fontSize: 14)),
+              ],
+            ),
+          ),
+          PopupMenuItem(
+            value: 'user_actions',
+            height: 40,
+            child: Row(
+              children: [
+                Icon(Icons.admin_panel_settings_outlined, size: 18, color: colorScheme.tertiary),
+                const SizedBox(width: 12),
+                Text('User Actions', style: TextStyle(color: colorScheme.tertiary, fontSize: 14)),
+              ],
+            ),
+          ),
+        ],
+      ],
     );
   }
 
@@ -1542,189 +1617,6 @@ class _CommentSectionState extends State<CommentSection> {
                       controller.deleteComment(comment);
                     },
                   );
-                },
-              ),
-              const SizedBox(height: 16),
-              _buildDivider(context),
-              Padding(
-                padding: const EdgeInsets.only(left: 4, bottom: 8),
-                child: Text(
-                  'User: ${comment.username}',
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                ),
-              ),
-              const SizedBox(height: 4),
-              _buildModAction(
-                context: context,
-                icon: Icons.info_rounded,
-                label: 'View User Info',
-                color: colorScheme.primary,
-                onTap: () {
-                  Navigator.pop(context);
-                  _showUserInfoDialog(
-                      context, comment.userId, controller);
-                },
-              ),
-              _buildModAction(
-                context: context,
-                icon: Icons.warning_rounded,
-                label: 'Warn User',
-                color: Colors.orange,
-                onTap: () {
-                  Navigator.pop(context);
-                  _showReasonDialog(
-                    context: context,
-                    title: 'Warn User',
-                    onConfirm: (reason) {
-                      controller.manageUser(
-                        targetUserId: comment.userId,
-                        action: 'warn_user',
-                        reason: reason,
-                      );
-                    },
-                  );
-                },
-              ),
-              _buildModAction(
-                context: context,
-                icon: Icons.volume_off_rounded,
-                label: 'Mute User (24h)',
-                color: Colors.amber,
-                onTap: () {
-                  Navigator.pop(context);
-                  _showReasonDialog(
-                    context: context,
-                    title: 'Mute User',
-                    onConfirm: (reason) {
-                      controller.manageUser(
-                        targetUserId: comment.userId,
-                        action: 'mute_user',
-                        reason: reason,
-                        duration: 24,
-                      );
-                    },
-                  );
-                },
-              ),
-              _buildModAction(
-                context: context,
-                icon: Icons.block_rounded,
-                label: 'Ban User',
-                color: colorScheme.error,
-                onTap: () {
-                  Navigator.pop(context);
-                  _showReasonDialog(
-                    context: context,
-                    title: 'Ban User',
-                    isDestructive: true,
-                    onConfirm: (reason) {
-                      controller.manageUser(
-                        targetUserId: comment.userId,
-                        action: 'ban_user',
-                        reason: reason,
-                      );
-                    },
-                  );
-                },
-              ),
-              _buildModAction(
-                context: context,
-                icon: Icons.visibility_off_rounded,
-                label: 'Shadow Ban User',
-                color: Colors.purple,
-                onTap: () {
-                  Navigator.pop(context);
-                  _showReasonDialog(
-                    context: context,
-                    title: 'Shadow Ban User',
-                    isDestructive: true,
-                    onConfirm: (reason) {
-                      controller.manageUser(
-                        targetUserId: comment.userId,
-                        action: 'ban_user',
-                        reason: reason,
-                        shadowBan: true,
-                      );
-                    },
-                  );
-                },
-              ),
-              const SizedBox(height: 8),
-              _buildDivider(context),
-              Padding(
-                padding: const EdgeInsets.only(left: 4, bottom: 8),
-                child: Text(
-                  'Restore Actions',
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: Colors.teal,
-                      ),
-                ),
-              ),
-              _buildModAction(
-                context: context,
-                icon: Icons.check_circle_rounded,
-                label: 'Unban User',
-                color: Colors.teal,
-                onTap: () {
-                  Navigator.pop(context);
-                  _showReasonDialog(
-                    context: context,
-                    title: 'Unban User',
-                    onConfirm: (reason) {
-                      controller.manageUser(
-                        targetUserId: comment.userId,
-                        action: 'unban_user',
-                        reason: reason,
-                      );
-                    },
-                  );
-                },
-              ),
-              _buildModAction(
-                context: context,
-                icon: Icons.notifications_active_rounded,
-                label: 'Unmute User',
-                color: Colors.teal,
-                onTap: () {
-                  Navigator.pop(context);
-                  _showReasonDialog(
-                    context: context,
-                    title: 'Unmute User',
-                    onConfirm: (reason) {
-                      controller.manageUser(
-                        targetUserId: comment.userId,
-                        action: 'unmute_user',
-                        reason: reason,
-                      );
-                    },
-                  );
-                },
-              ),
-              const SizedBox(height: 8),
-              _buildDivider(context),
-              Padding(
-                padding: const EdgeInsets.only(left: 4, bottom: 8),
-                child: Text(
-                  'Info',
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                ),
-              ),
-              _buildModAction(
-                context: context,
-                icon: Icons.history_rounded,
-                label: 'View User History',
-                color: colorScheme.primary,
-                onTap: () {
-                  Navigator.pop(context);
-                  _showUserHistoryDialog(
-                      context, comment.userId, controller);
                 },
               ),
             ],
@@ -2032,31 +1924,40 @@ class _CommentSectionState extends State<CommentSection> {
                   );
                 },
               ),
-              if (controller.canManageUsers()) ...[
-                const SizedBox(height: 8),
-                _buildModAction(
-                  context: context,
-                  icon: Icons.info_rounded,
-                  label: 'View User Info',
-                  color: colorScheme.primary,
-                  onTap: () {
-                    Navigator.pop(context);
-                    _showUserInfoDialog(
-                        context, comment.userId, controller);
-                  },
+              const SizedBox(height: 8),
+              _buildDivider(context),
+              Padding(
+                padding: const EdgeInsets.only(left: 4, bottom: 8),
+                child: Text(
+                  'Info',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
                 ),
-                _buildModAction(
-                  context: context,
-                  icon: Icons.history_rounded,
-                  label: 'View User History',
-                  color: colorScheme.primary,
-                  onTap: () {
-                    Navigator.pop(context);
-                    _showUserHistoryDialog(
-                        context, comment.userId, controller);
-                  },
-                ),
-              ],
+              ),
+              _buildModAction(
+                context: context,
+                icon: Icons.info_rounded,
+                label: 'View User Info',
+                color: colorScheme.primary,
+                onTap: () {
+                  Navigator.pop(context);
+                  _showUserInfoDialog(
+                      context, comment.userId, controller);
+                },
+              ),
+              _buildModAction(
+                context: context,
+                icon: Icons.history_rounded,
+                label: 'View User History',
+                color: colorScheme.primary,
+                onTap: () {
+                  Navigator.pop(context);
+                  _showUserHistoryDialog(
+                      context, comment.userId, controller);
+                },
+              ),
             ],
           ),
         );
@@ -2095,31 +1996,97 @@ class _CommentSectionState extends State<CommentSection> {
 
             final user = users.first as Map<String, dynamic>;
             final isBanned =
+                user['banned']?.toString() == 'true' ||
                 user['commentum_user_banned']?.toString() == 'true';
             final isMuted =
+                user['muted']?.toString() == 'true' ||
                 user['commentum_user_muted']?.toString() == 'true';
             final isShadowBanned =
+                user['shadow_banned']?.toString() == 'true' ||
                 user['commentum_user_shadow_banned']?.toString() == 'true';
+            final username = user['username']?.toString() ??
+                user['commentum_username']?.toString() ?? 'Unknown';
+            final avatar = user['avatar']?.toString() ??
+                user['commentum_user_avatar']?.toString();
+            final role = user['role']?.toString() ??
+                user['commentum_user_role']?.toString() ?? 'user';
+            final warnings = user['warnings']?.toString() ??
+                user['commentum_user_warnings']?.toString() ?? '0';
+            final mutedUntil = user['muted_until']?.toString() ??
+                user['commentum_user_muted_until']?.toString();
+            final notes = user['notes']?.toString() ??
+                user['commentum_user_notes']?.toString();
+            final clientType = user['client_type']?.toString() ??
+                user['commentum_client_type']?.toString() ?? '';
+            final createdAt = user['created_at']?.toString() ?? '';
+            final colorScheme = Theme.of(context).colorScheme;
 
-            return Column(
+            return SingleChildScrollView(
+              child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildInfoRow('Role',
-                    user['commentum_user_role']?.toString() ?? 'user'),
+                Center(
+                  child: Column(
+                    children: [
+                      CircleAvatar(
+                        radius: 32,
+                        backgroundColor: colorScheme.surfaceContainer,
+                        backgroundImage: avatar != null && avatar.isNotEmpty
+                            ? NetworkImage(avatar)
+                            : null,
+                        child: avatar == null || avatar.isEmpty
+                            ? Icon(Icons.person_rounded,
+                                size: 28, color: colorScheme.onSurfaceVariant)
+                            : null,
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        username,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w700),
+                      ),
+                      const SizedBox(height: 4),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: _getRoleColor(role).withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: _getRoleColor(role).withOpacity(0.3),
+                          ),
+                        ),
+                        child: Text(
+                          role.toUpperCase(),
+                          style: TextStyle(
+                            color: _getRoleColor(role),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const Divider(height: 1),
+                const SizedBox(height: 8),
+                _buildInfoRow('User ID', userId),
+                if (clientType.isNotEmpty)
+                  _buildInfoRow('Client', clientType.toUpperCase()),
                 _buildInfoRow('Banned', isBanned ? 'Yes' : 'No'),
-                _buildInfoRow('Shadow Banned',
-                    isShadowBanned ? 'Yes' : 'No'),
+                _buildInfoRow('Shadow Banned', isShadowBanned ? 'Yes' : 'No'),
                 _buildInfoRow('Muted', isMuted ? 'Yes' : 'No'),
-                _buildInfoRow('Warnings',
-                    user['commentum_user_warnings']?.toString() ?? '0'),
-                if (user['commentum_user_muted_until'] != null)
-                  _buildInfoRow('Muted Until',
-                      user['commentum_user_muted_until'].toString()),
-                if (user['commentum_user_notes'] != null &&
-                    user['commentum_user_notes'].toString().isNotEmpty)
-                  _buildInfoRow(
-                      'Notes', user['commentum_user_notes'].toString()),
+                _buildInfoRow('Warnings', warnings),
+                if (mutedUntil != null && mutedUntil.isNotEmpty && mutedUntil != 'null')
+                  _buildInfoRow('Muted Until', _formatTimestamp(mutedUntil)),
+                if (createdAt != null && createdAt.isNotEmpty && createdAt != 'null')
+                  _buildInfoRow('Joined', _formatTimestamp(createdAt)),
+                if (notes != null && notes.isNotEmpty && notes != 'null')
+                  _buildInfoRow('Notes', notes),
                 const SizedBox(height: 12),
                 SizedBox(
                   width: double.infinity,
@@ -2138,6 +2105,7 @@ class _CommentSectionState extends State<CommentSection> {
                   ),
                 ),
               ],
+            ),
             );
           },
         ),
@@ -2149,6 +2117,21 @@ class _CommentSectionState extends State<CommentSection> {
         ],
       ),
     );
+  }
+
+  Color _getRoleColor(String role) {
+    switch (role) {
+      case 'owner':
+        return Colors.purple;
+      case 'super_admin':
+        return Colors.red;
+      case 'admin':
+        return Colors.orange;
+      case 'moderator':
+        return Colors.teal;
+      default:
+        return Colors.grey;
+    }
   }
 
   Widget _buildInfoRow(String label, String value) {
@@ -2312,14 +2295,39 @@ class _CommentSectionState extends State<CommentSection> {
                                 ),
                                 if (firstReport != null) ...[
                                   const SizedBox(height: 4),
-                                  Text(
-                                    'Reason: ${firstReport['reason'] ?? 'N/A'}',
-                                    style: TextStyle(
-                                        fontSize: 11,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurfaceVariant
-                                            .withOpacity(0.7)),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Reason: ${firstReport['reason'] ?? 'N/A'}',
+                                        style: TextStyle(
+                                            fontSize: 11,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurfaceVariant
+                                                .withOpacity(0.7)),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Row(
+                                    children: [
+                                      Icon(Icons.person_outline,
+                                          size: 12,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurfaceVariant
+                                              .withOpacity(0.7)),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        'Reported by: ${firstReport['reporter_username'] ?? firstReport['reporter_id'] ?? 'Unknown'}',
+                                        style: TextStyle(
+                                            fontSize: 11,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurfaceVariant
+                                                .withOpacity(0.7)),
+                                      ),
+                                    ],
                                   ),
                                 ],
                                 if (media['title'] != null) ...[
@@ -2341,9 +2349,13 @@ class _CommentSectionState extends State<CommentSection> {
                                       child: OutlinedButton(
                                         onPressed: () async {
                                           final reporterId =
-                                              firstReport?['reporterId']
+                                              firstReport?['reporter_id']
                                                       ?.toString() ??
                                                   '';
+                                          if (reporterId.isEmpty) {
+                                            snackBar('No reporter ID found');
+                                            return;
+                                          }
                                           final success =
                                               await controller.resolveReport(
                                             commentId: report['commentId']
@@ -2374,9 +2386,13 @@ class _CommentSectionState extends State<CommentSection> {
                                       child: FilledButton(
                                         onPressed: () async {
                                           final reporterId =
-                                              firstReport?['reporterId']
+                                              firstReport?['reporter_id']
                                                       ?.toString() ??
                                                   '';
+                                          if (reporterId.isEmpty) {
+                                            snackBar('No reporter ID found');
+                                            return;
+                                          }
                                           final success =
                                               await controller.resolveReport(
                                             commentId: report['commentId']
@@ -2479,12 +2495,15 @@ class _CommentSectionState extends State<CommentSection> {
                   itemBuilder: (context, index) {
                     final entry = history[index] as Map<String, dynamic>;
                     final action = entry['action']?.toString() ?? 'Unknown';
+                    final content = entry['content']?.toString() ?? '';
                     final reason =
                         entry['reason']?.toString() ?? 'No reason';
                     final timestamp =
                         entry['created_at']?.toString() ?? '';
                     final moderator =
                         entry['moderator_username']?.toString() ?? 'System';
+                    final mediaTitle = entry['media_title']?.toString() ?? '';
+                    final deleted = entry['deleted'] == true;
 
                     final actionIcon = switch (action) {
                       'warn' => Icons.warning_rounded,
@@ -2493,6 +2512,8 @@ class _CommentSectionState extends State<CommentSection> {
                       'shadow_ban' => Icons.visibility_off_rounded,
                       'unban' => Icons.check_circle_rounded,
                       'unmute' => Icons.notifications_active_rounded,
+                      'moderated' => Icons.gavel_rounded,
+                      'comment' => Icons.chat_bubble_outline_rounded,
                       _ => Icons.info_rounded,
                     };
 
@@ -2502,7 +2523,15 @@ class _CommentSectionState extends State<CommentSection> {
                       'ban' || 'shadow_ban' =>
                         Theme.of(context).colorScheme.error,
                       'unban' || 'unmute' => Colors.teal,
+                      'moderated' => Colors.deepPurple,
+                      'comment' => Theme.of(context).colorScheme.primary,
                       _ => Theme.of(context).colorScheme.primary,
+                    };
+
+                    final actionLabel = switch (action) {
+                      'moderated' => 'MODERATED',
+                      'comment' => deleted ? 'DELETED COMMENT' : 'COMMENT',
+                      _ => action.toUpperCase(),
                     };
 
                     return Padding(
@@ -2528,7 +2557,7 @@ class _CommentSectionState extends State<CommentSection> {
                                 Row(
                                   children: [
                                     Text(
-                                      action.toUpperCase(),
+                                      actionLabel,
                                       style: TextStyle(
                                         color: actionColor,
                                         fontWeight: FontWeight.w700,
@@ -2549,17 +2578,46 @@ class _CommentSectionState extends State<CommentSection> {
                                   ],
                                 ),
                                 const SizedBox(height: 2),
-                                Text(
-                                  reason,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurfaceVariant,
+                                if (content.isNotEmpty)
+                                  Text(
+                                    content,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurfaceVariant,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                                if (reason.isNotEmpty && reason != 'No reason')
+                                  Text(
+                                    'Reason: $reason',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurfaceVariant
+                                          .withOpacity(0.7),
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                if (mediaTitle.isNotEmpty) ...[
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    'On: $mediaTitle',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
                                 const SizedBox(height: 2),
                                 Text(
                                   'by $moderator',

@@ -23,6 +23,12 @@ class _SettingsCommentsState extends State<SettingsComments> {
   final commentumService = Get.find<CommentumService>();
 
   @override
+  void initState() {
+    super.initState();
+    commentumService.getUserRole();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: Column(
@@ -77,21 +83,27 @@ class _SettingsCommentsState extends State<SettingsComments> {
                           _showRoleInfo();
                         }),
                     const Divider(height: 1),
-                    CustomTile(
-                        icon: Icons.admin_panel_settings,
-                        title: "Moderation Panel",
-                        description: "Access moderation tools and reports",
-                        onTap: () {
-                          navigate(() => const SettingsModeration());
-                        }),
-                    CustomTile(
-                        icon: Icons.report_outlined,
-                        title: "Reported Comments",
-                        description: "View and manage reported content",
-                        onTap: () {
-                          _navigateToReportsPanel();
-                        }),
-                    const Divider(height: 1),
+                    Obx(() => commentumService.currentUserRole.value != 'user'
+                        ? Column(
+                            children: [
+                              CustomTile(
+                                  icon: Icons.admin_panel_settings,
+                                  title: "Moderation Panel",
+                                  description: "Access moderation tools and reports",
+                                  onTap: () {
+                                    navigate(() => const SettingsModeration());
+                                  }),
+                              CustomTile(
+                                  icon: Icons.report_outlined,
+                                  title: "Reported Comments",
+                                  description: "View and manage reported content",
+                                  onTap: () {
+                                    _navigateToReportsPanel();
+                                  }),
+                              const Divider(height: 1),
+                            ],
+                          )
+                        : const SizedBox.shrink()),
                     CustomTile(
                         icon: Icons.settings_outlined,
                         title: "Comment Preferences",
@@ -266,25 +278,21 @@ class _SettingsCommentsState extends State<SettingsComments> {
   }
 
   void _navigateToModerationPanel() {
-    // Check if user has moderation permissions
     if (commentumService.currentUserRole.value == 'user') {
       snackBar('You need moderator or admin permissions to access this panel');
       return;
     }
 
-    // Navigate to moderation panel (to be implemented)
-    snackBar('Moderation panel coming soon!');
+    navigate(() => const SettingsModeration());
   }
 
   void _navigateToReportsPanel() {
-    // Check if user has moderation permissions
     if (commentumService.currentUserRole.value == 'user') {
       snackBar('You need moderator or admin permissions to access this panel');
       return;
     }
 
-    // Navigate to reports panel (to be implemented)
-    snackBar('Reports panel coming soon!');
+    navigate(() => const ReportsQueuePage());
   }
 
   void _showCommentPreferences() {

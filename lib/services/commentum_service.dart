@@ -259,7 +259,7 @@ class CommentumService extends GetxController {
 
   Future<Map<String, dynamic>?> voteComment({
     required int commentId,
-    required String voteType, // 'upvote', 'downvote', 'remove'
+    required String voteType,
   }) async {
     if (currentUserId == null) {
       Logger.i('User not logged in');
@@ -700,7 +700,6 @@ class CommentumService extends GetxController {
       userVoteValue = -1;
     }
 
-    // Parse tags from JSON array or string
     String tagValue = 'General';
     final tagsData = commentData['tags'];
     if (tagsData is List && tagsData.isNotEmpty) {
@@ -718,7 +717,6 @@ class CommentumService extends GetxController {
       }
     }
 
-    // Parse nested replies from API
     List<Comment>? replies;
     final repliesData = commentData['replies'];
     if (repliesData is List && repliesData.isNotEmpty) {
@@ -767,7 +765,6 @@ class CommentumService extends GetxController {
       final token = await _authToken;
       if (token == null) return 'user';
 
-      // Use get_user_info with our own ID — the response includes moderator.role
       final response = await http.post(
         Uri.parse('$_baseUrl/users'),
         headers: {
@@ -785,9 +782,6 @@ class CommentumService extends GetxController {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        // The backend returns moderator.role even if user has no admin rights,
-        // but only when the user IS a moderator/admin.
-        // For non-mod users, the endpoint returns 401 (insufficient permissions).
         final role = data['moderator']?['role'];
         if (role != null) {
           currentUserRole.value = role;
@@ -795,7 +789,6 @@ class CommentumService extends GetxController {
         }
       }
 
-      // If we get 401 or no role, user is a regular user
       currentUserRole.value = 'user';
       return 'user';
     } catch (e) {
