@@ -206,28 +206,33 @@ class CommentumService extends GetxController {
       return false;
     }
 
-    final needsToken = userId != null && userId != currentUserId;
-    final token = needsToken ? await _authToken : null;
+    final isModDelete = userId != null && userId != currentUserId;
+    final token = isModDelete ? await _authToken : null;
 
-    if (needsToken && token == null) {
+    if (isModDelete && token == null) {
       Logger.i('Admin token required for deleting others\' comments');
       return false;
     }
 
     try {
-      final body = <String, dynamic>{
-        'action': 'delete',
-        'comment_id': commentId,
-        'user_info': {
-          "user_id": targetUserId,
-          "username": currentUsername,
-          "avatar": currentUserAvatar,
-        },
-      };
-
-      if (needsToken) {
-        body['client_type'] = _clientType;
-        body['token'] = token;
+      Map<String, dynamic> body;
+      if (isModDelete) {
+        body = {
+          'action': 'mod_delete',
+          'comment_id': commentId,
+          'client_type': _clientType,
+          'access_token': token,
+        };
+      } else {
+        body = {
+          'action': 'delete',
+          'comment_id': commentId,
+          'user_info': {
+            "user_id": targetUserId,
+            "username": currentUsername,
+            "avatar": currentUserAvatar,
+          },
+        };
       }
 
       final response = await http.post(
@@ -338,7 +343,7 @@ class CommentumService extends GetxController {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getModerationQueue() async {
+  Future<List<Map<String, dynamic>>> getReportsQueue() async {
     if (currentUserId == null) {
       Logger.i('User not logged in');
       return [];
@@ -359,8 +364,7 @@ class CommentumService extends GetxController {
         body: json.encode({
           'action': 'get_queue',
           'client_type': _clientType,
-          'moderator_id': currentUserId,
-          'token': token,
+          'access_token': token,
         }),
       );
 
@@ -370,12 +374,156 @@ class CommentumService extends GetxController {
       } else {
         final error = json.decode(response.body);
         Logger.i(
-            'Failed to get moderation queue: ${error['error'] ?? 'Unknown error'}');
+            'Failed to get reports queue: ${error['error'] ?? 'Unknown error'}');
         return [];
       }
     } catch (e) {
-      Logger.i('Error getting moderation queue: $e');
+      Logger.i('Error getting reports queue: $e');
       return [];
+    }
+  }
+
+  Future<bool> resolveReport({
+    required int commentId,
+    required String reporterId,
+    required String resolution,
+    String? reviewNotes,
+  }) async {
+    if (currentUserId == null) {
+      Logger.i('User not logged in');
+      return false;
+    }
+
+    final token = await _authToken;
+    if (token == null) {
+      Logger.i('No auth token available');
+      return false;
+    }
+
+    try {
+      final response = await http.post(
+        Uri.parse('$_baseUrl/reports'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'action': 'resolve',
+          'comment_id': commentId,
+          'reporter_info': {'user_id': reporterId},
+          'client_type': _clientType,
+          'access_token': token,
+          'resolution': resolution,
+          'review_notes': reviewNotes,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        final error = json.decode(response.body);
+        Logger.i(
+            'Failed to resolve report: ${error['error'] ?? 'Unknown error'}');
+        return false;
+      }
+    } catch (e) {
+      Logger.i('Error resolving report: $e');
+      return false;
+    }
+  }
+
+  Future<Map<String, dynamic>?> getUserInfo({
+    required String targetUserId,
+    String? targetClientType,
+  }) async {
+    if (currentUserId == null) {
+      Logger.i('User not logged in');
+      return null;
+    }
+
+    final token = await _authToken;
+    if (token == null) {
+      Logger.i('No auth token available');
+      return null;
+    }
+
+    try {
+      final body = <String, dynamic>{
+        'action': 'get_user_info',
+        'target_user_id': targetUserId,
+        'client_type': _clientType,
+        'access_token': token,
+      };
+      if (targetClientType != null) {
+        body['target_client_type'] = targetClientType;
+      }
+
+      final response = await http.post(
+        Uri.parse('$_baseUrl/users'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode(body),
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        final error = json.decode(response.body);
+        Logger.i(
+            'Failed to get user info: ${error['error'] ?? 'Unknown error'}');
+        return null;
+      }
+    } catch (e) {
+      Logger.i('Error getting user info: $e');
+      return null;
+    }
+  }
+
+  Future<Map<String, dynamic>?> getUserHistory({
+    required String targetUserId,
+    String? targetClientType,
+  }) async {
+    if (currentUserId == null) {
+      Logger.i('User not logged in');
+      return null;
+    }
+
+    final token = await _authToken;
+    if (token == null) {
+      Logger.i('No auth token available');
+      return null;
+    }
+
+    try {
+      final body = <String, dynamic>{
+        'action': 'get_user_history',
+        'target_user_id': targetUserId,
+        'client_type': _clientType,
+        'access_token': token,
+      };
+      if (targetClientType != null) {
+        body['target_client_type'] = targetClientType;
+      }
+
+      final response = await http.post(
+        Uri.parse('$_baseUrl/users'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode(body),
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        final error = json.decode(response.body);
+        Logger.i(
+            'Failed to get user history: ${error['error'] ?? 'Unknown error'}');
+        return null;
+      }
+    } catch (e) {
+      Logger.i('Error getting user history: $e');
+      return null;
     }
   }
 
@@ -405,8 +553,7 @@ class CommentumService extends GetxController {
           'action': action,
           'comment_id': commentId,
           'client_type': _clientType,
-          'moderator_id': currentUserId,
-          'token': token,
+          'access_token': token,
           'reason': reason,
         }),
       );
@@ -425,6 +572,52 @@ class CommentumService extends GetxController {
     }
   }
 
+  Future<Map<String, dynamic>?> getUserStats({
+    String? targetClientType,
+  }) async {
+    if (currentUserId == null) {
+      Logger.i('User not logged in');
+      return null;
+    }
+
+    final token = await _authToken;
+    if (token == null) {
+      Logger.i('No auth token available');
+      return null;
+    }
+
+    try {
+      final body = <String, dynamic>{
+        'action': 'get_user_stats',
+        'client_type': _clientType,
+        'access_token': token,
+      };
+      if (targetClientType != null) {
+        body['target_client_type'] = targetClientType;
+      }
+
+      final response = await http.post(
+        Uri.parse('$_baseUrl/users'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode(body),
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        final error = json.decode(response.body);
+        Logger.i(
+            'Failed to get user stats: ${error['error'] ?? 'Unknown error'}');
+        return null;
+      }
+    } catch (e) {
+      Logger.i('Error getting user stats: $e');
+      return null;
+    }
+  }
+
   Future<bool> manageUser({
     required String action,
     required String targetUserId,
@@ -432,6 +625,7 @@ class CommentumService extends GetxController {
     String? severity,
     int? duration,
     bool shadowBan = false,
+    String? targetClientType,
   }) async {
     if (currentUserId == null) {
       Logger.i('User not logged in');
@@ -449,17 +643,21 @@ class CommentumService extends GetxController {
         'action': action,
         'target_user_id': targetUserId,
         'client_type': _clientType,
-        'moderator_id': currentUserId,
-        'token': token,
+        'access_token': token,
         'reason': reason,
       };
 
+      if (targetClientType != null) {
+        body['target_client_type'] = targetClientType;
+      } else {
+        body['target_client_type'] = _clientType;
+      }
       if (severity != null) body['severity'] = severity;
       if (duration != null) body['duration'] = duration;
       if (shadowBan) body['shadow_ban'] = shadowBan;
 
       final response = await http.post(
-        Uri.parse('$_baseUrl/moderation'),
+        Uri.parse('$_baseUrl/users'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -484,7 +682,11 @@ class CommentumService extends GetxController {
     Map<String, dynamic> userVotes = {};
 
     if (userVotesData is String) {
-      userVotes = json.decode(userVotesData) as Map<String, dynamic>? ?? {};
+      try {
+        userVotes = json.decode(userVotesData) as Map<String, dynamic>? ?? {};
+      } catch (_) {
+        userVotes = {};
+      }
     } else if (userVotesData is Map) {
       userVotes = Map<String, dynamic>.from(userVotesData);
     }
@@ -498,6 +700,33 @@ class CommentumService extends GetxController {
       userVoteValue = -1;
     }
 
+    // Parse tags from JSON array or string
+    String tagValue = 'General';
+    final tagsData = commentData['tags'];
+    if (tagsData is List && tagsData.isNotEmpty) {
+      tagValue = tagsData.first.toString();
+    } else if (tagsData is String && tagsData.isNotEmpty) {
+      try {
+        final parsed = json.decode(tagsData);
+        if (parsed is List && parsed.isNotEmpty) {
+          tagValue = parsed.first.toString();
+        } else {
+          tagValue = tagsData;
+        }
+      } catch (_) {
+        tagValue = tagsData;
+      }
+    }
+
+    // Parse nested replies from API
+    List<Comment>? replies;
+    final repliesData = commentData['replies'];
+    if (repliesData is List && repliesData.isNotEmpty) {
+      replies = repliesData
+          .map((r) => _mapCommentumToAnymeXComment(r as Map<String, dynamic>))
+          .toList();
+    }
+
     return Comment(
       id: commentData['id'].toString(),
       contentId: int.tryParse(commentData['media_id'].toString()) ?? 0,
@@ -508,13 +737,26 @@ class CommentumService extends GetxController {
       likes: commentData['upvotes'] as int? ?? 0,
       dislikes: commentData['downvotes'] as int? ?? 0,
       userVote: userVoteValue,
-      tag: commentData['tags']?.toString() ?? 'General',
+      tag: tagValue,
       createdAt: commentData['created_at']?.toString() ??
           DateTime.now().toIso8601String(),
       updatedAt: commentData['updated_at']?.toString() ??
           DateTime.now().toIso8601String(),
       deleted: commentData['deleted'] as bool? ?? false,
       parentId: commentData['parent_id'] as int?,
+      pinned: commentData['pinned'] as bool?,
+      locked: commentData['locked'] as bool?,
+      edited: commentData['edited'] as bool?,
+      editCount: commentData['edit_count'] as int?,
+      moderated: commentData['moderated'] as bool?,
+      moderatedBy: commentData['moderated_by']?.toString(),
+      moderationReason: commentData['moderation_reason']?.toString(),
+      moderationAction: commentData['moderation_action']?.toString(),
+      reported: commentData['reported'] as bool?,
+      reportCount: commentData['report_count'] as int?,
+      reportStatus: commentData['report_status']?.toString(),
+      userRole: commentData['user_role']?.toString(),
+      replies: replies,
     );
   }
 
@@ -525,44 +767,96 @@ class CommentumService extends GetxController {
       final token = await _authToken;
       if (token == null) return 'user';
 
+      // Use get_user_info with our own ID — the response includes moderator.role
       final response = await http.post(
-        Uri.parse('$_baseUrl/users/role'),
+        Uri.parse('$_baseUrl/users'),
         headers: {
           'Content-Type': 'application/json',
         },
         body: json.encode({
+          'action': 'get_user_info',
+          'target_user_id': currentUserId,
           'client_type': _clientType,
-          'user_id': currentUserId,
-          'token': token,
+          'access_token': token,
         }),
       );
 
+      Logger.i('getUserRole response: ${response.statusCode} ${response.body}');
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final role = data['role'] ?? 'user';
-        currentUserRole.value = role;
-        return role;
+        // The backend returns moderator.role even if user has no admin rights,
+        // but only when the user IS a moderator/admin.
+        // For non-mod users, the endpoint returns 401 (insufficient permissions).
+        final role = data['moderator']?['role'];
+        if (role != null) {
+          currentUserRole.value = role;
+          return role;
+        }
       }
 
+      // If we get 401 or no role, user is a regular user
+      currentUserRole.value = 'user';
       return 'user';
     } catch (e) {
       Logger.i('Error getting user role: $e');
+      currentUserRole.value = 'user';
       return 'user';
     }
   }
 
   Future<bool> isModerator() async {
     final role = await getUserRole();
-    return ['moderator', 'admin', 'super_admin'].contains(role);
+    return ['moderator', 'admin', 'super_admin', 'owner'].contains(role);
   }
 
   Future<bool> isAdmin() async {
     final role = await getUserRole();
-    return ['admin', 'super_admin'].contains(role);
+    return ['admin', 'super_admin', 'owner'].contains(role);
   }
 
   Future<bool> isSuperAdmin() async {
     final role = await getUserRole();
-    return role == 'super_admin';
+    return ['super_admin', 'owner'].contains(role);
+  }
+
+  Future<List<Map<String, dynamic>>> getModerationQueue() async {
+    if (currentUserId == null) {
+      Logger.i('User not logged in');
+      return [];
+    }
+
+    final token = await _authToken;
+    if (token == null) {
+      Logger.i('No auth token available');
+      return [];
+    }
+
+    try {
+      final response = await http.post(
+        Uri.parse('$_baseUrl/moderation'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'action': 'get_queue',
+          'client_type': _clientType,
+          'access_token': token,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return List<Map<String, dynamic>>.from(data['comments'] ?? []);
+      } else {
+        final error = json.decode(response.body);
+        Logger.i(
+            'Failed to get moderation queue: ${error['error'] ?? 'Unknown error'}');
+        return [];
+      }
+    } catch (e) {
+      Logger.i('Error getting moderation queue: $e');
+      return [];
+    }
   }
 }

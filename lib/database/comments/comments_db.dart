@@ -10,13 +10,17 @@ class CommentsDatabase {
 
   void log(String msg) => {};
 
-  Future<List<Comment>> fetchComments(String mediaId) async {
+  Future<List<Comment>> fetchComments(String mediaId,
+      {String sort = 'newest', int page = 1, int limit = 50}) async {
     try {
-      log("Fetching comments for media: $mediaId");
-      final comments = await commentumService.fetchComments(mediaId);
+      log("Fetching comments for media: $mediaId (sort: $sort, page: $page)");
+      // Always fetch from backend as newest (backend sorts by created_at desc)
+      // Client-side sorting handles top/controversial since backend ignores orderBy
+      final comments = await commentumService.fetchComments(mediaId,
+          page: page, limit: limit);
       log("Fetched ${comments.length} comments");
 
-      final organizedComments = _organizeComments(comments);
+      final organizedComments = _organizeComments(comments, sort: sort);
       log("Organized into ${organizedComments.length} top-level comments with replies");
 
       return organizedComments;
@@ -27,8 +31,8 @@ class CommentsDatabase {
     }
   }
 
-  List<Comment> _organizeComments(List<Comment> comments) {
-    log("Organizing ${comments.length} comments");
+  List<Comment> _organizeComments(List<Comment> comments, {String sort = 'newest'}) {
+    log("Organizing ${comments.length} comments with sort: $sort");
 
     final Map<int, Comment> commentMap = {};
     final List<Comment> parentComments = [];
@@ -37,34 +41,58 @@ class CommentsDatabase {
     for (final comment in comments) {
       final commentId = int.tryParse(comment.id) ?? 0;
       commentMap[commentId] = comment;
-      log("Comment ${comment.id} (ID: $commentId) - parentId: ${comment.parentId}, text: ${comment.commentText.substring(0, comment.commentText.length > 30 ? 30 : comment.commentText.length)}");
     }
 
     for (final comment in comments) {
       final parentId = comment.parentId;
       if (parentId == null || parentId == 0) {
         parentComments.add(comment);
-        log("Added parent comment: ${comment.id}");
       } else {
         final parent = commentMap[parentId];
         if (parent != null) {
           parent.replies ??= [];
           parent.replies!.add(comment);
           replyCount++;
-          log("Added reply ${comment.id} to parent ${parentId} (parent now has ${parent.replies!.length} replies)");
         } else {
+          // Parent not in this page, treat as top-level
           parentComments.add(comment);
-          log("Parent $parentId not found for comment ${comment.id}, treating as parent comment");
         }
       }
     }
 
-    parentComments.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    // Sort top-level comments based on sort option
+    switch (sort) {
+      case 'oldest':
+        parentComments.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+        break;
+      case 'top':
+        // Sort by vote score (upvotes - downvotes), newest as tiebreaker
+        parentComments.sort((a, b) {
+          final scoreA = a.likes - a.dislikes;
+          final scoreB = b.likes - b.dislikes;
+          if (scoreB != scoreA) return scoreB.compareTo(scoreA);
+          return b.createdAt.compareTo(a.createdAt);
+        });
+        break;
+      case 'controversial':
+        // Sort by total votes (most argued), newest as tiebreaker
+        parentComments.sort((a, b) {
+          final totalA = a.likes + a.dislikes;
+          final totalB = b.likes + b.dislikes;
+          if (totalB != totalA) return totalB.compareTo(totalA);
+          return b.createdAt.compareTo(a.createdAt);
+        });
+        break;
+      case 'newest':
+      default:
+        parentComments.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+        break;
+    }
 
+    // Always sort replies chronologically (oldest first)
     for (final parent in parentComments) {
-      if (parent.replies != null) {
+      if (parent.replies != null && parent.replies!.isNotEmpty) {
         parent.replies!.sort((a, b) => a.createdAt.compareTo(b.createdAt));
-        log("Parent ${parent.id} has ${parent.replies!.length} replies after sorting");
       }
     }
 
@@ -211,6 +239,95 @@ class CommentsDatabase {
       log("Error reporting comment: $e");
       snackBar('Error reporting comment');
       return false;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getReportsQueue() async {
+    try {
+      log("Fetching reports queue");
+      final queue = await commentumService.getReportsQueue();
+      log("Fetched ${queue.length} items in reports queue");
+      return queue;
+    } catch (e) {
+      log("Error fetching reports queue: $e");
+      snackBar('Error fetching reports queue');
+      return [];
+    }
+  }
+
+  Future<bool> resolveReport({
+    required int commentId,
+    required String reporterId,
+    required String resolution,
+    String? reviewNotes,
+  }) async {
+    try {
+      log("Resolving report for comment $commentId: $resolution");
+      final success = await commentumService.resolveReport(
+        commentId: commentId,
+        reporterId: reporterId,
+        resolution: resolution,
+        reviewNotes: reviewNotes,
+      );
+      if (success) {
+        snackBar('Report resolved successfully');
+      } else {
+        snackBar('Failed to resolve report');
+      }
+      return success;
+    } catch (e) {
+      log("Error resolving report: $e");
+      snackBar('Error resolving report');
+      return false;
+    }
+  }
+
+  Future<Map<String, dynamic>?> getUserInfo({
+    required String targetUserId,
+    String? targetClientType,
+  }) async {
+    try {
+      log("Fetching user info for: $targetUserId");
+      return await commentumService.getUserInfo(
+        targetUserId: targetUserId,
+        targetClientType: targetClientType,
+      );
+    } catch (e) {
+      log("Error fetching user info: $e");
+      snackBar('Error fetching user info');
+      return null;
+    }
+  }
+
+  Future<Map<String, dynamic>?> getUserHistory({
+    required String targetUserId,
+    String? targetClientType,
+  }) async {
+    try {
+      log("Fetching user history for: $targetUserId");
+      return await commentumService.getUserHistory(
+        targetUserId: targetUserId,
+        targetClientType: targetClientType,
+      );
+    } catch (e) {
+      log("Error fetching user history: $e");
+      snackBar('Error fetching user history');
+      return null;
+    }
+  }
+
+  Future<Map<String, dynamic>?> getUserStats({
+    String? targetClientType,
+  }) async {
+    try {
+      log("Fetching user stats");
+      return await commentumService.getUserStats(
+        targetClientType: targetClientType,
+      );
+    } catch (e) {
+      log("Error fetching user stats: $e");
+      snackBar('Error fetching user stats');
+      return null;
     }
   }
 
