@@ -312,55 +312,54 @@ class CommentSectionController extends GetxController
 
     votingComments.add(comment.id);
 
-    final index = comments.indexWhere((c) => c.id == comment.id);
-    if (index == -1) {
+    final found = findCommentById(comment.id);
+    if (found == null) {
       votingComments.remove(comment.id);
       return;
     }
 
-    final originalLikes = comment.likes;
-    final originalDislikes = comment.dislikes;
-    final originalUserVote = comment.userVote;
+    final originalLikes = found.likes;
+    final originalDislikes = found.dislikes;
+    final originalUserVote = found.userVote;
 
-    final updatedComment = _createUpdatedComment(comment, newVote);
-    comments[index] = updatedComment;
+    _updateCommentVoteInPlace(found, newVote);
 
     try {
-      final commentId = int.tryParse(comment.id) ?? 0;
+      final commentId = int.tryParse(found.id) ?? 0;
       if (commentId == 0) {
-        throw Exception("Invalid comment ID: ${comment.id}");
+        throw Exception("Invalid comment ID: ${found.id}");
       }
 
       final result = await commentsDB.likeOrDislikeComment(
           commentId, originalUserVote, newVote);
 
       if (result == null) {
-        comment.likes = originalLikes;
-        comment.dislikes = originalDislikes;
-        comment.userVote = originalUserVote;
-        comments[index] = comment;
+        found.likes = originalLikes;
+        found.dislikes = originalDislikes;
+        found.userVote = originalUserVote;
+        comments.refresh();
         snackBar('Failed to update vote. Please try again.');
       } else {
         await backgroundRefresh();
       }
     } catch (e) {
-      comment.likes = originalLikes;
-      comment.dislikes = originalDislikes;
-      comment.userVote = originalUserVote;
-      comments[index] = comment;
+      found.likes = originalLikes;
+      found.dislikes = originalDislikes;
+      found.userVote = originalUserVote;
+      comments.refresh();
       snackBar('Failed to update vote. Please try again.');
     } finally {
       votingComments.remove(comment.id);
     }
   }
 
-  Comment _createUpdatedComment(Comment original, int newVote) {
-    int newLikes = original.likes;
-    int newDislikes = original.dislikes;
+  void _updateCommentVoteInPlace(Comment comment, int newVote) {
+    int newLikes = comment.likes;
+    int newDislikes = comment.dislikes;
 
-    if (original.userVote == 1) {
+    if (comment.userVote == 1) {
       newLikes--;
-    } else if (original.userVote == -1) {
+    } else if (comment.userVote == -1) {
       newDislikes--;
     }
 
@@ -370,40 +369,10 @@ class CommentSectionController extends GetxController
       newDislikes++;
     }
 
-    newLikes = newLikes < 0 ? 0 : newLikes;
-    newDislikes = newDislikes < 0 ? 0 : newDislikes;
-
-    return Comment(
-      id: original.id,
-      userId: original.userId,
-      commentText: original.commentText,
-      contentId: original.contentId,
-      tag: original.tag,
-      likes: newLikes,
-      dislikes: newDislikes,
-      userVote: newVote,
-      username: original.username,
-      avatarUrl: original.avatarUrl,
-      createdAt: original.createdAt,
-      updatedAt: original.updatedAt,
-      deleted: original.deleted,
-      pinned: original.pinned,
-      locked: original.locked,
-      edited: original.edited,
-      editCount: original.editCount,
-      editHistory: original.editHistory,
-      reported: original.reported,
-      reportCount: original.reportCount,
-      reportStatus: original.reportStatus,
-      userBanned: original.userBanned,
-      userMutedUntil: original.userMutedUntil,
-      userShadowBanned: original.userShadowBanned,
-      userWarnings: original.userWarnings,
-      moderatedBy: original.moderatedBy,
-      moderationReason: original.moderationReason,
-      parentId: original.parentId,
-      replies: original.replies,
-    );
+    comment.likes = newLikes < 0 ? 0 : newLikes;
+    comment.dislikes = newDislikes < 0 ? 0 : newDislikes;
+    comment.userVote = newVote;
+    comments.refresh();
   }
 
   Future<void> editComment(Comment comment, String newContent) async {
