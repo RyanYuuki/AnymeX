@@ -7,6 +7,7 @@ import 'package:window_manager/window_manager.dart';
 
 class AnymexTitleBar {
   static final ValueNotifier<bool> isFullScreen = ValueNotifier(false);
+  static final ValueNotifier<bool> isMaximized = ValueNotifier(false);
 
   static Future<void> initialize() async {
     if (!Platform.isWindows) {
@@ -29,6 +30,9 @@ class AnymexTitleBar {
     await windowManager.waitUntilReadyToShow(windowOptions, () async {
       await windowManager.show();
       await windowManager.focus();
+
+      AnymexTitleBar.isMaximized.value = await windowManager.isMaximized();
+      windowManager.addListener(_WindowListener());
     });
   }
 
@@ -50,8 +54,31 @@ class AnymexTitleBar {
   }
 }
 
+class _WindowListener extends WindowListener {
+  Future<void> _sync() async {
+    AnymexTitleBar.isMaximized.value = await windowManager.isMaximized();
+  }
+
+  @override
+  void onWindowMaximize() => _sync();
+
+  @override
+  void onWindowUnmaximize() => _sync();
+}
+
 class _TitleBarWidget extends StatelessWidget {
   const _TitleBarWidget();
+
+  Future<void> _toggleMaximize() async {
+    final maximized = await windowManager.isMaximized();
+    if (maximized) {
+      await windowManager.unmaximize();
+    } else {
+      await windowManager.maximize();
+    }
+
+    AnymexTitleBar.isMaximized.value = await windowManager.isMaximized();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,14 +129,7 @@ class _TitleBarWidget extends StatelessWidget {
                   onPanStart: (_) {
                     windowManager.startDragging();
                   },
-                  onDoubleTap: () async {
-                    final isMaximized = await windowManager.isMaximized();
-                    if (isMaximized) {
-                      await windowManager.unmaximize();
-                    } else {
-                      await windowManager.maximize();
-                    }
-                  },
+                  onDoubleTap: _toggleMaximize,
                 ),
               ),
               _WindowButton(
@@ -117,17 +137,17 @@ class _TitleBarWidget extends StatelessWidget {
                 onPressed: () => windowManager.minimize(),
                 buttonColor: defaultColor,
               ),
-              _WindowButton(
-                icon: Icons.crop_square_rounded,
-                onPressed: () async {
-                  final isMaximized = await windowManager.isMaximized();
-                  if (isMaximized) {
-                    await windowManager.unmaximize();
-                  } else {
-                    await windowManager.maximize();
-                  }
+              ValueListenableBuilder<bool>(
+                valueListenable: AnymexTitleBar.isMaximized,
+                builder: (_, isMaximized, __) {
+                  return _WindowButton(
+                    icon: isMaximized
+                        ? Icons.filter_none_rounded
+                        : Icons.crop_square_rounded,
+                    onPressed: _toggleMaximize,
+                    buttonColor: defaultColor,
+                  );
                 },
-                buttonColor: defaultColor,
               ),
               _WindowButton(
                 icon: Icons.close_rounded,
