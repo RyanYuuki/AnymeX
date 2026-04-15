@@ -1,5 +1,5 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/controllers/services/underrated_service.dart';
+import 'package:anymex/controllers/services/community_service.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -87,7 +87,7 @@ extension MediaMapper on Media {
   }
 }
 
-extension UnderratedMediaMapper on UnderratedMedia {
+extension CommunityMediaMapper on CommunityMedia {
   CarouselData toCarouselData({bool isManga = false}) {
     return CarouselData(
         id: media.id.toString(),

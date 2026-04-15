@@ -60,6 +60,9 @@ class Episode {
   }
 
   factory Episode.fromJson(Map<String, dynamic> json) {
+    final rawSortKeys = json['sortKeys'] as List<dynamic>?;
+    final rawSortVals = json['sortVals'] as List<dynamic>?;
+
     return Episode(
       number: (json['number'] ?? 1).toString(),
       link: json['link'] as String?,
@@ -77,8 +80,8 @@ class Episode {
           ?.map((v) => Video.fromJson(v as Map<String, dynamic>))
           .toList(),
       source: json['source'] as String?,
-      sortKeys: json['sortKeys'] as List<String>?,
-      sortVals: json['sortVals'] as List<String>?,
+      sortKeys: rawSortKeys?.map((e) => e.toString()).toList(),
+      sortVals: rawSortVals?.map((e) => e.toString()).toList(),
     );
   }
 }
@@ -86,7 +89,16 @@ class Episode {
 extension EpisodeMap on Episode {
   Map<String, String> get sortMap {
     if (sortKeys == null || sortVals == null) return {};
+    if (sortKeys!.isEmpty || sortVals!.isEmpty) return {};
 
-    return Map<String, String>.fromIterables(sortKeys!, sortVals!);
+    final pairCount = sortKeys!.length < sortVals!.length
+        ? sortKeys!.length
+        : sortVals!.length;
+    if (pairCount == 0) return {};
+
+    return Map<String, String>.fromIterables(
+      sortKeys!.take(pairCount),
+      sortVals!.take(pairCount),
+    );
   }
 }

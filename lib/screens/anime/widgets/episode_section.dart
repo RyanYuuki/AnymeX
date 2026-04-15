@@ -372,33 +372,7 @@ class _EpisodeSectionState extends State<EpisodeSection> {
       },
     );
   }
-
-  Widget _buildListShell({
-    required BuildContext context,
-    required Widget child,
-  }) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainer.opaque(0.3),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: context.colors.outline.opaque(0.2, iReallyMeanIt: true),
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: context.colors.shadow.opaque(0.08, iReallyMeanIt: true),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: child,
-    );
-  }
-
+  
   @override
   Widget build(BuildContext context) {
     return _buildSliverContent(context);

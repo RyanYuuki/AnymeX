@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:anymex/controllers/cacher/cache_controller.dart';
+import 'package:anymex/screens/downloads/controller/download_controller.dart';
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -11,7 +12,7 @@ import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/controllers/services/mal/mal_service.dart';
 import 'package:anymex/controllers/services/simkl/simkl_service.dart';
 import 'package:anymex/controllers/services/storage/storage_manager_service.dart';
-import 'package:anymex/controllers/services/underrated_service.dart';
+import 'package:anymex/controllers/services/community_service.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/sync/gist_sync_controller.dart';
@@ -154,7 +155,7 @@ void main(List<String> args) async {
     runApp(
       ChangeNotifierProvider(
         create: (context) => ThemeProvider(),
-        child: const MyAdaptiveWrapper(child: MainApp()),
+        child: const MainApp(),
       ),
     );
   }, (error, stackTrace) async {
@@ -168,10 +169,10 @@ void main(List<String> args) async {
 }
 
 void _initializeGetxController() async {
-  Get.put(Settings()); 
+  Get.put(Settings());
   Get.put(OfflineStorageController());
   Get.put(AnilistAuth());
-  Get.put(UnderratedService()); 
+  Get.put(CommunityService());
   Get.put(AnilistData());
   Get.put(SimklService());
   Get.put(MalService());
@@ -184,6 +185,7 @@ void _initializeGetxController() async {
   Get.put(CommentumService());
   Get.put(CommentPreloader());
   Get.put(GistSyncController(), permanent: true);
+  Get.put(DownloadController(), permanent: true);
   Get.lazyPut(() => CacheController());
   await StorageManagerService().enforceImageCacheLimit();
 }

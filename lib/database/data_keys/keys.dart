@@ -13,6 +13,16 @@ enum General {
   customLogDirectory,
   imageCacheThresholdGb,
   libraryGridAutoMigrated,
+  showCommunityRecommendations,
+  hideNsfwRecommendations,
+  filterByListEnabled,
+  filterCompleted,
+  filterWatching,
+  filterDropped,
+  filterPlanning,
+  filterPaused,
+  filterRepeating,
+  communityListViewIsGrid,
 }
 
 enum ThemeKeys {
@@ -254,3 +264,12 @@ enum UISettingsKeys {
   carouselStyle,
   showContinueWatchingCard,
 }
+
+enum DownloadKeys {
+  downloadPath,
+  concurrentDownloads,
+  saveActiveTasks,
+  downloadChunks,
+  hlsParallelSegments,
+}
+

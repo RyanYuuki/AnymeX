@@ -81,14 +81,12 @@ class Glow extends StatelessWidget {
 class LiquidMode extends StatelessWidget {
   final Widget child;
   final GradientVariant gradientVariant;
-  final bool useTexture;
   final ColorScheme theme;
 
   const LiquidMode(
       {super.key,
       required this.child,
       this.gradientVariant = GradientVariant.subtle,
-      this.useTexture = false,
       required this.theme});
 
   @override
@@ -115,10 +113,6 @@ class LiquidMode extends StatelessWidget {
             theme: theme,
           ),
         ),
-        if (useTexture)
-          Positioned.fill(
-            child: _TextureOverlay(theme: theme),
-          ),
         child,
       ],
     );
@@ -257,71 +251,6 @@ class _OptimizedGradientOverlay extends StatelessWidget {
         );
     }
   }
-}
-
-class _TextureOverlay extends StatelessWidget {
-  final ColorScheme theme;
-
-  const _TextureOverlay({required this.theme});
-
-  @override
-  Widget build(BuildContext context) {
-    return RepaintBoundary(
-      child: CustomPaint(
-        painter: _TexturePainter(theme: theme),
-        size: Size.infinite,
-      ),
-    );
-  }
-}
-
-class _TexturePainter extends CustomPainter {
-  final ColorScheme theme;
-
-  _TexturePainter({required this.theme});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = theme.onSurface.opaque(0.02)
-      ..strokeWidth = 0.5
-      ..style = PaintingStyle.stroke;
-
-    final random = Random(42);
-    for (int i = 0; i < 200; i++) {
-      final x = random.nextDouble() * size.width;
-      final y = random.nextDouble() * size.height;
-      final radius = random.nextDouble() * 2 + 0.5;
-
-      canvas.drawCircle(
-        Offset(x, y),
-        radius,
-        paint..color = theme.onSurface.opaque(random.nextDouble() * 0.03),
-      );
-    }
-
-    paint.color = theme.onSurface.opaque(0.2);
-    paint.strokeWidth = 0.4;
-
-    for (double x = 0; x < size.width; x += 10) {
-      canvas.drawLine(
-        Offset(x, 0),
-        Offset(x, size.height),
-        paint,
-      );
-    }
-
-    for (double y = 0; y < size.height; y += 10) {
-      canvas.drawLine(
-        Offset(0, y),
-        Offset(size.width, y),
-        paint,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class _CachedColorFilteredImage extends StatelessWidget {

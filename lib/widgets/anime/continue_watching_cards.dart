@@ -141,6 +141,7 @@ class ContinueWatchingCard extends StatelessWidget {
                           variant: TextVariant.bold,
                           color: colorScheme.onPrimary,
                           overflow: TextOverflow.ellipsis,
+                          isMarquee: false,
                         ),
                       ),
                     ],
@@ -161,7 +162,7 @@ class ContinueWatchingCard extends StatelessWidget {
               ],
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
+              padding: const EdgeInsets.fromLTRB(10, 8, 10, 9),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -175,6 +176,7 @@ class ContinueWatchingCard extends StatelessWidget {
                           maxLines: 1,
                           variant: TextVariant.bold,
                           overflow: TextOverflow.ellipsis,
+                          isMarquee: true,
                         ),
                         if (media.title != null &&
                             media.title != media.progressTitle)
@@ -187,6 +189,7 @@ class ContinueWatchingCard extends StatelessWidget {
                               variant: TextVariant.regular,
                               color: colorScheme.onSurface.opaque(0.6),
                               overflow: TextOverflow.ellipsis,
+                              isMarquee: true,
                             ),
                           ),
                       ],

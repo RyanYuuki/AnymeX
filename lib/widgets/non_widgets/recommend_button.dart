@@ -1,0 +1,71 @@
+import 'package:anymex/controllers/services/community_service.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/widgets/non_widgets/recommend_sheet.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+class RecommendIconButton extends StatelessWidget {
+  final Media media;
+  final ItemType mediaItemType;
+
+  /// Pre-existing entry data — if provided, skips API check in the sheet.
+  final Map<String, dynamic>? existingEntry;
+  final Widget Function(VoidCallback onTap, Widget child)? buttonBuilder;
+
+  const RecommendIconButton({
+    super.key,
+    required this.media,
+    required this.mediaItemType,
+    this.existingEntry,
+    this.buttonBuilder,
+  });
+
+  void _openSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useRootNavigator: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return Padding(
+          padding: MediaQuery.of(ctx).viewInsets,
+          child: SingleChildScrollView(
+            child: RecommendSheet(
+              media: media,
+              mediaItemType: mediaItemType,
+              existingEntry: existingEntry,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!CommunityService.votingEnabled) return const SizedBox.shrink();
+
+    final sh = Get.find<ServiceHandler>();
+    if (!sh.isLoggedIn.value) return const SizedBox.shrink();
+
+    final icon = Icon(
+      Icons.recommend_rounded,
+      size: 20,
+      color: Theme.of(context).colorScheme.onSurface,
+    );
+
+    if (buttonBuilder != null) {
+      return buttonBuilder!(() => _openSheet(context), icon);
+    }
+
+    return IconButton(
+      onPressed: () => _openSheet(context),
+      icon: icon,
+      tooltip: 'Recommend',
+    );
+  }
+}

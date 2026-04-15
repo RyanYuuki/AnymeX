@@ -2,6 +2,7 @@ import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/slider_semantics.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -193,16 +194,15 @@ class ReaderBottomControls extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        titleText,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: context.colors.onSurface,
-                        ),
+                      AnymexText(
+                        text: titleText,
+                        size: 14,
+                        variant: TextVariant.semiBold,
+                        color: context.colors.onSurface,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.center,
+                        isMarquee: true,
                       ),
                     ],
                   ),

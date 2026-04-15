@@ -97,8 +97,9 @@ class NewsPage extends StatelessWidget {
                                         text: decodedTitle,
                                         variant: TextVariant.semiBold,
                                         size: 15,
-                                        maxLines: 3,
+                                        maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
+                                        isMarquee: true,
                                       ),
                                       if (item.date != null) ...[
                                         const SizedBox(height: 8),

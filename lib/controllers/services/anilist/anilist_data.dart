@@ -8,7 +8,8 @@ import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/anilist/anilist_queries.dart';
 import 'package:anymex/controllers/services/anilist/kitsu.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
-import 'package:anymex/controllers/services/underrated_service.dart';
+import 'package:anymex/screens/community/community_recommendations_page.dart';
+import 'package:anymex/controllers/services/community_service.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
@@ -46,7 +47,7 @@ Map<String, dynamic> _parseJson(String body) {
 
 class AnilistData extends GetxController implements BaseService, OnlineService {
   final anilistAuth = Get.find<AnilistAuth>();
-  final underratedService = Get.find<UnderratedService>();
+  final communityService = Get.find<CommunityService>();
 
   // Anime Data
   RxList<Media> upcomingAnimes = <Media>[].obs;
@@ -250,11 +251,15 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
       buildSection('Upcoming Anime', upcomingAnimes),
       // Underrated Anime section at the bottom (filtered for logged-in users)
       Obx(() {
-        final filteredList = underratedService.getFilteredAnimes();
+        final filteredList = communityService.getFilteredCommunityAnimes();
         if (filteredList.isEmpty) {
           return const SizedBox.shrink();
         }
-        return buildUnderratedSection('Underrated Anime', filteredList);
+        return buildUnderratedSection('Community Recommendations', filteredList,
+            onSeeAll: () => navigate(() => CommunityRecommendationsPage(
+                  category: 'anime',
+                  type: ItemType.anime,
+                )));
       }),
     ].obs;
   }
@@ -274,11 +279,16 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
       ...sourceController.novelSections,
       // Underrated Manga section at the bottom (filtered for logged-in users)
       Obx(() {
-        final filteredList = underratedService.getFilteredMangas();
+        final filteredList = communityService.getFilteredCommunityMangas();
         if (filteredList.isEmpty) {
           return const SizedBox.shrink();
         }
-        return buildUnderratedMangaSection('Underrated Manga', filteredList);
+        return buildUnderratedMangaSection(
+            'Community Recommendations', filteredList,
+            onSeeAll: () => navigate(() => CommunityRecommendationsPage(
+                  category: 'manga',
+                  type: ItemType.manga,
+                )));
       }),
     ].obs;
   }
@@ -1095,7 +1105,7 @@ averageScore
     await Future.wait([
       fetchAnilistHomepage(),
       fetchAnilistMangaPage(),
-      underratedService.fetchAll(),
+      communityService.fetchAll(),
     ]);
   }
 
