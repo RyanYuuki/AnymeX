@@ -135,6 +135,8 @@ class _SettingsCommentsState extends State<SettingsComments> {
   String _getCurrentRoleDescription() {
     final role = commentumService.currentUserRole.value;
     switch (role) {
+      case 'owner':
+        return 'Full system ownership and control';
       case 'super_admin':
         return 'Full system access and control';
       case 'admin':
@@ -149,6 +151,8 @@ class _SettingsCommentsState extends State<SettingsComments> {
   Color _getRoleColor() {
     final role = commentumService.currentUserRole.value;
     switch (role) {
+      case 'owner':
+        return Colors.purple;
       case 'super_admin':
         return Colors.red;
       case 'admin':

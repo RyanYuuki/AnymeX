@@ -140,6 +140,8 @@ class _SettingsModerationState extends State<SettingsModeration> {
   Color _getRoleColor() {
     final role = commentumService.currentUserRole.value;
     switch (role) {
+      case 'owner':
+        return Colors.purple;
       case 'super_admin':
         return Colors.red;
       case 'admin':

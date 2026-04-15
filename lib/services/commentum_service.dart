@@ -807,17 +807,17 @@ class CommentumService extends GetxController {
 
   Future<bool> isModerator() async {
     final role = await getUserRole();
-    return ['moderator', 'admin', 'super_admin'].contains(role);
+    return ['moderator', 'admin', 'super_admin', 'owner'].contains(role);
   }
 
   Future<bool> isAdmin() async {
     final role = await getUserRole();
-    return ['admin', 'super_admin'].contains(role);
+    return ['admin', 'super_admin', 'owner'].contains(role);
   }
 
   Future<bool> isSuperAdmin() async {
     final role = await getUserRole();
-    return role == 'super_admin';
+    return ['super_admin', 'owner'].contains(role);
   }
 
   Future<List<Map<String, dynamic>>> getModerationQueue() async {

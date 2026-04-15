@@ -105,7 +105,8 @@ class CommentSectionController extends GetxController
       isSuperAdmin.value = await commentumService.isSuperAdmin();
 
       if (isSuperAdmin.value) {
-        currentUserRole.value = 'super_admin';
+        final rawRole = commentumService.currentUserRole.value;
+        currentUserRole.value = rawRole == 'owner' ? 'owner' : 'super_admin';
       } else if (isAdmin.value) {
         currentUserRole.value = 'admin';
       } else if (isModerator.value) {
