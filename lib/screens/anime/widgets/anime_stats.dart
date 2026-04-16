@@ -924,6 +924,16 @@ class AnimeStats extends StatelessWidget {
   }
 }
 
+class _ChipData {
+  final String label;
+  final VoidCallback? onTap;
+
+  const _ChipData({
+    required this.label,
+    this.onTap,
+  });
+}
+
 class _CollapsibleBox extends StatefulWidget {
   final Widget header;
   final Widget content;
