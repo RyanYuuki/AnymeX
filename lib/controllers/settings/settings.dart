@@ -32,6 +32,7 @@ class Settings extends GetxController {
   RxInt concurrentDownloads = 3.obs;
   RxInt downloadChunks = 1.obs;
   RxInt hlsParallelSegments = 3.obs;
+  RxBool enableJxlCompression = false.obs;
 
   RxBool isTV = false.obs;
   final _selectedShader = ''.obs;
@@ -82,6 +83,7 @@ class Settings extends GetxController {
     concurrentDownloads.value = DownloadKeys.concurrentDownloads.get<int>(3);
     downloadChunks.value = DownloadKeys.downloadChunks.get<int>(1);
     hlsParallelSegments.value = DownloadKeys.hlsParallelSegments.get<int>(3);
+    enableJxlCompression.value = DownloadKeys.enableJxlCompression.get<bool>(false);
 
     bridgeMode.value = PluginKeys.bridgeMode.get<String>(_defaultBridgeMode);
     if (Platform.isMacOS && bridgeMode.value != 'sidecar') {
@@ -168,6 +170,11 @@ class Settings extends GetxController {
   void saveHlsParallelSegments(int value) {
     hlsParallelSegments.value = value;
     DownloadKeys.hlsParallelSegments.set(value);
+  }
+
+  void saveEnableJxlCompression(bool value) {
+    enableJxlCompression.value = value;
+    DownloadKeys.enableJxlCompression.set(value);
   }
 
   void showWelcomeDialog(BuildContext context) {

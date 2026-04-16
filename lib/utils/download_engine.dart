@@ -32,10 +32,21 @@ class HlsDownloadResult {
 
 class DownloadEngine {
   static final Set<String> _cancelledTasks = {};
+  static final Set<String> _pausedTasks = {};
 
   static void cancel(String taskId) {
     _cancelledTasks.add(taskId);
   }
+
+  static void pause(String taskId) {
+    _pausedTasks.add(taskId);
+  }
+
+  static void resume(String taskId) {
+    _pausedTasks.remove(taskId);
+  }
+
+  static bool isPaused(String taskId) => _pausedTasks.contains(taskId);
 
   static String _extensionFor(String url) {
     final lower = url.toLowerCase().split('?').first;
@@ -130,8 +141,17 @@ class DownloadEngine {
           return const DownloadResult(success: false, error: 'Cancelled');
         }
 
-        while (activeIndices.length >= parallelSegments) {
-          await Future.delayed(const Duration(milliseconds: 50));
+        while (_pausedTasks.contains(taskId)) {
+          if (_cancelledTasks.contains(taskId)) {
+            await sink.close();
+            return const DownloadResult(success: false, error: 'Cancelled');
+          }
+          await Future.delayed(const Duration(milliseconds: 500));
+        }
+
+        while (activeIndices.length >= parallelSegments || _pausedTasks.contains(taskId)) {
+          if (_cancelledTasks.contains(taskId)) break;
+          await Future.delayed(const Duration(milliseconds: 100));
         }
 
         final currentIndex = i;

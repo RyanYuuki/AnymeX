@@ -218,10 +218,15 @@ class MediaKitPlayer extends base.BasePlayer {
 
   @override
   Future<void> setVideoTrack(base.VideoTrack track) async {
+    print(
+        'trying video track: ${track.id} - ${track.title} (${track.width}x${track.height})');
     final mediaKitTrack = _player.state.tracks.video.firstWhere(
       (t) => t.id == track.id,
       orElse: () => _player.state.tracks.video.first,
     );
+    print(
+        'Setting video track: ${mediaKitTrack.id} - ${mediaKitTrack.title} (${mediaKitTrack.w}x${mediaKitTrack.h})');
+
     await _player.setVideoTrack(mediaKitTrack);
   }
 
