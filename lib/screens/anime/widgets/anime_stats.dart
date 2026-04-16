@@ -119,27 +119,26 @@ class AnimeStats extends StatelessWidget {
           ),
           if (data.synonyms.isNotEmpty) ...[
             const SizedBox(height: 16),
-            _buildScrollableChipSection(
+            _buildChipSection(
               context,
               title: 'Synonyms',
               icon: Icons.translate_rounded,
-              chips: data.synonyms
-                  .map((s) => _ChipData(label: s))
-                  .toList(),
+              chips: data.synonyms.map((s) => _ChipData(label: s)).toList(),
             ),
           ],
           if (data.tags.isNotEmpty) ...[
             const SizedBox(height: 16),
-            _buildScrollableChipSection(
+            _buildChipSection(
               context,
               title: 'Tags',
               icon: Icons.label_rounded,
+              coloredChips: true,
               chips: data.tags
                   .map((t) => _ChipData(
                         label: '${t.name} (${t.rank}%)',
                         onTap: () => navigate(() => SearchPage(
                               searchTerm: '',
-                              isManga: data.mediaType == ItemType.manga,
+                              isManga: false,
                               initialFilters: {
                                 'tags': [t.name]
                               },
@@ -213,71 +212,90 @@ class AnimeStats extends StatelessWidget {
     );
   }
 
-  Widget _buildScrollableChipSection(
+
+  static const List<Color> _tagColors = [
+    Color(0xFFEF5350), Color(0xFF42A5F5), Color(0xFF66BB6A),
+    Color(0xFFFFA726), Color(0xFFAB47BC), Color(0xFF26C6DA),
+    Color(0xFFEC407A), Color(0xFF8D6E63), Color(0xFF78909C),
+    Color(0xFF26A69A), Color(0xFFD4E157), Color(0xFF7E57C2),
+  ];
+
+  Widget _buildChipSection(
     BuildContext context, {
     required String title,
     required IconData icon,
     required List<_ChipData> chips,
+    bool coloredChips = false,
   }) {
     final colorScheme = context.colors;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(icon, size: 16, color: colorScheme.primary),
-            const SizedBox(width: 8),
-            AnymexText(
-              text: title,
-              variant: TextVariant.bold,
-              size: 15,
-              color: colorScheme.primary,
-            ),
-          ],
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.opaque(0.35),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: colorScheme.outline.opaque(0.15, iReallyMeanIt: true),
+          width: 1.5,
         ),
-        const SizedBox(height: 10),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: colorScheme.primary.opaque(0.15, iReallyMeanIt: true),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, size: 18, color: colorScheme.primary),
+              ),
+              const SizedBox(width: 10),
+              AnymexText(
+                text: title,
+                variant: TextVariant.bold,
+                size: 16,
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
             children: chips.asMap().entries.map((entry) {
+              final i = entry.key;
               final chip = entry.value;
-              final isLast = entry.key == chips.length - 1;
-              final widget = GestureDetector(
+              final color = coloredChips
+                  ? _tagColors[i % _tagColors.length]
+                  : colorScheme.primary;
+              return GestureDetector(
                 onTap: chip.onTap,
                 child: Container(
-                  margin: EdgeInsets.only(right: isLast ? 0 : 8),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 14, vertical: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: chip.onTap != null
-                        ? colorScheme.primary.opaque(0.12, iReallyMeanIt: true)
-                        : colorScheme.surfaceContainerHighest.opaque(0.5),
+                    color: color.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: chip.onTap != null
-                          ? colorScheme.primary.opaque(0.3, iReallyMeanIt: true)
-                          : colorScheme.outline.opaque(0.15, iReallyMeanIt: true),
+                      color: color.withOpacity(0.35),
                       width: 1,
                     ),
                   ),
                   child: AnymexText(
                     text: chip.label,
-                    size: 13,
+                    size: 12,
                     variant: TextVariant.semiBold,
-                    color: chip.onTap != null
-                        ? colorScheme.primary
-                        : colorScheme.onSurface,
+                    color: color,
                   ),
                 ),
               );
-              return widget;
             }).toList(),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
-
   Widget _buildOthersSection(BuildContext context) {
     final colorScheme = context.colors;
     return _buildCollapsibleSectionContainer(
@@ -1004,11 +1022,4 @@ class _CollapsibleBoxState extends State<_CollapsibleBox> with SingleTickerProvi
       ),
     );
   }
-}
-
-class _ChipData {
-  final String label;
-  final VoidCallback? onTap;
-
-  const _ChipData({required this.label, this.onTap});
 }
