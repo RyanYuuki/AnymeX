@@ -3,12 +3,12 @@ import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/player/base_player.dart';
 import 'package:anymex/screens/anime/widgets/episode/normal_episode.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_segmented_button.dart';
+
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
@@ -85,20 +85,7 @@ class _DynamicBottomSheetState extends State<DynamicBottomSheet>
     super.dispose();
   }
 
-  void _filterItems(String query) {
-    setState(() {
-      if (query.isEmpty) {
-        _filteredItems = widget.items;
-      } else {
-        _filteredItems = widget.items
-            .where((item) =>
-                item.title.toLowerCase().contains(query.toLowerCase()) ||
-                (item.subtitle?.toLowerCase().contains(query.toLowerCase()) ??
-                    false))
-            .toList();
-      }
-    });
-  }
+
 
   void _closeBottomSheet() async {
     await _fadeController.reverse();
@@ -503,8 +490,7 @@ class PlayerBottomSheets {
             title: 'Auto', subtitle: 'Audio Track', icon: Icons.audiotrack),
         ...tracks.where((e) => e.title != null).map((entry) {
           return BottomSheetItem(
-            title: (entry.title ?? entry.language ?? entry.url ?? "")
-                .toUpperCase(),
+            title: completeLanguageName(entry.language ?? '').toUpperCase(),
             subtitle: 'Audio Track',
             icon: Icons.audiotrack,
           );
@@ -548,94 +534,7 @@ class PlayerBottomSheets {
     );
   }
 
-  static Future<int?> showUnifiedSubtitles(
-      BuildContext context, PlayerController controller) {
-    return Future.value(null);
-  }
 
-  static Future<int?> showOfflineSubs(
-      BuildContext context, PlayerController controller) {
-    final tracks = controller.embeddedSubs.value;
-    final currentIndex =
-        tracks.indexOf(controller.selectedSubsTrack.value ?? tracks.first);
-    return show<int>(
-      context: context,
-      title: 'Subtitle Tracks',
-      showSearch: tracks.length > 5,
-      searchHint: 'Search subtitle tracks...',
-      items: [
-        const BottomSheetItem(
-            title: 'None', subtitle: 'Subtitle Track', icon: Icons.audiotrack),
-        ...tracks
-            .where((e) => e.title != null && e.language != null)
-            .map((entry) {
-          return BottomSheetItem(
-            title: (entry.language ?? entry.title ?? entry.url.toString())
-                .toUpperCase(),
-            subtitle: 'Subtitle Track',
-            icon: Icons.closed_caption_rounded,
-          );
-        })
-      ],
-      selectedIndex: currentIndex < 0 ? 0 : currentIndex,
-      onItemSelected: (index) {
-        if (index == 0) {
-          controller.setSubtitleTrack(SubtitleTrack.no());
-        } else {
-          final selectedTrack = tracks[index];
-          controller.selectedSubsTrack.value = selectedTrack;
-          controller.setSubtitleTrack(selectedTrack);
-        }
-        Get.back(result: index);
-      },
-    );
-  }
-
-  static Future<int?> showSubtitleTracks(
-    BuildContext context,
-    PlayerController controller,
-  ) {
-    final tracks = controller.externalSubs.value;
-    final selectedTrack = tracks.indexOf(controller.selectedExternalSub.value);
-
-    return show<int>(
-      context: context,
-      title: 'Subtitles',
-      items: [
-        const BottomSheetItem(
-          title: 'Search Online',
-          subtitle: 'Find subtitles online',
-          icon: Icons.cloud_download,
-        ),
-        const BottomSheetItem(
-          title: 'None',
-          subtitle: 'No subtitles',
-          icon: Icons.subtitles_off,
-        ),
-        ...tracks.map((e) => BottomSheetItem(
-              title: e?.label ?? 'No Title',
-              subtitle: 'Local Subtitle Track',
-              icon: Icons.subtitles,
-            )),
-      ],
-      selectedIndex: controller.selectedExternalSub.value == Track()
-          ? 1
-          : selectedTrack + 2,
-      onItemSelected: (index) {
-        if (index == 0) {
-          Future.delayed(const Duration(milliseconds: 1000), () {
-            controller.isSubtitlePaneOpened.value = true;
-          });
-          return;
-        } else if (index == 1) {
-          controller.setExternalSub(null);
-        } else {
-          final selectedTrack = tracks[index - 2];
-          controller.setExternalSub(selectedTrack);
-        }
-      },
-    );
-  }
 
   static Future<String?> showVideoServers(
       BuildContext context, PlayerController controller) {
@@ -662,14 +561,13 @@ class PlayerBottomSheets {
 
   static Future<String?> showVideoQuality(
       BuildContext context, PlayerController controller) {
-    final qualities = controller.embeddedQuality.value;
+    final qualities = controller.embeddedQuality.value
+        .where((e) => e.height != null && e.width != null).toList();
     final selectedQuality = controller.selectedQualityTrack.value;
     return show<String>(
       context: context,
       title: 'Video Quality',
-      items: qualities
-          .where((e) => e.height != null && e.width != null)
-          .map((quality) {
+      items: qualities.map((quality) {
         return BottomSheetItem(
           title: quality.height == 0
               ? 'Auto'
@@ -711,7 +609,7 @@ class PlayerBottomSheets {
       title: 'Episodes',
       isExpanded: true,
       content: ScrollablePositionedList.separated(
-        initialScrollIndex: selectedEpisode.value.number!.toInt() - 1,
+        initialScrollIndex: selectedEpisode.value.number.toInt() - 1,
         separatorBuilder: (context, i) => const SizedBox(height: 8),
         itemCount: episodes.length,
         itemBuilder: (context, index) {

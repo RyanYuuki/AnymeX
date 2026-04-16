@@ -252,8 +252,7 @@ class NetflixMobilePlayerControlTheme extends PlayerControlTheme {
                               NFLabeledButton(
                                 icon: Symbols.subtitles_rounded,
                                 label: 'Audio & Subtitles',
-                                onTap: () => PlayerBottomSheets.showUnifiedSubtitles(
-                                    context, controller),
+                                onTap: () => controller.isTracksPaneOpened.value = !controller.isTracksPaneOpened.value,
                               ),
                               Obx(() => NFLabeledButton(
                                     icon: Icons.skip_next_rounded,

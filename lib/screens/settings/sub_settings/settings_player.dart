@@ -64,14 +64,14 @@ final List<_BottomControl> _bottomControls = [
   const _BottomControl(
       id: 'shaders', name: 'Shaders', icon: Symbols.tune_rounded),
   const _BottomControl(
-      id: 'subtitles', name: 'Subtitles', icon: Symbols.subtitles_rounded),
+      id: 'source', name: 'Source', icon: Symbols.cloud_rounded),
   const _BottomControl(
-      id: 'server', name: 'Server', icon: Symbols.cloud_rounded),
+      id: 'tracks',
+      name: 'Tracks (Audio/Subs)',
+      icon: Symbols.library_music_rounded),
   const _BottomControl(
-      id: 'quality', name: 'Quality', icon: Symbols.high_quality_rounded),
+      id: 'sync_subs', name: 'Sync Subs', icon: Symbols.sync_rounded),
   const _BottomControl(id: 'speed', name: 'Speed', icon: Symbols.speed_rounded),
-  const _BottomControl(
-      id: 'audio_track', name: 'Audio Track', icon: Symbols.music_note_rounded),
   const _BottomControl(
       id: 'orientation',
       name: 'Orientation',
@@ -129,7 +129,61 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
         _bottomControls.isNotEmpty) {
       _initializeDefaultButtonLayout();
     } else {
+      _migrateLegacyButtons();
       _pruneRemovedButtons();
+    }
+  }
+
+  void _migrateLegacyButtons() {
+    final legacyToNew = {
+      'server': 'source',
+      'subtitles': 'tracks',
+      'audio_track': 'tracks',
+      'quality': 'source',
+    };
+
+    bool migrated = false;
+
+    void replaceInList(List<String> list) {
+      for (int i = 0; i < list.length; i++) {
+        if (legacyToNew.containsKey(list[i])) {
+          list[i] = legacyToNew[list[i]]!;
+          migrated = true;
+        }
+      }
+    }
+
+    replaceInList(_leftButtonIds);
+    replaceInList(_rightButtonIds);
+    replaceInList(_hiddenButtonIds);
+
+    final seen = <String>{};
+    void deduplicate(List<String> list) {
+      list.removeWhere((id) {
+        if (seen.contains(id)) {
+          migrated = true;
+          return true;
+        }
+        seen.add(id);
+        return false;
+      });
+    }
+
+    deduplicate(_leftButtonIds);
+    deduplicate(_rightButtonIds);
+    deduplicate(_hiddenButtonIds);
+
+    final essential = ['source', 'tracks', 'sync_subs'];
+    for (final id in essential) {
+      if (!seen.contains(id)) {
+        _rightButtonIds.add(id);
+        _buttonConfigs[id] = {'visible': true};
+        migrated = true;
+      }
+    }
+
+    if (migrated) {
+      _saveButtonConfig();
     }
   }
 
