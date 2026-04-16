@@ -654,13 +654,6 @@ class Ranking {
   }
 }
 
-extension RemoveDupesOnTM on List<TrackedMedia> {
-  List<TrackedMedia> removeDupes() {
-    final seen = <String>{};
-    return where((media) => seen.add(media.id!)).toList();
-  }
-}
-
 class MediaTag {
   final String name;
   final int rank;
@@ -681,5 +674,12 @@ class MediaTag {
       isMediaSpoiler: json['isMediaSpoiler'] ?? false,
       isGeneralSpoiler: json['isGeneralSpoiler'] ?? false,
     );
+  }
+}
+
+extension RemoveDupesOnTM on List<TrackedMedia> {
+  List<TrackedMedia> removeDupes() {
+    final seen = <String>{};
+    return where((media) => seen.add(media.id!)).toList();
   }
 }
