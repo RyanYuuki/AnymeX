@@ -241,7 +241,6 @@ class MalService extends GetxController implements BaseService, OnlineService {
               'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manhua&limit=15'))
           .removeDupes();
 
-      // Fetch underrated content
       await communityService.fetchAll();
     } catch (e) {
       Logger.i('Error fetching home page data: $e');
@@ -779,7 +778,6 @@ class MalService extends GetxController implements BaseService, OnlineService {
       } else {
         fetchUserMangaList();
       }
-      // Refresh Missing Sequels / Upcoming / Catch Up after list change
       missingSequelService.onListChanged(isAnime: isAnime);
     } else {
       Logger.i('Error: ${req.body}');
