@@ -7,6 +7,7 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/anilist/anilist_queries.dart';
 import 'package:anymex/controllers/services/anilist/kitsu.dart';
+import 'package:anymex/controllers/services/missing_sequel/missing_sequel_service.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
 import 'package:anymex/screens/community/community_recommendations_page.dart';
 import 'package:anymex/controllers/services/community_service.dart';
@@ -48,6 +49,7 @@ Map<String, dynamic> _parseJson(String body) {
 class AnilistData extends GetxController implements BaseService, OnlineService {
   final anilistAuth = Get.find<AnilistAuth>();
   final communityService = Get.find<CommunityService>();
+  late final MissingSequelService missingSequelService;
 
   // Anime Data
   RxList<Media> upcomingAnimes = <Media>[].obs;
@@ -249,7 +251,22 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
       buildSection('Popular Anime', popularAnimes),
       buildSection('Recently Completed', latestAnimes),
       buildSection('Upcoming Anime', upcomingAnimes),
-      // Underrated Anime section at the bottom (filtered for logged-in users)
+      Obx(() {
+        final ms = missingSequelService;
+        if (!anilistAuth.isLoggedIn.value) return const SizedBox.shrink();
+        return Column(
+          children: [
+            if (ms.missingSequelsAnime.isNotEmpty)
+              buildSection('Missing Sequels', ms.missingSequelsAnime)
+            else if (!ms.isLoadingCheckAnime && anilistAuth.isLoggedIn.value)
+              const SizedBox.shrink(),
+            if (ms.upcomingSequelsAnime.isNotEmpty)
+              buildSection('Upcoming Sequels', ms.upcomingSequelsAnime),
+            if (ms.catchUpAnime.isNotEmpty)
+              buildSection('Catch Up', ms.catchUpAnime),
+          ],
+        );
+      }),
       Obx(() {
         final filteredList = communityService.getFilteredCommunityAnimes();
         if (filteredList.isEmpty) {
@@ -272,12 +289,23 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
       buildMangaSection('Latest Manga', latestMangas),
       buildMangaSection('Popular Manga', popularMangas),
       buildMangaSection('More Popular Manga', morePopularMangas),
-
-      // buildMangaSection('Most Favorite Mangas', mostFavoriteMangas),
-      // buildMangaSection('Top Rated Mangas', topRatedMangas),
-      // buildMangaSection('Top Ongoing Mangas', topOngoingMangas),
+      Obx(() {
+        final ms = missingSequelService;
+        if (!anilistAuth.isLoggedIn.value) return const SizedBox.shrink();
+        return Column(
+          children: [
+            if (ms.missingSequelsManga.isNotEmpty)
+              buildMangaSection('Missing Sequels', ms.missingSequelsManga)
+            else if (!ms.isLoadingCheckManga && anilistAuth.isLoggedIn.value)
+              const SizedBox.shrink(),
+            if (ms.upcomingSequelsManga.isNotEmpty)
+              buildMangaSection('Upcoming Sequels', ms.upcomingSequelsManga),
+            if (ms.catchUpManga.isNotEmpty)
+              buildMangaSection('Catch Up', ms.catchUpManga),
+          ],
+        );
+      }),
       ...sourceController.novelSections,
-      // Underrated Manga section at the bottom (filtered for logged-in users)
       Obx(() {
         final filteredList = communityService.getFilteredCommunityMangas();
         if (filteredList.isEmpty) {
@@ -296,6 +324,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
   @override
   void onInit() {
     super.onInit();
+    missingSequelService = Get.find<MissingSequelService>();
     _initFallback();
   }
 

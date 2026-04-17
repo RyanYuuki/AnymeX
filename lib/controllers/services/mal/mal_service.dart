@@ -8,6 +8,7 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
 import 'package:anymex/screens/community/community_recommendations_page.dart';
 import 'package:anymex/controllers/services/community_service.dart';
+import 'package:anymex/controllers/services/missing_sequel/missing_sequel_service.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
@@ -39,6 +40,13 @@ import 'package:http/http.dart' as http;
 
 class MalService extends GetxController implements BaseService, OnlineService {
   final communityService = Get.find<CommunityService>();
+  late final MissingSequelService missingSequelService;
+
+  @override
+  void onInit() {
+    super.onInit();
+    missingSequelService = Get.find<MissingSequelService>();
+  }
 
   Media? _firstMediaWithCover(Iterable<Media> mediaList) {
     for (final media in mediaList) {
@@ -119,7 +127,20 @@ class MalService extends GetxController implements BaseService, OnlineService {
                   buildSectionIfNotEmpty("Popular Anime", popularAnimes),
                   buildSectionIfNotEmpty("Top Anime", topAnimes),
                   buildSectionIfNotEmpty("Upcoming Anime", upcomingAnimes),
-                  // Underrated Anime section at the bottom (filtered for logged-in users)
+                  Obx(() {
+                    final ms = missingSequelService;
+                    if (!isLoggedIn.value) return const SizedBox.shrink();
+                    return Column(
+                      children: [
+                        if (ms.missingSequelsAnime.isNotEmpty)
+                          buildSection('Missing Sequels', ms.missingSequelsAnime),
+                        if (ms.upcomingSequelsAnime.isNotEmpty)
+                          buildSection('Upcoming Sequels', ms.upcomingSequelsAnime),
+                        if (ms.catchUpAnime.isNotEmpty)
+                          buildSection('Catch Up', ms.catchUpAnime),
+                      ],
+                    );
+                  }),
                   Obx(() {
                     final filteredList =
                         communityService.getFilteredCommunityAnimes();
@@ -152,8 +173,24 @@ class MalService extends GetxController implements BaseService, OnlineService {
                       isManga: true),
                   buildSectionIfNotEmpty("Top Manhua", topManhua,
                       isManga: true),
+                  Obx(() {
+                    final ms = missingSequelService;
+                    if (!isLoggedIn.value) return const SizedBox.shrink();
+                    return Column(
+                      children: [
+                        if (ms.missingSequelsManga.isNotEmpty)
+                          buildSection('Missing Sequels', ms.missingSequelsManga,
+                              type: ItemType.manga),
+                        if (ms.upcomingSequelsManga.isNotEmpty)
+                          buildSection('Upcoming Sequels', ms.upcomingSequelsManga,
+                              type: ItemType.manga),
+                        if (ms.catchUpManga.isNotEmpty)
+                          buildSection('Catch Up', ms.catchUpManga,
+                              type: ItemType.manga),
+                      ],
+                    );
+                  }),
                   ...sourceController.novelSections.value,
-                  // Underrated Manga section at the bottom (filtered for logged-in users)
                   Obx(() {
                     final filteredList =
                         communityService.getFilteredCommunityMangas();
@@ -402,6 +439,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
         auth: true, useAuthHeader: true, token: tokenn);
     profileData.value = Profile.fromKitsu(data);
     isLoggedIn.value = true;
+    Get.find<MissingSequelService>().fetchAll();
     Future.wait([fetchUserAnimeList(), fetchUserMangaList()]);
   }
 

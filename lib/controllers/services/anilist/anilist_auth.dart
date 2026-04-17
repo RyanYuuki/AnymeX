@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/missing_sequel/missing_sequel_service.dart';
 import 'package:anymex/database/comments/comments_db.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
@@ -580,6 +581,8 @@ class AnilistAuth extends GetxController {
         userProfile.tokenExpiry = getExpiryFromToken(token);
         profileData.value = userProfile;
         isLoggedIn.value = true;
+
+        Get.find<MissingSequelService>().fetchAll();
 
         Logger.i(
             'User profile fetched: ${userProfile.name} (ID: ${userProfile.id})');
