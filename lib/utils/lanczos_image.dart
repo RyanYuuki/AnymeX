@@ -20,11 +20,10 @@ class _BoundedCache {
   bool containsKey(String key) => _map.containsKey(key);
 
   void operator []=(String key, Uint8List value) {
-    if (_map.containsKey(key)) {
-      // Refresh insertion order.
-      _map.remove(key);
-    } else if (_map.length >= _kMaxCacheEntries) {
-      // Evict oldest entry.
+    // Remove first so that re-inserting refreshes insertion order (update).
+    _map.remove(key);
+    if (_map.length >= _kMaxCacheEntries) {
+      // Evict the oldest entry.
       _map.remove(_map.keys.first);
     }
     _map[key] = value;
@@ -40,7 +39,12 @@ Uint8List _lanczosResizeIsolate(Map<String, dynamic> args) {
   final maxHeight = args['maxHeight'] as int;
 
   final source = img.decodeImage(bytes);
-  if (source == null) return bytes;
+  if (source == null) {
+    // decodeImage returns null for unsupported/corrupted formats; return
+    // original bytes so the caller can fall back gracefully.
+    debugPrint('LanczosResize: failed to decode image, returning original bytes');
+    return bytes;
+  }
 
   // Only downscale; upscaling with Lanczos is slow and produces ringing.
   if (source.width <= maxWidth && source.height <= maxHeight) return bytes;
@@ -100,14 +104,18 @@ class _LanczosNetworkImageState extends State<LanczosNetworkImage> {
   int _maxHeight = 1920;
   bool _loaded = false;
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void _updateDimensions() {
     final mq = MediaQuery.of(context);
     _maxWidth =
         (mq.size.width * mq.devicePixelRatio).toInt().clamp(1, 4096);
     _maxHeight =
         (mq.size.height * mq.devicePixelRatio).toInt().clamp(1, 4096);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _updateDimensions();
 
     if (!_loaded) {
       _loaded = true;
@@ -119,11 +127,7 @@ class _LanczosNetworkImageState extends State<LanczosNetworkImage> {
   void didUpdateWidget(LanczosNetworkImage old) {
     super.didUpdateWidget(old);
     if (old.url != widget.url) {
-      final mq = MediaQuery.of(context);
-      _maxWidth =
-          (mq.size.width * mq.devicePixelRatio).toInt().clamp(1, 4096);
-      _maxHeight =
-          (mq.size.height * mq.devicePixelRatio).toInt().clamp(1, 4096);
+      _updateDimensions();
       setState(() {
         _future = _load();
       });
@@ -224,14 +228,18 @@ class _LanczosFileImageState extends State<LanczosFileImage> {
   int _maxHeight = 1920;
   bool _loaded = false;
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void _updateDimensions() {
     final mq = MediaQuery.of(context);
     _maxWidth =
         (mq.size.width * mq.devicePixelRatio).toInt().clamp(1, 4096);
     _maxHeight =
         (mq.size.height * mq.devicePixelRatio).toInt().clamp(1, 4096);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _updateDimensions();
 
     if (!_loaded) {
       _loaded = true;
@@ -243,11 +251,7 @@ class _LanczosFileImageState extends State<LanczosFileImage> {
   void didUpdateWidget(LanczosFileImage old) {
     super.didUpdateWidget(old);
     if (old.path != widget.path) {
-      final mq = MediaQuery.of(context);
-      _maxWidth =
-          (mq.size.width * mq.devicePixelRatio).toInt().clamp(1, 4096);
-      _maxHeight =
-          (mq.size.height * mq.devicePixelRatio).toInt().clamp(1, 4096);
+      _updateDimensions();
       setState(() {
         _future = _load();
       });
