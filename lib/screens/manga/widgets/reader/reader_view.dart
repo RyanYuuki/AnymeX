@@ -618,7 +618,7 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                           alignment: Alignment.center,
                           filterQuality: filterQuality,
                           enableLoadState: true,
-                        ))),
+                        )),
         ),
       );
     });

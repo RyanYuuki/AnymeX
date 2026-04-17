@@ -179,7 +179,7 @@ class _SettingsReaderState extends State<SettingsReader> {
           case 3:
             return 'High (Bicubic)';
           case 4:
-            return 'Lanczos (Best quality, slower)';
+            return 'Cubic Pre-scale (Best quality, slower)';
           default:
             return 'Medium (Default)';
         }
@@ -361,7 +361,7 @@ class _SettingsReaderState extends State<SettingsReader> {
                                 0 => 'None (Nearest)',
                                 1 => 'Low (Bilinear)',
                                 3 => 'High (Bicubic)',
-                                4 => 'Lanczos (Best)',
+                                4 => 'Cubic Pre-scale (Best)',
                                 _ => 'Medium (Default)',
                               },
                               onTap: _showMangaFilterQualityDialog,

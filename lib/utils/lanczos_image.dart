@@ -30,9 +30,10 @@ class _BoundedCache {
   }
 }
 
-/// Resizes [bytes] to fit within [maxWidth]×[maxHeight] using Lanczos3
-/// interpolation, preserving aspect ratio.  The work runs synchronously so it
-/// must be called inside a `compute()` isolate.
+/// Resizes [bytes] to fit within [maxWidth]×[maxHeight] using cubic
+/// interpolation (highest quality available in the `image` package),
+/// preserving aspect ratio.  The work runs synchronously so it must be called
+/// inside a `compute()` isolate.
 Uint8List _lanczosResizeIsolate(Map<String, dynamic> args) {
   final bytes = args['bytes'] as Uint8List;
   final maxWidth = args['maxWidth'] as int;
@@ -46,7 +47,8 @@ Uint8List _lanczosResizeIsolate(Map<String, dynamic> args) {
     return bytes;
   }
 
-  // Only downscale; upscaling with Lanczos is slow and produces ringing.
+  // Only downscale; upscaling with cubic interpolation is slow and may produce
+  // ringing artefacts on small images.
   if (source.width <= maxWidth && source.height <= maxHeight) return bytes;
 
   final scaleX = maxWidth / source.width;
@@ -59,7 +61,7 @@ Uint8List _lanczosResizeIsolate(Map<String, dynamic> args) {
     source,
     width: targetW,
     height: targetH,
-    interpolation: img.Interpolation.lanczos3,
+    interpolation: img.Interpolation.cubic,
   );
 
   return Uint8List.fromList(img.encodePng(resized));
@@ -69,8 +71,9 @@ Uint8List _lanczosResizeIsolate(Map<String, dynamic> args) {
 // Network variant
 // ---------------------------------------------------------------------------
 
-/// Fetches a network image, applies Lanczos3 downscaling in a background
-/// isolate, and renders the result.  Results are kept in a bounded LRU cache
+/// Fetches a network image, applies cubic downscaling in a background
+/// isolate (highest quality available in the `image` package), and renders
+/// the result.  Results are kept in a bounded LRU cache
 /// (capped at [_kMaxCacheEntries] entries) so that repeated builds are cheap.
 class LanczosNetworkImage extends StatefulWidget {
   final String url;
@@ -198,8 +201,9 @@ class _LanczosNetworkImageState extends State<LanczosNetworkImage> {
 // File variant
 // ---------------------------------------------------------------------------
 
-/// Reads a local image file, applies Lanczos3 downscaling in a background
-/// isolate, and renders the result.
+/// Reads a local image file, applies cubic downscaling in a background
+/// isolate (highest quality available in the `image` package), and renders
+/// the result.
 class LanczosFileImage extends StatefulWidget {
   final String path;
   final BoxFit fit;

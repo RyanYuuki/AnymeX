@@ -316,7 +316,7 @@ class _GeneralPage extends StatelessWidget {
                 0 => 'None (Nearest)',
                 1 => 'Low (Bilinear)',
                 3 => 'High (Bicubic)',
-                4 => 'Lanczos (Best)',
+                4 => 'Cubic Pre-scale (Best)',
                 _ => 'Medium (Default)',
               },
               icon: Icons.image_search_rounded,
@@ -621,7 +621,7 @@ class _GeneralPage extends StatelessWidget {
                     groupValue: controller.imageFilterQuality.value,
                     onChanged: _setFilterQuality),
                 RadioListTile<int>(
-                    title: const Text('Lanczos (Best quality, slower)'),
+                    title: const Text('Cubic Pre-scale (Best quality, slower)'),
                     value: 4,
                     groupValue: controller.imageFilterQuality.value,
                     onChanged: _setFilterQuality),
