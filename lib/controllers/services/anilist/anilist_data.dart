@@ -246,24 +246,27 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
   RxList<Widget> animeWidgets(BuildContext context) {
     return [
       buildBigCarousel(trendingAnimes, false),
-      buildSection('Recently Updated', recentlyUpdatedAnimes),
-      buildSection('Trending Anime', trendingAnimes),
-      buildSection('Popular Anime', popularAnimes),
-      buildSection('Recently Completed', latestAnimes),
-      buildSection('Upcoming Anime', upcomingAnimes),
+      buildMediaSectionWithSeeAll('Recently Updated', recentlyUpdatedAnimes, ItemType.anime),
+      buildMediaSectionWithSeeAll('Trending Anime', trendingAnimes, ItemType.anime),
+      buildMediaSectionWithSeeAll('Popular Anime', popularAnimes, ItemType.anime),
+      buildMediaSectionWithSeeAll('Recently Completed', latestAnimes, ItemType.anime),
+      buildMediaSectionWithSeeAll('Upcoming Anime', upcomingAnimes, ItemType.anime),
       Obx(() {
         final ms = missingSequelService;
         if (!anilistAuth.isLoggedIn.value) return const SizedBox.shrink();
         return Column(
           children: [
             if (ms.missingSequelsAnime.isNotEmpty)
-              buildSection('Missing Sequels', ms.missingSequelsAnime)
+              buildMediaSectionWithSeeAll('Missing Sequels', ms.missingSequelsAnime, ItemType.anime,
+                onRefresh: () => ms.refreshSection('check', isAnime: true))
             else if (!ms.isLoadingCheckAnime && anilistAuth.isLoggedIn.value)
               const SizedBox.shrink(),
             if (ms.upcomingSequelsAnime.isNotEmpty)
-              buildSection('Upcoming Sequels', ms.upcomingSequelsAnime),
+              buildMediaSectionWithSeeAll('Upcoming Sequels', ms.upcomingSequelsAnime, ItemType.anime,
+                onRefresh: () => ms.refreshSection('upcoming', isAnime: true)),
             if (ms.catchUpAnime.isNotEmpty)
-              buildSection('Catch Up', ms.catchUpAnime),
+              buildMediaSectionWithSeeAll('Catch Up', ms.catchUpAnime, ItemType.anime,
+                onRefresh: () => ms.refreshSection('catchup', isAnime: true)),
           ],
         );
       }),
@@ -285,23 +288,26 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
   RxList<Widget> mangaWidgets(BuildContext context) {
     return [
       buildBigCarousel(trendingMangas, true),
-      buildMangaSection('Trending Manga', trendingMangas),
-      buildMangaSection('Latest Manga', latestMangas),
-      buildMangaSection('Popular Manga', popularMangas),
-      buildMangaSection('More Popular Manga', morePopularMangas),
+      buildMediaSectionWithSeeAll('Trending Manga', trendingMangas, ItemType.manga),
+      buildMediaSectionWithSeeAll('Latest Manga', latestMangas, ItemType.manga),
+      buildMediaSectionWithSeeAll('Popular Manga', popularMangas, ItemType.manga),
+      buildMediaSectionWithSeeAll('More Popular Manga', morePopularMangas, ItemType.manga),
       Obx(() {
         final ms = missingSequelService;
         if (!anilistAuth.isLoggedIn.value) return const SizedBox.shrink();
         return Column(
           children: [
             if (ms.missingSequelsManga.isNotEmpty)
-              buildMangaSection('Missing Sequels', ms.missingSequelsManga)
+              buildMediaSectionWithSeeAll('Missing Sequels', ms.missingSequelsManga, ItemType.manga,
+                onRefresh: () => ms.refreshSection('check', isAnime: false))
             else if (!ms.isLoadingCheckManga && anilistAuth.isLoggedIn.value)
               const SizedBox.shrink(),
             if (ms.upcomingSequelsManga.isNotEmpty)
-              buildMangaSection('Upcoming Sequels', ms.upcomingSequelsManga),
+              buildMediaSectionWithSeeAll('Upcoming Sequels', ms.upcomingSequelsManga, ItemType.manga,
+                onRefresh: () => ms.refreshSection('upcoming', isAnime: false)),
             if (ms.catchUpManga.isNotEmpty)
-              buildMangaSection('Catch Up', ms.catchUpManga),
+              buildMediaSectionWithSeeAll('Catch Up', ms.catchUpManga, ItemType.manga,
+                onRefresh: () => ms.refreshSection('catchup', isAnime: false)),
           ],
         );
       }),

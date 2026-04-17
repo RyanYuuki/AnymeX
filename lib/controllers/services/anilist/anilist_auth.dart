@@ -1928,6 +1928,8 @@ class AnilistAuth extends GetxController {
           await fetchUserMangaList();
         }
         setCurrentMedia(listId, isManga: !isAnime);
+        // Refresh Missing Sequels / Upcoming / Catch Up after list change
+        Get.find<MissingSequelService>().onListChanged(isAnime: isAnime);
       } else if (response.statusCode == 403) {
         _handle403(response);
       } else {

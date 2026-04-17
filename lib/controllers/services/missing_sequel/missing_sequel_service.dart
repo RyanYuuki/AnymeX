@@ -40,6 +40,9 @@ class MissingSequelService extends GetxController {
   DateTime? _lastFetchCatchUpAnime;
   DateTime? _lastFetchCatchUpManga;
 
+  /// Track which platform the cache belongs to so we invalidate on switch.
+  String? _cachedPlatform;
+
   static const Duration _cacheDuration = Duration(hours: 24);
 
   Map<String, dynamic>? _cachedCheckAnime;
@@ -48,6 +51,36 @@ class MissingSequelService extends GetxController {
   Map<String, dynamic>? _cachedUpcomingManga;
   Map<String, dynamic>? _cachedCatchUpAnime;
   Map<String, dynamic>? _cachedCatchUpManga;
+
+  /// Clears all caches — called when user switches platform (AniList ↔ MAL).
+  void clearAllCache() {
+    _cachedCheckAnime = null;
+    _cachedCheckManga = null;
+    _cachedUpcomingAnime = null;
+    _cachedUpcomingManga = null;
+    _cachedCatchUpAnime = null;
+    _cachedCatchUpManga = null;
+    _lastFetchCheckAnime = null;
+    _lastFetchCheckManga = null;
+    _lastFetchUpcomingAnime = null;
+    _lastFetchUpcomingManga = null;
+    _lastFetchCatchUpAnime = null;
+    _lastFetchCatchUpManga = null;
+    _cachedPlatform = null;
+    missingSequelsAnime.clear();
+    missingSequelsManga.clear();
+    upcomingSequelsAnime.clear();
+    upcomingSequelsManga.clear();
+    catchUpAnime.clear();
+    catchUpManga.clear();
+  }
+
+  /// Returns true if cache is valid for the current platform.
+  bool _isCacheValid() {
+    final platform = _getPlatform();
+    if (platform == null || _cachedPlatform == null) return false;
+    return platform == _cachedPlatform;
+  }
 
   String? _getPlatform() {
     final serviceType = serviceHandler.serviceType.value;
@@ -133,13 +166,25 @@ class MissingSequelService extends GetxController {
       episodes = '?';
     }
 
+    // cover_image can be: string (compact), Map with extraLarge/large/medium (full), or null
+    String _extractCover(dynamic cover) {
+      if (cover == null) return '';
+      if (cover is String) return cover;
+      if (cover is Map) {
+        return (cover['extra_large'] ?? cover['extraLarge'] ?? cover['large'] ?? cover['medium'] ?? '').toString();
+      }
+      return cover.toString();
+    }
+
+    final coverUrl = _extractCover(json['cover_image']);
+
     return Media(
       id: json['id']?.toString() ?? '0',
       idMal: json['id_mal']?.toString() ?? '0',
       title: titleStr,
       romajiTitle: romajiStr,
-      poster: json['cover_image']?.toString() ?? '',
-      cover: json['cover_image']?.toString() ?? '',
+      poster: coverUrl,
+      cover: coverUrl,
       totalEpisodes: episodes,
       totalChapters: chapters,
       status: (json['status'] ?? '').toString().replaceAll('_', ' '),
@@ -156,6 +201,12 @@ class MissingSequelService extends GetxController {
 
   Future<void> fetchMissingSequels({bool isAnime = true}) async {
     final now = DateTime.now();
+
+    // Invalidate cache if platform changed
+    if (!_isCacheValid()) {
+      clearAllCache();
+    }
+
     final lastFetch = isAnime ? _lastFetchCheckAnime : _lastFetchCheckManga;
 
     if (lastFetch != null && now.difference(lastFetch) < _cacheDuration) {
@@ -183,6 +234,7 @@ class MissingSequelService extends GetxController {
 
       final data = await _apiCall('/api/check', body);
       if (data != null) {
+        _cachedPlatform = _getPlatform();
         if (isAnime) {
           _cachedCheckAnime = data;
           _lastFetchCheckAnime = now;
@@ -220,6 +272,12 @@ class MissingSequelService extends GetxController {
 
   Future<void> fetchUpcoming({bool isAnime = true}) async {
     final now = DateTime.now();
+
+    // Invalidate cache if platform changed
+    if (!_isCacheValid()) {
+      clearAllCache();
+    }
+
     final lastFetch = isAnime ? _lastFetchUpcomingAnime : _lastFetchUpcomingManga;
 
     if (lastFetch != null && now.difference(lastFetch) < _cacheDuration) {
@@ -246,6 +304,7 @@ class MissingSequelService extends GetxController {
 
       final data = await _apiCall('/api/upcoming', body);
       if (data != null) {
+        _cachedPlatform = _getPlatform();
         if (isAnime) {
           _cachedUpcomingAnime = data;
           _lastFetchUpcomingAnime = now;
@@ -280,6 +339,12 @@ class MissingSequelService extends GetxController {
 
   Future<void> fetchCatchUp({bool isAnime = true}) async {
     final now = DateTime.now();
+
+    // Invalidate cache if platform changed
+    if (!_isCacheValid()) {
+      clearAllCache();
+    }
+
     final lastFetch = isAnime ? _lastFetchCatchUpAnime : _lastFetchCatchUpManga;
 
     if (lastFetch != null && now.difference(lastFetch) < _cacheDuration) {
@@ -306,6 +371,7 @@ class MissingSequelService extends GetxController {
 
       final data = await _apiCall('/api/status-check', body);
       if (data != null) {
+        _cachedPlatform = _getPlatform();
         if (isAnime) {
           _cachedCatchUpAnime = data;
           _lastFetchCatchUpAnime = now;
@@ -338,6 +404,46 @@ class MissingSequelService extends GetxController {
     }
   }
 
+  /// Clears cache for a specific section and re-fetches it.
+  /// [section] is one of: 'check', 'upcoming', 'catchup'
+  void refreshSection(String section, {bool isAnime = true}) {
+    switch (section) {
+      case 'check':
+        if (isAnime) {
+          _cachedCheckAnime = null;
+          _lastFetchCheckAnime = null;
+          _isLoadingCheckAnime = false;
+        } else {
+          _cachedCheckManga = null;
+          _lastFetchCheckManga = null;
+          _isLoadingCheckManga = false;
+        }
+        fetchMissingSequels(isAnime: isAnime);
+      case 'upcoming':
+        if (isAnime) {
+          _cachedUpcomingAnime = null;
+          _lastFetchUpcomingAnime = null;
+          _isLoadingUpcomingAnime = false;
+        } else {
+          _cachedUpcomingManga = null;
+          _lastFetchUpcomingManga = null;
+          _isLoadingUpcomingManga = false;
+        }
+        fetchUpcoming(isAnime: isAnime);
+      case 'catchup':
+        if (isAnime) {
+          _cachedCatchUpAnime = null;
+          _lastFetchCatchUpAnime = null;
+          _isLoadingCatchUpAnime = false;
+        } else {
+          _cachedCatchUpManga = null;
+          _lastFetchCatchUpManga = null;
+          _isLoadingCatchUpManga = false;
+        }
+        fetchCatchUp(isAnime: isAnime);
+    }
+  }
+
   Future<void> fetchAll() async {
     final platform = _getPlatform();
     final token = _getToken();
@@ -351,5 +457,12 @@ class MissingSequelService extends GetxController {
       fetchCatchUp(isAnime: true),
       fetchCatchUp(isAnime: false),
     ]);
+  }
+
+  /// Called after user modifies their list (watch episode, change status, etc.)
+  /// Clears cache and refreshes in background so home sections stay up to date.
+  void onListChanged({bool? isAnime}) {
+    clearAllCache();
+    fetchAll();
   }
 }

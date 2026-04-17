@@ -123,21 +123,24 @@ class MalService extends GetxController implements BaseService, OnlineService {
             : Column(
                 children: [
                   buildBigCarousel(trendingAnimes, false),
-                  buildSectionIfNotEmpty("Trending Anime", trendingAnimes),
-                  buildSectionIfNotEmpty("Popular Anime", popularAnimes),
-                  buildSectionIfNotEmpty("Top Anime", topAnimes),
-                  buildSectionIfNotEmpty("Upcoming Anime", upcomingAnimes),
+                  buildMediaSectionWithSeeAll("Trending Anime", trendingAnimes, ItemType.anime),
+                  buildMediaSectionWithSeeAll("Popular Anime", popularAnimes, ItemType.anime),
+                  buildMediaSectionWithSeeAll("Top Anime", topAnimes, ItemType.anime),
+                  buildMediaSectionWithSeeAll("Upcoming Anime", upcomingAnimes, ItemType.anime),
                   Obx(() {
                     final ms = missingSequelService;
                     if (!isLoggedIn.value) return const SizedBox.shrink();
                     return Column(
                       children: [
                         if (ms.missingSequelsAnime.isNotEmpty)
-                          buildSection('Missing Sequels', ms.missingSequelsAnime),
+                          buildMediaSectionWithSeeAll('Missing Sequels', ms.missingSequelsAnime, ItemType.anime,
+                            onRefresh: () => ms.refreshSection('check', isAnime: true)),
                         if (ms.upcomingSequelsAnime.isNotEmpty)
-                          buildSection('Upcoming Sequels', ms.upcomingSequelsAnime),
+                          buildMediaSectionWithSeeAll('Upcoming Sequels', ms.upcomingSequelsAnime, ItemType.anime,
+                            onRefresh: () => ms.refreshSection('upcoming', isAnime: true)),
                         if (ms.catchUpAnime.isNotEmpty)
-                          buildSection('Catch Up', ms.catchUpAnime),
+                          buildMediaSectionWithSeeAll('Catch Up', ms.catchUpAnime, ItemType.anime,
+                            onRefresh: () => ms.refreshSection('catchup', isAnime: true)),
                       ],
                     );
                   }),
@@ -166,27 +169,24 @@ class MalService extends GetxController implements BaseService, OnlineService {
             : Column(
                 children: [
                   buildBigCarousel(trendingManga, true),
-                  buildSectionIfNotEmpty("Trending Manga", trendingManga,
-                      isManga: true),
-                  buildSectionIfNotEmpty("Top Manga", topManga, isManga: true),
-                  buildSectionIfNotEmpty("Top Manhwa", topManhwa,
-                      isManga: true),
-                  buildSectionIfNotEmpty("Top Manhua", topManhua,
-                      isManga: true),
+                  buildMediaSectionWithSeeAll("Trending Manga", trendingManga, ItemType.manga),
+                  buildMediaSectionWithSeeAll("Top Manga", topManga, ItemType.manga),
+                  buildMediaSectionWithSeeAll("Top Manhwa", topManhwa, ItemType.manga),
+                  buildMediaSectionWithSeeAll("Top Manhua", topManhua, ItemType.manga),
                   Obx(() {
                     final ms = missingSequelService;
                     if (!isLoggedIn.value) return const SizedBox.shrink();
                     return Column(
                       children: [
                         if (ms.missingSequelsManga.isNotEmpty)
-                          buildSection('Missing Sequels', ms.missingSequelsManga,
-                              type: ItemType.manga),
+                          buildMediaSectionWithSeeAll('Missing Sequels', ms.missingSequelsManga, ItemType.manga,
+                            onRefresh: () => ms.refreshSection('check', isAnime: false)),
                         if (ms.upcomingSequelsManga.isNotEmpty)
-                          buildSection('Upcoming Sequels', ms.upcomingSequelsManga,
-                              type: ItemType.manga),
+                          buildMediaSectionWithSeeAll('Upcoming Sequels', ms.upcomingSequelsManga, ItemType.manga,
+                            onRefresh: () => ms.refreshSection('upcoming', isAnime: false)),
                         if (ms.catchUpManga.isNotEmpty)
-                          buildSection('Catch Up', ms.catchUpManga,
-                              type: ItemType.manga),
+                          buildMediaSectionWithSeeAll('Catch Up', ms.catchUpManga, ItemType.manga,
+                            onRefresh: () => ms.refreshSection('catchup', isAnime: false)),
                       ],
                     );
                   }),
@@ -394,10 +394,10 @@ class MalService extends GetxController implements BaseService, OnlineService {
               }).toList(),
             )),
       ],
-      buildSectionIfNotEmpty("Trending Animes", trendingAnimes),
-      buildSectionIfNotEmpty("Popular Animes", popularAnimes),
-      buildSectionIfNotEmpty("Trending Manga", trendingManga, isManga: true),
-      buildSectionIfNotEmpty("Popular Manga", topManga, isManga: true),
+      buildMediaSectionWithSeeAll("Trending Animes", trendingAnimes, ItemType.anime),
+      buildMediaSectionWithSeeAll("Popular Animes", popularAnimes, ItemType.anime),
+      buildMediaSectionWithSeeAll("Trending Manga", trendingManga, ItemType.manga),
+      buildMediaSectionWithSeeAll("Popular Manga", topManga, ItemType.manga),
     ].obs;
   }
 
@@ -779,6 +779,8 @@ class MalService extends GetxController implements BaseService, OnlineService {
       } else {
         fetchUserMangaList();
       }
+      // Refresh Missing Sequels / Upcoming / Catch Up after list change
+      missingSequelService.onListChanged(isAnime: isAnime);
     } else {
       Logger.i('Error: ${req.body}');
       Logger.i('$isAnime: $body');
