@@ -9,7 +9,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
 class MissingSequelService extends GetxController {
-  static const String baseUrl = 'http://anymex.duckdns.org:3002';
+  static const String baseUrl = 'http://217.60.25.118:3002';
   static const String apiKey = 'xK9mP2vL7nQ4wR8';
 
   RxList<Media> missingSequelsAnime = <Media>[].obs;
