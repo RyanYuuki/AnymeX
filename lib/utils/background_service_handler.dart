@@ -186,6 +186,7 @@ class BackgroundDownloadTaskHandler extends TaskHandler {
         final taskId = task['taskId'] as String;
 
         if (_cancelledTasks.contains(taskId)) {
+          _cancelledTasks.remove(taskId);
           continue;
         }
 
@@ -209,6 +210,7 @@ class BackgroundDownloadTaskHandler extends TaskHandler {
         final taskId = task['taskId'] as String;
 
         if (_cancelledTasks.contains(taskId)) {
+          _cancelledTasks.remove(taskId);
           continue;
         }
 

@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:math';
 import 'dart:collection';
-import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:anymex/controllers/settings/settings.dart';
@@ -26,8 +25,6 @@ import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.
 import 'package:background_downloader/background_downloader.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:anymex/utils/background_service_handler.dart';
-import 'package:jxl_coder/jxl_coder.dart';
-import 'package:image/image.dart' as img;
 import 'package:flutter/foundation.dart';
 
 class DownloadController extends GetxController {
@@ -698,18 +695,10 @@ class DownloadController extends GetxController {
   void _processMangaScrapeQueue() {
     if (_mangaScrapeQueue.isEmpty) return;
 
-    final maxConcurrent = Get.find<Settings>().concurrentDownloads.value;
-    while (_mangaScrapeQueue.isNotEmpty && _activeTaskCount < maxConcurrent) {
+    while (_mangaScrapeQueue.isNotEmpty) {
       final request = _mangaScrapeQueue.removeFirst();
       if (request.task.status == MangaDownloadStatus.cancelled) continue;
-
-      _activeTaskCount++;
-      _runChapterDownload(task: request.task, source: request.source)
-          .whenComplete(() {
-        _activeTaskCount--;
-        _processMangaScrapeQueue();
-        _processScrapeQueue();
-      });
+      _runChapterDownload(task: request.task, source: request.source);
     }
   }
 
@@ -743,14 +732,11 @@ class DownloadController extends GetxController {
       task.status = MangaDownloadStatus.downloading;
       activeMangaTasks.refresh();
 
-      final chapterNum = task.chapter.number.toString();
-      final sanitizedChNum = DownloadEngine.sanitizePathSegment(chapterNum);
-
       final mediaDir =
           await _getMangaMediaDirPath(task.mediaTitle, task.extensionName);
       final chapterDir = Directory(p.join(
         mediaDir,
-        'Ch_$sanitizedChNum',
+        DownloadEngine.sanitizePathSegment(task.chapterDisplay),
       ));
       await _startBackgroundServiceIfNotRunning();
 
@@ -767,7 +753,6 @@ class DownloadController extends GetxController {
         'chapterDirPath': chapterDir.path,
         'mediaTitle': task.mediaTitle,
         'chapterName': task.chapterDisplay,
-        'enableJxlCompression': Get.find<Settings>().enableJxlCompression.value,
         'pages': pagesPayload,
       };
 
@@ -1342,23 +1327,7 @@ class DownloadController extends GetxController {
     }
   }
 
-  static Future<Uint8List?> _backgroundJxlCompress(
-      Map<String, dynamic> params) async {
-    final bytes = params['bytes'] as Uint8List;
-    final isJpg = params['isJpg'] as bool;
 
-    if (isJpg) {
-      return await JxlCoder.jpegToJxl(bytes);
-    } else {
-      final decoded = img.decodeImage(bytes);
-      if (decoded != null) {
-        final jpegBytes =
-            Uint8List.fromList(img.encodeJpg(decoded, quality: 100));
-        return await JxlCoder.jpegToJxl(jpegBytes);
-      }
-    }
-    return null;
-  }
 }
 
 class _ScrapeRequest {
