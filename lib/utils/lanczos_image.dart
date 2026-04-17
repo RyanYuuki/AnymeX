@@ -10,6 +10,8 @@ import 'package:image_scaler/types.dart';
 
 /// Maximum number of entries kept in each in-memory cache.
 const int _kMaxCacheEntries = 50;
+const int _kDefaultViewportWidthPx = 1080;
+const int _kDefaultViewportHeightPx = 1920;
 
 /// A simple size-bounded cache backed by an insertion-ordered [Map].
 /// When [_kMaxCacheEntries] is reached the oldest entry is evicted.
@@ -55,6 +57,7 @@ Future<Uint8List> _lanczosResize(Uint8List bytes, int maxWidth, int maxHeight) a
       image: source,
       newSize: IntSize(targetW, targetH),
       algorithm: ScaleAlgorithm.lanczos,
+      // image_scaler's Lanczos implementation is currently stable at radius 1.
       areaRadius: 1,
     );
     final png = await scaled.toByteData(format: ui.ImageByteFormat.png);
@@ -104,8 +107,8 @@ class _LanczosNetworkImageState extends State<LanczosNetworkImage> {
   Future<Uint8List?>? _future;
   // Screen dimensions captured synchronously (in didChangeDependencies)
   // before the async work begins.
-  int _maxWidth = 1080;
-  int _maxHeight = 1920;
+  int _maxWidth = _kDefaultViewportWidthPx;
+  int _maxHeight = _kDefaultViewportHeightPx;
   bool _loaded = false;
 
   void _updateDimensions() {
@@ -228,8 +231,8 @@ class _LanczosFileImageState extends State<LanczosFileImage> {
   static final _BoundedCache _cache = _BoundedCache();
 
   Future<Uint8List?>? _future;
-  int _maxWidth = 1080;
-  int _maxHeight = 1920;
+  int _maxWidth = _kDefaultViewportWidthPx;
+  int _maxHeight = _kDefaultViewportHeightPx;
   bool _loaded = false;
 
   void _updateDimensions() {
