@@ -153,7 +153,6 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   final RxInt displayRefreshDurationMs = 200.obs;
   final RxInt displayRefreshInterval = 1.obs;
   final RxString displayRefreshColor = 'black'.obs;
-  // 0=none, 1=low, 2=medium(default), 3=high, 4=lanczos
   final RxInt imageFilterQuality = 2.obs;
   final RxBool showingTransition = false.obs;
   final RxBool transitionIsNext = true.obs;
