@@ -1,15 +1,39 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:anymex/utils/logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
 
+/// Maximum number of entries kept in each in-memory cache.
+const int _kMaxCacheEntries = 50;
+
+/// A simple size-bounded cache backed by an insertion-ordered [Map].
+/// When [_kMaxCacheEntries] is reached the oldest entry is evicted.
+class _BoundedCache {
+  final Map<String, Uint8List> _map = {};
+
+  Uint8List? operator [](String key) => _map[key];
+
+  bool containsKey(String key) => _map.containsKey(key);
+
+  void operator []=(String key, Uint8List value) {
+    if (_map.containsKey(key)) {
+      // Refresh insertion order.
+      _map.remove(key);
+    } else if (_map.length >= _kMaxCacheEntries) {
+      // Evict oldest entry.
+      _map.remove(_map.keys.first);
+    }
+    _map[key] = value;
+  }
+}
+
 /// Resizes [bytes] to fit within [maxWidth]×[maxHeight] using Lanczos3
-/// interpolation, preserving aspect ratio.  The work is done synchronously so
-/// it must be called inside a `compute()` isolate.
+/// interpolation, preserving aspect ratio.  The work runs synchronously so it
+/// must be called inside a `compute()` isolate.
 Uint8List _lanczosResizeIsolate(Map<String, dynamic> args) {
   final bytes = args['bytes'] as Uint8List;
   final maxWidth = args['maxWidth'] as int;
@@ -18,11 +42,9 @@ Uint8List _lanczosResizeIsolate(Map<String, dynamic> args) {
   final source = img.decodeImage(bytes);
   if (source == null) return bytes;
 
-  // Only downscale; never upscale with Lanczos (it would be slow and produce
-  // ringing artefacts on small images).
+  // Only downscale; upscaling with Lanczos is slow and produces ringing.
   if (source.width <= maxWidth && source.height <= maxHeight) return bytes;
 
-  // Keep aspect ratio inside the requested box.
   final scaleX = maxWidth / source.width;
   final scaleY = maxHeight / source.height;
   final scale = scaleX < scaleY ? scaleX : scaleY;
@@ -44,8 +66,8 @@ Uint8List _lanczosResizeIsolate(Map<String, dynamic> args) {
 // ---------------------------------------------------------------------------
 
 /// Fetches a network image, applies Lanczos3 downscaling in a background
-/// isolate, and renders the result.  Results are cached in memory for the
-/// lifetime of the process so that repeated builds are cheap.
+/// isolate, and renders the result.  Results are kept in a bounded LRU cache
+/// (capped at [_kMaxCacheEntries] entries) so that repeated builds are cheap.
 class LanczosNetworkImage extends StatefulWidget {
   final String url;
   final Map<String, String>? headers;
@@ -69,20 +91,39 @@ class LanczosNetworkImage extends StatefulWidget {
 }
 
 class _LanczosNetworkImageState extends State<LanczosNetworkImage> {
-  static final Map<String, Uint8List> _cache = {};
+  static final _BoundedCache _cache = _BoundedCache();
 
-  late Future<Uint8List?> _future;
+  Future<Uint8List?>? _future;
+  // Screen dimensions captured synchronously (in didChangeDependencies)
+  // before the async work begins.
+  int _maxWidth = 1080;
+  int _maxHeight = 1920;
+  bool _loaded = false;
 
   @override
-  void initState() {
-    super.initState();
-    _future = _load();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final mq = MediaQuery.of(context);
+    _maxWidth =
+        (mq.size.width * mq.devicePixelRatio).toInt().clamp(1, 4096);
+    _maxHeight =
+        (mq.size.height * mq.devicePixelRatio).toInt().clamp(1, 4096);
+
+    if (!_loaded) {
+      _loaded = true;
+      _future = _load();
+    }
   }
 
   @override
   void didUpdateWidget(LanczosNetworkImage old) {
     super.didUpdateWidget(old);
     if (old.url != widget.url) {
+      final mq = MediaQuery.of(context);
+      _maxWidth =
+          (mq.size.width * mq.devicePixelRatio).toInt().clamp(1, 4096);
+      _maxHeight =
+          (mq.size.height * mq.devicePixelRatio).toInt().clamp(1, 4096);
       setState(() {
         _future = _load();
       });
@@ -96,25 +137,25 @@ class _LanczosNetworkImageState extends State<LanczosNetworkImage> {
       final response = await http
           .get(Uri.parse(widget.url), headers: widget.headers)
           .timeout(const Duration(seconds: 30));
-      if (response.statusCode != 200) return null;
-
-      final context = Get.context;
-      if (context == null || !context.mounted) return null;
-
-      final mq = MediaQuery.of(context);
-      final physicalWidth =
-          (mq.size.width * mq.devicePixelRatio).toInt().clamp(1, 4096);
-      final physicalHeight =
-          (mq.size.height * mq.devicePixelRatio).toInt().clamp(1, 4096);
+      if (response.statusCode != 200) {
+        Logger.w(
+          'LanczosNetworkImage: HTTP ${response.statusCode} for ${widget.url}',
+        );
+        return null;
+      }
 
       final processed = await compute(_lanczosResizeIsolate, {
         'bytes': response.bodyBytes,
-        'maxWidth': physicalWidth,
-        'maxHeight': physicalHeight,
+        'maxWidth': _maxWidth,
+        'maxHeight': _maxHeight,
       });
       _cache[widget.url] = processed;
       return processed;
-    } catch (_) {
+    } on SocketException catch (e) {
+      Logger.w('LanczosNetworkImage: Network error for ${widget.url}: $e');
+      return null;
+    } catch (e) {
+      Logger.e('LanczosNetworkImage: Failed to load ${widget.url}: $e');
       return null;
     }
   }
@@ -176,20 +217,37 @@ class LanczosFileImage extends StatefulWidget {
 }
 
 class _LanczosFileImageState extends State<LanczosFileImage> {
-  static final Map<String, Uint8List> _cache = {};
+  static final _BoundedCache _cache = _BoundedCache();
 
-  late Future<Uint8List?> _future;
+  Future<Uint8List?>? _future;
+  int _maxWidth = 1080;
+  int _maxHeight = 1920;
+  bool _loaded = false;
 
   @override
-  void initState() {
-    super.initState();
-    _future = _load();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final mq = MediaQuery.of(context);
+    _maxWidth =
+        (mq.size.width * mq.devicePixelRatio).toInt().clamp(1, 4096);
+    _maxHeight =
+        (mq.size.height * mq.devicePixelRatio).toInt().clamp(1, 4096);
+
+    if (!_loaded) {
+      _loaded = true;
+      _future = _load();
+    }
   }
 
   @override
   void didUpdateWidget(LanczosFileImage old) {
     super.didUpdateWidget(old);
     if (old.path != widget.path) {
+      final mq = MediaQuery.of(context);
+      _maxWidth =
+          (mq.size.width * mq.devicePixelRatio).toInt().clamp(1, 4096);
+      _maxHeight =
+          (mq.size.height * mq.devicePixelRatio).toInt().clamp(1, 4096);
       setState(() {
         _future = _load();
       });
@@ -202,23 +260,18 @@ class _LanczosFileImageState extends State<LanczosFileImage> {
     try {
       final raw = await File(widget.path).readAsBytes();
 
-      final context = Get.context;
-      if (context == null || !context.mounted) return null;
-
-      final mq = MediaQuery.of(context);
-      final physicalWidth =
-          (mq.size.width * mq.devicePixelRatio).toInt().clamp(1, 4096);
-      final physicalHeight =
-          (mq.size.height * mq.devicePixelRatio).toInt().clamp(1, 4096);
-
       final processed = await compute(_lanczosResizeIsolate, {
         'bytes': raw,
-        'maxWidth': physicalWidth,
-        'maxHeight': physicalHeight,
+        'maxWidth': _maxWidth,
+        'maxHeight': _maxHeight,
       });
       _cache[widget.path] = processed;
       return processed;
-    } catch (_) {
+    } on FileSystemException catch (e) {
+      Logger.w('LanczosFileImage: File error for ${widget.path}: $e');
+      return null;
+    } catch (e) {
+      Logger.e('LanczosFileImage: Failed to process ${widget.path}: $e');
       return null;
     }
   }
