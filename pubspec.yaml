@@ -85,6 +85,7 @@ dependencies:
 
     archive: any
     image: any
+    image_scaler: ^0.0.2
     flutter_widget_from_html: ^0.15.3
     timeago: ^3.7.1
     flutter_staggered_animations: ^1.1.1

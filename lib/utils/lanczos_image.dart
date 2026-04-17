@@ -1,11 +1,12 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:anymex/utils/logger.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:image/image.dart' as img;
+import 'package:image_scaler/image_scaler.dart';
+import 'package:image_scaler/types.dart';
 
 /// Maximum number of entries kept in each in-memory cache.
 const int _kMaxCacheEntries = 50;
@@ -30,49 +31,49 @@ class _BoundedCache {
   }
 }
 
-/// Resizes [bytes] to fit within [maxWidth]×[maxHeight] using cubic
-/// interpolation (highest quality available in the `image` package),
-/// preserving aspect ratio.  The work runs synchronously so it must be called
-/// inside a `compute()` isolate.
-Uint8List _lanczosResizeIsolate(Map<String, dynamic> args) {
-  final bytes = args['bytes'] as Uint8List;
-  final maxWidth = args['maxWidth'] as int;
-  final maxHeight = args['maxHeight'] as int;
+/// Resizes [bytes] to fit within [maxWidth]×[maxHeight] using Lanczos
+/// pre-scaling from `image_scaler`, preserving aspect ratio.
+Future<Uint8List> _lanczosResize(Uint8List bytes, int maxWidth, int maxHeight) async {
+  ui.Codec? codec;
+  ui.Image? source;
+  ui.Image? scaled;
+  try {
+    codec = await ui.instantiateImageCodec(bytes);
+    final frame = await codec.getNextFrame();
+    source = frame.image;
 
-  final source = img.decodeImage(bytes);
-  if (source == null) {
-    // decodeImage returns null for unsupported/corrupted formats; return
-    // original bytes so the caller can fall back gracefully.
-    debugPrint('LanczosResize: failed to decode image, returning original bytes');
+    // Only downscale; upscaling with Lanczos is expensive and unnecessary here.
+    if (source.width <= maxWidth && source.height <= maxHeight) return bytes;
+
+    final scaleX = maxWidth / source.width;
+    final scaleY = maxHeight / source.height;
+    final scaleRatio = scaleX < scaleY ? scaleX : scaleY;
+    final targetW = (source.width * scaleRatio).round().clamp(1, maxWidth);
+    final targetH = (source.height * scaleRatio).round().clamp(1, maxHeight);
+
+    scaled = await scale(
+      image: source,
+      newSize: IntSize(targetW, targetH),
+      algorithm: ScaleAlgorithm.lanczos,
+      areaRadius: 1,
+    );
+    final png = await scaled.toByteData(format: ui.ImageByteFormat.png);
+    return png?.buffer.asUint8List() ?? bytes;
+  } catch (e) {
+    debugPrint('LanczosResize: failed to process image, returning original bytes: $e');
     return bytes;
+  } finally {
+    scaled?.dispose();
+    source?.dispose();
+    codec?.dispose();
   }
-
-  // Only downscale; upscaling with cubic interpolation is slow and may produce
-  // ringing artefacts on small images.
-  if (source.width <= maxWidth && source.height <= maxHeight) return bytes;
-
-  final scaleX = maxWidth / source.width;
-  final scaleY = maxHeight / source.height;
-  final scale = scaleX < scaleY ? scaleX : scaleY;
-  final targetW = (source.width * scale).round().clamp(1, maxWidth);
-  final targetH = (source.height * scale).round().clamp(1, maxHeight);
-
-  final resized = img.copyResize(
-    source,
-    width: targetW,
-    height: targetH,
-    interpolation: img.Interpolation.cubic,
-  );
-
-  return Uint8List.fromList(img.encodePng(resized));
 }
 
 // ---------------------------------------------------------------------------
 // Network variant
 // ---------------------------------------------------------------------------
 
-/// Fetches a network image, applies cubic downscaling in a background
-/// isolate (highest quality available in the `image` package), and renders
+/// Fetches a network image, applies Lanczos downscaling, and renders
 /// the result.  Results are kept in a bounded LRU cache
 /// (capped at [_kMaxCacheEntries] entries) so that repeated builds are cheap.
 class LanczosNetworkImage extends StatefulWidget {
@@ -151,11 +152,11 @@ class _LanczosNetworkImageState extends State<LanczosNetworkImage> {
         return null;
       }
 
-      final processed = await compute(_lanczosResizeIsolate, {
-        'bytes': response.bodyBytes,
-        'maxWidth': _maxWidth,
-        'maxHeight': _maxHeight,
-      });
+      final processed = await _lanczosResize(
+        response.bodyBytes,
+        _maxWidth,
+        _maxHeight,
+      );
       _cache[widget.url] = processed;
       return processed;
     } on SocketException catch (e) {
@@ -201,9 +202,8 @@ class _LanczosNetworkImageState extends State<LanczosNetworkImage> {
 // File variant
 // ---------------------------------------------------------------------------
 
-/// Reads a local image file, applies cubic downscaling in a background
-/// isolate (highest quality available in the `image` package), and renders
-/// the result.
+/// Reads a local image file, applies Lanczos downscaling, and renders the
+/// result.
 class LanczosFileImage extends StatefulWidget {
   final String path;
   final BoxFit fit;
@@ -268,11 +268,7 @@ class _LanczosFileImageState extends State<LanczosFileImage> {
     try {
       final raw = await File(widget.path).readAsBytes();
 
-      final processed = await compute(_lanczosResizeIsolate, {
-        'bytes': raw,
-        'maxWidth': _maxWidth,
-        'maxHeight': _maxHeight,
-      });
+      final processed = await _lanczosResize(raw, _maxWidth, _maxHeight);
       _cache[widget.path] = processed;
       return processed;
     } on FileSystemException catch (e) {
