@@ -24,9 +24,12 @@ import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:anymex/database/database.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'dart:io';
 
 Widget _buildDynamicTabBar({
@@ -164,22 +167,41 @@ class _DownloadScreenState extends State<DownloadScreen> {
   }
 
   Future<void> _checkPermissions() async {
-    bool storage = true;
-    if (!Platform.isIOS) {
-      storage = await Permission.storage.request().isGranted;
-      if (Platform.isAndroid && !storage) {
-        storage = await Permission.manageExternalStorage.request().isGranted;
+    if (Platform.isIOS || !Platform.isAndroid) {
+      if (mounted) setState(() => _isPermissionsGranted = true);
+      return;
+    }
+
+    bool hasStorage = await Permission.storage.isGranted ||
+        await Permission.manageExternalStorage.isGranted ||
+        await Permission.videos.isGranted ||
+        await Permission.photos.isGranted;
+
+    if (!hasStorage) {
+      hasStorage = await Database().requestPermission();
+
+      if (!hasStorage) {
+        hasStorage = await Permission.storage.isGranted ||
+            await Permission.manageExternalStorage.isGranted ||
+            await Permission.videos.isGranted ||
+            await Permission.photos.isGranted;
       }
     }
 
-    bool notifications = true;
-    if (Platform.isAndroid) {
-      notifications = await Permission.notification.request().isGranted;
+    bool hasNotifications = await Permission.notification.isGranted;
+    if (!hasNotifications) {
+      hasNotifications = (await Permission.notification.request()).isGranted;
+    }
+    
+    if (await FlutterForegroundTask.isIgnoringBatteryOptimizations == false) {
+      await FlutterForegroundTask.requestIgnoreBatteryOptimization();
     }
 
-    setState(() {
-      _isPermissionsGranted = storage && notifications;
-    });
+    if (mounted) {
+      setState(() {
+        _isPermissionsGranted = hasStorage && hasNotifications;
+      });
+    }
   }
 
   @override
@@ -256,7 +278,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
             Icon(HugeIcons.strokeRoundedSecurityLock,
                 size: 64, color: theme.primary),
             const SizedBox(height: 24),
-            AnymexText(
+            const AnymexText(
               text: 'Permissions Required',
               variant: TextVariant.bold,
               size: 20,
@@ -476,8 +498,9 @@ class _DownloadScreenState extends State<DownloadScreen> {
   Widget _buildNewDownloadTab(BuildContext context) {
     final controller = Get.find<DownloadSearchController>();
     return Obx(() {
-      if (controller.step.value == 1)
+      if (controller.step.value == 1) {
         return _buildEpisodeStep(context, controller);
+      }
 
       final theme = context.colors;
       return Column(
@@ -1190,17 +1213,17 @@ class _DownloadScreenState extends State<DownloadScreen> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      _buildQuickSelectBtn( 'Next 10',
-                          () => controller.selectNextChapters(10)),
+                      _buildQuickSelectBtn(
+                          'Next 10', () => controller.selectNextChapters(10)),
                       const SizedBox(width: 8),
-                      _buildQuickSelectBtn( 'Next 20',
-                          () => controller.selectNextChapters(20)),
+                      _buildQuickSelectBtn(
+                          'Next 20', () => controller.selectNextChapters(20)),
                       const SizedBox(width: 8),
-                      _buildQuickSelectBtn( 'Next 100',
-                          () => controller.selectNextChapters(100)),
+                      _buildQuickSelectBtn(
+                          'Next 100', () => controller.selectNextChapters(100)),
                       const SizedBox(width: 8),
-                      _buildQuickSelectBtn( 'Custom Range',
-                          () => _showRangeDialog(controller)),
+                      _buildQuickSelectBtn(
+                          'Custom Range', () => _showRangeDialog(controller)),
                     ],
                   ),
                 ),
@@ -1308,7 +1331,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                       ),
                     ),
                   );
-                }).toList(),
+                }),
               ],
             );
           }),
@@ -1503,8 +1526,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
     );
   }
 
-  Widget _buildQuickSelectBtn(
- String label, VoidCallback onTap) {
+  Widget _buildQuickSelectBtn(String label, VoidCallback onTap) {
     final theme = context.colors;
     return AnymexOnTap(
       onTap: onTap,
