@@ -1,40 +1,29 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
-
 import 'package:anymex/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_scaler/image_scaler.dart';
 import 'package:image_scaler/types.dart';
 
-/// Maximum number of entries kept in each in-memory cache.
 const int _kMaxCacheEntries = 50;
 const int _kDefaultViewportWidthPx = 1080;
 const int _kDefaultViewportHeightPx = 1920;
 
-/// A simple size-bounded cache backed by an insertion-ordered [Map].
-/// When [_kMaxCacheEntries] is reached the oldest entry is evicted.
 class _BoundedCache {
   final Map<String, Uint8List> _map = {};
-
   Uint8List? operator [](String key) => _map[key];
-
   bool containsKey(String key) => _map.containsKey(key);
-
   void operator []=(String key, Uint8List value) {
-    // Remove first so that re-inserting refreshes insertion order (update).
     _map.remove(key);
     if (_map.length >= _kMaxCacheEntries) {
-      // Evict the oldest entry.
       _map.remove(_map.keys.first);
     }
     _map[key] = value;
   }
 }
 
-/// Resizes [bytes] to fit within [maxWidth]×[maxHeight] using Lanczos
-/// pre-scaling from `image_scaler`, preserving aspect ratio.
 Future<Uint8List> _lanczosResize(Uint8List bytes, int maxWidth, int maxHeight) async {
   ui.Codec? codec;
   ui.Image? source;
@@ -43,8 +32,6 @@ Future<Uint8List> _lanczosResize(Uint8List bytes, int maxWidth, int maxHeight) a
     codec = await ui.instantiateImageCodec(bytes);
     final frame = await codec.getNextFrame();
     source = frame.image;
-
-    // Only downscale; upscaling with Lanczos is expensive and unnecessary here.
     if (source.width <= maxWidth && source.height <= maxHeight) return bytes;
 
     final scaleX = maxWidth / source.width;
@@ -57,7 +44,6 @@ Future<Uint8List> _lanczosResize(Uint8List bytes, int maxWidth, int maxHeight) a
       image: source,
       newSize: IntSize(targetW, targetH),
       algorithm: ScaleAlgorithm.lanczos,
-      // image_scaler's Lanczos implementation is currently stable at radius 1.
       areaRadius: 1,
     );
     final png = await scaled.toByteData(format: ui.ImageByteFormat.png);
@@ -72,13 +58,6 @@ Future<Uint8List> _lanczosResize(Uint8List bytes, int maxWidth, int maxHeight) a
   }
 }
 
-// ---------------------------------------------------------------------------
-// Network variant
-// ---------------------------------------------------------------------------
-
-/// Fetches a network image, applies Lanczos downscaling, and renders
-/// the result.  Results are kept in a bounded LRU cache
-/// (capped at [_kMaxCacheEntries] entries) so that repeated builds are cheap.
 class LanczosNetworkImage extends StatefulWidget {
   final String url;
   final Map<String, String>? headers;
@@ -105,8 +84,6 @@ class _LanczosNetworkImageState extends State<LanczosNetworkImage> {
   static final _BoundedCache _cache = _BoundedCache();
 
   Future<Uint8List?>? _future;
-  // Screen dimensions captured synchronously (in didChangeDependencies)
-  // before the async work begins.
   int _maxWidth = _kDefaultViewportWidthPx;
   int _maxHeight = _kDefaultViewportHeightPx;
   bool _loaded = false;
@@ -201,12 +178,6 @@ class _LanczosNetworkImageState extends State<LanczosNetworkImage> {
   }
 }
 
-// ---------------------------------------------------------------------------
-// File variant
-// ---------------------------------------------------------------------------
-
-/// Reads a local image file, applies Lanczos downscaling, and renders the
-/// result.
 class LanczosFileImage extends StatefulWidget {
   final String path;
   final BoxFit fit;
