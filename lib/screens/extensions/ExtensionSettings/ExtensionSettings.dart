@@ -139,14 +139,12 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
                           );
                         case 'multi_select':
                           final p = pref.multiSelectListPreference!;
-                          final selectedValues = (p.values ?? []).toSet().obs;
-                          var subtitle = (p.entries ?? [])
+                          final selectedOptions = (p.values ?? []);
+                          final subtitle = (p.entries ?? [])
                               .asMap()
                               .entries
-                              .where((e) =>
-                                  p.values?.contains(p.entryValues?[e.key]) ?? false)
+                              .where((e) => selectedOptions.contains(p.entryValues?[e.key]))
                               .map((e) => e.value)
-                              .toList()
                               .join(", ");
                           return _PreferenceTile(
                             title: p.title ?? '',
@@ -157,14 +155,14 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
                                     : subtitle,
                             isSelected: false,
                             onTap: () {
-                              final selectedValues = (p.values ?? []).toSet();
+                              final tempSelectedValues = (p.values ?? []).toSet();
                               showDialog(
                                 context: context,
                                 builder: (context) => StatefulBuilder(
                                   builder: (context, setDialogState) => AnymexDialog(
                                     title: p.title ?? 'Select Options',
                                     onConfirm: () {
-                                      p.values = selectedValues.toList();
+                                      p.values = tempSelectedValues.toList();
                                       widget.source.methods.setPreference(pref, p.values);
                                       setState(() {});
                                     },
@@ -176,19 +174,19 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
                                         itemCount: p.entries?.length ?? 0,
                                         itemBuilder: (context, i) {
                                           final val = p.entryValues![i];
-                                          final isSelected = selectedValues.contains(val);
+                                          final isCurrentlySelected = tempSelectedValues.contains(val);
                                           return Padding(
                                             padding: const EdgeInsets.only(bottom: 8.0),
                                             child: _PreferenceTile(
                                               title: p.entries![i],
                                               subtitle: 'Option ${i + 1}',
-                                              isSelected: isSelected,
+                                              isSelected: isCurrentlySelected,
                                               onTap: () {
                                                 setDialogState(() {
-                                                  if (isSelected) {
-                                                    selectedValues.remove(val);
+                                                  if (isCurrentlySelected) {
+                                                    tempSelectedValues.remove(val);
                                                   } else {
-                                                    selectedValues.add(val);
+                                                    tempSelectedValues.add(val);
                                                   }
                                                 });
                                               },

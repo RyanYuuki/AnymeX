@@ -286,7 +286,7 @@ class _MainAppState extends State<MainApp> {
           if (isDesktop) {
             return Stack(
               children: [
-                child!,
+                RepaintBoundary(child: child!),
                 Positioned(
                   top: 0,
                   left: 0,

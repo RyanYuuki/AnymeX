@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/controllers/theme.dart';
+import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 
 class AnymexTitleBar {
@@ -21,7 +23,7 @@ class AnymexTitleBar {
     }
 
     const windowOptions = WindowOptions(
-      backgroundColor: Colors.transparent,
+      backgroundColor: null,
       skipTaskbar: false,
       titleBarStyle: TitleBarStyle.hidden,
     );
@@ -55,18 +57,20 @@ class _TitleBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isOled = Provider.of<ThemeProvider>(context).isOled;
     final defaultColor = context.colors.onSurface;
 
-    return Material(
-      color: Colors.transparent,
+    return RepaintBoundary(
+      child: Material(
+        color: Colors.transparent,
       child: ClipRect(
         child: Container(
           height: 40,
           decoration: BoxDecoration(
-            color: Colors.black.opaque(0.2),
+            color: isOled ? Colors.black : Colors.black.opaque(0.2),
             border: Border(
               bottom: BorderSide(
-                color: defaultColor.opaque(0.1),
+                color: isOled ? Colors.transparent : defaultColor.opaque(0.1),
                 width: 0.5,
               ),
             ),
@@ -139,7 +143,7 @@ class _TitleBarWidget extends StatelessWidget {
           ),
         ),
       ),
-    );
+    ));
   }
 }
 
