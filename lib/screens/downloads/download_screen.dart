@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/screens/downloads/controller/download_controller.dart';
 import 'package:anymex/screens/downloads/controller/download_search_controller.dart';
@@ -22,6 +23,7 @@ import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
@@ -159,6 +161,10 @@ class _DownloadScreenState extends State<DownloadScreen> {
   final searchController = Get.put(DownloadSearchController());
 
   bool _isPermissionsGranted = false;
+  bool _isCheckingPermissions = true;
+  bool _hasDownloadDir = false;
+
+  Settings get _settings => Get.find<Settings>();
 
   @override
   void initState() {
@@ -167,8 +173,14 @@ class _DownloadScreenState extends State<DownloadScreen> {
   }
 
   Future<void> _checkPermissions() async {
-    if (Platform.isIOS || !Platform.isAndroid) {
-      if (mounted) setState(() => _isPermissionsGranted = true);
+    if (mounted) setState(() => _isCheckingPermissions = true);
+
+    if (Platform.isIOS) {
+      if (mounted) setState(() {
+        _isPermissionsGranted = true;
+        _hasDownloadDir = true;
+        _isCheckingPermissions = false;
+      });
       return;
     }
 
@@ -179,7 +191,6 @@ class _DownloadScreenState extends State<DownloadScreen> {
 
     if (!hasStorage) {
       hasStorage = await Database().requestPermission();
-
       if (!hasStorage) {
         hasStorage = await Permission.storage.isGranted ||
             await Permission.manageExternalStorage.isGranted ||
@@ -192,15 +203,28 @@ class _DownloadScreenState extends State<DownloadScreen> {
     if (!hasNotifications) {
       hasNotifications = (await Permission.notification.request()).isGranted;
     }
-    
+
     if (await FlutterForegroundTask.isIgnoringBatteryOptimizations == false) {
       await FlutterForegroundTask.requestIgnoreBatteryOptimization();
     }
 
+    final savedPath = _settings.downloadPath.value;
+    final dirAlreadySet = savedPath.isNotEmpty && await Directory(savedPath).exists();
+
     if (mounted) {
       setState(() {
         _isPermissionsGranted = hasStorage && hasNotifications;
+        _hasDownloadDir = dirAlreadySet;
+        _isCheckingPermissions = false;
       });
+    }
+  }
+
+  Future<void> _pickDownloadDirectory() async {
+    final result = await FilePicker.platform.getDirectoryPath();
+    if (result != null && mounted) {
+      _settings.saveDownloadPath(result);
+      setState(() => _hasDownloadDir = true);
     }
   }
 
@@ -227,8 +251,14 @@ class _DownloadScreenState extends State<DownloadScreen> {
                 ),
               ),
             ),
-            if (!_isPermissionsGranted)
+            if (_isCheckingPermissions)
+              const Expanded(
+                child: Center(child: CircularProgressIndicator()),
+              )
+            else if (!_isPermissionsGranted)
               Expanded(child: _buildPermissionRoadblock(theme))
+            else if (!_hasDownloadDir)
+              Expanded(child: _buildDirectoryPickerGate(theme))
             else ...[
               const SizedBox(height: 16),
               Padding(
@@ -262,6 +292,52 @@ class _DownloadScreenState extends State<DownloadScreen> {
                 ),
               ),
             ]
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDirectoryPickerGate(ColorScheme theme) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(HugeIcons.strokeRoundedFolder01, size: 64, color: theme.primary),
+            const SizedBox(height: 24),
+            const AnymexText(
+              text: 'Choose Download Folder',
+              variant: TextVariant.bold,
+              size: 20,
+            ),
+            const SizedBox(height: 12),
+            AnymexText(
+              text: 'Select a folder where AnymeX will save your downloaded anime episodes and manga chapters.',
+              textAlign: TextAlign.center,
+              color: theme.onSurface.opaque(0.7),
+            ),
+            const SizedBox(height: 32),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: theme.primary,
+                  foregroundColor: theme.onPrimary,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                onPressed: _pickDownloadDirectory,
+                icon: const Icon(Icons.folder_open_rounded),
+                label: const AnymexText(
+                  text: 'Select Folder',
+                  variant: TextVariant.semiBold,
+                ),
+              ),
+            ),
           ],
         ),
       ),

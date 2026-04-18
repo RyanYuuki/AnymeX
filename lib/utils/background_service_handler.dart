@@ -34,6 +34,7 @@ class BackgroundDownloadTaskHandler extends TaskHandler {
   double _mangaProgress = 0.0;
   
   final Set<String> _cancelledTasks = {};
+  final Map<String, Map<String, dynamic>> _completedResults = {};
 
   @override
   Future<void> onStart(DateTime timestamp, SendPort? sendPort) async {
@@ -155,17 +156,19 @@ class BackgroundDownloadTaskHandler extends TaskHandler {
     );
 
     if (_cancelledTasks.contains(taskId)) {
-       return;
+      return;
     }
 
     if (result.success) {
-      _uiSendPort?.send(jsonEncode({
+      final msg = {
         'type': 'TASK_UPDATE',
         'taskId': taskId,
         'status': 'completed',
         'progress': 1.0,
         'filePath': result.filePath,
-      }));
+      };
+      _completedResults[taskId] = msg;
+      _uiSendPort?.send(jsonEncode(msg));
     } else {
       _uiSendPort?.send(jsonEncode({
         'type': 'TASK_UPDATE',
@@ -305,13 +308,15 @@ class BackgroundDownloadTaskHandler extends TaskHandler {
 
     if (_cancelledTasks.contains(taskId)) return;
 
-    _uiSendPort?.send(jsonEncode({
-        'type': 'MANGA_TASK_UPDATE',
-        'taskId': taskId,
-        'status': 'completed',
-        'progress': 1.0,
-        'pageCount': pagesRaw.length
-    }));
+    final msg = {
+      'type': 'MANGA_TASK_UPDATE',
+      'taskId': taskId,
+      'status': 'completed',
+      'progress': 1.0,
+      'pageCount': pagesRaw.length,
+    };
+    _completedResults[taskId] = msg;
+    _uiSendPort?.send(jsonEncode(msg));
   }
 
   String _imageExtension(String url) {
@@ -332,6 +337,10 @@ class BackgroundDownloadTaskHandler extends TaskHandler {
   }
 
   void _sendStatusUpdate() {
+    for (final msg in _completedResults.values) {
+      _uiSendPort?.send(jsonEncode(msg));
+    }
+
     if (_activeHlsTask != null) {
        _uiSendPort?.send(jsonEncode({
          'type': 'TASK_UPDATE',
@@ -348,7 +357,7 @@ class BackgroundDownloadTaskHandler extends TaskHandler {
          'progress': 0.0,
        }));
     }
-    
+
     if (_activeMangaTask != null) {
        _uiSendPort?.send(jsonEncode({
          'type': 'MANGA_TASK_UPDATE',

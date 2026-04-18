@@ -42,6 +42,9 @@ class DownloadController extends GetxController {
   final List<String> _activeFileTasks = [];
   SendPort? _bgSendPort;
 
+  final Map<String, DateTime> _lastProgressUpdate = {};
+  static const _progressThrottleMs = 250;
+
   @override
   void onInit() {
     super.onInit();
@@ -153,6 +156,7 @@ class DownloadController extends GetxController {
   }
 
   Future<void> _startBackgroundServiceIfNotRunning() async {
+    if (Platform.isIOS) return;
     if (!await FlutterForegroundTask.isRunningService) {
       await FlutterForegroundTask.startService(
         notificationTitle: 'AnymeX Downloads',
@@ -177,33 +181,46 @@ class DownloadController extends GetxController {
           final task = activeTasks.firstWhereOrNull((t) => t.taskId == taskId);
           if (task != null) {
             final statusStr = payload['status'] as String;
-            final prog = payload['progress'] as double;
+            final prog = (payload['progress'] as num).toDouble();
+            final isTerminal = statusStr == 'completed' || statusStr == 'failed';
+
             if (statusStr == 'downloading') {
               task.status = DownloadStatus.downloading;
             } else if (statusStr == 'completed') {
               task.status = DownloadStatus.completed;
-              task.filePath = payload['filePath'];
+              task.filePath = payload['filePath'] as String?;
             } else if (statusStr == 'failed') {
               task.status = DownloadStatus.failed;
-              task.errorMessage = payload['errorMessage'];
+              task.errorMessage = payload['errorMessage'] as String?;
             }
             task.progress = prog;
-            if (statusStr == 'completed') {
-              _activeFileTasks.remove(taskId);
-              _activeTaskCount--;
-              _onForegroundTaskFinished(task);
-              _processScrapeQueue();
-              _processMangaScrapeQueue();
+
+            if (isTerminal) {
+              _lastProgressUpdate.remove(taskId);
+              activeTasks.refresh();
+              _saveActiveTasks();
+              if (statusStr == 'completed') {
+                _activeFileTasks.remove(taskId);
+                _activeTaskCount--;
+                _onForegroundTaskFinished(task);
+                _processScrapeQueue();
+                _processMangaScrapeQueue();
+              }
+            } else {
+              final now = DateTime.now();
+              final last = _lastProgressUpdate[taskId];
+              if (last == null || now.difference(last).inMilliseconds > _progressThrottleMs) {
+                _lastProgressUpdate[taskId] = now;
+                activeTasks.refresh();
+              }
             }
-            activeTasks.refresh();
-            _saveActiveTasks();
           }
         } else if (type == 'MANGA_TASK_UPDATE') {
-          final task =
-              activeMangaTasks.firstWhereOrNull((t) => t.taskId == taskId);
+          final task = activeMangaTasks.firstWhereOrNull((t) => t.taskId == taskId);
           if (task != null) {
             final statusStr = payload['status'] as String;
-            final prog = payload['progress'] as double;
+            final prog = (payload['progress'] as num).toDouble();
+            final isTerminal = statusStr == 'completed' || statusStr == 'failed';
 
             if (statusStr == 'downloading') {
               task.status = MangaDownloadStatus.downloading;
@@ -212,13 +229,23 @@ class DownloadController extends GetxController {
             } else if (statusStr == 'failed') {
               task.status = MangaDownloadStatus.failed;
             }
-
             task.progress = prog;
-            if (statusStr == 'completed') {
-              _onForegroundMangaTaskFinished(task, payload['pageCount'] as int);
+
+            if (isTerminal) {
+              _lastProgressUpdate.remove(taskId);
+              activeMangaTasks.refresh();
+              _saveMangaActiveTasks();
+              if (statusStr == 'completed') {
+                _onForegroundMangaTaskFinished(task, payload['pageCount'] as int);
+              }
+            } else {
+              final now = DateTime.now();
+              final last = _lastProgressUpdate[taskId];
+              if (last == null || now.difference(last).inMilliseconds > _progressThrottleMs) {
+                _lastProgressUpdate[taskId] = now;
+                activeMangaTasks.refresh();
+              }
             }
-            activeMangaTasks.refresh();
-            _saveMangaActiveTasks();
           }
         } else if (type == 'NOTIFICATION_TAPPED') {
           _handleNotificationTap();
@@ -266,6 +293,7 @@ class DownloadController extends GetxController {
   }
 
   void _sendToBackground(Map<String, dynamic> payload) {
+    if (Platform.isIOS) return;
     final str = jsonEncode(payload);
     if (_bgSendPort == null) {
       _pendingPayloads.add(str);
@@ -591,8 +619,6 @@ class DownloadController extends GetxController {
         return;
       }
 
-      final subDir = 'AnymeX/Downloads/Anime/${task.mediaTitle}';
-
       DownloadResult result;
 
       if (linkType == VideoLinkType.hls) {
@@ -601,40 +627,76 @@ class DownloadController extends GetxController {
           sortMap: task.episode.sortMap,
           url: task.videoUrl,
         );
-        _activeFileTasks.add(task.taskId);
 
-        final docsDir = await getApplicationDocumentsDirectory();
-
-        final payload = {
-          'type': 'ADD_HLS',
-          'taskId': task.taskId,
-          'm3u8Url': task.videoUrl,
-          'fileName': fileName,
-          'subDirectory': subDir,
-          'docsPath': docsDir.path,
-          'preferredQuality': preferredQuality,
-          'parallelSegments': Get.find<Settings>().hlsParallelSegments.value,
-          'headers': chosenVideo?.headers ?? task.videoHeaders,
-        };
-
-        _sendToBackground(payload);
+        if (Platform.isIOS) {
+          final mediaDir = await _getMediaDirPath(task.mediaTitle, task.extensionName, mediaType: 'Anime');
+          final result = await DownloadEngine.downloadHls(
+            taskId: task.taskId,
+            m3u8Url: task.videoUrl,
+            fileName: fileName,
+            subDirectory: '',
+            docsPath: mediaDir,
+            preferredQuality: preferredQuality,
+            parallelSegments: Get.find<Settings>().hlsParallelSegments.value,
+            headers: chosenVideo?.headers ?? task.videoHeaders,
+            onProgress: (prog) {
+              task.progress = prog;
+              task.status = DownloadStatus.downloading;
+              final now = DateTime.now();
+              final last = _lastProgressUpdate[task.taskId];
+              if (last == null || now.difference(last).inMilliseconds > _progressThrottleMs) {
+                _lastProgressUpdate[task.taskId] = now;
+                activeTasks.refresh();
+              }
+            },
+          );
+          _lastProgressUpdate.remove(task.taskId);
+          if (result.success) {
+            task.status = DownloadStatus.completed;
+            task.filePath = result.filePath;
+            task.progress = 1.0;
+            await _onTaskFinished(task, fileName);
+          } else {
+            task.status = DownloadStatus.failed;
+            task.errorMessage = result.error;
+          }
+          activeTasks.refresh();
+          _saveActiveTasks();
+        } else {
+          _activeFileTasks.add(task.taskId);
+          final rootDir = await _getRootDir();
+          final subDir = p.join('Anime', task.extensionName, task.mediaTitle);
+          final payload = {
+            'type': 'ADD_HLS',
+            'taskId': task.taskId,
+            'm3u8Url': task.videoUrl,
+            'fileName': fileName,
+            'subDirectory': subDir,
+            'docsPath': rootDir.path,
+            'preferredQuality': preferredQuality,
+            'parallelSegments': Get.find<Settings>().hlsParallelSegments.value,
+            'headers': chosenVideo?.headers ?? task.videoHeaders,
+          };
+          _sendToBackground(payload);
+        }
       } else {
         final fileName = DownloadEngine.buildFileName(
           episodeNumber: task.episode.number,
           sortMap: task.episode.sortMap,
           url: task.videoUrl,
         );
+        final rootDir = await _getRootDir();
+        final mediaDir = await _getMediaDirPath(task.mediaTitle, task.extensionName, mediaType: 'Anime');
         final standardTask = DownloadTask(
           taskId: task.taskId,
           url: task.videoUrl,
           filename: fileName,
-          directory: subDir,
-          baseDirectory: BaseDirectory.applicationDocuments,
+          directory: mediaDir,
+          baseDirectory: BaseDirectory.root,
           updates: Updates.statusAndProgress,
           headers: chosenVideo?.headers ?? task.videoHeaders,
           allowPause: true,
         );
-
         await FileDownloader().enqueue(standardTask);
       }
     } catch (e) {
@@ -740,23 +802,62 @@ class DownloadController extends GetxController {
       ));
       await _startBackgroundServiceIfNotRunning();
 
-      final pagesPayload = pages
-          .map((p) => {
-                'url': p.url,
-                'headers': p.headers,
-              })
-          .toList();
+      if (Platform.isIOS) {
+        await chapterDir.create(recursive: true);
+        int downloaded = 0;
+        final total = pages.length;
+        for (int i = 0; i < total; i++) {
+          if (task.status == MangaDownloadStatus.cancelled) break;
+          final page = pages[i];
+          final url = page.url;
+          if (url == null || url.isEmpty) { downloaded++; continue; }
+          final headers = page.headers?.map((k, v) => MapEntry(k, v.toString()));
+          try {
+            final ext = _imageExtension(url);
+            final fileName = 'page_${(i + 1).toString().padLeft(3, '0')}$ext';
+            final file = File(p.join(chapterDir.path, fileName));
+            if (!await file.exists() || (await file.length()) == 0) {
+              final response = await http.get(Uri.parse(url), headers: headers);
+              if (response.statusCode == 200) await file.writeAsBytes(response.bodyBytes);
+            }
+          } catch (_) {}
+          downloaded++;
+          final prog = downloaded / total;
+          task.progress = prog;
+          final now = DateTime.now();
+          final last = _lastProgressUpdate[task.taskId];
+          if (last == null || now.difference(last).inMilliseconds > _progressThrottleMs) {
+            _lastProgressUpdate[task.taskId] = now;
+            activeMangaTasks.refresh();
+          }
+        }
+        _lastProgressUpdate.remove(task.taskId);
+        if (task.status != MangaDownloadStatus.cancelled) {
+          task.status = MangaDownloadStatus.completed;
+          task.progress = 1.0;
+          await _onForegroundMangaTaskFinished(task, pages.length);
+        }
+        activeMangaTasks.refresh();
+        _saveMangaActiveTasks();
+      } else {
+        final pagesPayload = pages
+            .map((p) => {
+                  'url': p.url,
+                  'headers': p.headers,
+                })
+            .toList();
 
-      final payload = {
-        'type': 'ADD_MANGA',
-        'taskId': task.taskId,
-        'chapterDirPath': chapterDir.path,
-        'mediaTitle': task.mediaTitle,
-        'chapterName': task.chapterDisplay,
-        'pages': pagesPayload,
-      };
+        final payload = {
+          'type': 'ADD_MANGA',
+          'taskId': task.taskId,
+          'chapterDirPath': chapterDir.path,
+          'mediaTitle': task.mediaTitle,
+          'chapterName': task.chapterDisplay,
+          'pages': pagesPayload,
+        };
 
-      _sendToBackground(payload);
+        _sendToBackground(payload);
+      }
     } catch (e) {
       task.status = MangaDownloadStatus.failed;
       task.errorMessage = e.toString();
