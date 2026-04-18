@@ -30,6 +30,7 @@ class ReusableCarousel extends StatefulWidget {
   final bool isLoading;
   final Source? source;
   final CardStyle? cardStyle;
+  final VoidCallback? onSeeAll;
 
   const ReusableCarousel({
     super.key,
@@ -40,6 +41,7 @@ class ReusableCarousel extends StatefulWidget {
     this.isLoading = false,
     this.source,
     this.cardStyle,
+    this.onSeeAll,
   });
 
   @override
@@ -77,13 +79,42 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
 
   Widget _buildHeaderTitle() {
     return Padding(
-      padding: const EdgeInsets.only(left: 20.0),
-      child: AnymexText(
-        text: widget.title,
-        variant: TextVariant.semiBold,
-        size: 17,
-        color: context.colors.primary,
-        isMarquee: true,
+      padding: const EdgeInsets.only(left: 20.0, right: 12.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: AnymexText(
+              text: widget.title,
+              variant: TextVariant.semiBold,
+              size: 17,
+              color: context.colors.primary,
+              isMarquee: true,
+            ),
+          ),
+          if (widget.onSeeAll != null)
+            GestureDetector(
+              onTap: widget.onSeeAll,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'See All',
+                    style: TextStyle(
+                      fontFamily: "Poppins-SemiBold",
+                      fontSize: 13,
+                      color: context.colors.primary.withOpacity(0.7),
+                    ),
+                  ),
+                  Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 13,
+                    color: context.colors.primary.withOpacity(0.7),
+                  ),
+                ],
+              ),
+            ),
+        ],
       ),
     );
   }

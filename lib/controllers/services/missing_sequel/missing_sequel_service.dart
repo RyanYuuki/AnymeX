@@ -33,51 +33,35 @@ class MissingSequelService extends GetxController {
   bool get isLoadingCatchUpAnime => _isLoadingCatchUpAnime;
   bool get isLoadingCatchUpManga => _isLoadingCatchUpManga;
 
-  DateTime? _lastFetchCheckAnime;
-  DateTime? _lastFetchCheckManga;
-  DateTime? _lastFetchUpcomingAnime;
-  DateTime? _lastFetchUpcomingManga;
-  DateTime? _lastFetchCatchUpAnime;
-  DateTime? _lastFetchCatchUpManga;
+  DateTime? _alLastFetchCheckAnime;
+  DateTime? _alLastFetchCheckManga;
+  DateTime? _alLastFetchUpcomingAnime;
+  DateTime? _alLastFetchUpcomingManga;
+  DateTime? _alLastFetchCatchUpAnime;
+  DateTime? _alLastFetchCatchUpManga;
 
-  String? _cachedPlatform;
+  Map<String, dynamic>? _alCachedCheckAnime;
+  Map<String, dynamic>? _alCachedCheckManga;
+  Map<String, dynamic>? _alCachedUpcomingAnime;
+  Map<String, dynamic>? _alCachedUpcomingManga;
+  Map<String, dynamic>? _alCachedCatchUpAnime;
+  Map<String, dynamic>? _alCachedCatchUpManga;
+
+  DateTime? _malLastFetchCheckAnime;
+  DateTime? _malLastFetchCheckManga;
+  DateTime? _malLastFetchUpcomingAnime;
+  DateTime? _malLastFetchUpcomingManga;
+  DateTime? _malLastFetchCatchUpAnime;
+  DateTime? _malLastFetchCatchUpManga;
+
+  Map<String, dynamic>? _malCachedCheckAnime;
+  Map<String, dynamic>? _malCachedCheckManga;
+  Map<String, dynamic>? _malCachedUpcomingAnime;
+  Map<String, dynamic>? _malCachedUpcomingManga;
+  Map<String, dynamic>? _malCachedCatchUpAnime;
+  Map<String, dynamic>? _malCachedCatchUpManga;
 
   static const Duration _cacheDuration = Duration(hours: 24);
-
-  Map<String, dynamic>? _cachedCheckAnime;
-  Map<String, dynamic>? _cachedCheckManga;
-  Map<String, dynamic>? _cachedUpcomingAnime;
-  Map<String, dynamic>? _cachedUpcomingManga;
-  Map<String, dynamic>? _cachedCatchUpAnime;
-  Map<String, dynamic>? _cachedCatchUpManga;
-
-  void clearAllCache() {
-    _cachedCheckAnime = null;
-    _cachedCheckManga = null;
-    _cachedUpcomingAnime = null;
-    _cachedUpcomingManga = null;
-    _cachedCatchUpAnime = null;
-    _cachedCatchUpManga = null;
-    _lastFetchCheckAnime = null;
-    _lastFetchCheckManga = null;
-    _lastFetchUpcomingAnime = null;
-    _lastFetchUpcomingManga = null;
-    _lastFetchCatchUpAnime = null;
-    _lastFetchCatchUpManga = null;
-    _cachedPlatform = null;
-    missingSequelsAnime.clear();
-    missingSequelsManga.clear();
-    upcomingSequelsAnime.clear();
-    upcomingSequelsManga.clear();
-    catchUpAnime.clear();
-    catchUpManga.clear();
-  }
-
-  bool _isCacheValid() {
-    final platform = _getPlatform();
-    if (platform == null || _cachedPlatform == null) return false;
-    return platform == _cachedPlatform;
-  }
 
   String? _getPlatform() {
     final serviceType = serviceHandler.serviceType.value;
@@ -111,6 +95,41 @@ class MissingSequelService extends GetxController {
     return null;
   }
 
+  void clearAllCache() {
+    _alCachedCheckAnime = null;
+    _alCachedCheckManga = null;
+    _alCachedUpcomingAnime = null;
+    _alCachedUpcomingManga = null;
+    _alCachedCatchUpAnime = null;
+    _alCachedCatchUpManga = null;
+    _alLastFetchCheckAnime = null;
+    _alLastFetchCheckManga = null;
+    _alLastFetchUpcomingAnime = null;
+    _alLastFetchUpcomingManga = null;
+    _alLastFetchCatchUpAnime = null;
+    _alLastFetchCatchUpManga = null;
+
+    _malCachedCheckAnime = null;
+    _malCachedCheckManga = null;
+    _malCachedUpcomingAnime = null;
+    _malCachedUpcomingManga = null;
+    _malCachedCatchUpAnime = null;
+    _malCachedCatchUpManga = null;
+    _malLastFetchCheckAnime = null;
+    _malLastFetchCheckManga = null;
+    _malLastFetchUpcomingAnime = null;
+    _malLastFetchUpcomingManga = null;
+    _malLastFetchCatchUpAnime = null;
+    _malLastFetchCatchUpManga = null;
+
+    missingSequelsAnime.clear();
+    missingSequelsManga.clear();
+    upcomingSequelsAnime.clear();
+    upcomingSequelsManga.clear();
+    catchUpAnime.clear();
+    catchUpManga.clear();
+  }
+
   Future<Map<String, dynamic>?> _apiCall(String endpoint, Map<String, dynamic> body) async {
     final platform = _getPlatform();
     final token = _getToken();
@@ -138,7 +157,7 @@ class MissingSequelService extends GetxController {
     }
   }
 
-  Media _parseCompactMedia(dynamic json) {
+  Media _parseAniListCompactMedia(dynamic json) {
     if (json == null) return Media(serviceType: ServicesType.anilist);
 
     final title = json['title'];
@@ -163,20 +182,10 @@ class MissingSequelService extends GetxController {
       episodes = '?';
     }
 
-    String extractCover(dynamic cover) {
-      if (cover == null) return '';
-      if (cover is String) return cover;
-      if (cover is Map) {
-        return (cover['extra_large'] ?? cover['extraLarge'] ?? cover['large'] ?? cover['medium'] ?? '').toString();
-      }
-      return cover.toString();
-    }
-
-    final coverUrl = extractCover(json['cover_image']);
+    final coverUrl = _extractCover(json['cover_image']);
 
     return Media(
       id: json['id']?.toString() ?? '0',
-      idMal: json['id_mal']?.toString() ?? '0',
       title: titleStr,
       romajiTitle: romajiStr,
       poster: coverUrl,
@@ -190,22 +199,153 @@ class MissingSequelService extends GetxController {
       type: type,
       format: json['format']?.toString() ?? '',
       mediaType: isManga ? ItemType.manga : ItemType.anime,
-      serviceType: _getPlatform() == 'mal' ? ServicesType.mal : ServicesType.anilist,
+      serviceType: ServicesType.anilist,
       seasonYear: json['start_date']?['year'],
     );
   }
 
-  Future<void> fetchMissingSequels({bool isAnime = true}) async {
-    final now = DateTime.now();
+  Media _parseMalCompactMedia(dynamic json) {
+    if (json == null) return Media(serviceType: ServicesType.mal);
 
-    if (!_isCacheValid()) {
-      clearAllCache();
+    final title = json['title'];
+    String titleStr = '';
+    String romajiStr = '';
+
+    if (title is String) {
+      titleStr = title;
+      romajiStr = title;
+    } else if (title is Map) {
+      titleStr = title['english'] ?? title['preferred'] ?? title['romaji'] ?? '';
+      romajiStr = title['preferred'] ?? title['english'] ?? '';
     }
 
-    final lastFetch = isAnime ? _lastFetchCheckAnime : _lastFetchCheckManga;
+    final type = json['type']?.toString().toUpperCase() ?? 'ANIME';
+    final isManga = type == 'MANGA';
+
+    String episodes = json['episodes']?.toString() ?? '?';
+    String chapters = json['chapters']?.toString() ?? '?';
+
+    if (isManga && chapters != '?') {
+      episodes = '?';
+    }
+
+    final coverUrl = _extractCover(json['cover_image']);
+
+    return Media(
+      id: json['id']?.toString() ?? '0',
+      title: titleStr,
+      romajiTitle: romajiStr,
+      poster: coverUrl,
+      cover: coverUrl,
+      totalEpisodes: episodes,
+      totalChapters: chapters,
+      status: (json['status'] ?? '').toString().replaceAll('_', ' '),
+      rating: json['average_score'] != null
+          ? (json['average_score'] / 10).toStringAsFixed(1)
+          : '?',
+      type: type,
+      format: json['format']?.toString() ?? '',
+      mediaType: isManga ? ItemType.manga : ItemType.anime,
+      serviceType: ServicesType.mal,
+      seasonYear: json['start_date']?['year'],
+    );
+  }
+
+  String _extractCover(dynamic cover) {
+    if (cover == null) return '';
+    if (cover is String) return cover;
+    if (cover is Map) {
+      return (cover['extra_large'] ?? cover['extraLarge'] ?? cover['large'] ?? cover['medium'] ?? '').toString();
+    }
+    return cover.toString();
+  }
+
+  bool _isMal() => _getPlatform() == 'mal';
+
+  DateTime? _getLastFetchCheck(bool isAnime) =>
+      _isMal() ? (isAnime ? _malLastFetchCheckAnime : _malLastFetchCheckManga) : (isAnime ? _alLastFetchCheckAnime : _alLastFetchCheckManga);
+
+  void _setLastFetchCheck(bool isAnime, DateTime time) {
+    if (_isMal()) {
+      if (isAnime) _malLastFetchCheckAnime = time;
+      else _malLastFetchCheckManga = time;
+    } else {
+      if (isAnime) _alLastFetchCheckAnime = time;
+      else _alLastFetchCheckManga = time;
+    }
+  }
+
+  Map<String, dynamic>? _getCachedCheck(bool isAnime) =>
+      _isMal() ? (isAnime ? _malCachedCheckAnime : _malCachedCheckManga) : (isAnime ? _alCachedCheckAnime : _alCachedCheckManga);
+
+  void _setCachedCheck(bool isAnime, Map<String, dynamic>? data) {
+    if (_isMal()) {
+      if (isAnime) _malCachedCheckAnime = data;
+      else _malCachedCheckManga = data;
+    } else {
+      if (isAnime) _alCachedCheckAnime = data;
+      else _alCachedCheckManga = data;
+    }
+  }
+
+  DateTime? _getLastFetchUpcoming(bool isAnime) =>
+      _isMal() ? (isAnime ? _malLastFetchUpcomingAnime : _malLastFetchUpcomingManga) : (isAnime ? _alLastFetchUpcomingAnime : _alLastFetchUpcomingManga);
+
+  void _setLastFetchUpcoming(bool isAnime, DateTime time) {
+    if (_isMal()) {
+      if (isAnime) _malLastFetchUpcomingAnime = time;
+      else _malLastFetchUpcomingManga = time;
+    } else {
+      if (isAnime) _alLastFetchUpcomingAnime = time;
+      else _alLastFetchUpcomingManga = time;
+    }
+  }
+
+  Map<String, dynamic>? _getCachedUpcoming(bool isAnime) =>
+      _isMal() ? (isAnime ? _malCachedUpcomingAnime : _malCachedUpcomingManga) : (isAnime ? _alCachedUpcomingAnime : _alCachedUpcomingManga);
+
+  void _setCachedUpcoming(bool isAnime, Map<String, dynamic>? data) {
+    if (_isMal()) {
+      if (isAnime) _malCachedUpcomingAnime = data;
+      else _malCachedUpcomingManga = data;
+    } else {
+      if (isAnime) _alCachedUpcomingAnime = data;
+      else _alCachedUpcomingManga = data;
+    }
+  }
+
+  DateTime? _getLastFetchCatchUp(bool isAnime) =>
+      _isMal() ? (isAnime ? _malLastFetchCatchUpAnime : _malLastFetchCatchUpManga) : (isAnime ? _alLastFetchCatchUpAnime : _alLastFetchCatchUpManga);
+
+  void _setLastFetchCatchUp(bool isAnime, DateTime time) {
+    if (_isMal()) {
+      if (isAnime) _malLastFetchCatchUpAnime = time;
+      else _malLastFetchCatchUpManga = time;
+    } else {
+      if (isAnime) _alLastFetchCatchUpAnime = time;
+      else _alLastFetchCatchUpManga = time;
+    }
+  }
+
+  Map<String, dynamic>? _getCachedCatchUp(bool isAnime) =>
+      _isMal() ? (isAnime ? _malCachedCatchUpAnime : _malCachedCatchUpManga) : (isAnime ? _alCachedCatchUpAnime : _alCachedCatchUpManga);
+
+  void _setCachedCatchUp(bool isAnime, Map<String, dynamic>? data) {
+    if (_isMal()) {
+      if (isAnime) _malCachedCatchUpAnime = data;
+      else _malCachedCatchUpManga = data;
+    } else {
+      if (isAnime) _alCachedCatchUpAnime = data;
+      else _alCachedCatchUpManga = data;
+    }
+  }
+
+  Future<void> fetchMissingSequels({bool isAnime = true}) async {
+    final now = DateTime.now();
+    final lastFetch = _getLastFetchCheck(isAnime);
 
     if (lastFetch != null && now.difference(lastFetch) < _cacheDuration) {
-      final cached = isAnime ? _cachedCheckAnime : _cachedCheckManga;
+      final cached = _getCachedCheck(isAnime);
       if (cached != null) {
         _processCheckResponse(cached, isAnime);
         return;
@@ -213,7 +353,6 @@ class MissingSequelService extends GetxController {
     }
 
     if (isAnime ? _isLoadingCheckAnime : _isLoadingCheckManga) return;
-
     if (isAnime) {
       _isLoadingCheckAnime = true;
     } else {
@@ -229,14 +368,8 @@ class MissingSequelService extends GetxController {
 
       final data = await _apiCall('/api/check', body);
       if (data != null) {
-        _cachedPlatform = _getPlatform();
-        if (isAnime) {
-          _cachedCheckAnime = data;
-          _lastFetchCheckAnime = now;
-        } else {
-          _cachedCheckManga = data;
-          _lastFetchCheckManga = now;
-        }
+        _setLastFetchCheck(isAnime, now);
+        _setCachedCheck(isAnime, data);
         _processCheckResponse(data, isAnime);
       }
     } catch (e) {
@@ -252,10 +385,13 @@ class MissingSequelService extends GetxController {
 
   void _processCheckResponse(Map<String, dynamic> data, bool isAnime) {
     final missing = data['missing'] as List<dynamic>? ?? [];
+    final isMal = _isMal();
 
     final mediaList = missing.map((item) {
       final missingMedia = item['missing'];
-      return _parseCompactMedia(missingMedia);
+      return isMal
+          ? _parseMalCompactMedia(missingMedia)
+          : _parseAniListCompactMedia(missingMedia);
     }).where((m) => m.id != '0').toList();
 
     if (isAnime) {
@@ -267,15 +403,10 @@ class MissingSequelService extends GetxController {
 
   Future<void> fetchUpcoming({bool isAnime = true}) async {
     final now = DateTime.now();
-
-    if (!_isCacheValid()) {
-      clearAllCache();
-    }
-
-    final lastFetch = isAnime ? _lastFetchUpcomingAnime : _lastFetchUpcomingManga;
+    final lastFetch = _getLastFetchUpcoming(isAnime);
 
     if (lastFetch != null && now.difference(lastFetch) < _cacheDuration) {
-      final cached = isAnime ? _cachedUpcomingAnime : _cachedUpcomingManga;
+      final cached = _getCachedUpcoming(isAnime);
       if (cached != null) {
         _processUpcomingResponse(cached, isAnime);
         return;
@@ -283,7 +414,6 @@ class MissingSequelService extends GetxController {
     }
 
     if (isAnime ? _isLoadingUpcomingAnime : _isLoadingUpcomingManga) return;
-
     if (isAnime) {
       _isLoadingUpcomingAnime = true;
     } else {
@@ -298,14 +428,8 @@ class MissingSequelService extends GetxController {
 
       final data = await _apiCall('/api/upcoming', body);
       if (data != null) {
-        _cachedPlatform = _getPlatform();
-        if (isAnime) {
-          _cachedUpcomingAnime = data;
-          _lastFetchUpcomingAnime = now;
-        } else {
-          _cachedUpcomingManga = data;
-          _lastFetchUpcomingManga = now;
-        }
+        _setLastFetchUpcoming(isAnime, now);
+        _setCachedUpcoming(isAnime, data);
         _processUpcomingResponse(data, isAnime);
       }
     } catch (e) {
@@ -321,8 +445,13 @@ class MissingSequelService extends GetxController {
 
   void _processUpcomingResponse(Map<String, dynamic> data, bool isAnime) {
     final upcoming = data['upcoming'] as List<dynamic>? ?? [];
-    final list = upcoming.map((item) => _parseCompactMedia(item))
-        .where((m) => m.id != '0').toList();
+    final isMal = _isMal();
+
+    final list = upcoming.map((item) {
+      return isMal
+          ? _parseMalCompactMedia(item)
+          : _parseAniListCompactMedia(item);
+    }).where((m) => m.id != '0').toList();
 
     if (isAnime) {
       upcomingSequelsAnime.value = list;
@@ -333,15 +462,10 @@ class MissingSequelService extends GetxController {
 
   Future<void> fetchCatchUp({bool isAnime = true}) async {
     final now = DateTime.now();
-
-    if (!_isCacheValid()) {
-      clearAllCache();
-    }
-
-    final lastFetch = isAnime ? _lastFetchCatchUpAnime : _lastFetchCatchUpManga;
+    final lastFetch = _getLastFetchCatchUp(isAnime);
 
     if (lastFetch != null && now.difference(lastFetch) < _cacheDuration) {
-      final cached = isAnime ? _cachedCatchUpAnime : _cachedCatchUpManga;
+      final cached = _getCachedCatchUp(isAnime);
       if (cached != null) {
         _processCatchUpResponse(cached, isAnime);
         return;
@@ -349,7 +473,6 @@ class MissingSequelService extends GetxController {
     }
 
     if (isAnime ? _isLoadingCatchUpAnime : _isLoadingCatchUpManga) return;
-
     if (isAnime) {
       _isLoadingCatchUpAnime = true;
     } else {
@@ -364,14 +487,8 @@ class MissingSequelService extends GetxController {
 
       final data = await _apiCall('/api/status-check', body);
       if (data != null) {
-        _cachedPlatform = _getPlatform();
-        if (isAnime) {
-          _cachedCatchUpAnime = data;
-          _lastFetchCatchUpAnime = now;
-        } else {
-          _cachedCatchUpManga = data;
-          _lastFetchCatchUpManga = now;
-        }
+        _setLastFetchCatchUp(isAnime, now);
+        _setCachedCatchUp(isAnime, data);
         _processCatchUpResponse(data, isAnime);
       }
     } catch (e) {
@@ -387,8 +504,13 @@ class MissingSequelService extends GetxController {
 
   void _processCatchUpResponse(Map<String, dynamic> data, bool isAnime) {
     final items = data['finished_not_completed'] as List<dynamic>? ?? [];
-    final list = items.map((item) => _parseCompactMedia(item))
-        .where((m) => m.id != '0').toList();
+    final isMal = _isMal();
+
+    final list = items.map((item) {
+      return isMal
+          ? _parseMalCompactMedia(item)
+          : _parseAniListCompactMedia(item);
+    }).where((m) => m.id != '0').toList();
 
     if (isAnime) {
       catchUpAnime.value = list;
@@ -400,37 +522,22 @@ class MissingSequelService extends GetxController {
   void refreshSection(String section, {bool isAnime = true}) {
     switch (section) {
       case 'check':
-        if (isAnime) {
-          _cachedCheckAnime = null;
-          _lastFetchCheckAnime = null;
-          _isLoadingCheckAnime = false;
-        } else {
-          _cachedCheckManga = null;
-          _lastFetchCheckManga = null;
-          _isLoadingCheckManga = false;
-        }
+        _setCachedCheck(isAnime, null);
+        _setLastFetchCheck(isAnime, DateTime.fromMillisecondsSinceEpoch(0));
+        if (isAnime) _isLoadingCheckAnime = false;
+        else _isLoadingCheckManga = false;
         fetchMissingSequels(isAnime: isAnime);
       case 'upcoming':
-        if (isAnime) {
-          _cachedUpcomingAnime = null;
-          _lastFetchUpcomingAnime = null;
-          _isLoadingUpcomingAnime = false;
-        } else {
-          _cachedUpcomingManga = null;
-          _lastFetchUpcomingManga = null;
-          _isLoadingUpcomingManga = false;
-        }
+        _setCachedUpcoming(isAnime, null);
+        _setLastFetchUpcoming(isAnime, DateTime.fromMillisecondsSinceEpoch(0));
+        if (isAnime) _isLoadingUpcomingAnime = false;
+        else _isLoadingUpcomingManga = false;
         fetchUpcoming(isAnime: isAnime);
       case 'catchup':
-        if (isAnime) {
-          _cachedCatchUpAnime = null;
-          _lastFetchCatchUpAnime = null;
-          _isLoadingCatchUpAnime = false;
-        } else {
-          _cachedCatchUpManga = null;
-          _lastFetchCatchUpManga = null;
-          _isLoadingCatchUpManga = false;
-        }
+        _setCachedCatchUp(isAnime, null);
+        _setLastFetchCatchUp(isAnime, DateTime.fromMillisecondsSinceEpoch(0));
+        if (isAnime) _isLoadingCatchUpAnime = false;
+        else _isLoadingCatchUpManga = false;
         fetchCatchUp(isAnime: isAnime);
     }
   }

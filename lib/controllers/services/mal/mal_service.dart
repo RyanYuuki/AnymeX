@@ -378,17 +378,15 @@ class MalService extends GetxController implements BaseService, OnlineService {
         const SizedBox(height: 10),
         Obx(() => Column(
               children: acceptedLists.map((e) {
+                final isManga = e.contains("Manga") || e.contains("Reading");
                 return ReusableCarousel(
                   data: filterListByLabel(
-                      e.contains("Manga") || e.contains("Reading")
-                          ? mangaList
-                          : animeList,
+                      isManga ? mangaList : animeList,
                       e),
                   title: e,
                   variant: DataVariant.anilist,
-                  type: e.contains("Manga") || e.contains("Reading")
-                      ? ItemType.manga
-                      : ItemType.anime,
+                  type: isManga ? ItemType.manga : ItemType.anime,
+                  onSeeAll: () => navigate(() => isManga ? const AnilistMangaList() : const AnimeList()),
                 );
               }).toList(),
             )),
