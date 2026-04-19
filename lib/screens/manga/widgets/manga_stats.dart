@@ -158,7 +158,6 @@ class _MangaStatsState extends State<MangaStats> {
               context,
               title: 'Tags',
               icon: Icons.label_rounded,
-              coloredChips: true,
               chips: widget.data.tags
                   .map((t) => _ChipData(
                         label: '${t.name} (${t.rank}%)',
@@ -692,19 +691,11 @@ class _MangaStatsState extends State<MangaStats> {
   }
 
 
-  static const List<Color> _tagColors = [
-    Color(0xFFEF5350), Color(0xFF42A5F5), Color(0xFF66BB6A),
-    Color(0xFFFFA726), Color(0xFFAB47BC), Color(0xFF26C6DA),
-    Color(0xFFEC407A), Color(0xFF8D6E63), Color(0xFF78909C),
-    Color(0xFF26A69A), Color(0xFFD4E157), Color(0xFF7E57C2),
-  ];
-
   Widget _buildChipSection(
     BuildContext context, {
     required String title,
     required IconData icon,
     required List<_ChipData> chips,
-    bool coloredChips = false,
   }) {
     final colorScheme = context.colors;
     return Container(
@@ -746,9 +737,7 @@ class _MangaStatsState extends State<MangaStats> {
             children: chips.asMap().entries.map((entry) {
               final i = entry.key;
               final chip = entry.value;
-              final color = coloredChips
-                  ? _tagColors[i % _tagColors.length]
-                  : colorScheme.primary;
+              final color = colorScheme.primary;
               return GestureDetector(
                 onTap: chip.onTap,
                 child: Container(
@@ -851,16 +840,6 @@ class _MangaStatsState extends State<MangaStats> {
       padding: const EdgeInsets.all(24),
     );
   }
-}
-
-class _ChipData {
-  final String label;
-  final VoidCallback? onTap;
-
-  const _ChipData({
-    required this.label,
-    this.onTap,
-  });
 }
 
 class _CollapsibleBox extends StatefulWidget {
