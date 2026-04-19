@@ -200,6 +200,7 @@ class _MediaSectionWithSeeAll extends StatelessWidget {
                 GestureDetector(
                   onTap: onSeeAll ?? () => navigate(() => MediaSeeAllPage(
                     title: title,
+                    dataList: [],
                     mediaList: data,
                     type: type,
                     variant: variant,

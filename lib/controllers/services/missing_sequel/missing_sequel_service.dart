@@ -89,9 +89,8 @@ class MissingSequelService extends GetxController {
     final serviceType = serviceHandler.serviceType.value;
     if (serviceType == ServicesType.anilist) {
       return int.tryParse(serviceHandler.profileData.value.id ?? '') ?? 0;
-    } else if (serviceType == ServicesType.mal) {
-      return serviceHandler.profileData.value.name ?? '';
     }
+    // MAL: don't send user_id, backend resolves username from token
     return null;
   }
 

@@ -50,10 +50,9 @@ class _MediaSeeAllPageState extends State<MediaSeeAllPage> {
   }
 
   void _navigateToDetails(CarouselData itemData) {
-    final isMediaManga = widget.type == ItemType.manga;
-    final media = Media.fromCarouselData(itemData, isMediaManga);
+    final media = Media.fromCarouselData(itemData, widget.type);
     final tag = 'see-all-${media.id}';
-    if (isMediaManga) {
+    if (widget.type == ItemType.manga) {
       navigate(() => MangaDetailsPage(media: media, tag: tag));
     } else {
       navigate(() => AnimeDetailsPage(media: media, tag: tag));
@@ -61,8 +60,7 @@ class _MediaSeeAllPageState extends State<MediaSeeAllPage> {
   }
 
   void _showPeekPopup(BuildContext context, CarouselData itemData) {
-    final isMediaManga = widget.type == ItemType.manga;
-    final media = Media.fromCarouselData(itemData, isMediaManga);
+    final media = Media.fromCarouselData(itemData, widget.type);
     final tag = 'see-all-${media.id}';
     MediaPeekPopup.show(context, media, widget.type, tag);
   }
