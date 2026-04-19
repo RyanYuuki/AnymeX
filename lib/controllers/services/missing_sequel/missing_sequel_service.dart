@@ -141,6 +141,7 @@ class MissingSequelService extends GetxController {
       },
       body: jsonEncode({
         ...body,
+        if (body['user_id'] != null) 'user_id': body['user_id'],
         'platform': platform,
         'token': token,
         'compact': true,
