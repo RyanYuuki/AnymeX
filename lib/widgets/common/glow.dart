@@ -4,10 +4,12 @@ import 'dart:math';
 
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
 enum GradientVariant {
@@ -49,14 +51,18 @@ class Glow extends StatelessWidget {
           )
         : context.colors;
     final isDesktop = Platform.isWindows;
+    final isOled = Provider.of<ThemeProvider>(context).isOled;
     final ch = isDesktop
-        ? Padding(
-            padding: const EdgeInsets.only(top: 40),
+        ? Container(
+            margin: const EdgeInsets.only(top: 40),
             child: child,
           )
         : child;
 
-    if (disabled) return child;
+    if (disabled || (isOled && isDesktop)) {
+      return Container(
+          color: isOled ? Colors.black : Colors.transparent, child: ch);
+    }
 
     return Obx(() {
       settings.liquidBackgroundPath;
@@ -64,13 +70,15 @@ class Glow extends StatelessWidget {
 
       if (liquidMode) {
         return LiquidMode(
+          isOled: isOled,
           theme: theme,
           gradientVariant: GradientVariant.subtle,
           child: ch,
         );
       } else {
-        if (settings.disableGradient) {
-          return Container(color: theme.surface, child: ch);
+        if (settings.disableGradient || isOled) {
+          return Container(
+              color: isOled ? Colors.black : theme.surface, child: ch);
         }
         return LightweightGlow(begin: begin, end: end, child: ch);
       }
@@ -79,15 +87,17 @@ class Glow extends StatelessWidget {
 }
 
 class LiquidMode extends StatelessWidget {
-  final Widget child;
   final GradientVariant gradientVariant;
   final ColorScheme theme;
+  final bool isOled;
+  final Widget child;
 
   const LiquidMode(
       {super.key,
       required this.child,
       this.gradientVariant = GradientVariant.subtle,
-      required this.theme});
+      required this.theme,
+      this.isOled = false});
 
   @override
   Widget build(BuildContext context) {
@@ -108,10 +118,12 @@ class LiquidMode extends StatelessWidget {
           }),
         ),
         Positioned.fill(
-          child: _OptimizedGradientOverlay(
-            gradientVariant: gradientVariant,
-            theme: theme,
-          ),
+          child: isOled
+              ? Container(color: Colors.black)
+              : _OptimizedGradientOverlay(
+                  gradientVariant: gradientVariant,
+                  theme: theme,
+                ),
         ),
         child,
       ],
@@ -357,17 +369,19 @@ class LightweightGlow extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = context.colors;
 
-    return Container(
-      color: theme.surface,
+    return RepaintBoundary(
       child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [theme.surface.opaque(0.3), theme.primary.opaque(0.4)],
-            begin: begin,
-            end: end,
+        color: theme.surface,
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [theme.surface.opaque(0.3), theme.primary.opaque(0.4)],
+              begin: begin,
+              end: end,
+            ),
           ),
+          child: child,
         ),
-        child: child,
       ),
     );
   }

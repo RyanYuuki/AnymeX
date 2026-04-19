@@ -25,44 +25,31 @@ class ActiveDownloads extends StatelessWidget {
             const NestedHeader(title: 'Active Downloads'),
             Expanded(
               child: Obx(() {
-                final tasks = controller.activeTasks;
+                final animeTasks = controller.activeTasks
+                    .map((e) => _UnifiedTask.fromAnime(e))
+                    .toList();
+                final mangaTasks = controller.activeMangaTasks
+                    .map((e) => _UnifiedTask.fromManga(e))
+                    .toList();
+                final tasks = [...animeTasks, ...mangaTasks];
+
                 if (tasks.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(HugeIcons.strokeRoundedDownload04,
-                            size: 64,
-                            color: context.colors.onSurface.opaque(0.15)),
-                        const SizedBox(height: 16),
-                        AnymexText(
-                            text: 'No active downloads',
-                            size: 16,
-                            variant: TextVariant.semiBold,
-                            color: context.colors.onSurface.opaque(0.4)),
-                        const SizedBox(height: 6),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 32),
-                          child: AnymexText(
-                              text:
-                                  'Start a new download from the "New Download" tab',
-                              size: 13,
-                              color: context.colors.onSurface.opaque(0.3),
-                              textAlign: TextAlign.center),
-                        ),
-                      ],
-                    ),
-                  );
+                  return _buildEmptyState(context);
                 }
                 return ListView.builder(
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 80),
                   itemCount: tasks.length,
                   itemBuilder: (context, index) {
                     final task = tasks[index];
-                    return _ActiveTaskCard(
+                    return _buildActiveTaskCard(
+                      context: context,
                       task: task,
-                      onCancel: () => controller.cancelDownload(task.taskId),
-                      onRemove: () => controller.removeTask(task.taskId),
+                      onCancel: () => task.isManga
+                          ? controller.cancelMangaDownload(task.taskId)
+                          : controller.cancelDownload(task.taskId),
+                      onRemove: () => task.isManga
+                          ? controller.removeMangaTask(task.taskId)
+                          : controller.removeTask(task.taskId),
                     );
                   },
                 );
@@ -73,56 +60,68 @@ class ActiveDownloads extends StatelessWidget {
       ),
     );
   }
-}
 
-class _ActiveTaskCard extends StatelessWidget {
-  final ActiveDownloadTask task;
-  final VoidCallback onCancel;
-  final VoidCallback onRemove;
+  Widget _buildEmptyState(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(HugeIcons.strokeRoundedDownload04,
+              size: 64, color: context.colors.onSurface.opaque(0.15)),
+          const SizedBox(height: 16),
+          AnymexText(
+              text: 'No active downloads',
+              size: 16,
+              variant: TextVariant.semiBold,
+              color: context.colors.onSurface.opaque(0.4)),
+          const SizedBox(height: 6),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: AnymexText(
+                text: 'Start a new download from the "New Download" tab',
+                size: 13,
+                color: context.colors.onSurface.opaque(0.3),
+                textAlign: TextAlign.center),
+          ),
+        ],
+      ),
+    );
+  }
 
-  const _ActiveTaskCard(
-      {required this.task, required this.onCancel, required this.onRemove});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildActiveTaskCard({
+    required BuildContext context,
+    required _UnifiedTask task,
+    required VoidCallback onCancel,
+    required VoidCallback onRemove,
+  }) {
     final theme = context.colors;
 
     Color statusColor = theme.primary;
     String statusLabel = 'Queued';
     IconData statusIcon = Icons.schedule_rounded;
 
-    switch (task.status) {
-      case DownloadStatus.downloading:
-        statusLabel = '${(task.progress * 100).toStringAsFixed(0)}%';
-        statusIcon = Icons.downloading_rounded;
-        break;
-      case DownloadStatus.paused:
-        statusColor = Colors.orange.shade400;
-        statusLabel = 'Paused · ${(task.progress * 100).toStringAsFixed(0)}%';
-        statusIcon = Icons.pause_circle_rounded;
-        break;
-      case DownloadStatus.completed:
-        statusColor = Colors.green.shade400;
-        statusLabel = 'Completed';
-        statusIcon = Icons.check_circle_rounded;
-        break;
-      case DownloadStatus.failed:
-        statusColor = theme.error;
-        statusLabel = 'Failed';
-        statusIcon = Icons.error_outline_rounded;
-        break;
-      case DownloadStatus.cancelled:
-        statusColor = theme.onSurface.opaque(0.4);
-        statusLabel = 'Cancelled';
-        statusIcon = Icons.cancel_outlined;
-        break;
-      default:
-        break;
+    if (task.isDownloading) {
+      statusLabel = task.isManga ? 'Downloading' : '${(task.progress * 100).toStringAsFixed(0)}%';
+      statusIcon = Icons.downloading_rounded;
+    } else if (task.isPaused) {
+      statusColor = Colors.orange.shade400;
+      statusLabel = 'Paused · ${(task.progress * 100).toStringAsFixed(0)}%';
+      statusIcon = Icons.pause_circle_rounded;
+    } else if (task.isCompleted) {
+      statusColor = Colors.green.shade400;
+      statusLabel = 'Completed';
+      statusIcon = Icons.check_circle_rounded;
+    } else if (task.isFailed) {
+      statusColor = theme.error;
+      statusLabel = 'Failed';
+      statusIcon = Icons.error_outline_rounded;
+    } else if (task.isCancelled) {
+      statusColor = theme.onSurface.opaque(0.4);
+      statusLabel = 'Cancelled';
+      statusIcon = Icons.cancel_outlined;
     }
 
-    final isActive = task.status == DownloadStatus.downloading ||
-        task.status == DownloadStatus.queued ||
-        task.status == DownloadStatus.paused;
+    final isActive = task.isDownloading || task.isQueued || task.isPaused;
 
     final controller = Get.find<DownloadController>();
 
@@ -150,7 +149,7 @@ class _ActiveTaskCard extends StatelessWidget {
                         maxLines: 1),
                     const SizedBox(height: 2),
                     AnymexText(
-                      text: task.episodeDisplayId,
+                      text: task.displayId,
                       size: 12,
                       color: theme.onSurface.opaque(0.5),
                     ),
@@ -159,8 +158,8 @@ class _ActiveTaskCard extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               if (isActive) ...[
-                if (task.status == DownloadStatus.downloading ||
-                    task.status == DownloadStatus.queued)
+                if (task.isDownloading || task.isQueued)
+
                   GestureDetector(
                     onTap: () => controller.pauseDownload(task.taskId),
                     child: Container(
@@ -172,7 +171,7 @@ class _ActiveTaskCard extends StatelessWidget {
                           size: 16, color: theme.primary),
                     ),
                   )
-                else if (task.status == DownloadStatus.paused)
+                else if (task.isPaused)
                   GestureDetector(
                     onTap: () => controller.resumeDownload(task.taskId),
                     child: Container(
@@ -211,22 +210,21 @@ class _ActiveTaskCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 10),
-          if (task.status == DownloadStatus.downloading ||
-              task.status == DownloadStatus.paused) ...[
+          if (task.isDownloading || task.isPaused) ...[
             ClipRRect(
               borderRadius: BorderRadius.circular(4),
               child: LinearProgressIndicator(
                 value: task.progress,
                 backgroundColor: theme.surfaceContainerHighest.opaque(0.4),
                 valueColor: AlwaysStoppedAnimation(
-                    task.status == DownloadStatus.paused
+                    task.isPaused
                         ? theme.primary.opaque(0.5)
                         : theme.primary),
                 minHeight: 5,
               ),
             ),
             const SizedBox(height: 8),
-          ] else if (task.status == DownloadStatus.queued) ...[
+          ] else if (task.isQueued) ...[
             ClipRRect(
               borderRadius: BorderRadius.circular(4),
               child: LinearProgressIndicator(
@@ -247,10 +245,10 @@ class _ActiveTaskCard extends StatelessWidget {
                   color: statusColor,
                   variant: TextVariant.semiBold),
               const Spacer(),
-              if (task.status == DownloadStatus.failed &&
+              if (task.isFailed && !task.isManga &&
                   (task.errorMessage?.contains('matching quality') ?? false))
                 GestureDetector(
-                  onTap: () => _showManualServerSelection(context, task),
+                  onTap: () => _showManualServerSelection(context, task.originalTask!),
                   child: Container(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -265,7 +263,7 @@ class _ActiveTaskCard extends StatelessWidget {
                         variant: TextVariant.bold),
                   ),
                 )
-              else if (task.videoQuality.isNotEmpty)
+              else if (task.qualityOrStatus.isNotEmpty)
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
@@ -274,8 +272,9 @@ class _ActiveTaskCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: AnymexText(
-                      text: task.videoQuality, size: 11, color: theme.primary),
+                      text: task.qualityOrStatus, size: 11, color: theme.primary),
                 ),
+
               const SizedBox(width: 6),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
@@ -290,8 +289,8 @@ class _ActiveTaskCard extends StatelessWidget {
               ),
             ],
           ),
-          if (task.errorMessage != null &&
-              task.status == DownloadStatus.failed) ...[
+          if (task.errorMessage != null && task.isFailed) ...[
+
             const SizedBox(height: 6),
             AnymexText(
                 text: task.errorMessage!,
@@ -306,6 +305,7 @@ class _ActiveTaskCard extends StatelessWidget {
 
   void _showManualServerSelection(
       BuildContext context, ActiveDownloadTask task) async {
+    final downloadController = Get.find<DownloadController>();
     final theme = context.colors;
     final sourceController = Get.find<SourceController>();
     final sources = [
@@ -393,4 +393,57 @@ class _ActiveTaskCard extends StatelessWidget {
       },
     );
   }
+}
+
+class _UnifiedTask {
+  final ActiveDownloadTask? originalTask;
+  final String taskId;
+  final String mediaTitle;
+  final String extensionName;
+  final String displayId;
+  final double progress;
+  final String? errorMessage;
+  final bool isManga;
+  final String qualityOrStatus;
+  
+  final bool isDownloading;
+  final bool isPaused;
+  final bool isCompleted;
+  final bool isFailed;
+  final bool isCancelled;
+  final bool isQueued;
+  
+  _UnifiedTask.fromAnime(ActiveDownloadTask task) :
+    originalTask = task,
+    taskId = task.taskId,
+    mediaTitle = task.mediaTitle,
+    extensionName = task.extensionName,
+    displayId = task.episodeDisplayId,
+    progress = task.progress,
+    errorMessage = task.errorMessage,
+    isManga = false,
+    qualityOrStatus = task.videoQuality,
+    isDownloading = task.status == DownloadStatus.downloading,
+    isPaused = task.status == DownloadStatus.paused,
+    isCompleted = task.status == DownloadStatus.completed,
+    isFailed = task.status == DownloadStatus.failed,
+    isCancelled = task.status == DownloadStatus.cancelled,
+    isQueued = task.status == DownloadStatus.queued;
+    
+  _UnifiedTask.fromManga(ActiveMangaDownloadTask task) :
+    originalTask = null,
+    taskId = task.taskId,
+    mediaTitle = task.mediaTitle,
+    extensionName = task.extensionName,
+    displayId = task.chapterDisplay,
+    progress = task.progress,
+    errorMessage = task.errorMessage,
+    isManga = true,
+    qualityOrStatus = task.status == MangaDownloadStatus.fetchingPages ? 'Pages' : 'Images',
+    isDownloading = task.status == MangaDownloadStatus.downloading || task.status == MangaDownloadStatus.fetchingPages,
+    isPaused = task.status == MangaDownloadStatus.paused,
+    isCompleted = task.status == MangaDownloadStatus.completed,
+    isFailed = task.status == MangaDownloadStatus.failed,
+    isCancelled = task.status == MangaDownloadStatus.cancelled,
+    isQueued = task.status == MangaDownloadStatus.queued;
 }

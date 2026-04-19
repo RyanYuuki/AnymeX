@@ -271,5 +271,6 @@ enum DownloadKeys {
   saveActiveTasks,
   downloadChunks,
   hlsParallelSegments,
+  enableJxlCompression,
 }
 

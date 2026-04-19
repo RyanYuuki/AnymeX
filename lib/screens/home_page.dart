@@ -49,10 +49,12 @@ class _HomePageState extends State<HomePage> {
       padding: const EdgeInsets.only(bottom: 8.0),
       child: SizedBox(
         height: 100,
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: data.length,
-          itemBuilder: (context, i) => RecentlyOpenedAnimeCard(media: data[i]),
+        child: RepaintBoundary(
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: data.length,
+            itemBuilder: (context, i) => RecentlyOpenedAnimeCard(media: data[i]),
+          ),
         ),
       ),
     );
@@ -91,19 +93,21 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: 10),
             SizedBox(
               height: 228,
-              child: GridView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                scrollDirection: Axis.horizontal,
-                itemCount: visibleHistory.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 1,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 0,
-                  mainAxisExtent: 300,
-                ),
-                itemBuilder: (context, i) => ContinueWatchingCard(
-                  media: HistoryModel.fromOfflineMedia(
-                      visibleHistory[i], ItemType.anime),
+              child: RepaintBoundary(
+                child: GridView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: visibleHistory.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 1,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 0,
+                    mainAxisExtent: 300,
+                  ),
+                  itemBuilder: (context, i) => ContinueWatchingCard(
+                    media: HistoryModel.fromOfflineMedia(
+                        visibleHistory[i], ItemType.anime),
+                  ),
                 ),
               ),
             ),

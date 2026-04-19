@@ -26,7 +26,7 @@ dependencies:
     flutter_html: ^3.0.0
     flutter_inappwebview: ^6.1.5
     flutter_svg: ^2.0.10
-    # flutter_local_notifications: ^18.0.1
+    flutter_foreground_task: ^6.3.0
     flutter_markdown: ^0.7.6
     markdown: ^7.3.0
     flutter_native_splash: ^2.4.4
@@ -116,6 +116,7 @@ dependencies:
             ref: main
     # anymex_extension_runtime_bridge: 
     #     path: ../AnymeXExtensionRuntimeBridge
+    jxl_coder: ^0.1.0
 
 dev_dependencies:
     build_runner: ^2.4.11
