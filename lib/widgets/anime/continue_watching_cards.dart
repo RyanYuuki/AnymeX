@@ -42,7 +42,7 @@ class ContinueWatchingCard extends StatelessWidget {
                     ),
                     child: AnymeXImage(
                       imageUrl:
-                          media.cover.isEmpty ? media.poster : media.cover,
+                      media.cover.isEmpty ? media.poster : media.cover,
                       width: double.infinity,
                       radius: 0,
                     ),
@@ -73,7 +73,7 @@ class ContinueWatchingCard extends StatelessWidget {
                   right: 8,
                   child: Container(
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: context.colors.primary
                           .opaque(0.8, iReallyMeanIt: true),
@@ -119,29 +119,31 @@ class ContinueWatchingCard extends StatelessWidget {
                   right: 10,
                   child: Row(
                     children: [
-                      Container(
-                        constraints: const BoxConstraints(maxWidth: 200),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: colorScheme.primary,
-                          borderRadius: BorderRadius.circular(6),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.opaque(0.3),
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
-                            )
-                          ],
-                        ),
-                        child: AnymexText(
-                          text: media.formattedEpisodeTitle ?? '',
-                          size: 11,
-                          maxLines: 1,
-                          variant: TextVariant.bold,
-                          color: colorScheme.onPrimary,
-                          overflow: TextOverflow.ellipsis,
-                          isMarquee: false,
+                      Flexible(
+                        child: Container(
+                          constraints: const BoxConstraints(maxWidth: 200),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: colorScheme.primary,
+                            borderRadius: BorderRadius.circular(6),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.opaque(0.3),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              )
+                            ],
+                          ),
+                          child: AnymexText(
+                            text: media.formattedEpisodeTitle ?? '',
+                            size: 11,
+                            maxLines: 1,
+                            variant: TextVariant.bold,
+                            color: colorScheme.onPrimary,
+                            overflow: TextOverflow.ellipsis,
+                            isMarquee: false,
+                          ),
                         ),
                       ),
                     ],

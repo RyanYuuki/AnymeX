@@ -64,7 +64,7 @@ class _ThreadDetailPageState extends State<ThreadDetailPage> {
 
   void _onScroll() {
     if (_scrollController.position.pixels >=
-            _scrollController.position.maxScrollExtent - 200 &&
+        _scrollController.position.maxScrollExtent - 200 &&
         !_isLoadingMoreComments &&
         _hasNextPage &&
         !_isLoadingComments) {
@@ -143,7 +143,7 @@ class _ThreadDetailPageState extends State<ThreadDetailPage> {
     });
 
     final success =
-        await Get.find<AnilistAuth>().toggleLike(thread.id, 'THREAD');
+    await Get.find<AnilistAuth>().toggleLike(thread.id, 'THREAD');
 
     if (!success && mounted) {
       setState(() {
@@ -177,7 +177,7 @@ class _ThreadDetailPageState extends State<ThreadDetailPage> {
     });
 
     final success =
-        await Get.find<AnilistAuth>().toggleLike(comment.id, 'THREAD_COMMENT');
+    await Get.find<AnilistAuth>().toggleLike(comment.id, 'THREAD_COMMENT');
 
     if (!success && mounted) {
       setState(() {
@@ -259,7 +259,7 @@ class _ThreadDetailPageState extends State<ThreadDetailPage> {
 
     if (confirmed == true) {
       final success =
-          await Get.find<AnilistAuth>().deleteThreadComment(comment.id);
+      await Get.find<AnilistAuth>().deleteThreadComment(comment.id);
       if (success && mounted) {
         await _fetchComments(reset: true);
       }
@@ -303,7 +303,7 @@ class _ThreadDetailPageState extends State<ThreadDetailPage> {
     final currentUserId =
         Get.find<ServiceHandler>().profileData.value.id;
     final currentUserIdInt =
-        currentUserId == null ? null : int.tryParse(currentUserId);
+    currentUserId == null ? null : int.tryParse(currentUserId);
     final isThreadOwner =
         currentUserIdInt != null && _thread?.userId == currentUserIdInt;
 
@@ -400,65 +400,65 @@ class _ThreadDetailPageState extends State<ThreadDetailPage> {
               child: _isLoadingThread
                   ? const Center(child: CircularProgressIndicator())
                   : RefreshIndicator(
-                      onRefresh: _onRefresh,
-                      child: ListView(
-                        controller: _scrollController,
-                        physics:
-                            const AlwaysScrollableScrollPhysics(
-                                parent: BouncingScrollPhysics()),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 12),
-                        children: [
-                          if (_thread != null) ...[
-                            _buildThreadHeader(colors, currentUserIdInt),
-                          ],
+                onRefresh: _onRefresh,
+                child: ListView(
+                  controller: _scrollController,
+                  physics:
+                  const AlwaysScrollableScrollPhysics(
+                      parent: BouncingScrollPhysics()),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16, vertical: 12),
+                  children: [
+                    if (_thread != null) ...[
+                      _buildThreadHeader(colors, currentUserIdInt),
+                    ],
 
-                          const Divider(indent: 16, endIndent: 16, height: 32),
+                    const Divider(indent: 16, endIndent: 16, height: 32),
 
-                          AnymexText(
-                            text: 'Comments (${_thread?.replyCount ?? 0})',
-                            variant: TextVariant.semiBold,
-                            size: 16,
-                            color: colors.primary,
-                          ),
-                          const SizedBox(height: 12),
-
-                          if (_isLoadingComments)
-                            const Padding(
-                              padding: EdgeInsets.all(32.0),
-                              child: Center(
-                                  child: CircularProgressIndicator()),
-                            )
-                          else if (_comments.isEmpty)
-                            const Padding(
-                              padding: EdgeInsets.all(32.0),
-                              child: Center(
-                                child: AnymexText(
-                                    text: 'No comments yet. Be the first!'),
-                              ),
-                            )
-                          else
-                            ..._comments
-                                .map((comment) => _buildCommentCard(
-                                    comment, colors, currentUserIdInt)),
-
-                          if (_isLoadingMoreComments)
-                            const Padding(
-                              padding: EdgeInsets.all(16.0),
-                              child: Center(
-                                child: SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: CircularProgressIndicator(
-                                      strokeWidth: 2),
-                                ),
-                              ),
-                            ),
-
-                          const SizedBox(height: 80),
-                        ],
-                      ),
+                    AnymexText(
+                      text: 'Comments (${_thread?.replyCount ?? 0})',
+                      variant: TextVariant.semiBold,
+                      size: 16,
+                      color: colors.primary,
                     ),
+                    const SizedBox(height: 12),
+
+                    if (_isLoadingComments)
+                      const Padding(
+                        padding: EdgeInsets.all(32.0),
+                        child: Center(
+                            child: CircularProgressIndicator()),
+                      )
+                    else if (_comments.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.all(32.0),
+                        child: Center(
+                          child: AnymexText(
+                              text: 'No comments yet. Be the first!'),
+                        ),
+                      )
+                    else
+                      ..._comments
+                          .map((comment) => _buildCommentCard(
+                          comment, colors, currentUserIdInt)),
+
+                    if (_isLoadingMoreComments)
+                      const Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Center(
+                          child: SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                                strokeWidth: 2),
+                          ),
+                        ),
+                      ),
+
+                    const SizedBox(height: 80),
+                  ],
+                ),
+              ),
             ),
 
             if (_thread?.isLocked != true)
@@ -564,31 +564,31 @@ class _ThreadDetailPageState extends State<ThreadDetailPage> {
             runSpacing: 4,
             children: [
               ...thread.categories.map((cat) => Chip(
-                    label: AnymexText(
-                      text: cat.name,
-                      size: 11,
-                      variant: TextVariant.semiBold,
-                      color: colors.onSecondaryContainer,
-                    ),
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    visualDensity: VisualDensity.compact,
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    backgroundColor: colors.secondaryContainer,
-                    side: BorderSide.none,
-                  )),
+                label: AnymexText(
+                  text: cat.name,
+                  size: 11,
+                  variant: TextVariant.semiBold,
+                  color: colors.onSecondaryContainer,
+                ),
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                visualDensity: VisualDensity.compact,
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                backgroundColor: colors.secondaryContainer,
+                side: BorderSide.none,
+              )),
               ...thread.mediaCategories.map((mc) => Chip(
-                    label: AnymexText(
-                      text: mc.title ?? 'Media',
-                      size: 11,
-                      variant: TextVariant.semiBold,
-                      color: colors.onPrimaryContainer,
-                    ),
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    visualDensity: VisualDensity.compact,
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    backgroundColor: colors.primaryContainer,
-                    side: BorderSide.none,
-                  )),
+                label: AnymexText(
+                  text: mc.title ?? 'Media',
+                  size: 11,
+                  variant: TextVariant.semiBold,
+                  color: colors.onPrimaryContainer,
+                ),
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                visualDensity: VisualDensity.compact,
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                backgroundColor: colors.primaryContainer,
+                side: BorderSide.none,
+              )),
             ],
           ),
         ],
@@ -715,11 +715,11 @@ class _ThreadDetailPageState extends State<ThreadDetailPage> {
   }
 
   Widget _buildSingleComment(
-    AnilistThreadComment comment,
-    ColorScheme colors,
-    bool isOwnComment, {
-    required int indent,
-  }) {
+      AnilistThreadComment comment,
+      ColorScheme colors,
+      bool isOwnComment, {
+        required int indent,
+      }) {
     final subtleText = colors.onSurface.withOpacity(0.7);
 
     return Container(
@@ -937,17 +937,17 @@ class _ThreadDetailPageState extends State<ThreadDetailPage> {
                     child: IconButton(
                       icon: _isPostingComment
                           ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                  strokeWidth: 2, color: Colors.white),
-                            )
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white),
+                      )
                           : Icon(
-                              Icons.send,
-                              color: isEmpty
-                                  ? Colors.grey
-                                  : colors.onPrimary,
-                            ),
+                        Icons.send,
+                        color: isEmpty
+                            ? Colors.grey
+                            : colors.onPrimary,
+                      ),
                       onPressed: isEmpty || _isPostingComment
                           ? null
                           : _postComment,
@@ -987,7 +987,7 @@ class _ThreadDetailPageState extends State<ThreadDetailPage> {
 
     if (confirmed == true) {
       final success =
-          await Get.find<AnilistAuth>().deleteThread(_thread!.id);
+      await Get.find<AnilistAuth>().deleteThread(_thread!.id);
       if (success && mounted) {
         Navigator.pop(context);
       }
