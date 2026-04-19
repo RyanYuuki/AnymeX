@@ -129,30 +129,32 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         floatingActionButton: _buildContinueFab(),
-        body: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHero(context, theme),
-              _buildSectionHeader(theme),
-              if (isLoading)
-                const SizedBox(
-                  height: 200,
-                  child: Center(child: CircularProgressIndicator()),
-                )
-              else if (isEmpty)
-                _buildEmptyState(theme)
-              else
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
-                  child: Column(
-                    children: _isManga
-                        ? _buildChapterList(theme)
-                        : _buildEpisodeList(theme),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildHero(context, theme),
+                _buildSectionHeader(theme),
+                if (isLoading)
+                  const SizedBox(
+                    height: 200,
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                else if (isEmpty)
+                  _buildEmptyState(theme)
+                else
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
+                    child: Column(
+                      children: _isManga
+                          ? _buildChapterList(theme)
+                          : _buildEpisodeList(theme),
+                    ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

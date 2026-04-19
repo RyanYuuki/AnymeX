@@ -88,6 +88,7 @@ class DownloadEngine {
     required String m3u8Url,
     required String fileName,
     required String subDirectory,
+    String? docsPath,
     Map<String, String>? headers,
     String? preferredQuality,
     int parallelSegments = 3,
@@ -98,8 +99,8 @@ class DownloadEngine {
     _cancelledTasks.remove(taskId);
 
     try {
-      final docsDir = await getApplicationDocumentsDirectory();
-      final outDir = Directory(p.join(docsDir.path, subDirectory));
+      final String effectiveDocsPath = docsPath ?? (await getApplicationDocumentsDirectory()).path;
+      final outDir = Directory(p.join(effectiveDocsPath, subDirectory));
       await outDir.create(recursive: true);
 
       final outPath = p.join(outDir.path, tsFileName);
