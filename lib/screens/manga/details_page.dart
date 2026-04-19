@@ -53,9 +53,9 @@ class MangaDetailsPage extends StatefulWidget {
   final int initialTabIndex;
   const MangaDetailsPage(
       {super.key,
-      required this.media,
-      required this.tag,
-      this.initialTabIndex = 0});
+        required this.media,
+        required this.tag,
+        this.initialTabIndex = 0});
 
   @override
   State<MangaDetailsPage> createState() => _MangaDetailsPageState();
@@ -411,7 +411,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                           return Row(
                             children: [
                               if (widget.media.serviceType !=
-                                      ServicesType.extensions &&
+                                  ServicesType.extensions &&
                                   widget.media.serviceType.onlineService
                                       .isLoggedIn.value) ...[
                                 Expanded(
@@ -446,7 +446,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                                         borderRadius: BorderRadius.circular(16),
                                         child: Row(
                                           mainAxisAlignment:
-                                              MainAxisAlignment.center,
+                                          MainAxisAlignment.center,
                                           children: [
                                             AnymexText(
                                               text: convertAniListStatus(
@@ -476,10 +476,10 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                                     mediaItemType: ItemType.manga,
                                     buttonBuilder: (onTap, icon) =>
                                         _buildActionIconButton(
-                                      context: context,
-                                      icon: Icons.recommend_rounded,
-                                      onTap: onTap,
-                                    ),
+                                          context: context,
+                                          icon: Icons.recommend_rounded,
+                                          onTap: onTap,
+                                        ),
                                   ),
                                 if (CommunityService.votingEnabled)
                                   const SizedBox(width: 7),
@@ -742,92 +742,92 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   // Desktop Navigation bar: START
   Widget _buildDesktopNav() {
     return Obx(() => Container(
-          margin: const EdgeInsets.all(20),
-          width: 85,
-          height: 300,
-          child: Column(
-            children: [
-              Container(
-                width: 70,
-                height: 65,
-                padding: const EdgeInsets.all(0),
-                margin: const EdgeInsets.symmetric(
-                  horizontal: 5,
-                  vertical: 0,
+      margin: const EdgeInsets.all(20),
+      width: 85,
+      height: 300,
+      child: Column(
+        children: [
+          Container(
+            width: 70,
+            height: 65,
+            padding: const EdgeInsets.all(0),
+            margin: const EdgeInsets.symmetric(
+              horizontal: 5,
+              vertical: 0,
+            ),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+                color: Colors.transparent,
+                border: Border.all(
+                  color:
+                  Theme.of(context).colorScheme.onSurface.opaque(0.2),
+                  width: 1,
                 ),
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    border: Border.all(
-                      color:
-                          Theme.of(context).colorScheme.onSurface.opaque(0.2),
-                      width: 1,
-                    ),
-                    borderRadius: BorderRadius.circular(
-                      20.multiplyRadius(),
-                    )),
-                child: NavBarItem(
-                  isSelected: false,
-                  isVertical: true,
-                  onTap: () {
-                    Get.back();
-                  },
-                  selectedIcon: Iconsax.back_square,
-                  unselectedIcon: IconlyBold.arrow_left,
-                ),
-              ),
-              const SizedBox(height: 10),
-              ResponsiveNavBar(
-                  isDesktop: true,
-                  currentIndex: selectedPage.value,
-                  borderRadius: BorderRadius.circular(20),
-                  items: [
-                    NavItem(
-                        onTap: (index) => _onPageSelected(index),
-                        selectedIcon: Iconsax.info_circle5,
-                        unselectedIcon: Iconsax.info_circle,
-                        label: "Info"),
-                    if (sourceController.shouldShowExtensions.value)
-                      NavItem(
-                          onTap: (index) => _onPageSelected(index),
-                          selectedIcon: Iconsax.book,
-                          unselectedIcon: Iconsax.book,
-                          label: "Read"),
-                    NavItem(
-                        onTap: (index) => _onPageSelected(index),
-                        selectedIcon: HugeIcons.strokeRoundedComment01,
-                        unselectedIcon: HugeIcons.strokeRoundedComment02,
-                        label: "Comments"),
-                  ]),
-            ],
+                borderRadius: BorderRadius.circular(
+                  20.multiplyRadius(),
+                )),
+            child: NavBarItem(
+              isSelected: false,
+              isVertical: true,
+              onTap: () {
+                Get.back();
+              },
+              selectedIcon: Iconsax.back_square,
+              unselectedIcon: IconlyBold.arrow_left,
+            ),
           ),
-        ));
+          const SizedBox(height: 10),
+          ResponsiveNavBar(
+              isDesktop: true,
+              currentIndex: selectedPage.value,
+              borderRadius: BorderRadius.circular(20),
+              items: [
+                NavItem(
+                    onTap: (index) => _onPageSelected(index),
+                    selectedIcon: Iconsax.info_circle5,
+                    unselectedIcon: Iconsax.info_circle,
+                    label: "Info"),
+                if (sourceController.shouldShowExtensions.value)
+                  NavItem(
+                      onTap: (index) => _onPageSelected(index),
+                      selectedIcon: Iconsax.book,
+                      unselectedIcon: Iconsax.book,
+                      label: "Read"),
+                NavItem(
+                    onTap: (index) => _onPageSelected(index),
+                    selectedIcon: HugeIcons.strokeRoundedComment01,
+                    unselectedIcon: HugeIcons.strokeRoundedComment02,
+                    label: "Comments"),
+              ]),
+        ],
+      ),
+    ));
   }
   // Desktop Navigation bar: END
 
 // Mobile Navigation bar: START
   Widget _buildMobiledNav() {
     return Obx(() => ResponsiveNavBar(
-            isDesktop: false,
-            currentIndex: selectedPage.value,
-            margin: const EdgeInsets.symmetric(horizontal: 80, vertical: 40),
-            items: [
-              NavItem(
-                  onTap: _onPageSelected,
-                  selectedIcon: Iconsax.info_circle5,
-                  unselectedIcon: Iconsax.info_circle,
-                  label: "Info"),
-              NavItem(
-                  onTap: _onPageSelected,
-                  selectedIcon: Iconsax.book,
-                  unselectedIcon: Iconsax.book,
-                  label: "Watch"),
-              NavItem(
-                  onTap: _onPageSelected,
-                  selectedIcon: HugeIcons.strokeRoundedComment01,
-                  unselectedIcon: HugeIcons.strokeRoundedComment02,
-                  label: "Comments"),
-            ]));
+        isDesktop: false,
+        currentIndex: selectedPage.value,
+        margin: const EdgeInsets.symmetric(horizontal: 80, vertical: 40),
+        items: [
+          NavItem(
+              onTap: _onPageSelected,
+              selectedIcon: Iconsax.info_circle5,
+              unselectedIcon: Iconsax.info_circle,
+              label: "Info"),
+          NavItem(
+              onTap: _onPageSelected,
+              selectedIcon: Iconsax.book,
+              unselectedIcon: Iconsax.book,
+              label: "Watch"),
+          NavItem(
+              onTap: _onPageSelected,
+              selectedIcon: HugeIcons.strokeRoundedComment01,
+              unselectedIcon: HugeIcons.strokeRoundedComment02,
+              label: "Comments"),
+        ]));
   }
   // Mobile Navigation bar: END
 
@@ -872,5 +872,5 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
       },
     );
   }
-  // List Editor Modal: END
+// List Editor Modal: END
 }

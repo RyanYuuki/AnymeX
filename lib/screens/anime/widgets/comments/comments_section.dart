@@ -842,8 +842,27 @@ class _CommentSectionState extends State<CommentSection> {
         ],
         Container(
           margin: EdgeInsets.only(left: indent),
-          child: _buildCommentItem(context, comment, controller,
-              effectiveLocked: effectiveLocked, depth: depth),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (depth > 0) ...[
+                for (int i = 0; i < depth; i++)
+                  Container(
+                    width: 2,
+                    height: 40, // Fixed height for thread lines to prevent squeezing
+                    margin: const EdgeInsets.only(right: 8),
+                    decoration: BoxDecoration(
+                      color: _getThreadColor(i, colorScheme),
+                      borderRadius: BorderRadius.circular(1),
+                    ),
+                  ),
+              ],
+              Expanded(
+                child: _buildCommentItem(context, comment, controller,
+                    effectiveLocked: effectiveLocked, depth: depth),
+              ),
+            ],
+          ),
         ),
         if (controller.isReplyingTo(comment.id) && !effectiveLocked) ...[
           const SizedBox(height: 8),

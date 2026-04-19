@@ -38,9 +38,9 @@ extension StringExtensions on String {
 String convertAniListStatus(String? status, {bool isManga = false}) {
   switch (status?.toUpperCase()) {
     case 'CURRENT':
-      return isManga ? "CURRENTLY READING" : 'CURRENTLY WATCHING';
+      return isManga ? "READING" : 'WATCHING';
     case 'PLANNING':
-      return 'PLANNING TO ${isManga ? 'READ' : 'WATCH'}';
+      return 'PLANNING';
     case 'COMPLETED':
       return 'COMPLETED';
     case 'DROPPED':
@@ -55,9 +55,9 @@ String convertAniListStatus(String? status, {bool isManga = false}) {
 }
 
 Future<void> snackString(
-  String? s, {
-  String? clipboard,
-}) async {
+    String? s, {
+      String? clipboard,
+    }) async {
   var context = Get.context;
 
   if (context != null && s != null && s.isNotEmpty) {
@@ -102,7 +102,7 @@ class ChapterRecognition {
   static const _numberPattern = r"([0-9]+)(\.[0-9]+)?(\.?[a-z]+)?";
 
   static final _unwanted =
-      RegExp(r"\b(?:v|ver|vol|version|volume|season|s)[^a-z]?[0-9]+");
+  RegExp(r"\b(?:v|ver|vol|version|volume|season|s)[^a-z]?[0-9]+");
 
   static final _unwantedWhiteSpace = RegExp(r"\s(?=extra|special|omake)");
 
@@ -259,7 +259,7 @@ List<List<Episode>> chunkEpisodes(List<Episode> episodes, int chunkSize) {
 
   final chunks = List.generate(
     (episodes.length / chunkSize).ceil(),
-    (index) => episodes.sublist(
+        (index) => episodes.sublist(
       index * chunkSize,
       (index + 1) * chunkSize > episodes.length
           ? episodes.length
@@ -295,7 +295,7 @@ List<List<Chapter>> chunkChapter(List<Chapter> chapters, int chunkSize) {
 
   final chunks = List.generate(
     (chapters.length / chunkSize).ceil(),
-    (index) => chapters.sublist(
+        (index) => chapters.sublist(
       index * chunkSize,
       (index + 1) * chunkSize > chapters.length
           ? chapters.length
@@ -310,10 +310,10 @@ List<List<Chapter>> chunkChapter(List<Chapter> chapters, int chunkSize) {
 }
 
 int findChunkIndexFromProgress(
-  int userProgress,
-  List<List<Episode>> chunks, {
-  bool isManga = false,
-}) {
+    int userProgress,
+    List<List<Episode>> chunks, {
+      bool isManga = false,
+    }) {
   if (chunks.isEmpty || chunks.length <= 1) return 0;
   if (userProgress <= 0) return 1;
 
@@ -337,9 +337,9 @@ int findChunkIndexFromProgress(
 }
 
 int findChapterChunkIndexFromProgress(
-  int userProgress,
-  List<List<Chapter>> chunks,
-) {
+    int userProgress,
+    List<List<Chapter>> chunks,
+    ) {
   if (chunks.isEmpty || chunks.length <= 1) return 0;
   if (userProgress <= 0) return 1;
 
@@ -456,7 +456,7 @@ List<TrackedMedia> filterListByStatus(
     case 'COMPLETED TV':
       return animeList
           .where((anime) =>
-              ((anime.watchingStatus == 'COMPLETED') && anime.format == 'TV'))
+      ((anime.watchingStatus == 'COMPLETED') && anime.format == 'TV'))
           .toList();
     case 'COMPLETED':
       return animeList
@@ -465,27 +465,27 @@ List<TrackedMedia> filterListByStatus(
     case 'COMPLETED MOVIE':
       return animeList
           .where((anime) =>
-              anime.watchingStatus == 'COMPLETED' && anime.format == 'MOVIE')
+      anime.watchingStatus == 'COMPLETED' && anime.format == 'MOVIE')
           .toList();
     case 'COMPLETED OVA':
       return animeList
           .where((anime) =>
-              anime.watchingStatus == 'COMPLETED' && anime.format == 'OVA')
+      anime.watchingStatus == 'COMPLETED' && anime.format == 'OVA')
           .toList();
     case 'COMPLETED SPECIAL':
       return animeList
           .where((anime) =>
-              anime.watchingStatus == 'COMPLETED' && anime.format == 'SPECIAL')
+      anime.watchingStatus == 'COMPLETED' && anime.format == 'SPECIAL')
           .toList();
     case 'COMPLETED ONA':
       return animeList
           .where((anime) =>
-              anime.watchingStatus == 'COMPLETED' && anime.format == 'ONA')
+      anime.watchingStatus == 'COMPLETED' && anime.format == 'ONA')
           .toList();
     case 'COMPLETED TV SHORT':
       return animeList
           .where((anime) =>
-              anime.watchingStatus == 'COMPLETED' && anime.format == 'TV_SHORT')
+      anime.watchingStatus == 'COMPLETED' && anime.format == 'TV_SHORT')
           .toList();
     case 'PAUSED':
       return animeList
@@ -510,17 +510,17 @@ List<TrackedMedia> filterListByStatus(
     case 'COMPLETED MANGA':
       return animeList
           .where((anime) =>
-              anime.watchingStatus == 'COMPLETED' && anime.format == 'MANGA')
+      anime.watchingStatus == 'COMPLETED' && anime.format == 'MANGA')
           .toList();
     case 'COMPLETED NOVEL':
       return animeList
           .where((anime) =>
-              anime.watchingStatus == 'COMPLETED' && anime.format == 'NOVEL')
+      anime.watchingStatus == 'COMPLETED' && anime.format == 'NOVEL')
           .toList();
     case 'COMPLETED ONE SHOT':
       return animeList
           .where((anime) =>
-              anime.watchingStatus == 'COMPLETED' && anime.format == 'ONE_SHOT')
+      anime.watchingStatus == 'COMPLETED' && anime.format == 'ONE_SHOT')
           .toList();
 
     case 'CURRENTLY WATCHING':
