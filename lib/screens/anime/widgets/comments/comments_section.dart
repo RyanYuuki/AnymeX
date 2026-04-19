@@ -782,8 +782,9 @@ class _CommentSectionState extends State<CommentSection> {
 
   double _getIndentForDepth(int depth, double screenWidth) {
     if (depth == 0) return 0;
-    final baseIndent = screenWidth * 0.04;
-    final maxIndent = screenWidth * 0.22;
+    // Reduced base indent and capped max indent to prevent right-side overflow
+    final baseIndent = screenWidth * 0.03;
+    final maxIndent = screenWidth * 0.12;
     return (baseIndent * depth).clamp(0.0, maxIndent);
   }
 
@@ -1111,127 +1112,49 @@ class _CommentSectionState extends State<CommentSection> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (!isCompact) ...[
-                Row(
-                  children: [
-                    Flexible(
-                      child: RichText(
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: comment.username,
-                              style: TextStyle(
-                                color: colorScheme.onSurface,
-                                fontSize: nameFontSize,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            if (comment.userRole != null &&
-                                comment.userRole != 'user') ...[
-                              WidgetSpan(
-                                child: _buildRoleBadge(
-                                    context, comment.userRole!),
-                                alignment: PlaceholderAlignment.middle,
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
+              Wrap(
+                spacing: 6,
+                runSpacing: 4,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  Text(
+                    comment.username,
+                    style: TextStyle(
+                      color: colorScheme.onSurface,
+                      fontSize: nameFontSize,
+                      fontWeight: FontWeight.w700,
                     ),
-                    if (comment.tag.isNotEmpty) ...[
-                      const SizedBox(width: 8),
-                      _buildTag(context, comment.tag),
-                    ],
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
+                  ),
+                  if (comment.userRole != null &&
+                      comment.userRole != 'user')
+                    _buildRoleBadge(context, comment.userRole!),
+                  if (comment.tag.isNotEmpty && comment.tag != 'General')
+                    _buildTag(context, comment.tag),
+                  Text(
+                    timeago.format(DateTime.parse(comment.createdAt)),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                      fontSize: isCompact ? 11 : 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  if (comment.edited == true)
                     Text(
-                      timeago.format(DateTime.parse(comment.createdAt)),
+                      '(edited)',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
+                        color: colorScheme.onSurfaceVariant.opaque(0.6),
+                        fontSize: 10,
+                        fontStyle: FontStyle.italic,
                       ),
                     ),
-                    if (comment.edited == true) ...[
-                      const SizedBox(width: 6),
-                      Text(
-                        '(edited)',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant.opaque(0.6),
-                          fontSize: 11,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    ],
-                    if (comment.pinned == true) ...[
-                      const SizedBox(width: 6),
-                      Icon(Icons.push_pin_rounded,
-                          size: 13, color: colorScheme.primary),
-                    ],
-                    if (isLocked) ...[
-                      const SizedBox(width: 6),
-                      Icon(Icons.lock_rounded,
-                          size: 13, color: colorScheme.error),
-                    ],
-                  ],
-                ),
-              ] else ...[
-                Row(
-                  children: [
-                    Text(
-                      comment.username,
-                      style: TextStyle(
-                        color: colorScheme.onSurface,
-                        fontSize: nameFontSize,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    if (comment.userRole != null &&
-                        comment.userRole != 'user') ...[
-                      _buildRoleBadge(context, comment.userRole!),
-                    ],
-                    const SizedBox(width: 6),
-                    Text(
-                      timeago.format(DateTime.parse(comment.createdAt)),
-                      style: TextStyle(
-                        color: colorScheme.onSurfaceVariant,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    if (comment.edited == true) ...[
-                      const SizedBox(width: 4),
-                      Text(
-                        '(edited)',
-                        style: TextStyle(
-                          color: colorScheme.onSurfaceVariant.opaque(0.6),
-                          fontSize: 10,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    ],
-                    if (comment.pinned == true) ...[
-                      const SizedBox(width: 4),
-                      Icon(Icons.push_pin_rounded,
-                          size: 11, color: colorScheme.primary),
-                    ],
-                    if (isLocked) ...[
-                      const SizedBox(width: 4),
-                      Icon(Icons.lock_rounded,
-                          size: 11, color: colorScheme.error),
-                    ],
-                    if (comment.tag.isNotEmpty && comment.tag != 'General') ...[
-                      const SizedBox(width: 6),
-                      _buildTag(context, comment.tag),
-                    ],
-                  ],
-                ),
-              ],
+                  if (comment.pinned == true)
+                    Icon(Icons.push_pin_rounded,
+                        size: isCompact ? 11 : 13, color: colorScheme.primary),
+                  if (isLocked)
+                    Icon(Icons.lock_rounded,
+                        size: isCompact ? 11 : 13, color: colorScheme.error),
+                ],
+              ),
               SizedBox(height: isCompact ? 6 : 12),
               _SpoilerText(
                 text: comment.commentText,

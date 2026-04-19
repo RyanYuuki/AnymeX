@@ -56,9 +56,9 @@ class AnimeDetailsPage extends StatefulWidget {
   final int initialTabIndex;
   const AnimeDetailsPage(
       {super.key,
-      required this.media,
-      required this.tag,
-      this.initialTabIndex = 0});
+        required this.media,
+        required this.tag,
+        this.initialTabIndex = 0});
 
   @override
   State<AnimeDetailsPage> createState() => _AnimeDetailsPageState();
@@ -274,7 +274,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
   void _updateAnifyAvailabilityForSource() {
     final shouldDisable =
-        sourceController.activeSource.value is CloudStreamSource;
+    sourceController.activeSource.value is CloudStreamSource;
     disableAnifyForCurrentSource.value = shouldDisable;
 
     if (widget.media.serviceType == ServicesType.extensions ||
@@ -413,13 +413,13 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     ];
 
     final englishTitle =
-        englishCandidates.firstWhere((title) => title.isNotEmpty, orElse: () {
+    englishCandidates.firstWhere((title) => title.isNotEmpty, orElse: () {
       return romajiCandidates.firstWhere((title) => title.isNotEmpty,
           orElse: () => 'Unknown Title');
     });
 
     final romajiTitle =
-        romajiCandidates.firstWhere((title) => title.isNotEmpty, orElse: () {
+    romajiCandidates.firstWhere((title) => title.isNotEmpty, orElse: () {
       return englishTitle;
     });
 
@@ -652,13 +652,20 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                         Obx(() {
                           widget
                               .media.serviceType.onlineService.animeList.value;
-                          return Row(
+                          return Wrap(
+                            spacing: 7,
+                            runSpacing: 7,
+                            crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
                               if (widget.media.serviceType !=
-                                      ServicesType.extensions &&
+                                  ServicesType.extensions &&
                                   widget.media.serviceType.onlineService
                                       .isLoggedIn.value) ...[
-                                Expanded(
+                                ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                      minWidth:
+                                      MediaQuery.of(context).size.width *
+                                          0.4),
                                   child: Container(
                                     height: 50,
                                     decoration: BoxDecoration(
@@ -688,44 +695,36 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                                           }
                                         },
                                         borderRadius: BorderRadius.circular(16),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            AnymexText(
-                                              text: convertAniListStatus(
-                                                  animeStatus.value),
-                                              variant: TextVariant.bold,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .primary,
-                                            ),
-                                          ],
+                                        child: Center(
+                                          child: AnymexText(
+                                            text: convertAniListStatus(
+                                                animeStatus.value),
+                                            variant: TextVariant.bold,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
                                 ),
-                                const SizedBox(width: 7),
                                 _buildActionIconButton(
                                   context: context,
                                   icon: Icons.share_rounded,
                                   onTap: _showShareOptions,
                                 ),
-                                const SizedBox(width: 7),
                                 if (CommunityService.votingEnabled)
                                   RecommendIconButton(
                                     media: anilistData!,
                                     mediaItemType: ItemType.anime,
                                     buttonBuilder: (onTap, icon) =>
                                         _buildActionIconButton(
-                                      context: context,
-                                      icon: Icons.recommend_rounded,
-                                      onTap: onTap,
-                                    ),
+                                          context: context,
+                                          icon: Icons.recommend_rounded,
+                                          onTap: onTap,
+                                        ),
                                   ),
-                                if (CommunityService.votingEnabled)
-                                  const SizedBox(width: 7),
                                 _buildActionIconButton(
                                   context: context,
                                   icon: HugeIcons.strokeRoundedLibrary,
@@ -733,7 +732,6 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                                     showCustomListDialog(context, anilistData!);
                                   },
                                 ),
-                                const SizedBox(width: 7),
                                 Obx(() => _buildFavoriteButton(context)),
                               ] else ...[
                                 _buildActionIconButton(
@@ -741,8 +739,11 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                                   icon: Icons.share_rounded,
                                   onTap: _showShareOptions,
                                 ),
-                                const SizedBox(width: 7),
-                                Expanded(
+                                ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                      minWidth:
+                                      MediaQuery.of(context).size.width *
+                                          0.4),
                                   child: AnymexButton2(
                                     onTap: () {
                                       showCustomListDialog(
@@ -751,8 +752,9 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                                     label: 'Add to Library',
                                     icon: HugeIcons.strokeRoundedLibrary,
                                   ),
-                                )
-                              ]
+                                ),
+                                Obx(() => _buildFavoriteButton(context)),
+                              ],
                             ],
                           );
                         }),
@@ -941,7 +943,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
                   color:
-                      context.colors.primary.opaque(0.1, iReallyMeanIt: true),
+                  context.colors.primary.opaque(0.1, iReallyMeanIt: true),
                 ),
                 child: Text(
                   '${formatProgress(currentChapter: currentAnime.value?.episodeCount ?? 0, totalChapters: anilistData?.totalEpisodes ?? 0, altLength: 0)}%',
@@ -958,20 +960,26 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
             const SizedBox(height: 10),
             Row(
               children: [
-                _buildTimeStat(context,
-                    label: 'Total',
-                    value: _formatWatchTime(totalMins),
-                    color: context.colors.onSurface),
+                Expanded(
+                  child: _buildTimeStat(context,
+                      label: 'Total',
+                      value: _formatWatchTime(totalMins),
+                      color: context.colors.onSurface),
+                ),
                 const SizedBox(width: 8),
-                _buildTimeStat(context,
-                    label: 'Watched',
-                    value: _formatWatchTime(watchedMins),
-                    color: context.colors.primary),
+                Expanded(
+                  child: _buildTimeStat(context,
+                      label: 'Watched',
+                      value: _formatWatchTime(watchedMins),
+                      color: context.colors.primary),
+                ),
                 const SizedBox(width: 8),
-                _buildTimeStat(context,
-                    label: 'Remaining',
-                    value: _formatWatchTime(remainingMins),
-                    color: context.colors.error),
+                Expanded(
+                  child: _buildTimeStat(context,
+                      label: 'Remaining',
+                      value: _formatWatchTime(remainingMins),
+                      color: context.colors.error),
+                ),
               ],
             ),
           ],
@@ -1013,7 +1021,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
             children: [
               const SizedBox(height: 20),
               Obx(
-                () => AnimeStats(
+                    () => AnimeStats(
                   data: anilistData!,
                   countdown: formatTime(timeLeft.value),
                   friendsWatching: anilistData?.friendsWatching,
@@ -1043,8 +1051,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
           data: anilistData!.recommendations,
           title: widget.media.serviceType == ServicesType.simkl
               ? (anilistData!.id.endsWith('*MOVIE')
-                  ? 'Recommended Movies'
-                  : 'Recommended Shows')
+              ? 'Recommended Movies'
+              : 'Recommended Shows')
               : 'Recommended Animes',
           variant: DataVariant.recommendation,
         ),
@@ -1054,90 +1062,90 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
   Widget _buildDesktopNav() {
     return Obx(() => Container(
-          margin: const EdgeInsets.all(20),
-          width: 85,
-          height: 300,
-          child: Column(
-            children: [
-              Container(
-                width: 70,
-                height: 65,
-                padding: const EdgeInsets.all(0),
-                margin: const EdgeInsets.symmetric(
-                  horizontal: 5,
-                  vertical: 0,
+      margin: const EdgeInsets.all(20),
+      width: 85,
+      height: 300,
+      child: Column(
+        children: [
+          Container(
+            width: 70,
+            height: 65,
+            padding: const EdgeInsets.all(0),
+            margin: const EdgeInsets.symmetric(
+              horizontal: 5,
+              vertical: 0,
+            ),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+                color: Colors.transparent,
+                border: Border.all(
+                  color:
+                  Theme.of(context).colorScheme.onSurface.opaque(0.2),
+                  width: 1,
                 ),
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    border: Border.all(
-                      color:
-                          Theme.of(context).colorScheme.onSurface.opaque(0.2),
-                      width: 1,
-                    ),
-                    borderRadius: BorderRadius.circular(
-                      20.multiplyRadius(),
-                    )),
-                child: NavBarItem(
-                  isSelected: false,
-                  isVertical: true,
-                  onTap: () {
-                    Get.back();
-                  },
-                  selectedIcon: Iconsax.back_square,
-                  unselectedIcon: IconlyBold.arrow_left,
-                ),
-              ),
-              const SizedBox(height: 10),
-              ResponsiveNavBar(
-                  isDesktop: true,
-                  currentIndex: selectedPage.value,
-                  borderRadius: BorderRadius.circular(20),
-                  items: [
-                    NavItem(
-                        onTap: _onPageSelected,
-                        selectedIcon: Iconsax.info_circle5,
-                        unselectedIcon: Iconsax.info_circle,
-                        label: "Info"),
-                    if (sourceController.shouldShowExtensions.value)
-                      NavItem(
-                          onTap: _onPageSelected,
-                          selectedIcon: Iconsax.play5,
-                          unselectedIcon: Iconsax.play,
-                          label: "Watch"),
-                    NavItem(
-                        onTap: _onPageSelected,
-                        selectedIcon: HugeIcons.strokeRoundedComment01,
-                        unselectedIcon: HugeIcons.strokeRoundedComment02,
-                        label: "Comments"),
-                  ]),
-            ],
+                borderRadius: BorderRadius.circular(
+                  20.multiplyRadius(),
+                )),
+            child: NavBarItem(
+              isSelected: false,
+              isVertical: true,
+              onTap: () {
+                Get.back();
+              },
+              selectedIcon: Iconsax.back_square,
+              unselectedIcon: IconlyBold.arrow_left,
+            ),
           ),
-        ));
+          const SizedBox(height: 10),
+          ResponsiveNavBar(
+              isDesktop: true,
+              currentIndex: selectedPage.value,
+              borderRadius: BorderRadius.circular(20),
+              items: [
+                NavItem(
+                    onTap: _onPageSelected,
+                    selectedIcon: Iconsax.info_circle5,
+                    unselectedIcon: Iconsax.info_circle,
+                    label: "Info"),
+                if (sourceController.shouldShowExtensions.value)
+                  NavItem(
+                      onTap: _onPageSelected,
+                      selectedIcon: Iconsax.play5,
+                      unselectedIcon: Iconsax.play,
+                      label: "Watch"),
+                NavItem(
+                    onTap: _onPageSelected,
+                    selectedIcon: HugeIcons.strokeRoundedComment01,
+                    unselectedIcon: HugeIcons.strokeRoundedComment02,
+                    label: "Comments"),
+              ]),
+        ],
+      ),
+    ));
   }
 
   Widget _buildMobiledNav() {
     return Obx(() => ResponsiveNavBar(
-            isDesktop: false,
-            currentIndex: selectedPage.value,
-            margin: const EdgeInsets.symmetric(horizontal: 80, vertical: 40),
-            items: [
-              NavItem(
-                  onTap: _onPageSelected,
-                  selectedIcon: Iconsax.info_circle5,
-                  unselectedIcon: Iconsax.info_circle,
-                  label: "Info"),
-              NavItem(
-                  onTap: _onPageSelected,
-                  selectedIcon: Iconsax.play5,
-                  unselectedIcon: Iconsax.play,
-                  label: "Watch"),
-              NavItem(
-                  onTap: _onPageSelected,
-                  selectedIcon: HugeIcons.strokeRoundedComment01,
-                  unselectedIcon: HugeIcons.strokeRoundedComment02,
-                  label: "Comments"),
-            ]));
+        isDesktop: false,
+        currentIndex: selectedPage.value,
+        margin: const EdgeInsets.symmetric(horizontal: 80, vertical: 40),
+        items: [
+          NavItem(
+              onTap: _onPageSelected,
+              selectedIcon: Iconsax.info_circle5,
+              unselectedIcon: Iconsax.info_circle,
+              label: "Info"),
+          NavItem(
+              onTap: _onPageSelected,
+              selectedIcon: Iconsax.play5,
+              unselectedIcon: Iconsax.play,
+              label: "Watch"),
+          NavItem(
+              onTap: _onPageSelected,
+              selectedIcon: HugeIcons.strokeRoundedComment01,
+              unselectedIcon: HugeIcons.strokeRoundedComment02,
+              label: "Comments"),
+        ]));
   }
 
   void showListEditorModal(BuildContext context) {
