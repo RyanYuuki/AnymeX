@@ -124,7 +124,7 @@ Widget buildUnderratedMangaSection(String title, List<CommunityMedia> data,
 }
 
 Widget buildMediaSectionWithSeeAll(String title, RxList<Media> data, ItemType type,
-    {VoidCallback? onSeeAll, VoidCallback? onRefresh}) {
+    {VoidCallback? onSeeAll, VoidCallback? onRefresh, DataVariant variant = DataVariant.regular}) {
   if (data.isEmpty) return const SizedBox.shrink();
   return _MediaSectionWithSeeAll(
     title: title,
@@ -132,6 +132,7 @@ Widget buildMediaSectionWithSeeAll(String title, RxList<Media> data, ItemType ty
     type: type,
     onSeeAll: onSeeAll,
     onRefresh: onRefresh,
+    variant: variant,
   );
 }
 
@@ -161,6 +162,7 @@ class _MediaSectionWithSeeAll extends StatelessWidget {
   final ItemType type;
   final VoidCallback? onSeeAll;
   final VoidCallback? onRefresh;
+  final DataVariant variant;
 
   const _MediaSectionWithSeeAll({
     required this.title,
@@ -168,6 +170,7 @@ class _MediaSectionWithSeeAll extends StatelessWidget {
     required this.type,
     this.onSeeAll,
     this.onRefresh,
+    this.variant = DataVariant.regular,
   });
 
   @override
@@ -199,6 +202,7 @@ class _MediaSectionWithSeeAll extends StatelessWidget {
                     title: title,
                     mediaList: data,
                     type: type,
+                    variant: variant,
                     onRefresh: onRefresh,
                   )),
                   child: Row(

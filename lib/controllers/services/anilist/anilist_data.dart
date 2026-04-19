@@ -27,6 +27,7 @@ import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
 import 'package:anymex/screens/library/online/manga_list.dart';
+import 'package:anymex/screens/other/media_see_all_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart' as fb;
@@ -202,16 +203,22 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
           return Column(
             children: acceptedLists.map((e) {
               final isManga = e.contains("Manga") || e.contains("Reading");
+              final filteredData = filterListByLabel(
+                  isManga
+                      ? anilistAuth.mangaList.removeDupes()
+                      : anilistAuth.animeList.removeDupes(),
+                  e);
               return ReusableCarousel(
-                data: filterListByLabel(
-                    isManga
-                        ? anilistAuth.mangaList.removeDupes()
-                        : anilistAuth.animeList.removeDupes(),
-                    e),
+                data: filteredData,
                 title: e,
                 variant: DataVariant.anilist,
                 type: isManga ? ItemType.manga : ItemType.anime,
-                onSeeAll: () => navigate(() => isManga ? const AnilistMangaList() : const AnimeList()),
+                onSeeAll: () => navigate(() => MediaSeeAllPage(
+                  title: e,
+                  dataList: filteredData,
+                  type: isManga ? ItemType.manga : ItemType.anime,
+                  variant: DataVariant.anilist,
+                )),
               );
             }).toList(),
           );
@@ -227,6 +234,13 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                   ? recAnimes.where((e) => !ids[0].contains(e.id)).toList()
                   : recAnimes,
               type: ItemType.anime,
+              onSeeAll: () => navigate(() => MediaSeeAllPage(
+                title: "Recommended Anime",
+                dataList: isLoggedIn.value
+                    ? recAnimes.where((e) => !ids[0].contains(e.id)).toList()
+                    : recAnimes,
+                type: ItemType.anime,
+              )),
             ),
           if (acceptedLists.contains("Recommended Mangas") &&
               settings.homePageCards.keys.contains('Recommended Mangas'))
@@ -236,6 +250,13 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                   ? recMangas.where((e) => !ids[1].contains(e.id)).toList()
                   : recMangas,
               type: ItemType.manga,
+              onSeeAll: () => navigate(() => MediaSeeAllPage(
+                title: "Recommended Manga",
+                dataList: isLoggedIn.value
+                    ? recMangas.where((e) => !ids[1].contains(e.id)).toList()
+                    : recMangas,
+                type: ItemType.manga,
+              )),
             )
         ],
       )

@@ -22,6 +22,7 @@ import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
 import 'package:anymex/screens/library/online/manga_list.dart';
+import 'package:anymex/screens/other/media_see_all_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/fallback/fallback_manga.dart';
@@ -379,14 +380,18 @@ class MalService extends GetxController implements BaseService, OnlineService {
         Obx(() => Column(
               children: acceptedLists.map((e) {
                 final isManga = e.contains("Manga") || e.contains("Reading");
+                final filteredData = filterListByLabel(isManga ? mangaList : animeList, e);
                 return ReusableCarousel(
-                  data: filterListByLabel(
-                      isManga ? mangaList : animeList,
-                      e),
+                  data: filteredData,
                   title: e,
                   variant: DataVariant.anilist,
                   type: isManga ? ItemType.manga : ItemType.anime,
-                  onSeeAll: () => navigate(() => isManga ? const AnilistMangaList() : const AnimeList()),
+                  onSeeAll: () => navigate(() => MediaSeeAllPage(
+                    title: e,
+                    dataList: filteredData,
+                    type: isManga ? ItemType.manga : ItemType.anime,
+                    variant: DataVariant.anilist,
+                  )),
                 );
               }).toList(),
             )),

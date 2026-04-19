@@ -1,6 +1,6 @@
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/models/models_convertor/carousel_mapper.dart';
+import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/other_features.dart';
@@ -17,15 +17,19 @@ import 'package:get/get.dart';
 
 class MediaSeeAllPage extends StatefulWidget {
   final String title;
-  final RxList<Media> mediaList;
+  final List<dynamic> dataList;
+  final RxList<Media>? mediaList;
   final ItemType type;
+  final DataVariant variant;
   final VoidCallback? onRefresh;
 
   const MediaSeeAllPage({
     super.key,
     required this.title,
-    required this.mediaList,
+    required this.dataList,
+    this.mediaList,
     required this.type,
+    this.variant = DataVariant.regular,
     this.onRefresh,
   });
 
@@ -45,16 +49,20 @@ class _MediaSeeAllPageState extends State<MediaSeeAllPage> {
     });
   }
 
-  void _navigateToDetails(Media media) {
+  void _navigateToDetails(CarouselData itemData) {
+    final isMediaManga = widget.type == ItemType.manga;
+    final media = Media.fromCarouselData(itemData, isMediaManga);
     final tag = 'see-all-${media.id}';
-    if (widget.type == ItemType.manga) {
+    if (isMediaManga) {
       navigate(() => MangaDetailsPage(media: media, tag: tag));
     } else {
       navigate(() => AnimeDetailsPage(media: media, tag: tag));
     }
   }
 
-  void _showPeekPopup(BuildContext context, Media media) {
+  void _showPeekPopup(BuildContext context, CarouselData itemData) {
+    final isMediaManga = widget.type == ItemType.manga;
+    final media = Media.fromCarouselData(itemData, isMediaManga);
     final tag = 'see-all-${media.id}';
     MediaPeekPopup.show(context, media, widget.type, tag);
   }
@@ -84,13 +92,14 @@ class _MediaSeeAllPageState extends State<MediaSeeAllPage> {
             ),
             Expanded(
               child: Obx(() {
-                final data = widget.mediaList;
-                final cardStyle =
-                    CardStyle.values[settingsController.cardStyle];
-                final cardHeight = getCardHeight(cardStyle, isDesktop);
-                final crossAxisCount = isDesktop ? 5 : 3;
+                final List<dynamic> rawData;
+                if (widget.mediaList != null) {
+                  rawData = widget.mediaList!.toList();
+                } else {
+                  rawData = widget.dataList;
+                }
 
-                if (data.isEmpty) {
+                if (rawData.isEmpty) {
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -115,6 +124,13 @@ class _MediaSeeAllPageState extends State<MediaSeeAllPage> {
                   );
                 }
 
+                final processedData = convertData(rawData,
+                    variant: widget.variant, isManga: widget.type == ItemType.manga);
+                final cardStyle =
+                    CardStyle.values[settingsController.cardStyle];
+                final cardHeight = getCardHeight(cardStyle, isDesktop);
+                final crossAxisCount = isDesktop ? 5 : 3;
+
                 return GridView.builder(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 12, vertical: 16),
@@ -124,21 +140,20 @@ class _MediaSeeAllPageState extends State<MediaSeeAllPage> {
                     mainAxisSpacing: 10,
                     mainAxisExtent: cardHeight,
                   ),
-                  itemCount: data.length,
+                  itemCount: processedData.length,
                   itemBuilder: (context, index) {
-                    final media = data[index];
-                    final carouselData = media.toCarouselData(
-                        isManga: widget.type == ItemType.manga);
+                    final carouselData = processedData[index];
                     final tag =
-                        'see-all-${carouselData.id}-${media.hashCode}';
+                        'see-all-${carouselData.id}-${carouselData.hashCode}';
 
                     return GestureDetector(
-                      onTap: () => _navigateToDetails(media),
-                      onLongPress: () => _showPeekPopup(context, media),
+                      onTap: () => _navigateToDetails(carouselData),
+                      onLongPress: () =>
+                          _showPeekPopup(context, carouselData),
                       child: MediaCardGate(
                         itemData: carouselData,
                         tag: tag,
-                        variant: DataVariant.regular,
+                        variant: widget.variant,
                         cardStyle: cardStyle,
                         type: widget.type,
                       ),
