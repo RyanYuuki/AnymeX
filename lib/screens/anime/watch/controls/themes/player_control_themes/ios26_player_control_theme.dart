@@ -414,21 +414,27 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
         tooltip: 'Shaders & Color Profiles',
         compact: true,
       ),
-      'subtitles': !controller.isOffline.value
-          ? ControlButton(
-              icon: Symbols.subtitles_rounded,
-              onPressed: () =>
-                  PlayerBottomSheets.showUnifiedSubtitles(context, controller),
-              tooltip: 'Subtitles',
-              compact: true,
-            )
-          : ControlButton(
-              icon: Symbols.subtitles_rounded,
-              onPressed: () =>
-                  PlayerBottomSheets.showUnifiedSubtitles(context, controller),
-              tooltip: 'Subtitles',
-              compact: true,
-            ),
+      'source': ControlButton(
+        icon: Symbols.cloud_rounded,
+        onPressed: () => controller.isSourcePaneOpened.value =
+            !controller.isSourcePaneOpened.value,
+        tooltip: 'Source',
+        compact: true,
+      ),
+      'tracks': ControlButton(
+        icon: Symbols.library_music_rounded,
+        onPressed: () => controller.isTracksPaneOpened.value =
+            !controller.isTracksPaneOpened.value,
+        tooltip: 'Tracks',
+        compact: true,
+      ),
+      'sync_subs': ControlButton(
+        icon: Symbols.sync_rounded,
+        onPressed: () => controller.isSyncSubsPaneOpened.value =
+            !controller.isSyncSubsPaneOpened.value,
+        tooltip: 'Sync Subs',
+        compact: true,
+      ),
       'server': ControlButton(
         icon: Symbols.cloud_rounded,
         onPressed: () =>

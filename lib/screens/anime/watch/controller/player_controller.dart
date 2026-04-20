@@ -1,7 +1,8 @@
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
+import 'package:path/path.dart' as p;
 
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
@@ -19,7 +20,7 @@ import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
 import 'package:anymex/screens/anime/watch/player/base_player.dart';
 import 'package:anymex/screens/anime/watch/player/better_player.dart';
 import 'package:anymex/screens/anime/watch/player/media_kit_player.dart';
-import 'package:anymex/screens/anime/watch/subtitles/model/online_subtitle.dart';
+
 import 'package:anymex/utils/aniskip.dart' as aniskip;
 import 'package:anymex/utils/color_profiler.dart';
 import 'package:anymex/utils/logger.dart';
@@ -36,6 +37,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:path/path.dart' as p;
 import 'package:rxdart/rxdart.dart' show ThrottleExtensions;
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:sensors_plus/sensors_plus.dart';
@@ -180,8 +182,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final Rxn<model.Video> selectedVideo = Rxn();
   final Rx<List<model.Track>> externalSubs = Rx([]);
   final RxBool showAllStreamSubtitles = false.obs;
-  final Rx<bool> isSubtitlePaneOpened = false.obs;
-  final Rx<bool> isSubtitleUnifiedPaneOpened = false.obs;
+  final Rx<bool> isSourcePaneOpened = false.obs;
+  final Rx<bool> isTracksPaneOpened = false.obs;
+  final Rx<bool> isSyncSubsPaneOpened = false.obs;
+  final RxList<SubtitleCue> parsedSubtitleCues = <SubtitleCue>[].obs;
   final Rx<bool> isEpisodePaneOpened = false.obs;
   final RxBool canGoForward = false.obs;
   final RxBool canGoBackward = false.obs;
@@ -205,6 +209,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final RxInt autoSkipCountdownRemaining = 0.obs;
   Timer? _autoSkipCountdownTimer;
   bool _autoSkipCancelledForCurrentSegment = false;
+
+  Worker? _subSyncWorker;
 
   bool get isAutoSkipCountdownActive => autoSkipCountdownRemaining.value > 0;
 
@@ -284,6 +290,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _initializeSwipeStuffs();
     _initializeControlsAutoHide();
     updateNavigatorState();
+    if (isOffline.value) {
+      _loadLocalSubtitles();
+    }
     ever(selectedVideo, (_) {
       final audios = selectedVideo.value?.audios ?? [];
       embeddedAudioTracks.value = audios
@@ -307,11 +316,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         'leftButtonIds': ['playlist'],
         'rightButtonIds': [
           'shaders',
-          'subtitles',
-          'server',
-          'quality',
+          'source',
+          'tracks',
+          'sync_subs',
           'speed',
-          'audio_track',
           'orientation',
           'aspect_ratio'
         ],
@@ -319,11 +327,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         'buttonConfigs': {
           'playlist': {'visible': true},
           'shaders': {'visible': true},
-          'subtitles': {'visible': true},
-          'server': {'visible': true},
-          'quality': {'visible': true},
+          'source': {'visible': true},
+          'tracks': {'visible': true},
+          'sync_subs': {'visible': true},
           'speed': {'visible': true},
-          'audio_track': {'visible': true},
           'orientation': {'visible': true},
           'aspect_ratio': {'visible': true},
         },
@@ -762,6 +769,15 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       lastAutoTranslate = autoTranslate;
       lastTranslateTo = translateTo;
     }));
+
+    _subSyncWorker = ever(selectedExternalSub, (track) {
+      if (track.file != null && track.file!.isNotEmpty) {
+        final url = _resolveSubtitleUrl(track.file!);
+        loadSubtitleCuesFromUrl(url);
+      } else {
+        parsedSubtitleCues.clear();
+      }
+    });
   }
 
   void _bindPlayerStreams() {
@@ -824,7 +840,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _playerSubscriptions.add(_basePlayer.tracksStream.listen((e) {
       embeddedAudioTracks.value = [];
       for (var i in e.audio) {
-        if (i.url?.isEmpty ?? true) continue;
         embeddedAudioTracks.value.add(i);
       }
       embeddedSubs.value = e.subtitle
@@ -921,6 +936,39 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }));
   }
 
+  void _loadLocalSubtitles() async {
+    if (offlineVideoPath == null) return;
+    try {
+      final videoFile = File(offlineVideoPath!);
+      final parentDir = videoFile.parent;
+      final subsDir = Directory(
+          p.join(parentDir.path, 'Episode_${currentEpisode.value.number}_subs'));
+
+      if (await subsDir.exists()) {
+        final files = await subsDir.list().toList();
+        final subFiles = files.whereType<File>().where((f) {
+          final ext = p.extension(f.path).toLowerCase();
+          return ext == '.vtt' ||
+              ext == '.srt' ||
+              ext == '.ass' ||
+              ext == '.ssa';
+        }).toList();
+
+        final tracks = subFiles.map((f) {
+          final label = p.basenameWithoutExtension(f.path);
+          return model.Track(
+            file: f.path,
+            label: label,
+          );
+        }).toList();
+
+        externalSubs.update((val) { val?.addAll(tracks); });
+      }
+    } catch (e) {
+      debugPrint('Error loading local subtitles: $e');
+    }
+  }
+
   void _initializeControlsAutoHide() {
     ever(showControls, (visible) {
       if (visible) {
@@ -948,7 +996,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     if (showControls.value && !isMouseHovering.value) {
       _autoHideTimer = Timer(_autoHideDuration, () {
         if (!isMouseHovering.value &&
-            !isSubtitlePaneOpened.value &&
+            !isSourcePaneOpened.value &&
             !isEpisodePaneOpened.value) {
           showControls.value = false;
         }
@@ -1162,7 +1210,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         ? <model.Video>[]
         : episodeTracks.where((v) => v.url == currentUrl).toList();
     return _processSubtitles(
-      tracks.isNotEmpty ? tracks : [if (selectedVideo.value != null) selectedVideo.value!],
+      tracks.isNotEmpty
+          ? tracks
+          : [if (selectedVideo.value != null) selectedVideo.value!],
       includeServerSuffix: false,
     );
   }
@@ -1192,7 +1242,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       }
 
       if (selectedExternalSub.value.file != null &&
-          currentStreamSubs.any((e) => e.file == selectedExternalSub.value.file)) {
+          currentStreamSubs
+              .any((e) => e.file == selectedExternalSub.value.file)) {
         final match = currentStreamSubs.firstWhere(
           (e) => e.file == selectedExternalSub.value.file,
           orElse: () => currentStreamSubs.first,
@@ -1217,6 +1268,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> delete() async {
+    _subSyncWorker?.dispose();
     _seekDebounce?.cancel();
     _brightnessTimer?.cancel();
     _volumeTimer?.cancel();
@@ -1304,6 +1356,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void setVideoTrack(VideoTrack track) {
     _basePlayer.setVideoTrack(track);
+    selectedQualityTrack.value = track;
   }
 
   void setAudioTrack(AudioTrack track) {
@@ -1546,22 +1599,92 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     setAudioTrack(AudioTrack.uri(track.file!));
   }
 
-  void toggleSubtitlePane() {
-    isSubtitlePaneOpened.value = !isSubtitlePaneOpened.value;
-    if (isSubtitlePaneOpened.value) {
-      _cancelAutoHideTimer();
-    } else {
-      _resetAutoHideTimer();
+  void parseSubtitleCues(String subtitleContent) {
+    final cues = <SubtitleCue>[];
+
+    final content = subtitleContent.replaceAll('\r\n', '\n');
+    final blocks = content.split(RegExp(r'\n\s*\n'));
+
+    final timestampPattern = RegExp(
+      r'(\d{1,2}:\d{2}:\d{2}[,.]\d{3})\s*-->\s*(\d{1,2}:\d{2}:\d{2}[,.]\d{3})',
+    );
+
+    for (var block in blocks) {
+      final match = timestampPattern.firstMatch(block);
+      if (match != null) {
+        final start = _parseDuration(match.group(1)!);
+        final end = _parseDuration(match.group(2)!);
+
+        final lines = block.split('\n');
+        final timestampLineIndex = lines.indexWhere((l) => l.contains('-->'));
+
+        if (timestampLineIndex != -1 && timestampLineIndex < lines.length - 1) {
+          final text = lines
+              .sublist(timestampLineIndex + 1)
+              .join('\n')
+              .replaceAll(RegExp(r'<[^>]*>'), '')
+              .replaceAll(RegExp(r'\{[^}]*\}'), '')
+              .replaceAll(RegExp(r'\\[nN]'), '\n')
+              .trim();
+
+          if (text.isNotEmpty) {
+            cues.add(SubtitleCue(start: start, end: end, text: text));
+          }
+        }
+      }
     }
+
+    parsedSubtitleCues.assignAll(cues);
   }
 
-  void addOnlineSub(OnlineSubtitle sub) {
-    externalSubs.value.insert(
-        0,
-        model.Track(
-          label: '${sub.label} (Online)',
-          file: sub.url,
-        ));
+  Duration _parseDuration(String timestamp) {
+    timestamp = timestamp.replaceAll(',', '.');
+    final parts = timestamp.split(':');
+    if (parts.length == 3) {
+      final hours = int.tryParse(parts[0]) ?? 0;
+      final minutes = int.tryParse(parts[1]) ?? 0;
+      final secParts = parts[2].split('.');
+      final seconds = int.tryParse(secParts[0]) ?? 0;
+      final millis = int.tryParse(secParts.length > 1
+              ? secParts[1].padRight(3, '0').substring(0, 3)
+              : '0') ??
+          0;
+      return Duration(
+          hours: hours,
+          minutes: minutes,
+          seconds: seconds,
+          milliseconds: millis);
+    }
+    if (parts.length == 2) {
+      final minutes = int.tryParse(parts[0]) ?? 0;
+      final secParts = parts[1].split('.');
+      final seconds = int.tryParse(secParts[0]) ?? 0;
+      final millis = int.tryParse(secParts.length > 1
+              ? secParts[1].padRight(3, '0').substring(0, 3)
+              : '0') ??
+          0;
+      return Duration(minutes: minutes, seconds: seconds, milliseconds: millis);
+    }
+    return Duration.zero;
+  }
+
+  Future<void> loadSubtitleCuesFromUrl(String url) async {
+    try {
+      parsedSubtitleCues.clear();
+      final uri = Uri.tryParse(url);
+      if (uri == null) return;
+
+      final client = HttpClient();
+      final request = await client.getUrl(uri);
+      final response = await request.close();
+      final content = await response
+          .transform(const Utf8Decoder(allowMalformed: true))
+          .join();
+      client.close();
+      parseSubtitleCues(content);
+    } catch (e) {
+      Logger.e('Failed to load subtitle cues: $e');
+    }
   }
 
   Future<void> onLibassPreferenceChanged(bool enabled) async {
@@ -1877,4 +2000,12 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       isCompleted: shouldRemove,
     );
   }
+}
+
+class SubtitleCue {
+  final Duration start;
+  final Duration end;
+  final String text;
+
+  SubtitleCue({required this.start, required this.end, required this.text});
 }

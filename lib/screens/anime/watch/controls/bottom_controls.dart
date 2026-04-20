@@ -246,12 +246,6 @@ class BottomControls extends StatelessWidget {
         (buttonConfigs[id]?['visible'] as bool?) ?? true;
 
     final serverCount = controller.episodeTracks.length;
-    final qualityCount = controller.embeddedQuality.value
-        .where((e) => e.height != null && e.width != null)
-        .length;
-    final audioCount = controller.embeddedAudioTracks.value
-        .where((e) => e.title != null && e.language != null)
-        .length;
 
     final Map<String, Widget> buttonWidgets = {
       'playlist': ControlButton(
@@ -269,38 +263,31 @@ class BottomControls extends StatelessWidget {
         tooltip: 'Shaders & Color Profiles',
         compact: true,
       ),
-      'subtitles': !controller.isOffline.value
-          ? ControlButton(
-              icon: Symbols.subtitles_rounded,
-              onPressed: () {
-                controller.isSubtitleUnifiedPaneOpened.value =
-                    !controller.isSubtitleUnifiedPaneOpened.value;
-              },
-              tooltip: 'Subtitles',
-              compact: true,
-            )
-          : ControlButton(
-              icon: Symbols.subtitles_rounded,
-              onPressed: () {
-                controller.isSubtitleUnifiedPaneOpened.value =
-                    !controller.isSubtitleUnifiedPaneOpened.value;
-              },
-              tooltip: 'Subtitles',
-              compact: true,
-            ),
-      'server': ControlButton(
+      'source': ControlButton(
         icon: Symbols.cloud_rounded,
         onPressed: () {
-          PlayerBottomSheets.showVideoServers(context, controller);
+          controller.isSourcePaneOpened.value =
+              !controller.isSourcePaneOpened.value;
         },
-        tooltip: 'Server',
+        tooltip: 'Source',
         compact: true,
       ),
-      'quality': ControlButton(
-        icon: Symbols.high_quality_rounded,
-        onPressed: () =>
-            PlayerBottomSheets.showVideoQuality(context, controller),
-        tooltip: 'Quality',
+      'tracks': ControlButton(
+        icon: Symbols.library_music_rounded,
+        onPressed: () {
+          controller.isTracksPaneOpened.value =
+              !controller.isTracksPaneOpened.value;
+        },
+        tooltip: 'Tracks',
+        compact: true,
+      ),
+      'sync_subs': ControlButton(
+        icon: Symbols.sync_rounded,
+        onPressed: () {
+          controller.isSyncSubsPaneOpened.value =
+              !controller.isSyncSubsPaneOpened.value;
+        },
+        tooltip: 'Sync Subtitles',
         compact: true,
       ),
       'speed': ControlButton(
@@ -308,13 +295,6 @@ class BottomControls extends StatelessWidget {
         onPressed: () =>
             PlayerBottomSheets.showPlaybackSpeed(context, controller),
         tooltip: 'Speed',
-        compact: true,
-      ),
-      'audio_track': ControlButton(
-        icon: Symbols.music_note_rounded,
-        onPressed: () =>
-            PlayerBottomSheets.showAudioTracks(context, controller),
-        tooltip: 'Audio Track',
         compact: true,
       ),
       'orientation': ControlButton(
@@ -338,14 +318,11 @@ class BottomControls extends StatelessWidget {
 
       for (var id in ids) {
         if (!isVisible(id)) continue;
-        if (id == 'server' && controller.isOffline.value) continue;
-        if (id == 'quality' && controller.isOffline.value) continue;
+        if (id == 'source' && (controller.isOffline.value || (serverCount <= 1 && controller.getCurrentStreamSubtitleOptions().isEmpty))) continue;
+        if (id == 'tracks' && (controller.embeddedAudioTracks.value.isEmpty && controller.embeddedSubs.value.isEmpty)) continue;
         if (id == 'orientation' && !(Platform.isAndroid || Platform.isIOS)) {
           continue;
         }
-        if (id == 'server' && serverCount <= 1) continue;
-        if (id == 'quality' && qualityCount <= 1) continue;
-        if (id == 'audio_track' && audioCount <= 1) continue;
 
         final widget = buttonWidgets[id];
         if (widget != null) {

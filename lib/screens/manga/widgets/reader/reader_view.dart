@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
@@ -473,23 +475,30 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
             vertical: widget.controller.spacedPages.value ? 8.0 : 0),
         child: Center(
           child: widget.controller.cropImages.value
-              ? CroppedNetworkImage(
-                  url: page.url,
-                  headers: (page.headers?.isEmpty ?? true)
-                      ? {
-                          'Referer': sourceController
-                                  .activeMangaSource.value?.baseUrl ??
-                              ''
-                        }
-                      : page.headers,
-                  fit: BoxFit.contain,
-                  alignment: Alignment.center,
-                  cropThreshold: 30,
-                  placeholder:
-                      _buildPageLoadingWidget(context, pageIndex: index),
-                )
-              : ExtendedImage.network(
-                  page.url,
+              ? (page.url.startsWith('http')
+                  ? CroppedNetworkImage(
+                      url: page.url,
+                      headers: (page.headers?.isEmpty ?? true)
+                          ? {
+                              'Referer': sourceController
+                                      .activeMangaSource.value?.baseUrl ??
+                                  ''
+                            }
+                          : page.headers,
+                      fit: BoxFit.contain,
+                      alignment: Alignment.center,
+                      cropThreshold: 30,
+                      placeholder:
+                          _buildPageLoadingWidget(context, pageIndex: index),
+                    )
+                  : Image.file(
+                      File(page.url),
+                      fit: BoxFit.contain,
+                      alignment: Alignment.center,
+                    ))
+              : (page.url.startsWith('http')
+                  ? ExtendedImage.network(
+                      page.url,
                   cacheMaxAge:
                       Duration(days: PlayerUiKeys.cacheDays.get<int>(7)),
                   mode: ExtendedImageMode.none,
@@ -561,7 +570,19 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                         return state.completedWidget;
                     }
                   },
-                ),
+                )
+              : ExtendedImage.file(
+                  File(page.url),
+                  fit: BoxFit.contain,
+                  constraints: isContinuous
+                      ? BoxConstraints(
+                          maxWidth:
+                              500 * widget.controller.pageWidthMultiplier.value)
+                      : null,
+                  alignment: Alignment.center,
+                  filterQuality: FilterQuality.medium,
+                  enableLoadState: true,
+                )),
         ),
       );
     });

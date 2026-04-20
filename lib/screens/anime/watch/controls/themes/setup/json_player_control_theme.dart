@@ -1147,16 +1147,18 @@ class ThemeRenderer {
         controller.openColorProfileBottomSheet(context);
         break;
       case 'subtitles':
-        if (controller.isOffline.value) {
-          PlayerBottomSheets.showOfflineSubs(context, controller);
-        } else {
-          PlayerBottomSheets.showSubtitleTracks(context, controller);
-        }
+      case 'source':
+        controller.isSourcePaneOpened.value = !controller.isSourcePaneOpened.value;
         break;
       case 'server':
-        if (!controller.isOffline.value) {
-          PlayerBottomSheets.showVideoServers(context, controller);
-        }
+        controller.isSourcePaneOpened.value = !controller.isSourcePaneOpened.value;
+        break;
+      case 'sync_subs':
+        controller.isSyncSubsPaneOpened.value = !controller.isSyncSubsPaneOpened.value;
+        break;
+      case 'tracks':
+      case 'audio_track':
+        controller.isTracksPaneOpened.value = !controller.isTracksPaneOpened.value;
         break;
       case 'quality':
         if (!controller.isOffline.value) {
@@ -1166,8 +1168,6 @@ class ThemeRenderer {
       case 'speed':
         PlayerBottomSheets.showPlaybackSpeed(context, controller);
         break;
-      case 'audio_track':
-        PlayerBottomSheets.showAudioTracks(context, controller);
         break;
       case 'orientation':
         if (_isMobile) controller.toggleOrientation();
