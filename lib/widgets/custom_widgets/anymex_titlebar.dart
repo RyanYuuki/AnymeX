@@ -1,11 +1,14 @@
 import 'dart:io';
 
 import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
+import 'package:ffi/ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/controllers/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:win32/win32.dart';
+import 'dart:ffi';
 
 class AnymexTitleBar {
   static final ValueNotifier<bool> isFullScreen = ValueNotifier(false);
@@ -38,6 +41,18 @@ class AnymexTitleBar {
     });
   }
 
+  static void listenToWin32() {
+    final hwnd = GetForegroundWindow();
+
+    final placement = calloc<WINDOWPLACEMENT>();
+    GetWindowPlacement(hwnd, placement);
+
+    final isMaximized = placement.ref.showCmd == SW_SHOWMAXIMIZED;
+    AnymexTitleBar.isMaximized.value = isMaximized;
+
+    calloc.free(placement);
+  }
+
   static Widget titleBar() => ValueListenableBuilder<bool>(
         valueListenable: isFullScreen,
         builder: (_, fullscreen, __) {
@@ -66,6 +81,13 @@ class _WindowListener extends WindowListener {
 
   @override
   void onWindowUnmaximize() => _sync();
+
+  @override
+  void onWindowResized() async {
+    if (Platform.isWindows) {
+      AnymexTitleBar.listenToWin32();
+    }
+  }
 }
 
 class _TitleBarWidget extends StatelessWidget {
@@ -88,8 +110,8 @@ class _TitleBarWidget extends StatelessWidget {
     final defaultColor = context.colors.onSurface;
 
     return RepaintBoundary(
-      child: Material(
-        color: Colors.transparent,
+        child: Material(
+      color: Colors.transparent,
       child: ClipRect(
         child: Container(
           height: 40,
