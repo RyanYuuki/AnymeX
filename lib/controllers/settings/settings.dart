@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/player/player_adaptor.dart';
 import 'package:anymex/models/ui/ui_adaptor.dart';
+import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/onboarding/welcome_dialog.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
@@ -488,6 +490,21 @@ class Settings extends GetxController {
   set playerMenuAnimation(bool value) {
     playerSettings.update((s) => s?.playerMenuAnimation = value);
     PlayerSettingsKeys.playerMenuAnimation.set(value);
+  }
+
+  String get hardwareDecoder => _getPlayerSetting((s) => s.hardwareDecoder);
+  set hardwareDecoder(String value) {
+    final normalized = switch (value) {
+      'hw+' => Platform.isAndroid ? 'hw+' : 'hw',
+      'hw' => 'hw',
+      'sw' => 'sw',
+      _ => Platform.isAndroid ? 'hw+' : 'hw',
+    };
+    playerSettings.update((s) => s?.hardwareDecoder = normalized);
+    PlayerSettingsKeys.hardwareDecoder.set(normalized);
+    if (Get.isRegistered<PlayerController>()) {
+      unawaited(Get.find<PlayerController>().reloadActivePlayer());
+    }
   }
 
   bool get enableSwipeControls =>

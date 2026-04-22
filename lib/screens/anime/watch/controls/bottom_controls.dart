@@ -281,15 +281,16 @@ class BottomControls extends StatelessWidget {
         tooltip: 'Tracks',
         compact: true,
       ),
-      'sync_subs': ControlButton(
-        icon: Symbols.sync_rounded,
-        onPressed: () {
-          controller.isSyncSubsPaneOpened.value =
-              !controller.isSyncSubsPaneOpened.value;
-        },
-        tooltip: 'Sync Subtitles',
-        compact: true,
-      ),
+      if (!controller.isOffline.value)
+        'sync_subs': ControlButton(
+          icon: Symbols.sync_rounded,
+          onPressed: () {
+            controller.isSyncSubsPaneOpened.value =
+                !controller.isSyncSubsPaneOpened.value;
+          },
+          tooltip: 'Sync Subtitles',
+          compact: true,
+        ),
       'speed': ControlButton(
         icon: Symbols.speed_rounded,
         onPressed: () =>
@@ -318,8 +319,14 @@ class BottomControls extends StatelessWidget {
 
       for (var id in ids) {
         if (!isVisible(id)) continue;
-        if (id == 'source' && (controller.isOffline.value || (serverCount <= 1 && controller.getCurrentStreamSubtitleOptions().isEmpty))) continue;
-        if (id == 'tracks' && (controller.embeddedAudioTracks.value.isEmpty && controller.embeddedSubs.value.isEmpty)) continue;
+        if (id == 'source' &&
+            (controller.isOffline.value ||
+                (serverCount <= 1 &&
+                    controller.getCurrentStreamSubtitleOptions().isEmpty)))
+          continue;
+        if (id == 'tracks' &&
+            (controller.embeddedAudioTracks.value.isEmpty &&
+                controller.embeddedSubs.value.isEmpty)) continue;
         if (id == 'orientation' && !(Platform.isAndroid || Platform.isIOS)) {
           continue;
         }

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/database/isar_models/custom_list.dart';
+import 'package:anymex/database/isar_models/key_value.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/screens/library/controller/library_controller.dart';
 import 'package:anymex/utils/logger.dart';
@@ -14,6 +15,7 @@ import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:file_picker/file_picker.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:isar_community/isar.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -36,7 +38,10 @@ class BackupRestoreService extends GetxController {
     return digest.toString().substring(0, 32);
   }
 
-  Future<Map<String, dynamic>> _buildBackupData() async {
+  Future<Map<String, dynamic>> _buildBackupData({
+    bool backupSettings = true,
+    bool backupAuthTokens = false,
+  }) async {
     final animeCustomLists =
         await _storageController.getCustomListsByType(ItemType.anime);
     final mangaCustomLists =
@@ -78,11 +83,23 @@ class BackupRestoreService extends GetxController {
       'animeCustomLists': animeCustomLists.map((e) => e.toJson()).toList(),
       'mangaCustomLists': mangaCustomLists.map((e) => e.toJson()).toList(),
       'novelCustomLists': novelCustomLists.map((e) => e.toJson()).toList(),
+      'settings': isar.collection<KeyValue>()
+          .where()
+          .findAllSync()
+          .where((e) {
+            final isAuth = e.key?.startsWith('AuthKeys_') ?? false;
+            if (isAuth) return backupAuthTokens;
+            return backupSettings;
+          })
+          .map((e) => {'key': e.key, 'value': e.value})
+          .toList(),
     };
   }
 
   Future<void> _applyBackupData(Map<String, dynamic> data,
-      {bool merge = false}) async {
+      {bool merge = false,
+      bool restoreSettings = true,
+      bool restoreAuthTokens = false}) async {
     if (!merge) {
       await _storageController.clearCache();
     }
@@ -161,6 +178,23 @@ class BackupRestoreService extends GetxController {
       });
     }
 
+    final settingsList = data['settings'] as List? ?? [];
+    await isar.writeTxn(() async {
+      for (var setting in settingsList) {
+        final key = setting['key'] as String?;
+        if (key == null) continue;
+
+        final isAuth = key.startsWith('AuthKeys_');
+        if (isAuth && !restoreAuthTokens) continue;
+        if (!isAuth && !restoreSettings) continue;
+
+        final kv = KeyValue()
+          ..key = key
+          ..value = setting['value'];
+        await isar.collection<KeyValue>().put(kv);
+      }
+    });
+
     Get.delete<LibraryController>();
   }
 
@@ -217,6 +251,8 @@ class BackupRestoreService extends GetxController {
   Future<String?> exportBackupToExternal({
     String? password,
     bool requestPath = true,
+    bool backupSettings = true,
+    bool backupAuthTokens = false,
   }) async {
     try {
       if (Platform.isAndroid && requestPath) {
@@ -227,7 +263,10 @@ class BackupRestoreService extends GetxController {
         }
       }
 
-      final data = await _buildBackupData();
+      final data = await _buildBackupData(
+        backupSettings: backupSettings,
+        backupAuthTokens: backupAuthTokens,
+      );
       final packageInfo = await PackageInfo.fromPlatform();
       data['appVersion'] = packageInfo.version;
 
@@ -309,7 +348,10 @@ class BackupRestoreService extends GetxController {
   }
 
   Future<void> restoreBackup(String filePath,
-      {String? password, bool merge = false}) async {
+      {String? password,
+      bool merge = false,
+      bool restoreSettings = true,
+      bool restoreAuthTokens = false}) async {
     try {
       final file = File(filePath);
 
@@ -323,7 +365,10 @@ class BackupRestoreService extends GetxController {
           ? _decryptData(content, password)
           : jsonDecode(content) as Map<String, dynamic>;
 
-      await _applyBackupData(data, merge: merge);
+      await _applyBackupData(data,
+          merge: merge,
+          restoreSettings: restoreSettings,
+          restoreAuthTokens: restoreAuthTokens);
 
       Logger.i('Backup restored successfully from: $filePath');
     } catch (e) {
@@ -434,6 +479,12 @@ class BackupRestoreService extends GetxController {
             (data['mangaCustomLists'] as List?)?.length ?? 0,
         'novelCustomListsCount':
             (data['novelCustomLists'] as List?)?.length ?? 0,
+        'hasSettings': (data['settings'] as List?)?.any((e) =>
+                !(e['key'] as String? ?? '').startsWith('AuthKeys_')) ??
+            false,
+        'hasAuthTokens': (data['settings'] as List?)?.any((e) =>
+                (e['key'] as String? ?? '').startsWith('AuthKeys_')) ??
+            false,
       };
     } catch (e) {
       Logger.i('Failed to get backup info: $e');

@@ -23,6 +23,7 @@ enum General {
   filterPaused,
   filterRepeating,
   communityListViewIsGrid,
+  hasJoinedNewDiscord,
 }
 
 enum ThemeKeys {
@@ -235,6 +236,7 @@ enum PlayerSettingsKeys {
   subtitleBottomMargin,
   subtitleOutlineType,
   playerMenuAnimation,
+  hardwareDecoder,
 }
 
 enum UISettingsKeys {

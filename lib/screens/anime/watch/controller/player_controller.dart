@@ -600,6 +600,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     final useMediaKit = _shouldUseMediaKit();
     final mpvCore = PlayerCoreVisualSettings.getMpvCoreSettings();
     final betterCore = PlayerCoreVisualSettings.getBetterPlayerCoreSettings();
+    final decoderHwdec = _resolveDecoderHwdec();
     final bufferSizeMb = (useMediaKit
             ? (mpvCore['demuxerMaxBytesMb'] as num? ?? 64)
             : (betterCore['bufferSizeMb'] as num? ?? 32))
@@ -608,20 +609,16 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     final config = PlayerConfiguration(
       bufferSize: bufferSizeMb * 1024 * 1024,
       useLibass: PlayerKeys.useLibass.get<bool>(false),
-      hwdec: (mpvCore['hwdec'] as String?) ?? 'auto-safe',
+      hwdec: decoderHwdec,
       playerType: useMediaKit ? PlayerType.mediaKit : PlayerType.betterPlayer,
       autoPlay: (betterCore['autoPlay'] as bool?) ?? true,
       useBuffering: (betterCore['useBuffering'] as bool?) ?? true,
     );
     _activeUseLibass = config.useLibass;
 
-    if (useMediaKit) {
-      _basePlayer = MediaKitPlayer(
-        configuration: config,
-      );
-    } else {
-      _basePlayer = BetterPlayerImpl(configuration: config);
-    }
+    _basePlayer = MediaKitPlayer(
+      configuration: config,
+    );
 
     await _basePlayer.initialize();
     _bindPlayerStreams();
@@ -636,6 +633,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         startPosition:
             startPositionOverride ?? Duration(milliseconds: stamp ?? 0),
       );
+      snackBar('If you see black screen, use external player for watching');
     } else {
       await _openWithCloudFallback(
           startPositionOverride: startPositionOverride);
@@ -656,6 +654,23 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     _performInitialTracking();
     applySavedProfile();
+  }
+
+  String _resolveDecoderHwdec() {
+    switch (settings.hardwareDecoder) {
+      case 'sw':
+        return 'no';
+      case 'hw+':
+        if (Platform.isAndroid) return 'mediacodec-copy';
+        return 'videotoolbox';
+      case 'hw':
+      default:
+        if (Platform.isAndroid) return 'mediacodec';
+        if (Platform.isIOS || Platform.isMacOS) return 'videotoolbox';
+        if (Platform.isWindows) return 'd3d11va';
+        if (Platform.isLinux) return 'vaapi';
+        return 'auto';
+    }
   }
 
   Future<void> _openWithCloudFallback({Duration? startPositionOverride}) async {
@@ -941,8 +956,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     try {
       final videoFile = File(offlineVideoPath!);
       final parentDir = videoFile.parent;
-      final subsDir = Directory(
-          p.join(parentDir.path, 'Episode_${currentEpisode.value.number}_subs'));
+      final subsDir = Directory(p.join(
+          parentDir.path, 'Episode_${currentEpisode.value.number}_subs'));
 
       if (await subsDir.exists()) {
         final files = await subsDir.list().toList();
@@ -962,7 +977,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           );
         }).toList();
 
-        externalSubs.update((val) { val?.addAll(tracks); });
+        externalSubs.update((val) {
+          val?.addAll(tracks);
+        });
       }
     } catch (e) {
       debugPrint('Error loading local subtitles: $e');
@@ -1050,10 +1067,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void setSubtitleDelay(Duration delay) {
-    if (_basePlayer is BetterPlayerImpl) {
-      snackBar('Subtitle delay is not supported in BetterPlayer');
-      return;
-    }
     subtitleDelay.value = delay;
     _basePlayer.setSubtitleDelay(delay);
   }

@@ -75,15 +75,16 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
   Widget build(BuildContext context) {
     final theme = context.theme;
     final cs = theme.colorScheme;
-    final isBetterPlayer = widget.controller.basePlayer is BetterPlayerImpl;
+    // final isBetterPlayer = widget.controller.basePlayer is BetterPlayerImpl;
+    const isBetterPlayer = false;
 
     return Column(
       children: [
         _buildHeader(cs, theme),
-        if (isBetterPlayer)
-          _buildUnsupportedBanner(cs, theme)
-        else
-          _buildDelayControls(cs, theme),
+        // if (isBetterPlayer)
+        //   _buildUnsupportedBanner(cs, theme)
+        // else
+        _buildDelayControls(cs, theme),
         Expanded(child: _buildCueViewer(cs, theme)),
       ],
     );
@@ -125,7 +126,8 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
                 color: cs.surfaceContainerHighest.withOpacity(0.5),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(Icons.close, size: 20, color: cs.onSurface.withOpacity(0.7)),
+              child: Icon(Icons.close,
+                  size: 20, color: cs.onSurface.withOpacity(0.7)),
             ),
           ),
         ],
@@ -185,7 +187,8 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
                 ),
                 const SizedBox(width: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
                     color: seconds == 0
                         ? cs.primary.withOpacity(0.1)
@@ -193,7 +196,9 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    seconds == 0 ? 'In sync' : (seconds > 0 ? 'Delayed' : 'Earlier'),
+                    seconds == 0
+                        ? 'In sync'
+                        : (seconds > 0 ? 'Delayed' : 'Earlier'),
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: seconds == 0 ? cs.primary : cs.tertiary,
                       fontWeight: FontWeight.w600,
@@ -223,7 +228,8 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
     );
   }
 
-  Widget _buildDelayChip(ColorScheme cs, ThemeData theme, String label, VoidCallback onTap) {
+  Widget _buildDelayChip(
+      ColorScheme cs, ThemeData theme, String label, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -326,7 +332,8 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 margin: const EdgeInsets.symmetric(vertical: 3),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                 decoration: BoxDecoration(
                   color: isActive
                       ? cs.primary.withOpacity(0.15)
@@ -343,7 +350,8 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
                         color: isActive
                             ? cs.primary.withOpacity(0.15)
@@ -370,7 +378,8 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
                           color: isActive
                               ? cs.primary
                               : cs.onSurface.withOpacity(isPast ? 0.4 : 0.85),
-                          fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+                          fontWeight:
+                              isActive ? FontWeight.w600 : FontWeight.w400,
                           height: 1.4,
                         ),
                       ),
@@ -390,7 +399,8 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Symbols.subtitles_off_rounded, size: 48, color: cs.onSurface.withOpacity(0.3)),
+          Icon(Symbols.subtitles_off_rounded,
+              size: 48, color: cs.onSurface.withOpacity(0.3)),
           const SizedBox(height: 16),
           Text(
             'No subtitle cues loaded',

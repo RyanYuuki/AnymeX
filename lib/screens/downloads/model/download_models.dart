@@ -50,6 +50,8 @@ class ActiveDownloadTask {
   double progress;
   String? filePath;
   String? errorMessage;
+  String? pendingFileName;
+  String? pendingMediaDir;
 
   ActiveDownloadTask({
     required this.taskId,
