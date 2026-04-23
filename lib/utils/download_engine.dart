@@ -95,7 +95,7 @@ class DownloadEngine {
     void Function(double progress)? onProgress,
   }) async {
     print('Starting HLS download: $m3u8Url with headers $headers');
-    final tsFileName = fileName.replaceAll(RegExp(r'\.\w+$'), '.ts');
+    final mp4FileName = fileName.replaceAll(RegExp(r'\.\w+$'), '.mp4');
     _cancelledTasks.remove(taskId);
 
     try {
@@ -103,7 +103,7 @@ class DownloadEngine {
       final outDir = Directory(p.join(effectiveDocsPath, subDirectory));
       await outDir.create(recursive: true);
 
-      final outPath = p.join(outDir.path, tsFileName);
+      final outPath = p.join(outDir.path, mp4FileName);
       final progressPath = '$outPath.hls_progress';
 
       final rootBody = await _fetchText(m3u8Url, headers);

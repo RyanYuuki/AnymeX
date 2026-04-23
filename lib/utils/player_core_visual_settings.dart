@@ -6,7 +6,7 @@ class PlayerCoreVisualSettings {
       PlayerUiKeys.playerExperimentalEnabled.get<bool>(false);
 
   static const Map<String, dynamic> mpvCoreDefaults = {
-    'hwdec': 'auto-safe',
+    'hwdec': 'no',
     'videoSync': 'audio',
     'interpolation': false,
     'cacheMinutes': 5,
@@ -80,7 +80,7 @@ class PlayerCoreVisualSettings {
     final settings = getMpvCoreSettings();
     final mpv = player.platform as dynamic;
 
-    await _safeSet(mpv, 'hwdec', settings['hwdec']);
+    // await _safeSet(mpv, 'hwdec', settings['hwdec']);
     await _safeSet(mpv, 'video-sync', settings['videoSync']);
     await _safeSet(mpv, 'interpolation', _boolToMpv(settings['interpolation']));
     await _safeSet(

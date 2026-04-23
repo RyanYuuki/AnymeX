@@ -44,6 +44,7 @@ class DownloadController extends GetxController {
 
   final Map<String, DateTime> _lastProgressUpdate = {};
   static const _progressThrottleMs = 250;
+  bool _receivePortListening = false;
 
   @override
   void onInit() {
@@ -152,7 +153,15 @@ class DownloadController extends GetxController {
       _sendToBackground({'type': 'GET_STATUS'});
       _sendToBackground({'type': 'UI_READY'});
     }
-    FlutterForegroundTask.receivePort?.listen(_onForegroundReceiveData);
+    _attachReceivePortListener();
+  }
+
+  void _attachReceivePortListener() {
+    if (_receivePortListening) return;
+    final port = FlutterForegroundTask.receivePort;
+    if (port == null) return;
+    port.listen(_onForegroundReceiveData);
+    _receivePortListening = true;
   }
 
   Future<void> _startBackgroundServiceIfNotRunning() async {
@@ -164,6 +173,7 @@ class DownloadController extends GetxController {
         callback: startBackgroundService,
       );
     }
+    _attachReceivePortListener();
   }
 
   void _onForegroundReceiveData(dynamic data) {
@@ -363,8 +373,14 @@ class DownloadController extends GetxController {
   }
 
   Future<void> _onTaskFinished(ActiveDownloadTask task, String fileName) async {
-    final filePath =
-        await (await FileDownloader().taskForId(task.taskId))?.filePath() ?? '';
+    String filePath = '';
+    if (task.pendingMediaDir != null && task.pendingFileName != null) {
+      filePath = p.join(task.pendingMediaDir!, task.pendingFileName!);
+    } else {
+      filePath =
+          await (await FileDownloader().taskForId(task.taskId))?.filePath() ??
+              '';
+    }
     task.filePath = filePath;
     await _writeEpisodeMeta(task, fileName);
     await _loadIndex();
@@ -685,8 +701,9 @@ class DownloadController extends GetxController {
           sortMap: task.episode.sortMap,
           url: task.videoUrl,
         );
-        final rootDir = await _getRootDir();
         final mediaDir = await _getMediaDirPath(task.mediaTitle, task.extensionName, mediaType: 'Anime');
+        task.pendingFileName = fileName;
+        task.pendingMediaDir = mediaDir;
         final standardTask = DownloadTask(
           taskId: task.taskId,
           url: task.videoUrl,
@@ -1397,12 +1414,11 @@ class DownloadController extends GetxController {
   Future<void> _downloadSubtitles(
       ActiveDownloadTask task, List<hive.Track> subs) async {
     try {
-      final docs = await getApplicationDocumentsDirectory();
+      final root = await _getRootDir();
       final subsDir = Directory(p.join(
-        docs.path,
-        'AnymeX',
-        'Downloads',
+        root.path,
         'Anime',
+        task.extensionName,
         task.mediaTitle,
         'Episode_${task.episode.number}_subs',
       ));

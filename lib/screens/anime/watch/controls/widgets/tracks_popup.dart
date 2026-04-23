@@ -279,7 +279,7 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
           return _buildListItem(
             cs: cs,
             theme: theme,
-            title: completeLanguageName(track.language ?? '') +
+            title: completeSubtitleLanguageName(track.language ?? '') +
                 (track.title != null ? ' - ${track.title}' : ''),
             subtitle: 'Audio Track',
             icon: Symbols.music_note_rounded,
@@ -322,7 +322,7 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
           return _buildListItem(
             cs: cs,
             theme: theme,
-            title: (track.title ?? track.language ?? track.url ?? track.id)
+            title: ( completeSubtitleLanguageName(track.language ?? ''))
                 .toUpperCase(),
             subtitle: 'Embedded Subtitle',
             icon: Icons.closed_caption_rounded,
