@@ -1164,7 +1164,6 @@ class CommunityMedia {
   final bool isNsfw;
   final List<ReasonEntry> reasons;
 
-  /// Raw JSON entry from the database (for passing to recommend sheet).
   final Map<String, dynamic>? rawJson;
 
   CommunityMedia({

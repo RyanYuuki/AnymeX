@@ -8,6 +8,7 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
 import 'package:anymex/screens/community/community_recommendations_page.dart';
 import 'package:anymex/controllers/services/community_service.dart';
+import 'package:anymex/controllers/services/missing_sequel/missing_sequel_service.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
@@ -21,6 +22,7 @@ import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
 import 'package:anymex/screens/library/online/manga_list.dart';
+import 'package:anymex/screens/other/media_see_all_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/fallback/fallback_manga.dart';
@@ -39,6 +41,13 @@ import 'package:http/http.dart' as http;
 
 class MalService extends GetxController implements BaseService, OnlineService {
   final communityService = Get.find<CommunityService>();
+  late final MissingSequelService missingSequelService;
+
+  @override
+  void onInit() {
+    super.onInit();
+    missingSequelService = Get.find<MissingSequelService>();
+  }
 
   Media? _firstMediaWithCover(Iterable<Media> mediaList) {
     for (final media in mediaList) {
@@ -115,11 +124,27 @@ class MalService extends GetxController implements BaseService, OnlineService {
             : Column(
                 children: [
                   buildBigCarousel(trendingAnimes, false),
-                  buildSectionIfNotEmpty("Trending Anime", trendingAnimes),
-                  buildSectionIfNotEmpty("Popular Anime", popularAnimes),
-                  buildSectionIfNotEmpty("Top Anime", topAnimes),
-                  buildSectionIfNotEmpty("Upcoming Anime", upcomingAnimes),
-                  // Underrated Anime section at the bottom (filtered for logged-in users)
+                  buildMediaSectionWithSeeAll("Trending Anime", trendingAnimes, ItemType.anime),
+                  buildMediaSectionWithSeeAll("Popular Anime", popularAnimes, ItemType.anime),
+                  buildMediaSectionWithSeeAll("Top Anime", topAnimes, ItemType.anime),
+                  buildMediaSectionWithSeeAll("Upcoming Anime", upcomingAnimes, ItemType.anime),
+                  Obx(() {
+                    final ms = missingSequelService;
+                    if (!isLoggedIn.value) return const SizedBox.shrink();
+                    return Column(
+                      children: [
+                        if (ms.missingSequelsAnime.isNotEmpty)
+                          buildMediaSectionWithSeeAll('Missing Sequels', ms.missingSequelsAnime, ItemType.anime,
+                            onRefresh: () => ms.refreshSection('check', isAnime: true)),
+                        if (ms.upcomingSequelsAnime.isNotEmpty)
+                          buildMediaSectionWithSeeAll('Upcoming Sequels', ms.upcomingSequelsAnime, ItemType.anime,
+                            onRefresh: () => ms.refreshSection('upcoming', isAnime: true)),
+                        if (ms.catchUpAnime.isNotEmpty)
+                          buildMediaSectionWithSeeAll('Catch Up', ms.catchUpAnime, ItemType.anime,
+                            onRefresh: () => ms.refreshSection('catchup', isAnime: true)),
+                      ],
+                    );
+                  }),
                   Obx(() {
                     final filteredList =
                         communityService.getFilteredCommunityAnimes();
@@ -145,15 +170,28 @@ class MalService extends GetxController implements BaseService, OnlineService {
             : Column(
                 children: [
                   buildBigCarousel(trendingManga, true),
-                  buildSectionIfNotEmpty("Trending Manga", trendingManga,
-                      isManga: true),
-                  buildSectionIfNotEmpty("Top Manga", topManga, isManga: true),
-                  buildSectionIfNotEmpty("Top Manhwa", topManhwa,
-                      isManga: true),
-                  buildSectionIfNotEmpty("Top Manhua", topManhua,
-                      isManga: true),
+                  buildMediaSectionWithSeeAll("Trending Manga", trendingManga, ItemType.manga),
+                  buildMediaSectionWithSeeAll("Top Manga", topManga, ItemType.manga),
+                  buildMediaSectionWithSeeAll("Top Manhwa", topManhwa, ItemType.manga),
+                  buildMediaSectionWithSeeAll("Top Manhua", topManhua, ItemType.manga),
+                  Obx(() {
+                    final ms = missingSequelService;
+                    if (!isLoggedIn.value) return const SizedBox.shrink();
+                    return Column(
+                      children: [
+                        if (ms.missingSequelsManga.isNotEmpty)
+                          buildMediaSectionWithSeeAll('Missing Sequels', ms.missingSequelsManga, ItemType.manga,
+                            onRefresh: () => ms.refreshSection('check', isAnime: false)),
+                        if (ms.upcomingSequelsManga.isNotEmpty)
+                          buildMediaSectionWithSeeAll('Upcoming Sequels', ms.upcomingSequelsManga, ItemType.manga,
+                            onRefresh: () => ms.refreshSection('upcoming', isAnime: false)),
+                        if (ms.catchUpManga.isNotEmpty)
+                          buildMediaSectionWithSeeAll('Catch Up', ms.catchUpManga, ItemType.manga,
+                            onRefresh: () => ms.refreshSection('catchup', isAnime: false)),
+                      ],
+                    );
+                  }),
                   ...sourceController.novelSections.value,
-                  // Underrated Manga section at the bottom (filtered for logged-in users)
                   Obx(() {
                     final filteredList =
                         communityService.getFilteredCommunityMangas();
@@ -204,7 +242,6 @@ class MalService extends GetxController implements BaseService, OnlineService {
               'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manhua&limit=15'))
           .removeDupes();
 
-      // Fetch underrated content
       await communityService.fetchAll();
     } catch (e) {
       Logger.i('Error fetching home page data: $e');
@@ -342,25 +379,27 @@ class MalService extends GetxController implements BaseService, OnlineService {
         const SizedBox(height: 10),
         Obx(() => Column(
               children: acceptedLists.map((e) {
+                final isManga = e.contains("Manga") || e.contains("Reading");
+                final filteredData = filterListByLabel(isManga ? mangaList : animeList, e);
                 return ReusableCarousel(
-                  data: filterListByLabel(
-                      e.contains("Manga") || e.contains("Reading")
-                          ? mangaList
-                          : animeList,
-                      e),
+                  data: filteredData,
                   title: e,
                   variant: DataVariant.anilist,
-                  type: e.contains("Manga") || e.contains("Reading")
-                      ? ItemType.manga
-                      : ItemType.anime,
+                  type: isManga ? ItemType.manga : ItemType.anime,
+                  onSeeAll: () => navigate(() => MediaSeeAllPage(
+                    title: e,
+                    dataList: filteredData,
+                    type: isManga ? ItemType.manga : ItemType.anime,
+                    variant: DataVariant.anilist,
+                  )),
                 );
               }).toList(),
             )),
       ],
-      buildSectionIfNotEmpty("Trending Animes", trendingAnimes),
-      buildSectionIfNotEmpty("Popular Animes", popularAnimes),
-      buildSectionIfNotEmpty("Trending Manga", trendingManga, isManga: true),
-      buildSectionIfNotEmpty("Popular Manga", topManga, isManga: true),
+      buildMediaSectionWithSeeAll("Trending Animes", trendingAnimes, ItemType.anime),
+      buildMediaSectionWithSeeAll("Popular Animes", popularAnimes, ItemType.anime),
+      buildMediaSectionWithSeeAll("Trending Manga", trendingManga, ItemType.manga),
+      buildMediaSectionWithSeeAll("Popular Manga", topManga, ItemType.manga),
     ].obs;
   }
 
@@ -402,6 +441,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
         auth: true, useAuthHeader: true, token: tokenn);
     profileData.value = Profile.fromKitsu(data);
     isLoggedIn.value = true;
+    Get.find<MissingSequelService>().fetchAll();
     Future.wait([fetchUserAnimeList(), fetchUserMangaList()]);
   }
 
@@ -741,6 +781,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
       } else {
         fetchUserMangaList();
       }
+      missingSequelService.onListChanged(isAnime: isAnime);
     } else {
       Logger.i('Error: ${req.body}');
       Logger.i('$isAnime: $body');

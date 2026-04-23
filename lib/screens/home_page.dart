@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/missing_sequel/missing_sequel_service.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
@@ -231,13 +232,18 @@ class _HomePageState extends State<HomePage> {
     final List<dynamic> novelData = [];
 
     return RefreshIndicator(
-      onRefresh: () {
+      onRefresh: () async {
         if (!serviceHandler.isLoggedIn.value) {
           snackBar(
               "W-what are you doing step-bro, login before you do that (●´⌓`●)",
               duration: 1200);
+          return;
         }
-        return serviceHandler.refresh();
+        final missingSequelService = Get.find<MissingSequelService>();
+        await Future.wait([
+          serviceHandler.refresh(),
+          missingSequelService.fetchAll(),
+        ]);
       },
       child: Scaffold(
         extendBodyBehindAppBar: true,
@@ -245,6 +251,7 @@ class _HomePageState extends State<HomePage> {
           children: [
             SingleChildScrollView(
               controller: _scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
               child: Column(
                 crossAxisAlignment: isMobile
                     ? CrossAxisAlignment.center

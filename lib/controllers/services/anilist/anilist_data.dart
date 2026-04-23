@@ -7,6 +7,7 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/anilist/anilist_queries.dart';
 import 'package:anymex/controllers/services/anilist/kitsu.dart';
+import 'package:anymex/controllers/services/missing_sequel/missing_sequel_service.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
 import 'package:anymex/screens/community/community_recommendations_page.dart';
 import 'package:anymex/controllers/services/community_service.dart';
@@ -26,6 +27,7 @@ import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
 import 'package:anymex/screens/library/online/manga_list.dart';
+import 'package:anymex/screens/other/media_see_all_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart' as fb;
@@ -48,6 +50,7 @@ Map<String, dynamic> _parseJson(String body) {
 class AnilistData extends GetxController implements BaseService, OnlineService {
   final anilistAuth = Get.find<AnilistAuth>();
   final communityService = Get.find<CommunityService>();
+  late final MissingSequelService missingSequelService;
 
   // Anime Data
   RxList<Media> upcomingAnimes = <Media>[].obs;
@@ -199,17 +202,23 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
           if (acceptedLists.isEmpty) return const SizedBox.shrink();
           return Column(
             children: acceptedLists.map((e) {
+              final isManga = e.contains("Manga") || e.contains("Reading");
+              final filteredData = filterListByLabel(
+                  isManga
+                      ? anilistAuth.mangaList.removeDupes()
+                      : anilistAuth.animeList.removeDupes(),
+                  e);
               return ReusableCarousel(
-                data: filterListByLabel(
-                    e.contains("Manga") || e.contains("Reading")
-                        ? anilistAuth.mangaList.removeDupes()
-                        : anilistAuth.animeList.removeDupes(),
-                    e),
+                data: filteredData,
                 title: e,
                 variant: DataVariant.anilist,
-                type: e.contains("Manga") || e.contains("Reading")
-                    ? ItemType.manga
-                    : ItemType.anime,
+                type: isManga ? ItemType.manga : ItemType.anime,
+                onSeeAll: () => navigate(() => MediaSeeAllPage(
+                  title: e,
+                  dataList: filteredData,
+                  type: isManga ? ItemType.manga : ItemType.anime,
+                  variant: DataVariant.anilist,
+                )),
               );
             }).toList(),
           );
@@ -225,6 +234,13 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                   ? recAnimes.where((e) => !ids[0].contains(e.id)).toList()
                   : recAnimes,
               type: ItemType.anime,
+              onSeeAll: () => navigate(() => MediaSeeAllPage(
+                title: "Recommended Anime",
+                dataList: isLoggedIn.value
+                    ? recAnimes.where((e) => !ids[0].contains(e.id)).toList()
+                    : recAnimes,
+                type: ItemType.anime,
+              )),
             ),
           if (acceptedLists.contains("Recommended Mangas") &&
               settings.homePageCards.keys.contains('Recommended Mangas'))
@@ -234,6 +250,13 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                   ? recMangas.where((e) => !ids[1].contains(e.id)).toList()
                   : recMangas,
               type: ItemType.manga,
+              onSeeAll: () => navigate(() => MediaSeeAllPage(
+                title: "Recommended Manga",
+                dataList: isLoggedIn.value
+                    ? recMangas.where((e) => !ids[1].contains(e.id)).toList()
+                    : recMangas,
+                type: ItemType.manga,
+              )),
             )
         ],
       )
@@ -244,12 +267,30 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
   RxList<Widget> animeWidgets(BuildContext context) {
     return [
       buildBigCarousel(trendingAnimes, false),
-      buildSection('Recently Updated', recentlyUpdatedAnimes),
-      buildSection('Trending Anime', trendingAnimes),
-      buildSection('Popular Anime', popularAnimes),
-      buildSection('Recently Completed', latestAnimes),
-      buildSection('Upcoming Anime', upcomingAnimes),
-      // Underrated Anime section at the bottom (filtered for logged-in users)
+      buildMediaSectionWithSeeAll('Recently Updated', recentlyUpdatedAnimes, ItemType.anime),
+      buildMediaSectionWithSeeAll('Trending Anime', trendingAnimes, ItemType.anime),
+      buildMediaSectionWithSeeAll('Popular Anime', popularAnimes, ItemType.anime),
+      buildMediaSectionWithSeeAll('Recently Completed', latestAnimes, ItemType.anime),
+      buildMediaSectionWithSeeAll('Upcoming Anime', upcomingAnimes, ItemType.anime),
+      Obx(() {
+        final ms = missingSequelService;
+        if (!anilistAuth.isLoggedIn.value) return const SizedBox.shrink();
+        return Column(
+          children: [
+            if (ms.missingSequelsAnime.isNotEmpty)
+              buildMediaSectionWithSeeAll('Missing Sequels', ms.missingSequelsAnime, ItemType.anime,
+                onRefresh: () => ms.refreshSection('check', isAnime: true))
+            else if (!ms.isLoadingCheckAnime && anilistAuth.isLoggedIn.value)
+              const SizedBox.shrink(),
+            if (ms.upcomingSequelsAnime.isNotEmpty)
+              buildMediaSectionWithSeeAll('Upcoming Sequels', ms.upcomingSequelsAnime, ItemType.anime,
+                onRefresh: () => ms.refreshSection('upcoming', isAnime: true)),
+            if (ms.catchUpAnime.isNotEmpty)
+              buildMediaSectionWithSeeAll('Catch Up', ms.catchUpAnime, ItemType.anime,
+                onRefresh: () => ms.refreshSection('catchup', isAnime: true)),
+          ],
+        );
+      }),
       Obx(() {
         final filteredList = communityService.getFilteredCommunityAnimes();
         if (filteredList.isEmpty) {
@@ -268,16 +309,30 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
   RxList<Widget> mangaWidgets(BuildContext context) {
     return [
       buildBigCarousel(trendingMangas, true),
-      buildMangaSection('Trending Manga', trendingMangas),
-      buildMangaSection('Latest Manga', latestMangas),
-      buildMangaSection('Popular Manga', popularMangas),
-      buildMangaSection('More Popular Manga', morePopularMangas),
-
-      // buildMangaSection('Most Favorite Mangas', mostFavoriteMangas),
-      // buildMangaSection('Top Rated Mangas', topRatedMangas),
-      // buildMangaSection('Top Ongoing Mangas', topOngoingMangas),
+      buildMediaSectionWithSeeAll('Trending Manga', trendingMangas, ItemType.manga),
+      buildMediaSectionWithSeeAll('Latest Manga', latestMangas, ItemType.manga),
+      buildMediaSectionWithSeeAll('Popular Manga', popularMangas, ItemType.manga),
+      buildMediaSectionWithSeeAll('More Popular Manga', morePopularMangas, ItemType.manga),
+      Obx(() {
+        final ms = missingSequelService;
+        if (!anilistAuth.isLoggedIn.value) return const SizedBox.shrink();
+        return Column(
+          children: [
+            if (ms.missingSequelsManga.isNotEmpty)
+              buildMediaSectionWithSeeAll('Missing Sequels', ms.missingSequelsManga, ItemType.manga,
+                onRefresh: () => ms.refreshSection('check', isAnime: false))
+            else if (!ms.isLoadingCheckManga && anilistAuth.isLoggedIn.value)
+              const SizedBox.shrink(),
+            if (ms.upcomingSequelsManga.isNotEmpty)
+              buildMediaSectionWithSeeAll('Upcoming Sequels', ms.upcomingSequelsManga, ItemType.manga,
+                onRefresh: () => ms.refreshSection('upcoming', isAnime: false)),
+            if (ms.catchUpManga.isNotEmpty)
+              buildMediaSectionWithSeeAll('Catch Up', ms.catchUpManga, ItemType.manga,
+                onRefresh: () => ms.refreshSection('catchup', isAnime: false)),
+          ],
+        );
+      }),
       ...sourceController.novelSections,
-      // Underrated Manga section at the bottom (filtered for logged-in users)
       Obx(() {
         final filteredList = communityService.getFilteredCommunityMangas();
         if (filteredList.isEmpty) {
@@ -296,6 +351,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
   @override
   void onInit() {
     super.onInit();
+    missingSequelService = Get.find<MissingSequelService>();
     _initFallback();
   }
 

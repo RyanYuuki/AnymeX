@@ -1,5 +1,6 @@
 // ignore_for_file: invalid_use_of_protected_member
 
+import 'package:anymex/controllers/services/missing_sequel/missing_sequel_service.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:flutter/material.dart';
@@ -40,6 +41,15 @@ class _MangaHomePageState extends State<MangaHomePage> {
     super.dispose();
   }
 
+  Future<void> _handleRefresh() async {
+    final serviceHandler = Get.find<ServiceHandler>();
+    final missingSequelService = Get.find<MissingSequelService>();
+    await Future.wait([
+      serviceHandler.refresh(),
+      missingSequelService.fetchAll(),
+    ]);
+  }
+
   @override
   Widget build(BuildContext context) {
     final serviceHandler = Get.find<ServiceHandler>();
@@ -52,23 +62,27 @@ class _MangaHomePageState extends State<MangaHomePage> {
       extendBodyBehindAppBar: true,
       body: Stack(
         children: [
-          SingleChildScrollView(
-            controller: _scrollController,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: statusBarHeight + appBarHeight),
-                const SizedBox(height: 10),
-                Obx(() {
-                  return Column(
-                    children: serviceHandler.mangaWidgets(context),
-                  );
-                }),
-                if (!isDesktop)
-                  SizedBox(height: bottomNavBarHeight)
-                else
-                  const SizedBox(height: 50),
-              ],
+          RefreshIndicator(
+            onRefresh: _handleRefresh,
+            child: SingleChildScrollView(
+              controller: _scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: statusBarHeight + appBarHeight),
+                  const SizedBox(height: 10),
+                  Obx(() {
+                    return Column(
+                      children: serviceHandler.mangaWidgets(context),
+                    );
+                  }),
+                  if (!isDesktop)
+                    SizedBox(height: bottomNavBarHeight)
+                  else
+                    const SizedBox(height: 50),
+                ],
+              ),
             ),
           ),
           CustomAnimatedAppBar(
