@@ -160,8 +160,12 @@ jobs:
         run: |
           if [[ "${{ env.LATEST_TAG }}" == *"alpha"* ]]; then
             echo "DISCORD_WEBHOOK_URL=${{ secrets.DISCORD_WEBHOOK_ALPHA }}" >> $GITHUB_ENV
-          else
+          
+          elif [[ "${{ env.LATEST_TAG }}" == *"beta"* ]]; then
             echo "DISCORD_WEBHOOK_URL=${{ secrets.DISCORD_WEBHOOK_BETA }}" >> $GITHUB_ENV
+          
+          else
+            echo "DISCORD_WEBHOOK_URL=${{ secrets.DISCORD_WEBHOOK }}" >> $GITHUB_ENV
           fi
 
       - name: Send message to Telegram
@@ -322,11 +326,11 @@ jobs:
           
           # Mention the role based on the release name
           if [[ "${{ env.LATEST_TAG }}" == *alpha* ]]; then
-            role_mention="<@&1313089691523878942>"  # Role ID for alpha channel
+            role_mention=""  # Role ID for alpha channel
           elif [[ "${{ env.LATEST_TAG }}" == *beta* ]]; then
-            role_mention="<@&1313087262539518033>"  # Role ID for beta channel
+            role_mention="<@&1496768971096064140>"  # Role ID for beta channel
           else
-            role_mention="<@&1313346791479054456>"  # Default role ID
+            role_mention="<@&1496771866986287134>"  # Default role ID
           fi
         
           default_color="#1ac4c5"
