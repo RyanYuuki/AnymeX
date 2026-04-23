@@ -126,7 +126,7 @@ Join our communities to stay updated and contribute to the discussion:
 
 We welcome contributions, from translations to new features.  
 Our development environment setup guide is available [here](./DEVELOPMENT.md).  
-For inquiries, join our [Discord server](https://discord.gg/5gAHhMvTcx) or [Telegram group](https://t.me/AnymeX_Discussion).  
+For inquiries, join our [Discord server](https://discord.gg/hDwQ3heJ8V) or [Telegram group](https://t.me/AnymeX_Discussion).  
 Pull requests are welcome; check the [open issues](https://github.com/RyanYuuki/AnymeX/issues) for guidance on major changes.
 
 <!--<details>
