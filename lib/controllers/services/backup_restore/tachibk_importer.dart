@@ -372,30 +372,32 @@ class TachibkImporter extends GetxController {
       if (animeToImport.isNotEmpty) {
         statusMessage.value = 'Importing anime (${animeToImport.length})...';
         final mediaList = animeToImport.map(_animeToOfflineMedia).toList();
-        
+
+        final existingAnimeItems = await isar.offlineMedias
+            .filter()
+            .mediaTypeIndexEqualTo(1)
+            .findAll();
+        final existingIds = existingAnimeItems.map((e) => e.mediaId).toSet();
+        final existingNames = existingAnimeItems.map((e) => e.name).toSet();
+
         await isar.writeTxn(() async {
           for (final media in mediaList) {
             bool shouldAdd = true;
             if (merge) {
               final id = media.mediaId ?? '';
               if (id.isEmpty || id == '0') {
-                final existing = await isar.offlineMedias
-                    .filter()
-                    .nameEqualTo(media.name ?? '')
-                    .and()
-                    .mediaTypeIndexEqualTo(1)
-                    .findFirst();
-                if (existing != null) shouldAdd = false;
+                if (existingNames.contains(media.name)) shouldAdd = false;
               } else {
-                final existing = _storageController.getMediaById(id);
-                if (existing != null) shouldAdd = false;
+                if (existingIds.contains(id)) shouldAdd = false;
               }
             }
-            
+
             if (shouldAdd) {
               await isar.offlineMedias.put(media);
+              if (media.mediaId != null) existingIds.add(media.mediaId);
+              if (media.name != null) existingNames.add(media.name);
             }
-            
+
             processed++;
             importProgress.value = processed / total;
           }
@@ -406,27 +408,29 @@ class TachibkImporter extends GetxController {
         statusMessage.value = 'Importing manga (${mangaToImport.length})...';
         final mediaList = mangaToImport.map(_mangaToOfflineMedia).toList();
 
+        final existingMangaItems = await isar.offlineMedias
+            .filter()
+            .mediaTypeIndexEqualTo(0)
+            .findAll();
+        final existingMangaIds = existingMangaItems.map((e) => e.mediaId).toSet();
+        final existingMangaNames = existingMangaItems.map((e) => e.name).toSet();
+
         await isar.writeTxn(() async {
           for (final media in mediaList) {
             bool shouldAdd = true;
             if (merge) {
               final id = media.mediaId ?? '';
               if (id.isEmpty || id == '0') {
-                final existing = await isar.offlineMedias
-                    .filter()
-                    .nameEqualTo(media.name ?? '')
-                    .and()
-                    .mediaTypeIndexEqualTo(0)
-                    .findFirst();
-                if (existing != null) shouldAdd = false;
+                if (existingMangaNames.contains(media.name)) shouldAdd = false;
               } else {
-                final existing = _storageController.getMediaById(id);
-                if (existing != null) shouldAdd = false;
+                if (existingMangaIds.contains(id)) shouldAdd = false;
               }
             }
 
             if (shouldAdd) {
               await isar.offlineMedias.put(media);
+              if (media.mediaId != null) existingMangaIds.add(media.mediaId);
+              if (media.name != null) existingMangaNames.add(media.name);
             }
 
             processed++;
