@@ -5,6 +5,7 @@ import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/database/isar_models/custom_list.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
+import 'package:anymex/database/kv_helper.dart';
 import 'package:anymex/main.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/logger.dart';
@@ -23,23 +24,69 @@ class OfflineStorageController extends GetxController {
       ? Get.find<GistSyncController>()
       : null;
 
+  String? get _pid {
+    final prefix = KvHelper.profilePrefix;
+    if (prefix.isEmpty) return null;
+    return prefix.replaceAll('_', '');
+  }
+
+  void migrateOrphanedData() {
+    final pid = _pid;
+    if (pid == null) return;
+
+    try {
+      isar.writeTxnSync(() {
+        final col = isar.offlineMedias;
+        final orphans =
+            col.where().findAllSync().where((m) => m.profileId == null).toList();
+        if (orphans.isNotEmpty) {
+          for (final m in orphans) {
+            m.profileId = pid;
+            col.putSync(m);
+          }
+        }
+
+        final listCol = isar.customLists;
+        final listOrphans = listCol
+            .where().findAllSync().where((l) => l.profileId == null).toList();
+        if (listOrphans.isNotEmpty) {
+          for (final l in listOrphans) {
+            l.profileId = pid;
+            listCol.putSync(l);
+          }
+        }
+      });
+    } catch (e) {
+      Logger.i('Error migrating orphaned library data: $e');
+    }
+  }
+
   Stream<List<OfflineMedia>> watchAnimeLibrary() {
+    migrateOrphanedData();
     return isar.offlineMedias
         .filter()
+        .profileIdEqualTo(_pid)
+        .and()
         .mediaTypeIndexEqualTo(1)
         .watch(fireImmediately: true);
   }
 
   Stream<List<OfflineMedia>> watchMangaLibrary() {
+    migrateOrphanedData();
     return isar.offlineMedias
         .filter()
+        .profileIdEqualTo(_pid)
+        .and()
         .mediaTypeIndexEqualTo(0)
         .watch(fireImmediately: true);
   }
 
   Stream<List<OfflineMedia>> watchNovelLibrary() {
+    migrateOrphanedData();
     return isar.offlineMedias
         .filter()
+        .profileIdEqualTo(_pid)
+        .and()
         .mediaTypeIndexEqualTo(2)
         .watch(fireImmediately: true);
   }
@@ -47,19 +94,28 @@ class OfflineStorageController extends GetxController {
   Stream<OfflineMedia?> watchMediaById(String mediaId) {
     return isar.offlineMedias
         .filter()
+        .profileIdEqualTo(_pid)
+        .and()
         .mediaIdEqualTo(mediaId)
         .watch(fireImmediately: true)
         .map((list) => list.isNotEmpty ? list.first : null);
   }
 
   Stream<List<CustomList>> watchCustomLists(ItemType mediaType) {
-    return isar.customLists.where().watch(fireImmediately: true);
+    return isar.customLists
+        .filter()
+        .profileIdEqualTo(_pid)
+        .and()
+        .mediaTypeIndexEqualTo(mediaType.index)
+        .watch(fireImmediately: true);
   }
 
   Stream<CustomListData> watchCustomListData(
       String listName, ItemType mediaType) async* {
     await for (final customList in isar.customLists
         .filter()
+        .profileIdEqualTo(_pid)
+        .and()
         .listNameEqualTo(listName)
         .and()
         .mediaTypeIndexEqualTo(mediaType.index)
@@ -79,6 +135,8 @@ class OfflineStorageController extends GetxController {
 
       final mediaItems = await isar.offlineMedias
           .filter()
+          .profileIdEqualTo(_pid)
+          .and()
           .anyOf(
               mediaIds,
               (q, String id) => q
@@ -98,6 +156,8 @@ class OfflineStorageController extends GetxController {
       {int offset = 0, int limit = 50}) async {
     return await isar.offlineMedias
         .filter()
+        .profileIdEqualTo(_pid)
+        .and()
         .mediaTypeIndexEqualTo(1)
         .offset(offset)
         .limit(limit)
@@ -108,6 +168,8 @@ class OfflineStorageController extends GetxController {
       {int offset = 0, int limit = 50}) async {
     return await isar.offlineMedias
         .filter()
+        .profileIdEqualTo(_pid)
+        .and()
         .mediaTypeIndexEqualTo(0)
         .offset(offset)
         .limit(limit)
@@ -118,6 +180,8 @@ class OfflineStorageController extends GetxController {
       {int offset = 0, int limit = 50}) async {
     return await isar.offlineMedias
         .filter()
+        .profileIdEqualTo(_pid)
+        .and()
         .mediaTypeIndexEqualTo(2)
         .offset(offset)
         .limit(limit)
@@ -131,6 +195,8 @@ class OfflineStorageController extends GetxController {
   }) async {
     return await isar.offlineMedias
         .filter()
+        .profileIdEqualTo(_pid)
+        .and()
         .mediaTypeIndexEqualTo(mediaType.index)
         .offset(offset)
         .limit(limit)
@@ -140,6 +206,8 @@ class OfflineStorageController extends GetxController {
   Future<List<CustomList>> getCustomListsFromType(ItemType type) async {
     return await isar.customLists
         .filter()
+        .profileIdEqualTo(_pid)
+        .and()
         .mediaTypeIndexEqualTo(type.index)
         .findAll();
   }
@@ -150,6 +218,8 @@ class OfflineStorageController extends GetxController {
   ) async {
     return await isar.offlineMedias
         .filter()
+        .profileIdEqualTo(_pid)
+        .and()
         .mediaTypeIndexEqualTo(mediaType.index)
         .group((q) => q
             .nameContains(query, caseSensitive: false)
@@ -161,7 +231,12 @@ class OfflineStorageController extends GetxController {
   }
 
   OfflineMedia? getMediaById(String mediaId) {
-    return isar.offlineMedias.filter().mediaIdEqualTo(mediaId).findFirstSync();
+    return isar.offlineMedias
+        .filter()
+        .profileIdEqualTo(_pid)
+        .and()
+        .mediaIdEqualTo(mediaId)
+        .findFirstSync();
   }
 
   OfflineMedia? getAnimeById(String id) => getMediaById(id);
@@ -235,13 +310,19 @@ class OfflineStorageController extends GetxController {
   Future<List<CustomList>> getCustomListsByType(ItemType type) async {
     return await isar.customLists
         .filter()
+        .profileIdEqualTo(_pid)
+        .and()
         .mediaTypeIndexEqualTo(type.index)
         .findAll();
   }
 
   Future<CustomList?> getCustomListByName(String listName,
       {ItemType? mediaType}) async {
-    var query = isar.customLists.filter().listNameEqualTo(listName);
+    var query = isar.customLists
+        .filter()
+        .profileIdEqualTo(_pid)
+        .and()
+        .listNameEqualTo(listName);
     if (mediaType != null) {
       return await query.mediaTypeIndexEqualTo(mediaType.index).findFirst();
     }
@@ -260,6 +341,7 @@ class OfflineStorageController extends GetxController {
 
     await isar.writeTxn(() async {
       await isar.customLists.put(CustomList(
+        profileId: _pid,
         listName: listName,
         mediaIds: [],
         mediaTypeIndex: mediaType.index,
@@ -351,11 +433,16 @@ class OfflineStorageController extends GetxController {
 
     return await isar.offlineMedias
         .filter()
+        .profileIdEqualTo(_pid)
+        .and()
         .anyOf(list.mediaIds!, (q, String id) => q.mediaIdEqualTo(id))
         .findAll();
   }
 
   Future<void> addMediaToLibrary(OfflineMedia original) async {
+    if (original.profileId == null) {
+      original.profileId = _pid;
+    }
     final existing = getMediaById(original.mediaId ?? "");
 
     if (existing != null) return;
@@ -703,7 +790,7 @@ class OfflineStorageController extends GetxController {
 
   Future<Map<String, dynamic>> getNovelStats() async {
     final allNovels =
-        await isar.offlineMedias.filter().mediaTypeIndexEqualTo(2).findAll();
+        await isar.offlineMedias.filter().profileIdEqualTo(_pid).and().mediaTypeIndexEqualTo(2).findAll();
 
     int completedNovels = 0;
     int readingNovels = 0;
@@ -740,6 +827,7 @@ class OfflineStorageController extends GetxController {
   ) {
     final handler = Get.find<ServiceHandler>();
     return OfflineMedia(
+      profileId: _pid,
       mediaId: original.id,
       jname: original.romajiTitle,
       name: original.title,
@@ -774,8 +862,21 @@ class OfflineStorageController extends GetxController {
 
   Future<void> clearCache() async {
     await isar.writeTxn(() async {
-      await isar.offlineMedias.clear();
-      await isar.customLists.clear();
+      final mediaToDelete = isar.offlineMedias
+          .filter()
+          .profileIdEqualTo(_pid)
+          .findAllSync();
+      for (final m in mediaToDelete) {
+        await isar.offlineMedias.delete(m.id);
+      }
+
+      final listsToDelete = isar.customLists
+          .filter()
+          .profileIdEqualTo(_pid)
+          .findAllSync();
+      for (final l in listsToDelete) {
+        await isar.customLists.delete(l.id);
+      }
     });
 
     Logger.i('Cache cleared successfully');
@@ -785,6 +886,8 @@ class OfflineStorageController extends GetxController {
       {required ItemType mediaType}) {
     final lists = isar.customLists
         .filter()
+        .profileIdEqualTo(_pid)
+        .and()
         .mediaTypeIndexEqualTo(mediaType.index)
         .findAllSync();
 
@@ -797,6 +900,8 @@ class OfflineStorageController extends GetxController {
 
       final mediaItems = isar.offlineMedias
           .filter()
+          .profileIdEqualTo(_pid)
+          .and()
           .anyOf(
             mediaIds,
             (q, String id) => q
@@ -845,6 +950,7 @@ class OfflineStorageController extends GetxController {
           await isar.customLists.put(existingList);
         } else {
           await isar.customLists.put(CustomList(
+            profileId: _pid,
             listName: updatedListData.listName,
             mediaIds: updatedListData.listData
                 .map((media) => media.mediaId ?? '')

@@ -32,6 +32,9 @@ import 'package:anymex/utils/external_font_loader.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/deeplink.dart';
 import 'package:anymex/utils/register_protocol/register_protocol.dart';
+import 'package:anymex/models/Service/app_profile.dart';
+import 'package:anymex/screens/profile/widgets/profile_avatar.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/adaptive_wrapper.dart';
 import 'package:anymex/widgets/animation/more_page_transitions.dart';
 import 'package:anymex/widgets/common/glow.dart';
@@ -405,6 +408,12 @@ class _AutoStartHandlerState extends State<_AutoStartHandler> {
     }
   }
 
+  void _goToProfileSelection() {
+    final manager = Get.find<ProfileManager>();
+    manager.isProfileReady.value = true;
+    manager.resetAutoStart();
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -418,8 +427,36 @@ class _AutoStartHandlerState extends State<_AutoStartHandler> {
     if (_needsPin) {
       return Scaffold(
         backgroundColor: colorScheme.surface,
-        body: Center(
-          child: _PinAutoStartDialog(onSubmit: _submitPin),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    onPressed: _goToProfileSelection,
+                    icon: Icon(Icons.arrow_back,
+                        color: colorScheme.onSurface.withOpacity(0.7)),
+                    label: Text('Switch Profile',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 14,
+                          color: colorScheme.onSurface.withOpacity(0.7),
+                        )),
+                  ),
+                ),
+                Expanded(
+                  child: _PinAutoStartWidget(
+                    profile: manager.profiles.firstWhere(
+                        (p) => p.id == widget.profileId),
+                    onSubmit: _submitPin,
+                    onSwitchProfile: _goToProfileSelection,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       );
     }
@@ -435,17 +472,24 @@ class _AutoStartHandlerState extends State<_AutoStartHandler> {
   }
 }
 
-class _PinAutoStartDialog extends StatefulWidget {
+class _PinAutoStartWidget extends StatefulWidget {
+  final AppProfile profile;
   final Future<void> Function(String pin) onSubmit;
-  const _PinAutoStartDialog({required this.onSubmit});
+  final VoidCallback onSwitchProfile;
+  const _PinAutoStartWidget({
+    required this.profile,
+    required this.onSubmit,
+    required this.onSwitchProfile,
+  });
 
   @override
-  State<_PinAutoStartDialog> createState() => _PinAutoStartDialogState();
+  State<_PinAutoStartWidget> createState() => _PinAutoStartWidgetState();
 }
 
-class _PinAutoStartDialogState extends State<_PinAutoStartDialog> {
+class _PinAutoStartWidgetState extends State<_PinAutoStartWidget> {
   final _controller = TextEditingController();
   bool _error = false;
+  String _errorMessage = '';
 
   @override
   void dispose() {
@@ -453,86 +497,213 @@ class _PinAutoStartDialogState extends State<_PinAutoStartDialog> {
     super.dispose();
   }
 
+  void _submit() {
+    final pin = _controller.text.trim();
+    if (pin.length < 4) return;
+    widget.onSubmit(pin);
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final profile = widget.profile;
+    final onSurface = context.colors.onSurface;
 
-    return Container(
-      margin: const EdgeInsets.all(32),
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(24),
-      ),
+    if (profile.isLocked) {
+      final remaining =
+          profile.lockedUntil!.difference(DateTime.now()).inMinutes + 1;
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ProfileAvatar(profile: profile, radius: 48, showLocked: true),
+            const SizedBox(height: 16),
+            Text(profile.name,
+                style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 22,
+                    color: onSurface)),
+            const SizedBox(height: 24),
+            Text('Too many failed attempts.',
+                style: TextStyle(
+                    color: onSurface.withOpacity(0.7), fontSize: 14)),
+            const SizedBox(height: 8),
+            Text('Try again in $remaining minute${remaining != 1 ? 's' : ''}',
+                style: const TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Poppins')),
+            const SizedBox(height: 24),
+            TextButton(
+              onPressed: widget.onSwitchProfile,
+              child: Text('Switch to another profile',
+                  style: TextStyle(
+                      color: colorScheme.primary,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w600)),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.lock_rounded, size: 48,
-              color: colorScheme.primary),
+          const SizedBox(height: 40),
+          ProfileAvatar(profile: profile, radius: 52),
           const SizedBox(height: 16),
-          Text('Enter PIN',
+          Text(profile.name,
               style: TextStyle(
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-                color: colorScheme.onSurface,
-              )),
-          const SizedBox(height: 20),
-          TextField(
-            controller: _controller,
-            keyboardType: TextInputType.number,
-            obscureText: true,
-            maxLength: 6,
-            autofocus: true,
-            style: TextStyle(
-              color: colorScheme.onSurface,
-              fontFamily: 'Poppins',
-              fontSize: 24,
-              letterSpacing: 8,
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                  color: onSurface)),
+          const SizedBox(height: 6),
+          if (profile.anilistLinked ||
+              profile.malLinked ||
+              profile.simklLinked)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (profile.anilistLinked)
+                  _serviceDot('AL', Colors.blue),
+                if (profile.malLinked)
+                  _serviceDot('MAL', Colors.blueAccent),
+                if (profile.simklLinked)
+                  _serviceDot('Simkl', Colors.green),
+              ],
             ),
-            textAlign: TextAlign.center,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: colorScheme.surface,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: _error
-                    ? const BorderSide(color: Colors.red, width: 2)
-                    : BorderSide.none,
-              ),
-              counterText: '',
+          const SizedBox(height: 40),
+          Container(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainer,
+              borderRadius: BorderRadius.circular(20),
             ),
-            onChanged: (_) => setState(() => _error = false),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.lock_outline_rounded,
+                        size: 20,
+                        color: colorScheme.primary.withOpacity(0.8)),
+                    const SizedBox(width: 8),
+                    Text('Enter PIN to unlock',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                          color: onSurface.withOpacity(0.8),
+                        )),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: _controller,
+                  keyboardType: TextInputType.number,
+                  obscureText: true,
+                  maxLength: 6,
+                  autofocus: true,
+                  style: TextStyle(
+                    color: colorScheme.onSurface,
+                    fontFamily: 'Poppins',
+                    fontSize: 28,
+                    letterSpacing: 10,
+                  ),
+                  textAlign: TextAlign.center,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: colorScheme.surface,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: _error
+                          ? const BorderSide(color: Colors.red, width: 2)
+                          : BorderSide.none,
+                    ),
+                    counterText: '',
+                  ),
+                  onChanged: (_) => setState(() {
+                    _error = false;
+                    _errorMessage = '';
+                  }),
+                  onSubmitted: (_) => _submit(),
+                ),
+                if (_error) ...[
+                  const SizedBox(height: 8),
+                  Text(_errorMessage,
+                      style: const TextStyle(
+                          color: Colors.red, fontSize: 13)),
+                ],
+                const SizedBox(height: 4),
+                Obx(() {
+                  final manager = Get.find<ProfileManager>();
+                  final attempts = manager.profiles
+                          .firstWhereOrNull((p) => p.id == profile.id)
+                          ?.failedPinAttempts ??
+                      0;
+                  if (attempts > 0) {
+                    return Text(
+                      '$attempts / $kMaxPinAttempts attempts',
+                      style: TextStyle(
+                          color: onSurface.withOpacity(0.4), fontSize: 12),
+                    );
+                  }
+                  return const SizedBox.shrink();
+                }),
+              ],
+            ),
           ),
-          if (_error) ...[
-            const SizedBox(height: 8),
-            const Text('Wrong PIN',
-                style: TextStyle(color: Colors.red)),
-          ],
           const SizedBox(height: 20),
           SizedBox(
             width: double.infinity,
-            height: 48,
+            height: 52,
             child: ElevatedButton(
-              onPressed: () {
-                final pin = _controller.text.trim();
-                if (pin.length >= 4) widget.onSubmit(pin);
-              },
+              onPressed: _submit,
               style: ElevatedButton.styleFrom(
                 backgroundColor: colorScheme.primary,
                 foregroundColor: colorScheme.onPrimary,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(14)),
               ),
               child: const Text('Unlock',
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.bold,
+                    fontSize: 16,
                   )),
             ),
           ),
+          const SizedBox(height: 16),
+          TextButton(
+            onPressed: widget.onSwitchProfile,
+            child: Text('Not your profile? Switch to another',
+                style: TextStyle(
+                    color: colorScheme.primary.withOpacity(0.8),
+                    fontFamily: 'Poppins',
+                    fontSize: 13)),
+          ),
         ],
       ),
+    );
+  }
+
+  Widget _serviceDot(String text, Color color) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(text,
+          style: TextStyle(
+              fontSize: 11, fontWeight: FontWeight.w600, color: color)),
     );
   }
 }

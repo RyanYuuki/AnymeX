@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/mal/mal_service.dart';
@@ -7,6 +8,8 @@ import 'package:anymex/controllers/services/simkl/simkl_service.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/key_value.dart';
 import 'package:anymex/database/kv_helper.dart';
+import 'package:anymex/database/isar_models/custom_list.dart';
+import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/main.dart';
 import 'package:anymex/models/Service/app_profile.dart';
 import 'package:anymex/utils/logger.dart';
@@ -115,6 +118,10 @@ class ProfileManager extends GetxController {
     isProfileReady.value = true;
 
     _reauthServices();
+
+    if (Get.isRegistered<OfflineStorageController>()) {
+      Get.find<OfflineStorageController>().migrateOrphanedData();
+    }
 
     return profile;
   }
@@ -239,6 +246,31 @@ class ProfileManager extends GetxController {
       });
     } catch (e) {
       Logger.i('Error deleting profile KV data: $e');
+    }
+
+    final pid = profile.id;
+    try {
+      isar.writeTxnSync(() {
+        final mediaCol = isar.collection<OfflineMedia>();
+        final mediaToDelete = mediaCol
+            .filter()
+            .profileIdEqualTo(pid)
+            .findAllSync();
+        for (final m in mediaToDelete) {
+          mediaCol.deleteSync(m.id);
+        }
+
+        final listCol = isar.collection<CustomList>();
+        final listsToDelete = listCol
+            .filter()
+            .profileIdEqualTo(pid)
+            .findAllSync();
+        for (final l in listsToDelete) {
+          listCol.deleteSync(l.id);
+        }
+      });
+    } catch (e) {
+      Logger.i('Error deleting profile library data: $e');
     }
 
     profiles.removeWhere((p) => p.id == profileId);
