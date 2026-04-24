@@ -16,7 +16,14 @@ class ProfileSelectionPage extends StatefulWidget {
 }
 
 class _ProfileSelectionPageState extends State<ProfileSelectionPage> {
-  RxBool autoStart = false.obs;
+  late RxBool autoStart;
+
+  @override
+  void initState() {
+    super.initState();
+    final manager = Get.find<ProfileManager>();
+    autoStart = (manager.hasAutoStart).obs;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -148,79 +155,83 @@ class _ProfileSelectionPageState extends State<ProfileSelectionPage> {
       ColorScheme colorScheme, dynamic theme) {
     return GestureDetector(
       onTap: () => _selectProfile(profile),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: colorScheme.surfaceContainer,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: colorScheme.onSurface.withOpacity(0.1),
+      child: AnimatedScale(
+        duration: const Duration(milliseconds: 150),
+        scale: 1.0,
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainer,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: colorScheme.onSurface.withOpacity(0.1),
+            ),
           ),
-        ),
-        child: Row(
-          children: [
-            ProfileAvatar(
-              profile: profile,
-              radius: 28,
-              showLocked: profile.isLocked,
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        profile.name,
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: theme.onSurface,
-                        ),
-                      ),
-                      if (profile.hasPin) ...[
-                        const SizedBox(width: 8),
-                        Icon(Icons.lock_outline,
-                            size: 14,
-                            color: theme.onSurface.withOpacity(0.5)),
-                      ],
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Last used ${_formatDate(profile.lastUsedAt)}',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: theme.onSurface.withOpacity(0.5),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      if (profile.anilistLinked)
-                        _buildBadge('AL', Colors.blue, colorScheme),
-                      if (profile.malLinked)
-                        _buildBadge('MAL', Colors.blueAccent, colorScheme),
-                      if (profile.simklLinked)
-                        _buildBadge('Simkl', Colors.green, colorScheme),
-                      if (!profile.anilistLinked &&
-                          !profile.malLinked &&
-                          !profile.simklLinked)
-                        _buildBadge('No services linked',
-                            theme.onSurface.withOpacity(0.3), colorScheme),
-                    ],
-                  ),
-                ],
+          child: Row(
+            children: [
+              ProfileAvatar(
+                profile: profile,
+                radius: 28,
+                showLocked: profile.isLocked,
               ),
-            ),
-            Icon(
-              Icons.chevron_right_rounded,
-              color: theme.onSurface.withOpacity(0.3),
-              size: 28,
-            ),
-          ],
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          profile.name,
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: theme.onSurface,
+                          ),
+                        ),
+                        if (profile.hasPin) ...[
+                          const SizedBox(width: 8),
+                          Icon(Icons.lock_outline,
+                              size: 14,
+                              color: theme.onSurface.withOpacity(0.5)),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Last used ${_formatDate(profile.lastUsedAt)}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: theme.onSurface.withOpacity(0.5),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        if (profile.anilistLinked)
+                          _buildBadge('AL', Colors.blue, colorScheme),
+                        if (profile.malLinked)
+                          _buildBadge('MAL', Colors.blueAccent, colorScheme),
+                        if (profile.simklLinked)
+                          _buildBadge('Simkl', Colors.green, colorScheme),
+                        if (!profile.anilistLinked &&
+                            !profile.malLinked &&
+                            !profile.simklLinked)
+                          _buildBadge('No services linked',
+                              theme.onSurface.withOpacity(0.3), colorScheme),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: theme.onSurface.withOpacity(0.3),
+                size: 28,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -298,10 +309,6 @@ class _ProfileSelectionPageState extends State<ProfileSelectionPage> {
 
     final manager = Get.find<ProfileManager>();
     await manager.switchToProfile(profile.id, autoStart: autoStart.value);
-
-    if (mounted) {
-      Navigator.of(context).pop(true);
-    }
   }
 
   Future<bool?> _showPinDialog(AppProfile profile) async {

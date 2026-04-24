@@ -4,6 +4,7 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/mal/mal_service.dart';
 import 'package:anymex/controllers/services/simkl/simkl_service.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/key_value.dart';
 import 'package:anymex/database/kv_helper.dart';
 import 'package:anymex/main.dart';
@@ -25,6 +26,8 @@ class ProfileManager extends GetxController {
   RxList<AppProfile> profiles = <AppProfile>[].obs;
   Rx<AppProfile?> currentProfile = Rx<AppProfile?>(null);
   RxString currentProfileId = ''.obs;
+  RxBool isProfileReady = false.obs;
+  RxString autoStartProfileId = ''.obs;
 
   @override
   void onInit() {
@@ -36,6 +39,11 @@ class ProfileManager extends GetxController {
     final raw = _readGlobal(_kProfilesKey);
     if (raw != null && raw.isNotEmpty) {
       profiles.value = AppProfile.fromJsonList(raw);
+    }
+
+    final savedAutoStart = _readGlobal(_kAutoStartProfileIdKey);
+    if (savedAutoStart != null && savedAutoStart.isNotEmpty) {
+      autoStartProfileId.value = savedAutoStart;
     }
 
     final savedId = _readGlobal(_kCurrentProfileIdKey);
@@ -61,9 +69,8 @@ class ProfileManager extends GetxController {
 
   bool get hasSingleProfile => profiles.length == 1;
 
-  String? get autoStartProfileId {
-    return _readGlobal(_kAutoStartProfileIdKey);
-  }
+  bool get hasAutoStart => autoStartProfileId.value.isNotEmpty &&
+      profiles.any((p) => p.id == autoStartProfileId.value);
 
   AppProfile? createProfile({
     required String name,
@@ -98,19 +105,28 @@ class ProfileManager extends GetxController {
 
     if (autoStart) {
       _writeGlobal(_kAutoStartProfileIdKey, profile.id);
+      autoStartProfileId.value = profile.id;
     }
 
-    await _reauthServices();
+    final handler = Get.find<ServiceHandler>();
+    final serviceIndex = ServiceKeys.serviceType.get<int>(0);
+    handler.serviceType.value = ServicesType.values[serviceIndex];
+
+    isProfileReady.value = true;
+
+    _reauthServices();
 
     return profile;
   }
 
-  Future<void> _reauthServices() async {
+  void _reauthServices() {
     try {
       final handler = Get.find<ServiceHandler>();
-      await handler.autoLogin();
-      await handler.fetchHomePage();
-      updateServiceBadges();
+      handler.autoLogin().then((_) {
+        handler.fetchHomePage();
+      }).then((_) {
+        updateServiceBadges();
+      });
     } catch (e) {
       Logger.i('Error re-authenticating on profile switch: $e');
     }
@@ -228,8 +244,9 @@ class ProfileManager extends GetxController {
     profiles.removeWhere((p) => p.id == profileId);
     _saveProfiles();
 
-    if (autoStartProfileId == profileId) {
+    if (autoStartProfileId.value == profileId) {
       _writeGlobal(_kAutoStartProfileIdKey, '');
+      autoStartProfileId.value = '';
     }
 
     return true;
@@ -237,6 +254,7 @@ class ProfileManager extends GetxController {
 
   void resetAutoStart() {
     _writeGlobal(_kAutoStartProfileIdKey, '');
+    autoStartProfileId.value = '';
   }
 
   void _updateProfile(AppProfile updated) {

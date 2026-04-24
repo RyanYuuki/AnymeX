@@ -42,7 +42,7 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
         final manager = Get.find<ProfileManager>();
         final profiles = manager.profiles;
         final currentId = manager.currentProfileId.value;
-        final autoStartId = manager.autoStartProfileId;
+        final autoStartId = manager.autoStartProfileId.value;
 
         return ListView(
           padding: const EdgeInsets.all(16),

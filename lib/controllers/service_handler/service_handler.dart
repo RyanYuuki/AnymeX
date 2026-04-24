@@ -150,8 +150,6 @@ class ServiceHandler extends GetxController {
   @override
   void onReady() {
     super.onReady();
-    fetchHomePage();
-    autoLogin();
   }
 
   Future<void> fetchHomePage() => service.fetchHomePage();

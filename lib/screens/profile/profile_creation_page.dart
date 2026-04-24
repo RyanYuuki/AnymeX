@@ -16,12 +16,17 @@ class ProfileCreationPage extends StatefulWidget {
 
 class _ProfileCreationPageState extends State<ProfileCreationPage> {
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _pinController = TextEditingController();
+  final TextEditingController _confirmPinController = TextEditingController();
   String _avatarPath = '';
   bool _isCreating = false;
+  bool _enablePin = false;
 
   @override
   void dispose() {
     _nameController.dispose();
+    _pinController.dispose();
+    _confirmPinController.dispose();
     super.dispose();
   }
 
@@ -41,6 +46,32 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
       return;
     }
 
+    if (_enablePin) {
+      final pin = _pinController.text.trim();
+      final confirmPin = _confirmPinController.text.trim();
+
+      if (pin.length < 4 || pin.length > 6) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('PIN must be 4-6 digits')),
+        );
+        return;
+      }
+
+      if (!RegExp(r'^\d+$').hasMatch(pin)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('PIN must contain only numbers')),
+        );
+        return;
+      }
+
+      if (pin != confirmPin) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('PINs do not match')),
+        );
+        return;
+      }
+    }
+
     setState(() => _isCreating = true);
 
     final manager = Get.find<ProfileManager>();
@@ -57,6 +88,10 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
         );
       }
       return;
+    }
+
+    if (_enablePin) {
+      manager.setPin(profile.id, _pinController.text.trim());
     }
 
     await manager.switchToProfile(profile.id);
@@ -191,7 +226,238 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
                 ),
               ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: colorScheme.surfaceContainer,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.lock_outline_rounded,
+                            size: 20,
+                            color: _enablePin
+                                ? colorScheme.primary
+                                : theme.onSurface.withOpacity(0.5),
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            'Protect with PIN',
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                              color: theme.onSurface,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Switch(
+                        value: _enablePin,
+                        onChanged: (val) {
+                          setState(() {
+                            _enablePin = val;
+                            if (!val) {
+                              _pinController.clear();
+                              _confirmPinController.clear();
+                            }
+                          });
+                        },
+                        activeColor: colorScheme.primary,
+                      ),
+                    ],
+                  ),
+                  if (!_enablePin)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Profile will be unprotected. Anyone who opens the app can access it.',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: theme.onSurface.withOpacity(0.4),
+                          ),
+                        ),
+                      ),
+                    ),
+                  if (_enablePin) ...[
+                    const SizedBox(height: 16),
+                    Text(
+                      'Set a 4-6 digit PIN. You\'ll need to enter it every time you open this profile.',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: theme.onSurface.withOpacity(0.6),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: _pinController,
+                      keyboardType: TextInputType.number,
+                      obscureText: true,
+                      maxLength: 6,
+                      style: TextStyle(
+                        color: colorScheme.onSurface,
+                        fontFamily: 'Poppins',
+                        fontSize: 22,
+                        letterSpacing: 8,
+                      ),
+                      textAlign: TextAlign.center,
+                      decoration: InputDecoration(
+                        labelText: 'Create PIN',
+                        labelStyle: TextStyle(
+                          color: theme.onSurface.withOpacity(0.6),
+                          fontFamily: 'Poppins',
+                          fontSize: 13,
+                        ),
+                        filled: true,
+                        fillColor: colorScheme.surface,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: colorScheme.primary,
+                            width: 2,
+                          ),
+                        ),
+                        counterText: '',
+                        prefixIcon: Icon(
+                          Icons.password_rounded,
+                          color: colorScheme.primary.withOpacity(0.6),
+                          size: 20,
+                        ),
+                        prefixIconConstraints: const BoxConstraints(
+                          minWidth: 40,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    if (_pinController.text.isNotEmpty)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: colorScheme.primary.withOpacity(0.08),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Preview: ',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontFamily: 'Poppins',
+                                color: theme.onSurface.withOpacity(0.5),
+                              ),
+                            ),
+                            Row(
+                              children: List.generate(
+                                _pinController.text.length,
+                                (index) => Container(
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 3),
+                                  width: 12,
+                                  height: 12,
+                                  decoration: BoxDecoration(
+                                    color: colorScheme.primary,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: _confirmPinController,
+                      keyboardType: TextInputType.number,
+                      obscureText: true,
+                      maxLength: 6,
+                      style: TextStyle(
+                        color: colorScheme.onSurface,
+                        fontFamily: 'Poppins',
+                        fontSize: 22,
+                        letterSpacing: 8,
+                      ),
+                      textAlign: TextAlign.center,
+                      decoration: InputDecoration(
+                        labelText: 'Confirm PIN',
+                        labelStyle: TextStyle(
+                          color: theme.onSurface.withOpacity(0.6),
+                          fontFamily: 'Poppins',
+                          fontSize: 13,
+                        ),
+                        filled: true,
+                        fillColor: colorScheme.surface,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: colorScheme.primary,
+                            width: 2,
+                          ),
+                        ),
+                        counterText: '',
+                        prefixIcon: Icon(
+                          Icons.password_rounded,
+                          color: colorScheme.primary.withOpacity(0.6),
+                          size: 20,
+                        ),
+                        prefixIconConstraints: const BoxConstraints(
+                          minWidth: 40,
+                        ),
+                      ),
+                    ),
+                    if (_confirmPinController.text.isNotEmpty &&
+                        _confirmPinController.text != _pinController.text)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 6),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.error_outline_rounded,
+                                color: Colors.red, size: 14),
+                            const SizedBox(width: 4),
+                            const Text('PINs do not match',
+                                style:
+                                    TextStyle(color: Colors.red, fontSize: 12)),
+                          ],
+                        ),
+                      ),
+                    if (_confirmPinController.text.isNotEmpty &&
+                        _confirmPinController.text == _pinController.text)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 6),
+                        child: Row(
+                          children: [
+                            Icon(Icons.check_circle_outline_rounded,
+                                color: Colors.green.shade400, size: 14),
+                            const SizedBox(width: 4),
+                            Text('PINs match',
+                                style: TextStyle(
+                                    color: Colors.green.shade400, fontSize: 12)),
+                          ],
+                        ),
+                      ),
+                  ],
+                ],
+              ),
+            ),
+            const SizedBox(height: 32),
             Obx(() {
               final count = Get.find<ProfileManager>().profiles.length;
               return Text(
@@ -227,7 +493,7 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
                         ),
                       )
                     : Text(
-                        'Create Profile',
+                        _enablePin ? 'Create Protected Profile' : 'Create Profile',
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontWeight: FontWeight.bold,

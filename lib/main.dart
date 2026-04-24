@@ -328,15 +328,16 @@ class _ProfileGateState extends State<ProfileGate> {
     final manager = Get.find<ProfileManager>();
 
     return Obx(() {
+      if (manager.isProfileReady.value) {
+        return const FilterScreen();
+      }
+
       if (!manager.hasProfiles) {
         return const ProfileCreationPage();
       }
 
-      final autoStartId = manager.autoStartProfileId;
-      if (autoStartId != null &&
-          autoStartId.isNotEmpty &&
-          manager.profiles.any((p) => p.id == autoStartId)) {
-        return _AutoStartHandler(profileId: autoStartId);
+      if (manager.hasAutoStart) {
+        return _AutoStartHandler(profileId: manager.autoStartProfileId.value);
       }
 
       if (manager.hasSingleProfile) {
@@ -358,7 +359,6 @@ class _AutoStartHandler extends StatefulWidget {
 }
 
 class _AutoStartHandlerState extends State<_AutoStartHandler> {
-  bool _resolved = false;
   bool _needsPin = false;
 
   @override
@@ -369,11 +369,16 @@ class _AutoStartHandlerState extends State<_AutoStartHandler> {
 
   Future<void> _checkAndStart() async {
     final manager = Get.find<ProfileManager>();
+
+    if (manager.isProfileReady.value) {
+      return;
+    }
+
     final profile = manager.profiles
         .firstWhereOrNull((p) => p.id == widget.profileId);
 
     if (profile == null) {
-      setState(() => _resolved = true);
+      manager.isProfileReady.value = true;
       return;
     }
 
@@ -381,7 +386,6 @@ class _AutoStartHandlerState extends State<_AutoStartHandler> {
       setState(() => _needsPin = true);
     } else {
       await manager.switchToProfile(profile.id);
-      if (mounted) setState(() => _resolved = true);
     }
   }
 
@@ -391,7 +395,6 @@ class _AutoStartHandlerState extends State<_AutoStartHandler> {
 
     if (result == true) {
       await manager.switchToProfile(widget.profileId);
-      if (mounted) setState(() => _resolved = true);
     } else {
       snackBar(result == null
           ? 'Profile is temporarily locked'
@@ -405,8 +408,10 @@ class _AutoStartHandlerState extends State<_AutoStartHandler> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final manager = Get.find<ProfileManager>();
 
-    if (_resolved) {
+    if (manager.isProfileReady.value || !manager.profiles
+        .any((p) => p.id == widget.profileId)) {
       return const FilterScreen();
     }
 
@@ -419,8 +424,14 @@ class _AutoStartHandlerState extends State<_AutoStartHandler> {
       );
     }
 
-    // Fallback: show profile selection
-    return const ProfileSelectionPage();
+    return Scaffold(
+      backgroundColor: colorScheme.surface,
+      body: Center(
+        child: CircularProgressIndicator(
+          color: colorScheme.primary,
+        ),
+      ),
+    );
   }
 }
 
