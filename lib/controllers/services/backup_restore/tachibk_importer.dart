@@ -372,26 +372,30 @@ class TachibkImporter extends GetxController {
       if (animeToImport.isNotEmpty) {
         statusMessage.value = 'Importing anime (${animeToImport.length})...';
         final mediaList = animeToImport.map(_animeToOfflineMedia).toList();
+        
         await isar.writeTxn(() async {
           for (final media in mediaList) {
+            bool shouldAdd = true;
             if (merge) {
               final id = media.mediaId ?? '';
               if (id.isEmpty || id == '0') {
-                // No tracker ID — skip duplicates by title+type
                 final existing = await isar.offlineMedias
                     .filter()
                     .nameEqualTo(media.name ?? '')
                     .and()
                     .mediaTypeIndexEqualTo(1)
                     .findFirst();
-                if (existing == null) await isar.offlineMedias.put(media);
+                if (existing != null) shouldAdd = false;
               } else {
                 final existing = _storageController.getMediaById(id);
-                if (existing == null) await isar.offlineMedias.put(media);
+                if (existing != null) shouldAdd = false;
               }
-            } else {
+            }
+            
+            if (shouldAdd) {
               await isar.offlineMedias.put(media);
             }
+            
             processed++;
             importProgress.value = processed / total;
           }
@@ -401,8 +405,10 @@ class TachibkImporter extends GetxController {
       if (mangaToImport.isNotEmpty) {
         statusMessage.value = 'Importing manga (${mangaToImport.length})...';
         final mediaList = mangaToImport.map(_mangaToOfflineMedia).toList();
+
         await isar.writeTxn(() async {
           for (final media in mediaList) {
+            bool shouldAdd = true;
             if (merge) {
               final id = media.mediaId ?? '';
               if (id.isEmpty || id == '0') {
@@ -412,14 +418,17 @@ class TachibkImporter extends GetxController {
                     .and()
                     .mediaTypeIndexEqualTo(0)
                     .findFirst();
-                if (existing == null) await isar.offlineMedias.put(media);
+                if (existing != null) shouldAdd = false;
               } else {
                 final existing = _storageController.getMediaById(id);
-                if (existing == null) await isar.offlineMedias.put(media);
+                if (existing != null) shouldAdd = false;
               }
-            } else {
+            }
+
+            if (shouldAdd) {
               await isar.offlineMedias.put(media);
             }
+
             processed++;
             importProgress.value = processed / total;
           }
@@ -452,7 +461,6 @@ class TachibkImporter extends GetxController {
   }
 
   OfflineMedia _animeToOfflineMedia(_TachiAnime anime) {
-    // Prefer AniList ID, then MAL ID, then Kitsu, else 0
     int trackId = 0;
     for (final syncId in [_kSyncIdAniList, _kSyncIdMal, _kSyncIdKitsu]) {
       final t = anime.tracking.where((t) => t.syncId == syncId).firstOrNull;
