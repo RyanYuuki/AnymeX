@@ -39,39 +39,31 @@ class BackupRestoreService extends GetxController {
     return digest.toString().substring(0, 32);
   }
 
-  /// Returns the current profile's ID derived from KvHelper.profilePrefix.
-  /// Matches the same logic as OfflineStorageController._pid.
   String? _getCurrentPid() {
     final prefix = KvHelper.profilePrefix;
     if (prefix.isEmpty) return null;
     return prefix.replaceAll('_', '');
   }
 
-  /// Checks if a KV key is global (e.g. __app_profiles__) — not scoped to any profile.
   bool _isGlobalKey(String key) {
     return key.startsWith('__') && key.endsWith('__');
   }
 
-  /// Checks if a KV key belongs to the current profile.
   bool _isCurrentProfileKey(String key) {
     if (_isGlobalKey(key)) return false;
     final prefix = KvHelper.profilePrefix;
-    if (prefix.isEmpty) return true; // Legacy non-profile key
+    if (prefix.isEmpty) return true;
     return key.startsWith(prefix);
   }
 
-  /// Remaps a profile-scoped KV key from an old profile prefix to the current one.
-  /// Global keys are returned unchanged. Legacy keys get the current prefix added.
   String _remapKey(String key, String backupPrefix) {
     if (_isGlobalKey(key)) return key;
     final currentPrefix = KvHelper.profilePrefix;
 
     if (backupPrefix.isNotEmpty && key.startsWith(backupPrefix)) {
-      // Strip old profile prefix, apply current profile prefix
       final suffix = key.substring(backupPrefix.length);
       return '$currentPrefix$suffix';
     } else {
-      // Legacy key without any prefix — add current prefix
       return '$currentPrefix$key';
     }
   }
@@ -106,13 +98,10 @@ class BackupRestoreService extends GetxController {
       (sum, list) => sum + (list.mediaIds?.length ?? 0),
     );
 
-    // Only include settings for the current profile + global keys.
-    // Other profiles' settings are excluded from the backup.
     final allSettings = isar.collection<KeyValue>().where().findAllSync();
     final filteredSettings = allSettings.where((e) {
       final isAuth = e.key.startsWith('AuthKeys_');
       if (isAuth) return backupAuthTokens;
-      // Only include current profile's keys and global keys
       return backupSettings && _isCurrentProfileKey(e.key);
     }).map((e) => {'key': e.key, 'value': e.value}).toList();
 
@@ -132,7 +121,6 @@ class BackupRestoreService extends GetxController {
       'mangaCustomLists': mangaCustomLists.map((e) => e.toJson()).toList(),
       'novelCustomLists': novelCustomLists.map((e) => e.toJson()).toList(),
       'settings': filteredSettings,
-      // Store the profile prefix so restore can remap keys correctly
       'profilePrefix': KvHelper.profilePrefix,
       'profileId': _getCurrentPid(),
     };
@@ -146,10 +134,7 @@ class BackupRestoreService extends GetxController {
       await _storageController.clearCache();
     }
 
-    // Get current profile's ID so restored media belongs to THIS profile
     final currentPid = _getCurrentPid();
-
-    // Get the backup's profile prefix for key remapping
     final backupPrefix = (data['profilePrefix'] as String?) ?? '';
 
     final animeList = (data['animeLibrary'] as List?)
@@ -250,19 +235,16 @@ class BackupRestoreService extends GetxController {
       });
     }
 
-    // Restore settings with key remapping for profile isolation
     final settingsList = data['settings'] as List? ?? [];
     await isar.writeTxn(() async {
       for (var setting in settingsList) {
         final originalKey = setting['key'] as String?;
         if (originalKey == null) continue;
 
-        // Skip AuthKeys if not requested
         final isAuth = originalKey.contains('AuthKeys_');
         if (isAuth && !restoreAuthTokens) continue;
         if (!isAuth && !restoreSettings) continue;
 
-        // Remap the key to use the current profile's prefix
         final remappedKey = _remapKey(originalKey, backupPrefix);
 
         final kv = KeyValue()
