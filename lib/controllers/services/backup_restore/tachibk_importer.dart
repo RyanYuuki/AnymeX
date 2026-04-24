@@ -454,8 +454,7 @@ class TachibkImporter extends GetxController {
 
       statusMessage.value = 'Done!';
       importProgress.value = 1.0;
-      Logger.i('TachibkImporter: imported ${animeToImport.length} anime, '
-          '${mangaToImport.length} manga');
+      Logger.i('TachibkImporter: imported ${animeToImport.length} anime, ${mangaToImport.length} manga');
     } catch (e) {
       Logger.i('TachibkImporter: import failed: $e');
       rethrow;
