@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:anymex/controllers/cacher/cache_controller.dart';
+import 'package:anymex/controllers/profile/profile_manager.dart';
 import 'package:anymex/screens/downloads/controller/download_controller.dart';
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
@@ -36,6 +37,9 @@ import 'package:anymex/widgets/animation/more_page_transitions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/screens/profile/profile_creation_page.dart';
+import 'package:anymex/screens/profile/profile_selection_page.dart';
+import 'package:anymex/screens/profile/widgets/profile_switcher_overlay.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_splash_screen.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_titlebar.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
@@ -169,6 +173,7 @@ void main(List<String> args) async {
 }
 
 void _initializeGetxController() async {
+  Get.put(ProfileManager(), permanent: true);
   Get.put(Settings());
   Get.put(OfflineStorageController());
   Get.put(AnilistAuth());
@@ -276,7 +281,7 @@ class _MainAppState extends State<MainApp> {
             : theme.isLightMode
                 ? ThemeMode.light
                 : ThemeMode.dark,
-        home: _showMainApp ? const FilterScreen() : const AnymeXSplashScreen(),
+        home: _showMainApp ? const ProfileGate() : const AnymeXSplashScreen(),
         builder: (context, child) {
           if (PlatformDispatcher.instance.views.length > 1) {
             return child!;
@@ -305,6 +310,217 @@ class _MainAppState extends State<MainApp> {
         logWriterCallback: (text, {isError = false}) async {
           Logger.d(text);
         },
+      ),
+    );
+  }
+}
+
+class ProfileGate extends StatefulWidget {
+  const ProfileGate({super.key});
+
+  @override
+  State<ProfileGate> createState() => _ProfileGateState();
+}
+
+class _ProfileGateState extends State<ProfileGate> {
+  @override
+  Widget build(BuildContext context) {
+    final manager = Get.find<ProfileManager>();
+
+    return Obx(() {
+      if (!manager.hasProfiles) {
+        return const ProfileCreationPage();
+      }
+
+      final autoStartId = manager.autoStartProfileId;
+      if (autoStartId != null &&
+          autoStartId.isNotEmpty &&
+          manager.profiles.any((p) => p.id == autoStartId)) {
+        return _AutoStartHandler(profileId: autoStartId);
+      }
+
+      if (manager.hasSingleProfile) {
+        return _AutoStartHandler(
+            profileId: manager.profiles.first.id);
+      }
+
+      return const ProfileSelectionPage();
+    });
+  }
+}
+
+class _AutoStartHandler extends StatefulWidget {
+  final String profileId;
+  const _AutoStartHandler({required this.profileId});
+
+  @override
+  State<_AutoStartHandler> createState() => _AutoStartHandlerState();
+}
+
+class _AutoStartHandlerState extends State<_AutoStartHandler> {
+  bool _resolved = false;
+  bool _needsPin = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkAndStart();
+  }
+
+  Future<void> _checkAndStart() async {
+    final manager = Get.find<ProfileManager>();
+    final profile = manager.profiles
+        .firstWhereOrNull((p) => p.id == widget.profileId);
+
+    if (profile == null) {
+      setState(() => _resolved = true);
+      return;
+    }
+
+    if (profile.hasPin) {
+      setState(() => _needsPin = true);
+    } else {
+      await manager.switchToProfile(profile.id);
+      if (mounted) setState(() => _resolved = true);
+    }
+  }
+
+  Future<void> _submitPin(String pin) async {
+    final manager = Get.find<ProfileManager>();
+    final result = manager.verifyPin(widget.profileId, pin);
+
+    if (result == true) {
+      await manager.switchToProfile(widget.profileId);
+      if (mounted) setState(() => _resolved = true);
+    } else {
+      snackBar(result == null
+          ? 'Profile is temporarily locked'
+          : 'Wrong PIN');
+      if (result == null && mounted) {
+        setState(() => _needsPin = false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    if (_resolved) {
+      return const FilterScreen();
+    }
+
+    if (_needsPin) {
+      return Scaffold(
+        backgroundColor: colorScheme.surface,
+        body: Center(
+          child: _PinAutoStartDialog(onSubmit: _submitPin),
+        ),
+      );
+    }
+
+    // Fallback: show profile selection
+    return const ProfileSelectionPage();
+  }
+}
+
+class _PinAutoStartDialog extends StatefulWidget {
+  final Future<void> Function(String pin) onSubmit;
+  const _PinAutoStartDialog({required this.onSubmit});
+
+  @override
+  State<_PinAutoStartDialog> createState() => _PinAutoStartDialogState();
+}
+
+class _PinAutoStartDialogState extends State<_PinAutoStartDialog> {
+  final _controller = TextEditingController();
+  bool _error = false;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      margin: const EdgeInsets.all(32),
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainer,
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.lock_rounded, size: 48,
+              color: colorScheme.primary),
+          const SizedBox(height: 16),
+          Text('Enter PIN',
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                color: colorScheme.onSurface,
+              )),
+          const SizedBox(height: 20),
+          TextField(
+            controller: _controller,
+            keyboardType: TextInputType.number,
+            obscureText: true,
+            maxLength: 6,
+            autofocus: true,
+            style: TextStyle(
+              color: colorScheme.onSurface,
+              fontFamily: 'Poppins',
+              fontSize: 24,
+              letterSpacing: 8,
+            ),
+            textAlign: TextAlign.center,
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: colorScheme.surface,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: _error
+                    ? const BorderSide(color: Colors.red, width: 2)
+                    : BorderSide.none,
+              ),
+              counterText: '',
+            ),
+            onChanged: (_) => setState(() => _error = false),
+          ),
+          if (_error) ...[
+            const SizedBox(height: 8),
+            const Text('Wrong PIN',
+                style: TextStyle(color: Colors.red)),
+          ],
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: ElevatedButton(
+              onPressed: () {
+                final pin = _controller.text.trim();
+                if (pin.length >= 4) widget.onSubmit(pin);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: colorScheme.primary,
+                foregroundColor: colorScheme.onPrimary,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+              ),
+              child: const Text('Unlock',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.bold,
+                  )),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -406,25 +622,32 @@ class _FilterScreenState extends State<FilterScreen> {
                             return SettingsSheet.show(context);
                           },
                           label: 'Profile',
-                          altIcon: CircleAvatar(
-                              radius: 24,
-                              backgroundColor: Theme.of(context)
-                                  .colorScheme
-                                  .surfaceContainer
-                                  .withValues(alpha: 0.3),
-                              child: authService.isLoggedIn.value
-                                  ? ClipRRect(
-                                      borderRadius: BorderRadius.circular(59),
-                                      child: AnymeXImage(
-                                          width: 40,
-                                          height: 40,
-                                          fit: BoxFit.cover,
-                                          radius: 0,
-                                          imageUrl: authService
-                                                  .profileData.value.avatar ??
-                                              ''),
-                                    )
-                                  : const Icon((IconlyBold.profile)))),
+                          altIcon: GestureDetector(
+                            onLongPress: () =>
+                                showProfileSwitcher(context),
+                            child: CircleAvatar(
+                                radius: 24,
+                                backgroundColor: Theme.of(context)
+                                    .colorScheme
+                                    .surfaceContainer
+                                    .withValues(alpha: 0.3),
+                                child: authService.isLoggedIn.value
+                                    ? ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(59),
+                                        child: AnymeXImage(
+                                            width: 40,
+                                            height: 40,
+                                            fit: BoxFit.cover,
+                                            radius: 0,
+                                            imageUrl: authService
+                                                    .profileData
+                                                    .value
+                                                    .avatar ??
+                                                ''),
+                                      )
+                                    : const Icon((IconlyBold.profile))),
+                          )),
                       NavItem(
                         unselectedIcon: IconlyLight.home,
                         selectedIcon: IconlyBold.home,

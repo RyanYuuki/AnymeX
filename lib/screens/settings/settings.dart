@@ -1,5 +1,6 @@
 import 'package:anymex/screens/downloads/download_screen.dart';
 import 'package:anymex/screens/other_features.dart';
+import 'package:anymex/screens/profile/profile_management_page.dart';
 import 'package:anymex/screens/settings/search/settings_registry.dart';
 import 'package:anymex/screens/settings/search/settings_search_icons.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_about.dart';
@@ -255,6 +256,11 @@ class _SettingsPageState extends State<SettingsPage> {
 
   List<Widget> _buildCategoryWidgets() {
     final items = [
+      _CategoryItem(
+          icon: HugeIcons.strokeRoundedUser02,
+          title: "Profiles",
+          description: "Manage profiles, PIN locks, and switching",
+          destination: () => const ProfileManagementPage()),
       _CategoryItem(
           icon: IconlyLight.profile,
           title: "Accounts",
