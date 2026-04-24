@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/utils/logger.dart';
@@ -10,13 +9,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:get/get.dart';
 import 'package:isar_community/isar.dart';
 import 'package:path_provider/path_provider.dart';
-
 import '../../../main.dart';
-
-// ---------------------------------------------------------------------------
-// Minimal protobuf wire-format reader (no generated code needed)
-// Wire types: 0=varint, 1=64-bit, 2=length-delimited, 5=32-bit
-// ---------------------------------------------------------------------------
 
 class _ProtoReader {
   final Uint8List _buf;
@@ -28,7 +21,6 @@ class _ProtoReader {
 
   int _readRawByte() => _buf[_pos++];
 
-  // Decode a base-128 varint
   int readVarint() {
     int result = 0;
     int shift = 0;
@@ -42,14 +34,12 @@ class _ProtoReader {
     return result;
   }
 
-  // Read a 32-bit little-endian float (wire type 5)
   double readFloat32() {
     final bytes = _buf.sublist(_pos, _pos + 4);
     _pos += 4;
     return ByteData.sublistView(bytes).getFloat32(0, Endian.little);
   }
 
-  // Read length-delimited bytes
   Uint8List readBytes() {
     final len = readVarint();
     final bytes = _buf.sublist(_pos, _pos + len);
@@ -57,7 +47,6 @@ class _ProtoReader {
     return bytes;
   }
 
-  // Skip over a field we don't care about
   void skip(int wireType) {
     switch (wireType) {
       case 0:
@@ -78,7 +67,6 @@ class _ProtoReader {
     }
   }
 
-  // Read next tag; returns null at end of buffer
   ({int fieldNumber, int wireType})? readTag() {
     if (!hasMore) return null;
     final tag = readVarint();
@@ -86,18 +74,12 @@ class _ProtoReader {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Proto model classes matching aniyomi/mihon backup schema
-// Field numbers from Kotlin source files provided in context
-// ---------------------------------------------------------------------------
-
-/// BackupAnime tracking entry (field 18 in BackupAnime)
 class _TachiAnimeTracking {
-  int syncId = 0;       // field 1
-  int mediaIdInt = 0;   // field 3 (deprecated, int)
-  double lastEpisodeSeen = 0; // field 6 (float32, wire type 5)
-  int status = 0;       // field 9
-  int mediaId = 0;      // field 100 (long)
+  int syncId = 0;
+  int mediaIdInt = 0;
+  double lastEpisodeSeen = 0;
+  int status = 0;
+  int mediaId = 0;
 
   static _TachiAnimeTracking decode(Uint8List bytes) {
     final r = _ProtoReader(bytes);
@@ -112,7 +94,7 @@ class _TachiAnimeTracking {
         case 3:
           obj.mediaIdInt = r.readVarint();
           break;
-        case 6: // float (wire type 5)
+        case 6:
           if (tag.wireType == 5) {
             obj.lastEpisodeSeen = r.readFloat32();
           } else {
@@ -132,18 +114,16 @@ class _TachiAnimeTracking {
     return obj;
   }
 
-  // Match Kotlin getTrackImpl() logic: prefer mediaIdInt if non-zero
   int get resolvedMediaId => mediaIdInt != 0 ? mediaIdInt : mediaId;
 }
 
-/// BackupAnime — anime entry in backup
 class _TachiAnime {
-  int source = 0;             // field 1
-  String url = '';            // field 2
-  String title = '';          // field 3
-  String? thumbnailUrl;       // field 9
-  bool favorite = true;       // field 100
-  List<_TachiAnimeTracking> tracking = []; // field 18
+  int source = 0;
+  String url = '';
+  String title = '';
+  String? thumbnailUrl;
+  bool favorite = true;
+  List<_TachiAnimeTracking> tracking = [];
 
   static _TachiAnime decode(Uint8List bytes) {
     final r = _ProtoReader(bytes);
@@ -178,7 +158,6 @@ class _TachiAnime {
   }
 }
 
-/// BackupTracking — manga tracking entry (field 18 in BackupManga)
 class _TachiMangaTracking {
   int syncId = 0;
   int mediaIdInt = 0;
@@ -222,7 +201,6 @@ class _TachiMangaTracking {
   int get resolvedMediaId => mediaIdInt != 0 ? mediaIdInt : mediaId;
 }
 
-/// BackupManga — manga entry in backup
 class _TachiManga {
   int source = 0;
   String url = '';
@@ -264,10 +242,6 @@ class _TachiManga {
   }
 }
 
-/// Top-level Backup proto — handles all three formats:
-///   - Mihon / new aniyomi:  manga @ field 1, anime @ field 501
-///   - Legacy aniyomi full:  manga @ field 1, anime @ field 3
-///   - Very old aniyomi:     manga @ field 1 only (no anime)
 class _TachiBackup {
   List<_TachiManga> backupManga = [];
   List<_TachiAnime> backupAnime = [];
@@ -279,13 +253,13 @@ class _TachiBackup {
       final tag = r.readTag();
       if (tag == null) break;
       switch (tag.fieldNumber) {
-        case 1: // backupManga — present in all formats
+        case 1:
           obj.backupManga.add(_TachiManga.decode(r.readBytes()));
           break;
-        case 3: // backupAnime — legacy aniyomi full backup format
+        case 3:
           obj.backupAnime.add(_TachiAnime.decode(r.readBytes()));
           break;
-        case 501: // backupAnime — new aniyomi/mihon-fork format
+        case 501:
           obj.backupAnime.add(_TachiAnime.decode(r.readBytes()));
           break;
         default:
@@ -296,17 +270,9 @@ class _TachiBackup {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Tracker syncId constants (matches aniyomi TrackerManager IDs)
-// ---------------------------------------------------------------------------
-
 const int _kSyncIdMal = 1;
 const int _kSyncIdAniList = 2;
 const int _kSyncIdKitsu = 3;
-
-// ---------------------------------------------------------------------------
-// Main importer controller
-// ---------------------------------------------------------------------------
 
 class TachibkImporter extends GetxController {
   final OfflineStorageController _storageController = Get.find();
@@ -315,7 +281,6 @@ class TachibkImporter extends GetxController {
   var importProgress = 0.0.obs;
   var statusMessage = ''.obs;
 
-  // Pick a .tachibk file via system file picker
   Future<String?> pickTachibkFile() async {
     try {
       final result = await FilePicker.platform.pickFiles(
@@ -349,7 +314,6 @@ class TachibkImporter extends GetxController {
     }
   }
 
-  // Decode file and return a preview summary without writing to DB
   Future<Map<String, dynamic>?> previewTachibk(String filePath) async {
     try {
       final backup = await _decode(filePath);
@@ -377,7 +341,6 @@ class TachibkImporter extends GetxController {
     }
   }
 
-  // Import the backup into AnymeX's Isar database
   Future<void> importTachibk(
     String filePath, {
     bool merge = true,
@@ -475,17 +438,12 @@ class TachibkImporter extends GetxController {
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // Internal helpers
-  // ---------------------------------------------------------------------------
-
   Future<_TachiBackup> _decode(String filePath) async {
     final file = File(filePath);
     if (!await file.exists()) throw Exception('File not found: $filePath');
 
     Uint8List bytes = await file.readAsBytes();
 
-    // Detect gzip magic bytes 0x1f 0x8b and decompress
     if (bytes.length >= 2 && bytes[0] == 0x1f && bytes[1] == 0x8b) {
       bytes = Uint8List.fromList(GZipCodec().decode(bytes));
     }
