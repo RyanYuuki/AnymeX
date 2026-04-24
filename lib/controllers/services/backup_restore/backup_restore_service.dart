@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/database/kv_helper.dart';
 import 'package:anymex/database/isar_models/custom_list.dart';
 import 'package:anymex/database/isar_models/key_value.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
@@ -38,6 +39,43 @@ class BackupRestoreService extends GetxController {
     return digest.toString().substring(0, 32);
   }
 
+  /// Returns the current profile's ID derived from KvHelper.profilePrefix.
+  /// Matches the same logic as OfflineStorageController._pid.
+  String? _getCurrentPid() {
+    final prefix = KvHelper.profilePrefix;
+    if (prefix.isEmpty) return null;
+    return prefix.replaceAll('_', '');
+  }
+
+  /// Checks if a KV key is global (e.g. __app_profiles__) — not scoped to any profile.
+  bool _isGlobalKey(String key) {
+    return key.startsWith('__') && key.endsWith('__');
+  }
+
+  /// Checks if a KV key belongs to the current profile.
+  bool _isCurrentProfileKey(String key) {
+    if (_isGlobalKey(key)) return false;
+    final prefix = KvHelper.profilePrefix;
+    if (prefix.isEmpty) return true; // Legacy non-profile key
+    return key.startsWith(prefix);
+  }
+
+  /// Remaps a profile-scoped KV key from an old profile prefix to the current one.
+  /// Global keys are returned unchanged. Legacy keys get the current prefix added.
+  String _remapKey(String key, String backupPrefix) {
+    if (_isGlobalKey(key)) return key;
+    final currentPrefix = KvHelper.profilePrefix;
+
+    if (backupPrefix.isNotEmpty && key.startsWith(backupPrefix)) {
+      // Strip old profile prefix, apply current profile prefix
+      final suffix = key.substring(backupPrefix.length);
+      return '$currentPrefix$suffix';
+    } else {
+      // Legacy key without any prefix — add current prefix
+      return '$currentPrefix$key';
+    }
+  }
+
   Future<Map<String, dynamic>> _buildBackupData({
     bool backupSettings = true,
     bool backupAuthTokens = false,
@@ -68,6 +106,16 @@ class BackupRestoreService extends GetxController {
       (sum, list) => sum + (list.mediaIds?.length ?? 0),
     );
 
+    // Only include settings for the current profile + global keys.
+    // Other profiles' settings are excluded from the backup.
+    final allSettings = isar.collection<KeyValue>().where().findAllSync();
+    final filteredSettings = allSettings.where((e) {
+      final isAuth = e.key.startsWith('AuthKeys_');
+      if (isAuth) return backupAuthTokens;
+      // Only include current profile's keys and global keys
+      return backupSettings && _isCurrentProfileKey(e.key);
+    }).map((e) => {'key': e.key, 'value': e.value}).toList();
+
     return {
       'date': DateFormat('dd MM yyyy hh:mm a').format(DateTime.now()),
       'appVersion': '',
@@ -83,16 +131,10 @@ class BackupRestoreService extends GetxController {
       'animeCustomLists': animeCustomLists.map((e) => e.toJson()).toList(),
       'mangaCustomLists': mangaCustomLists.map((e) => e.toJson()).toList(),
       'novelCustomLists': novelCustomLists.map((e) => e.toJson()).toList(),
-      'settings': isar.collection<KeyValue>()
-          .where()
-          .findAllSync()
-          .where((e) {
-            final isAuth = e.key?.startsWith('AuthKeys_') ?? false;
-            if (isAuth) return backupAuthTokens;
-            return backupSettings;
-          })
-          .map((e) => {'key': e.key, 'value': e.value})
-          .toList(),
+      'settings': filteredSettings,
+      // Store the profile prefix so restore can remap keys correctly
+      'profilePrefix': KvHelper.profilePrefix,
+      'profileId': _getCurrentPid(),
     };
   }
 
@@ -104,21 +146,39 @@ class BackupRestoreService extends GetxController {
       await _storageController.clearCache();
     }
 
+    // Get current profile's ID so restored media belongs to THIS profile
+    final currentPid = _getCurrentPid();
+
+    // Get the backup's profile prefix for key remapping
+    final backupPrefix = (data['profilePrefix'] as String?) ?? '';
+
     final animeList = (data['animeLibrary'] as List?)
-            ?.map((e) => OfflineMedia.fromJson(
-                (e as Map<String, dynamic>)..["mediaTypeIndex"] = 1))
+            ?.map((e) {
+              final media = OfflineMedia.fromJson(
+                  (e as Map<String, dynamic>)..["mediaTypeIndex"] = 1);
+              media.profileId = currentPid;
+              return media;
+            })
             .toList() ??
         [];
 
     final mangaList = (data['mangaLibrary'] as List?)
-            ?.map((e) => OfflineMedia.fromJson(
-                (e as Map<String, dynamic>)..["mediaTypeIndex"] = 0))
+            ?.map((e) {
+              final media = OfflineMedia.fromJson(
+                  (e as Map<String, dynamic>)..["mediaTypeIndex"] = 0);
+              media.profileId = currentPid;
+              return media;
+            })
             .toList() ??
         [];
 
     final novelList = (data['novelLibrary'] as List?)
-            ?.map((e) => OfflineMedia.fromJson(
-                (e as Map<String, dynamic>)..["mediaTypeIndex"] = 2))
+            ?.map((e) {
+              final media = OfflineMedia.fromJson(
+                  (e as Map<String, dynamic>)..["mediaTypeIndex"] = 2);
+              media.profileId = currentPid;
+              return media;
+            })
             .toList() ??
         [];
 
@@ -152,20 +212,32 @@ class BackupRestoreService extends GetxController {
 
     if (!merge) {
       final animeCustomLists = (data['animeCustomLists'] as List?)
-              ?.map((e) => CustomList.fromJson(
-                  (e as Map<String, dynamic>)..['mediaTypeIndex'] = 1))
+              ?.map((e) {
+                final list = CustomList.fromJson(
+                    (e as Map<String, dynamic>)..['mediaTypeIndex'] = 1);
+                list.profileId = currentPid;
+                return list;
+              })
               .toList() ??
           [];
 
       final mangaCustomLists = (data['mangaCustomLists'] as List?)
-              ?.map((e) => CustomList.fromJson(
-                  (e as Map<String, dynamic>)..['mediaTypeIndex'] = 0))
+              ?.map((e) {
+                final list = CustomList.fromJson(
+                    (e as Map<String, dynamic>)..['mediaTypeIndex'] = 0);
+                list.profileId = currentPid;
+                return list;
+              })
               .toList() ??
           [];
 
       final novelCustomLists = (data['novelCustomLists'] as List?)
-              ?.map((e) => CustomList.fromJson(
-                  (e as Map<String, dynamic>)..['mediaTypeIndex'] = 2))
+              ?.map((e) {
+                final list = CustomList.fromJson(
+                    (e as Map<String, dynamic>)..['mediaTypeIndex'] = 2);
+                list.profileId = currentPid;
+                return list;
+              })
               .toList() ??
           [];
 
@@ -178,18 +250,23 @@ class BackupRestoreService extends GetxController {
       });
     }
 
+    // Restore settings with key remapping for profile isolation
     final settingsList = data['settings'] as List? ?? [];
     await isar.writeTxn(() async {
       for (var setting in settingsList) {
-        final key = setting['key'] as String?;
-        if (key == null) continue;
+        final originalKey = setting['key'] as String?;
+        if (originalKey == null) continue;
 
-        final isAuth = key.startsWith('AuthKeys_');
+        // Skip AuthKeys if not requested
+        final isAuth = originalKey.contains('AuthKeys_');
         if (isAuth && !restoreAuthTokens) continue;
         if (!isAuth && !restoreSettings) continue;
 
+        // Remap the key to use the current profile's prefix
+        final remappedKey = _remapKey(originalKey, backupPrefix);
+
         final kv = KeyValue()
-          ..key = key
+          ..key = remappedKey
           ..value = setting['value'];
         await isar.collection<KeyValue>().put(kv);
       }
@@ -485,6 +562,8 @@ class BackupRestoreService extends GetxController {
         'hasAuthTokens': (data['settings'] as List?)?.any((e) =>
                 (e['key'] as String? ?? '').startsWith('AuthKeys_')) ??
             false,
+        'profilePrefix': data['profilePrefix'] ?? '',
+        'profileId': data['profileId'] ?? '',
       };
     } catch (e) {
       Logger.i('Failed to get backup info: $e');

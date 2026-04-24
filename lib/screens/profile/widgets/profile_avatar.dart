@@ -20,6 +20,10 @@ class ProfileAvatar extends StatelessWidget {
     this.showLocked = false,
   });
 
+  bool _isGif(String path) {
+    return path.toLowerCase().endsWith('.gif');
+  }
+
   @override
   Widget build(BuildContext context) {
     if (showLocked) {
@@ -38,6 +42,37 @@ class ProfileAvatar extends StatelessWidget {
     if (profile.avatarPath.isNotEmpty) {
       final file = File(profile.avatarPath);
       if (file.existsSync()) {
+        if (_isGif(profile.avatarPath)) {
+          return ClipOval(
+            child: SizedBox(
+              width: radius * 2,
+              height: radius * 2,
+              child: Image.file(
+                file,
+                fit: BoxFit.cover,
+                width: radius * 2,
+                height: radius * 2,
+                filterQuality: FilterQuality.medium,
+                errorBuilder: (context, error, stackTrace) {
+                  return CircleAvatar(
+                    radius: radius,
+                    backgroundColor: fallbackColor ??
+                        Theme.of(context).colorScheme.primaryContainer,
+                    child: Text(
+                      profile.initials,
+                      style: TextStyle(
+                        fontSize: radius * 0.7,
+                        fontWeight: FontWeight.bold,
+                        color:
+                            Theme.of(context).colorScheme.onPrimaryContainer,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          );
+        }
         return CircleAvatar(
           radius: radius,
           backgroundColor:
@@ -65,9 +100,8 @@ class ProfileAvatar extends StatelessWidget {
 
 Future<String?> pickAndSaveProfileImage() async {
   final result = await FilePicker.platform.pickFiles(
-    type: FileType.image,
-    allowCompression: true,
-    compressionQuality: 85,
+    type: FileType.custom,
+    allowedExtensions: ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp'],
   );
 
   if (result == null || result.files.isEmpty) return null;
