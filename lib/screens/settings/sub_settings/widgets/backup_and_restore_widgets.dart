@@ -1029,13 +1029,8 @@ class GlassContainer extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Aniyomi / Mihon .tachibk import preview sheet
-// ---------------------------------------------------------------------------
-
 class TachibkImportPreviewSheet extends StatelessWidget {
   final Map<String, dynamic> preview;
-  /// Called with (importAnime, importManga, merge)
   final Function(bool importAnime, bool importManga, bool merge) onConfirm;
 
   const TachibkImportPreviewSheet({
