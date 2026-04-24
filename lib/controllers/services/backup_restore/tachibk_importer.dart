@@ -417,7 +417,7 @@ class TachibkImporter extends GetxController {
                 // No tracker ID — skip duplicates by title+type
                 final existing = await isar.offlineMedias
                     .filter()
-                    .titleEqualTo(media.title ?? '')
+                    .nameEqualTo(media.name ?? '')
                     .and()
                     .mediaTypeIndexEqualTo(1)
                     .findFirst();
@@ -445,7 +445,7 @@ class TachibkImporter extends GetxController {
               if (id.isEmpty || id == '0') {
                 final existing = await isar.offlineMedias
                     .filter()
-                    .titleEqualTo(media.title ?? '')
+                    .nameEqualTo(media.name ?? '')
                     .and()
                     .mediaTypeIndexEqualTo(0)
                     .findFirst();
@@ -506,9 +506,9 @@ class TachibkImporter extends GetxController {
 
     return OfflineMedia()
       ..mediaId = trackId != 0 ? trackId.toString() : null
-      ..title = anime.title
-      ..coverImage = anime.thumbnailUrl ?? ''
-      ..mediaTypeIndex = 1; // anime
+      ..name = anime.title
+      ..poster = anime.thumbnailUrl
+      ..mediaTypeIndex = 1;
   }
 
   OfflineMedia _mangaToOfflineMedia(_TachiManga manga) {
@@ -523,9 +523,9 @@ class TachibkImporter extends GetxController {
 
     return OfflineMedia()
       ..mediaId = trackId != 0 ? trackId.toString() : null
-      ..title = manga.title
-      ..coverImage = manga.thumbnailUrl ?? ''
-      ..mediaTypeIndex = 0; // manga
+      ..name = manga.title
+      ..poster = manga.thumbnailUrl
+      ..mediaTypeIndex = 0;
   }
 
   void resetState() {
