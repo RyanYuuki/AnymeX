@@ -204,11 +204,15 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
                         value: 'remove_pin', child: Text('Remove PIN')),
                   const PopupMenuItem(
                       value: 'export', child: Text('Export Data')),
-                  if (!isCurrent)
+                  if (!isCurrent) ...[
+                    const PopupMenuItem(
+                        value: 'switch',
+                        child: Text('Switch to Profile')),
                     const PopupMenuItem(
                         value: 'delete',
                         child: Text('Delete Profile',
                             style: TextStyle(color: Colors.red))),
+                  ],
                 ],
               ),
             ],
@@ -329,6 +333,9 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
       case 'export':
         _exportProfile(profile);
         break;
+      case 'switch':
+        await _switchToProfile(profile);
+        break;
       case 'delete':
         if (isCurrent) {
           snackBar('Switch to another profile first');
@@ -345,6 +352,95 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
       final manager = Get.find<ProfileManager>();
       manager.updateProfileAvatar(profile.id, path);
       snackBar('Avatar updated');
+    }
+  }
+
+  Future<void> _switchToProfile(AppProfile profile) async {
+    if (profile.hasPin) {
+      final pinController = TextEditingController();
+      final colorScheme = Theme.of(context).colorScheme;
+      final success = await showDialog<bool>(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => AlertDialog(
+          backgroundColor: colorScheme.surfaceContainer,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20)),
+          title: Text(
+            'Enter PIN for "${profile.name}"',
+            style: TextStyle(
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onSurface),
+          ),
+          content: TextField(
+            controller: pinController,
+            keyboardType: TextInputType.number,
+            obscureText: true,
+            maxLength: 6,
+            autofocus: true,
+            style: TextStyle(
+                color: colorScheme.onSurface,
+                fontFamily: 'Poppins',
+                fontSize: 22,
+                letterSpacing: 8),
+            textAlign: TextAlign.center,
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: colorScheme.surface,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+              counterText: '',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text('Cancel',
+                  style: TextStyle(
+                      color: colorScheme.onSurface.withOpacity(0.7))),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final pin = pinController.text.trim();
+                if (pin.length < 4) {
+                  snackBar('PIN must be at least 4 digits');
+                  return;
+                }
+                final manager = Get.find<ProfileManager>();
+                final result = manager.verifyPin(profile.id, pin);
+                if (result == true) {
+                  Navigator.pop(ctx, true);
+                } else {
+                  snackBar(result == null
+                      ? 'Profile is temporarily locked'
+                      : 'Wrong PIN');
+                  if (result == null) Navigator.pop(ctx, false);
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: colorScheme.primary,
+                foregroundColor: colorScheme.onPrimary,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+              ),
+              child: const Text('Unlock'),
+            ),
+          ],
+        ),
+      );
+      pinController.dispose();
+      if (success != true) return;
+    }
+
+    final manager = Get.find<ProfileManager>();
+    await manager.switchToProfile(profile.id);
+
+    if (mounted) {
+      snackBar('Switched to ${profile.name}');
+      Navigator.of(context).popUntil((route) => route.isFirst);
     }
   }
 
