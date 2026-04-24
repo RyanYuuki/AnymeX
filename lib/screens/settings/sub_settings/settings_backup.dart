@@ -1,4 +1,5 @@
 import 'package:anymex/controllers/services/backup_restore/backup_restore_service.dart';
+import 'package:anymex/controllers/services/backup_restore/tachibk_importer.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/screens/settings/sub_settings/widgets/backup_and_restore_widgets.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -16,10 +17,12 @@ class BackupRestorePage extends StatefulWidget {
 
 class _BackupRestorePageState extends State<BackupRestorePage> {
   late final controller = Get.put(BackupRestoreService());
+  late final tachibkController = Get.put(TachibkImporter());
 
   @override
   void dispose() {
     Get.delete<BackupRestoreService>();
+    Get.delete<TachibkImporter>();
     super.dispose();
   }
 
@@ -97,7 +100,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
         RestorePreviewSheet(
           info: info,
           isEncrypted: isEncrypted,
-        onConfirm: (restoreSettings, restoreAuthTokens) async {
+          onConfirm: (restoreSettings, restoreAuthTokens) async {
             Get.back();
             try {
               await controller.restoreBackup(
@@ -122,6 +125,67 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
       );
     } catch (e) {
       snackBar("Error selecting file: ${e.toString()}");
+    }
+  }
+
+  Future<void> _handleTachibkImport(BuildContext context) async {
+    try {
+      final path = await tachibkController.pickTachibkFile();
+      if (path == null) return;
+
+      if (!context.mounted) return;
+
+      final preview = await tachibkController.previewTachibk(path);
+      if (preview == null) {
+        snackBar("Failed to read backup file. Make sure it's a valid .tachibk file.");
+        return;
+      }
+
+      if (!context.mounted) return;
+
+      Get.bottomSheet(
+        TachibkImportPreviewSheet(
+          preview: preview,
+          onConfirm: (importAnime, importManga, merge) async {
+            Get.back();
+
+            if (!context.mounted) return;
+
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (_) => LoadingDialog(
+                statusObs: tachibkController.statusMessage,
+                progressObs: tachibkController.importProgress,
+              ),
+            );
+
+            try {
+              await tachibkController.importTachibk(
+                path,
+                merge: merge,
+                importAnime: importAnime,
+                importManga: importManga,
+              );
+              if (context.mounted) {
+                Navigator.of(context, rootNavigator: true).pop();
+                snackBar("Import from Aniyomi/Mihon complete!");
+              }
+            } catch (e) {
+              if (context.mounted) {
+                Navigator.of(context, rootNavigator: true).pop();
+                snackBar("Import failed: ${e.toString()}");
+              }
+            } finally {
+              tachibkController.resetState();
+            }
+          },
+        ),
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+      );
+    } catch (e) {
+      snackBar("Error: ${e.toString()}");
     }
   }
 
@@ -169,7 +233,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                       );
                     }),
                     const SizedBox(height: 32),
-                    const _SectionHeader(title: "Actions"),
+                    const _SectionHeader(title: "AnymeX Backup"),
                     const SizedBox(height: 16),
                     ActionCard(
                       title: "Create Backup",
@@ -185,6 +249,16 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                       icon: Icons.settings_backup_restore_rounded,
                       color: theme.colorScheme.tertiary,
                       onTap: () => _handleRestore(context),
+                    ),
+                    const SizedBox(height: 32),
+                    const _SectionHeader(title: "Import from Other Apps"),
+                    const SizedBox(height: 16),
+                    ActionCard(
+                      title: "Import from Aniyomi / Mihon",
+                      subtitle: "Import your .tachibk backup file",
+                      icon: Icons.import_export_rounded,
+                      color: theme.colorScheme.secondary,
+                      onTap: () => _handleTachibkImport(context),
                     ),
                   ],
                 ),
