@@ -331,6 +331,10 @@ class _ProfileGateState extends State<ProfileGate> {
     final manager = Get.find<ProfileManager>();
 
     return Obx(() {
+      if (manager.showProfileSelection.value) {
+        return const ProfileSelectionPage();
+      }
+
       if (manager.isProfileReady.value) {
         return const FilterScreen();
       }
@@ -410,8 +414,8 @@ class _AutoStartHandlerState extends State<_AutoStartHandler> {
 
   void _goToProfileSelection() {
     final manager = Get.find<ProfileManager>();
-    manager.isProfileReady.value = true;
     manager.resetAutoStart();
+    manager.requestProfileSelection();
   }
 
   @override
@@ -419,8 +423,11 @@ class _AutoStartHandlerState extends State<_AutoStartHandler> {
     final colorScheme = Theme.of(context).colorScheme;
     final manager = Get.find<ProfileManager>();
 
-    if (manager.isProfileReady.value || !manager.profiles
-        .any((p) => p.id == widget.profileId)) {
+    if (!manager.profiles.any((p) => p.id == widget.profileId)) {
+      return const ProfileSelectionPage();
+    }
+
+    if (manager.isProfileReady.value) {
       return const FilterScreen();
     }
 

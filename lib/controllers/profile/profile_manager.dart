@@ -31,6 +31,7 @@ class ProfileManager extends GetxController {
   RxString currentProfileId = ''.obs;
   RxBool isProfileReady = false.obs;
   RxString autoStartProfileId = ''.obs;
+  RxBool showProfileSelection = false.obs;
 
   @override
   void onInit() {
@@ -116,6 +117,7 @@ class ProfileManager extends GetxController {
     handler.serviceType.value = ServicesType.values[serviceIndex];
 
     isProfileReady.value = true;
+    showProfileSelection.value = false;
 
     _reauthServices();
 
@@ -287,6 +289,14 @@ class ProfileManager extends GetxController {
   void resetAutoStart() {
     _writeGlobal(_kAutoStartProfileIdKey, '');
     autoStartProfileId.value = '';
+  }
+
+  void requestProfileSelection() {
+    showProfileSelection.value = true;
+  }
+
+  void clearProfileSelectionRequest() {
+    showProfileSelection.value = false;
   }
 
   void _updateProfile(AppProfile updated) {
