@@ -39,7 +39,7 @@ class _PageAnimationState extends State<PageAnimation>
       vsync: this,
     );
 
-    // Opacity animation
+    
     _opacityAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -48,7 +48,7 @@ class _PageAnimationState extends State<PageAnimation>
       curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
     ));
 
-    // Bouncy slide animation
+    
     _bounceAnimation = Tween<Offset>(
       begin: Offset(0.0, widget.slideDistance / 100),
       end: Offset.zero,
@@ -57,7 +57,7 @@ class _PageAnimationState extends State<PageAnimation>
       curve: widget.curve,
     ));
 
-    // Scale animation for extra bounce effect
+    
     _scaleAnimation = Tween<double>(
       begin: 0.8,
       end: 1.0,
@@ -66,7 +66,7 @@ class _PageAnimationState extends State<PageAnimation>
       curve: widget.curve,
     ));
 
-    // Start animation after delay
+    
     if (widget.delay == Duration.zero) {
       _controller.forward();
     } else {
@@ -138,7 +138,7 @@ class _BouncyAnimatedItemWrapperState extends State<BouncyAnimatedItemWrapper>
       vsync: this,
     );
 
-    // Opacity animation
+    
     _opacityAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -147,7 +147,7 @@ class _BouncyAnimatedItemWrapperState extends State<BouncyAnimatedItemWrapper>
       curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
     ));
 
-    // Bouncy slide animation
+    
     _bounceAnimation = Tween<Offset>(
       begin: Offset(0.0, widget.slideDistance / 100),
       end: Offset.zero,
@@ -156,7 +156,7 @@ class _BouncyAnimatedItemWrapperState extends State<BouncyAnimatedItemWrapper>
       curve: widget.curve,
     ));
 
-    // Scale animation for extra bounce effect
+    
     _scaleAnimation = Tween<double>(
       begin: 0.8,
       end: 1.0,
@@ -165,7 +165,7 @@ class _BouncyAnimatedItemWrapperState extends State<BouncyAnimatedItemWrapper>
       curve: widget.curve,
     ));
 
-    // Start animation after delay
+    
     if (widget.delay == Duration.zero) {
       _controller.forward();
     } else {
@@ -198,7 +198,7 @@ class _BouncyAnimatedItemWrapperState extends State<BouncyAnimatedItemWrapper>
   }
 }
 
-// Staggered bouncy version
+
 class StaggeredBouncyAnimatedWrapper extends StatelessWidget {
   final Widget child;
   final int index;
@@ -232,7 +232,7 @@ class StaggeredBouncyAnimatedWrapper extends StatelessWidget {
   }
 }
 
-// Custom bouncy animation with more control
+
 class CustomBouncyWrapper extends StatefulWidget {
   final Widget child;
   final Duration duration;
@@ -274,7 +274,7 @@ class _CustomBouncyWrapperState extends State<CustomBouncyWrapper>
     );
 
     if (widget.useCustomBounce) {
-      // Custom bounce sequence
+      
       _scaleAnimation = TweenSequence<double>([
         TweenSequenceItem(
           tween: Tween<double>(
@@ -319,7 +319,7 @@ class _CustomBouncyWrapperState extends State<CustomBouncyWrapper>
       curve: Curves.elasticOut,
     ));
 
-    // Start animation after delay
+    
     if (widget.delay == Duration.zero) {
       _controller.forward();
     } else {
@@ -352,7 +352,7 @@ class _CustomBouncyWrapperState extends State<CustomBouncyWrapper>
   }
 }
 
-// Simple spring bounce wrapper
+
 class SpringBouncyWrapper extends StatefulWidget {
   final Widget child;
   final Duration delay;
@@ -393,7 +393,7 @@ class _SpringBouncyWrapperState extends State<SpringBouncyWrapper>
       curve: Curves.elasticOut,
     ));
 
-    // Start animation after delay
+    
     if (widget.delay == Duration.zero) {
       _controller.forward();
     } else {
@@ -479,7 +479,7 @@ class _AnimatedItemWrapperState extends State<AnimatedItemWrapper>
       curve: widget.curve,
     ));
 
-    // Start animation after delay
+    
     if (widget.delay == Duration.zero) {
       _controller.forward();
     } else {
@@ -509,7 +509,7 @@ class _AnimatedItemWrapperState extends State<AnimatedItemWrapper>
   }
 }
 
-// Optional: Staggered version for multiple items
+
 class StaggeredAnimatedItemWrapper extends StatelessWidget {
   final Widget child;
   final int index;
@@ -540,7 +540,7 @@ class StaggeredAnimatedItemWrapper extends StatelessWidget {
   }
 }
 
-// Alternative: Visibility-based animation (more performant for large lists)
+
 class VisibilityAnimatedWrapper extends StatefulWidget {
   final Widget child;
   final Duration duration;

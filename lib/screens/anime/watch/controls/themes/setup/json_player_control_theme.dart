@@ -8,6 +8,7 @@ import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
+import 'package:anymex/widgets/common/marquee_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
@@ -561,7 +562,7 @@ class ThemeRenderer {
         final text = _getTitleText();
         if (text.isEmpty) return null;
         return _makeTextThing(
-            value: text, item: item, maxLines: item.grabInt('maxLines', 1));
+            value: text, item: item, maxLines: item.grabInt('maxLines', 1), isMarquee: true);
 
       case 'episode_badge':
         return _makeBadgeThing(_getEpisodeLabel(), item);
@@ -687,7 +688,7 @@ class ThemeRenderer {
           ),
         ),
         SizedBox(height: gap),
-        Text(
+        MarqueeText(
           title,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
@@ -804,7 +805,7 @@ class ThemeRenderer {
             child: Center(
               child: AnimatedOpacity(
                 opacity: enabled ? 1.0 : 0.6,
-                duration: const Duration(milliseconds: 180),
+                duration: controller.overlayAnimationDuration(180),
                 child: guts,
               ),
             ),
@@ -866,7 +867,7 @@ class ThemeRenderer {
       _makeBadgeThing(text, item);
 
   Widget _makeTextThing(
-      {required String value, required ThemeItem item, int maxLines = 1}) {
+      {required String value, required ThemeItem item, int maxLines = 1, bool isMarquee = false}) {
     final style = def.styles.text.mash(item.style);
     final textColor = _resolveColor(style.textColor, fallback: Colors.white);
     final textAlign = _parseTextAlign(item.grabString('textAlign'));
@@ -875,7 +876,7 @@ class ThemeRenderer {
         style.backgroundColor!.trim().isNotEmpty &&
         style.backgroundColor!.trim().toLowerCase() != 'transparent';
 
-    final textWidget = Text(
+    Widget textWidget = Text(
       value,
       maxLines: maxLines,
       overflow: TextOverflow.ellipsis,
@@ -888,6 +889,21 @@ class ThemeRenderer {
         height: style.height,
       ),
     );
+    if (isMarquee) {
+      textWidget = MarqueeText(
+        value,
+        maxLines: maxLines,
+        overflow: TextOverflow.ellipsis,
+        textAlign: textAlign,
+        style: TextStyle(
+          color: textColor,
+          fontSize: style.fontSize,
+          fontWeight: style.fontWeight,
+          letterSpacing: style.letterSpacing,
+          height: style.height,
+        ),
+      );
+    }
 
     if (!hasBackground) return textWidget;
 
@@ -991,11 +1007,15 @@ class ThemeRenderer {
       ignoring: vibes.ignorePointerWhenHidden && !visible,
       child: AnimatedSlide(
         offset: visible ? Offset.zero : vibes.hiddenOffset,
-        duration: vibes.slideDuration,
+        duration: controller.playerSettings.playerMenuAnimation
+            ? vibes.slideDuration
+            : Duration.zero,
         curve: vibes.slideCurve,
         child: AnimatedOpacity(
           opacity: visible ? 1.0 : 0.0,
-          duration: vibes.opacityDuration,
+          duration: controller.playerSettings.playerMenuAnimation
+              ? vibes.opacityDuration
+              : Duration.zero,
           curve: vibes.opacityCurve,
           child: child,
         ),
@@ -1127,16 +1147,18 @@ class ThemeRenderer {
         controller.openColorProfileBottomSheet(context);
         break;
       case 'subtitles':
-        if (controller.isOffline.value) {
-          PlayerBottomSheets.showOfflineSubs(context, controller);
-        } else {
-          PlayerBottomSheets.showSubtitleTracks(context, controller);
-        }
+      case 'source':
+        controller.isSourcePaneOpened.value = !controller.isSourcePaneOpened.value;
         break;
       case 'server':
-        if (!controller.isOffline.value) {
-          PlayerBottomSheets.showVideoServers(context, controller);
-        }
+        controller.isSourcePaneOpened.value = !controller.isSourcePaneOpened.value;
+        break;
+      case 'sync_subs':
+        controller.isSyncSubsPaneOpened.value = !controller.isSyncSubsPaneOpened.value;
+        break;
+      case 'tracks':
+      case 'audio_track':
+        controller.isTracksPaneOpened.value = !controller.isTracksPaneOpened.value;
         break;
       case 'quality':
         if (!controller.isOffline.value) {
@@ -1146,8 +1168,6 @@ class ThemeRenderer {
       case 'speed':
         PlayerBottomSheets.showPlaybackSpeed(context, controller);
         break;
-      case 'audio_track':
-        PlayerBottomSheets.showAudioTracks(context, controller);
         break;
       case 'orientation':
         if (_isMobile) controller.toggleOrientation();

@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/screens/profile/widgets/profile_common.dart';
+import 'package:anymex/widgets/common/marquee_text.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/fullscreen_image_viewer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -305,7 +306,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                               final shouldStackFollow =
                                   hasFollowState && constraints.maxWidth < 250;
 
-                              final nameWidget = Text(
+                              final nameWidget = MarqueeText(
                                 name,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -373,7 +374,10 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                                         ),
                                       const SizedBox(width: 5),
                                       Text(
-                                        getFollowLabel(isFollowing: widget.isFollowingUser, isFollower: widget.isFollowerOfUser),
+                                        getFollowLabel(
+                                            isFollowing: widget.isFollowingUser,
+                                            isFollower:
+                                                widget.isFollowerOfUser),
                                         style: TextStyle(
                                           fontSize: 9.5,
                                           fontFamily: 'Poppins-Bold',

@@ -6,15 +6,19 @@ import 'package:get/get.dart';
 import 'package:anymex/models/Anilist/anilist_activity.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/widgets/non_widgets/activity_card.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:anymex/utils/al_about_me.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/non_widgets/activity_composer_sheet.dart';
+import 'package:anymex/screens/profile/widgets/profile_common.dart';
 
 void showActivityDetailsSheet(BuildContext context, AnilistActivity activity) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
+    isDismissible: false,
+    enableDrag: false,
     backgroundColor: Colors.transparent,
     builder: (context) {
       return ActivityDetailsSheet(activity: activity);
@@ -175,33 +179,64 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding:
-          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-      child: DraggableScrollableSheet(
-        initialChildSize: 0.9,
-        maxChildSize: 0.95,
-        minChildSize: 0.5,
-        builder: (context, scrollController) {
-          return Container(
-            decoration: BoxDecoration(
-              color: context.theme.colorScheme.surface,
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(20)),
-            ),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12.0),
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.withOpacity(0.3),
-                      borderRadius: BorderRadius.circular(2),
+    return WillPopScope(
+      onWillPop: () => confirmDiscardComposer(
+        context,
+        composerKey: _composerKey,
+        discardTitle: 'Discard reply?',
+        discardMessage:
+            'You have unsent text. Closing now will lose your reply.',
+      ),
+      child: Padding(
+        padding:
+            EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        child: DraggableScrollableSheet(
+          initialChildSize: 0.9,
+          maxChildSize: 0.95,
+          minChildSize: 0.5,
+          builder: (context, scrollController) {
+            return Container(
+              decoration: BoxDecoration(
+                color: context.theme.colorScheme.surface,
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 8, 8, 0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Center(
+                            child: Container(
+                              width: 40,
+                              height: 4,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.withOpacity(0.3),
+                                borderRadius: BorderRadius.circular(2),
+                              ),
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () async {
+                            final discard = await confirmDiscardComposer(
+                              context,
+                              composerKey: _composerKey,
+                              discardTitle: 'Discard reply?',
+                              discardMessage:
+                                  'You have unsent text. Closing now will lose your reply.',
+                            );
+                            if (discard && context.mounted) {
+                              Navigator.pop(context);
+                            }
+                          },
+                        ),
+                      ],
                     ),
                   ),
-                ),
                 Expanded(
                   child: RefreshIndicator(
                     onRefresh: _fetchReplies,
@@ -270,11 +305,12 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                     onSubmit: (text, {isPrivate = false}) => _postReply(text),
                   ),
                 ),
-              ], 
-            ), 
-          ); 
-        },
-      ), 
+              ],
+              ),
+            );
+          },
+        ),
+      ),
     ); 
   }
 
@@ -633,15 +669,14 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                         ),
                       const SizedBox(width: 16),
                       Expanded(
-                        child: Text(
-                          liker.name,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: context.theme.colorScheme.onSurface,
-                          ),
+                        child: AnymexText(
+                          text: liker.name,
+                          size: 16,
+                          variant: TextVariant.bold,
+                          color: context.theme.colorScheme.onSurface,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
+                          isMarquee: true,
                         ),
                       ),
                     ],

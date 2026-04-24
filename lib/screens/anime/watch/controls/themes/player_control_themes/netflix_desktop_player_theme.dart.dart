@@ -23,7 +23,7 @@ class NetflixDesktopPlayerControlTheme extends PlayerControlTheme {
         ignoring: !controller.showControls.value,
         child: AnimatedOpacity(
           opacity: controller.showControls.value ? 1.0 : 0.0,
-          duration: const Duration(milliseconds: 200),
+          duration: controller.overlayAnimationDuration(200),
           child: VerticalScrim(
             fromTop: true,
             height: 120,
@@ -78,7 +78,6 @@ class NetflixDesktopPlayerControlTheme extends PlayerControlTheme {
   @override
   Widget buildCenterControls(
       BuildContext context, PlayerController controller) {
-    // Desktop uses the bottom bar for play/pause — no center controls needed
     return const SizedBox.shrink();
   }
 
@@ -90,7 +89,7 @@ class NetflixDesktopPlayerControlTheme extends PlayerControlTheme {
         ignoring: !controller.showControls.value,
         child: AnimatedOpacity(
           opacity: controller.showControls.value ? 1.0 : 0.0,
-          duration: const Duration(milliseconds: 200),
+          duration: controller.overlayAnimationDuration(200),
           child: VerticalScrim(
             fromTop: false,
             height: 140,
@@ -157,11 +156,7 @@ class NetflixDesktopPlayerControlTheme extends PlayerControlTheme {
                         NFDesktopButton(
                           icon: Symbols.subtitles_rounded,
                           size: 30,
-                          onTap: () => controller.isOffline.value
-                              ? PlayerBottomSheets.showOfflineSubs(
-                                  context, controller)
-                              : PlayerBottomSheets.showSubtitleTracks(
-                                  context, controller),
+                          onTap: () => controller.isTracksPaneOpened.value = !controller.isTracksPaneOpened.value,
                         ),
                         const SizedBox(width: 20),
                         NFDesktopButton(

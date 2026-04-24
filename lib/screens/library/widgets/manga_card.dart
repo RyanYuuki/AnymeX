@@ -154,6 +154,7 @@ class MangaHistoryCard extends StatelessWidget {
                                 mobileValue: 1, desktopValue: 2),
                             variant: TextVariant.bold,
                             overflow: TextOverflow.ellipsis,
+                            isMarquee: true,
                           ),
                           const SizedBox(height: 4),
                           if (data.name != null &&
@@ -165,6 +166,7 @@ class MangaHistoryCard extends StatelessWidget {
                               variant: TextVariant.regular,
                               color: colorScheme.onSurface.opaque(0.7),
                               overflow: TextOverflow.ellipsis,
+                              isMarquee: true,
                             ),
                           const Spacer(),
                           // Progress indicator

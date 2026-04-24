@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:anymex/controllers/cacher/cache_controller.dart';
+import 'package:anymex/screens/downloads/controller/download_controller.dart';
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -12,6 +13,7 @@ import 'package:anymex/controllers/services/mal/mal_service.dart';
 import 'package:anymex/controllers/services/mangabaka/mangabaka_service.dart';
 import 'package:anymex/controllers/services/simkl/simkl_service.dart';
 import 'package:anymex/controllers/services/storage/storage_manager_service.dart';
+import 'package:anymex/controllers/services/community_service.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/sync/gist_sync_controller.dart';
@@ -47,6 +49,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
@@ -101,6 +104,11 @@ void initDeepLinkListener() async {
 void main(List<String> args) async {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
+    if (Platform.isAndroid) {
+      FlutterDisplayMode.setHighRefreshRate().catchError((e) {
+        debugPrint("Error setting high refresh rate: $e");
+      });
+    }
     ExternalFontLoader.loadAllFonts();
 
     await Logger.init();
@@ -134,6 +142,7 @@ void main(List<String> args) async {
           systemNavigationBarDividerColor: Colors.transparent,
           systemNavigationBarContrastEnforced: false,
           systemNavigationBarColor: Colors.transparent,
+          systemNavigationBarIconBrightness: Brightness.dark,
           statusBarColor: Colors.transparent,
           statusBarBrightness: Brightness.dark));
     }
@@ -147,7 +156,7 @@ void main(List<String> args) async {
     runApp(
       ChangeNotifierProvider(
         create: (context) => ThemeProvider(),
-        child: const MyAdaptiveWrapper(child: MainApp()),
+        child: const MainApp(),
       ),
     );
   }, (error, stackTrace) async {
@@ -161,8 +170,10 @@ void main(List<String> args) async {
 }
 
 void _initializeGetxController() async {
+  Get.put(Settings());
   Get.put(OfflineStorageController());
   Get.put(AnilistAuth());
+  Get.put(CommunityService());
   Get.put(AnilistData());
   Get.put(SimklService());
   Get.put(MalService());
@@ -171,12 +182,12 @@ void _initializeGetxController() async {
   if (!Get.isRegistered<SourceController>()) {
     Get.put(SourceController());
   }
-  Get.put(Settings());
   Get.put(ServiceHandler());
   Get.put(GreetingController());
   Get.put(CommentumService());
   Get.put(CommentPreloader());
   Get.put(GistSyncController(), permanent: true);
+  Get.put(DownloadController(), permanent: true);
   Get.lazyPut(() => CacheController());
   await StorageManagerService().enforceImageCacheLimit();
 }
@@ -190,10 +201,48 @@ class MainApp extends StatefulWidget {
 
 class _MainAppState extends State<MainApp> {
   bool _showMainApp = false;
+  bool _isFullScreen = false;
+
+  late FocusNode focusNode;
+
+  KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+    if (event is KeyDownEvent &&
+        event.logicalKey == LogicalKeyboardKey.escape) {
+      if (_isFullScreen) {
+        AnymexTitleBar.setFullScreen(false);
+      } else {
+        BuildContext escapeContext = Get.context!;
+        if (Navigator.of(escapeContext).canPop()) {
+          Navigator.pop(escapeContext);
+        }
+      }
+      return KeyEventResult.handled;
+    } else if (event is KeyDownEvent &&
+        event.logicalKey == LogicalKeyboardKey.f11) {
+      AnymexTitleBar.toggleFullScreen();
+      return KeyEventResult.handled;
+    } else if (event is KeyDownEvent &&
+        event.logicalKey == LogicalKeyboardKey.enter) {
+      final isAltPressed = HardwareKeyboard.instance.logicalKeysPressed
+              .contains(LogicalKeyboardKey.altLeft) ||
+          HardwareKeyboard.instance.logicalKeysPressed
+              .contains(LogicalKeyboardKey.altRight);
+      if (isAltPressed) {
+        AnymexTitleBar.toggleFullScreen();
+      }
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
+  }
 
   @override
   void initState() {
     super.initState();
+
+    AnymexTitleBar.isFullScreen
+        .addListener(() => _isFullScreen = AnymexTitleBar.isFullScreen.value);
+
+    focusNode = FocusNode();
 
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
@@ -205,30 +254,19 @@ class _MainAppState extends State<MainApp> {
   }
 
   @override
+  void dispose() {
+    Logger.dispose();
+    focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
 
-    return KeyboardListener(
-      focusNode: FocusNode(),
-      onKeyEvent: (KeyEvent event) async {
-        if (event is KeyDownEvent) {
-          if (event.logicalKey == LogicalKeyboardKey.escape) {
-            Navigator.pop(Get.context!);
-          } else if (event.logicalKey == LogicalKeyboardKey.f11) {
-            bool isFullScreen = await windowManager.isFullScreen();
-            AnymexTitleBar.setFullScreen(!isFullScreen);
-          } else if (event.logicalKey == LogicalKeyboardKey.enter) {
-            final isAltPressed = HardwareKeyboard.instance.logicalKeysPressed
-                    .contains(LogicalKeyboardKey.altLeft) ||
-                HardwareKeyboard.instance.logicalKeysPressed
-                    .contains(LogicalKeyboardKey.altRight);
-            if (isAltPressed) {
-              bool isFullScreen = await windowManager.isFullScreen();
-              AnymexTitleBar.setFullScreen(!isFullScreen);
-            }
-          }
-        }
-      },
+    return Focus(
+      focusNode: focusNode,
+      onKeyEvent: _handleKeyEvent,
       child: GetMaterialApp(
         scrollBehavior: MyCustomScrollBehavior(),
         debugShowCheckedModeBanner: false,
@@ -250,7 +288,7 @@ class _MainAppState extends State<MainApp> {
           if (isDesktop) {
             return Stack(
               children: [
-                child!,
+                RepaintBoundary(child: child!),
                 Positioned(
                   top: 0,
                   left: 0,
@@ -414,13 +452,12 @@ class _FilterScreenState extends State<FilterScreen> {
                         onTap: _onItemTapped,
                         label: 'Library',
                       ),
-                      if (sourceController.shouldShowExtensions.value)
-                        NavItem(
-                          unselectedIcon: Icons.extension_outlined,
-                          selectedIcon: Icons.extension_rounded,
-                          onTap: _onItemTapped,
-                          label: "Extensions",
-                        ),
+                      NavItem(
+                        unselectedIcon: Icons.extension_outlined,
+                        selectedIcon: Icons.extension_rounded,
+                        onTap: _onItemTapped,
+                        label: "Extensions",
+                      ),
                     ],
                   ),
                 ],

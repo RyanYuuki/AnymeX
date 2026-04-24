@@ -6,7 +6,6 @@ import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -62,41 +61,164 @@ class BottomControls extends StatelessWidget {
           ),
         );
       }
+      final showControls = controller.showControls.value;
+      final inSkipSegment = controller.currentSkipInterval.value != null;
+      final bottomBarVisible = showControls || inSkipSegment;
+
       return IgnorePointer(
-        ignoring: !controller.showControls.value,
+        ignoring: !bottomBarVisible,
         child: AnimatedSlide(
-          offset:
-              controller.showControls.value ? Offset.zero : const Offset(0, 1),
-          duration: const Duration(milliseconds: 400),
+          offset: bottomBarVisible ? Offset.zero : const Offset(0, 1),
+          duration: controller.overlayAnimationDuration(400),
           curve: Curves.easeOutCubic,
           child: AnimatedOpacity(
-            opacity: controller.showControls.value ? 1.0 : 0.0,
-            duration: const Duration(milliseconds: 300),
+            opacity: bottomBarVisible ? 1.0 : 0.0,
+            duration: controller.overlayAnimationDuration(300),
             curve: Curves.easeOut,
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withValues(alpha: 0.8),
-                  ],
-                ),
+            child: showControls
+                ? _buildFullBar(context, isDesktop)
+                : _buildStandaloneSkip(context, isDesktop),
+          ),
+        ),
+      );
+    });
+  }
+
+  Widget _buildStandaloneSkip(BuildContext context, bool isDesktop) {
+    final horizontal = isDesktop ? 32.0 : 20.0;
+    final vertical = isDesktop ? 24.0 : 8.0;
+    return GestureDetector(
+      behavior: HitTestBehavior.deferToChild,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Positioned(
+            right: horizontal + 20,
+            bottom: vertical + 5,
+            child: _buildSkipButton(context),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFullBar(BuildContext context, bool isDesktop) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.transparent,
+            Colors.black.withValues(alpha: 0.8),
+          ],
+        ),
+      ),
+      child: SafeArea(
+        top: false,
+        left: false,
+        right: false,
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: isDesktop ? 32 : 20,
+            vertical: isDesktop ? 24 : 8,
+          ),
+          child: _buildLayout(context),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSkipButton(BuildContext context) {
+    final controller = Get.find<PlayerController>();
+    final theme = context.theme;
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Obx(() {
+      final isCountdownActive = controller.isAutoSkipCountdownActive;
+      final interval = controller.currentSkipInterval.value;
+      final inSegment = interval != null || isCountdownActive;
+      final progress = isCountdownActive
+          ? 1.0 -
+              (controller.autoSkipCountdownRemaining.value /
+                  PlayerController.autoSkipCountdownSeconds)
+          : 0.0;
+
+      return Material(
+        borderRadius: BorderRadius.circular(16),
+        color: Colors.transparent,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap:
+              controller.isLocked.value ? null : controller.performSkipAction,
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            decoration: BoxDecoration(
+              color: isDark
+                  ? theme.colorScheme.surfaceContainer.withValues(alpha: 0.6)
+                  : theme.colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: isDark
+                    ? theme.colorScheme.outline
+                    : theme.colorScheme.outline.opaque(0.5),
+                width: 0.5,
               ),
-              child: SafeArea(
-                top: false,
-                left: false,
-                right: false,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: isDesktop ? 32 : 20,
-                    vertical: isDesktop ? 24 : 8,
+            ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                if (isCountdownActive)
+                  Positioned.fill(
+                    child: TweenAnimationBuilder<double>(
+                      duration: const Duration(milliseconds: 1000),
+                      curve: Curves.linear,
+                      tween: Tween<double>(begin: 0.0, end: progress),
+                      builder: (context, value, child) {
+                        return FractionallySizedBox(
+                          alignment: Alignment.centerLeft,
+                          widthFactor: value,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.primary
+                                  .withValues(alpha: 0.25),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                  child: _buildLayout(context),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (inSegment)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 4),
+                          child: Icon(
+                            isCountdownActive
+                                ? Icons.close_rounded
+                                : Icons.skip_next_rounded,
+                            color: controller.isLocked.value
+                                ? theme.colorScheme.onSurface.opaque(0.4)
+                                : theme.colorScheme.onSurface,
+                            size: 20,
+                          ),
+                        ),
+                      AnymexText(
+                        text: controller.skipButtonLabel,
+                        variant: TextVariant.semiBold,
+                        color: controller.isLocked.value
+                            ? theme.colorScheme.onSurface.opaque(0.4)
+                            : null,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         ),
@@ -123,6 +245,8 @@ class BottomControls extends StatelessWidget {
     bool isVisible(String id) =>
         (buttonConfigs[id]?['visible'] as bool?) ?? true;
 
+    final serverCount = controller.episodeTracks.length;
+
     final Map<String, Widget> buttonWidgets = {
       'playlist': ControlButton(
         icon: Symbols.playlist_play_rounded,
@@ -139,52 +263,39 @@ class BottomControls extends StatelessWidget {
         tooltip: 'Shaders & Color Profiles',
         compact: true,
       ),
-      'subtitles': !controller.isOffline.value
-          ? ControlButton(
-              icon: Symbols.subtitles_rounded,
-              onPressed: () => PlayerBottomSheets.showSubtitleTracks(
-                context,
-                controller,
-              ),
-              tooltip: 'Subtitles',
-              compact: true,
-            )
-          : ControlButton(
-              icon: Symbols.subtitles_rounded,
-              onPressed: () => PlayerBottomSheets.showOfflineSubs(
-                context,
-                controller,
-              ),
-              tooltip: 'Subtitles',
-              compact: true,
-            ),
-      'server': ControlButton(
+      'source': ControlButton(
         icon: Symbols.cloud_rounded,
         onPressed: () {
-          PlayerBottomSheets.showVideoServers(context, controller);
+          controller.isSourcePaneOpened.value =
+              !controller.isSourcePaneOpened.value;
         },
-        tooltip: 'Server',
+        tooltip: 'Source',
         compact: true,
       ),
-      'quality': ControlButton(
-        icon: Symbols.high_quality_rounded,
-        onPressed: () =>
-            PlayerBottomSheets.showVideoQuality(context, controller),
-        tooltip: 'Quality',
+      'tracks': ControlButton(
+        icon: Symbols.library_music_rounded,
+        onPressed: () {
+          controller.isTracksPaneOpened.value =
+              !controller.isTracksPaneOpened.value;
+        },
+        tooltip: 'Tracks',
         compact: true,
       ),
+      if (!controller.isOffline.value)
+        'sync_subs': ControlButton(
+          icon: Symbols.sync_rounded,
+          onPressed: () {
+            controller.isSyncSubsPaneOpened.value =
+                !controller.isSyncSubsPaneOpened.value;
+          },
+          tooltip: 'Sync Subtitles',
+          compact: true,
+        ),
       'speed': ControlButton(
         icon: Symbols.speed_rounded,
         onPressed: () =>
             PlayerBottomSheets.showPlaybackSpeed(context, controller),
         tooltip: 'Speed',
-        compact: true,
-      ),
-      'audio_track': ControlButton(
-        icon: Symbols.music_note_rounded,
-        onPressed: () =>
-            PlayerBottomSheets.showAudioTracks(context, controller),
-        tooltip: 'Audio Track',
         compact: true,
       ),
       'orientation': ControlButton(
@@ -208,8 +319,14 @@ class BottomControls extends StatelessWidget {
 
       for (var id in ids) {
         if (!isVisible(id)) continue;
-        if (id == 'server' && controller.isOffline.value) continue;
-        if (id == 'quality' && controller.isOffline.value) continue;
+        if (id == 'source' &&
+            (controller.isOffline.value ||
+                (serverCount <= 1 &&
+                    controller.getCurrentStreamSubtitleOptions().isEmpty)))
+          continue;
+        if (id == 'tracks' &&
+            (controller.embeddedAudioTracks.value.isEmpty &&
+                controller.embeddedSubs.value.isEmpty)) continue;
         if (id == 'orientation' && !(Platform.isAndroid || Platform.isIOS)) {
           continue;
         }
@@ -258,73 +375,7 @@ class BottomControls extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(0, 0, 20, 5),
           child: Align(
             alignment: Alignment.centerRight,
-            child: Obx(() {
-              final interval = controller.currentSkipInterval.value;
-              final skipValue = interval != null
-                  ? (interval.end - interval.start).toString()
-                  : '+${controller.playerSettings.skipDuration}';
-              final buttonText = interval != null ? 'Skip' : skipValue;
-              
-              return Material(
-                borderRadius: BorderRadius.circular(16),
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: controller.isLocked.value
-                      ? null
-                      : () {
-                          if (interval != null) {
-                            controller.seekTo(Duration(seconds: interval.end));
-                          } else {
-                            controller.megaSeek(controller.playerSettings.skipDuration);
-                          }
-                        },
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                    decoration: BoxDecoration(
-                      color: interval != null
-                          ? theme.colorScheme.primary.withValues(alpha: 0.8)
-                          : isDark
-                              ? theme.colorScheme.surfaceContainer
-                                  .withValues(alpha: 0.6)
-                              : theme.colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: interval != null
-                            ? theme.colorScheme.primary
-                            : isDark
-                                ? theme.colorScheme.outline
-                                : theme.colorScheme.outline.opaque(0.5),
-                        width: 0.5,
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (interval != null)
-                          Padding(
-                            padding: const EdgeInsets.only(right: 4),
-                            child: Icon(
-                              Icons.skip_next_rounded,
-                              color: theme.colorScheme.onPrimary,
-                              size: 20,
-                            ),
-                          ),
-                        AnymexText(
-                          text: buttonText,
-                          variant: TextVariant.semiBold,
-                          color: interval != null
-                              ? theme.colorScheme.onPrimary
-                              : controller.isLocked.value
-                                  ? theme.colorScheme.onSurface.opaque(0.4)
-                                  : null,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            }),
+            child: _buildSkipButton(context),
           ),
         ),
         Container(

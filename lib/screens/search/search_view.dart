@@ -21,6 +21,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -1011,13 +1012,12 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      media.title,
+                    AnymexText(
+                      text: media.title,
                       maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                      size: 16,
+                      variant: TextVariant.semiBold,
+                      isMarquee: true,
                     ),
                     if (media.rating != "??") ...[
                       const SizedBox(height: 8),
@@ -1134,7 +1134,9 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   }
 
   void _navigateToDetails(Media media) {
-    if (widget.isManga) {
+    final shouldOpenAnime = media.serviceType == ServicesType.simkl;
+
+    if (widget.isManga && !shouldOpenAnime) {
       navigate(() => MangaDetailsPage(
             media: media,
             tag: media.title,

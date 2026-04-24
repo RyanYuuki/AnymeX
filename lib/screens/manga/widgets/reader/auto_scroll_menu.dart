@@ -23,6 +23,10 @@ class ReaderAutoScrollMenu extends StatelessWidget {
     final isMaterial = theme == AutoScrollTheme.material;
 
     return Obx(() {
+      if (controller.readingLayout.value != MangaPageViewMode.continuous) {
+        return const SizedBox.shrink();
+      }
+
       return Positioned(
         top: 0,
         bottom: 0,

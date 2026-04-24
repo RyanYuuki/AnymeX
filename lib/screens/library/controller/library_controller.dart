@@ -24,8 +24,8 @@ class LibraryController extends GetxController {
   final type = ItemType.anime.obs;
   final isSearchActive = false.obs;
 
-  SortType currentSort = SortType.lastAdded;
-  bool isAscending = false;
+  final currentSort = SortType.lastAdded.obs;
+  final isAscending = false.obs;
 
   @override
   void onInit() {
@@ -60,16 +60,27 @@ class LibraryController extends GetxController {
         DynamicKeys.libraryLastListIndex.get<int>(type.value.name, 0);
     selectedListIndex.value = savedListIndex;
 
-    currentSort = SortType.values[DynamicKeys.librarySortType
-        .get<int>(type.value.name, SortType.lastAdded.index)];
-    isAscending =
-        DynamicKeys.librarySortOrder.get<bool>(type.value.name, false);
     gridCount.value = DynamicKeys.libraryGridSize.get<int>(type.value.name, 0);
+
+    _loadSortPrefs();
+  }
+
+  void _loadSortPrefs() {
+    final prefix = selectedListIndex.value == -1 ? '${type.value.name}_history' : type.value.name;
+    final defaultSort = selectedListIndex.value == -1 ? SortType.lastRead.index : SortType.lastAdded.index;
+
+    currentSort.value = SortType.values[DynamicKeys.librarySortType.get<int>(prefix, defaultSort)];
+    isAscending.value = DynamicKeys.librarySortOrder.get<bool>(prefix, false);
+  }
+
+  void _saveSortPrefs() {
+    final prefix = selectedListIndex.value == -1 ? '${type.value.name}_history' : type.value.name;
+    DynamicKeys.librarySortType.set(prefix, currentSort.value.index);
+    DynamicKeys.librarySortOrder.set(prefix, isAscending.value);
   }
 
   void savePreferences() {
-    DynamicKeys.librarySortType.set(type.value.name, currentSort.index);
-    DynamicKeys.librarySortOrder.set(type.value.name, isAscending);
+    _saveSortPrefs();
     DynamicKeys.libraryGridSize.set(type.value.name, gridCount.value);
 
     LibraryKeys.libraryLastType.set(type.value.index);
@@ -95,6 +106,7 @@ class LibraryController extends GetxController {
       searchController.clear();
       searchQuery.value = '';
     }
+    _loadSortPrefs();
     savePreferences();
 
     if (index == -1) {
@@ -115,13 +127,13 @@ class LibraryController extends GetxController {
   }
 
   void handleSortChange(SortType sortType) {
-    if (currentSort == sortType) {
-      isAscending = !isAscending;
+    if (currentSort.value == sortType) {
+      isAscending.value = !isAscending.value;
     } else {
-      currentSort = sortType;
-      isAscending = false;
+      currentSort.value = sortType;
+      isAscending.value = false;
     }
-    savePreferences();
+    _saveSortPrefs();
   }
 
   List<OfflineMedia> applySorting(List<OfflineMedia> items) {
@@ -130,7 +142,7 @@ class LibraryController extends GetxController {
     sorted.sort((a, b) {
       int comparison = 0;
 
-      switch (currentSort) {
+      switch (currentSort.value) {
         case SortType.title:
           comparison = (a.name ?? '').compareTo(b.name ?? '');
           break;
@@ -152,7 +164,7 @@ class LibraryController extends GetxController {
         // return isAscending ? items.reversed.toList() : items;
       }
 
-      return isAscending ? comparison : -comparison;
+      return isAscending.value ? comparison : -comparison;
     });
 
     return sorted;
@@ -181,17 +193,26 @@ class LibraryController extends GetxController {
   Stream<List<OfflineMedia>> getHistoryStream() {
     return getLibraryStream().map((items) {
       if (type.value.isAnime) {
-        return items
+        var filtered = items
             .where((e) => e.currentEpisode?.currentTrack != null)
             .toList();
+        filtered.sort((a, b) => (b.currentEpisode?.lastWatchedTime ?? 0)
+            .compareTo(a.currentEpisode?.lastWatchedTime ?? 0));
+        return filtered;
       }
 
       if (type.value.isManga) {
-        return items.where((e) => e.currentChapter?.link != null).toList();
+        var filtered = items.where((e) => e.currentChapter?.link != null).toList();
+        filtered.sort((a, b) => (b.currentChapter?.lastReadTime ?? 0)
+            .compareTo(a.currentChapter?.lastReadTime ?? 0));
+        return filtered;
       }
 
       if (type.value.isNovel) {
-        return items.where((e) => e.currentChapter?.link != null).toList();
+        var filtered = items.where((e) => e.currentChapter?.link != null).toList();
+        filtered.sort((a, b) => (b.currentChapter?.lastReadTime ?? 0)
+            .compareTo(a.currentChapter?.lastReadTime ?? 0));
+        return filtered;
       }
 
       return items;

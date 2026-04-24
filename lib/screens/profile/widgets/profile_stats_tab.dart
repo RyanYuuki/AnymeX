@@ -36,6 +36,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colors;
+    final bottomSpace = MediaQuery.of(context).size.width > 900 ? 32.0 : 120.0;
     final anime = widget.user.stats?.animeStats;
     final manga = widget.user.stats?.mangaStats;
 
@@ -46,7 +47,6 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
       return true;
     }).toList();
 
-    
     if ((_subTab == _StatsSubTab.voiceActors ||
             _subTab == _StatsSubTab.studios) &&
         !_isAnime) {
@@ -59,7 +59,6 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 12),
-
           Container(
             height: 50,
             padding: const EdgeInsets.all(4),
@@ -82,7 +81,6 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
             ),
           ),
           const SizedBox(height: 20),
-
           SizedBox(
             height: 38,
             child: ListView.separated(
@@ -112,7 +110,8 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
                     child: AnymexText(
                       text: _tabLabel(tab),
                       size: 13,
-                      variant: selected ? TextVariant.semiBold : TextVariant.regular,
+                      variant:
+                          selected ? TextVariant.semiBold : TextVariant.regular,
                       color: selected
                           ? colorScheme.primary
                           : colorScheme.onSurface.withOpacity(0.6),
@@ -123,7 +122,6 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
             ),
           ),
           const SizedBox(height: 20),
-
           Row(
             children: [
               _metricPill('Count', _StatMetric.count),
@@ -134,7 +132,6 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
             ],
           ),
           const SizedBox(height: 16),
-
           if (_isAnime && anime != null)
             ..._buildContent(anime, null)
           else if (!_isAnime && manga != null)
@@ -149,14 +146,13 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
                 ),
               ),
             ),
-
-          const SizedBox(height: 32),
+          SizedBox(height: bottomSpace),
         ],
       ),
     );
   }
 
- // content
+  // content
   List<Widget> _buildContent(AnimeStats? anime, MangaStats? manga) {
     switch (_subTab) {
       case _StatsSubTab.overview:
@@ -338,8 +334,6 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
     ];
   }
 
-  
-
   Widget _segmentBtn(String label, bool selected, VoidCallback onTap) {
     final c = context.colors;
     return Expanded(
@@ -351,13 +345,15 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
           decoration: BoxDecoration(
             color: selected ? c.primary : Colors.transparent,
             borderRadius: BorderRadius.circular(21),
-            boxShadow: selected ? [
-              BoxShadow(
-                color: c.primary.withOpacity(0.3),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              )
-            ] : null,
+            boxShadow: selected
+                ? [
+                    BoxShadow(
+                      color: c.primary.withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    )
+                  ]
+                : null,
           ),
           alignment: Alignment.center,
           child: AnimatedDefaultTextStyle(
@@ -366,9 +362,8 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
               fontSize: 14,
               fontWeight: FontWeight.w600,
               fontFamily: 'Poppins',
-              color: selected 
-                  ? c.onPrimary 
-                  : c.onSurfaceVariant.withOpacity(0.7),
+              color:
+                  selected ? c.onPrimary : c.onSurfaceVariant.withOpacity(0.7),
             ),
             child: Text(label),
           ),
@@ -376,7 +371,6 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
       ),
     );
   }
-
 
   Widget _metricPill(String label, _StatMetric metric) {
     final c = context.colors;
@@ -405,7 +399,6 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
       ),
     );
   }
-
 
   Widget _sectionContainer({
     required IconData icon,
@@ -451,7 +444,6 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
     );
   }
 
-
   Widget _textSubtitleVertical(String text, String subtitle) {
     final c = context.colors;
     return Expanded(
@@ -466,6 +458,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
             color: c.onSurface,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
+            isMarquee: true,
           ),
           const SizedBox(height: 2),
           AnymexText(
@@ -488,9 +481,21 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _textSubtitleVertical(isAnime ? (anime.animeCount ?? '0') : (manga?.mangaCount ?? '0'), 'Total'),
-              _textSubtitleVertical(isAnime ? (anime.episodesWatched ?? '0') : (manga?.chaptersRead ?? '0'), isAnime ? 'Episodes Watched' : 'Chapters Read'),
-              _textSubtitleVertical(isAnime ? _minToDays(anime.minutesWatched) : (manga?.volumesRead ?? '0'), isAnime ? 'Days Watched' : 'Volumes Read'),
+              _textSubtitleVertical(
+                  isAnime
+                      ? (anime.animeCount ?? '0')
+                      : (manga?.mangaCount ?? '0'),
+                  'Total'),
+              _textSubtitleVertical(
+                  isAnime
+                      ? (anime.episodesWatched ?? '0')
+                      : (manga?.chaptersRead ?? '0'),
+                  isAnime ? 'Episodes Watched' : 'Chapters Read'),
+              _textSubtitleVertical(
+                  isAnime
+                      ? _minToDays(anime.minutesWatched)
+                      : (manga?.volumesRead ?? '0'),
+                  isAnime ? 'Days Watched' : 'Volumes Read'),
             ],
           ),
           const SizedBox(height: 28),
@@ -498,13 +503,21 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               _textSubtitleVertical(
-                isAnime 
-                  ? _minToDays(_plannedAmount(anime.statuses)?.toString())
-                  : (_plannedCount(manga?.statuses ?? [])?.toString() ?? '0'), 
-                isAnime ? 'Days Planned' : 'Chapters Planned'
-              ),
-              _textSubtitleVertical(isAnime ? '${anime.meanScore ?? '0'}%' : '${manga?.meanScore ?? '0'}%', 'Mean Score'),
-              _textSubtitleVertical(isAnime ? (anime.standardDeviation?.toStringAsFixed(1) ?? '0.0') : (manga?.standardDeviation?.toStringAsFixed(1) ?? '0.0'), 'Standard Deviation'),
+                  isAnime
+                      ? _minToDays(_plannedAmount(anime.statuses)?.toString())
+                      : (_plannedCount(manga?.statuses ?? [])?.toString() ??
+                          '0'),
+                  isAnime ? 'Days Planned' : 'Chapters Planned'),
+              _textSubtitleVertical(
+                  isAnime
+                      ? '${anime.meanScore ?? '0'}%'
+                      : '${manga?.meanScore ?? '0'}%',
+                  'Mean Score'),
+              _textSubtitleVertical(
+                  isAnime
+                      ? (anime.standardDeviation?.toStringAsFixed(1) ?? '0.0')
+                      : (manga?.standardDeviation?.toStringAsFixed(1) ?? '0.0'),
+                  'Standard Deviation'),
             ],
           ),
         ],
@@ -513,10 +526,30 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
   }
 
   int _getVal(dynamic s) {
-    if (s is TypeStat) return _metric == _StatMetric.count ? s.count : _metric == _StatMetric.time ? s.amount : s.meanScore.round();
-    if (s is ScoreStat) return _metric == _StatMetric.count ? s.count : _metric == _StatMetric.time ? s.amount : s.meanScore.round();
-    if (s is LengthStat) return _metric == _StatMetric.count ? s.count : _metric == _StatMetric.time ? s.amount : s.meanScore.round();
-    if (s is YearStat) return _metric == _StatMetric.count ? s.count : _metric == _StatMetric.time ? s.amount : s.meanScore.round();
+    if (s is TypeStat)
+      return _metric == _StatMetric.count
+          ? s.count
+          : _metric == _StatMetric.time
+              ? s.amount
+              : s.meanScore.round();
+    if (s is ScoreStat)
+      return _metric == _StatMetric.count
+          ? s.count
+          : _metric == _StatMetric.time
+              ? s.amount
+              : s.meanScore.round();
+    if (s is LengthStat)
+      return _metric == _StatMetric.count
+          ? s.count
+          : _metric == _StatMetric.time
+              ? s.amount
+              : s.meanScore.round();
+    if (s is YearStat)
+      return _metric == _StatMetric.count
+          ? s.count
+          : _metric == _StatMetric.time
+              ? s.amount
+              : s.meanScore.round();
     return 0;
   }
 
@@ -524,7 +557,8 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
     if (s is TypeStat) return _fmtLabel(s.type);
     if (s is ScoreStat) return s.score.toString();
     if (s is LengthStat) return s.length;
-    if (s is YearStat) return "'${s.year.toString().substring(s.year.toString().length >= 2 ? s.year.toString().length - 2 : 0)}";
+    if (s is YearStat)
+      return "'${s.year.toString().substring(s.year.toString().length >= 2 ? s.year.toString().length - 2 : 0)}";
     return '';
   }
 
@@ -539,9 +573,9 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
     final c = context.colors;
     final total = items.fold<int>(0, (s, i) => s + _getVal(i));
     if (total == 0) return const SizedBox.shrink();
-    
+
     final palette = _palette(items.length);
-    
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -556,7 +590,8 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
               final color = palette[i];
               return Container(
                 margin: const EdgeInsets.only(right: 8),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 decoration: BoxDecoration(
                   color: color.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(16),
@@ -565,9 +600,17 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    AnymexText(text: val.toString(), size: 13, color: color, variant: TextVariant.bold),
+                    AnymexText(
+                        text: val.toString(),
+                        size: 13,
+                        color: color,
+                        variant: TextVariant.bold),
                     const SizedBox(width: 8),
-                    AnymexText(text: _getLabel(items[i]), size: 13, color: color.withOpacity(0.8), variant: TextVariant.semiBold),
+                    AnymexText(
+                        text: _getLabel(items[i]),
+                        size: 13,
+                        color: color.withOpacity(0.8),
+                        variant: TextVariant.semiBold),
                   ],
                 ),
               );
@@ -604,23 +647,23 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
 
   Widget _verticalStatsBar(List<dynamic> items) {
     final c = context.colors;
-    
+
     // For YearStats
     var sortedItems = List<dynamic>.from(items);
     if (sortedItems.isNotEmpty && sortedItems.first is YearStat) {
-       sortedItems = sortedItems.where((y) => (y as YearStat).year > 0).toList()
-         ..sort((a, b) => (a as YearStat).year.compareTo((b as YearStat).year));
+      sortedItems = sortedItems.where((y) => (y as YearStat).year > 0).toList()
+        ..sort((a, b) => (a as YearStat).year.compareTo((b as YearStat).year));
     }
-    
+
     final maxVal = sortedItems.fold<int>(0, (m, i) => max(m, _getVal(i)));
     if (maxVal == 0) return const SizedBox.shrink();
 
     return Column(
       children: sortedItems.map((item) {
         final val = _getVal(item);
-        if (val == 0 && item is! YearStat) return const SizedBox.shrink(); 
+        if (val == 0 && item is! YearStat) return const SizedBox.shrink();
         final fraction = val / maxVal;
-        
+
         return Padding(
           padding: const EdgeInsets.only(bottom: 8.0),
           child: Row(
@@ -633,28 +676,29 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
                   color: c.onSurfaceVariant,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
+                  isMarquee: true,
                 ),
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          height: 10,
-                          width: constraints.maxWidth * fraction,
-                          decoration: BoxDecoration(
-                            color: item is ScoreStat ? _scoreColor(item.score) : c.primary,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
+                child: LayoutBuilder(builder: (context, constraints) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        height: 10,
+                        width: constraints.maxWidth * fraction,
+                        decoration: BoxDecoration(
+                          color: item is ScoreStat
+                              ? _scoreColor(item.score)
+                              : c.primary,
+                          borderRadius: BorderRadius.circular(4),
                         ),
-                      ],
-                    );
-                  }
-                ),
+                      ),
+                    ],
+                  );
+                }),
               ),
               const SizedBox(width: 8),
               SizedBox(
@@ -673,7 +717,6 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
       }).toList(),
     );
   }
-
 
   Widget _rankedList(
     List<_RankedItem> items, {
@@ -756,6 +799,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
                     color: c.onSurface,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
+                    isMarquee: true,
                   ),
                 ),
                 // Value column
@@ -788,7 +832,6 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
     );
   }
 
-
   Widget _emptyState(String msg) {
     return Padding(
       padding: const EdgeInsets.all(40),
@@ -802,16 +845,18 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
   }
 
   // nav
-  Future<void> _searchFor(String label, {bool isGenre = false, bool isTag = false}) async {
+  Future<void> _searchFor(String label,
+      {bool isGenre = false, bool isTag = false}) async {
     final handler = Get.find<ServiceHandler>();
     if (handler.serviceType.value != ServicesType.anilist) return;
-    
-   
+
     if (isTag) {
       navigate(() => SearchPage(
             searchTerm: '',
             isManga: !_isAnime,
-            initialFilters: {'tags': [label]},
+            initialFilters: {
+              'tags': [label]
+            },
           ));
       return;
     }
@@ -842,10 +887,11 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
       final userId = int.tryParse(widget.user.id ?? '0') ?? 0;
       final lists = await auth.fetchUserMediaList(userId, type);
 
-      if (context.mounted) Navigator.pop(context);
+      if (!mounted) return;
+      Navigator.pop(context);
 
       final data = lists['All'] ?? [];
-      
+
       if (_isAnime) {
         navigate(() => AnimeList(
               data: data,
@@ -954,5 +1000,3 @@ class _RankedItem {
   _RankedItem(this.label, this.count, this.meanScore, this.amount,
       {this.image, this.id});
 }
-
-

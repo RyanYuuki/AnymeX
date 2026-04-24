@@ -10,6 +10,7 @@ import 'package:anymex/widgets/common/carousel/carousel_types.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:anymex/widgets/common/marquee_text.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/foundation.dart';
@@ -464,7 +465,7 @@ class _CarouselCard extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
+                                MarqueeText(
                                   media.title,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,

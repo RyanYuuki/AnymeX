@@ -34,6 +34,7 @@ class UpdateListEntryParams {
   DateTime? startedAt;
   DateTime? completedAt;
   bool? isPrivate;
+  int? season;
 
   UpdateListEntryParams({
     required this.listId,
@@ -45,5 +46,6 @@ class UpdateListEntryParams {
     this.startedAt,
     this.completedAt,
     this.isPrivate,
+    this.season,
   });
 }

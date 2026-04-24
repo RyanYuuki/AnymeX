@@ -10,13 +10,23 @@ class CarouselData {
   ServicesType servicesType;
   bool releasing;
 
-  CarouselData(
-      {this.id,
-      this.title,
-      this.poster,
-      this.extraData,
-      this.source,
-      this.args,
-      required this.servicesType,
-      required this.releasing});
+  int? anilistUserId;
+  int? malUserId;
+  String? author;
+  String? reason;
+
+  CarouselData({
+    this.id,
+    this.title,
+    this.poster,
+    this.extraData,
+    this.source,
+    this.args,
+    required this.servicesType,
+    required this.releasing,
+    this.anilistUserId,
+    this.malUserId,
+    this.author,
+    this.reason,
+  });
 }

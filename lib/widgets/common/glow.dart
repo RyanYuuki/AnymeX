@@ -4,10 +4,12 @@ import 'dart:math';
 
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
 enum GradientVariant {
@@ -49,14 +51,18 @@ class Glow extends StatelessWidget {
           )
         : context.colors;
     final isDesktop = Platform.isWindows;
+    final isOled = Provider.of<ThemeProvider>(context).isOled;
     final ch = isDesktop
-        ? Padding(
-            padding: const EdgeInsets.only(top: 40),
+        ? Container(
+            margin: const EdgeInsets.only(top: 40),
             child: child,
           )
         : child;
 
-    if (disabled) return child;
+    if (disabled || (isOled && isDesktop)) {
+      return Container(
+          color: isOled ? Colors.black : Colors.transparent, child: ch);
+    }
 
     return Obx(() {
       settings.liquidBackgroundPath;
@@ -64,13 +70,15 @@ class Glow extends StatelessWidget {
 
       if (liquidMode) {
         return LiquidMode(
+          isOled: isOled,
           theme: theme,
           gradientVariant: GradientVariant.subtle,
           child: ch,
         );
       } else {
-        if (settings.disableGradient) {
-          return Container(color: theme.surface, child: ch);
+        if (settings.disableGradient || isOled) {
+          return Container(
+              color: isOled ? Colors.black : theme.surface, child: ch);
         }
         return LightweightGlow(begin: begin, end: end, child: ch);
       }
@@ -79,17 +87,17 @@ class Glow extends StatelessWidget {
 }
 
 class LiquidMode extends StatelessWidget {
-  final Widget child;
   final GradientVariant gradientVariant;
-  final bool useTexture;
   final ColorScheme theme;
+  final bool isOled;
+  final Widget child;
 
   const LiquidMode(
       {super.key,
       required this.child,
       this.gradientVariant = GradientVariant.subtle,
-      this.useTexture = false,
-      required this.theme});
+      required this.theme,
+      this.isOled = false});
 
   @override
   Widget build(BuildContext context) {
@@ -110,15 +118,13 @@ class LiquidMode extends StatelessWidget {
           }),
         ),
         Positioned.fill(
-          child: _OptimizedGradientOverlay(
-            gradientVariant: gradientVariant,
-            theme: theme,
-          ),
+          child: isOled
+              ? Container(color: Colors.black)
+              : _OptimizedGradientOverlay(
+                  gradientVariant: gradientVariant,
+                  theme: theme,
+                ),
         ),
-        if (useTexture)
-          Positioned.fill(
-            child: _TextureOverlay(theme: theme),
-          ),
         child,
       ],
     );
@@ -259,71 +265,6 @@ class _OptimizedGradientOverlay extends StatelessWidget {
   }
 }
 
-class _TextureOverlay extends StatelessWidget {
-  final ColorScheme theme;
-
-  const _TextureOverlay({required this.theme});
-
-  @override
-  Widget build(BuildContext context) {
-    return RepaintBoundary(
-      child: CustomPaint(
-        painter: _TexturePainter(theme: theme),
-        size: Size.infinite,
-      ),
-    );
-  }
-}
-
-class _TexturePainter extends CustomPainter {
-  final ColorScheme theme;
-
-  _TexturePainter({required this.theme});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = theme.onSurface.opaque(0.02)
-      ..strokeWidth = 0.5
-      ..style = PaintingStyle.stroke;
-
-    final random = Random(42);
-    for (int i = 0; i < 200; i++) {
-      final x = random.nextDouble() * size.width;
-      final y = random.nextDouble() * size.height;
-      final radius = random.nextDouble() * 2 + 0.5;
-
-      canvas.drawCircle(
-        Offset(x, y),
-        radius,
-        paint..color = theme.onSurface.opaque(random.nextDouble() * 0.03),
-      );
-    }
-
-    paint.color = theme.onSurface.opaque(0.2);
-    paint.strokeWidth = 0.4;
-
-    for (double x = 0; x < size.width; x += 10) {
-      canvas.drawLine(
-        Offset(x, 0),
-        Offset(x, size.height),
-        paint,
-      );
-    }
-
-    for (double y = 0; y < size.height; y += 10) {
-      canvas.drawLine(
-        Offset(0, y),
-        Offset(size.width, y),
-        paint,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
 class _CachedColorFilteredImage extends StatelessWidget {
   final Color? color;
   final String imagePath;
@@ -428,17 +369,19 @@ class LightweightGlow extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = context.colors;
 
-    return Container(
-      color: theme.surface,
+    return RepaintBoundary(
       child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [theme.surface.opaque(0.3), theme.primary.opaque(0.4)],
-            begin: begin,
-            end: end,
+        color: theme.surface,
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [theme.surface.opaque(0.3), theme.primary.opaque(0.4)],
+              begin: begin,
+              end: end,
+            ),
           ),
+          child: child,
         ),
-        child: child,
       ),
     );
   }

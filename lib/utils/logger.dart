@@ -13,6 +13,7 @@ class Logger {
   static File? _logFile;
   static IOSink? _fileSink;
   static bool _isInitialized = false;
+  static bool _writeToFileEnabled = false;
   static final _messageQueue = StreamController<String>();
   static StreamSubscription? _queueSubscription;
   static const int _maxLogFileSizeBytes = 100 * 1024;
@@ -21,7 +22,50 @@ class Logger {
     if (_isInitialized) return;
 
     try {
-      final documentsDirectory = await getApplicationDocumentsDirectory();
+      _queueSubscription = _messageQueue.stream.listen((logEntry) {
+        _fileSink?.writeln(logEntry);
+      });
+
+      _isInitialized = true;
+      _initMethodChannelHandler();
+    } catch (exception) {
+      debugPrintSynchronously('Logger init failed: $exception');
+    }
+  }
+
+  static bool get isFileLoggingEnabled => _writeToFileEnabled;
+
+  static Future<void> setFileLoggingEnabled(bool enabled,
+      {String? customPath}) async {
+    if (!_isInitialized) {
+      await init();
+    }
+
+    if (enabled == _writeToFileEnabled && customPath == null) return;
+
+    if (enabled) {
+      await _ensureLogFileReady(customPath: customPath);
+      _writeToFileEnabled = true;
+      await _logInitializationDetails();
+      return;
+    }
+
+    _writeToFileEnabled = false;
+    await _fileSink?.flush();
+    await _fileSink?.close();
+    _fileSink = null;
+  }
+
+  static Future<void> _ensureLogFileReady({String? customPath}) async {
+    try {
+      final documentsDirectory = customPath != null && customPath.isNotEmpty
+          ? Directory(customPath)
+          : await getApplicationDocumentsDirectory();
+
+      if (!await documentsDirectory.exists()) {
+        await documentsDirectory.create(recursive: true);
+      }
+
       _logFile = File('${documentsDirectory.path}/app_logs.txt');
 
       if (await _logFile!.exists() &&
@@ -32,78 +76,78 @@ class Logger {
       if (!await _logFile!.exists()) {
         await _logFile!.create(recursive: true);
       }
+    } catch (e) {
+      debugPrint('Logger: Failed to initialize log file at $customPath: $e');
+      if (customPath != null) {
+        await _ensureLogFileReady(customPath: null);
+      }
+    }
+    await _fileSink?.flush();
+    await _fileSink?.close();
+    _fileSink = _logFile!.openWrite(mode: FileMode.append);
+  }
 
-      _fileSink = _logFile!.openWrite(mode: FileMode.append);
+  static Future<void> _logInitializationDetails() async {
+    final pkg = await PackageInfo.fromPlatform();
 
-      _queueSubscription = _messageQueue.stream.listen((logEntry) {
-        _fileSink?.writeln(logEntry);
-      });
+    final deviceInfo = DeviceInfoPlugin();
+    String deviceDetails = '';
 
-      _isInitialized = true;
-
-      final pkg = await PackageInfo.fromPlatform();
-
-      final deviceInfo = DeviceInfoPlugin();
-      String deviceDetails = '';
-
-      if (Platform.isAndroid) {
-        final info = await deviceInfo.androidInfo;
-        deviceDetails = '''
+    if (Platform.isAndroid) {
+      final info = await deviceInfo.androidInfo;
+      deviceDetails = '''
 Device: ${info.manufacturer} ${info.model}
 Brand: ${info.brand}
 Device ID: ${info.id}
 Android Version: ${info.version.release} (SDK ${info.version.sdkInt})
 Fingerprint: ${info.fingerprint}
 ''';
-      } else if (Platform.isIOS) {
-        final info = await deviceInfo.iosInfo;
-        deviceDetails = '''
+    } else if (Platform.isIOS) {
+      final info = await deviceInfo.iosInfo;
+      deviceDetails = '''
 Device: ${info.name}
 Model: ${info.model}
 System: ${info.systemName} ${info.systemVersion}
 Identifier: ${info.identifierForVendor}
 ''';
-      } else if (Platform.isWindows) {
-        final info = await deviceInfo.windowsInfo;
-        deviceDetails = '''
+    } else if (Platform.isWindows) {
+      final info = await deviceInfo.windowsInfo;
+      deviceDetails = '''
 Computer Name: ${info.computerName}
 Number of Cores: ${info.numberOfCores}
 System Memory: ${info.systemMemoryInMegabytes} MB
 OS: Windows ${info.displayVersion} (Build ${info.buildNumber})
 ''';
-      } else if (Platform.isMacOS) {
-        final info = await deviceInfo.macOsInfo;
-        deviceDetails = '''
+    } else if (Platform.isMacOS) {
+      final info = await deviceInfo.macOsInfo;
+      deviceDetails = '''
 Model: ${info.model}
 CPU: ${info.arch}
 OS: macOS ${info.osRelease}
 Kernel: ${info.kernelVersion}
 ''';
-      } else if (Platform.isLinux) {
-        final info = await deviceInfo.linuxInfo;
-        deviceDetails = '''
+    } else if (Platform.isLinux) {
+      final info = await deviceInfo.linuxInfo;
+      deviceDetails = '''
 Name: ${info.name}
 Version: ${info.version}
 ID: ${info.id}
 Architecture: ${info.machineId}
 Pretty Name: ${info.prettyName}
 ''';
-      }
-
-      _writeLogEntry(
-        '=== Logger initialized ===\n'
-            'App Info:\n'
-            'Name: ${pkg.appName}\n'
-            'Package: ${pkg.packageName}\n'
-            'Version: ${pkg.version} (Build ${pkg.buildNumber})\n'
-            '\nDevice Info:\n$deviceDetails'
-            '==========================',
-        'SYSTEM',
-        500,
-      );
-    } catch (exception) {
-      debugPrintSynchronously('Logger init failed: $exception');
     }
+
+    _writeLogEntry(
+      '=== Logger initialized ===\n'
+          'App Info:\n'
+          'Name: ${pkg.appName}\n'
+          'Package: ${pkg.packageName}\n'
+          'Version: ${pkg.version} (Build ${pkg.buildNumber})\n'
+          '\nDevice Info:\n$deviceDetails'
+          '==========================',
+      'SYSTEM',
+      500,
+    );
   }
 
   static void _writeLogEntry(String message, String loggerName, int logLevel) {
@@ -116,9 +160,45 @@ Pretty Name: ${info.prettyName}
 
     final logEntry = '[$formattedTimestamp][$loggerName] $message';
 
-    _messageQueue.add(logEntry);
+    if (_writeToFileEnabled && _fileSink != null) {
+      _messageQueue.add(logEntry);
+    }
 
     developer.log(message, level: logLevel, name: loggerName);
+  }
+
+  static void _initMethodChannelHandler() {
+    const channel = MethodChannel('anymexLogger');
+    channel.setMethodCallHandler((call) async {
+      if (call.method == 'log') {
+        final args = call.arguments as Map;
+        final level = args['level'] as String? ?? 'INFO';
+        final tag = args['tag'] as String? ?? 'NATIVE';
+        final msg = args['message'] as String? ?? '';
+        final fullMsg = '[NATIVE] [$tag] $msg';
+
+        switch (level) {
+          case 'DEBUG':
+          case 'VERBOSE':
+            d(fullMsg, 'NATIVE');
+            break;
+          case 'WARNING':
+            w(fullMsg, 'NATIVE');
+            break;
+          case 'ERROR':
+            e(fullMsg, loggerName: 'NATIVE');
+            break;
+          default:
+            i(fullMsg, 'NATIVE');
+            break;
+        }
+      }
+    });
+
+    // Notify native that we are ready to receive logs
+    channel.invokeMethod('ready').catchError((e) {
+      debugPrint('Logger: Failed to send ready signal: $e');
+    });
   }
 
   static void d(String message, [String? loggerName]) {
@@ -193,6 +273,13 @@ Pretty Name: ${info.prettyName}
   }
 
   static Future<void> share() async {
+    if (_logFile == null || !await _logFile!.exists()) {
+      snackBar('Enable "Write log to a file" and reproduce the issue first');
+      return;
+    }
+
+    await _fileSink?.flush();
+
     if (Platform.isAndroid) {
       await SharePlus.instance.share(ShareParams(
         files: [XFile(_logFile!.path)],

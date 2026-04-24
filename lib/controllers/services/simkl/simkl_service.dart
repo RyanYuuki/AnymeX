@@ -6,7 +6,10 @@ import 'dart:math' as math;
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/community_service.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
+import 'package:anymex/screens/community/community_recommendations_page.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
@@ -47,6 +50,8 @@ class SimklService extends GetxController
   RxList<Media> usMovies = <Media>[].obs;
   RxList<Media> ukMovies = <Media>[].obs;
   RxList<Media> canadaMovies = <Media>[].obs;
+
+  final communityService = Get.find<CommunityService>();
 
   @override
   Future<Media> fetchDetails(FetchDetailsParams params) async {
@@ -153,8 +158,14 @@ class SimklService extends GetxController
   }
 
   @override
-  Future<void> fetchHomePage() async =>
-      Future.wait([fetchMovies(), fetchSeries(), fetchCountryMovies(), fetchCountrySeries()]);
+  Future<void> fetchHomePage() async => Future.wait([
+        fetchMovies(),
+        fetchSeries(),
+        fetchCountryMovies(),
+        fetchCountrySeries(),
+        communityService.fetchCommunityShows(),
+        communityService.fetchCommunityMovies(),
+      ]);
 
   Future<List<Media>> searchMovies(String query, {int page = 1}) async {
     final movieUrl = Uri.https('api.simkl.com', '/search/movie', {
@@ -269,8 +280,9 @@ class SimklService extends GetxController
               height: buttonHeight,
               buttonText: "CALENDAR",
               borderRadius: 16.multiplyRadius(),
-              backgroundImage:
-                  trendingMovies.isNotEmpty ? trendingMovies[0].cover ?? '' : '',
+              backgroundImage: trendingMovies.isNotEmpty
+                  ? trendingMovies[0].cover ?? ''
+                  : '',
               onPressed: () {
                 navigate(() => const Calendar());
               },
@@ -327,7 +339,16 @@ class SimklService extends GetxController
           if (ukMovies.value.isNotEmpty)
             ReusableCarousel(data: ukMovies.value, title: "UK Movies"),
           if (canadaMovies.value.isNotEmpty)
-            ReusableCarousel(data: canadaMovies.value, title: "Canadian Movies"),
+            ReusableCarousel(
+                data: canadaMovies.value, title: "Canadian Movies"),
+          Obx(() {
+            final list = communityService.getFilteredCommunityMovies();
+            return buildUnderratedSection('Community Recommendations', list,
+                onSeeAll: () => navigate(() => CommunityRecommendationsPage(
+                      category: 'movies',
+                      type: ItemType.anime,
+                    )));
+          }),
         ],
       ].obs;
 
@@ -365,6 +386,14 @@ class SimklService extends GetxController
             ReusableCarousel(data: ukSeries.value, title: "UK Shows"),
           if (canadaSeries.value.isNotEmpty)
             ReusableCarousel(data: canadaSeries.value, title: "Canadian Shows"),
+          Obx(() {
+            final list = communityService.getFilteredCommunityShows();
+            return buildUnderratedSection('Community Recommendations', list,
+                onSeeAll: () => navigate(() => CommunityRecommendationsPage(
+                      category: 'shows',
+                      type: ItemType.anime,
+                    )));
+          }),
         ],
       ].obs;
 
@@ -374,21 +403,77 @@ class SimklService extends GetxController
   @override
   Rx<Profile> profileData = Profile().obs;
 
+  Future<Map<int, int>> getEpisodesBySeason(String listId) async {
+    final apiKey = dotenv.env['SIMKL_CLIENT_ID'];
+    if (apiKey == null) return {};
+
+    final isMovie = listId.split('*').last.toUpperCase() == 'MOVIE';
+    if (isMovie) return {1: 1};
+
+    final id = listId.split('*').first;
+    final isAnime = listId.split('*').last.toUpperCase() == 'ANIME';
+
+    Future<Map<int, int>> fetchFrom(String endpointType) async {
+      final url = Uri.parse(
+          'https://api.simkl.com/$endpointType/episodes/$id?client_id=$apiKey');
+      try {
+        final response =
+            await get(url, headers: {'Content-Type': 'application/json'});
+        if (response.statusCode == 200) {
+          final dynamic decoded = json.decode(response.body);
+          if (decoded is! List || decoded.isEmpty) return {};
+          final seasons = <int, int>{};
+          for (final ep in decoded) {
+            int s = 1;
+            final directSeason = ep['season'];
+            if (directSeason != null) {
+              s = directSeason is int
+                  ? directSeason
+                  : int.tryParse(directSeason.toString()) ?? 1;
+            } else if (ep['tvdb'] is Map && ep['tvdb']['season'] != null) {
+              final tvdbSeason = ep['tvdb']['season'];
+              s = tvdbSeason is int
+                  ? tvdbSeason
+                  : int.tryParse(tvdbSeason.toString()) ?? 1;
+            }
+            seasons[s] = (seasons[s] ?? 0) + 1;
+          }
+          Logger.i('[Simkl/$endpointType] Season map for $id: $seasons');
+          return seasons;
+        }
+        Logger.i(
+            '[Simkl/$endpointType] HTTP ${response.statusCode} for id=$id');
+      } catch (e) {
+        Logger.i('[Simkl/$endpointType] Error for $id: $e');
+      }
+      return {};
+    }
+
+    final endpoint = isAnime ? 'anime' : 'tv';
+    final fallbackEndpoint = isAnime ? 'tv' : 'anime';
+
+    var seasons = await fetchFrom(endpoint);
+    if (seasons.isEmpty) {
+      seasons = await fetchFrom(fallbackEndpoint);
+    }
+
+    return seasons;
+  }
+
   @override
   Future<void> updateListEntry(UpdateListEntryParams params) async {
     if (!isLoggedIn.value) {
       return;
     }
-    final listId = params.listId;
-    final status = params.status;
-    final progress = params.progress;
+    final String listId = params.listId;
+    final double? score = params.score;
+    final String? status = params.status;
+    final int? progress = params.progress;
+    final bool isAnime = params.isAnime;
+    final int? season = params.season;
     try {
       final isMovie = listId.split('*').last == 'MOVIE';
       final id = listId.split('*').first;
-
-      String? newStatus = isMovie
-          ? Simkl.alToSimklMovie(status ?? '')
-          : Simkl.alToSimklShow(status ?? '');
 
       final token = AuthKeys.simklAuthToken.get<String?>();
       final apiKey = dotenv.env['SIMKL_CLIENT_ID'];
@@ -398,49 +483,59 @@ class SimklService extends GetxController
         return;
       }
 
-      final alrExist =
-          (isMovie ? animeList : mangaList).any((e) => e.id == listId);
-
       final url = Uri.parse('https://api.simkl.com/sync/add-to-list');
 
-      final body = isMovie
-          ? {
-              'movies': [
-                {
-                  'to': newStatus,
-                  'ids': {'simkl': id},
-                }
-              ]
-            }
-          : {
-              'shows': [
-                {
-                  'to': newStatus,
-                  'ids': {'simkl': id},
-                }
-              ]
-            };
+      if (status != null) {
+        String newStatus = isMovie
+            ? Simkl.alToSimklMovie(status)
+            : Simkl.alToSimklShow(status);
 
-      final response = await post(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-          'simkl-api-key': apiKey,
-        },
-        body: jsonEncode(body),
-      );
+        final body = isMovie
+            ? {
+                'movies': [
+                  {
+                    'to': newStatus,
+                    'ids': {'simkl': id},
+                  }
+                ]
+              }
+            : {
+                'shows': [
+                  {
+                    'to': newStatus,
+                    'ids': {'simkl': id},
+                  }
+                ]
+              };
+
+        final response = await post(
+          url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+            'simkl-api-key': apiKey,
+          },
+          body: jsonEncode(body),
+        );
+        Logger.i(response.body);
+      }
 
       if (progress != null && progress > 0 && status != 'PLANNING') {
         final historyUrl = Uri.parse('https://api.simkl.com/sync/history');
+        final effectiveSeason = (season != null && season > 0) ? season : 1;
         final historyBody = isMovie
             ? null
             : {
                 'shows': [
                   {
                     'ids': {'simkl': id},
-                    'episodes': [
-                      for (int i = 1; i <= progress; i++) {'number': i}
+                    'seasons': [
+                      {
+                        'number': effectiveSeason,
+                        'episodes': [
+                          for (int i = 1; i <= progress; i++) {'number': i}
+                        ]
+                      }
                     ]
                   }
                 ]
@@ -457,7 +552,36 @@ class SimklService extends GetxController
         }
       }
 
-      Logger.i(response.body);
+      if (score != null && score > 0) {
+        final ratingsUrl = Uri.parse('https://api.simkl.com/sync/ratings');
+        final ratingsBody = isMovie
+            ? {
+                'movies': [
+                  {
+                    'rating': score.toInt(),
+                    'ids': {'simkl': id},
+                  }
+                ]
+              }
+            : {
+                'shows': [
+                  {
+                    'rating': score.toInt(),
+                    'ids': {'simkl': id},
+                  }
+                ]
+              };
+        await post(
+          ratingsUrl,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+            'simkl-api-key': apiKey,
+          },
+          body: jsonEncode(ratingsBody),
+        );
+      }
+
       if (progress != null) {
         currentMedia.value.episodeCount = progress.toString();
       }

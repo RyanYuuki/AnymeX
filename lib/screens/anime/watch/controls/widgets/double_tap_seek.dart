@@ -31,7 +31,6 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
   Timer? _seekDebounceTimer;
   Timer? _setRateDebounceTimer;
 
-  bool _isInSeekMode = false;
   static const Duration _seekModeTimeout = Duration(milliseconds: 1500);
   static const Duration _indicatorTimeout = Duration(milliseconds: 1000);
   static const Duration _seekDebounceTimeout = Duration(milliseconds: 500);
@@ -94,14 +93,12 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
   }
 
   void _handleLeftSeek() {
-    // Block seek if locked
     if (widget.controller.isLocked.value) return;
     HapticFeedback.lightImpact();
     _performSeek(isLeft: true);
   }
 
   void _handleRightSeek() {
-    // Block seek if locked
     if (widget.controller.isLocked.value) return;
     HapticFeedback.lightImpact();
     _performSeek(isLeft: false);
@@ -111,7 +108,6 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
     if (widget.controller.isLocked.value) return;
 
     setState(() {
-      _isInSeekMode = true;
       if (isLeft) {
         _leftTapCount += 1;
         _rightTapCount = 0;
@@ -155,7 +151,6 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
     _seekModeTimer = Timer(_seekModeTimeout, () {
       if (mounted) {
         setState(() {
-          _isInSeekMode = false;
           _leftTapCount = 0;
           _rightTapCount = 0;
         });
@@ -486,36 +481,12 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
         ));
   }
 
-  void _handleDoubleTap(TapDownDetails details) {
-    if (widget.controller.isLocked.value) return;
-    final screenWidth = MediaQuery.of(context).size.width;
-    final tapPosition = details.globalPosition;
-    final isLeft = tapPosition.dx < screenWidth / 2;
-
-    if (isLeft) {
-      _handleLeftSeek();
-    } else {
-      _handleRightSeek();
-    }
-  }
-
-  void _handleSingleTap(TapDownDetails details) {
+  void _handleSingleTap() {
     if (widget.controller.isLocked.value) {
       widget.controller.toggleControls();
       return;
     }
-    if (_isInSeekMode) {
-      final screenWidth = MediaQuery.of(context).size.width;
-      final tapX = details.localPosition.dx;
-
-      if (tapX < screenWidth * 0.3) {
-        _handleLeftSeek();
-      } else if (tapX > screenWidth * 0.7) {
-        _handleRightSeek();
-      }
-    } else {
-      widget.controller.toggleControls();
-    }
+    widget.controller.toggleControls();
   }
 
   void _handleKeyboard(KeyEvent event) {
@@ -570,8 +541,6 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
                   widget.controller.onVerticalDragUpdate(context, details);
                 }
               },
-              onTapDown: _handleSingleTap,
-              onDoubleTapDown: _handleDoubleTap,
               onLongPressStart: (details) {
                 _initialSwipeY = details.globalPosition.dy;
                 _startHold();
@@ -587,29 +556,63 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
                 color: Colors.transparent,
                 child: Stack(
                   children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 35,
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.translucent,
+                            onTap: _handleSingleTap,
+                            onDoubleTapDown: (details) => _handleLeftSeek(),
+                            child: Container(color: Colors.transparent),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 30,
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.translucent,
+                            onTap: _handleSingleTap,
+                            child: Container(color: Colors.transparent),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 35,
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.translucent,
+                            onTap: _handleSingleTap,
+                            onDoubleTapDown: (details) => _handleRightSeek(),
+                            child: Container(color: Colors.transparent),
+                          ),
+                        ),
+                      ],
+                    ),
                     Positioned(
                       left: 0,
                       top: 0,
                       bottom: 0,
-                      child: _buildSeekIndicator(
-                        isLeft: true,
-                        tapCount: _leftTapCount,
+                      child: IgnorePointer(
+                        child: _buildSeekIndicator(
+                          isLeft: true,
+                          tapCount: _leftTapCount,
+                        ),
                       ),
                     ),
                     Positioned(
                       right: 0,
                       top: 0,
                       bottom: 0,
-                      child: _buildSeekIndicator(
-                        isLeft: false,
-                        tapCount: _rightTapCount,
+                      child: IgnorePointer(
+                        child: _buildSeekIndicator(
+                          isLeft: false,
+                          tapCount: _rightTapCount,
+                        ),
                       ),
                     ),
                     Positioned(
                       left: 0,
                       right: 0,
                       top: MediaQuery.of(context).size.height * 0.05,
-                      child: _buildSpeedIndicator(),
+                      child: IgnorePointer(child: _buildSpeedIndicator()),
                     ),
                   ],
                 ),

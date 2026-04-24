@@ -39,7 +39,7 @@ class NetflixMobilePlayerControlTheme extends PlayerControlTheme {
         ignoring: !controller.showControls.value,
         child: AnimatedOpacity(
           opacity: controller.showControls.value ? 1.0 : 0.0,
-          duration: const Duration(milliseconds: 200),
+          duration: controller.overlayAnimationDuration(200),
           child: VerticalScrim(
             fromTop: true,
             height: 120,
@@ -101,7 +101,7 @@ class NetflixMobilePlayerControlTheme extends PlayerControlTheme {
         ignoring: !controller.showControls.value,
         child: AnimatedOpacity(
           opacity: controller.showControls.value ? 1.0 : 0.0,
-          duration: const Duration(milliseconds: 200),
+          duration: controller.overlayAnimationDuration(200),
           child: Center(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -169,7 +169,7 @@ class NetflixMobilePlayerControlTheme extends PlayerControlTheme {
         ignoring: !controller.showControls.value,
         child: AnimatedOpacity(
           opacity: controller.showControls.value ? 1.0 : 0.0,
-          duration: const Duration(milliseconds: 200),
+          duration: controller.overlayAnimationDuration(200),
           child: VerticalScrim(
             fromTop: false,
             height: 180,
@@ -252,11 +252,7 @@ class NetflixMobilePlayerControlTheme extends PlayerControlTheme {
                               NFLabeledButton(
                                 icon: Symbols.subtitles_rounded,
                                 label: 'Audio & Subtitles',
-                                onTap: () => controller.isOffline.value
-                                    ? PlayerBottomSheets.showOfflineSubs(
-                                        context, controller)
-                                    : PlayerBottomSheets.showSubtitleTracks(
-                                        context, controller),
+                                onTap: () => controller.isTracksPaneOpened.value = !controller.isTracksPaneOpened.value,
                               ),
                               Obx(() => NFLabeledButton(
                                     icon: Icons.skip_next_rounded,

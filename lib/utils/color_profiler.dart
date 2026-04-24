@@ -19,8 +19,6 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
 class ColorProfileManager {
-  static bool get _experimentalEnabled =>
-      PlayerUiKeys.playerExperimentalEnabled.get<bool>(false);
 
   static const Map<String, Map<String, int>> profiles = {
     "cinema": {
@@ -176,10 +174,6 @@ class ColorProfileManager {
   };
 
   Future<void> applyColorProfile(String profile, dynamic player) async {
-    if (!_experimentalEnabled) {
-      Logger.i('Skipped color profile apply (experimental disabled)');
-      return;
-    }
     final settings = profiles[profile.toLowerCase()];
     if (settings != null && player.platform != null) {
       try {
@@ -196,10 +190,6 @@ class ColorProfileManager {
 
   Future<void> applyCustomSettings(
       Map<String, int> customSettings, dynamic player) async {
-    if (!_experimentalEnabled) {
-      Logger.i('Skipped custom visual settings apply (experimental disabled)');
-      return;
-    }
     if (player.platform != null) {
       try {
         for (final entry in customSettings.entries) {
@@ -213,15 +203,10 @@ class ColorProfileManager {
   }
 
   Future<void> resetToNatural(dynamic player) async {
-    if (!_experimentalEnabled) return;
     await applyColorProfile('natural', player);
   }
 
   Future<void> resetShader(dynamic player) async {
-    if (!_experimentalEnabled) {
-      Logger.i('Skipped shader reset (experimental disabled)');
-      return;
-    }
     try {
       if (player.platform != null) {
         await PlayerShaders.setShaders(player, "Default");
@@ -554,49 +539,15 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
               labelStyle: const TextStyle(fontWeight: FontWeight.w600),
             ),
           ),
-          if (!_experimentalEnabled)
-            Container(
-              width: double.infinity,
-              margin: const EdgeInsets.fromLTRB(24, 12, 24, 0),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primaryContainer.opaque(0.2),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: theme.colorScheme.primary.opaque(0.35),
-                ),
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.info_outline_rounded,
-                      size: 18, color: theme.colorScheme.primary),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      'Enable Experimental option in Player Settings to use Visual/Core tuning.',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
           Expanded(
-            child: IgnorePointer(
-              ignoring: !_experimentalEnabled,
-              child: Opacity(
-                opacity: _experimentalEnabled ? 1 : 0.45,
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    _buildShadersTab(theme),
-                    _buildVisualTab(theme),
-                    _buildPresetsTab(theme),
-                    _buildCustomTab(theme),
-                  ],
-                ),
-              ),
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                _buildShadersTab(theme),
+                _buildVisualTab(theme),
+                _buildPresetsTab(theme),
+                _buildCustomTab(theme),
+              ],
             ),
           ),
         ],
@@ -785,7 +736,6 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
   }
 
   Future<void> setShaders(String message, {bool backOut = true}) async {
-    if (!_experimentalEnabled) return;
     await PlayerShaders.setShaders(widget.player, message);
     settingsController.selectedShader = message == "Default" ? "" : message;
     PlayerUiKeys.selectedShader.set(message == "Default" ? "" : message);
@@ -1039,6 +989,10 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
   }
 
   Widget _buildVisualTab(ThemeData theme) {
+    if (!_experimentalEnabled) {
+      return _buildVisualLockedState(theme);
+    }
+
     return Column(
       children: [
         Expanded(
@@ -1194,6 +1148,52 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildVisualLockedState(ThemeData theme) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.primaryContainer.opaque(0.2),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: theme.colorScheme.primary.opaque(0.35),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.science_outlined,
+                size: 28,
+                color: theme.colorScheme.primary,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Visual settings are experimental',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Enable Experimental in Player Settings to use this tab.',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w500,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 

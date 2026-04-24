@@ -6,6 +6,8 @@ import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
+import 'package:anymex/screens/community/community_recommendations_page.dart';
+import 'package:anymex/controllers/services/community_service.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
@@ -36,6 +38,8 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
 class MalService extends GetxController implements BaseService, OnlineService {
+  final communityService = Get.find<CommunityService>();
+
   Media? _firstMediaWithCover(Iterable<Media> mediaList) {
     for (final media in mediaList) {
       final cover = media.cover;
@@ -115,6 +119,21 @@ class MalService extends GetxController implements BaseService, OnlineService {
                   buildSectionIfNotEmpty("Popular Anime", popularAnimes),
                   buildSectionIfNotEmpty("Top Anime", topAnimes),
                   buildSectionIfNotEmpty("Upcoming Anime", upcomingAnimes),
+                  // Underrated Anime section at the bottom (filtered for logged-in users)
+                  Obx(() {
+                    final filteredList =
+                        communityService.getFilteredCommunityAnimes();
+                    if (filteredList.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
+                    return buildUnderratedSection(
+                        'Community Recommendations', filteredList,
+                        onSeeAll: () =>
+                            navigate(() => CommunityRecommendationsPage(
+                                  category: 'anime',
+                                  type: ItemType.anime,
+                                )));
+                  }),
                 ],
               )),
       ].obs;
@@ -133,7 +152,22 @@ class MalService extends GetxController implements BaseService, OnlineService {
                       isManga: true),
                   buildSectionIfNotEmpty("Top Manhua", topManhua,
                       isManga: true),
-                  ...sourceController.novelSections.value
+                  ...sourceController.novelSections.value,
+                  // Underrated Manga section at the bottom (filtered for logged-in users)
+                  Obx(() {
+                    final filteredList =
+                        communityService.getFilteredCommunityMangas();
+                    if (filteredList.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
+                    return buildUnderratedMangaSection(
+                        'Community Recommendations', filteredList,
+                        onSeeAll: () =>
+                            navigate(() => CommunityRecommendationsPage(
+                                  category: 'manga',
+                                  type: ItemType.manga,
+                                )));
+                  }),
                 ],
               )),
       ].obs;
@@ -169,6 +203,9 @@ class MalService extends GetxController implements BaseService, OnlineService {
       topManhua.value = (await fetchDataFromApi(
               'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manhua&limit=15'))
           .removeDupes();
+
+      // Fetch underrated content
+      await communityService.fetchAll();
     } catch (e) {
       Logger.i('Error fetching home page data: $e');
     }

@@ -40,11 +40,11 @@ class TopControls extends StatelessWidget {
         child: AnimatedSlide(
           offset:
               controller.showControls.value ? Offset.zero : const Offset(0, -1),
-          duration: const Duration(milliseconds: 400),
+          duration: controller.overlayAnimationDuration(400),
           curve: Curves.easeOutCubic,
           child: AnimatedOpacity(
             opacity: controller.showControls.value ? 1.0 : 0.0,
-            duration: const Duration(milliseconds: 300),
+            duration: controller.overlayAnimationDuration(300),
             curve: Curves.easeOut,
             child: Container(
               width: double.infinity,
@@ -264,8 +264,7 @@ class TopControls extends StatelessWidget {
                                   horizontal: 12, vertical: 4),
                               decoration: BoxDecoration(
                                 color: isDark
-                                    ? theme.colorScheme.primary
-                                        .opaque(0.15)
+                                    ? theme.colorScheme.primary.opaque(0.15)
                                     : theme.colorScheme.primaryContainer,
                                 borderRadius: BorderRadius.circular(8),
                               ),
@@ -428,7 +427,6 @@ class _QualityChip extends StatelessWidget {
   }
 }
 
-// Unlock button widget
 class _UnlockButton extends StatefulWidget {
   final VoidCallback onUnlock;
   const _UnlockButton({required this.onUnlock});

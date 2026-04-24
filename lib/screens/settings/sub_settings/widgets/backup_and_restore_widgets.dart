@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:get/get.dart';
 
@@ -164,7 +165,7 @@ class LoadingDialog extends StatelessWidget {
 class RestorePreviewSheet extends StatelessWidget {
   final Map<String, dynamic> info;
   final bool isEncrypted;
-  final VoidCallback onConfirm;
+  final Function(bool restoreSettings, bool restoreAuthTokens) onConfirm;
 
   const RestorePreviewSheet({
     super.key,
@@ -177,6 +178,11 @@ class RestorePreviewSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final date = info['date'] as String? ?? 'Unknown Date';
+    final hasSettings = info['hasSettings'] as bool? ?? false;
+    final hasAuthTokens = info['hasAuthTokens'] as bool? ?? false;
+
+    final restoreSettings = true.obs;
+    final restoreAuthTokens = false.obs;
 
     return DraggableScrollableSheet(
       initialChildSize: 0.9,
@@ -292,8 +298,43 @@ class RestorePreviewSheet extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 24),
+                  if (hasSettings || hasAuthTokens) ...[
+                    Text(
+                      "RESTORE OPTIONS",
+                      style: TextStyle(
+                        color: theme.colorScheme.primary,
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    if (hasSettings)
+                      Obx(() => CheckboxListTile(
+                            value: restoreSettings.value,
+                            onChanged: (v) => restoreSettings.value = v ?? true,
+                            title: const Text("Restore Settings"),
+                            subtitle: const Text(
+                                "UI, Player, and general app settings"),
+                            controlAffinity: ListTileControlAffinity.trailing,
+                            contentPadding: EdgeInsets.zero,
+                          )),
+                    if (hasAuthTokens)
+                      Obx(() => CheckboxListTile(
+                            value: restoreAuthTokens.value,
+                            onChanged: (v) =>
+                                restoreAuthTokens.value = v ?? false,
+                            title: const Text("Restore Login Tokens"),
+                            subtitle: const Text(
+                                "Login sessions for MAL, Simkl, etc."),
+                            controlAffinity: ListTileControlAffinity.trailing,
+                            contentPadding: EdgeInsets.zero,
+                          )),
+                    const SizedBox(height: 24),
+                  ],
                   ElevatedButton(
-                    onPressed: onConfirm,
+                    onPressed: () => onConfirm(
+                        restoreSettings.value, restoreAuthTokens.value),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: theme.colorScheme.primary,
                       foregroundColor: theme.colorScheme.onPrimary,
@@ -660,23 +701,29 @@ class ActionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return GlassContainer(
-      child: ListTile(
-        onTap: onTap,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-        leading: Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: color.opaque(0.1),
-            borderRadius: BorderRadius.circular(14),
+    return HighlightDecorator(
+      title: title,
+      child: GlassContainer(
+        child: ListTile(
+          onTap: onTap,
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          leading: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: color.opaque(0.1),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(icon, color: color),
           ),
-          child: Icon(icon, color: color),
+          title:
+              Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+          subtitle: Text(subtitle,
+              style: TextStyle(
+                  color: theme.colorScheme.onSurfaceVariant, fontSize: 12)),
+          trailing:
+              Icon(Icons.chevron_right, color: theme.colorScheme.outline),
         ),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text(subtitle,
-            style: TextStyle(
-                color: theme.colorScheme.onSurfaceVariant, fontSize: 12)),
-        trailing: Icon(Icons.chevron_right, color: theme.colorScheme.outline),
       ),
     );
   }
@@ -732,13 +779,14 @@ class LibraryDashboard extends StatelessWidget {
 class BackupPasswordDialog extends StatefulWidget {
   final TextEditingController passwordController;
   final TextEditingController confirmPasswordController;
-  final Function(bool) onUsePasswordChanged;
+  final Function(bool usePassword, bool backupSettings, bool backupAuthTokens)
+      onConfirm;
 
   const BackupPasswordDialog({
     super.key,
     required this.passwordController,
     required this.confirmPasswordController,
-    required this.onUsePasswordChanged,
+    required this.onConfirm,
   });
 
   @override
@@ -747,6 +795,8 @@ class BackupPasswordDialog extends StatefulWidget {
 
 class BackupPasswordDialogState extends State<BackupPasswordDialog> {
   bool _usePassword = false;
+  bool _backupSettings = true;
+  bool _backupAuthTokens = false;
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
 
@@ -797,10 +847,46 @@ class BackupPasswordDialogState extends State<BackupPasswordDialog> {
               ],
             ),
             const SizedBox(height: 24),
+            Text(
+              "BACKUP CONTENT",
+              style: TextStyle(
+                color: theme.colorScheme.primary,
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.5,
+              ),
+            ),
+            const SizedBox(height: 12),
+            CheckboxListTile(
+              value: _backupSettings,
+              onChanged: (v) => setState(() => _backupSettings = v ?? true),
+              title: const Text("Include Settings"),
+              subtitle: const Text("UI, Player, and general app settings"),
+              controlAffinity: ListTileControlAffinity.trailing,
+              contentPadding: EdgeInsets.zero,
+            ),
+            CheckboxListTile(
+              value: _backupAuthTokens,
+              onChanged: (v) => setState(() => _backupAuthTokens = v ?? false),
+              title: const Text("Include Login Tokens"),
+              subtitle: const Text("Login sessions (Sensitive data)"),
+              controlAffinity: ListTileControlAffinity.trailing,
+              contentPadding: EdgeInsets.zero,
+            ),
+            const SizedBox(height: 24),
+            Text(
+              "SECURITY",
+              style: TextStyle(
+                color: theme.colorScheme.primary,
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.5,
+              ),
+            ),
+            const SizedBox(height: 12),
             Container(
               decoration: BoxDecoration(
-                color:
-                    theme.colorScheme.surfaceContainerHighest.opaque(0.3),
+                color: theme.colorScheme.surfaceContainerHighest.opaque(0.3),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: CheckboxListTile(
@@ -808,7 +894,6 @@ class BackupPasswordDialogState extends State<BackupPasswordDialog> {
                 onChanged: (value) {
                   setState(() {
                     _usePassword = value ?? false;
-                    widget.onUsePasswordChanged(_usePassword);
                   });
                 },
                 title: Text(
@@ -900,7 +985,8 @@ class BackupPasswordDialogState extends State<BackupPasswordDialog> {
                 Expanded(
                   flex: 2,
                   child: ElevatedButton(
-                    onPressed: () => Navigator.of(context).pop(true),
+                    onPressed: () => widget.onConfirm(
+                        _usePassword, _backupSettings, _backupAuthTokens),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: theme.colorScheme.primary,
                       foregroundColor: theme.colorScheme.onPrimary,

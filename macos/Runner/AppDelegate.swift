@@ -4,6 +4,11 @@ import app_links
 
 @main
 class AppDelegate: FlutterAppDelegate {
+  override init() {
+    setenv("LC_ALL", "C", 1)
+    super.init()
+  }
+
   public override func application(_ application: NSApplication,
                                  continue userActivity: NSUserActivity,
                                  restorationHandler: @escaping ([any NSUserActivityRestoring]) -> Void) -> Bool {

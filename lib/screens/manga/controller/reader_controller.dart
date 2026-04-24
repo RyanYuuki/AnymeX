@@ -12,6 +12,7 @@ import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/services/volume_key_handler.dart';
 import 'package:anymex/utils/logger.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -108,6 +109,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       TapZoneLayout.defaultWebtoonHorizontal.obs;
   final Rx<TapZoneLayout> webtoonProfile = TapZoneLayout.defaultWebtoon.obs;
   final RxBool tapZonesEnabled = true.obs;
+  final RxBool activeTapIsWebtoon = false.obs;
+  final RxBool activeTapIsVertical = false.obs;
   ScrollOffsetListener? scrollOffsetListener;
   PhotoViewController? photoViewController;
   PreloadPageController? pageController;
@@ -127,6 +130,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   final RxBool autoScrollEnabled = false.obs;
   final RxDouble autoScrollSpeed = 3.0.obs;
   Timer? _autoScrollTimer;
+  Timer? _autoScrollResumeTimer;
+  static const Duration _autoScrollResumeDebounce = Duration(milliseconds: 300);
   final RxBool showControls = true.obs;
   final Rx<LoadingState> loadingState = LoadingState.loading.obs;
   final RxString errorMessage = ''.obs;
@@ -160,7 +165,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         return true;
       case DualPageMode.auto:
         if (readingLayout.value == MangaPageViewMode.continuous) return false;
-        return Get.width > 600;
+        final size = MediaQuery.sizeOf(Get.context!);
+        return size.width > 600;
     }
   }
 
@@ -250,6 +256,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     webtoonProfile.value = _tapRepo.getWebtoonLayout();
     webtoonHorizontalProfile.value = _tapRepo.getWebtoonHorizontalLayout();
     tapZonesEnabled.value = _tapRepo.getTapZonesEnabled();
+    activeTapIsWebtoon.value = _tapRepo.getActiveIsWebtoon();
+    activeTapIsVertical.value = _tapRepo.getActiveIsVertical();
   }
 
   void _enableVolumeKeys() {
@@ -382,6 +390,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     _disableVolumeKeys();
 
     pageController?.dispose();
+    _autoScrollResumeTimer?.cancel();
     _stopAutoScroll();
     super.onClose();
   }
@@ -582,23 +591,21 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     _stopAutoScroll();
     if (readingLayout.value == MangaPageViewMode.continuous) {
       final pixelsPerSecond = Get.height / autoScrollSpeed.value;
-      const tickMs = 50;
-      _autoScrollTimer = Timer.periodic(
-        const Duration(milliseconds: tickMs),
-        (_) {
-          if (!autoScrollEnabled.value) {
-            _stopAutoScroll();
-            return;
-          }
-          final offset = pixelsPerSecond * tickMs / 1000;
-          final isReversed = readingDirection.value.reversed;
-          scrollOffsetController?.animateScroll(
-            offset: isReversed ? -offset : offset,
-            duration: const Duration(milliseconds: tickMs),
-            curve: Curves.linear,
-          );
-        },
+      const double maxOffset = 500000.0;
+      final durationMs = (maxOffset / pixelsPerSecond * 1000).toInt();
+
+      final isReversed = readingDirection.value.reversed;
+      scrollOffsetController?.animateScroll(
+        offset: isReversed ? -maxOffset : maxOffset,
+        duration: Duration(milliseconds: durationMs),
+        curve: Curves.linear,
       );
+      
+      _autoScrollTimer = Timer(Duration(milliseconds: durationMs), () {
+        if (autoScrollEnabled.value) {
+          _startAutoScroll();
+        }
+      });
     } else {
       _autoScrollTimer = Timer.periodic(
         Duration(milliseconds: (autoScrollSpeed.value * 1000).toInt()),
@@ -614,8 +621,19 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   }
 
   void _stopAutoScroll() {
-    _autoScrollTimer?.cancel();
-    _autoScrollTimer = null;
+    if (_autoScrollTimer != null) {
+      _autoScrollTimer!.cancel();
+      _autoScrollTimer = null;
+      if (readingLayout.value == MangaPageViewMode.continuous) {
+        try {
+          scrollOffsetController?.animateScroll(
+            offset: 0,
+            duration: const Duration(milliseconds: 10),
+            curve: Curves.linear,
+          );
+        } catch (_) {}
+      }
+    }
   }
 
   void navigateToChapter(int index) async {
@@ -860,6 +878,10 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     isOverscrolling.value = false;
     overscrollProgress.value = 0.0;
     _virtualOverscrollPixels = 0.0;
+    if (autoScrollEnabled.value) {
+      _autoScrollResumeTimer?.cancel();
+      _stopAutoScroll();
+    }
   }
 
   void onPointerUp(PointerUpEvent event) {
@@ -875,6 +897,25 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       }
     }
     _resetOverscroll();
+    if (autoScrollEnabled.value) {
+      _scheduleAutoScrollResume();
+    }
+  }
+
+  void onPointerCancel(PointerCancelEvent event) {
+    _resetOverscroll();
+    if (autoScrollEnabled.value) {
+      _scheduleAutoScrollResume();
+    }
+  }
+
+  void _scheduleAutoScrollResume() {
+    _autoScrollResumeTimer?.cancel();
+    _autoScrollResumeTimer = Timer(_autoScrollResumeDebounce, () {
+      if (autoScrollEnabled.value) {
+        _startAutoScroll();
+      }
+    });
   }
 
   void _handleOverscrollUpdate(double progress, bool isNext) {
@@ -1105,6 +1146,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     webtoonHorizontalProfile.value = _tapRepo.getWebtoonHorizontalLayout();
     webtoonProfile.value = _tapRepo.getWebtoonLayout();
     tapZonesEnabled.value = _tapRepo.getTapZonesEnabled();
+    activeTapIsWebtoon.value = _tapRepo.getActiveIsWebtoon();
+    activeTapIsVertical.value = _tapRepo.getActiveIsVertical();
 
     DiscordRPCController.instance.updateMangaPresence(
         manga: media,
@@ -1353,26 +1396,14 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       navigateToChapter(newIndex);
     } else {
       if (next) {
-        Get.snackbar(
-          "Last Chapter",
+        snackBar(
+          title: "Last Chapter",
           "There are no more chapters.",
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.black.withOpacity(0.8),
-          colorText: Colors.white,
-          margin: const EdgeInsets.all(20),
-          duration: const Duration(seconds: 2),
-          isDismissible: true,
         );
       } else {
-        Get.snackbar(
-          "First Chapter",
+        snackBar(
+          title: "First Chapter",
           "This is the first chapter.",
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.black.withOpacity(0.8),
-          colorText: Colors.white,
-          margin: const EdgeInsets.all(20),
-          duration: const Duration(seconds: 2),
-          isDismissible: true,
         );
       }
     }
@@ -1393,6 +1424,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> fetchImages(String url) async {
+    final curChapter = currentChapter.value;
     _isNavigating = true;
     _resetOverscroll();
     WidgetsBinding.instance.addPostFrameCallback((_) => _initTracking());
@@ -1404,8 +1436,28 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       pageList.clear();
       errorMessage.value = '';
 
-      final data = await sourceController.activeMangaSource.value!.methods
-          .getPageList(DEpisode(episodeNumber: '1', url: url));
+      List<PageUrl> data = [];
+
+      if (curChapter?.localPath != null &&
+          Directory(curChapter!.localPath!).existsSync()) {
+        final dir = Directory(curChapter.localPath!);
+        final files = dir
+            .listSync()
+            .whereType<File>()
+            .where((f) =>
+                f.path.endsWith('.jpg') ||
+                f.path.endsWith('.jpeg') ||
+                f.path.endsWith('.png') ||
+                f.path.endsWith('.webp'))
+            .toList();
+
+        files.sort((a, b) => a.path.compareTo(b.path));
+
+        data = files.map((f) => PageUrl(f.path)).toList();
+      } else {
+        data = await sourceController.activeMangaSource.value!.methods
+            .getPageList(DEpisode(episodeNumber: '1', url: url));
+      }
 
       if (data.isNotEmpty) {
         pageList.value = data;
@@ -1504,17 +1556,17 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         (position.dy / size.height).clamp(0.0, 1.0));
 
     TapZoneLayout layout;
-    if (readingLayout.value == MangaPageViewMode.continuous) {
-      if (readingDirection.value.axis == Axis.horizontal) {
-        layout = webtoonHorizontalProfile.value;
-      } else {
-        layout = webtoonProfile.value;
-      }
-    } else {
-      if (readingDirection.value.axis == Axis.vertical) {
+    if (!activeTapIsWebtoon.value) {
+      if (activeTapIsVertical.value) {
         layout = pagedVerticalProfile.value;
       } else {
         layout = pagedProfile.value;
+      }
+    } else {
+      if (activeTapIsVertical.value) {
+        layout = webtoonProfile.value;
+      } else {
+        layout = webtoonHorizontalProfile.value;
       }
     }
 
@@ -1556,16 +1608,22 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   void _navPrevPage() => navigateToPage(currentPageIndex.value - 2);
 
   void _scrollUp() {
+    final dist = readingDirection.value.axis == Axis.horizontal
+        ? -Get.width * 0.75
+        : -Get.height * 0.75;
     scrollOffsetController?.animateScroll(
-      offset: -Get.height * 0.75,
+      offset: dist,
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOutCubic,
     );
   }
 
   void _scrollDown() {
+    final dist = readingDirection.value.axis == Axis.horizontal
+        ? Get.width * 0.75
+        : Get.height * 0.75;
     scrollOffsetController?.animateScroll(
-      offset: Get.height * 0.75,
+      offset: dist,
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOutCubic,
     );

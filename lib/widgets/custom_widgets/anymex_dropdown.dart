@@ -27,6 +27,8 @@ class AnymexDropdown extends StatefulWidget {
 
 class _AnymexDropdownState extends State<AnymexDropdown>
     with TickerProviderStateMixin {
+  static const double _dropdownMaxHeight = 320;
+  static const double _dropdownSpacing = 8;
   bool _isOpen = false;
   bool _openUpwards = false;
   late AnimationController _animationController;
@@ -91,21 +93,32 @@ class _AnymexDropdownState extends State<AnymexDropdown>
     final Size size = renderBox.size;
     final double screenHeight = MediaQuery.of(context).size.height;
 
-    const double dropdownMaxHeight = 320;
-    const double spacing = 8;
+    final double dropdownHeight = _calculateDropdownHeight();
 
     final double spaceBelow = screenHeight - (offset.dy + size.height);
     final double spaceAbove = offset.dy;
 
-    if (spaceBelow >= dropdownMaxHeight + spacing) {
+    if (spaceBelow >= dropdownHeight + _dropdownSpacing) {
       return false;
     }
 
-    if (spaceAbove > spaceBelow) {
+    if (spaceAbove >= dropdownHeight + _dropdownSpacing) {
       return true;
     }
 
-    return false;
+    return spaceAbove > spaceBelow;
+  }
+
+  double _calculateDropdownHeight() {
+    if (widget.items.isEmpty) return 0;
+
+    double totalHeight = 0;
+    for (final item in widget.items) {
+      totalHeight += item.subtitle != null ? 76 : 64;
+    }
+
+    totalHeight += (widget.items.length - 1).clamp(0, double.infinity) * 1;
+    return totalHeight.clamp(0, _dropdownMaxHeight);
   }
 
   void _openDropdown() {
@@ -134,206 +147,203 @@ class _AnymexDropdownState extends State<AnymexDropdown>
   }
 
   OverlayEntry _createOverlayEntry() {
-    RenderBox renderBox = context.findRenderObject() as RenderBox;
-    Size size = renderBox.size;
-    Offset offset = renderBox.localToGlobal(Offset.zero);
+    final RenderBox renderBox = context.findRenderObject() as RenderBox;
+    final Size size = renderBox.size;
+    final double dropdownHeight = _calculateDropdownHeight();
 
     return OverlayEntry(
-      builder: (context) => GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onTap: _closeDropdown,
-        child: Stack(
-          children: [
-            Positioned(
-              left: offset.dx,
-              top: _openUpwards ? null : offset.dy + size.height + 8,
-              bottom: _openUpwards
-                  ? MediaQuery.of(context).size.height - offset.dy + 8
-                  : null,
-              width: size.width,
-              child: GestureDetector(
-                onTap: () {},
-                child: CompositedTransformFollower(
-                  link: _layerLink,
-                  showWhenUnlinked: false,
-                  offset: Offset(0.0,
-                      (_openUpwards ? -(320 + 8) : size.height + 8).toDouble()),
-                  child: FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: ScaleTransition(
-                      scale: _expandAnimation,
-                      alignment: _openUpwards
-                          ? Alignment.bottomCenter
-                          : Alignment.topCenter,
-                      child: Material(
-                        elevation: 12,
+      builder: (context) => Stack(
+        children: [
+          Positioned.fill(
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: _closeDropdown,
+            ),
+          ),
+          CompositedTransformFollower(
+            link: _layerLink,
+            showWhenUnlinked: false,
+            offset: Offset(
+              0,
+              _openUpwards
+                  ? -(dropdownHeight + _dropdownSpacing)
+                  : size.height + _dropdownSpacing,
+            ),
+            child: FadeTransition(
+              opacity: _fadeAnimation,
+              child: ScaleTransition(
+                scale: _expandAnimation,
+                alignment: _openUpwards
+                    ? Alignment.bottomCenter
+                    : Alignment.topCenter,
+                child: Material(
+                  elevation: 12,
+                  borderRadius: BorderRadius.circular(20),
+                  color: context.colors.surface,
+                  shadowColor: Theme.of(context)
+                      .shadowColor
+                      .opaque(0.15, iReallyMeanIt: true),
+                  child: SizedBox(
+                    width: size.width,
+                    child: Container(
+                      constraints: const BoxConstraints(
+                        maxHeight: _dropdownMaxHeight,
+                      ),
+                      decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
-                        color: context.colors.surface,
-                        shadowColor: Theme.of(context)
-                            .shadowColor
-                            .opaque(0.15, iReallyMeanIt: true),
-                        child: Container(
-                          constraints: const BoxConstraints(
-                            maxHeight: 320,
+                        border: Border.all(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .outline
+                              .opaque(0.15, iReallyMeanIt: true),
+                          width: 1,
+                        ),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: ListView.separated(
+                          padding: EdgeInsets.zero,
+                          shrinkWrap: true,
+                          itemCount: widget.items.length,
+                          separatorBuilder: (context, index) => Divider(
+                            height: 1,
+                            thickness: 0.5,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .outline
+                                .opaque(0.1, iReallyMeanIt: true),
+                            indent: 16,
+                            endIndent: 16,
                           ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .outline
-                                  .opaque(0.15, iReallyMeanIt: true),
-                              width: 1,
-                            ),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
-                            child: ListView.separated(
-                              shrinkWrap: true,
-                              itemCount: widget.items.length,
-                              separatorBuilder: (context, index) => Divider(
-                                height: 1,
-                                thickness: 0.5,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .outline
-                                    .opaque(0.1, iReallyMeanIt: true),
-                                indent: 16,
-                                endIndent: 16,
-                              ),
-                              itemBuilder: (context, index) {
-                                final item = widget.items[index];
-                                final isSelected =
-                                    widget.selectedItem?.value == item.value;
+                          itemBuilder: (context, index) {
+                            final item = widget.items[index];
+                            final isSelected =
+                                widget.selectedItem?.value == item.value;
 
-                                return Material(
-                                  color: Colors.transparent,
-                                  child: InkWell(
-                                    onTap: () {
-                                      widget.onChanged(item);
-                                      _closeDropdown();
-                                    },
-                                    splashColor: Theme.of(context)
-                                        .colorScheme
-                                        .primary
-                                        .opaque(0.1, iReallyMeanIt: true),
-                                    highlightColor: Theme.of(context)
-                                        .colorScheme
-                                        .primary
-                                        .opaque(0.05, iReallyMeanIt: true),
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 20,
-                                        vertical: 16,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: isSelected
-                                            ? Theme.of(context)
-                                                .colorScheme
-                                                .primary
-                                                .opaque(0.08,
-                                                    iReallyMeanIt: true)
-                                            : null,
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          if (item.leadingIcon != null) ...[
-                                            Container(
-                                              width: 32,
-                                              height: 32,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .primaryContainer
-                                                    .opaque(0.3,
-                                                        iReallyMeanIt: true),
-                                              ),
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                                child: item.leadingIcon!,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 12),
-                                          ],
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  item.text,
-                                                  style: TextStyle(
-                                                    fontSize: 15,
-                                                    fontWeight: isSelected
-                                                        ? FontWeight.w600
-                                                        : FontWeight.w500,
-                                                    color: isSelected
-                                                        ? Theme.of(context)
-                                                            .colorScheme
-                                                            .primary
-                                                        : Theme.of(context)
-                                                            .colorScheme
-                                                            .onSurface,
-                                                  ),
-                                                ),
-                                                if (item.subtitle != null) ...[
-                                                  const SizedBox(height: 2),
-                                                  Text(
-                                                    item.subtitle!,
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .onSurface
-                                                          .opaque(0.6,
-                                                              iReallyMeanIt:
-                                                                  true),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ],
-                                            ),
-                                          ),
-                                          if (item.extra != null) ...[
-                                            const SizedBox(width: 8),
-                                            item.extra!,
-                                          ],
-                                          if (item.trailingIcon != null) ...[
-                                            const SizedBox(width: 8),
-                                            item.trailingIcon!,
-                                          ] else if (isSelected) ...[
-                                            const SizedBox(width: 8),
-                                            Container(
-                                              padding: const EdgeInsets.all(4),
-                                              decoration: BoxDecoration(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .primary,
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                              child: Icon(
-                                                Icons.check,
-                                                size: 14,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .onPrimary,
-                                              ),
-                                            ),
-                                          ],
-                                        ],
-                                      ),
-                                    ),
+                            return Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () {
+                                  widget.onChanged(item);
+                                  _closeDropdown();
+                                },
+                                splashColor: Theme.of(context)
+                                    .colorScheme
+                                    .primary
+                                    .opaque(0.1, iReallyMeanIt: true),
+                                highlightColor: Theme.of(context)
+                                    .colorScheme
+                                    .primary
+                                    .opaque(0.05, iReallyMeanIt: true),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 16,
                                   ),
-                                );
-                              },
-                            ),
-                          ),
+                                  decoration: BoxDecoration(
+                                    color: isSelected
+                                        ? Theme.of(context)
+                                            .colorScheme
+                                            .primary
+                                            .opaque(0.08,
+                                                iReallyMeanIt: true)
+                                        : null,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      if (item.leadingIcon != null) ...[
+                                        Container(
+                                          width: 32,
+                                          height: 32,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primaryContainer
+                                                .opaque(0.3,
+                                                    iReallyMeanIt: true),
+                                          ),
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            child: item.leadingIcon!,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                      ],
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              item.text,
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: isSelected
+                                                    ? FontWeight.w600
+                                                    : FontWeight.w500,
+                                                color: isSelected
+                                                    ? Theme.of(context)
+                                                        .colorScheme
+                                                        .primary
+                                                    : Theme.of(context)
+                                                        .colorScheme
+                                                        .onSurface,
+                                              ),
+                                            ),
+                                            if (item.subtitle != null) ...[
+                                              const SizedBox(height: 2),
+                                              Text(
+                                                item.subtitle!,
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w400,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .onSurface
+                                                      .opaque(0.6,
+                                                          iReallyMeanIt: true),
+                                                ),
+                                              ),
+                                            ],
+                                          ],
+                                        ),
+                                      ),
+                                      if (item.extra != null) ...[
+                                        const SizedBox(width: 8),
+                                        item.extra!,
+                                      ],
+                                      if (item.trailingIcon != null) ...[
+                                        const SizedBox(width: 8),
+                                        item.trailingIcon!,
+                                      ] else if (isSelected) ...[
+                                        const SizedBox(width: 8),
+                                        Container(
+                                          padding: const EdgeInsets.all(4),
+                                          decoration: BoxDecoration(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          child: Icon(
+                                            Icons.check,
+                                            size: 14,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onPrimary,
+                                          ),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ),
@@ -341,8 +351,8 @@ class _AnymexDropdownState extends State<AnymexDropdown>
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

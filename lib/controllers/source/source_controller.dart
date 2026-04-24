@@ -23,7 +23,7 @@ import 'package:isar_community/isar.dart';
 
 import '../../main.dart';
 
-final sourceController = Get.put(SourceController());
+SourceController get sourceController => Get.find<SourceController>();
 
 class SourceController extends GetxController implements BaseService {
   ExtensionManager get _bridge => Get.find<ExtensionManager>();
@@ -44,6 +44,26 @@ class SourceController extends GetxController implements BaseService {
   final activeMangaSource = Rxn<Source>();
   final activeNovelSource = Rxn<Source>();
   final lastUpdatedSource = ''.obs;
+
+  final Map<String, String> _activeTokens = {};
+
+  void cancelInProgress(String key) {
+    if (_activeTokens.containsKey(key)) {
+      final token = _activeTokens[key]!;
+      final source = switch (key) {
+        'search' || 'detail' => activeSource.value,
+        'manga_search' || 'manga_detail' => activeMangaSource.value,
+        _ => null,
+      };
+      source?.cancelRequest(token);
+      _activeTokens.remove(key);
+    }
+  }
+
+  void updateToken(String key, String token) {
+    cancelInProgress(key);
+    _activeTokens[key] = token;
+  }
 
   final _animeSections = <Widget>[].obs;
   final _homeSections = <Widget>[].obs;
@@ -258,7 +278,7 @@ class SourceController extends GetxController implements BaseService {
         list.firstOrNull;
   }
 
-  void setActiveSource(Source source) {
+  void setActiveSource(Source source, {String? mediaId}) {
     final (rx, key, tag) = switch (source.itemType) {
       ItemType.anime => (activeSource, SourceKeys.activeSourceId, 'ANIME'),
       ItemType.manga => (
@@ -273,39 +293,62 @@ class SourceController extends GetxController implements BaseService {
         ),
       _ => (activeSource, SourceKeys.activeSourceId, 'ANIME'),
     };
+
+    if (rx.value?.id != source.id) {
+      cancelInProgress(tag == 'ANIME' ? 'search' : 'manga_search');
+      cancelInProgress(tag == 'ANIME' ? 'detail' : 'manga_detail');
+    }
+
     rx.value = source;
     KvHelper.set(key.name, source.id.toString());
+    if (mediaId != null) {
+      DynamicKeys.stickySource.set(mediaId, source.id.toString());
+    }
     lastUpdatedSource.value = tag;
   }
 
-  Source? getExtensionByValue(String value) => _activateByName(
+  Source? getSavedSource(String mediaId, ItemType type) {
+    final savedId = DynamicKeys.stickySource.get<String?>(mediaId);
+    if (savedId == null) return null;
+
+    final list = _installedFor(type);
+    return list.firstWhereOrNull((s) => s.id.toString() == savedId);
+  }
+
+  Source? getExtensionByValue(String value, {String? mediaId}) => _activateByName(
       installedExtensions,
       value,
       activeSource,
       SourceKeys.activeSourceId,
-      'ANIME');
+      'ANIME',
+      mediaId: mediaId);
 
-  Source? getMangaExtensionByName(String name) => _activateByName(
-      installedMangaExtensions,
-      name,
-      activeMangaSource,
-      SourceKeys.activeMangaSourceId,
-      'MANGA');
+  Source? getMangaExtensionByName(String name, {String? mediaId}) =>
+      _activateByName(
+          installedMangaExtensions,
+          name,
+          activeMangaSource,
+          SourceKeys.activeMangaSourceId,
+          'MANGA',
+          mediaId: mediaId);
 
-  Source? getNovelExtensionByName(String name) => _activateByName(
-      installedNovelExtensions,
-      name,
-      activeNovelSource,
-      SourceKeys.activeNovelSourceId,
-      'NOVEL');
+  Source? getNovelExtensionByName(String name, {String? mediaId}) =>
+      _activateByName(
+          installedNovelExtensions,
+          name,
+          activeNovelSource,
+          SourceKeys.activeNovelSourceId,
+          'NOVEL',
+          mediaId: mediaId);
 
   Source? _activateByName(
     List<Source> sources,
     String name,
     Rxn<Source> rx,
     SourceKeys key,
-    String tag,
-  ) {
+    String tag, {
+    String? mediaId,
+  }) {
     print('Activating extension by name: $name');
     final match = sources.firstWhereOrNull(
       (s) =>
@@ -315,11 +358,18 @@ class SourceController extends GetxController implements BaseService {
     );
 
     if (match != null) {
+      if (rx.value?.id != match.id) {
+        cancelInProgress(tag == 'ANIME' ? 'search' : 'manga_search');
+        cancelInProgress(tag == 'ANIME' ? 'detail' : 'manga_detail');
+      }
       rx.value = match;
       KvHelper.set(key.name, match.id.toString());
+      if (mediaId != null) {
+        DynamicKeys.stickySource.set(mediaId, match.id.toString());
+      }
+      lastUpdatedSource.value = tag;
       return match;
     }
-    lastUpdatedSource.value = tag;
     return null;
   }
 

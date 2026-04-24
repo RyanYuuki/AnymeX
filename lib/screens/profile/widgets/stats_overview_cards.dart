@@ -1,6 +1,7 @@
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/screens/profile/widgets/user_media_list_page.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/widgets/common/marquee_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -138,19 +139,17 @@ class DesktopStatsGrid extends StatelessWidget {
                         border: Border.all(
                           color: isHovered
                               ? context.theme.colorScheme.primary
-                                  .withOpacity(0.9) 
+                                  .withOpacity(0.9)
                               : context.theme.colorScheme.outlineVariant
                                   .withOpacity(0.15),
                           width: isHovered ? 2.5 : 1.0,
-                          strokeAlign: BorderSide
-                              .strokeAlignOutside, 
+                          strokeAlign: BorderSide.strokeAlignOutside,
                         ),
                         boxShadow: hasThumbs
                             ? [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(isHovered
-                                      ? 0.7
-                                      : 0.45), 
+                                  color: Colors.black
+                                      .withOpacity(isHovered ? 0.7 : 0.45),
                                   blurRadius: isHovered ? 24 : 20,
                                   spreadRadius: isHovered ? 4 : 2,
                                   offset: const Offset(0, 8),
@@ -158,17 +157,15 @@ class DesktopStatsGrid extends StatelessWidget {
                                 if (isHovered)
                                   BoxShadow(
                                     color: context.theme.colorScheme.primary
-                                        .withOpacity(
-                                            0.4), 
+                                        .withOpacity(0.4),
                                     blurRadius: 28,
-                                    spreadRadius: 6, 
+                                    spreadRadius: 6,
                                   ),
                               ]
                             : (isHovered
                                 ? [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(
-                                          0.2), 
+                                      color: Colors.black.withOpacity(0.2),
                                       blurRadius: 16,
                                       spreadRadius: 2,
                                       offset: const Offset(0, 4),
@@ -184,7 +181,6 @@ class DesktopStatsGrid extends StatelessWidget {
                       ),
                       child: Stack(
                         children: [
-                          
                           if (hasThumbs)
                             Positioned.fill(
                               child: CachedNetworkImage(
@@ -194,7 +190,6 @@ class DesktopStatsGrid extends StatelessWidget {
                                     const SizedBox.shrink(),
                               ),
                             ),
-                          
                           if (hasThumbs)
                             Positioned.fill(
                               child: DecoratedBox(
@@ -210,7 +205,7 @@ class DesktopStatsGrid extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text(
+                                MarqueeText(
                                   item.label,
                                   style: TextStyle(
                                     fontSize: 9,
@@ -229,7 +224,7 @@ class DesktopStatsGrid extends StatelessWidget {
                                 Flexible(
                                   child: Align(
                                     alignment: Alignment.centerLeft,
-                                    child: Text(
+                                    child: MarqueeText(
                                       item.value,
                                       style: TextStyle(
                                         fontSize: 18,
@@ -244,7 +239,7 @@ class DesktopStatsGrid extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                Text(
+                                MarqueeText(
                                   item.sub,
                                   style: TextStyle(
                                     fontSize: 11,
@@ -358,7 +353,7 @@ class ScoreCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
-            child: Text(
+            child: MarqueeText(
               label,
               style: TextStyle(
                 fontSize: compact ? 11 : 12,

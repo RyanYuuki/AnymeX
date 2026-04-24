@@ -3,6 +3,8 @@ import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Media/character.dart';
 import 'package:anymex/models/Media/staff.dart';
 import 'package:anymex/screens/anime/widgets/character_staff_sheet.dart';
+import 'package:anymex/widgets/common/marquee_text.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:flutter/material.dart';
@@ -116,13 +118,16 @@ class CharactersCarousel extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 10),
-                        Text(
-                          itemData.name ?? '??',
-                          maxLines: 2,
-                          style: TextStyle(
-                              fontSize: isDesktop ? 14 : 12,
-                              fontFamily: "Poppins-SemiBold"),
-                          overflow: TextOverflow.ellipsis,
+                        SizedBox(
+                          width: double.infinity,
+                          child: AnymexText(
+                            text: itemData.name ?? '??',
+                            maxLines: 1,
+                            size: isDesktop ? 14 : 12,
+                            variant: TextVariant.semiBold,
+                            overflow: TextOverflow.ellipsis,
+                            isMarquee: true,
+                          ),
                         )
                       ],
                     ),
@@ -219,19 +224,22 @@ class CharactersCarousel extends StatelessWidget {
                                               .primary,
                                         ),
                                         const SizedBox(width: 3),
-                                        Text(
-                                          characterName ?? '',
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              fontFamily: "Poppins-Bold",
-                                              fontStyle: FontStyle.italic,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .inverseSurface
-                                                  .opaque(0.9)),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          textAlign: TextAlign.right,
+                                        SizedBox(
+                                          width: isDesktop ? 96 : 62,
+                                          child: MarqueeText(
+                                            characterName ?? '',
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                fontFamily: "Poppins-Bold",
+                                                fontStyle: FontStyle.italic,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .inverseSurface
+                                                    .opaque(0.9)),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            textAlign: TextAlign.right,
+                                          ),
                                         ),
                                         const SizedBox(width: 3),
                                       ],
@@ -242,13 +250,16 @@ class CharactersCarousel extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        Text(
-                          itemData?.name ?? 'No Voice Actor',
-                          maxLines: 2,
-                          style: TextStyle(
-                              fontSize: isDesktop ? 14 : 12,
-                              fontFamily: "Poppins-SemiBold"),
-                          overflow: TextOverflow.ellipsis,
+                        SizedBox(
+                          width: double.infinity,
+                          child: AnymexText(
+                            text: itemData?.name ?? 'No Voice Actor',
+                            maxLines: 1,
+                            size: isDesktop ? 14 : 12,
+                            variant: TextVariant.semiBold,
+                            overflow: TextOverflow.ellipsis,
+                            isMarquee: true,
+                          ),
                         ),
                       ],
                     ),
@@ -338,41 +349,47 @@ class StaffCarousel extends StatelessWidget {
                                         .surfaceContainer,
                                   ),
                                   clipBehavior: Clip.antiAlias,
-                                  child: Text(
-                                    itemData.role!,
-                                    style: TextStyle(
-                                        fontSize: 10,
-                                        fontFamily: "Poppins-Bold",
-                                        fontStyle: FontStyle.italic,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .inverseSurface
-                                            .opaque(0.9)),
+                                  child: SizedBox(
+                                    width: isDesktop ? 110 : 74,
+                                    child: MarqueeText(
+                                      itemData.role!,
+                                      style: TextStyle(
+                                          fontSize: 10,
+                                          fontFamily: "Poppins-Bold",
+                                          fontStyle: FontStyle.italic,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .inverseSurface
+                                              .opaque(0.9)),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
                                 ),
                               )
                           ],
                         ),
                         const SizedBox(height: 10),
-                        Text(
-                          itemData.name ?? '??',
-                          maxLines: 2,
-                          style: TextStyle(
-                              fontSize: isDesktop ? 14 : 12,
-                              fontFamily: "Poppins-SemiBold"),
-                          overflow: TextOverflow.ellipsis,
+                        SizedBox(
+                          width: double.infinity,
+                          child: AnymexText(
+                            text: itemData.name ?? '??',
+                            maxLines: 1,
+                            size: isDesktop ? 14 : 12,
+                            variant: TextVariant.semiBold,
+                            overflow: TextOverflow.ellipsis,
+                            isMarquee: true,
+                          ),
                         ),
                         if (itemData.primaryOccupations != null &&
                             itemData.primaryOccupations!.isNotEmpty)
-                          Text(
-                            itemData.primaryOccupations!.join(", "),
+                          AnymexText(
+                            text: itemData.primaryOccupations!.join(", "),
                             maxLines: 1,
-                            style: TextStyle(
-                                fontSize: 10,
-                                color:
-                                    context.colors.onSurface.withOpacity(0.7),
-                                fontFamily: "Poppins"),
+                            size: 10,
+                            color: context.colors.onSurface.withOpacity(0.7),
                             overflow: TextOverflow.ellipsis,
+                            isMarquee: true,
                           )
                       ],
                     ),

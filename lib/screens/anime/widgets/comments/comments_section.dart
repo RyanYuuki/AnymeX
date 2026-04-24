@@ -12,6 +12,9 @@ import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/screens/profile/profile_page.dart';
+import 'package:anymex/screens/profile/user_profile_page.dart';
 
 class CommentSection extends StatefulWidget {
   final Media media;
@@ -76,8 +79,7 @@ class _CommentSectionState extends State<CommentSection> {
   }
 
   void _handlePostComment() {
-    final bool hasAccepted =
-        General.hasAcceptedCommentRules.get<bool>(false);
+    final bool hasAccepted = General.hasAcceptedCommentRules.get<bool>(false);
 
     if (hasAccepted) {
       controller.addComment();
@@ -761,36 +763,48 @@ class _CommentSectionState extends State<CommentSection> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: colorScheme.surfaceContainer,
-            border: Border.all(
-              color: colorScheme.outline.opaque(0.1, iReallyMeanIt: true),
-              width: 1,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: colorScheme.shadow.opaque(0.08, iReallyMeanIt: true),
-                blurRadius: 6,
-                offset: const Offset(0, 2),
+        GestureDetector(
+          onTap: () {
+            final currentUserId =
+                Get.find<ServiceHandler>().profileData.value.id;
+            if (comment.userId == currentUserId) {
+              navigate(() => const ProfilePage());
+            } else {
+              navigate(() =>
+                  UserProfilePage(userId: int.tryParse(comment.userId) ?? 0));
+            }
+          },
+          child: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: colorScheme.surfaceContainer,
+              border: Border.all(
+                color: colorScheme.outline.opaque(0.1, iReallyMeanIt: true),
+                width: 1,
               ),
-            ],
-          ),
-          child: ClipOval(
-            child: comment.avatarUrl?.isNotEmpty == true
-                ? AnymeXImage(
-                    imageUrl: comment.avatarUrl!,
-                    fit: BoxFit.cover,
-                    radius: 0,
-                  )
-                : Icon(
-                    Icons.person_rounded,
-                    color: colorScheme.onSurfaceVariant,
-                    size: 18,
-                  ),
+              boxShadow: [
+                BoxShadow(
+                  color: colorScheme.shadow.opaque(0.08, iReallyMeanIt: true),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: ClipOval(
+              child: comment.avatarUrl?.isNotEmpty == true
+                  ? AnymeXImage(
+                      imageUrl: comment.avatarUrl!,
+                      fit: BoxFit.cover,
+                      radius: 0,
+                    )
+                  : Icon(
+                      Icons.person_rounded,
+                      color: colorScheme.onSurfaceVariant,
+                      size: 18,
+                    ),
+            ),
           ),
         ),
         const SizedBox(width: 12),
@@ -801,15 +815,14 @@ class _CommentSectionState extends State<CommentSection> {
               Row(
                 children: [
                   Flexible(
-                    child: Text(
-                      comment.username,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: colorScheme.onSurface,
-                        fontSize: 15,
-                      ),
-                      overflow: TextOverflow.ellipsis,
+                    child: AnymexText(
+                      text: comment.username,
+                      variant: TextVariant.bold,
+                      color: colorScheme.onSurface,
+                      size: 15,
                       maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      isMarquee: true,
                     ),
                   ),
                   if (comment.tag.isNotEmpty) ...[

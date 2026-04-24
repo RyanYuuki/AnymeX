@@ -2228,7 +2228,7 @@ class AnilistAuth extends GetxController {
               ));
     } else {
       final savedAnime = offlineStorage.getAnimeById(id);
-      final number = savedAnime?.currentEpisode?.number.toInt() ?? 0;
+      final number = savedAnime?.currentEpisode?.number?.toInt() ?? 0;
       currentMedia.value = animeList.value.firstWhere((el) => el.id == id,
           orElse: () => TrackedMedia(
               episodeCount: number.toString(),

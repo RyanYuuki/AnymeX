@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:anymex/utils/logger.dart';
@@ -28,6 +29,7 @@ class MediaKitPlayer extends base.BasePlayer {
 
   base.PlayerState _state = base.PlayerState();
   final List<StreamSubscription> _subscriptions = [];
+  bool _isDisposed = false;
 
   MediaKitPlayer({base.PlayerConfiguration? configuration})
       : config = configuration ??
@@ -75,6 +77,7 @@ class MediaKitPlayer extends base.BasePlayer {
       configuration: PlayerConfiguration(
         bufferSize: config.bufferSize,
         libass: config.useLibass,
+        vo: 'gpu'
       ),
     );
 
@@ -82,6 +85,7 @@ class MediaKitPlayer extends base.BasePlayer {
       _player,
       configuration: VideoControllerConfiguration(
         hwdec: config.hwdec,
+        enableHardwareAcceleration: config.hwdec != 'no',
         androidAttachSurfaceAfterVideoParameters: true,
       ),
     );
@@ -127,12 +131,14 @@ class MediaKitPlayer extends base.BasePlayer {
                 ))
             .toList(),
         subtitle: tracks.subtitle
-            .map((t) => base.SubtitleTrack(
-                  id: t.id,
-                  title: t.title,
-                  language: t.language,
-                ))
-            .toList(),
+            .where((e) => e.title != null && e.language != null)
+            .map((t) {
+          return base.SubtitleTrack(
+            id: t.id,
+            title: t.title,
+            language: t.language,
+          );
+        }).toList(),
         video: tracks.video
             .map((t) => base.VideoTrack(
                   id: t.id,
@@ -176,9 +182,22 @@ class MediaKitPlayer extends base.BasePlayer {
     Map<String, String>? headers,
     Duration? startPosition,
   }) async {
+    final resolvedUrl = _resolveMediaUrl(url);
+    print('Opening video: $resolvedUrl with headers: $headers');
     await _player.open(
-      Media(url, httpHeaders: headers, start: startPosition),
+      Media(resolvedUrl, httpHeaders: headers, start: startPosition),
     );
+  }
+
+  String _resolveMediaUrl(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri != null &&
+        uri.hasScheme &&
+        !(Platform.isWindows &&
+            RegExp(r'^[a-zA-Z]:[\\/]').hasMatch(url))) {
+      return url;
+    }
+    return Uri.file(url).toString();
   }
 
   @override
@@ -214,10 +233,15 @@ class MediaKitPlayer extends base.BasePlayer {
 
   @override
   Future<void> setVideoTrack(base.VideoTrack track) async {
+    print(
+        'trying video track: ${track.id} - ${track.title} (${track.width}x${track.height})');
     final mediaKitTrack = _player.state.tracks.video.firstWhere(
       (t) => t.id == track.id,
       orElse: () => _player.state.tracks.video.first,
     );
+    print(
+        'Setting video track: ${mediaKitTrack.id} - ${mediaKitTrack.title} (${mediaKitTrack.w}x${mediaKitTrack.h})');
+
     await _player.setVideoTrack(mediaKitTrack);
   }
 
@@ -250,7 +274,11 @@ class MediaKitPlayer extends base.BasePlayer {
 
     if (track.url != null) {
       await _player.setSubtitleTrack(
-        SubtitleTrack.uri(track.url!, title: track.title),
+        SubtitleTrack.uri(
+          track.url!,
+          title: track.title,
+          language: track.language,
+        ),
       );
       return;
     }
@@ -260,6 +288,12 @@ class MediaKitPlayer extends base.BasePlayer {
       orElse: () => _player.state.tracks.subtitle.first,
     );
     await _player.setSubtitleTrack(mediaKitTrack);
+  }
+
+  @override
+  Future<void> setSubtitleDelay(Duration delay) async {
+    final seconds = delay.inMicroseconds / 1000000.0;
+    (_player.platform as dynamic).setProperty('sub-delay', seconds.toString());
   }
 
   @override
@@ -289,6 +323,8 @@ class MediaKitPlayer extends base.BasePlayer {
     double? width,
     double? height,
   }) {
+    if (_isDisposed) return const SizedBox.shrink();
+
     return Video(
       filterQuality: FilterQuality.medium,
       controls: null,
@@ -296,29 +332,46 @@ class MediaKitPlayer extends base.BasePlayer {
       fit: fit ?? BoxFit.contain,
       resumeUponEnteringForegroundMode: true,
       subtitleViewConfiguration:
-          const SubtitleViewConfiguration(visible: false),
+          SubtitleViewConfiguration(visible: config.useLibass),
     );
   }
 
   @override
   Future<void> dispose() async {
-    for (final subscription in _subscriptions) {
-      await subscription.cancel();
+    if (_isDisposed) return;
+
+    for (final s in _subscriptions) {
+      s.cancel();
+    }
+    _subscriptions.clear();
+
+    try {
+      await _player.stop();
+    } catch (_) {}
+
+    _isDisposed = true;
+
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    try {
+      await _player.dispose();
+    } catch (e) {
+      Logger.e('Error during _player.dispose(): $e');
     }
 
-    await _positionController.close();
-    await _durationController.close();
-    await _bufferController.close();
-    await _playingController.close();
-    await _bufferingController.close();
-    await _tracksController.close();
-    await _rateController.close();
-    await _errorController.close();
-    await _subtitleController.close();
-    await _heightController.close();
-    await _completedController.close();
-
-    await _player.dispose();
+    await Future.wait([
+      _positionController.close(),
+      _durationController.close(),
+      _bufferController.close(),
+      _playingController.close(),
+      _bufferingController.close(),
+      _tracksController.close(),
+      _rateController.close(),
+      _errorController.close(),
+      _subtitleController.close(),
+      _heightController.close(),
+      _completedController.close(),
+    ]);
   }
 
   Player get nativePlayer => _player;

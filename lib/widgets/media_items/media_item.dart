@@ -105,10 +105,21 @@ class GridAnimeCard extends StatelessWidget {
     final itemType = isManga ? ItemType.manga : ItemType.anime;
 
     return GestureDetector(
+      onSecondaryTap: () {
+        MediaPeekPopup.showIfUntracked(
+          context,
+          media.data,
+          itemType,
+          media.title,
+        );
+      },
       onLongPress: () {
-        if (media.data.userStatus == null || media.data.userStatus!.isEmpty) {
-          MediaPeekPopup.show(context, media.data, itemType, media.title);
-        }
+        MediaPeekPopup.showIfUntracked(
+          context,
+          media.data,
+          itemType,
+          media.title,
+        );
       },
       child: SizedBox(
         width: cardWidth,
@@ -175,6 +186,7 @@ class GridAnimeCard extends StatelessWidget {
                 maxLines: 2,
                 size: 14,
                 variant: TextVariant.semiBold,
+                isMarquee: true,
               ),
             ),
             const SizedBox(height: 3),
@@ -344,7 +356,7 @@ class BlurAnimeCard extends StatelessWidget {
                           size: 14,
                           maxLines: 2,
                           variant: TextVariant.bold,
-                          overflow: TextOverflow.ellipsis,
+                          isMarquee: true,
                         ),
                       ],
                     ),

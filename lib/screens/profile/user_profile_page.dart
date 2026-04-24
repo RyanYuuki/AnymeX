@@ -396,16 +396,12 @@ class _UserProfilePageState extends State<UserProfilePage>
     return Glow(
       child: Scaffold(
         backgroundColor: context.theme.colorScheme.surface,
-        extendBody: false,
+        extendBody: true,
         bottomNavigationBar: isDesktop
             ? null
             : ResponsiveNavBar(
                 isDesktop: false,
-                height: 64,
                 currentIndex: _selectedTab,
-                margin: EdgeInsets.zero,
-                borderRadius: BorderRadius.zero,
-                backgroundColor: context.theme.colorScheme.surface,
                 items: _profileNavItems,
               ),
         body: _buildBody(context, isDesktop),
@@ -554,6 +550,7 @@ class _UserProfilePageState extends State<UserProfilePage>
                   child: ActivityCard(
                     isOwnProfile: isOwner,
                     activity: activity,
+                    onDeleted: () => _handleActivityDeleted(activity),
                     onTap: () {
                       if (activity.type == 'ANIME_LIST') {
                         final media = Media(
@@ -650,6 +647,20 @@ class _UserProfilePageState extends State<UserProfilePage>
       context,
       activityFilters: _activityFilters,
       onApply: () => _fetchActivities(),
+    );
+  }
+
+  void _handleActivityDeleted(AnilistActivity activity) {
+    if (!mounted) return;
+    setState(() {
+      _activities.removeWhere((a) => a.id == activity.id);
+    });
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Activity deleted'),
+        duration: Duration(milliseconds: 1200),
+      ),
     );
   }
 
@@ -859,7 +870,7 @@ class _UserProfilePageState extends State<UserProfilePage>
         buildActivitySection(),
         buildAboutSection(),
         buildFavouritesSection(),
-        const SizedBox(height: 50),
+        SizedBox(height: isDesktop ? 50 : 120),
       ],
     );
   }
@@ -920,94 +931,119 @@ class _UserProfilePageState extends State<UserProfilePage>
   }
 
   void _showCreateMessageSheet(BuildContext context) {
+    final composerKey = GlobalKey<ActivityComposerSheetState>();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      isDismissible: false,
+      enableDrag: false,
       backgroundColor: context.theme.colorScheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-            left: 16,
-            right: 16,
-            top: 20,
+        return WillPopScope(
+          onWillPop: () => confirmDiscardComposer(
+            context,
+            composerKey: composerKey,
+            discardTitle: 'Discard message?',
+            discardMessage:
+                'You have unsent text. Closing now will lose your message.',
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Message ${_userProfile?.name ?? 'User'}",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: context.theme.colorScheme.onSurface,
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+              left: 16,
+              right: 16,
+              top: 20,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Message ${_userProfile?.name ?? 'User'}",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: context.theme.colorScheme.onSurface,
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.only(
-                  left: 12,
-                  right: 12,
-                  top: 8,
-                  bottom: 12,
-                ),
-                decoration: BoxDecoration(
-                  color: context.theme.colorScheme.surfaceContainer,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: ActivityComposerSheet(
-                  isModal: true,
-                  hintText: "Write a message...",
-                  showPrivateToggle: true,
-                  onSubmit: (text, {isPrivate = false}) async {
-                    final anilistAuth = Get.find<AnilistAuth>();
-                    try {
-                      await anilistAuth.createMessageActivity(
-                          widget.userId, text, isPrivate);
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(isPrivate 
-                                ? 'Private message sent successfully!' 
-                                : 'Message posted successfully!'),
-                            backgroundColor: Colors.green,
-                          ),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () async {
+                        final discard = await confirmDiscardComposer(
+                          context,
+                          composerKey: composerKey,
+                          discardTitle: 'Discard message?',
+                          discardMessage:
+                              'You have unsent text. Closing now will lose your message.',
                         );
-                      }
-                      _refreshActivityTab(showMessage: false);
-                      return true;
-                    } catch (e) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Failed to post message: $e'),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      }
-                      return false;
-                    }
-                  },
+                        if (discard && context.mounted) {
+                          Navigator.pop(context);
+                        }
+                      },
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 16),
-            ],
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.only(
+                    left: 12,
+                    right: 12,
+                    top: 8,
+                    bottom: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: context.theme.colorScheme.surfaceContainer,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: ActivityComposerSheet(
+                    key: composerKey,
+                    isModal: true,
+                    hintText: "Write a message...",
+                    showPrivateToggle: true,
+                    onSubmit: (text, {isPrivate = false}) async {
+                      final anilistAuth = Get.find<AnilistAuth>();
+                      try {
+                        await anilistAuth.createMessageActivity(
+                            widget.userId, text, isPrivate);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(isPrivate
+                                  ? 'Private message sent successfully!'
+                                  : 'Message posted successfully!'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                        }
+                        _refreshActivityTab(showMessage: false);
+                        return true;
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Failed to post message: $e'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                        return false;
+                      }
+                    },
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+            ),
           ),
         );
       },
     );
   }
+
 }

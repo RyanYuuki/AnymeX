@@ -4,6 +4,8 @@ import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/media_items/media_peek_popup.dart';
+import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
@@ -148,6 +150,9 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
                           text: widget.studioName,
                           variant: TextVariant.bold,
                           size: 20,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          isMarquee: true,
                         ),
                       ),
                       Obx(() => GestureDetector(
@@ -396,6 +401,22 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
     return SizedBox(
       width: 120,
       child: GestureDetector(
+        onSecondaryTap: () {
+          MediaPeekPopup.showIfUntracked(
+            context,
+            media,
+            ItemType.anime,
+            media.id.toString(),
+          );
+        },
+        onLongPress: () {
+          MediaPeekPopup.showIfUntracked(
+            context,
+            media,
+            ItemType.anime,
+            media.id.toString(),
+          );
+        },
         onTap: () {
           navigate(
             () => AnimeDetailsPage(

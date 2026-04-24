@@ -7,8 +7,11 @@ import 'package:anymex/screens/anime/watch/controls/themes/setup/themed_controls
 import 'package:anymex/screens/anime/watch/controls/widgets/double_tap_seek.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/overlay.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/buffering_overlay.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/subtitle_text.dart';
-import 'package:anymex/screens/anime/watch/subtitles/subtitle_view.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/tracks_popup.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/source_popup.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/sync_subs_popup.dart';
 import 'package:anymex/screens/anime/widgets/media_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -51,8 +54,7 @@ class _WatchScreenState extends State<WatchScreen> {
 
   @override
   void dispose() {
-    controller.delete();
-    Get.delete<PlayerController>(force: true);
+    Get.delete<PlayerController>();
     super.dispose();
   }
 
@@ -62,11 +64,18 @@ class _WatchScreenState extends State<WatchScreen> {
         body: Stack(
       children: [
         Obx(() {
+          controller.playerReloadVersion.value;
           return controller.videoWidget;
         }),
         PlayerOverlay(controller: controller),
-        if (!PlayerKeys.useLibass.get<bool>(false))
-          SubtitleText(controller: controller),
+        BufferingOverlay(controller: controller),
+        Obx(() {
+          controller.playerReloadVersion.value;
+          if (PlayerKeys.useLibass.get<bool>(false)) {
+            return const SizedBox.shrink();
+          }
+          return SubtitleText(controller: controller);
+        }),
         DoubleTapSeekWidget(
           controller: controller,
         ),
@@ -95,7 +104,21 @@ class _WatchScreenState extends State<WatchScreen> {
           top: 0,
           bottom: 0,
           left: 0,
-          child: SubtitleSearchBottomSheet(controller: controller),
+          child: SourcePopup(controller: controller),
+        ),
+        Positioned(
+          right: 0,
+          top: 0,
+          bottom: 0,
+          left: 0,
+          child: TracksPopup(controller: controller),
+        ),
+        Positioned(
+          right: 0,
+          top: 0,
+          bottom: 0,
+          left: 0,
+          child: SyncSubsPopup(controller: controller),
         ),
         Positioned(
           right: 0,

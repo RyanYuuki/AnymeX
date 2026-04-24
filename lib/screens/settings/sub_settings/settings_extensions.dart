@@ -1,6 +1,7 @@
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/ExtensionManager.dart';
@@ -29,6 +30,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
 
   int _managerIndex = 0;
   ItemType _tab = ItemType.anime;
+  bool _didApplyHighlightTab = false;
   final Map<String, bool> _deleting = {};
 
   static const _typeTabs = [
@@ -72,6 +74,25 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
         },
       ),
     );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_didApplyHighlightTab) return;
+    _didApplyHighlightTab = true;
+
+    final highlight = SettingsHighlightProvider.of(context)?.highlightTitle;
+    final nextTab = switch (highlight) {
+      'Anime' => ItemType.anime,
+      'Manga' => ItemType.manga,
+      'Novel' => ItemType.novel,
+      _ => null,
+    };
+
+    if (nextTab != null && _tab != nextTab) {
+      setState(() => _tab = nextTab);
+    }
   }
 
   @override
@@ -274,49 +295,54 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                 children: tabs.map((t) {
                   final selected = _tab == t.type;
                   return Expanded(
-                    child: GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: () {
-                        if (!selected) {
-                          HapticFeedback.lightImpact();
-                          setState(() => _tab = t.type);
-                        }
-                      },
-                      child: AnimatedScale(
-                        scale: selected ? 1.05 : 1.0,
-                        duration: const Duration(milliseconds: 250),
-                        curve: Curves.easeInOut,
-                        child: AnimatedOpacity(
-                          opacity: selected ? 1.0 : 0.7,
-                          duration: const Duration(milliseconds: 200),
-                          child: SizedBox.expand(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(t.icon,
-                                    size: 16,
-                                    color: selected
-                                        ? colors.onPrimary
-                                        : colors.onSurfaceVariant),
-                                const SizedBox(width: 6),
-                                Flexible(
-                                  child: AnimatedDefaultTextStyle(
-                                    duration: const Duration(milliseconds: 200),
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: selected
-                                          ? FontWeight.w700
-                                          : FontWeight.w400,
+                    child: HighlightDecorator(
+                      title: t.label,
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          if (!selected) {
+                            HapticFeedback.lightImpact();
+                            setState(() => _tab = t.type);
+                          }
+                        },
+                        child: AnimatedScale(
+                          scale: selected ? 1.05 : 1.0,
+                          duration: const Duration(milliseconds: 250),
+                          curve: Curves.easeInOut,
+                          child: AnimatedOpacity(
+                            opacity: selected ? 1.0 : 0.7,
+                            duration: const Duration(milliseconds: 200),
+                            child: SizedBox.expand(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(t.icon,
+                                      size: 16,
                                       color: selected
                                           ? colors.onPrimary
-                                          : colors.onSurfaceVariant,
+                                          : colors.onSurfaceVariant),
+                                  const SizedBox(width: 6),
+                                  Flexible(
+                                    child: AnimatedDefaultTextStyle(
+                                      duration:
+                                          const Duration(milliseconds: 200),
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        fontFamily: 'Poppins',
+                                        fontWeight: selected
+                                            ? FontWeight.w700
+                                            : FontWeight.w400,
+                                        color: selected
+                                            ? colors.onPrimary
+                                            : colors.onSurfaceVariant,
+                                      ),
+                                      child: Text(t.label,
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1),
                                     ),
-                                    child: Text(t.label,
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),

@@ -2,10 +2,12 @@ import 'dart:ui';
 
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/animation/animations.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 enum EpisodeLayoutType {
   compact,
@@ -19,6 +21,7 @@ class BetterEpisode extends StatelessWidget {
   final String? fallbackImageUrl;
   final List<Episode>? offlineEpisodes;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
 
   const BetterEpisode({
     super.key,
@@ -28,6 +31,7 @@ class BetterEpisode extends StatelessWidget {
     this.fallbackImageUrl,
     this.offlineEpisodes,
     this.onTap,
+    this.onLongPress,
   });
 
   @override
@@ -36,12 +40,15 @@ class BetterEpisode extends StatelessWidget {
     final isFiller = episode.filler ?? false;
     final hasProgress = episodeProgress > 0.0 && episodeProgress <= 1.0;
 
-    return GestureDetector(
-      onTap: onTap,
-      child: layoutType == EpisodeLayoutType.compact
-          ? _buildCompactLayout(context, episodeProgress, isFiller, hasProgress)
-          : _buildDetailedLayout(
-              context, episodeProgress, isFiller, hasProgress),
+    return StaggeredAnimatedItemWrapper(
+      child: GestureDetector(
+        onTap: onTap,
+        onLongPress: onLongPress,
+        child: layoutType == EpisodeLayoutType.compact
+            ? _buildCompactLayout(context, episodeProgress, isFiller, hasProgress)
+            : _buildDetailedLayout(
+                context, episodeProgress, isFiller, hasProgress),
+      ),
     );
   }
 
@@ -119,6 +126,7 @@ class BetterEpisode extends StatelessWidget {
                   variant: TextVariant.bold,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
+                  isMarquee: true,
                 ),
               ],
             ),
@@ -184,6 +192,7 @@ class BetterEpisode extends StatelessWidget {
                       variant: TextVariant.bold,
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
+                      isMarquee: true,
                     ),
                   ],
                 ),

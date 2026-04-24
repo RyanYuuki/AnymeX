@@ -78,13 +78,12 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
   Widget _buildHeaderTitle() {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0),
-      child: Text(
-        widget.title,
-        style: TextStyle(
-          fontFamily: "Poppins-SemiBold",
-          fontSize: 17,
-          color: context.colors.primary,
-        ),
+      child: AnymexText(
+        text: widget.title,
+        variant: TextVariant.semiBold,
+        size: 17,
+        color: context.colors.primary,
+        isMarquee: true,
       ),
     );
   }
@@ -184,7 +183,7 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
     final media = Media.fromCarouselData(itemData, mediaType);
 
     void onTapHandler() {
-      if (widget.type == ItemType.novel) {
+      if (mediaType == ItemType.novel) {
         final source =
             widget.source ?? sourceController.installedNovelExtensions.first;
         navigate(() => NovelDetailsPage(
@@ -192,7 +191,7 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
               tag: media.title,
               source: source,
             ));
-      } else if (widget.type == ItemType.manga) {
+      } else if (mediaType == ItemType.manga) {
         navigate(() => MangaDetailsPage(
               media: media,
               tag: media.title,
@@ -205,17 +204,6 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
       }
     }
 
-    final Widget page = isMediaManga
-        ? MangaDetailsPage(
-            media: media,
-            tag: tag,
-          )
-        : widget.type == ItemType.anime
-            ? AnimeDetailsPage(
-                media: media,
-                tag: tag,
-              )
-            : NovelDetailsPage(media: media, tag: tag, source: widget.source!);
     _setActiveSource(controller, itemData);
     onTapHandler();
   }

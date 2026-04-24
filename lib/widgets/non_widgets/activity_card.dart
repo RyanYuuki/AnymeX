@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anymex/models/Anilist/anilist_activity.dart';
@@ -12,6 +14,7 @@ import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/utils/al_about_me.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/markdown.dart';
+import 'package:anymex/widgets/common/marquee_text.dart';
 import 'package:anymex/widgets/non_widgets/activity_composer_sheet.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -19,6 +22,7 @@ class ActivityCard extends StatefulWidget {
   final AnilistActivity activity;
   final VoidCallback? onTap;
   final VoidCallback? onReplyTap;
+  final VoidCallback? onDeleted;
   final bool isOwnProfile;
 
   const ActivityCard({
@@ -26,6 +30,7 @@ class ActivityCard extends StatefulWidget {
     required this.activity,
     this.onTap,
     this.onReplyTap,
+    this.onDeleted,
     this.isOwnProfile = false,
   });
 
@@ -165,7 +170,7 @@ class _ActivityCardState extends State<ActivityCard> {
                     final auth = Get.find<AnilistAuth>();
                     final success = await auth.deleteActivity(activity.id);
                     if (success) {
-                      // Caller handle refresh
+                      widget.onDeleted?.call();
                     }
                   },
                 ),
@@ -447,12 +452,22 @@ class _ActivityCardState extends State<ActivityCard> {
     return RepaintBoundary(
         child: InkWell(
       onTap: widget.onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(20),
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         decoration: BoxDecoration(
           color: context.theme.colorScheme.surfaceContainer,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: context.theme.colorScheme.outlineVariant.withOpacity(0.22),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: context.theme.colorScheme.shadow.withOpacity(0.06),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+          ],
         ),
         clipBehavior: Clip.antiAlias,
         child: Stack(
@@ -460,18 +475,71 @@ class _ActivityCardState extends State<ActivityCard> {
             if (activity.mediaBannerUrl != null ||
                 activity.mediaCoverUrl != null)
               Positioned.fill(
-                child: CachedNetworkImage(
-                  imageUrl:
-                      (activity.mediaBannerUrl ?? activity.mediaCoverUrl)!,
-                  fit: BoxFit.cover,
+                child: ImageFiltered(
+                  imageFilter: ui.ImageFilter.blur(sigmaX: 3.2, sigmaY: 3.2),
+                  child: CachedNetworkImage(
+                    imageUrl:
+                        (activity.mediaBannerUrl ?? activity.mediaCoverUrl)!,
+                    fit: BoxFit.cover,
+                    filterQuality: FilterQuality.low,
+                  ),
                 ),
               ),
             if (activity.mediaBannerUrl != null ||
                 activity.mediaCoverUrl != null)
               Positioned.fill(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: context.theme.colorScheme.surface.withOpacity(0.78),
+                child: IgnorePointer(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          context.theme.colorScheme.surface.withOpacity(0.42),
+                          context.theme.colorScheme.surface.withOpacity(0.10),
+                        ],
+                        stops: const [0.0, 0.52],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            if (activity.mediaBannerUrl != null ||
+                activity.mediaCoverUrl != null)
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          Colors.transparent,
+                          context.theme.colorScheme.surface.withOpacity(0.20),
+                          context.theme.colorScheme.surface.withOpacity(0.48),
+                        ],
+                        stops: const [0.26, 0.64, 1.0],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            if (activity.mediaBannerUrl != null ||
+                activity.mediaCoverUrl != null)
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: RadialGradient(
+                        center: const Alignment(0.42, -0.05),
+                        radius: 0.95,
+                        colors: [
+                          context.theme.colorScheme.surface.withOpacity(0.22),
+                          Colors.transparent,
+                        ],
+                        stops: const [0.0, 1.0],
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -586,7 +654,7 @@ class _ActivityCardState extends State<ActivityCard> {
                         children: [
                           if (activity.mediaCoverUrl != null)
                             ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(12),
                               child: CachedNetworkImage(
                                 imageUrl: activity.mediaCoverUrl!,
                                 width: 105,
@@ -670,9 +738,9 @@ class _ActivityCardState extends State<ActivityCard> {
                                     ),
                                   ],
                                   const SizedBox(height: 6),
-                                  Text(
+                                  MarqueeText(
                                     activity.mediaTitle ?? '',
-                                    maxLines: 2,
+                                    maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                       fontSize: 16,
@@ -687,61 +755,34 @@ class _ActivityCardState extends State<ActivityCard> {
                                 ],
                                 if (isListActivity) const Spacer(),
                                 const SizedBox(height: 12),
-                                Row(
-                                  children: [
-                                    InkWell(
-                                      onTap: _toggleLike,
-                                      onLongPress: () =>
-                                          _showLikedBySheet(context),
-                                      borderRadius: BorderRadius.circular(16),
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            activity.isLiked
-                                                ? Icons.favorite
-                                                : Icons.favorite_border,
-                                            size: 18,
-                                            color: activity.isLiked
-                                                ? Colors.red
-                                                : Colors.grey,
-                                          ),
-                                          const SizedBox(width: 6),
-                                          Text(
-                                            '${activity.likeCount}',
-                                            style: TextStyle(
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.bold,
-                                              color: activity.isLiked
-                                                  ? Colors.red
-                                                  : Colors.grey,
-                                            ),
-                                          ),
-                                        ],
+                                Builder(builder: (context) {
+                                  final colorScheme = context.theme.colorScheme;
+                                  final likeColor = activity.isLiked
+                                      ? Colors.redAccent
+                                      : colorScheme.onSurfaceVariant;
+
+                                  return Row(
+                                    children: [
+                                      _ActivityActionChip(
+                                        icon: activity.isLiked
+                                            ? Icons.favorite
+                                            : Icons.favorite_outline,
+                                        count: '${activity.likeCount}',
+                                        foreground: likeColor,
+                                        onTap: _toggleLike,
+                                        onLongPress: () =>
+                                            _showLikedBySheet(context),
                                       ),
-                                    ),
-                                    const SizedBox(width: 16),
-                                    InkWell(
-                                      onTap: widget.onReplyTap,
-                                      borderRadius: BorderRadius.circular(16),
-                                      child: Row(
-                                        children: [
-                                          const Icon(Icons.chat_bubble_outline,
-                                              size: 18, color: Colors.grey),
-                                          if (activity.replyCount > 0) ...[
-                                            const SizedBox(width: 6),
-                                            Text(
-                                              '${activity.replyCount}',
-                                              style: const TextStyle(
-                                                  fontSize: 13,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.grey),
-                                            ),
-                                          ],
-                                        ],
+                                      const SizedBox(width: 8),
+                                      _ActivityActionChip(
+                                        icon: Icons.chat_bubble_outline,
+                                        count: '${activity.replyCount}',
+                                        foreground: colorScheme.onSurfaceVariant,
+                                        onTap: widget.onReplyTap,
                                       ),
-                                    ),
-                                  ],
-                                ),
+                                    ],
+                                  );
+                                }),
                               ],
                             ),
                           ),
@@ -873,6 +914,67 @@ class _ActivityAnilistCard extends StatefulWidget {
   State<_ActivityAnilistCard> createState() => _ActivityAnilistCardState();
 }
 
+class _ActivityActionChip extends StatelessWidget {
+  const _ActivityActionChip({
+    required this.icon,
+    required this.count,
+    required this.foreground,
+    this.onTap,
+    this.onLongPress,
+  });
+
+  final IconData icon;
+  final String count;
+  final Color foreground;
+  final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.theme.colorScheme;
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(14),
+      child: BackdropFilter(
+        filter: ui.ImageFilter.blur(sigmaX: 2.0, sigmaY: 2.0),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            onLongPress: onLongPress,
+            borderRadius: BorderRadius.circular(14),
+            child: Ink(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: colorScheme.surfaceContainerHighest.withOpacity(0.34),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: colorScheme.outlineVariant.withOpacity(0.32),
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(icon, size: 18, color: foreground),
+                  const SizedBox(width: 6),
+                  Text(
+                    count,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: foreground,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _ActivityAnilistCardState extends State<_ActivityAnilistCard> {
   Future<dynamic>? _dataFuture;
 
@@ -899,8 +1001,11 @@ class _ActivityAnilistCardState extends State<_ActivityAnilistCard> {
             width: 260,
             decoration: BoxDecoration(
               color: context.theme.colorScheme.surfaceContainerHighest
-                  .withOpacity(0.35),
-              borderRadius: BorderRadius.circular(10),
+                  .withOpacity(0.42),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: context.theme.colorScheme.outlineVariant.withOpacity(0.22),
+              ),
             ),
           );
         }
@@ -917,7 +1022,7 @@ class _ActivityAnilistCardState extends State<_ActivityAnilistCard> {
         final String format = media.format?.toString() ?? '';
 
         return InkWell(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(14),
           onTap: () {
             if (widget.isManga) {
               navigate(() => MangaDetailsPage(media: media, tag: title));
@@ -927,20 +1032,27 @@ class _ActivityAnilistCardState extends State<_ActivityAnilistCard> {
           },
           child: Container(
             width: 260,
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: context.theme.colorScheme.surfaceContainerHighest
-                  .withOpacity(0.35),
-              borderRadius: BorderRadius.circular(10),
+                  .withOpacity(0.52),
+              borderRadius: BorderRadius.circular(14),
               border: Border.all(
                 color:
-                    context.theme.colorScheme.outlineVariant.withOpacity(0.2),
+                    context.theme.colorScheme.outlineVariant.withOpacity(0.28),
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: context.theme.colorScheme.shadow.withOpacity(0.05),
+                  blurRadius: 14,
+                  offset: const Offset(0, 5),
+                ),
+              ],
             ),
             child: Row(
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
                     imageUrl: poster,
                     width: 54,

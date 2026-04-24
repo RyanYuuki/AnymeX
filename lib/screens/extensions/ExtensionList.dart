@@ -3,6 +3,8 @@ import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/custom_button.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
+import 'package:anymex_extension_runtime_bridge/Services/Aniyomi/Models/Source.dart';
+import 'package:anymex_extension_runtime_bridge/Services/Sora/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
@@ -14,6 +16,7 @@ class ExtensionList extends StatefulWidget {
   final ItemType itemType;
   final String query;
   final String selectedLanguage;
+  final String selectedSourceType;
   final bool showRecommended;
 
   const ExtensionList({
@@ -21,6 +24,7 @@ class ExtensionList extends StatefulWidget {
     required this.query,
     required this.itemType,
     required this.selectedLanguage,
+    required this.selectedSourceType,
     this.showRecommended = true,
     super.key,
   });
@@ -111,11 +115,13 @@ class _ExtensionListState extends State<ExtensionList>
     if (data.isEmpty) return data;
 
     final lang = widget.selectedLanguage;
+    final sourceType = widget.selectedSourceType;
     final query = widget.query.toLowerCase();
     final hasLangFilter = lang != 'all';
+    final hasSourceFilter = sourceType != 'all';
     final hasQuery = query.isNotEmpty;
 
-    if (!hasLangFilter && !hasQuery) return data;
+    if (!hasLangFilter && !hasQuery && !hasSourceFilter) return data;
 
     final targetLang = hasLangFilter ? completeLanguageCode(lang) : '';
 
@@ -123,11 +129,25 @@ class _ExtensionListState extends State<ExtensionList>
       if (hasLangFilter && (element.lang?.toLowerCase() ?? '') != targetLang) {
         return false;
       }
+      if (hasSourceFilter && !_matchesSourceType(element, sourceType)) {
+        return false;
+      }
       if (hasQuery && !(element.name?.toLowerCase() ?? '').contains(query)) {
         return false;
       }
       return true;
     }).toList();
+  }
+
+  bool _matchesSourceType(Source source, String type) {
+    if (type == 'all') return true;
+    return switch (type) {
+      'Mangayomi' => source is MSource,
+      'Aniyomi' => source is ASource,
+      'Cloudstream' => source is CloudStreamSource,
+      'Sora' => source is SSource,
+      _ => true,
+    };
   }
 
   String _idFor(Source source) => source.id?.toString() ?? '';

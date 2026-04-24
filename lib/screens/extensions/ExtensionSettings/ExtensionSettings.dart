@@ -1,6 +1,8 @@
+import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/AlertDialogBuilder.dart';
 import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_dialog.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
@@ -31,201 +33,327 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
     var theme = context.colors;
     return Glow(
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          title: Text(
-            "${widget.source.name} Settings",
-            style: TextStyle(
-              fontFamily: 'Poppins',
-              fontWeight: FontWeight.bold,
-              fontSize: 16.0,
-              color: theme.primary,
+        
+        body: Column(
+          children: [
+            NestedHeader(
+              title: "${widget.source.name} Settings",
             ),
-          ),
-          iconTheme: IconThemeData(color: theme.primary),
-        ),
-        body: Obx(
-          () {
-            if (preference.value == null) {
-              return const Center(
-                child: ExpressiveLoadingIndicator(),
-              );
-            }
-            if (preference.value!.isEmpty) {
-              return const Center(
-                child: Text("Source doesn't have any settings"),
-              );
-            }
-            Text TitleText(String text) {
-              return Text(
-                text,
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16.0,
-                  color: theme.primary,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              );
-            }
-
-            Text SubtitleText(String text) {
-              return Text(
-                text,
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 14.0,
-                  color: theme.onSurfaceVariant,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              );
-            }
-
-            return ListView.builder(
-              itemCount: preference.value!.length,
-              itemBuilder: (context, index) {
-                final pref = preference.value![index];
-                switch (pref.type) {
-                  case 'checkBox':
-                    final p = pref.checkBoxPreference!;
-                    return CheckboxListTile(
-                      title: TitleText(p.title ?? ''),
-                      subtitle:
-                          p.summary != null ? SubtitleText(p.summary!) : null,
-                      value: p.value ?? false,
-                      onChanged: (val) {
-                        p.value = val;
-                        widget.source.methods.setPreference(pref, val);
-                        setState(() {});
-                      },
+            Expanded(
+              child: Obx(
+                () {
+                  if (preference.value == null) {
+                    return const Center(
+                      child: ExpressiveLoadingIndicator(),
                     );
-                  case 'switch':
-                    final p = pref.switchPreferenceCompat!;
-                    return SwitchListTile(
-                      title: TitleText(p.title ?? ''),
-                      value: p.value ?? false,
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 0),
-                      onChanged: (val) {
-                        p.value = val;
-                        widget.source.methods.setPreference(pref, val);
-                        setState(() {});
-                      },
+                  }
+                  if (preference.value!.isEmpty) {
+                    return const Center(
+                      child: Text("Source doesn't have any settings"),
                     );
-                  case 'list':
-                    final p = pref.listPreference!;
-                    return ListTile(
-                      title: TitleText(p.title ?? ''),
-                      subtitle: SubtitleText(
-                        p.summary != null && p.summary!.isNotEmpty
-                            ? p.summary!
-                            : p.entries?[p.valueIndex ?? 0] ?? '',
-                      ),
-                      onTap: () {
-                        AlertDialogBuilder(context)
-                          ..setTitle(p.title ?? '')
-                          ..singleChoiceItems(
-                            (p.entries ?? []),
-                            p.valueIndex ?? 0,
-                            (int index) {
-                              p.valueIndex = index;
-                              widget.source.methods
-                                  .setPreference(pref, p.entryValues?[index]);
+                  }
+                  return ListView.separated(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: preference.value!.length,
+                    separatorBuilder: (context, index) => const SizedBox(height: 12),
+                    itemBuilder: (context, index) {
+                      final pref = preference.value![index];
+                      switch (pref.type) {
+                        case 'checkBox':
+                          final p = pref.checkBoxPreference!;
+                          return _PreferenceTile(
+                            title: p.title ?? '',
+                            subtitle: p.summary ?? 'Toggle setting',
+                            isSelected: p.value ?? false,
+                            onTap: () {
+                              final newVal = !(p.value ?? false);
+                              p.value = newVal;
+                              widget.source.methods.setPreference(pref, newVal);
                               setState(() {});
                             },
-                          )
-                          ..show();
-                      },
-                    );
-                  case 'multi_select':
-                    final p = pref.multiSelectListPreference!;
-                    var subtitle = (p.entries ?? [])
-                        .asMap()
-                        .entries
-                        .where((e) =>
-                            p.values?.contains(p.entryValues?[e.key]) ?? false)
-                        .map((e) => e.value)
-                        .toList()
-                        .join(", ");
-                    return ListTile(
-                      title: TitleText(p.title ?? ''),
-                      subtitle: SubtitleText(
-                        p.summary != null && p.summary!.isNotEmpty
-                            ? p.summary!
-                            : subtitle,
-                      ),
-                      onTap: () async {
-                        final newValues = <String>[];
-                        AlertDialogBuilder(context)
-                          ..setTitle(p.title ?? '')
-                          ..multiChoiceItems(
-                            p.entries ?? [],
-                            p.entryValues
-                                ?.map((pv) => p.values?.contains(pv) ?? false)
-                                .toList(),
-                            (List<bool> checked) {
-                              newValues.clear();
-                              for (var i = 0; i < checked.length; i++) {
-                                if (checked[i]) {
-                                  final value = p.entryValues?[i];
-                                  if (value != null) newValues.add(value);
-                                }
-                              }
+                            type: _PreferenceType.toggle,
+                          );
+                        case 'switch':
+                          final p = pref.switchPreferenceCompat!;
+                          return _PreferenceTile(
+                            title: p.title ?? '',
+                            subtitle: p.summary ?? 'Toggle setting',
+                            isSelected: p.value ?? false,
+                            onTap: () {
+                              final newVal = !(p.value ?? false);
+                              p.value = newVal;
+                              widget.source.methods.setPreference(pref, newVal);
+                              setState(() {});
                             },
-                          )
-                          ..setPositiveButton(
-                            'OK',
-                            () => setState(() {
-                              p.values = newValues.toList();
-                              widget.source.methods
-                                  .setPreference(pref, newValues);
-                            }),
-                          )
-                          ..setNegativeButton("Cancel", () {})
-                          ..show();
-                      },
-                    );
-                  case 'text':
-                    final p = pref.editTextPreference!;
-                    return ListTile(
-                      title: TitleText(p.title ?? ''),
-                      subtitle: SubtitleText(p.value ?? p.text ?? ''),
-                      onTap: () {
-                        var value = p.value ?? p.text ?? '';
-                        AlertDialogBuilder(context)
-                          ..setTitle(p.dialogTitle ?? '')
-                          ..setMessage(p.dialogMessage ?? '')
-                          ..setCustomView(
-                            TextFormField(
-                              initialValue: p.value ?? p.text,
-                              onChanged: (val) => value = val,
-                            ),
-                          )
-                          ..setPositiveButton(
-                            'OK',
-                            () => setState(() {
-                              p.value = value;
-                              widget.source.methods.setPreference(pref, value);
-                            }),
-                          )
-                          ..setNegativeButton("Cancel", () {})
-                          ..show();
-                      },
-                    );
+                            type: _PreferenceType.toggle,
+                          );
+                        case 'list':
+                          final p = pref.listPreference!;
+                          return _PreferenceTile(
+                            title: p.title ?? '',
+                            subtitle: p.summary != null && p.summary!.isNotEmpty
+                                ? p.summary!
+                                : p.entries?[p.valueIndex ?? 0] ?? 'Select option',
+                            isSelected: false,
+                            onTap: () {
+                              int tempIndex = p.valueIndex ?? 0;
+                              showDialog(
+                                context: context,
+                                builder: (context) => StatefulBuilder(
+                                  builder: (context, setDialogState) => AnymexDialog(
+                                    title: p.title ?? 'Select Option',
+                                    onConfirm: () {
+                                      p.valueIndex = tempIndex;
+                                      final newValue = p.entryValues?[tempIndex];
+                                      p.value = newValue;
+                                      widget.source.methods.setPreference(pref, newValue);
+                                      setState(() {});
+                                    },
+                                    contentWidget: SizedBox(
+                                      height: 300,
+                                      width: double.maxFinite,
+                                      child: ListView.builder(
+                                        shrinkWrap: true,
+                                        itemCount: p.entries?.length ?? 0,
+                                        itemBuilder: (context, i) => Padding(
+                                          padding: const EdgeInsets.only(bottom: 8.0),
+                                          child: _PreferenceTile(
+                                            title: p.entries![i],
+                                            subtitle: 'Option ${i + 1}',
+                                            isSelected: tempIndex == i,
+                                            onTap: () {
+                                              setDialogState(() {
+                                                tempIndex = i;
+                                              });
+                                            },
+                                            type: _PreferenceType.toggle,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                            type: _PreferenceType.list,
+                          );
+                        case 'multi_select':
+                          final p = pref.multiSelectListPreference!;
+                          final selectedOptions = (p.values ?? []);
+                          final subtitle = (p.entries ?? [])
+                              .asMap()
+                              .entries
+                              .where((e) => selectedOptions.contains(p.entryValues?[e.key]))
+                              .map((e) => e.value)
+                              .join(", ");
+                          return _PreferenceTile(
+                            title: p.title ?? '',
+                            subtitle: p.summary != null && p.summary!.isNotEmpty
+                                ? p.summary!
+                                : subtitle.isEmpty
+                                    ? 'Select multiple'
+                                    : subtitle,
+                            isSelected: false,
+                            onTap: () {
+                              final tempSelectedValues = (p.values ?? []).toSet();
+                              showDialog(
+                                context: context,
+                                builder: (context) => StatefulBuilder(
+                                  builder: (context, setDialogState) => AnymexDialog(
+                                    title: p.title ?? 'Select Options',
+                                    onConfirm: () {
+                                      p.values = tempSelectedValues.toList();
+                                      widget.source.methods.setPreference(pref, p.values);
+                                      setState(() {});
+                                    },
+                                    contentWidget: SizedBox(
+                                      height: 300,
+                                      width: double.maxFinite,
+                                      child: ListView.builder(
+                                        shrinkWrap: true,
+                                        itemCount: p.entries?.length ?? 0,
+                                        itemBuilder: (context, i) {
+                                          final val = p.entryValues![i];
+                                          final isCurrentlySelected = tempSelectedValues.contains(val);
+                                          return Padding(
+                                            padding: const EdgeInsets.only(bottom: 8.0),
+                                            child: _PreferenceTile(
+                                              title: p.entries![i],
+                                              subtitle: 'Option ${i + 1}',
+                                              isSelected: isCurrentlySelected,
+                                              onTap: () {
+                                                setDialogState(() {
+                                                  if (isCurrentlySelected) {
+                                                    tempSelectedValues.remove(val);
+                                                  } else {
+                                                    tempSelectedValues.add(val);
+                                                  }
+                                                });
+                                              },
+                                              type: _PreferenceType.toggle,
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                            type: _PreferenceType.list,
+                          );
+                        case 'text':
+                          final p = pref.editTextPreference!;
+                          return _PreferenceTile(
+                            title: p.title ?? '',
+                            subtitle: p.value ?? p.text ?? 'Edit text',
+                            isSelected: false,
+                            onTap: () {
+                              String tempValue = p.value ?? p.text ?? '';
+                              showDialog(
+                                context: context,
+                                builder: (context) => AnymexDialog(
+                                  title: p.dialogTitle ?? p.title ?? 'Edit Text',
+                                  onConfirm: () {
+                                    p.value = tempValue;
+                                    widget.source.methods.setPreference(pref, tempValue);
+                                    setState(() {});
+                                  },
+                                  contentWidget: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      if (p.dialogMessage != null) ...[
+                                        AnymexText(
+                                          text: p.dialogMessage!,
+                                          size: 14,
+                                          color: theme.onSurfaceVariant,
+                                        ),
+                                        const SizedBox(height: 12),
+                                      ],
+                                      TextField(
+                                        controller: TextEditingController(text: tempValue),
+                                        onChanged: (val) => tempValue = val,
+                                        style: TextStyle(color: theme.onSurface),
+                                        decoration: InputDecoration(
+                                          filled: true,
+                                          fillColor: theme.surfaceContainerHighest.opaque(0.3),
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(12),
+                                            borderSide: BorderSide(color: theme.outline),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                            type: _PreferenceType.text,
+                          );
+              
+                        default:
+                          return _PreferenceTile(
+                            title: pref.key ?? 'Unknown Preference',
+                            subtitle: 'Unsupported type ${pref.type}',
+                            isSelected: false,
+                            onTap: () {},
+                            type: _PreferenceType.text,
+                          );
+                      }
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
-                  default:
-                    return ListTile(
-                      title: Text(pref.key ?? 'Unknown Preference'),
-                      subtitle: Text(
-                        'Unsupported preference type ${pref.type}',
-                      ),
-                    );
-                }
-              },
-            );
-          },
+enum _PreferenceType { toggle, list, text }
+
+class _PreferenceTile extends StatelessWidget {
+  const _PreferenceTile({
+    required this.title,
+    required this.subtitle,
+    required this.isSelected,
+    required this.onTap,
+    required this.type,
+  });
+
+  final String title;
+  final String subtitle;
+  final bool isSelected;
+  final VoidCallback onTap;
+  final _PreferenceType type;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? context.colors.primaryContainer.opaque(0.35)
+                : context.colors.surfaceContainerHighest.opaque(0.35),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: isSelected
+                  ? context.colors.primary.opaque(0.4)
+                  : context.colors.outline.opaque(0.2),
+            ),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AnymexText(
+                      text: title,
+                      variant: TextVariant.semiBold,
+                      color: isSelected ? context.colors.primary : null,
+                    ),
+                    const SizedBox(height: 4),
+                    AnymexText(
+                      text: subtitle,
+                      size: 11,
+                      color: context.colors.onSurface.opaque(0.7),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              if (type == _PreferenceType.toggle)
+                Icon(
+                  isSelected
+                      ? Icons.check_circle_rounded
+                      : Icons.radio_button_unchecked_rounded,
+                  color: isSelected
+                      ? context.colors.primary
+                      : context.colors.onSurface.opaque(0.5),
+                )
+              else if (type == _PreferenceType.list)
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 14,
+                  color: context.colors.onSurface.opaque(0.5),
+                )
+              else
+                Icon(
+                  Icons.edit_rounded,
+                  size: 16,
+                  color: context.colors.onSurface.opaque(0.5),
+                ),
+            ],
+          ),
         ),
       ),
     );

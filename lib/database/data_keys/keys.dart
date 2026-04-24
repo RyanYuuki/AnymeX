@@ -9,8 +9,21 @@ enum General {
   hasAcceptedCommentRules,
   universalScrapper,
   enableBetaUpdates,
+  writeLogToFile,
+  customLogDirectory,
   imageCacheThresholdGb,
   libraryGridAutoMigrated,
+  showCommunityRecommendations,
+  hideNsfwRecommendations,
+  filterByListEnabled,
+  filterCompleted,
+  filterWatching,
+  filterDropped,
+  filterPlanning,
+  filterPaused,
+  filterRepeating,
+  communityListViewIsGrid,
+  hasJoinedNewDiscord,
 }
 
 enum ThemeKeys {
@@ -138,6 +151,12 @@ enum SourceKeys {
   novelExtensionOrder,
 }
 
+enum PluginKeys {
+  runtimeHostInstalledVersion,
+  runtimeHostInstalledReleaseTitle,
+  bridgeMode,
+}
+
 enum AuthKeys {
   authToken,
   malAuthToken,
@@ -157,6 +176,8 @@ enum TapZoneKeys {
   tapZonesWebtoon,
   tapZonesWebtoonHorizontal,
   tapZonesEnabled,
+  tapZonesActiveIsWebtoon,
+  tapZonesActiveIsVertical,
 }
 
 enum DynamicKeys {
@@ -169,7 +190,8 @@ enum DynamicKeys {
   librarySortOrder,
   libraryGridSize,
   mappedMediaTitle,
-  offlineVideoProgress;
+  offlineVideoProgress,
+  stickySource;
 
   T get<T>(dynamic id, [T? defaultValue]) {
     return KvHelper.get<T>('${name}_$id', defaultVal: defaultValue);
@@ -214,6 +236,8 @@ enum PlayerSettingsKeys {
   subtitleOpacity,
   subtitleBottomMargin,
   subtitleOutlineType,
+  playerMenuAnimation,
+  hardwareDecoder,
 }
 
 enum UISettingsKeys {
@@ -243,3 +267,13 @@ enum UISettingsKeys {
   carouselStyle,
   showContinueWatchingCard,
 }
+
+enum DownloadKeys {
+  downloadPath,
+  concurrentDownloads,
+  saveActiveTasks,
+  downloadChunks,
+  hlsParallelSegments,
+  enableJxlCompression,
+}
+

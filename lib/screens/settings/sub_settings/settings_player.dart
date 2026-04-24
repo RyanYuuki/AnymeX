@@ -55,6 +55,18 @@ class _BottomControl {
   });
 }
 
+class _DecoderOption {
+  final String value;
+  final String title;
+  final String description;
+
+  const _DecoderOption({
+    required this.value,
+    required this.title,
+    required this.description,
+  });
+}
+
 final List<_BottomControl> _bottomControls = [
   const _BottomControl(
       id: 'playlist',
@@ -64,14 +76,14 @@ final List<_BottomControl> _bottomControls = [
   const _BottomControl(
       id: 'shaders', name: 'Shaders', icon: Symbols.tune_rounded),
   const _BottomControl(
-      id: 'subtitles', name: 'Subtitles', icon: Symbols.subtitles_rounded),
+      id: 'source', name: 'Source', icon: Symbols.cloud_rounded),
   const _BottomControl(
-      id: 'server', name: 'Server', icon: Symbols.cloud_rounded),
+      id: 'tracks',
+      name: 'Tracks (Audio/Subs)',
+      icon: Symbols.library_music_rounded),
   const _BottomControl(
-      id: 'quality', name: 'Quality', icon: Symbols.high_quality_rounded),
+      id: 'sync_subs', name: 'Sync Subs', icon: Symbols.sync_rounded),
   const _BottomControl(id: 'speed', name: 'Speed', icon: Symbols.speed_rounded),
-  const _BottomControl(
-      id: 'audio_track', name: 'Audio Track', icon: Symbols.music_note_rounded),
   const _BottomControl(
       id: 'orientation',
       name: 'Orientation',
@@ -94,6 +106,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
   late List<String> _hiddenButtonIds;
   late Map<String, dynamic> _buttonConfigs;
   bool _shouldApplyResizeModeOnClose = false;
+  late bool _useLibass;
 
   @override
   void initState() {
@@ -105,6 +118,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
     _rightButtonIds = [];
     _hiddenButtonIds = [];
     _buttonConfigs = {};
+    _useLibass = PlayerKeys.useLibass.get<bool>(false);
 
     final String jsonString =
         PlayerUiKeys.bottomControlsSettings.get<String>('{}');
@@ -125,7 +139,61 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
         _bottomControls.isNotEmpty) {
       _initializeDefaultButtonLayout();
     } else {
+      _migrateLegacyButtons();
       _pruneRemovedButtons();
+    }
+  }
+
+  void _migrateLegacyButtons() {
+    final legacyToNew = {
+      'server': 'source',
+      'subtitles': 'tracks',
+      'audio_track': 'tracks',
+      'quality': 'source',
+    };
+
+    bool migrated = false;
+
+    void replaceInList(List<String> list) {
+      for (int i = 0; i < list.length; i++) {
+        if (legacyToNew.containsKey(list[i])) {
+          list[i] = legacyToNew[list[i]]!;
+          migrated = true;
+        }
+      }
+    }
+
+    replaceInList(_leftButtonIds);
+    replaceInList(_rightButtonIds);
+    replaceInList(_hiddenButtonIds);
+
+    final seen = <String>{};
+    void deduplicate(List<String> list) {
+      list.removeWhere((id) {
+        if (seen.contains(id)) {
+          migrated = true;
+          return true;
+        }
+        seen.add(id);
+        return false;
+      });
+    }
+
+    deduplicate(_leftButtonIds);
+    deduplicate(_rightButtonIds);
+    deduplicate(_hiddenButtonIds);
+
+    final essential = ['source', 'tracks', 'sync_subs'];
+    for (final id in essential) {
+      if (!seen.contains(id)) {
+        _rightButtonIds.add(id);
+        _buttonConfigs[id] = {'visible': true};
+        migrated = true;
+      }
+    }
+
+    if (migrated) {
+      _saveButtonConfig();
     }
   }
 
@@ -480,6 +548,126 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
     return PlayerKeys.useMediaKit.get<bool>(false);
   }
 
+  bool get _supportsDecoderSelection =>
+      Platform.isAndroid ||
+      Platform.isIOS ||
+      Platform.isLinux ||
+      Platform.isMacOS ||
+      Platform.isWindows;
+
+  List<_DecoderOption> get _decoderOptions {
+    if (Platform.isAndroid) {
+      return const [
+        _DecoderOption(
+          value: 'hw+',
+          title: 'HW+',
+          description: 'mediacodec-copy',
+        ),
+        _DecoderOption(
+          value: 'hw',
+          title: 'HW',
+          description: 'mediacodec',
+        ),
+        _DecoderOption(
+          value: 'sw',
+          title: 'SW',
+          description: 'no',
+        ),
+      ];
+    }
+
+    if (Platform.isIOS || Platform.isMacOS) {
+      return const [
+        _DecoderOption(
+          value: 'hw',
+          title: 'HW',
+          description: 'videotoolbox',
+        ),
+        _DecoderOption(
+          value: 'sw',
+          title: 'SW',
+          description: 'no',
+        ),
+      ];
+    }
+
+    if (Platform.isWindows) {
+      return const [
+        _DecoderOption(
+          value: 'hw',
+          title: 'HW',
+          description: 'd3d11va',
+        ),
+        _DecoderOption(
+          value: 'sw',
+          title: 'SW',
+          description: 'no',
+        ),
+      ];
+    }
+
+    if (Platform.isLinux) {
+      return const [
+        _DecoderOption(
+          value: 'hw',
+          title: 'HW',
+          description: 'vaapi',
+        ),
+        _DecoderOption(
+          value: 'sw',
+          title: 'SW',
+          description: 'no',
+        ),
+      ];
+    }
+
+    return const [
+      _DecoderOption(
+        value: 'hw',
+        title: 'HW',
+        description: 'auto',
+      ),
+      _DecoderOption(
+        value: 'sw',
+        title: 'SW',
+        description: 'no',
+      ),
+    ];
+  }
+
+  String _decoderTitle(String value) {
+    final match = _decoderOptions.firstWhere(
+      (option) => option.value == value,
+      orElse: () => _decoderOptions.first,
+    );
+    return match.title;
+  }
+
+  String _decoderDescription(String value) {
+    final match = _decoderOptions.firstWhere(
+      (option) => option.value == value,
+      orElse: () => _decoderOptions.first,
+    );
+    return match.description;
+  }
+
+  void _showDecoderModeDialog() {
+    final options = _decoderOptions;
+    if (options.isEmpty) return;
+
+    showSelectionDialog<String>(
+      title: 'Decoder',
+      items: options.map((option) => option.value).toList(),
+      selectedItem: settings.hardwareDecoder.obs,
+      getTitle: _decoderTitle,
+      onItemSelected: (value) {
+        settings.hardwareDecoder = value;
+        setState(() {});
+      },
+      leadingIcon: Icons.memory_rounded,
+    );
+  }
+
   void _showMpvCoreSelectionDialog({
     required String title,
     required List<String> items,
@@ -525,18 +713,35 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
               Obx(() => Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      if (_supportsDecoderSelection)
+                        AnymexExpansionTile(
+                            title: 'Playback',
+                            initialExpanded: true,
+                            content: Column(
+                              children: [
+                                CustomTile(
+                                  padding: 10,
+                                  icon: Icons.memory_rounded,
+                                  title: 'Decoder',
+                                  isDescBold: true,
+                                  descColor: Theme.of(context)
+                                      .colorScheme
+                                      .primary,
+                                  description:
+                                      _decoderDescription(settings.hardwareDecoder),
+                                  onTap: _showDecoderModeDialog,
+                                ),
+                              ],
+                            )),
                       AnymexExpansionTile(
                           title: 'Experimental',
                           initialExpanded: false,
                           content: Builder(builder: (context) {
-                            final experimentalEnabled =
-                                PlayerUiKeys.playerExperimentalEnabled
-                                    .get<bool>(false);
-                            final usingMpv = _isUsingMpvEngine();
+                            final experimentalEnabled = PlayerUiKeys
+                                .playerExperimentalEnabled
+                                .get<bool>(false);
                             final mpvCore =
                                 PlayerCoreVisualSettings.getMpvCoreSettings();
-                            final betterCore = PlayerCoreVisualSettings
-                                .getBetterPlayerCoreSettings();
 
                             return Column(
                               children: [
@@ -556,249 +761,171 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                 if (!experimentalEnabled)
                                   _buildExperimentalGateMessage(
                                       'Core and Visual settings are disabled. Enable Experimental to use them.'),
-                                if (experimentalEnabled && usingMpv)
-                                  Column(
-                                children: [
-                                  CustomTile(
-                                    padding: 10,
-                                    icon: Icons.memory_rounded,
-                                    title: 'Decoder (HWDec)',
-                                    isDescBold: true,
-                                    descColor:
-                                        Theme.of(context).colorScheme.primary,
-                                    description:
-                                        (mpvCore['hwdec'] as String?) ??
-                                            'auto-safe',
-                                    onTap: () => _showMpvCoreSelectionDialog(
-                                      title: 'Mpv Decoder (HWDec)',
-                                      items: const [
-                                        'no',
-                                        'auto-safe',
-                                        'auto',
-                                        'mediacodec-copy',
-                                        'vaapi',
-                                        'videotoolbox',
-                                        'd3d11va',
-                                      ],
-                                      selected: (mpvCore['hwdec'] as String?) ??
-                                          'auto-safe',
-                                      getTitle: (item) => item,
-                                      key: 'hwdec',
-                                    ),
-                                  ),
-                                  CustomTile(
-                                    padding: 10,
-                                    icon: Icons.sync_rounded,
-                                    title: 'Video Sync',
-                                    isDescBold: true,
-                                    descColor:
-                                        Theme.of(context).colorScheme.primary,
-                                    description:
-                                        (mpvCore['videoSync'] as String?) ??
-                                            'audio',
-                                    onTap: () => _showMpvCoreSelectionDialog(
-                                      title: 'Video Sync',
-                                      items: const [
-                                        'audio',
-                                        'display-resample',
-                                        'display-vdrop',
-                                        'display-adrop',
-                                      ],
-                                      selected:
-                                          (mpvCore['videoSync'] as String?) ??
-                                              'audio',
-                                      getTitle: (item) => item,
-                                      key: 'videoSync',
-                                    ),
-                                  ),
-                                  CustomSwitchTile(
-                                    padding: const EdgeInsets.all(10),
-                                    icon: Icons.movie_filter_rounded,
-                                    title: 'Frame Interpolation',
-                                    description:
-                                        'Smoother motion, can increase GPU usage',
-                                    switchValue:
-                                        (mpvCore['interpolation'] as bool?) ??
-                                            false,
-                                    onChanged: (val) {
-                                      PlayerCoreVisualSettings
-                                          .setMpvCoreSetting(
-                                              'interpolation', val);
-                                      setState(() {});
-                                    },
-                                  ),
-                                  CustomSwitchTile(
-                                    padding: const EdgeInsets.all(10),
-                                    icon: Icons.graphic_eq_rounded,
-                                    title: 'Audio Pitch Correction',
-                                    description:
-                                        'Keep voice pitch stable at higher speeds',
-                                    switchValue:
-                                        (mpvCore['audioPitchCorrection']
-                                                as bool?) ??
-                                            true,
-                                    onChanged: (val) {
-                                      PlayerCoreVisualSettings
-                                          .setMpvCoreSetting(
-                                              'audioPitchCorrection', val);
-                                      setState(() {});
-                                    },
-                                  ),
-                                  CustomSliderTile(
-                                    icon: Icons.timer_outlined,
-                                    title: 'Cache Minutes',
-                                    description:
-                                        'Read-ahead duration in Minutes',
-                                    sliderValue:
-                                        ((mpvCore['cacheMinutes'] as num?) ?? 5)
-                                            .toDouble(),
-                                    min: 0,
-                                    max: 60,
-                                    divisions: 60,
-                                    label:
-                                        ((mpvCore['cacheMinutes'] as num?) ?? 5)
-                                            .toInt()
-                                            .toString(),
-                                    onChanged: (value) {
-                                      PlayerCoreVisualSettings
-                                          .setMpvCoreSetting(
-                                              'cacheMinutes', value.round());
-                                      setState(() {});
-                                    },
-                                  ),
-                                  CustomSliderTile(
-                                    icon: Icons.downloading_rounded,
-                                    title: 'Demuxer Readahead',
-                                    description: 'Readahead seconds',
-                                    sliderValue:
-                                        ((mpvCore['demuxerReadaheadSeconds']
-                                                    as num?) ??
-                                                20)
-                                            .toDouble(),
-                                    min: 0,
-                                    max: 120,
-                                    divisions: 24,
-                                    label: ((mpvCore['demuxerReadaheadSeconds']
-                                                as num?) ??
-                                            20)
-                                        .toInt()
-                                        .toString(),
-                                    onChanged: (value) {
-                                      PlayerCoreVisualSettings
-                                          .setMpvCoreSetting(
-                                              'demuxerReadaheadSeconds',
-                                              value.round());
-                                      setState(() {});
-                                    },
-                                  ),
-                                  CustomSliderTile(
-                                    icon: Icons.storage_rounded,
-                                    title: 'Demuxer Max Buffer',
-                                    description: 'Maximum demuxer buffer (MB)',
-                                    sliderValue: ((mpvCore['demuxerMaxBytesMb']
-                                                as num?) ??
-                                            64)
-                                        .toDouble(),
-                                    min: 16,
-                                    max: 512,
-                                    divisions: 62,
-                                    label: ((mpvCore['demuxerMaxBytesMb']
-                                                as num?) ??
-                                            64)
-                                        .toInt()
-                                        .toString(),
-                                    onChanged: (value) {
-                                      PlayerCoreVisualSettings
-                                          .setMpvCoreSetting(
-                                              'demuxerMaxBytesMb',
-                                              value.round());
-                                      setState(() {});
-                                    },
-                                  ),
-                                  CustomSliderTile(
-                                    icon: Icons.developer_board_rounded,
-                                    title: 'Decoder Threads',
-                                    description:
-                                        '0 means automatic thread count',
-                                    sliderValue:
-                                        ((mpvCore['vdLavcThreads'] as num?) ??
-                                                0)
-                                            .toDouble(),
-                                    min: 0,
-                                    max: 16,
-                                    divisions: 16,
-                                    label:
-                                        ((mpvCore['vdLavcThreads'] as num?) ??
-                                                0)
-                                            .toInt()
-                                            .toString(),
-                                    onChanged: (value) {
-                                      PlayerCoreVisualSettings
-                                          .setMpvCoreSetting(
-                                              'vdLavcThreads', value.round());
-                                      setState(() {});
-                                    },
-                                  ),
-                                ],
-                              ),
-                                if (experimentalEnabled && !usingMpv)
+                                if (experimentalEnabled && _isUsingMpvEngine())
                                   Column(
                                     children: [
-                                CustomSliderTile(
-                                  icon: Icons.storage_rounded,
-                                  title: 'Buffer Size',
-                                  description: 'Network buffer size in MB',
-                                  sliderValue:
-                                      ((betterCore['bufferSizeMb'] as num?) ??
-                                              32)
-                                          .toDouble(),
-                                  min: 8,
-                                  max: 256,
-                                  divisions: 31,
-                                  label:
-                                      ((betterCore['bufferSizeMb'] as num?) ??
-                                              32)
-                                          .toInt()
-                                          .toString(),
-                                  onChanged: (value) {
-                                    PlayerCoreVisualSettings
-                                        .setBetterPlayerCoreSetting(
-                                            'bufferSizeMb', value.round());
-                                    setState(() {});
-                                  },
-                                ),
-                                CustomSwitchTile(
-                                  padding: const EdgeInsets.all(10),
-                                  icon: Icons.play_arrow_rounded,
-                                  title: 'Auto Play',
-                                  description:
-                                      'Start playback automatically after load',
-                                  switchValue:
-                                      (betterCore['autoPlay'] as bool?) ?? true,
-                                  onChanged: (val) {
-                                    PlayerCoreVisualSettings
-                                        .setBetterPlayerCoreSetting(
-                                            'autoPlay', val);
-                                    setState(() {});
-                                  },
-                                ),
-                                CustomSwitchTile(
-                                  padding: const EdgeInsets.all(10),
-                                  icon: Icons.network_check_rounded,
-                                  title: 'Use Buffering',
-                                  description:
-                                      'Enable buffering strategy for unstable networks',
-                                  switchValue:
-                                      (betterCore['useBuffering'] as bool?) ??
-                                          true,
-                                  onChanged: (val) {
-                                    PlayerCoreVisualSettings
-                                        .setBetterPlayerCoreSetting(
-                                            'useBuffering', val);
-                                    setState(() {});
-                                  },
-                                ),
-                              ],
+                                      CustomTile(
+                                        padding: 10,
+                                        icon: Icons.sync_rounded,
+                                        title: 'Video Sync',
+                                        isDescBold: true,
+                                        descColor: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                        description:
+                                            (mpvCore['videoSync'] as String?) ??
+                                                'audio',
+                                        onTap: () =>
+                                            _showMpvCoreSelectionDialog(
+                                          title: 'Video Sync',
+                                          items: const [
+                                            'audio',
+                                            'display-resample',
+                                            'display-vdrop',
+                                            'display-adrop',
+                                          ],
+                                          selected: (mpvCore['videoSync']
+                                                  as String?) ??
+                                              'audio',
+                                          getTitle: (item) => item,
+                                          key: 'videoSync',
+                                        ),
+                                      ),
+                                      CustomSwitchTile(
+                                        padding: const EdgeInsets.all(10),
+                                        icon: Icons.movie_filter_rounded,
+                                        title: 'Frame Interpolation',
+                                        description:
+                                            'Smoother motion, can increase GPU usage',
+                                        switchValue: (mpvCore['interpolation']
+                                                as bool?) ??
+                                            false,
+                                        onChanged: (val) {
+                                          PlayerCoreVisualSettings
+                                              .setMpvCoreSetting(
+                                                  'interpolation', val);
+                                          setState(() {});
+                                        },
+                                      ),
+                                      CustomSwitchTile(
+                                        padding: const EdgeInsets.all(10),
+                                        icon: Icons.graphic_eq_rounded,
+                                        title: 'Audio Pitch Correction',
+                                        description:
+                                            'Keep voice pitch stable at higher speeds',
+                                        switchValue:
+                                            (mpvCore['audioPitchCorrection']
+                                                    as bool?) ??
+                                                true,
+                                        onChanged: (val) {
+                                          PlayerCoreVisualSettings
+                                              .setMpvCoreSetting(
+                                                  'audioPitchCorrection', val);
+                                          setState(() {});
+                                        },
+                                      ),
+                                      CustomSliderTile(
+                                        icon: Icons.timer_outlined,
+                                        title: 'Cache Minutes',
+                                        description:
+                                            'Read-ahead duration in Minutes',
+                                        sliderValue: ((mpvCore['cacheMinutes']
+                                                    as num?) ??
+                                                5)
+                                            .toDouble(),
+                                        min: 0,
+                                        max: 60,
+                                        divisions: 60,
+                                        label: ((mpvCore['cacheMinutes']
+                                                    as num?) ??
+                                                5)
+                                            .toInt()
+                                            .toString(),
+                                        onChanged: (value) {
+                                          PlayerCoreVisualSettings
+                                              .setMpvCoreSetting('cacheMinutes',
+                                                  value.round());
+                                          setState(() {});
+                                        },
+                                      ),
+                                      CustomSliderTile(
+                                        icon: Icons.downloading_rounded,
+                                        title: 'Demuxer Readahead',
+                                        description: 'Readahead seconds',
+                                        sliderValue:
+                                            ((mpvCore['demuxerReadaheadSeconds']
+                                                        as num?) ??
+                                                    20)
+                                                .toDouble(),
+                                        min: 0,
+                                        max: 120,
+                                        divisions: 24,
+                                        label:
+                                            ((mpvCore['demuxerReadaheadSeconds']
+                                                        as num?) ??
+                                                    20)
+                                                .toInt()
+                                                .toString(),
+                                        onChanged: (value) {
+                                          PlayerCoreVisualSettings
+                                              .setMpvCoreSetting(
+                                                  'demuxerReadaheadSeconds',
+                                                  value.round());
+                                          setState(() {});
+                                        },
+                                      ),
+                                      CustomSliderTile(
+                                        icon: Icons.storage_rounded,
+                                        title: 'Demuxer Max Buffer',
+                                        description:
+                                            'Maximum demuxer buffer (MB)',
+                                        sliderValue:
+                                            ((mpvCore['demuxerMaxBytesMb']
+                                                        as num?) ??
+                                                    64)
+                                                .toDouble(),
+                                        min: 16,
+                                        max: 512,
+                                        divisions: 62,
+                                        label: ((mpvCore['demuxerMaxBytesMb']
+                                                    as num?) ??
+                                                64)
+                                            .toInt()
+                                            .toString(),
+                                        onChanged: (value) {
+                                          PlayerCoreVisualSettings
+                                              .setMpvCoreSetting(
+                                                  'demuxerMaxBytesMb',
+                                                  value.round());
+                                          setState(() {});
+                                        },
+                                      ),
+                                      CustomSliderTile(
+                                        icon: Icons.developer_board_rounded,
+                                        title: 'Decoder Threads',
+                                        description:
+                                            '0 means automatic thread count',
+                                        sliderValue: ((mpvCore['vdLavcThreads']
+                                                    as num?) ??
+                                                0)
+                                            .toDouble(),
+                                        min: 0,
+                                        max: 16,
+                                        divisions: 16,
+                                        label: ((mpvCore['vdLavcThreads']
+                                                    as num?) ??
+                                                0)
+                                            .toInt()
+                                            .toString(),
+                                        onChanged: (value) {
+                                          PlayerCoreVisualSettings
+                                              .setMpvCoreSetting(
+                                                  'vdLavcThreads',
+                                                  value.round());
+                                          setState(() {});
+                                        },
+                                      ),
+                                    ],
                                   ),
                               ],
                             );
@@ -808,30 +935,26 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                           title: 'Common',
                           content: Column(
                             children: [
-                              if (Platform.isAndroid || Platform.isIOS)
-                                CustomSwitchTile(
-                                    icon: Icons.subtitles,
-                                    padding: const EdgeInsets.all(10),
-                                    title: "Use LibMpv for Playback",
-                                    description:
-                                        "Pick wisely! (LibMpv -> FEATURES, ExoPlayer -> PERFORMANCE)",
-                                    switchValue:
-                                        PlayerKeys.useMediaKit.get<bool>(false),
-                                    onChanged: (val) {
-                                      PlayerKeys.useMediaKit.set<bool>(val);
-                                      setState(() {});
-                                    }),
                               CustomSwitchTile(
                                   icon: Icons.subtitles,
                                   padding: const EdgeInsets.all(10),
                                   title: "Use Libass for Subtitles",
                                   description:
                                       "Better subtitle rendering using libass library",
-                                  switchValue:
-                                      PlayerKeys.useLibass.get<bool>(false),
-                                  onChanged: (val) {
+                                  switchValue: _useLibass,
+                                  onChanged: (val) async {
+                                    setState(() {
+                                      _useLibass = val;
+                                    });
                                     PlayerKeys.useLibass.set<bool>(val);
-                                    setState(() {});
+                                    if (Get.isRegistered<PlayerController>()) {
+                                      final controller =
+                                          Get.find<PlayerController>();
+                                      if (!controller.isClosed) {
+                                        await controller
+                                            .onLibassPreferenceChanged(val);
+                                      }
+                                    }
                                   }),
                               CustomTile(
                                 padding: 10,
@@ -962,6 +1085,15 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                   switchValue: settings.enableScreenshot,
                                   onChanged: (val) =>
                                       settings.enableScreenshot = val),
+                              CustomSwitchTile(
+                                  padding: const EdgeInsets.all(10),
+                                  icon: Icons.animation_rounded,
+                                  title: "Animate Control Overlay",
+                                  description:
+                                      "Disable to show and hide player controls instantly",
+                                  switchValue: settings.playerMenuAnimation,
+                                  onChanged: (val) =>
+                                      settings.playerMenuAnimation = val),
                               CustomSliderTile(
                                 sliderValue: settings.seekDuration.toDouble(),
                                 max: 50,
@@ -1152,7 +1284,6 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                 sliderValue: settings.subtitleSize.toDouble(),
                                 min: 12.0,
                                 max: 90.0,
-                                divisions: 18,
                                 onChanged: (double value) {
                                   settings.subtitleSize = value.toInt();
                                 },
@@ -1336,7 +1467,8 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
       ),
       child: Row(
         children: [
-          Icon(Icons.info_outline_rounded, size: 18, color: context.colors.primary),
+          Icon(Icons.info_outline_rounded,
+              size: 18, color: context.colors.primary),
           const SizedBox(width: 10),
           Expanded(
             child: Text(

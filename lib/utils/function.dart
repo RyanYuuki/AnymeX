@@ -186,7 +186,8 @@ Episode DEpisodeToEpisode(DEpisode chapter) {
   return Episode(
     number: chapter.episodeNumber,
     link: chapter.url,
-    sortKey: chapter.sortKey,
+    sortKeys: chapter.sortMap?.keys.toList(),
+    sortVals: chapter.sortMap?.values.toList(),
     title: chapter.name,
     thumbnail: chapter.thumbnail,
     desc: chapter.description,
@@ -367,7 +368,8 @@ enum DataVariant {
   anilist,
   extension,
   offline,
-  library
+  library,
+  underrated
 }
 
 List<CarouselData> convertData(List<dynamic> data,

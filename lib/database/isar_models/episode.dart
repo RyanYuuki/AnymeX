@@ -11,7 +11,8 @@ class Episode {
   String? title;
   String? desc;
   String? thumbnail;
-  String? sortKey;
+  List<String>? sortKeys;
+  List<String>? sortVals;
   bool? filler;
   int? timeStampInMilliseconds;
   int? durationInMilliseconds;
@@ -29,7 +30,8 @@ class Episode {
     this.desc,
     this.thumbnail,
     this.filler,
-    this.sortKey,
+    this.sortKeys,
+    this.sortVals,
     this.timeStampInMilliseconds,
     this.durationInMilliseconds,
     this.lastWatchedTime,
@@ -52,28 +54,51 @@ class Episode {
       'currentTrack': currentTrack?.toJson(),
       'videoTracks': videoTracks?.map((v) => v.toJson()).toList(),
       'source': source,
-      'sortKey': sortKey
+      'sortKeys': sortKeys,
+      'sortVals': sortVals
     };
   }
 
   factory Episode.fromJson(Map<String, dynamic> json) {
+    final rawSortKeys = json['sortKeys'] as List<dynamic>?;
+    final rawSortVals = json['sortVals'] as List<dynamic>?;
+
     return Episode(
-        number: (json['number'] ?? 1).toString(),
-        link: json['link'] as String?,
-        title: json['title'] as String?,
-        desc: json['desc'] as String?,
-        thumbnail: json['thumbnail'] as String?,
-        filler: json['filler'] as bool?,
-        timeStampInMilliseconds: json['timeStampInMilliseconds'] as int?,
-        durationInMilliseconds: json['durationInMilliseconds'] as int?,
-        lastWatchedTime: json['lastWatchedTime'] as int?,
-        currentTrack: json['currentTrack'] != null
-            ? Video.fromJson(json['currentTrack'] as Map<String, dynamic>)
-            : null,
-        videoTracks: (json['videoTracks'] as List<dynamic>?)
-            ?.map((v) => Video.fromJson(v as Map<String, dynamic>))
-            .toList(),
-        source: json['source'] as String?,
-        sortKey: json['sortKey'] as String?);
+      number: (json['number'] ?? 1).toString(),
+      link: json['link'] as String?,
+      title: json['title'] as String?,
+      desc: json['desc'] as String?,
+      thumbnail: json['thumbnail'] as String?,
+      filler: json['filler'] as bool?,
+      timeStampInMilliseconds: json['timeStampInMilliseconds'] as int?,
+      durationInMilliseconds: json['durationInMilliseconds'] as int?,
+      lastWatchedTime: json['lastWatchedTime'] as int?,
+      currentTrack: json['currentTrack'] != null
+          ? Video.fromJson(json['currentTrack'] as Map<String, dynamic>)
+          : null,
+      videoTracks: (json['videoTracks'] as List<dynamic>?)
+          ?.map((v) => Video.fromJson(v as Map<String, dynamic>))
+          .toList(),
+      source: json['source'] as String?,
+      sortKeys: rawSortKeys?.map((e) => e.toString()).toList(),
+      sortVals: rawSortVals?.map((e) => e.toString()).toList(),
+    );
+  }
+}
+
+extension EpisodeMap on Episode {
+  Map<String, String> get sortMap {
+    if (sortKeys == null || sortVals == null) return {};
+    if (sortKeys!.isEmpty || sortVals!.isEmpty) return {};
+
+    final pairCount = sortKeys!.length < sortVals!.length
+        ? sortKeys!.length
+        : sortVals!.length;
+    if (pairCount == 0) return {};
+
+    return Map<String, String>.fromIterables(
+      sortKeys!.take(pairCount),
+      sortVals!.take(pairCount),
+    );
   }
 }

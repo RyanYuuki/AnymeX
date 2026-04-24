@@ -147,6 +147,7 @@ class SocialSection extends StatelessWidget {
               maxLines: 1,
               textAlign: TextAlign.center,
               overflow: TextOverflow.ellipsis,
+              isMarquee: true,
               variant: TextVariant.bold,
               color: theme.onSurface,
             ),

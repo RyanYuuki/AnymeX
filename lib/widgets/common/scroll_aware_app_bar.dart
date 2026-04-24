@@ -88,21 +88,18 @@ class _CustomAnimatedAppBarState extends State<CustomAnimatedAppBar>
 
   void _updateSystemOverlayStyle() {
     final bool isVisible = _getEffectiveIsVisibleNotifier().value;
+    final SystemUiOverlayStyle baseStyle = isVisible
+        ? (widget.visibleStatusBarStyle ?? SystemUiOverlayStyle.dark)
+        : (widget.hiddenStatusBarStyle ?? SystemUiOverlayStyle.light);
 
-    if (isVisible) {
-      SystemChrome.setEnabledSystemUIMode(
-        SystemUiMode.edgeToEdge,
-        overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom],
-      );
-
-      SystemChrome.setSystemUIOverlayStyle(
-        const SystemUiOverlayStyle(
-          statusBarIconBrightness: Brightness.light,
-          statusBarBrightness: Brightness.dark,
-          statusBarColor: Colors.transparent,
-        ),
-      );
-    }
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    SystemChrome.setSystemUIOverlayStyle(
+      baseStyle.copyWith(
+        systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarDividerColor: Colors.transparent,
+        systemNavigationBarContrastEnforced: false,
+      ),
+    );
   }
 
   @override

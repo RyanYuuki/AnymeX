@@ -129,7 +129,7 @@ class TrackedMedia {
       mediaStatus:
           json['not_aired_episodes_count'] == 0 ? "completed" : "airing",
       rating: null,
-      score: null,
+      score: json['user_rating']?.toString(),
       format: null,
       mediaListId: '${ids['simkl']}*SERIES',
     );
@@ -153,7 +153,7 @@ class TrackedMedia {
       mediaStatus:
           json['not_aired_episodes_count'] == 0 ? "COMPLETED" : "AIRING",
       rating: null,
-      score: null,
+      score: json['user_rating']?.toString(),
       format: null,
       mediaListId: '${ids['simkl']}*MOVIE',
     );

@@ -2,8 +2,11 @@ import 'package:anymex/database/isar_models/track.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/player/base_player.dart';
 import 'package:anymex/screens/anime/widgets/episode/normal_episode.dart';
+import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -82,20 +85,7 @@ class _DynamicBottomSheetState extends State<DynamicBottomSheet>
     super.dispose();
   }
 
-  void _filterItems(String query) {
-    setState(() {
-      if (query.isEmpty) {
-        _filteredItems = widget.items;
-      } else {
-        _filteredItems = widget.items
-            .where((item) =>
-                item.title.toLowerCase().contains(query.toLowerCase()) ||
-                (item.subtitle?.toLowerCase().contains(query.toLowerCase()) ??
-                    false))
-            .toList();
-      }
-    });
-  }
+
 
   void _closeBottomSheet() async {
     await _fadeController.reverse();
@@ -115,97 +105,100 @@ class _DynamicBottomSheetState extends State<DynamicBottomSheet>
           children: [
             SlideTransition(
               position: _slideAnimation,
-              child: Container(
-                width: double.infinity,
-                constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height * 0.8,
-                ),
-                decoration: BoxDecoration(
-                  color: context.theme.colorScheme.surface,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(24),
-                    topRight: Radius.circular(24),
+              child: GestureDetector(
+                onTap: () {},
+                child: Container(
+                  width: double.infinity,
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.of(context).size.height * 0.8,
                   ),
-                  border: Border.all(
-                    color: context.theme.colorScheme.outline
-                        .opaque(0.2, iReallyMeanIt: true),
-                    width: 1,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: context.theme.colorScheme.primary
-                          .opaque(0.1, iReallyMeanIt: true),
-                      blurRadius: 20,
-                      offset: const Offset(0, -4),
+                  decoration: BoxDecoration(
+                    color: context.theme.colorScheme.surface,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(24),
+                      topRight: Radius.circular(24),
                     ),
-                    BoxShadow(
-                      color: Colors.black.opaque(0.3, iReallyMeanIt: true),
-                      blurRadius: 30,
-                      offset: const Offset(0, -8),
+                    border: Border.all(
+                      color: context.theme.colorScheme.outline
+                          .opaque(0.2, iReallyMeanIt: true),
+                      width: 1,
                     ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(top: 12, bottom: 8),
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: context.theme.colorScheme.outline
-                            .opaque(0.3, iReallyMeanIt: true),
-                        borderRadius: BorderRadius.circular(2),
+                    boxShadow: [
+                      BoxShadow(
+                        color: context.theme.colorScheme.primary
+                            .opaque(0.1, iReallyMeanIt: true),
+                        blurRadius: 20,
+                        offset: const Offset(0, -4),
                       ),
-                    ),
-                    FadeTransition(
-                      opacity: _fadeAnimation,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 8),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                widget.title,
-                                style: context.theme.textTheme.titleLarge
-                                    ?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color: context.theme.colorScheme.onSurface,
-                                ),
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: _closeBottomSheet,
-                              child: Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: context
-                                      .theme.colorScheme.surfaceVariant
-                                      .opaque(0.3),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Icon(
-                                  Icons.close,
-                                  size: 20,
-                                  color: context.theme.colorScheme.onSurface
-                                      .opaque(0.7, iReallyMeanIt: true),
-                                ),
-                              ),
-                            ),
-                          ],
+                      BoxShadow(
+                        color: Colors.black.opaque(0.3, iReallyMeanIt: true),
+                        blurRadius: 30,
+                        offset: const Offset(0, -8),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(top: 12, bottom: 8),
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: context.theme.colorScheme.outline
+                              .opaque(0.3, iReallyMeanIt: true),
+                          borderRadius: BorderRadius.circular(2),
                         ),
                       ),
-                    ),
-                    Flexible(
-                      child: widget.customContent ?? _buildItemsList(),
-                    ),
-                    SizedBox(
-                        height: MediaQuery.of(context).padding.bottom + 16),
-                  ],
+                      FadeTransition(
+                        opacity: _fadeAnimation,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 8),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  widget.title,
+                                  style: context.theme.textTheme.titleLarge
+                                      ?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: context.theme.colorScheme.onSurface,
+                                  ),
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: _closeBottomSheet,
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: context
+                                        .theme.colorScheme.surfaceVariant
+                                        .opaque(0.3),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Icon(
+                                    Icons.close,
+                                    size: 20,
+                                    color: context.theme.colorScheme.onSurface
+                                        .opaque(0.7, iReallyMeanIt: true),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Flexible(
+                        child: widget.customContent ?? _buildItemsList(),
+                      ),
+                      SizedBox(
+                          height: MediaQuery.of(context).padding.bottom + 16),
+                    ],
+                  ),
                 ),
               ),
-            ),
+            )
           ],
         ),
       ),
@@ -497,8 +490,7 @@ class PlayerBottomSheets {
             title: 'Auto', subtitle: 'Audio Track', icon: Icons.audiotrack),
         ...tracks.where((e) => e.title != null).map((entry) {
           return BottomSheetItem(
-            title: (entry.title ?? entry.language ?? entry.url ?? "")
-                .toUpperCase(),
+            title: completeLanguageName(entry.language ?? '').toUpperCase(),
             subtitle: 'Audio Track',
             icon: Icons.audiotrack,
           );
@@ -519,89 +511,30 @@ class PlayerBottomSheets {
     );
   }
 
-  static Future<int?> showOfflineSubs(
-      BuildContext context, PlayerController controller) {
-    final tracks = controller.embeddedSubs.value;
-    final currentIndex =
-        tracks.indexOf(controller.selectedSubsTrack.value ?? tracks.first);
-    return show<int>(
+  static Future<T?> showCustom<T>({
+    required BuildContext context,
+    required String title,
+    required Widget content,
+    bool isExpanded = false,
+    double expandedHeightFactor = 0.8,
+  }) {
+    final sheet = DynamicBottomSheet(
+      title: title,
+      customContent: content,
+    );
+    return showModalBottomSheet<T>(
       context: context,
-      title: 'Subtitle Tracks',
-      showSearch: tracks.length > 5,
-      searchHint: 'Search subtitle tracks...',
-      items: [
-        const BottomSheetItem(
-            title: 'None', subtitle: 'Subtitle Track', icon: Icons.audiotrack),
-        ...tracks
-            .where((e) => e.title != null && e.language != null)
-            .map((entry) {
-          return BottomSheetItem(
-            title: (entry.language ?? entry.title ?? entry.url.toString())
-                .toUpperCase(),
-            subtitle: 'Subtitle Track',
-            icon: Icons.closed_caption_rounded,
-          );
-        })
-      ],
-      selectedIndex: currentIndex < 0 ? 0 : currentIndex,
-      onItemSelected: (index) {
-        if (index == 0) {
-          controller.setSubtitleTrack(SubtitleTrack.no());
-        } else {
-          final selectedTrack = tracks[index];
-          controller.selectedSubsTrack.value = selectedTrack;
-          controller.setSubtitleTrack(selectedTrack);
-        }
-        Get.back(result: index);
-      },
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => isExpanded
+          ? SizedBox(
+              height: MediaQuery.of(context).size.height * expandedHeightFactor,
+              child: sheet)
+          : sheet,
     );
   }
 
-  static Future<int?> showSubtitleTracks(
-    BuildContext context,
-    PlayerController controller,
-  ) {
-    final tracks = controller.externalSubs.value;
-    final selectedTrack = tracks.indexOf(controller.selectedExternalSub.value);
 
-    return show<int>(
-      context: context,
-      title: 'Subtitles',
-      items: [
-        const BottomSheetItem(
-          title: 'Search Online',
-          subtitle: 'Find subtitles online',
-          icon: Icons.cloud_download,
-        ),
-        const BottomSheetItem(
-          title: 'None',
-          subtitle: 'No subtitles',
-          icon: Icons.subtitles_off,
-        ),
-        ...tracks.map((e) => BottomSheetItem(
-              title: e?.label ?? 'No Title',
-              subtitle: 'Local Subtitle Track',
-              icon: Icons.subtitles,
-            )),
-      ],
-      selectedIndex: controller.selectedExternalSub.value == Track()
-          ? 1
-          : selectedTrack + 2,
-      onItemSelected: (index) {
-        if (index == 0) {
-          Future.delayed(const Duration(milliseconds: 1000), () {
-            controller.isSubtitlePaneOpened.value = true;
-          });
-          return;
-        } else if (index == 1) {
-          controller.setExternalSub(null);
-        } else {
-          final selectedTrack = tracks[index - 2];
-          controller.setExternalSub(selectedTrack);
-        }
-      },
-    );
-  }
 
   static Future<String?> showVideoServers(
       BuildContext context, PlayerController controller) {
@@ -628,14 +561,13 @@ class PlayerBottomSheets {
 
   static Future<String?> showVideoQuality(
       BuildContext context, PlayerController controller) {
-    final qualities = controller.embeddedQuality.value;
+    final qualities = controller.embeddedQuality.value
+        .where((e) => e.height != null && e.width != null).toList();
     final selectedQuality = controller.selectedQualityTrack.value;
     return show<String>(
       context: context,
       title: 'Video Quality',
-      items: qualities
-          .where((e) => e.height != null && e.width != null)
-          .map((quality) {
+      items: qualities.map((quality) {
         return BottomSheetItem(
           title: quality.height == 0
               ? 'Auto'
@@ -657,8 +589,11 @@ class PlayerBottomSheets {
       BuildContext context, PlayerController controller) {
     return showCustom(
         context: context,
+        isExpanded: true,
         title: 'Playback Speed',
-        content: PlaybackSpeedSheet(controller: controller));
+        content: SizedBox(
+            height: Get.height,
+            child: PlaybackSpeedSheet(controller: controller)));
   }
 
   static Future<double?> showPlaylist(
@@ -674,7 +609,7 @@ class PlayerBottomSheets {
       title: 'Episodes',
       isExpanded: true,
       content: ScrollablePositionedList.separated(
-        initialScrollIndex: selectedEpisode.value.number!.toInt() - 1,
+        initialScrollIndex: selectedEpisode.value.number.toInt() - 1,
         separatorBuilder: (context, i) => const SizedBox(height: 8),
         itemCount: episodes.length,
         itemBuilder: (context, index) {
@@ -691,22 +626,6 @@ class PlayerBottomSheets {
                 controller.anilistData.cover ?? controller.anilistData.poster,
           );
         },
-      ),
-    );
-  }
-
-  static Future<T?> showCustom<T>(
-      {required BuildContext context,
-      required String title,
-      required Widget content,
-      bool isExpanded = false}) {
-    return show<T>(
-      context: context,
-      title: title,
-      isExpanded: isExpanded,
-      customContent: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: content,
       ),
     );
   }
@@ -779,7 +698,7 @@ class _LoaderContentState extends State<_LoaderContent> {
                 ),
                 const SizedBox(height: 12),
                 TextButton.icon(
-                  onPressed: () => Get.back(), // closes bottom sheet only
+                  onPressed: () => Get.back(),
                   icon: const Icon(Icons.arrow_back_rounded),
                   label: const Text('Go Back'),
                 ),
@@ -915,10 +834,10 @@ class _PlaybackSpeedSheetState extends State<PlaybackSpeedSheet> {
     final tt = context.theme.textTheme;
     final sliderVal = _currentSpeed.clamp(_min, _max);
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 4, 20, 8),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(

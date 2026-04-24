@@ -1,16 +1,22 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/player/player_adaptor.dart';
 import 'package:anymex/models/ui/ui_adaptor.dart';
+import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/onboarding/welcome_dialog.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/shaders.dart';
 import 'package:anymex/utils/updater.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:get/get.dart';
 
-final settingsController = Get.put(Settings());
+Settings get settingsController => Get.find<Settings>();
 
 class Settings extends GetxController {
   late Rx<UISettings> uiSettings;
@@ -21,11 +27,24 @@ class Settings extends GetxController {
   final readerControlThemeRx = 'default'.obs;
 
   RxBool enableBetaUpdates = false.obs;
+  RxBool writeLogToFile = false.obs;
+  RxString customLogDirectory = ''.obs;
+
+  RxString downloadPath = ''.obs;
+  RxInt concurrentDownloads = 3.obs;
+  RxInt downloadChunks = 1.obs;
+  RxInt hlsParallelSegments = 3.obs;
+  RxBool enableJxlCompression = false.obs;
 
   RxBool isTV = false.obs;
   final _selectedShader = ''.obs;
   final _selectedProfile = 'MID-END'.obs;
   final mpvPath = ''.obs;
+  RxString bridgeMode = 'sidecar'.obs;
+
+  String get _defaultBridgeMode {
+    return 'sidecar';
+  }
 
   String get selectedShader => _selectedShader.value;
 
@@ -59,6 +78,23 @@ class Settings extends GetxController {
         ReaderKeys.readerControlTheme.get<String>('default');
 
     enableBetaUpdates.value = General.enableBetaUpdates.get<bool>(false);
+    writeLogToFile.value = General.writeLogToFile.get<bool>(false);
+    customLogDirectory.value = General.customLogDirectory.get<String>("");
+    
+    downloadPath.value = DownloadKeys.downloadPath.get<String>("");
+    concurrentDownloads.value = DownloadKeys.concurrentDownloads.get<int>(3);
+    downloadChunks.value = DownloadKeys.downloadChunks.get<int>(1);
+    hlsParallelSegments.value = DownloadKeys.hlsParallelSegments.get<int>(3);
+    enableJxlCompression.value = DownloadKeys.enableJxlCompression.get<bool>(false);
+
+    bridgeMode.value = PluginKeys.bridgeMode.get<String>(_defaultBridgeMode);
+    if (Platform.isMacOS && bridgeMode.value != 'sidecar') {
+      PluginKeys.bridgeMode.set('sidecar');
+      bridgeMode.value = 'sidecar';
+    }
+    _updateBridgeDispatcher();
+    Logger.setFileLoggingEnabled(writeLogToFile.value,
+        customPath: customLogDirectory.value);
 
     isTv().then((e) {
       isTV.value = e;
@@ -67,6 +103,16 @@ class Settings extends GetxController {
     PlayerShaders.getMpvPath().then((e) {
       mpvPath.value = e;
     });
+    setHighRefreshRate();
+  }
+
+  Future<void> setHighRefreshRate() async {
+    if (!Platform.isAndroid) return;
+    try {
+      await FlutterDisplayMode.setHighRefreshRate();
+    } catch (e) {
+      Logger.e("Error setting high refresh rate: $e");
+    }
   }
 
   void checkForUpdates(BuildContext context) {
@@ -80,6 +126,57 @@ class Settings extends GetxController {
   void saveBetaUpdateToggle(bool value) {
     enableBetaUpdates.value = value;
     General.enableBetaUpdates.set(value);
+  }
+
+  Future<void> saveWriteLogToFile(bool value) async {
+    writeLogToFile.value = value;
+    General.writeLogToFile.set(value);
+    await Logger.setFileLoggingEnabled(value);
+  }
+
+  Future<void> saveCustomLogDirectory(String value) async {
+    customLogDirectory.value = value;
+    General.customLogDirectory.set(value);
+    if (writeLogToFile.value) {
+      await Logger.setFileLoggingEnabled(true, customPath: value);
+    }
+  }
+
+  void _updateBridgeDispatcher() {
+    final mode =
+        bridgeMode.value == 'sidecar' ? BridgeType.sidecar : BridgeType.jni;
+    Get.find<ExtensionManager>().setBridgeType(mode);
+  }
+
+  void saveBridgeMode(String value) {
+    bridgeMode.value = value;
+    PluginKeys.bridgeMode.set(value);
+    _updateBridgeDispatcher();
+  }
+
+  void saveDownloadPath(String value) {
+    downloadPath.value = value;
+    DownloadKeys.downloadPath.set(value);
+  }
+
+  void saveConcurrentDownloads(int value) {
+    concurrentDownloads.value = value;
+    DownloadKeys.concurrentDownloads.set(value);
+  }
+
+  void saveDownloadChunks(int value) {
+    downloadChunks.value = value;
+    DownloadKeys.downloadChunks.set(value);
+  }
+
+  void saveHlsParallelSegments(int value) {
+    hlsParallelSegments.value = value;
+    DownloadKeys.hlsParallelSegments.set(value);
+  }
+
+  void saveEnableJxlCompression(bool value) {
+    enableJxlCompression.value = value;
+    DownloadKeys.enableJxlCompression.set(value);
   }
 
   void showWelcomeDialog(BuildContext context) {
@@ -386,6 +483,28 @@ class Settings extends GetxController {
   set enableScreenshot(bool value) {
     playerSettings.update((s) => s?.enableScreenshot = value);
     PlayerSettingsKeys.enableScreenshot.set(value);
+  }
+
+  bool get playerMenuAnimation =>
+      _getPlayerSetting((s) => s.playerMenuAnimation);
+  set playerMenuAnimation(bool value) {
+    playerSettings.update((s) => s?.playerMenuAnimation = value);
+    PlayerSettingsKeys.playerMenuAnimation.set(value);
+  }
+
+  String get hardwareDecoder => _getPlayerSetting((s) => s.hardwareDecoder);
+  set hardwareDecoder(String value) {
+    final normalized = switch (value) {
+      'hw+' => Platform.isAndroid ? 'hw+' : 'hw',
+      'hw' => 'hw',
+      'sw' => 'sw',
+      _ => Platform.isAndroid ? 'hw+' : 'hw',
+    };
+    playerSettings.update((s) => s?.hardwareDecoder = normalized);
+    PlayerSettingsKeys.hardwareDecoder.set(normalized);
+    if (Get.isRegistered<PlayerController>()) {
+      unawaited(Get.find<PlayerController>().reloadActivePlayer());
+    }
   }
 
   bool get enableSwipeControls =>

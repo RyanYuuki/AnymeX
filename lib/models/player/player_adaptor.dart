@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:anymex/database/data_keys/keys.dart';
 
 class PlayerSettings {
@@ -30,6 +32,8 @@ class PlayerSettings {
   double subtitleBottomMargin;
   String subtitleOutlineType;
   bool enableScreenshot;
+  bool playerMenuAnimation;
+  String hardwareDecoder;
 
   PlayerSettings({
     this.speed = 1.0,
@@ -61,6 +65,8 @@ class PlayerSettings {
     this.subtitleOutlineType = "Outline",
     this.autoSkipFiller = false,
     this.enableScreenshot = true,
+    this.playerMenuAnimation = true,
+    this.hardwareDecoder = 'hw',
   });
 
   factory PlayerSettings.fromDB() {
@@ -128,6 +134,29 @@ class PlayerSettings {
           PlayerSettingsKeys.autoSkipFiller.get<bool>(defaults.autoSkipFiller),
       enableScreenshot: PlayerSettingsKeys.enableScreenshot
           .get<bool>(defaults.enableScreenshot),
+      playerMenuAnimation: PlayerSettingsKeys.playerMenuAnimation
+          .get<bool>(defaults.playerMenuAnimation),
+      hardwareDecoder: _readHardwareDecoder(),
     );
   }
+}
+
+String _normalizeHardwareDecoder(String value) {
+  switch (value) {
+    case 'hw+':
+      return Platform.isAndroid ? 'hw+' : 'hw';
+    case 'hw':
+    case 'sw':
+      return value;
+    default:
+      return Platform.isAndroid ? 'hw+' : 'hw';
+  }
+}
+
+String _readHardwareDecoder() {
+  final stored = PlayerSettingsKeys.hardwareDecoder.get<String>('');
+  if (stored.isEmpty) {
+    return Platform.isAndroid ? 'hw+' : 'hw';
+  }
+  return _normalizeHardwareDecoder(stored);
 }

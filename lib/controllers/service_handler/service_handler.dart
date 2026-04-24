@@ -157,14 +157,15 @@ class ServiceHandler extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _initServices();
-  }
-
-  Future<void> _initServices() async {
     serviceType.value =
         ServicesType.values[ServiceKeys.serviceType.get<int>(0)];
-    await fetchHomePage();
-    await autoLogin();
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+    fetchHomePage();
+    autoLogin();
   }
 
   Future<void> fetchHomePage() => service.fetchHomePage();

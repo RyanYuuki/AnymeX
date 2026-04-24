@@ -7,12 +7,19 @@ import 'package:anymex/screens/anime/widgets/character_staff_sheet.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/profile/widgets/stats_overview_cards.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/widgets/common/marquee_text.dart';
+import 'package:anymex/widgets/media_items/media_peek_popup.dart';
+import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconly/iconly.dart';
 
 class FavoritesSection extends StatelessWidget {
+  static const double _firstSectionTopGap = 20;
+  static const double _sectionGap = 14;
+  static const double _headerToContentGap = 10;
+
   final Profile user;
   final bool needsPadding;
 
@@ -28,7 +35,7 @@ class FavoritesSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (user.favourites?.anime.isNotEmpty ?? false) ...[
-          const SizedBox(height: 20),
+          const SizedBox(height: _firstSectionTopGap),
           Padding(
             padding: needsPadding
                 ? const EdgeInsets.symmetric(horizontal: 20.0)
@@ -38,11 +45,11 @@ class FavoritesSection extends StatelessWidget {
               icon: IconlyBold.video,
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: _headerToContentGap),
           _buildMediaFavCarousel(context, user.favourites!.anime, true),
         ],
         if (user.favourites?.manga.isNotEmpty ?? false) ...[
-          const SizedBox(height: 10),
+          const SizedBox(height: _sectionGap),
           Padding(
             padding: needsPadding
                 ? const EdgeInsets.symmetric(horizontal: 20.0)
@@ -52,11 +59,11 @@ class FavoritesSection extends StatelessWidget {
               icon: IconlyBold.document,
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: _headerToContentGap),
           _buildMediaFavCarousel(context, user.favourites!.manga, false),
         ],
         if (user.favourites?.characters.isNotEmpty ?? false) ...[
-          const SizedBox(height: 10),
+          const SizedBox(height: _sectionGap),
           Padding(
             padding: needsPadding
                 ? const EdgeInsets.symmetric(horizontal: 20.0)
@@ -66,7 +73,7 @@ class FavoritesSection extends StatelessWidget {
               icon: IconlyBold.profile,
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: _headerToContentGap),
           _buildPersonCarousel(
               context,
               <PersonItem>[
@@ -76,7 +83,7 @@ class FavoritesSection extends StatelessWidget {
               true),
         ],
         if (user.favourites?.staff.isNotEmpty ?? false) ...[
-          const SizedBox(height: 10),
+          const SizedBox(height: _sectionGap),
           Padding(
             padding: needsPadding
                 ? const EdgeInsets.symmetric(horizontal: 20.0)
@@ -86,7 +93,7 @@ class FavoritesSection extends StatelessWidget {
               icon: Icons.people_rounded,
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: _headerToContentGap),
           _buildPersonCarousel(
               context,
               <PersonItem>[
@@ -96,7 +103,7 @@ class FavoritesSection extends StatelessWidget {
               false),
         ],
         if (user.favourites?.studios.isNotEmpty ?? false) ...[
-          const SizedBox(height: 10),
+          const SizedBox(height: _sectionGap),
           Padding(
             padding: needsPadding
                 ? const EdgeInsets.symmetric(horizontal: 20.0)
@@ -106,7 +113,7 @@ class FavoritesSection extends StatelessWidget {
               icon: Icons.business_rounded,
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: _headerToContentGap),
           Padding(
             padding: needsPadding
                 ? const EdgeInsets.symmetric(horizontal: 20.0)
@@ -183,20 +190,40 @@ class FavoritesSection extends StatelessWidget {
     FavouriteMedia item,
     bool isAnime,
   ) {
-    return GestureDetector(
-      onTap: () {
-        if (item.id != null) {
-          final media = Media(
-            id: item.id!,
+    final mediaId = item.id;
+    final mediaTag = item.title ?? 'fav-${item.id}';
+    final media = mediaId == null
+        ? null
+        : Media(
+            id: mediaId,
             title: item.title ?? '?',
             poster: item.cover ?? '',
             serviceType: ServicesType.anilist,
           );
-          final tag = item.title ?? 'fav-${item.id}';
+
+    return GestureDetector(
+      onSecondaryTap: () {
+        MediaPeekPopup.showIfUntracked(
+          context,
+          media,
+          isAnime ? ItemType.anime : ItemType.manga,
+          mediaTag,
+        );
+      },
+      onLongPress: () {
+        MediaPeekPopup.showIfUntracked(
+          context,
+          media,
+          isAnime ? ItemType.anime : ItemType.manga,
+          mediaTag,
+        );
+      },
+      onTap: () {
+        if (media != null) {
           if (isAnime) {
-            navigate(() => AnimeDetailsPage(media: media, tag: tag));
+            navigate(() => AnimeDetailsPage(media: media, tag: mediaTag));
           } else {
-            navigate(() => MangaDetailsPage(media: media, tag: tag));
+            navigate(() => MangaDetailsPage(media: media, tag: mediaTag));
           }
         }
       },
@@ -207,7 +234,7 @@ class FavoritesSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Hero(
-              tag: item.title ?? 'fav-${item.id}',
+              tag: mediaTag,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: item.cover != null
@@ -230,15 +257,18 @@ class FavoritesSection extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 5),
-            Text(
-              item.title ?? '',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-                color: context.theme.colorScheme.onSurface,
+            SizedBox(
+              height: 30,
+              child: MarqueeText(
+                item.title ?? '',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                  color: context.theme.colorScheme.onSurface,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
@@ -252,7 +282,7 @@ class FavoritesSection extends StatelessWidget {
     bool isCharacter,
   ) {
     return SizedBox(
-      height: 128,
+      height: 108,
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         scrollDirection: Axis.horizontal,
@@ -326,16 +356,19 @@ class FavoritesSection extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 6),
-            Text(
-              name ?? '',
-              style: TextStyle(
-                fontSize: 10.5,
-                fontWeight: FontWeight.w500,
-                color: context.theme.colorScheme.onSurface,
+            SizedBox(
+              height: 26,
+              child: MarqueeText(
+                name ?? '',
+                style: TextStyle(
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w500,
+                  color: context.theme.colorScheme.onSurface,
+                ),
+                maxLines: 1,
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
               ),
-              maxLines: 2,
-              textAlign: TextAlign.center,
-              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),

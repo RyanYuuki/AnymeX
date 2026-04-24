@@ -4,11 +4,13 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Media/character.dart';
 import 'package:anymex/models/Media/staff.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/common/marquee_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/fullscreen_image_viewer.dart';
 
 import 'package:anymex/screens/anime/details_page.dart';
+import 'package:anymex/widgets/media_items/media_peek_popup.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,6 +23,7 @@ import 'package:anymex/models/Media/voice_actor.dart';
 
 import 'package:anymex/utils/logger.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
@@ -740,10 +743,11 @@ class _CharacterStaffSheetContentState
                                                     text:
                                                         actor.name ?? 'Unknown',
                                                     size: 12,
-                                                    maxLines: 2,
+                                                    maxLines: 1,
                                                     textAlign: TextAlign.center,
                                                     overflow:
                                                         TextOverflow.ellipsis,
+                                                    isMarquee: true,
                                                     variant: TextVariant.bold,
                                                   ),
                                                 ),
@@ -1061,6 +1065,7 @@ class _CharacterStaffSheetContentState
                               color: Colors.white,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
+                              isMarquee: true,
                               variant: TextVariant.bold,
                             ),
                             if (media != null)
@@ -1070,6 +1075,7 @@ class _CharacterStaffSheetContentState
                                 color: theme.primary,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
+                                isMarquee: true,
                               ),
                           ],
                         ),
@@ -1103,6 +1109,24 @@ class _CharacterStaffSheetContentState
           return SizedBox(
             width: 120,
             child: GestureDetector(
+              onSecondaryTap: () {
+                final isManga = item.type.toUpperCase() == 'MANGA';
+                MediaPeekPopup.showIfUntracked(
+                  context,
+                  item,
+                  isManga ? ItemType.manga : ItemType.anime,
+                  tag,
+                );
+              },
+              onLongPress: () {
+                final isManga = item.type.toUpperCase() == 'MANGA';
+                MediaPeekPopup.showIfUntracked(
+                  context,
+                  item,
+                  isManga ? ItemType.manga : ItemType.anime,
+                  tag,
+                );
+              },
               onTap: () {
                 Navigator.of(context, rootNavigator: true).push(
                   MaterialPageRoute(
@@ -1159,7 +1183,7 @@ class _CharacterStaffSheetContentState
                                   stops: const [0.0, 0.4, 1.0],
                                 ),
                               ),
-                              child: Text(
+                              child: MarqueeText(
                                 item.characterRole?.toUpperCase() ?? '',
                                 textAlign: TextAlign.center,
                                 maxLines: 1,
@@ -1245,8 +1269,9 @@ class _CharacterStaffSheetContentState
                   AnymexText(
                     text: item.title,
                     variant: TextVariant.bold,
-                    maxLines: 2,
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
+                    isMarquee: true,
                     size: 11,
                   )
                 ],

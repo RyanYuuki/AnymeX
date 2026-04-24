@@ -21,8 +21,12 @@ import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/history/tap_history_cards.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
+import 'package:anymex/database/data_keys/keys.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:get/get.dart';
 
 class HomePage extends StatefulWidget {
@@ -49,10 +53,13 @@ class _HomePageState extends State<HomePage> {
       padding: const EdgeInsets.only(bottom: 8.0),
       child: SizedBox(
         height: 100,
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: data.length,
-          itemBuilder: (context, i) => RecentlyOpenedAnimeCard(media: data[i]),
+        child: RepaintBoundary(
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: data.length,
+            itemBuilder: (context, i) =>
+                RecentlyOpenedAnimeCard(media: data[i]),
+          ),
         ),
       ),
     );
@@ -80,7 +87,7 @@ class _HomePageState extends State<HomePage> {
             Padding(
               padding: const EdgeInsets.only(left: 20.0),
               child: Text(
-                "Continue Watching",
+                "Local History",
                 style: TextStyle(
                   fontFamily: "Poppins-SemiBold",
                   fontSize: 17,
@@ -91,19 +98,21 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: 10),
             SizedBox(
               height: 228,
-              child: GridView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                scrollDirection: Axis.horizontal,
-                itemCount: visibleHistory.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 1,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 0,
-                  mainAxisExtent: 300,
-                ),
-                itemBuilder: (context, i) => ContinueWatchingCard(
-                  media: HistoryModel.fromOfflineMedia(
-                      visibleHistory[i], ItemType.anime),
+              child: RepaintBoundary(
+                child: GridView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: visibleHistory.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 1,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 0,
+                    mainAxisExtent: 300,
+                  ),
+                  itemBuilder: (context, i) => ContinueWatchingCard(
+                    media: HistoryModel.fromOfflineMedia(
+                        visibleHistory[i], ItemType.anime),
+                  ),
                 ),
               ),
             ),
@@ -157,6 +166,39 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _scrollController = ScrollController();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showDiscordDialog();
+    });
+  }
+
+  void _showDiscordDialog() {
+    if (General.hasJoinedNewDiscord.get(false)) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return PopScope(
+          canPop: false,
+          child: AnymexDialog(
+            title: 'Important Announcement',
+            showCancelButton: false,
+            confirmText: 'Join Discord',
+            onConfirm: () async {
+              General.hasJoinedNewDiscord.set(true);
+              final url = Uri.parse('https://discord.gg/C9abCZjC8K');
+              await launchUrl(url, mode: LaunchMode.externalApplication);
+            },
+            contentWidget: const Text(
+              'Our previous Discord server with over 2,100 members was unfortunately taken down due to copyright infringement.\n\n'
+              'We are trying to rebuild! Please join our new Discord server to help us gain our wonderful community back. '
+              'You must join to continue using the app.',
+              style: TextStyle(fontFamily: 'Poppins', fontSize: 14),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   ScrollController get scrollController => _scrollController;
