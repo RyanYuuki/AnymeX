@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
-import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/models/Media/media.dart'; // THIS IS THE MISSING IMPORT
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:file_picker/file_picker.dart';
