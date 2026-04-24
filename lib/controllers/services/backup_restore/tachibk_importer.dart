@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:file_picker/file_picker.dart';
@@ -380,9 +381,13 @@ class TachibkImporter extends GetxController {
         final existingIds = existingAnimeItems.map((e) => e.mediaId).toSet();
         final existingNames = existingAnimeItems.map((e) => e.name).toSet();
 
+        await _storageController.addCustomList("Watching", mediaType: ItemType.anime);
+
         await isar.writeTxn(() async {
           for (final media in mediaList) {
             bool shouldAdd = true;
+            String lookupId = media.mediaId ?? media.name ?? '';
+            
             if (merge) {
               final id = media.mediaId ?? '';
               if (id.isEmpty || id == '0') {
@@ -397,6 +402,8 @@ class TachibkImporter extends GetxController {
               if (media.mediaId != null) existingIds.add(media.mediaId);
               if (media.name != null) existingNames.add(media.name);
             }
+            
+            await _storageController.addMediaToList("Watching", lookupId, mediaType: ItemType.anime);
 
             processed++;
             importProgress.value = processed / total;
@@ -415,9 +422,13 @@ class TachibkImporter extends GetxController {
         final existingMangaIds = existingMangaItems.map((e) => e.mediaId).toSet();
         final existingMangaNames = existingMangaItems.map((e) => e.name).toSet();
 
+        await _storageController.addCustomList("Reading", mediaType: ItemType.manga);
+
         await isar.writeTxn(() async {
           for (final media in mediaList) {
             bool shouldAdd = true;
+            String lookupId = media.mediaId ?? media.name ?? '';
+
             if (merge) {
               final id = media.mediaId ?? '';
               if (id.isEmpty || id == '0') {
@@ -432,6 +443,8 @@ class TachibkImporter extends GetxController {
               if (media.mediaId != null) existingMangaIds.add(media.mediaId);
               if (media.name != null) existingMangaNames.add(media.name);
             }
+
+            await _storageController.addMediaToList("Reading", lookupId, mediaType: ItemType.manga);
 
             processed++;
             importProgress.value = processed / total;
