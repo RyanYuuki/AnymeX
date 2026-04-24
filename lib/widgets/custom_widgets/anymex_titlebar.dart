@@ -1,14 +1,18 @@
 import 'dart:io';
 
 import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
+import 'package:ffi/ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/controllers/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:win32/win32.dart';
+import 'dart:ffi';
 
 class AnymexTitleBar {
   static final ValueNotifier<bool> isFullScreen = ValueNotifier(false);
+  static final ValueNotifier<bool> isMaximized = ValueNotifier(false);
 
   static Future<void> initialize() async {
     if (!Platform.isWindows) {
@@ -31,7 +35,22 @@ class AnymexTitleBar {
     await windowManager.waitUntilReadyToShow(windowOptions, () async {
       await windowManager.show();
       await windowManager.focus();
+
+      AnymexTitleBar.isMaximized.value = await windowManager.isMaximized();
+      windowManager.addListener(_WindowListener());
     });
+  }
+
+  static void listenToWin32() {
+    final hwnd = GetForegroundWindow();
+
+    final placement = calloc<WINDOWPLACEMENT>();
+    GetWindowPlacement(hwnd, placement);
+
+    final isMaximized = placement.ref.showCmd == SW_SHOWMAXIMIZED;
+    AnymexTitleBar.isMaximized.value = isMaximized;
+
+    calloc.free(placement);
   }
 
   static Widget titleBar() => ValueListenableBuilder<bool>(
@@ -52,8 +71,38 @@ class AnymexTitleBar {
   }
 }
 
+class _WindowListener extends WindowListener {
+  Future<void> _sync() async {
+    AnymexTitleBar.isMaximized.value = await windowManager.isMaximized();
+  }
+
+  @override
+  void onWindowMaximize() => _sync();
+
+  @override
+  void onWindowUnmaximize() => _sync();
+
+  @override
+  void onWindowResized() async {
+    if (Platform.isWindows) {
+      AnymexTitleBar.listenToWin32();
+    }
+  }
+}
+
 class _TitleBarWidget extends StatelessWidget {
   const _TitleBarWidget();
+
+  Future<void> _toggleMaximize() async {
+    final maximized = await windowManager.isMaximized();
+    if (maximized) {
+      await windowManager.unmaximize();
+    } else {
+      await windowManager.maximize();
+    }
+
+    AnymexTitleBar.isMaximized.value = await windowManager.isMaximized();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,8 +110,8 @@ class _TitleBarWidget extends StatelessWidget {
     final defaultColor = context.colors.onSurface;
 
     return RepaintBoundary(
-      child: Material(
-        color: Colors.transparent,
+        child: Material(
+      color: Colors.transparent,
       child: ClipRect(
         child: Container(
           height: 40,
@@ -106,14 +155,7 @@ class _TitleBarWidget extends StatelessWidget {
                   onPanStart: (_) {
                     windowManager.startDragging();
                   },
-                  onDoubleTap: () async {
-                    final isMaximized = await windowManager.isMaximized();
-                    if (isMaximized) {
-                      await windowManager.unmaximize();
-                    } else {
-                      await windowManager.maximize();
-                    }
-                  },
+                  onDoubleTap: _toggleMaximize,
                 ),
               ),
               _WindowButton(
@@ -121,17 +163,17 @@ class _TitleBarWidget extends StatelessWidget {
                 onPressed: () => windowManager.minimize(),
                 buttonColor: defaultColor,
               ),
-              _WindowButton(
-                icon: Icons.crop_square_rounded,
-                onPressed: () async {
-                  final isMaximized = await windowManager.isMaximized();
-                  if (isMaximized) {
-                    await windowManager.unmaximize();
-                  } else {
-                    await windowManager.maximize();
-                  }
+              ValueListenableBuilder<bool>(
+                valueListenable: AnymexTitleBar.isMaximized,
+                builder: (_, isMaximized, __) {
+                  return _WindowButton(
+                    icon: isMaximized
+                        ? Icons.filter_none_rounded
+                        : Icons.crop_square_rounded,
+                    onPressed: _toggleMaximize,
+                    buttonColor: defaultColor,
+                  );
                 },
-                buttonColor: defaultColor,
               ),
               _WindowButton(
                 icon: Icons.close_rounded,
