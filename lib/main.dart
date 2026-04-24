@@ -10,6 +10,7 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/controllers/services/mal/mal_service.dart';
+import 'package:anymex/controllers/services/mangabaka/mangabaka_service.dart';
 import 'package:anymex/controllers/services/simkl/simkl_service.dart';
 import 'package:anymex/controllers/services/storage/storage_manager_service.dart';
 import 'package:anymex/controllers/services/community_service.dart';
@@ -176,6 +177,7 @@ void _initializeGetxController() async {
   Get.put(AnilistData());
   Get.put(SimklService());
   Get.put(MalService());
+  Get.put(MangaBakaService());
   Get.put(DiscordRPCController());
   if (!Get.isRegistered<SourceController>()) {
     Get.put(SourceController());

@@ -57,6 +57,12 @@ class SettingsSheet extends StatelessWidget {
         'icon': 'simkl-icon.png',
         'desc': 'for movies and series'
       },
+      {
+        'type': ServicesType.mangabaka,
+        'name': "MangaBaka",
+        'icon': 'mangabaka-icon.png',
+        'desc': 'The largest database of manga & light novel'
+      },
       if (serviceHandler.extensionService.installedExtensions.isNotEmpty &&
           serviceHandler.extensionService.installedMangaExtensions.isNotEmpty)
         {
