@@ -117,6 +117,35 @@ class AnimeStats extends StatelessWidget {
             ),
             isInitiallyExpanded: true,
           ),
+          if (data.synonyms.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            _buildChipSection(
+              context,
+              title: 'Synonyms',
+              icon: Icons.translate_rounded,
+              chips: data.synonyms.map((s) => _ChipData(label: s)).toList(),
+            ),
+          ],
+          if (data.tags.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            _buildChipSection(
+              context,
+              title: 'Tags',
+              icon: Icons.label_rounded,
+              chips: data.tags
+                  .map((t) => _ChipData(
+                        label: '${t.name} (${t.rank}%)',
+                        onTap: () => navigate(() => SearchPage(
+                              searchTerm: '',
+                              isManga: false,
+                              initialFilters: {
+                                'tags': [t.name]
+                              },
+                            )),
+                      ))
+                  .toList(),
+            ),
+          ],
           const SizedBox(height: 16),
           _buildSectionContainer(
             context,
@@ -182,6 +211,80 @@ class AnimeStats extends StatelessWidget {
     );
   }
 
+
+  Widget _buildChipSection(
+    BuildContext context, {
+    required String title,
+    required IconData icon,
+    required List<_ChipData> chips,
+  }) {
+    final colorScheme = context.colors;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.opaque(0.35),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: colorScheme.outline.opaque(0.15, iReallyMeanIt: true),
+          width: 1.5,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: colorScheme.primary.opaque(0.15, iReallyMeanIt: true),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, size: 18, color: colorScheme.primary),
+              ),
+              const SizedBox(width: 10),
+              AnymexText(
+                text: title,
+                variant: TextVariant.bold,
+                size: 16,
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: chips.asMap().entries.map((entry) {
+              final i = entry.key;
+              final chip = entry.value;
+              final color = colorScheme.primary;
+              return GestureDetector(
+                onTap: chip.onTap,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: color.withOpacity(0.35),
+                      width: 1,
+                    ),
+                  ),
+                  child: AnymexText(
+                    text: chip.label,
+                    size: 12,
+                    variant: TextVariant.semiBold,
+                    color: color,
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
   Widget _buildOthersSection(BuildContext context) {
     final colorScheme = context.colors;
     return _buildCollapsibleSectionContainer(
@@ -908,4 +1011,14 @@ class _CollapsibleBoxState extends State<_CollapsibleBox> with SingleTickerProvi
       ),
     );
   }
+}
+
+class _ChipData {
+  final String label;
+  final VoidCallback? onTap;
+
+  _ChipData({
+    required this.label,
+    this.onTap,
+  });
 }
