@@ -131,6 +131,31 @@ String _syntheticId(int source, String url) {
   return 'ext_${source}_$hash';
 }
 
+class _TachiCategory {
+  String name = '';
+  int order = 0;
+
+  static _TachiCategory decode(Uint8List bytes) {
+    final r = _ProtoReader(bytes);
+    final obj = _TachiCategory();
+    while (r.hasMore) {
+      final tag = r.readTag();
+      if (tag == null) break;
+      switch (tag.fieldNumber) {
+        case 1:
+          obj.name = utf8.decode(r.readBytes());
+          break;
+        case 2:
+          obj.order = r.readVarint();
+          break;
+        default:
+          r.skip(tag.wireType);
+      }
+    }
+    return obj;
+  }
+}
+
 class _TachiTracking {
   int syncId = 0;
   int mediaIdInt = 0;
@@ -180,6 +205,7 @@ class _TachiAnime {
   String? thumbnailUrl;
   bool favorite = true;
   List<_TachiTracking> tracking = [];
+  List<int> categoryOrders = [];
 
   static _TachiAnime decode(Uint8List bytes) {
     final r = _ProtoReader(bytes);
@@ -199,6 +225,17 @@ class _TachiAnime {
           break;
         case 9:
           obj.thumbnailUrl = utf8.decode(r.readBytes());
+          break;
+        case 17:
+          if (tag.wireType == 2) {
+            final bytes = r.readBytes();
+            final pr = _ProtoReader(bytes);
+            while (pr.hasMore) {
+              obj.categoryOrders.add(pr.readVarint());
+            }
+          } else {
+            obj.categoryOrders.add(r.readVarint());
+          }
           break;
         case 18:
           obj.tracking.add(_TachiTracking.decode(r.readBytes()));
@@ -246,6 +283,7 @@ class _TachiManga {
   String? thumbnailUrl;
   bool favorite = true;
   List<_TachiTracking> tracking = [];
+  List<int> categoryOrders = [];
 
   static _TachiManga decode(Uint8List bytes) {
     final r = _ProtoReader(bytes);
@@ -265,6 +303,17 @@ class _TachiManga {
           break;
         case 9:
           obj.thumbnailUrl = utf8.decode(r.readBytes());
+          break;
+        case 17:
+          if (tag.wireType == 2) {
+            final bytes = r.readBytes();
+            final pr = _ProtoReader(bytes);
+            while (pr.hasMore) {
+              obj.categoryOrders.add(pr.readVarint());
+            }
+          } else {
+            obj.categoryOrders.add(r.readVarint());
+          }
           break;
         case 18:
           obj.tracking.add(_TachiTracking.decode(r.readBytes()));
@@ -308,6 +357,8 @@ class _TachiManga {
 class _TachiBackup {
   List<_TachiManga> backupManga = [];
   List<_TachiAnime> backupAnime = [];
+  Map<int, String> mangaCategories = {};
+  Map<int, String> animeCategories = {};
 
   static _TachiBackup decode(Uint8List bytes) {
     final r = _ProtoReader(bytes);
@@ -319,11 +370,25 @@ class _TachiBackup {
         case 1:
           obj.backupManga.add(_TachiManga.decode(r.readBytes()));
           break;
+        case 2:
+          final cat = _TachiCategory.decode(r.readBytes());
+          obj.mangaCategories[cat.order] = cat.name;
+          break;
         case 3:
           obj.backupAnime.add(_TachiAnime.decode(r.readBytes()));
           break;
+        case 4:
+          final cat = _TachiCategory.decode(r.readBytes());
+          if (!obj.animeCategories.containsKey(cat.order)) {
+            obj.animeCategories[cat.order] = cat.name;
+          }
+          break;
         case 501:
           obj.backupAnime.add(_TachiAnime.decode(r.readBytes()));
+          break;
+        case 502:
+          final cat = _TachiCategory.decode(r.readBytes());
+          obj.animeCategories[cat.order] = cat.name;
           break;
         default:
           r.skip(tag.wireType);
@@ -390,6 +455,8 @@ class TachibkImporter extends GetxController {
         'mangaTracked': mangaTracked,
         'animeUntracked': favoriteAnime.length - animeTracked,
         'mangaUntracked': favoriteManga.length - mangaTracked,
+        'animeCategoryCount': backup.animeCategories.length,
+        'mangaCategoryCount': backup.mangaCategories.length,
         'totalAnime': backup.backupAnime.length,
         'totalManga': backup.backupManga.length,
         'sampleAnime': favoriteAnime.take(6).map((a) => {
@@ -443,6 +510,9 @@ class TachibkImporter extends GetxController {
         ]) {
           await _storageController.addCustomList(listName, mediaType: ItemType.anime);
         }
+        for (final catName in backup.animeCategories.values) {
+          await _storageController.addCustomList(catName, mediaType: ItemType.anime);
+        }
 
         final existingAnimeItems = await isar.offlineMedias
             .filter()
@@ -450,7 +520,7 @@ class TachibkImporter extends GetxController {
             .findAll();
         final existingIds = existingAnimeItems.map((e) => e.mediaId).toSet();
 
-        final animeLookupIds = <({String lookupId, String listName})>[];
+        final animeLookupIds = <({String lookupId, List<String> listNames})>[];
 
         await isar.writeTxn(() async {
           for (final anime in animeToImport) {
@@ -472,9 +542,15 @@ class TachibkImporter extends GetxController {
               existingIds.add(tracked.mediaId);
             }
 
+            final lists = <String>[_animeListName(tracked.status)];
+            for (final order in anime.categoryOrders) {
+              final catName = backup.animeCategories[order];
+              if (catName != null) lists.add(catName);
+            }
+
             animeLookupIds.add((
               lookupId: tracked.mediaId,
-              listName: _animeListName(tracked.status),
+              listNames: lists,
             ));
 
             processed++;
@@ -483,11 +559,13 @@ class TachibkImporter extends GetxController {
         });
 
         for (final entry in animeLookupIds) {
-          await _storageController.addMediaToList(
-            entry.listName,
-            entry.lookupId,
-            mediaType: ItemType.anime,
-          );
+          for (final listName in entry.listNames) {
+            await _storageController.addMediaToList(
+              listName,
+              entry.lookupId,
+              mediaType: ItemType.anime,
+            );
+          }
         }
       }
 
@@ -499,6 +577,9 @@ class TachibkImporter extends GetxController {
         ]) {
           await _storageController.addCustomList(listName, mediaType: ItemType.manga);
         }
+        for (final catName in backup.mangaCategories.values) {
+          await _storageController.addCustomList(catName, mediaType: ItemType.manga);
+        }
 
         final existingMangaItems = await isar.offlineMedias
             .filter()
@@ -506,7 +587,7 @@ class TachibkImporter extends GetxController {
             .findAll();
         final existingMangaIds = existingMangaItems.map((e) => e.mediaId).toSet();
 
-        final mangaLookupIds = <({String lookupId, String listName})>[];
+        final mangaLookupIds = <({String lookupId, List<String> listNames})>[];
 
         await isar.writeTxn(() async {
           for (final manga in mangaToImport) {
@@ -528,9 +609,15 @@ class TachibkImporter extends GetxController {
               existingMangaIds.add(tracked.mediaId);
             }
 
+            final lists = <String>[_mangaListName(tracked.status)];
+            for (final order in manga.categoryOrders) {
+              final catName = backup.mangaCategories[order];
+              if (catName != null) lists.add(catName);
+            }
+
             mangaLookupIds.add((
               lookupId: tracked.mediaId,
-              listName: _mangaListName(tracked.status),
+              listNames: lists,
             ));
 
             processed++;
@@ -539,11 +626,13 @@ class TachibkImporter extends GetxController {
         });
 
         for (final entry in mangaLookupIds) {
-          await _storageController.addMediaToList(
-            entry.listName,
-            entry.lookupId,
-            mediaType: ItemType.manga,
-          );
+          for (final listName in entry.listNames) {
+            await _storageController.addMediaToList(
+              listName,
+              entry.lookupId,
+              mediaType: ItemType.manga,
+            );
+          }
         }
       }
 
