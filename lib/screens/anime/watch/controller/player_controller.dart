@@ -445,10 +445,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
         const double slightLeanThreshold = 0.05;
         if (averageX >= slightLeanThreshold) {
-          return DeviceOrientation.landscapeRight;
+          return DeviceOrientation.landscapeLeft;
         }
         if (averageX <= -slightLeanThreshold) {
-          return DeviceOrientation.landscapeLeft;
+          return DeviceOrientation.landscapeRight;
         }
       }
     } catch (_) {}
