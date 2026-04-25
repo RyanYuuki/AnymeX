@@ -82,6 +82,7 @@ const int _kSyncIdSimkl = 6;
 const int _kServiceAniList = 0;
 const int _kServiceMal = 1;
 const int _kServiceSimkl = 2;
+const int _kServiceExtensions = 3;
 const int _kStatusCurrent = 1;
 const int _kStatusCompleted = 2;
 const int _kStatusOnHold = 3;
@@ -123,6 +124,11 @@ String _mangaListName(int status) {
     default:
       return 'Reading';
   }
+}
+
+String _syntheticId(int source, String url) {
+  final hash = (source.toString() + url).hashCode.abs();
+  return 'ext_${source}_$hash';
 }
 
 class _TachiTracking {
@@ -207,7 +213,7 @@ class _TachiAnime {
     return obj;
   }
 
-  ({String? mediaId, int serviceIndex, int status}) get resolvedTracking {
+  ({String mediaId, int serviceIndex, int status, bool isSynthetic}) get resolvedTracking {
     final priority = [
       (_kSyncIdAniList, _kServiceAniList),
       (_kSyncIdSimkl, _kServiceSimkl),
@@ -220,10 +226,16 @@ class _TachiAnime {
           mediaId: t.resolvedMediaId.toString(),
           serviceIndex: serviceIdx,
           status: t.status,
+          isSynthetic: false,
         );
       }
     }
-    return (mediaId: null, serviceIndex: _kServiceAniList, status: _kStatusCurrent);
+    return (
+      mediaId: _syntheticId(source, url),
+      serviceIndex: _kServiceExtensions,
+      status: _kStatusCurrent,
+      isSynthetic: true,
+    );
   }
 }
 
@@ -267,7 +279,7 @@ class _TachiManga {
     return obj;
   }
 
-  ({String? mediaId, int serviceIndex, int status}) get resolvedTracking {
+  ({String mediaId, int serviceIndex, int status, bool isSynthetic}) get resolvedTracking {
     final priority = [
       (_kSyncIdAniList, _kServiceAniList),
       (_kSyncIdSimkl, _kServiceSimkl),
@@ -280,10 +292,16 @@ class _TachiManga {
           mediaId: t.resolvedMediaId.toString(),
           serviceIndex: serviceIdx,
           status: t.status,
+          isSynthetic: false,
         );
       }
     }
-    return (mediaId: null, serviceIndex: _kServiceAniList, status: _kStatusCurrent);
+    return (
+      mediaId: _syntheticId(source, url),
+      serviceIndex: _kServiceExtensions,
+      status: _kStatusCurrent,
+      isSynthetic: true,
+    );
   }
 }
 
@@ -362,14 +380,16 @@ class TachibkImporter extends GetxController {
       final favoriteAnime = backup.backupAnime.where((a) => a.favorite).toList();
       final favoriteManga = backup.backupManga.where((m) => m.favorite).toList();
 
-      final animeTracked = favoriteAnime.where((a) => a.resolvedTracking.mediaId != null).length;
-      final mangaTracked = favoriteManga.where((m) => m.resolvedTracking.mediaId != null).length;
+      final animeTracked = favoriteAnime.where((a) => !a.resolvedTracking.isSynthetic).length;
+      final mangaTracked = favoriteManga.where((m) => !m.resolvedTracking.isSynthetic).length;
 
       return {
         'animeCount': favoriteAnime.length,
         'mangaCount': favoriteManga.length,
         'animeTracked': animeTracked,
         'mangaTracked': mangaTracked,
+        'animeUntracked': favoriteAnime.length - animeTracked,
+        'mangaUntracked': favoriteManga.length - mangaTracked,
         'totalAnime': backup.backupAnime.length,
         'totalManga': backup.backupManga.length,
         'sampleAnime': favoriteAnime.take(6).map((a) => {
@@ -418,7 +438,9 @@ class TachibkImporter extends GetxController {
       if (animeToImport.isNotEmpty) {
         statusMessage.value = 'Importing anime (${animeToImport.length})...';
 
-        for (final listName in ['Watching', 'Completed', 'On Hold', 'Dropped', 'Plan to Watch', 'Rewatching']) {
+        for (final listName in [
+          'Watching', 'Completed', 'On Hold', 'Dropped', 'Plan to Watch', 'Rewatching'
+        ]) {
           await _storageController.addCustomList(listName, mediaType: ItemType.anime);
         }
 
@@ -427,39 +449,31 @@ class TachibkImporter extends GetxController {
             .mediaTypeIndexEqualTo(1)
             .findAll();
         final existingIds = existingAnimeItems.map((e) => e.mediaId).toSet();
-        final existingNames = existingAnimeItems.map((e) => e.name).toSet();
 
         final animeLookupIds = <({String lookupId, String listName})>[];
 
         await isar.writeTxn(() async {
           for (final anime in animeToImport) {
             final tracked = anime.resolvedTracking;
-            final media = OfflineMedia()
-              ..mediaId = tracked.mediaId
-              ..name = anime.title
-              ..poster = anime.thumbnailUrl
-              ..mediaTypeIndex = 1
-              ..serviceIndex = tracked.serviceIndex;
 
             bool shouldAdd = true;
-            final lookupId = tracked.mediaId ?? anime.title;
-
-            if (merge) {
-              if (tracked.mediaId == null) {
-                if (existingNames.contains(anime.title)) shouldAdd = false;
-              } else {
-                if (existingIds.contains(tracked.mediaId)) shouldAdd = false;
-              }
+            if (merge && existingIds.contains(tracked.mediaId)) {
+              shouldAdd = false;
             }
 
             if (shouldAdd) {
+              final media = OfflineMedia()
+                ..mediaId = tracked.mediaId
+                ..name = anime.title
+                ..poster = anime.thumbnailUrl
+                ..mediaTypeIndex = 1
+                ..serviceIndex = tracked.serviceIndex;
               await isar.offlineMedias.put(media);
               existingIds.add(tracked.mediaId);
-              existingNames.add(anime.title);
             }
 
             animeLookupIds.add((
-              lookupId: lookupId,
+              lookupId: tracked.mediaId,
               listName: _animeListName(tracked.status),
             ));
 
@@ -480,7 +494,9 @@ class TachibkImporter extends GetxController {
       if (mangaToImport.isNotEmpty) {
         statusMessage.value = 'Importing manga (${mangaToImport.length})...';
 
-        for (final listName in ['Reading', 'Completed', 'On Hold', 'Dropped', 'Plan to Read', 'Rereading']) {
+        for (final listName in [
+          'Reading', 'Completed', 'On Hold', 'Dropped', 'Plan to Read', 'Rereading'
+        ]) {
           await _storageController.addCustomList(listName, mediaType: ItemType.manga);
         }
 
@@ -489,39 +505,31 @@ class TachibkImporter extends GetxController {
             .mediaTypeIndexEqualTo(0)
             .findAll();
         final existingMangaIds = existingMangaItems.map((e) => e.mediaId).toSet();
-        final existingMangaNames = existingMangaItems.map((e) => e.name).toSet();
 
         final mangaLookupIds = <({String lookupId, String listName})>[];
 
         await isar.writeTxn(() async {
           for (final manga in mangaToImport) {
             final tracked = manga.resolvedTracking;
-            final media = OfflineMedia()
-              ..mediaId = tracked.mediaId
-              ..name = manga.title
-              ..poster = manga.thumbnailUrl
-              ..mediaTypeIndex = 0
-              ..serviceIndex = tracked.serviceIndex;
 
             bool shouldAdd = true;
-            final lookupId = tracked.mediaId ?? manga.title;
-
-            if (merge) {
-              if (tracked.mediaId == null) {
-                if (existingMangaNames.contains(manga.title)) shouldAdd = false;
-              } else {
-                if (existingMangaIds.contains(tracked.mediaId)) shouldAdd = false;
-              }
+            if (merge && existingMangaIds.contains(tracked.mediaId)) {
+              shouldAdd = false;
             }
 
             if (shouldAdd) {
+              final media = OfflineMedia()
+                ..mediaId = tracked.mediaId
+                ..name = manga.title
+                ..poster = manga.thumbnailUrl
+                ..mediaTypeIndex = 0
+                ..serviceIndex = tracked.serviceIndex;
               await isar.offlineMedias.put(media);
               existingMangaIds.add(tracked.mediaId);
-              existingMangaNames.add(manga.title);
             }
 
             mangaLookupIds.add((
-              lookupId: lookupId,
+              lookupId: tracked.mediaId,
               listName: _mangaListName(tracked.status),
             ));
 
