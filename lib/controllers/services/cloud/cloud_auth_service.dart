@@ -16,15 +16,16 @@ class CloudAuthService extends GetxController {
 
   static const String _kSkippedKey = '__cloud_skipped__';
 
-  String get _baseUrl {
+  String get _functionsUrl {
     final envBase = (dotenv.env['COMMENTS_BASE_URL'] ?? '').trim();
     if (envBase.isEmpty) return '';
-    return envBase.endsWith('/')
+    final base = envBase.endsWith('/')
         ? envBase.substring(0, envBase.length - 1)
         : envBase;
+    // Handle both "https://example.com" and "https://example.com/functions/v1"
+    if (base.endsWith('/functions/v1')) return base;
+    return '$base/functions/v1';
   }
-
-  String get _functionsUrl => '$_baseUrl/functions/v1';
 
   RxString username = ''.obs;
   RxString email = ''.obs;

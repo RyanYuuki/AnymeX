@@ -11,15 +11,15 @@ import 'package:path/path.dart' as p;
 class CloudProfileService extends GetxController {
   CloudAuthService get _auth => Get.find<CloudAuthService>();
 
-  String get _baseUrl {
+  String get _functionsUrl {
     final envBase = (dotenv.env['COMMENTS_BASE_URL'] ?? '').trim();
     if (envBase.isEmpty) return '';
-    return envBase.endsWith('/')
+    final base = envBase.endsWith('/')
         ? envBase.substring(0, envBase.length - 1)
         : envBase;
+    if (base.endsWith('/functions/v1')) return base;
+    return '$base/functions/v1';
   }
-
-  String get _functionsUrl => '$_baseUrl/functions/v1';
 
   Future<List<Map<String, dynamic>>?> listProfiles() async {
     try {
