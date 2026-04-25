@@ -941,3 +941,13 @@ class _CollapsibleBoxState extends State<_CollapsibleBox> with SingleTickerProvi
     );
   }
 }
+
+class _ChipData {
+  final String label;
+  final VoidCallback? onTap;
+
+  _ChipData({
+    required this.label,
+    this.onTap,
+  });
+}
