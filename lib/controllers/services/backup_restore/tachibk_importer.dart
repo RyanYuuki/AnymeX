@@ -383,10 +383,12 @@ class TachibkImporter extends GetxController {
 
         await _storageController.addCustomList("Watching", mediaType: ItemType.anime);
 
+        final animeLookupIds = <String>[];
+
         await isar.writeTxn(() async {
           for (final media in mediaList) {
             bool shouldAdd = true;
-            String lookupId = media.mediaId ?? media.name ?? '';
+            final lookupId = media.mediaId ?? media.name ?? '';
 
             if (merge) {
               final id = media.mediaId ?? '';
@@ -403,12 +405,15 @@ class TachibkImporter extends GetxController {
               if (media.name != null) existingNames.add(media.name);
             }
 
-            await _storageController.addMediaToList("Watching", lookupId, mediaType: ItemType.anime);
-
+            animeLookupIds.add(lookupId);
             processed++;
             importProgress.value = processed / total;
           }
         });
+
+        for (final lookupId in animeLookupIds) {
+          await _storageController.addMediaToList("Watching", lookupId, mediaType: ItemType.anime);
+        }
       }
 
       if (mangaToImport.isNotEmpty) {
@@ -424,10 +429,12 @@ class TachibkImporter extends GetxController {
 
         await _storageController.addCustomList("Reading", mediaType: ItemType.manga);
 
+        final mangaLookupIds = <String>[];
+
         await isar.writeTxn(() async {
           for (final media in mediaList) {
             bool shouldAdd = true;
-            String lookupId = media.mediaId ?? media.name ?? '';
+            final lookupId = media.mediaId ?? media.name ?? '';
 
             if (merge) {
               final id = media.mediaId ?? '';
@@ -444,12 +451,15 @@ class TachibkImporter extends GetxController {
               if (media.name != null) existingMangaNames.add(media.name);
             }
 
-            await _storageController.addMediaToList("Reading", lookupId, mediaType: ItemType.manga);
-
+            mangaLookupIds.add(lookupId);
             processed++;
             importProgress.value = processed / total;
           }
         });
+
+        for (final lookupId in mangaLookupIds) {
+          await _storageController.addMediaToList("Reading", lookupId, mediaType: ItemType.manga);
+        }
       }
 
       statusMessage.value = 'Done!';
