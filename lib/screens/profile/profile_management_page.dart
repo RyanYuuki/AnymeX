@@ -880,9 +880,16 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
     );
   }
 
+  BackupRestoreService _getBackupService() {
+    if (!Get.isRegistered<BackupRestoreService>()) {
+      Get.put(BackupRestoreService());
+    }
+    return Get.find<BackupRestoreService>();
+  }
+
   Future<void> _exportProfile(AppProfile profile) async {
+    final backupService = _getBackupService();
     try {
-      final backupService = Get.find<BackupRestoreService>();
       backupService.isBackingUp.value = true;
 
       final path = await backupService.exportBackupToExternal(
@@ -897,7 +904,7 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
         snackBar('Profile "${profile.name}" exported successfully');
       }
     } catch (e) {
-      Get.find<BackupRestoreService>().isBackingUp.value = false;
+      backupService.isBackingUp.value = false;
       snackBar('Export failed: $e');
     }
   }
