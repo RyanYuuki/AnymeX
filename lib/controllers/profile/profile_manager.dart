@@ -299,6 +299,56 @@ class ProfileManager extends GetxController {
     showProfileSelection.value = false;
   }
 
+
+  Future<bool> importFromCloud(List<Map<String, dynamic>> cloudProfiles) async {
+    if (cloudProfiles.isEmpty) return false;
+
+    bool anyNew = false;
+    for (final cp in cloudProfiles) {
+      final cloudId = cp['cloud_profile_id'] as String? ??
+          cp['id'] as String? ?? '';
+      final displayName = cp['display_name'] as String? ?? 'Profile';
+      final avatarUrl = cp['avatar_url'] as String? ?? '';
+      final pinHash = cp['pin_hash'] as String?;
+      final createdAt = cp['created_at'] != null
+          ? DateTime.tryParse(cp['created_at'].toString())
+          : null;
+      final lastUsed = cp['last_used_at'] != null
+          ? DateTime.tryParse(cp['last_used_at'].toString())
+          : null;
+
+      final existing = profiles.firstWhereOrNull((p) => p.id == cloudId);
+      if (existing != null) {
+        _updateProfile(existing.copyWith(
+          name: displayName,
+          avatarPath: avatarUrl.isNotEmpty ? avatarUrl : existing.avatarPath,
+          pinHash: pinHash ?? existing.pinHash,
+          lastUsedAt: lastUsed ?? existing.lastUsedAt,
+        ));
+      } else {
+        final profile = AppProfile(
+          id: cloudId,
+          name: displayName,
+          avatarPath: avatarUrl.isNotEmpty ? avatarUrl : '',
+          createdAt: createdAt,
+          lastUsedAt: lastUsed ?? DateTime.now(),
+          pinHash: pinHash,
+        )..anilistLinked = cp['anilist_linked'] as bool? ?? false
+          ..malLinked = cp['mal_linked'] as bool? ?? false
+          ..simklLinked = cp['simkl_linked'] as bool? ?? false;
+        profiles.add(profile);
+        anyNew = true;
+      }
+    }
+
+    if (anyNew) {
+      profiles.sort((a, b) => b.lastUsedAt.compareTo(a.lastUsedAt));
+      _saveProfiles();
+    }
+
+    return anyNew || cloudProfiles.isNotEmpty;
+  }
+
   void _updateProfile(AppProfile updated) {
     final index = profiles.indexWhere((p) => p.id == updated.id);
     if (index == -1) return;

@@ -185,7 +185,9 @@ class CloudSyncService extends GetxController {
       }
 
       final library = List<Map<String, dynamic>>.from(data['library'] ?? []);
-      return library.map((item) => _cloudJsonToMedia(item)).toList();
+      return library
+          .map((item) => _cloudJsonToMedia(item, profileId: cloudProfileId))
+          .toList();
     } catch (e) {
       Logger.i('Pull library error: $e');
       return [];
@@ -243,6 +245,7 @@ class CloudSyncService extends GetxController {
                     .toList() ??
                 [],
             mediaTypeIndex: l['media_type_index'] as int? ?? 0,
+            profileId: cloudProfileId,
           )).toList();
     } catch (e) {
       Logger.i('Pull custom lists error: $e');
@@ -389,7 +392,7 @@ class CloudSyncService extends GetxController {
     };
   }
 
-  OfflineMedia _cloudJsonToMedia(Map<String, dynamic> json) {
+  OfflineMedia _cloudJsonToMedia(Map<String, dynamic> json, {String? profileId}) {
     return OfflineMedia(
       mediaId: json['media_id'] as String?,
       jname: json['jname'] as String?,
@@ -414,6 +417,7 @@ class CloudSyncService extends GetxController {
       studios: (json['studios'] as List?)?.cast<String>(),
       serviceIndex: json['service_index'] as int?,
       mediaTypeIndex: json['media_type_index'] as int? ?? 0,
+      profileId: profileId ?? json['profile_id'] as String?,
       currentEpisode: null,
       currentChapter: null,
       watchedEpisodes: [],

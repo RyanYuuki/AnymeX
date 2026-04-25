@@ -1,4 +1,7 @@
+import 'package:anymex/controllers/profile/profile_manager.dart';
 import 'package:anymex/controllers/services/cloud/cloud_auth_service.dart';
+import 'package:anymex/controllers/services/cloud/cloud_profile_service.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:flutter/material.dart';
@@ -72,6 +75,22 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
     if (!success) {
       _setError(authService.errorMessage.value);
+    } else {
+      await _fetchCloudProfiles();
+    }
+  }
+
+  Future<void> _fetchCloudProfiles() async {
+    try {
+      final profileService = Get.find<CloudProfileService>();
+      final manager = Get.find<ProfileManager>();
+
+      final cloudProfiles = await profileService.listProfiles();
+      if (cloudProfiles != null && cloudProfiles.isNotEmpty) {
+        await manager.importFromCloud(cloudProfiles);
+      }
+    } catch (e) {
+      Logger.i('Error fetching cloud profiles after auth: $e');
     }
   }
 

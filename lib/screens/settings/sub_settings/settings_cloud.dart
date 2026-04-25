@@ -1,5 +1,6 @@
 import 'package:anymex/controllers/profile/profile_manager.dart';
 import 'package:anymex/controllers/services/cloud/cloud_auth_service.dart';
+import 'package:anymex/controllers/services/cloud/cloud_profile_service.dart';
 import 'package:anymex/controllers/services/cloud/cloud_sync_service.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/cloud_encryption.dart';
@@ -98,14 +99,27 @@ class _SettingsCloudState extends State<SettingsCloud> {
     authService.logout();
   }
 
-  void _navigateToCloudMode() {
+  Future<void> _navigateToCloudMode() async {
     final authService = Get.find<CloudAuthService>();
     final manager = Get.find<ProfileManager>();
 
     authService.unskipCloud();
     authService.cloudMode.value = CloudMode.cloud;
     manager.isProfileReady.value = false;
-    manager.profiles.clear();
+
+    try {
+      final profileService = Get.find<CloudProfileService>();
+      final cloudProfiles = await profileService.listProfiles();
+      if (cloudProfiles != null && cloudProfiles.isNotEmpty) {
+        manager.profiles.clear();
+        await manager.importFromCloud(cloudProfiles);
+      } else {
+        manager.profiles.clear();
+      }
+    } catch (_) {
+      manager.profiles.clear();
+    }
+
     manager.requestProfileSelection();
 
     if (mounted) {
@@ -152,6 +166,8 @@ class _SettingsCloudState extends State<SettingsCloud> {
 
   Future<void> _fullSync() async {
     final profileManager = Get.find<ProfileManager>();
+    final authService = Get.find<CloudAuthService>();
+    final syncService = Get.find<CloudSyncService>();
     final currentProfile = profileManager.currentProfile.value;
 
     if (currentProfile == null) {
@@ -159,13 +175,34 @@ class _SettingsCloudState extends State<SettingsCloud> {
       return;
     }
 
-    final password = await _askForEncryptionPassword();
-    if (password == null || password.isEmpty) return;
+    if (!authService.isLoggedIn.value) {
+      _showError('Not signed in to cloud');
+      return;
+    }
+
+    final encryptionSalt = CloudKeys.encryptionSalt.get<String?>();
+    if (encryptionSalt == null || encryptionSalt.isEmpty) {
+      _showError('Encryption salt not set. Please re-login.');
+      return;
+    }
 
     setState(() => _isLoading = true);
 
+    final success = await syncService.fullSyncPush(
+      localProfileId: currentProfile.id,
+      cloudProfileId: currentProfile.id,
+      encryptionPassword: '',
+      encryptionSalt: encryptionSalt,
+    );
+
+    if (!mounted) return;
     setState(() => _isLoading = false);
-    _showSuccess('Sync initiated! Check sync status for details.');
+
+    if (success) {
+      _showSuccess('Sync complete! All data pushed to cloud.');
+    } else {
+      _showError('Sync failed: ${syncService.syncStatus.value}');
+    }
   }
 
   Future<String?> _askForEncryptionPassword() async {

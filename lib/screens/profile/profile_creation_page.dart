@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:anymex/controllers/profile/profile_manager.dart';
+import 'package:anymex/controllers/services/cloud/cloud_auth_service.dart';
+import 'package:anymex/controllers/services/cloud/cloud_profile_service.dart';
 import 'package:anymex/screens/profile/widgets/profile_avatar.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
@@ -93,6 +95,19 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
     if (_enablePin) {
       manager.setPin(profile.id, _pinController.text.trim());
     }
+
+    try {
+      final authService = Get.find<CloudAuthService>();
+      if (authService.isLoggedIn.value) {
+        final profileService = Get.find<CloudProfileService>();
+        await profileService.createProfile(
+          localProfileId: profile.id,
+          displayName: profile.name,
+          avatarUrl: profile.avatarPath.isNotEmpty ? profile.avatarPath : null,
+          pinHash: profile.pinHash,
+        );
+      }
+    } catch (_) {}
 
     await manager.switchToProfile(profile.id);
 
