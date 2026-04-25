@@ -1,10 +1,13 @@
+import 'package:anymex/controllers/services/cloud/cloud_auth_service.dart';
 import 'package:anymex/screens/downloads/download_screen.dart';
 import 'package:anymex/screens/other_features.dart';
+import 'package:anymex/screens/profile/profile_management_page.dart';
 import 'package:anymex/screens/settings/search/settings_registry.dart';
 import 'package:anymex/screens/settings/search/settings_search_icons.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_about.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_accounts.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_backup.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_cloud.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_common.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_downloads.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_experimental.dart';
@@ -37,6 +40,7 @@ class _CategoryItem {
   final Widget Function()? destination;
   final void Function()? customTap;
   final bool isDebugOnly;
+  final bool isCloudOnly;
   final bool addDividerAbove;
 
   const _CategoryItem({
@@ -46,6 +50,7 @@ class _CategoryItem {
     this.destination,
     this.customTap,
     this.isDebugOnly = false,
+    this.isCloudOnly = false,
     this.addDividerAbove = false,
   });
 }
@@ -256,6 +261,12 @@ class _SettingsPageState extends State<SettingsPage> {
   List<Widget> _buildCategoryWidgets() {
     final items = [
       _CategoryItem(
+          icon: HugeIcons.strokeRoundedUser02,
+          title: "Profiles",
+          description: "Manage profiles, PIN locks, and switching",
+          destination: () => const ProfileManagementPage(),
+          isCloudOnly: true),
+      _CategoryItem(
           icon: IconlyLight.profile,
           title: "Accounts",
           description: "Manage your MyAnimeList, Anilist, Simkl Accounts!",
@@ -270,6 +281,11 @@ class _SettingsPageState extends State<SettingsPage> {
           title: "Backup & Restore",
           description: "Backup and restore your library",
           destination: () => const BackupRestorePage()),
+      _CategoryItem(
+          icon: Icons.cloud_rounded,
+          title: "Cloud Sync",
+          description: "Sync profiles, settings, and library to the cloud",
+          destination: () => const SettingsCloud()),
       _CategoryItem(
           icon: Icons.storage_rounded,
           title: "Storage Manager",
@@ -347,8 +363,10 @@ class _SettingsPageState extends State<SettingsPage> {
     ];
 
     final widgets = <Widget>[];
+    final authService = Get.find<CloudAuthService>();
     for (final item in items) {
       if (item.isDebugOnly && !kDebugMode) continue;
+      if (item.isCloudOnly && authService.isGuestMode) continue;
 
       if (item.addDividerAbove) {
         widgets.add(const SizedBox(height: 10));

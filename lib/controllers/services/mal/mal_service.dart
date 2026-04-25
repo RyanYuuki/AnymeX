@@ -407,6 +407,8 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
   @override
   Future<void> autoLogin() async {
+    isLoggedIn.value = false;
+    profileData.value = Profile();
     try {
       final token = AuthKeys.malAuthToken.get<String?>();
       final refreshToken = AuthKeys.malRefreshToken.get<String?>();

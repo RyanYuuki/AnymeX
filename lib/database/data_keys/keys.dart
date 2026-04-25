@@ -276,3 +276,10 @@ enum DownloadKeys {
   enableJxlCompression,
 }
 
+enum CloudKeys {
+  encryptionSalt,
+  lastSyncVersion,
+  lastSyncTime,
+  autoSyncEnabled,
+}
+

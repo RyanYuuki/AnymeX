@@ -798,6 +798,8 @@ class SimklService extends GetxController
 
   @override
   Future<void> autoLogin() async {
+    isLoggedIn.value = false;
+    profileData.value = Profile();
     final token = AuthKeys.simklAuthToken.get<String?>();
     if (token != null) {
       await fetchUserInfo();

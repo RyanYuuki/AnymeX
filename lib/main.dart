@@ -3,12 +3,16 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:anymex/controllers/cacher/cache_controller.dart';
+import 'package:anymex/controllers/profile/profile_manager.dart';
 import 'package:anymex/screens/downloads/controller/download_controller.dart';
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
+import 'package:anymex/controllers/services/cloud/cloud_auth_service.dart';
+import 'package:anymex/controllers/services/cloud/cloud_profile_service.dart';
+import 'package:anymex/controllers/services/cloud/cloud_sync_service.dart';
 import 'package:anymex/controllers/services/mal/mal_service.dart';
 import 'package:anymex/controllers/services/simkl/simkl_service.dart';
 import 'package:anymex/controllers/services/storage/storage_manager_service.dart';
@@ -31,11 +35,18 @@ import 'package:anymex/utils/external_font_loader.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/deeplink.dart';
 import 'package:anymex/utils/register_protocol/register_protocol.dart';
+import 'package:anymex/models/Service/app_profile.dart';
+import 'package:anymex/screens/profile/widgets/profile_avatar.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/adaptive_wrapper.dart';
 import 'package:anymex/widgets/animation/more_page_transitions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/screens/auth/welcome_screen.dart';
+import 'package:anymex/screens/profile/profile_creation_page.dart';
+import 'package:anymex/screens/profile/profile_selection_page.dart';
+import 'package:anymex/screens/profile/widgets/profile_switcher_overlay.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_splash_screen.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_titlebar.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
@@ -169,6 +180,7 @@ void main(List<String> args) async {
 }
 
 void _initializeGetxController() async {
+  Get.put(ProfileManager(), permanent: true);
   Get.put(Settings());
   Get.put(OfflineStorageController());
   Get.put(AnilistAuth());
@@ -183,6 +195,9 @@ void _initializeGetxController() async {
   Get.put(ServiceHandler());
   Get.put(GreetingController());
   Get.put(CommentumService());
+  Get.put(CloudAuthService(), permanent: true);
+  Get.put(CloudProfileService());
+  Get.put(CloudSyncService());
   Get.put(CommentPreloader());
   Get.put(GistSyncController(), permanent: true);
   Get.put(DownloadController(), permanent: true);
@@ -276,7 +291,7 @@ class _MainAppState extends State<MainApp> {
             : theme.isLightMode
                 ? ThemeMode.light
                 : ThemeMode.dark,
-        home: _showMainApp ? const FilterScreen() : const AnymeXSplashScreen(),
+        home: _showMainApp ? const ProfileGate() : const AnymeXSplashScreen(),
         builder: (context, child) {
           if (PlatformDispatcher.instance.views.length > 1) {
             return child!;
@@ -306,6 +321,415 @@ class _MainAppState extends State<MainApp> {
           Logger.d(text);
         },
       ),
+    );
+  }
+}
+
+class ProfileGate extends StatefulWidget {
+  const ProfileGate({super.key});
+
+  @override
+  State<ProfileGate> createState() => _ProfileGateState();
+}
+
+class _ProfileGateState extends State<ProfileGate> {
+  @override
+  Widget build(BuildContext context) {
+    final authService = Get.find<CloudAuthService>();
+    final manager = Get.find<ProfileManager>();
+
+    return Obx(() {
+      final mode = authService.cloudMode.value;
+
+      if (mode == CloudMode.guest) {
+        manager.isProfileReady.value = true;
+        return const FilterScreen();
+      }
+
+      if (mode == CloudMode.uninitialized) {
+        return const WelcomeScreen();
+      }
+
+      if (manager.showProfileSelection.value) {
+        return const ProfileSelectionPage();
+      }
+
+      if (manager.isProfileReady.value) {
+        return const FilterScreen();
+      }
+
+      if (!manager.hasProfiles) {
+        return const ProfileCreationPage();
+      }
+
+      if (manager.hasAutoStart) {
+        return _AutoStartHandler(profileId: manager.autoStartProfileId.value);
+      }
+
+      if (manager.hasSingleProfile) {
+        return _AutoStartHandler(
+            profileId: manager.profiles.first.id);
+      }
+
+      return const ProfileSelectionPage();
+    });
+  }
+}
+
+class _AutoStartHandler extends StatefulWidget {
+  final String profileId;
+  const _AutoStartHandler({required this.profileId});
+
+  @override
+  State<_AutoStartHandler> createState() => _AutoStartHandlerState();
+}
+
+class _AutoStartHandlerState extends State<_AutoStartHandler> {
+  bool _needsPin = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkAndStart();
+  }
+
+  Future<void> _checkAndStart() async {
+    final manager = Get.find<ProfileManager>();
+
+    if (manager.isProfileReady.value) {
+      return;
+    }
+
+    final profile = manager.profiles
+        .firstWhereOrNull((p) => p.id == widget.profileId);
+
+    if (profile == null) {
+      manager.isProfileReady.value = true;
+      return;
+    }
+
+    if (profile.hasPin) {
+      setState(() => _needsPin = true);
+    } else {
+      await manager.switchToProfile(profile.id);
+    }
+  }
+
+  Future<void> _submitPin(String pin) async {
+    final manager = Get.find<ProfileManager>();
+    final result = manager.verifyPin(widget.profileId, pin);
+
+    if (result == true) {
+      await manager.switchToProfile(widget.profileId);
+    } else {
+      snackBar(result == null
+          ? 'Profile is temporarily locked'
+          : 'Wrong PIN');
+      if (result == null && mounted) {
+        setState(() => _needsPin = false);
+      }
+    }
+  }
+
+  void _goToProfileSelection() {
+    final manager = Get.find<ProfileManager>();
+    manager.resetAutoStart();
+    manager.requestProfileSelection();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final manager = Get.find<ProfileManager>();
+
+    if (!manager.profiles.any((p) => p.id == widget.profileId)) {
+      return const ProfileSelectionPage();
+    }
+
+    if (manager.isProfileReady.value) {
+      return const FilterScreen();
+    }
+
+    if (_needsPin) {
+      return Scaffold(
+        backgroundColor: colorScheme.surface,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    onPressed: _goToProfileSelection,
+                    icon: Icon(Icons.arrow_back,
+                        color: colorScheme.onSurface.withOpacity(0.7)),
+                    label: Text('Switch Profile',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 14,
+                          color: colorScheme.onSurface.withOpacity(0.7),
+                        )),
+                  ),
+                ),
+                Expanded(
+                  child: _PinAutoStartWidget(
+                    profile: manager.profiles.firstWhere(
+                        (p) => p.id == widget.profileId),
+                    onSubmit: _submitPin,
+                    onSwitchProfile: _goToProfileSelection,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Scaffold(
+      backgroundColor: colorScheme.surface,
+      body: Center(
+        child: CircularProgressIndicator(
+          color: colorScheme.primary,
+        ),
+      ),
+    );
+  }
+}
+
+class _PinAutoStartWidget extends StatefulWidget {
+  final AppProfile profile;
+  final Future<void> Function(String pin) onSubmit;
+  final VoidCallback onSwitchProfile;
+  const _PinAutoStartWidget({
+    required this.profile,
+    required this.onSubmit,
+    required this.onSwitchProfile,
+  });
+
+  @override
+  State<_PinAutoStartWidget> createState() => _PinAutoStartWidgetState();
+}
+
+class _PinAutoStartWidgetState extends State<_PinAutoStartWidget> {
+  final _controller = TextEditingController();
+  bool _error = false;
+  String _errorMessage = '';
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final pin = _controller.text.trim();
+    if (pin.length < 4) return;
+    widget.onSubmit(pin);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final profile = widget.profile;
+    final onSurface = context.colors.onSurface;
+
+    if (profile.isLocked) {
+      final remaining =
+          profile.lockedUntil!.difference(DateTime.now()).inMinutes + 1;
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ProfileAvatar(profile: profile, radius: 48, showLocked: true),
+            const SizedBox(height: 16),
+            Text(profile.name,
+                style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 22,
+                    color: onSurface)),
+            const SizedBox(height: 24),
+            Text('Too many failed attempts.',
+                style: TextStyle(
+                    color: onSurface.withOpacity(0.7), fontSize: 14)),
+            const SizedBox(height: 8),
+            Text('Try again in $remaining minute${remaining != 1 ? 's' : ''}',
+                style: const TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Poppins')),
+            const SizedBox(height: 24),
+            TextButton(
+              onPressed: widget.onSwitchProfile,
+              child: Text('Switch to another profile',
+                  style: TextStyle(
+                      color: colorScheme.primary,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w600)),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: 40),
+          ProfileAvatar(profile: profile, radius: 52),
+          const SizedBox(height: 16),
+          Text(profile.name,
+              style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                  color: onSurface)),
+          const SizedBox(height: 6),
+          if (profile.anilistLinked ||
+              profile.malLinked ||
+              profile.simklLinked)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (profile.anilistLinked)
+                  _serviceDot('AL', Colors.blue),
+                if (profile.malLinked)
+                  _serviceDot('MAL', Colors.blueAccent),
+                if (profile.simklLinked)
+                  _serviceDot('Simkl', Colors.green),
+              ],
+            ),
+          const SizedBox(height: 40),
+          Container(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainer,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.lock_outline_rounded,
+                        size: 20,
+                        color: colorScheme.primary.withOpacity(0.8)),
+                    const SizedBox(width: 8),
+                    Text('Enter PIN to unlock',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                          color: onSurface.withOpacity(0.8),
+                        )),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: _controller,
+                  keyboardType: TextInputType.number,
+                  obscureText: true,
+                  maxLength: 6,
+                  autofocus: true,
+                  style: TextStyle(
+                    color: colorScheme.onSurface,
+                    fontFamily: 'Poppins',
+                    fontSize: 28,
+                    letterSpacing: 10,
+                  ),
+                  textAlign: TextAlign.center,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: colorScheme.surface,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: _error
+                          ? const BorderSide(color: Colors.red, width: 2)
+                          : BorderSide.none,
+                    ),
+                    counterText: '',
+                  ),
+                  onChanged: (_) => setState(() {
+                    _error = false;
+                    _errorMessage = '';
+                  }),
+                  onSubmitted: (_) => _submit(),
+                ),
+                if (_error) ...[
+                  const SizedBox(height: 8),
+                  Text(_errorMessage,
+                      style: const TextStyle(
+                          color: Colors.red, fontSize: 13)),
+                ],
+                const SizedBox(height: 4),
+                Obx(() {
+                  final manager = Get.find<ProfileManager>();
+                  final attempts = manager.profiles
+                          .firstWhereOrNull((p) => p.id == profile.id)
+                          ?.failedPinAttempts ??
+                      0;
+                  if (attempts > 0) {
+                    return Text(
+                      '$attempts / $kMaxPinAttempts attempts',
+                      style: TextStyle(
+                          color: onSurface.withOpacity(0.4), fontSize: 12),
+                    );
+                  }
+                  return const SizedBox.shrink();
+                }),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: ElevatedButton(
+              onPressed: _submit,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: colorScheme.primary,
+                foregroundColor: colorScheme.onPrimary,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14)),
+              ),
+              child: const Text('Unlock',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  )),
+            ),
+          ),
+          const SizedBox(height: 16),
+          TextButton(
+            onPressed: widget.onSwitchProfile,
+            child: Text('Not your profile? Switch to another',
+                style: TextStyle(
+                    color: colorScheme.primary.withOpacity(0.8),
+                    fontFamily: 'Poppins',
+                    fontSize: 13)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _serviceDot(String text, Color color) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(text,
+          style: TextStyle(
+              fontSize: 11, fontWeight: FontWeight.w600, color: color)),
     );
   }
 }
@@ -406,25 +830,33 @@ class _FilterScreenState extends State<FilterScreen> {
                             return SettingsSheet.show(context);
                           },
                           label: 'Profile',
-                          altIcon: CircleAvatar(
-                              radius: 24,
-                              backgroundColor: Theme.of(context)
-                                  .colorScheme
-                                  .surfaceContainer
-                                  .withValues(alpha: 0.3),
-                              child: authService.isLoggedIn.value
-                                  ? ClipRRect(
-                                      borderRadius: BorderRadius.circular(59),
-                                      child: AnymeXImage(
-                                          width: 40,
-                                          height: 40,
-                                          fit: BoxFit.cover,
-                                          radius: 0,
-                                          imageUrl: authService
-                                                  .profileData.value.avatar ??
-                                              ''),
-                                    )
-                                  : const Icon((IconlyBold.profile)))),
+                          altIcon: GestureDetector(
+                            onLongPress: Get.find<CloudAuthService>().isCloudMode
+                                ? () => showProfileSwitcher(context)
+                                : null,
+                            child: CircleAvatar(
+                                radius: 24,
+                                backgroundColor: Theme.of(context)
+                                    .colorScheme
+                                    .surfaceContainer
+                                    .withValues(alpha: 0.3),
+                                child: authService.isLoggedIn.value
+                                    ? ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(59),
+                                        child: AnymeXImage(
+                                            width: 40,
+                                            height: 40,
+                                            fit: BoxFit.cover,
+                                            radius: 0,
+                                            imageUrl: authService
+                                                    .profileData
+                                                    .value
+                                                    .avatar ??
+                                                ''),
+                                      )
+                                    : const Icon((IconlyBold.profile))),
+                          )),
                       NavItem(
                         unselectedIcon: IconlyLight.home,
                         selectedIcon: IconlyBold.home,
