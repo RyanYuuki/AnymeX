@@ -40,6 +40,7 @@ class _SettingsReaderState extends State<SettingsReader> {
   bool _mangaLongPressActions =
       ReaderKeys.longPressPageActionsEnabled.get<bool>(true);
   bool _mangaAutoWebtoon = ReaderKeys.autoWebtoonMode.get<bool>(false);
+  int _mangaFilterQuality = ReaderKeys.imageFilterQuality.get<int>(2);
 
   int _novelThemeMode = NovelReaderKeys.themeMode.get<int>(3);
   double _novelBackgroundOpacity =
@@ -161,6 +162,35 @@ class _SettingsReaderState extends State<SettingsReader> {
         });
       },
       leadingIcon: Iconsax.book_1,
+    );
+  }
+
+  void _showMangaFilterQualityDialog() {
+    showSelectionDialog<int>(
+      title: 'Image Filter Quality',
+      items: const [0, 1, 2, 3, 4],
+      selectedItem: _mangaFilterQuality.obs,
+      getTitle: (value) {
+        switch (value) {
+          case 0:
+            return 'None (Nearest-neighbor)';
+          case 1:
+            return 'Low (Bilinear)';
+          case 3:
+            return 'High (Bicubic)';
+          case 4:
+            return 'Lanczos Pre-scale (Best quality, slower)';
+          default:
+            return 'Medium (Default)';
+        }
+      },
+      onItemSelected: (value) {
+        setState(() {
+          _mangaFilterQuality = value;
+          ReaderKeys.imageFilterQuality.set(value);
+        });
+      },
+      leadingIcon: Icons.image_search_rounded,
     );
   }
 
@@ -323,6 +353,18 @@ class _SettingsReaderState extends State<SettingsReader> {
                                 _ => 'Standard (Single)',
                               },
                               onTap: _showMangaDualPageDialog,
+                            ),
+                            CustomTile(
+                              icon: Icons.image_search_rounded,
+                              title: 'Image Filter Quality',
+                              description: switch (_mangaFilterQuality) {
+                                0 => 'None (Nearest)',
+                                1 => 'Low (Bilinear)',
+                                3 => 'High (Bicubic)',
+                                4 => 'Lanczos Pre-scale (Best)',
+                                _ => 'Medium (Default)',
+                              },
+                              onTap: _showMangaFilterQualityDialog,
                             ),
                             CustomSwitchTile(
                               icon: Iconsax.pharagraphspacing,

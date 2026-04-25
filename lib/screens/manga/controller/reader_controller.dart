@@ -153,6 +153,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   final RxInt displayRefreshDurationMs = 200.obs;
   final RxInt displayRefreshInterval = 1.obs;
   final RxString displayRefreshColor = 'black'.obs;
+  final RxInt imageFilterQuality = 2.obs;
   final RxBool showingTransition = false.obs;
   final RxBool transitionIsNext = true.obs;
   final Rx<Chapter?> transitionTargetChapter = Rx<Chapter?>(null);
@@ -742,6 +743,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         ReaderKeys.displayRefreshInterval.get<int>(1);
     displayRefreshColor.value =
         ReaderKeys.displayRefreshColor.get<String>('black');
+    imageFilterQuality.value =
+        ReaderKeys.imageFilterQuality.get<int>(2);
 
     if (!keepScreenOn.value) WakelockPlus.disable();
 
@@ -783,6 +786,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     ReaderKeys.displayRefreshDurationMs.set(displayRefreshDurationMs.value);
     ReaderKeys.displayRefreshInterval.set(displayRefreshInterval.value);
     ReaderKeys.displayRefreshColor.set(displayRefreshColor.value);
+    ReaderKeys.imageFilterQuality.set(imageFilterQuality.value);
   }
 
   void _setupPositionListener() {
@@ -1314,6 +1318,11 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
   void toggleDisplayRefresh() {
     displayRefreshEnabled.value = !displayRefreshEnabled.value;
+    savePreferences();
+  }
+
+  void setImageFilterQuality(int value) {
+    imageFilterQuality.value = value;
     savePreferences();
   }
 

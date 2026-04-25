@@ -88,6 +88,7 @@ enum ReaderKeys {
   displayRefreshDurationMs,
   displayRefreshInterval,
   displayRefreshColor,
+  imageFilterQuality,
 }
 
 enum NovelReaderKeys {

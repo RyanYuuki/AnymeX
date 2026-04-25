@@ -9,6 +9,7 @@ import 'package:anymex/screens/manga/widgets/reader/reader_chapter_transition.da
 import 'package:anymex/screens/manga/widgets/reader/reader_color_overlay.dart';
 import 'package:anymex/screens/manga/widgets/reader/reader_page_actions_dialog.dart';
 import 'package:anymex/utils/image_cropper.dart';
+import 'package:anymex/utils/lanczos_image.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
@@ -470,6 +471,20 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
         widget.controller.readingLayout.value == MangaPageViewMode.continuous;
 
     return Obx(() {
+      final filterQualityIndex = widget.controller.imageFilterQuality.value;
+      final isLanczos = filterQualityIndex == 4;
+      final filterQuality = switch (filterQualityIndex) {
+        0 => FilterQuality.none,
+        1 => FilterQuality.low,
+        3 => FilterQuality.high,
+        _ => FilterQuality.medium,
+      };
+
+      final continuousConstraints = isContinuous
+          ? BoxConstraints(
+              maxWidth: 500 * widget.controller.pageWidthMultiplier.value)
+          : null;
+
       return Padding(
         padding: EdgeInsets.symmetric(
             vertical: widget.controller.spacedPages.value ? 8.0 : 0),
@@ -496,93 +511,114 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                       fit: BoxFit.contain,
                       alignment: Alignment.center,
                     ))
-              : (page.url.startsWith('http')
-                  ? ExtendedImage.network(
-                      page.url,
-                  cacheMaxAge:
-                      Duration(days: PlayerUiKeys.cacheDays.get<int>(7)),
-                  mode: ExtendedImageMode.none,
-                  gaplessPlayback: true,
-                  headers: (page.headers?.isEmpty ?? true)
-                      ? {
-                          'Referer': sourceController
-                                  .activeMangaSource.value?.baseUrl ??
-                              ''
-                        }
-                      : page.headers,
-                  fit: BoxFit.contain,
-                  constraints: isContinuous
-                      ? BoxConstraints(
-                          maxWidth:
-                              500 * widget.controller.pageWidthMultiplier.value)
-                      : null,
-                  cache: true,
-                  alignment: Alignment.center,
-                  filterQuality: FilterQuality.medium,
-                  enableLoadState: true,
-                  loadStateChanged: (ExtendedImageState state) {
-                    switch (state.extendedImageLoadState) {
-                      case LoadState.loading:
-                        return _buildPageLoadingWidget(
-                          context,
-                          pageIndex: index,
-                          progress: _networkLoadProgress(state),
-                        );
+              : isLanczos
+                  ? (page.url.startsWith('http')
+                      ? LanczosNetworkImage(
+                          url: page.url,
+                          headers: (page.headers?.isEmpty ?? true)
+                              ? {
+                                  'Referer': sourceController
+                                          .activeMangaSource.value?.baseUrl ??
+                                      ''
+                                }
+                              : page.headers,
+                          fit: BoxFit.contain,
+                          alignment: Alignment.center,
+                          constraints: continuousConstraints,
+                          placeholder:
+                              _buildPageLoadingWidget(context, pageIndex: index),
+                        )
+                      : LanczosFileImage(
+                          path: page.url,
+                          fit: BoxFit.contain,
+                          alignment: Alignment.center,
+                          constraints: continuousConstraints,
+                          placeholder:
+                              _buildPageLoadingWidget(context, pageIndex: index),
+                        ))
+                  : (page.url.startsWith('http')
+                      ? ExtendedImage.network(
+                          page.url,
+                          cacheMaxAge: Duration(
+                              days: PlayerUiKeys.cacheDays.get<int>(7)),
+                          mode: ExtendedImageMode.none,
+                          gaplessPlayback: true,
+                          headers: (page.headers?.isEmpty ?? true)
+                              ? {
+                                  'Referer': sourceController
+                                          .activeMangaSource.value?.baseUrl ??
+                                      ''
+                                }
+                              : page.headers,
+                          fit: BoxFit.contain,
+                          constraints: continuousConstraints,
+                          cache: true,
+                          alignment: Alignment.center,
+                          filterQuality: filterQuality,
+                          enableLoadState: true,
+                          loadStateChanged: (ExtendedImageState state) {
+                            switch (state.extendedImageLoadState) {
+                              case LoadState.loading:
+                                return _buildPageLoadingWidget(
+                                  context,
+                                  pageIndex: index,
+                                  progress: _networkLoadProgress(state),
+                                );
 
-                      case LoadState.failed:
-                        final size = MediaQuery.of(context).size;
-                        return SizedBox(
-                          height: size.height,
-                          child: Container(
-                            color: Colors.grey.opaque(0.1),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.broken_image_outlined,
-                                  size: 48,
-                                  color: Colors.grey.opaque(0.7),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'Failed to load page ${index + 1}',
-                                  style: const TextStyle(color: Colors.grey),
-                                ),
-                                const SizedBox(height: 8),
-                                ElevatedButton.icon(
-                                  onPressed: () {
-                                    state.reLoadImage();
-                                  },
-                                  icon: const Icon(Icons.refresh, size: 16),
-                                  label: const Text('Retry'),
-                                  style: ElevatedButton.styleFrom(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 12, vertical: 6),
-                                    textStyle: const TextStyle(fontSize: 12),
+                              case LoadState.failed:
+                                final size = MediaQuery.of(context).size;
+                                return SizedBox(
+                                  height: size.height,
+                                  child: Container(
+                                    color: Colors.grey.opaque(0.1),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.broken_image_outlined,
+                                          size: 48,
+                                          color: Colors.grey.opaque(0.7),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          'Failed to load page ${index + 1}',
+                                          style: const TextStyle(
+                                              color: Colors.grey),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        ElevatedButton.icon(
+                                          onPressed: () {
+                                            state.reLoadImage();
+                                          },
+                                          icon: const Icon(Icons.refresh,
+                                              size: 16),
+                                          label: const Text('Retry'),
+                                          style: ElevatedButton.styleFrom(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 12, vertical: 6),
+                                            textStyle:
+                                                const TextStyle(fontSize: 12),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
+                                );
 
-                      case LoadState.completed:
-                        return state.completedWidget;
-                    }
-                  },
-                )
-              : ExtendedImage.file(
-                  File(page.url),
-                  fit: BoxFit.contain,
-                  constraints: isContinuous
-                      ? BoxConstraints(
-                          maxWidth:
-                              500 * widget.controller.pageWidthMultiplier.value)
-                      : null,
-                  alignment: Alignment.center,
-                  filterQuality: FilterQuality.medium,
-                  enableLoadState: true,
-                )),
+                              case LoadState.completed:
+                                return state.completedWidget;
+                            }
+                          },
+                        )
+                      : ExtendedImage.file(
+                          File(page.url),
+                          fit: BoxFit.contain,
+                          constraints: continuousConstraints,
+                          alignment: Alignment.center,
+                          filterQuality: filterQuality,
+                          enableLoadState: true,
+                        )),
         ),
       );
     });
