@@ -24,7 +24,7 @@ class CloudProfileService extends GetxController {
   Future<List<Map<String, dynamic>>?> listProfiles() async {
     try {
       final response = await http.get(
-        Uri.parse('$_functionsUrl/${_auth.username.value}/profiles'),
+        Uri.parse('$_functionsUrl/profiles/${_auth.username.value}/profiles'),
         headers: _auth.authHeaders,
       );
 
@@ -48,7 +48,7 @@ class CloudProfileService extends GetxController {
   }) async {
     try {
       final response = await http.post(
-        Uri.parse('$_functionsUrl/${_auth.username.value}/profiles'),
+        Uri.parse('$_functionsUrl/profiles/${_auth.username.value}/profiles'),
         headers: _auth.authHeaders,
         body: jsonEncode({
           'local_profile_id': localProfileId,
@@ -88,7 +88,7 @@ class CloudProfileService extends GetxController {
 
       final response = await http.put(
         Uri.parse(
-            '$_functionsUrl/${_auth.username.value}/profiles/$profileId'),
+            '$_functionsUrl/profiles/${_auth.username.value}/profiles/$profileId'),
         headers: _auth.authHeaders,
         body: jsonEncode(body),
       );
@@ -109,7 +109,7 @@ class CloudProfileService extends GetxController {
     try {
       final response = await http.delete(
         Uri.parse(
-            '$_functionsUrl/${_auth.username.value}/profiles/$profileId'),
+            '$_functionsUrl/profiles/${_auth.username.value}/profiles/$profileId'),
         headers: _auth.authHeaders,
       );
 
@@ -129,7 +129,7 @@ class CloudProfileService extends GetxController {
     try {
       final response = await http.put(
         Uri.parse(
-            '$_functionsUrl/${_auth.username.value}/profiles/$profileId/pin'),
+            '$_functionsUrl/profiles/${_auth.username.value}/profiles/$profileId/pin'),
         headers: _auth.authHeaders,
         body: jsonEncode({'pin': pinHash}),
       );
@@ -146,7 +146,7 @@ class CloudProfileService extends GetxController {
     try {
       final response = await http.delete(
         Uri.parse(
-            '$_functionsUrl/${_auth.username.value}/profiles/$profileId/pin'),
+            '$_functionsUrl/profiles/${_auth.username.value}/profiles/$profileId/pin'),
         headers: _auth.authHeaders,
       );
 
@@ -163,7 +163,7 @@ class CloudProfileService extends GetxController {
     try {
       final response = await http.post(
         Uri.parse(
-            '$_functionsUrl/${_auth.username.value}/profiles/$profileId/verify-pin'),
+            '$_functionsUrl/profiles/${_auth.username.value}/profiles/$profileId/verify-pin'),
         headers: _auth.authHeaders,
         body: jsonEncode({'pin': pin}),
       );
@@ -192,7 +192,7 @@ class CloudProfileService extends GetxController {
       final request = http.MultipartRequest(
         'PUT',
         Uri.parse(
-            '$_functionsUrl/${_auth.username.value}/sync/$profileId/avatar'),
+            '$_functionsUrl/profiles/${_auth.username.value}/sync/$profileId/avatar'),
       );
       request.headers['Authorization'] = 'Bearer ${_auth.token.value}';
       request.files.add(
@@ -219,7 +219,7 @@ class CloudProfileService extends GetxController {
     try {
       final response = await http.delete(
         Uri.parse(
-            '$_functionsUrl/${_auth.username.value}/sync/$profileId/avatar'),
+            '$_functionsUrl/profiles/${_auth.username.value}/sync/$profileId/avatar'),
         headers: _auth.authHeaders,
       );
 
@@ -235,7 +235,7 @@ class CloudProfileService extends GetxController {
     try {
       final response = await http.post(
         Uri.parse(
-            '$_functionsUrl/${_auth.username.value}/profiles/reorder'),
+            '$_functionsUrl/profiles/${_auth.username.value}/profiles/reorder'),
         headers: _auth.authHeaders,
         body: jsonEncode({'profile_ids': profileIds}),
       );
@@ -252,7 +252,7 @@ class CloudProfileService extends GetxController {
     try {
       final response = await http.put(
         Uri.parse(
-            '$_functionsUrl/${_auth.username.value}/profiles/$profileId/last-used'),
+            '$_functionsUrl/profiles/${_auth.username.value}/profiles/$profileId/last-used'),
         headers: _auth.authHeaders,
       );
 

@@ -31,6 +31,11 @@ const CustomListSchema = CollectionSchema(
       id: 2,
       name: r'mediaTypeIndex',
       type: IsarType.long,
+    ),
+    r'profileId': PropertySchema(
+      id: 3,
+      name: r'profileId',
+      type: IsarType.string,
     )
   },
   estimateSize: _customListEstimateSize,
@@ -39,6 +44,19 @@ const CustomListSchema = CollectionSchema(
   deserializeProp: _customListDeserializeProp,
   idName: r'id',
   indexes: {
+    r'profileId': IndexSchema(
+      id: 6052971939042612300,
+      name: r'profileId',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'profileId',
+          type: IndexType.hash,
+          caseSensitive: true,
+        )
+      ],
+    ),
     r'listName': IndexSchema(
       id: -9160894145738258075,
       name: r'listName',
@@ -85,6 +103,12 @@ int _customListEstimateSize(
       }
     }
   }
+  {
+    final value = object.profileId;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   return bytesCount;
 }
 
@@ -97,6 +121,7 @@ void _customListSerialize(
   writer.writeString(offsets[0], object.listName);
   writer.writeStringList(offsets[1], object.mediaIds);
   writer.writeLong(offsets[2], object.mediaTypeIndex);
+  writer.writeString(offsets[3], object.profileId);
 }
 
 CustomList _customListDeserialize(
@@ -109,6 +134,7 @@ CustomList _customListDeserialize(
     listName: reader.readStringOrNull(offsets[0]),
     mediaIds: reader.readStringList(offsets[1]),
     mediaTypeIndex: reader.readLongOrNull(offsets[2]) ?? 0,
+    profileId: reader.readStringOrNull(offsets[3]),
   );
   object.id = id;
   return object;
@@ -127,6 +153,8 @@ P _customListDeserializeProp<P>(
       return (reader.readStringList(offset)) as P;
     case 2:
       return (reader.readLongOrNull(offset) ?? 0) as P;
+    case 3:
+      return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -217,6 +245,71 @@ extension CustomListQueryWhere
         upper: upperId,
         includeUpper: includeUpper,
       ));
+    });
+  }
+
+  QueryBuilder<CustomList, CustomList, QAfterWhereClause> profileIdIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'profileId',
+        value: [null],
+      ));
+    });
+  }
+
+  QueryBuilder<CustomList, CustomList, QAfterWhereClause> profileIdIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'profileId',
+        lower: [null],
+        includeLower: false,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<CustomList, CustomList, QAfterWhereClause> profileIdEqualTo(
+      String? profileId) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'profileId',
+        value: [profileId],
+      ));
+    });
+  }
+
+  QueryBuilder<CustomList, CustomList, QAfterWhereClause> profileIdNotEqualTo(
+      String? profileId) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'profileId',
+              lower: [],
+              upper: [profileId],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'profileId',
+              lower: [profileId],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'profileId',
+              lower: [profileId],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'profileId',
+              lower: [],
+              upper: [profileId],
+              includeUpper: false,
+            ));
+      }
     });
   }
 
@@ -789,6 +882,158 @@ extension CustomListQueryFilter
       ));
     });
   }
+
+  QueryBuilder<CustomList, CustomList, QAfterFilterCondition>
+      profileIdIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'profileId',
+      ));
+    });
+  }
+
+  QueryBuilder<CustomList, CustomList, QAfterFilterCondition>
+      profileIdIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'profileId',
+      ));
+    });
+  }
+
+  QueryBuilder<CustomList, CustomList, QAfterFilterCondition> profileIdEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'profileId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CustomList, CustomList, QAfterFilterCondition>
+      profileIdGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'profileId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CustomList, CustomList, QAfterFilterCondition> profileIdLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'profileId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CustomList, CustomList, QAfterFilterCondition> profileIdBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'profileId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CustomList, CustomList, QAfterFilterCondition>
+      profileIdStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'profileId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CustomList, CustomList, QAfterFilterCondition> profileIdEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'profileId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CustomList, CustomList, QAfterFilterCondition> profileIdContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'profileId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CustomList, CustomList, QAfterFilterCondition> profileIdMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'profileId',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CustomList, CustomList, QAfterFilterCondition>
+      profileIdIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'profileId',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<CustomList, CustomList, QAfterFilterCondition>
+      profileIdIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'profileId',
+        value: '',
+      ));
+    });
+  }
 }
 
 extension CustomListQueryObject
@@ -821,6 +1066,18 @@ extension CustomListQuerySortBy
       sortByMediaTypeIndexDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'mediaTypeIndex', Sort.desc);
+    });
+  }
+
+  QueryBuilder<CustomList, CustomList, QAfterSortBy> sortByProfileId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'profileId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<CustomList, CustomList, QAfterSortBy> sortByProfileIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'profileId', Sort.desc);
     });
   }
 }
@@ -863,6 +1120,18 @@ extension CustomListQuerySortThenBy
       return query.addSortBy(r'mediaTypeIndex', Sort.desc);
     });
   }
+
+  QueryBuilder<CustomList, CustomList, QAfterSortBy> thenByProfileId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'profileId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<CustomList, CustomList, QAfterSortBy> thenByProfileIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'profileId', Sort.desc);
+    });
+  }
 }
 
 extension CustomListQueryWhereDistinct
@@ -883,6 +1152,13 @@ extension CustomListQueryWhereDistinct
   QueryBuilder<CustomList, CustomList, QDistinct> distinctByMediaTypeIndex() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'mediaTypeIndex');
+    });
+  }
+
+  QueryBuilder<CustomList, CustomList, QDistinct> distinctByProfileId(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'profileId', caseSensitive: caseSensitive);
     });
   }
 }
@@ -910,6 +1186,12 @@ extension CustomListQueryProperty
   QueryBuilder<CustomList, int, QQueryOperations> mediaTypeIndexProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'mediaTypeIndex');
+    });
+  }
+
+  QueryBuilder<CustomList, String?, QQueryOperations> profileIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'profileId');
     });
   }
 }

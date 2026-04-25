@@ -58,7 +58,7 @@ class CloudSyncService extends GetxController {
     try {
       final response = await http.get(
         Uri.parse(
-            '$_functionsUrl/${_auth.username.value}/sync/$cloudProfileId/status'),
+            '$_functionsUrl/sync/${_auth.username.value}/$cloudProfileId/status'),
         headers: _auth.authHeaders,
       );
 
@@ -94,7 +94,7 @@ class CloudSyncService extends GetxController {
 
       final response = await http.post(
         Uri.parse(
-            '$_functionsUrl/${_auth.username.value}/sync/$cloudProfileId/settings'),
+            '$_functionsUrl/sync/${_auth.username.value}/$cloudProfileId/settings'),
         headers: _auth.authHeaders,
         body: jsonEncode({'settings': settings}),
       );
@@ -111,7 +111,7 @@ class CloudSyncService extends GetxController {
     try {
       final response = await http.get(
         Uri.parse(
-            '$_functionsUrl/${_auth.username.value}/sync/$cloudProfileId/settings'),
+            '$_functionsUrl/sync/${_auth.username.value}/$cloudProfileId/settings'),
         headers: _auth.authHeaders,
       );
 
@@ -149,7 +149,7 @@ class CloudSyncService extends GetxController {
 
       final response = await http.post(
         Uri.parse(
-            '$_functionsUrl/${_auth.username.value}/sync/$cloudProfileId/library/$mediaType'),
+            '$_functionsUrl/sync/${_auth.username.value}/$cloudProfileId/library/$mediaType'),
         headers: _auth.authHeaders,
         body: jsonEncode({
           'upsert': upsertItems,
@@ -172,7 +172,7 @@ class CloudSyncService extends GetxController {
   }) async {
     try {
       var url =
-          '$_functionsUrl/${_auth.username.value}/sync/$cloudProfileId/library/$mediaType';
+          '$_functionsUrl/sync/${_auth.username.value}/$cloudProfileId/library/$mediaType';
       if (sinceVersion != null) {
         url += '?since_version=$sinceVersion';
       }
@@ -206,7 +206,7 @@ class CloudSyncService extends GetxController {
 
       final response = await http.post(
         Uri.parse(
-            '$_functionsUrl/${_auth.username.value}/sync/$cloudProfileId/custom-lists/$mediaType'),
+            '$_functionsUrl/sync/${_auth.username.value}/$cloudProfileId/custom-lists/$mediaType'),
         headers: _auth.authHeaders,
         body: jsonEncode({'lists': listsJson}),
       );
@@ -226,7 +226,7 @@ class CloudSyncService extends GetxController {
     try {
       final response = await http.get(
         Uri.parse(
-            '$_functionsUrl/${_auth.username.value}/sync/$cloudProfileId/custom-lists/$mediaType'),
+            '$_functionsUrl/sync/${_auth.username.value}/$cloudProfileId/custom-lists/$mediaType'),
         headers: _auth.authHeaders,
       );
 
@@ -264,7 +264,7 @@ class CloudSyncService extends GetxController {
 
       final response = await http.post(
         Uri.parse(
-            '$_functionsUrl/${_auth.username.value}/sync/$cloudProfileId/tokens'),
+            '$_functionsUrl/sync/${_auth.username.value}/$cloudProfileId/tokens'),
         headers: _auth.authHeaders,
         body: jsonEncode({
           'service': service,
@@ -290,7 +290,7 @@ class CloudSyncService extends GetxController {
     try {
       final response = await http.get(
         Uri.parse(
-            '$_functionsUrl/${_auth.username.value}/sync/$cloudProfileId/tokens'),
+            '$_functionsUrl/sync/${_auth.username.value}/$cloudProfileId/tokens'),
         headers: _auth.authHeaders,
       );
 
@@ -325,7 +325,7 @@ class CloudSyncService extends GetxController {
     try {
       final response = await http.delete(
         Uri.parse(
-            '$_functionsUrl/${_auth.username.value}/sync/$cloudProfileId/tokens/$service'),
+            '$_functionsUrl/sync/${_auth.username.value}/$cloudProfileId/tokens/$service'),
         headers: _auth.authHeaders,
       );
 
@@ -341,7 +341,7 @@ class CloudSyncService extends GetxController {
     try {
       final response = await http.post(
         Uri.parse(
-            '$_functionsUrl/${_auth.username.value}/sync/$cloudProfileId/full-export'),
+            '$_functionsUrl/sync/${_auth.username.value}/$cloudProfileId/full-export'),
         headers: _auth.authHeaders,
       );
 
