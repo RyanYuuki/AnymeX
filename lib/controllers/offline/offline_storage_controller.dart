@@ -27,7 +27,7 @@ class OfflineStorageController extends GetxController {
   String? get _pid {
     final prefix = KvHelper.profilePrefix;
     if (prefix.isEmpty) return null;
-    return prefix.replaceAll('_', '');
+    return prefix.substring(0, prefix.length - 1);
   }
 
   void migrateOrphanedData() {

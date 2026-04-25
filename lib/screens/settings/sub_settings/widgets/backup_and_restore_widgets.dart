@@ -257,6 +257,7 @@ class RestorePreviewSheet extends StatelessWidget {
                     username: info['username'] ?? 'Unknown User',
                     avatar: info['avatar'],
                     appVersion: info['appVersion'] ?? 'Unknown',
+                    profileName: info['profileName'] as String? ?? '',
                   ),
                   const SizedBox(height: 24),
                   LibraryStatsCard(
@@ -278,6 +279,7 @@ class RestorePreviewSheet extends StatelessWidget {
                       ),
                     ),
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Icon(
                           Icons.warning_amber_rounded,
@@ -286,7 +288,7 @@ class RestorePreviewSheet extends StatelessWidget {
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            "This will completely replace your current library. All existing data will be overwritten.",
+                            "Data will replace the CURRENT profile's library & settings. Create a new profile first if you want to keep existing data separate.",
                             style: TextStyle(
                               color: theme.colorScheme.error,
                               fontSize: 13,
@@ -365,12 +367,14 @@ class UserInfoCard extends StatelessWidget {
   final String username;
   final String? avatar;
   final String appVersion;
+  final String profileName;
 
   const UserInfoCard({
     super.key,
     required this.username,
     this.avatar,
     required this.appVersion,
+    this.profileName = '',
   });
 
   @override
@@ -409,7 +413,9 @@ class UserInfoCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Backup Owner",
+                    profileName.isNotEmpty
+                        ? "Profile: $profileName"
+                        : "Backup Owner",
                     style: TextStyle(
                       color: theme.colorScheme.onSurfaceVariant,
                       fontSize: 12,

@@ -56,7 +56,7 @@ class ProfileManager extends GetxController {
       if (profile != null) {
         currentProfile.value = profile;
         currentProfileId.value = profile.id;
-        KvHelper.profilePrefix = 'prof_${profile.id}_';
+        KvHelper.profilePrefix = '${profile.id}_';
       }
     }
   }
@@ -104,7 +104,7 @@ class ProfileManager extends GetxController {
 
     currentProfile.value = profile;
     currentProfileId.value = profile.id;
-    KvHelper.profilePrefix = 'prof_${profile.id}_';
+    KvHelper.profilePrefix = '${profile.id}_';
     _saveCurrentProfileId();
 
     if (autoStart) {
@@ -234,7 +234,7 @@ class ProfileManager extends GetxController {
     final profile = profiles.firstWhereOrNull((p) => p.id == profileId);
     if (profile == null) return false;
 
-    final prefix = 'prof_${profile.id}_';
+    final prefix = '${profile.id}_';
     try {
       final col = isar.collection<KeyValue>();
       final allKeys = col.where().findAllSync();

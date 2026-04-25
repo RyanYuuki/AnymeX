@@ -38,43 +38,48 @@ const ChapterSchema = Schema(
       name: r'link',
       type: IsarType.string,
     ),
-    r'maxOffset': PropertySchema(
+    r'localPath': PropertySchema(
       id: 5,
+      name: r'localPath',
+      type: IsarType.string,
+    ),
+    r'maxOffset': PropertySchema(
+      id: 6,
       name: r'maxOffset',
       type: IsarType.double,
     ),
     r'number': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'number',
       type: IsarType.double,
     ),
     r'pageNumber': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'pageNumber',
       type: IsarType.long,
     ),
     r'releaseDate': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'releaseDate',
       type: IsarType.string,
     ),
     r'scanlator': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'scanlator',
       type: IsarType.string,
     ),
     r'sourceName': PropertySchema(
-      id: 10,
+      id: 11,
       name: r'sourceName',
       type: IsarType.string,
     ),
     r'title': PropertySchema(
-      id: 11,
+      id: 12,
       name: r'title',
       type: IsarType.string,
     ),
     r'totalPages': PropertySchema(
-      id: 12,
+      id: 13,
       name: r'totalPages',
       type: IsarType.long,
     )
@@ -122,6 +127,12 @@ int _chapterEstimateSize(
     }
   }
   {
+    final value = object.localPath;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
     final value = object.releaseDate;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
@@ -159,14 +170,15 @@ void _chapterSerialize(
   writer.writeStringList(offsets[2], object.headerValues);
   writer.writeLong(offsets[3], object.lastReadTime);
   writer.writeString(offsets[4], object.link);
-  writer.writeDouble(offsets[5], object.maxOffset);
-  writer.writeDouble(offsets[6], object.number);
-  writer.writeLong(offsets[7], object.pageNumber);
-  writer.writeString(offsets[8], object.releaseDate);
-  writer.writeString(offsets[9], object.scanlator);
-  writer.writeString(offsets[10], object.sourceName);
-  writer.writeString(offsets[11], object.title);
-  writer.writeLong(offsets[12], object.totalPages);
+  writer.writeString(offsets[5], object.localPath);
+  writer.writeDouble(offsets[6], object.maxOffset);
+  writer.writeDouble(offsets[7], object.number);
+  writer.writeLong(offsets[8], object.pageNumber);
+  writer.writeString(offsets[9], object.releaseDate);
+  writer.writeString(offsets[10], object.scanlator);
+  writer.writeString(offsets[11], object.sourceName);
+  writer.writeString(offsets[12], object.title);
+  writer.writeLong(offsets[13], object.totalPages);
 }
 
 Chapter _chapterDeserialize(
@@ -181,14 +193,15 @@ Chapter _chapterDeserialize(
     headerValues: reader.readStringList(offsets[2]),
     lastReadTime: reader.readLongOrNull(offsets[3]),
     link: reader.readStringOrNull(offsets[4]),
-    maxOffset: reader.readDoubleOrNull(offsets[5]),
-    number: reader.readDoubleOrNull(offsets[6]),
-    pageNumber: reader.readLongOrNull(offsets[7]),
-    releaseDate: reader.readStringOrNull(offsets[8]),
-    scanlator: reader.readStringOrNull(offsets[9]),
-    sourceName: reader.readStringOrNull(offsets[10]),
-    title: reader.readStringOrNull(offsets[11]),
-    totalPages: reader.readLongOrNull(offsets[12]),
+    localPath: reader.readStringOrNull(offsets[5]),
+    maxOffset: reader.readDoubleOrNull(offsets[6]),
+    number: reader.readDoubleOrNull(offsets[7]),
+    pageNumber: reader.readLongOrNull(offsets[8]),
+    releaseDate: reader.readStringOrNull(offsets[9]),
+    scanlator: reader.readStringOrNull(offsets[10]),
+    sourceName: reader.readStringOrNull(offsets[11]),
+    title: reader.readStringOrNull(offsets[12]),
+    totalPages: reader.readLongOrNull(offsets[13]),
   );
   return object;
 }
@@ -211,13 +224,13 @@ P _chapterDeserializeProp<P>(
     case 4:
       return (reader.readStringOrNull(offset)) as P;
     case 5:
-      return (reader.readDoubleOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 6:
       return (reader.readDoubleOrNull(offset)) as P;
     case 7:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readDoubleOrNull(offset)) as P;
     case 8:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 9:
       return (reader.readStringOrNull(offset)) as P;
     case 10:
@@ -225,6 +238,8 @@ P _chapterDeserializeProp<P>(
     case 11:
       return (reader.readStringOrNull(offset)) as P;
     case 12:
+      return (reader.readStringOrNull(offset)) as P;
+    case 13:
       return (reader.readLongOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -1003,6 +1018,152 @@ extension ChapterQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'link',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Chapter, Chapter, QAfterFilterCondition> localPathIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'localPath',
+      ));
+    });
+  }
+
+  QueryBuilder<Chapter, Chapter, QAfterFilterCondition> localPathIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'localPath',
+      ));
+    });
+  }
+
+  QueryBuilder<Chapter, Chapter, QAfterFilterCondition> localPathEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'localPath',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Chapter, Chapter, QAfterFilterCondition> localPathGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'localPath',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Chapter, Chapter, QAfterFilterCondition> localPathLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'localPath',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Chapter, Chapter, QAfterFilterCondition> localPathBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'localPath',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Chapter, Chapter, QAfterFilterCondition> localPathStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'localPath',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Chapter, Chapter, QAfterFilterCondition> localPathEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'localPath',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Chapter, Chapter, QAfterFilterCondition> localPathContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'localPath',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Chapter, Chapter, QAfterFilterCondition> localPathMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'localPath',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Chapter, Chapter, QAfterFilterCondition> localPathIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'localPath',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Chapter, Chapter, QAfterFilterCondition> localPathIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'localPath',
         value: '',
       ));
     });
