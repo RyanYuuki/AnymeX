@@ -2,8 +2,6 @@ import 'package:anymex/controllers/profile/profile_manager.dart';
 import 'package:anymex/controllers/services/cloud/cloud_auth_service.dart';
 import 'package:anymex/controllers/services/cloud/cloud_profile_service.dart';
 import 'package:anymex/controllers/services/cloud/cloud_sync_service.dart';
-import 'package:anymex/database/data_keys/keys.dart';
-import 'package:anymex/utils/cloud_encryption.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
@@ -72,7 +70,6 @@ class _SettingsCloudState extends State<SettingsCloud> {
     setState(() => _isLoading = false);
 
     if (success) {
-      _ensureEncryptionSalt();
       final authService = Get.find<CloudAuthService>();
       if (authService.cloudPassword.value.isEmpty) {
         authService.cloudPassword.value = _passwordController.text;
@@ -80,14 +77,6 @@ class _SettingsCloudState extends State<SettingsCloud> {
       _navigateToCloudMode();
     } else {
       _showError(authService.errorMessage.value);
-    }
-  }
-
-  void _ensureEncryptionSalt() {
-    final existingSalt = CloudKeys.encryptionSalt.get<String?>();
-    if (existingSalt == null || existingSalt.isEmpty) {
-      final salt = CloudEncryption.generateSaltBase64();
-      CloudKeys.encryptionSalt.set(salt);
     }
   }
 
@@ -133,6 +122,7 @@ class _SettingsCloudState extends State<SettingsCloud> {
 
   Future<void> _changePassword() async {
     final authService = Get.find<CloudAuthService>();
+    final syncService = Get.find<CloudSyncService>();
     final current = _currentPasswordController.text;
     final newPass = _newPasswordController.text;
 
@@ -150,11 +140,22 @@ class _SettingsCloudState extends State<SettingsCloud> {
       currentPassword: current,
       newPassword: newPass,
     );
+
+    if (success) {
+      final reEncrypted = await syncService.reEncryptTokensWithNewPassword(
+        currentPassword: current,
+        newPassword: newPass,
+      );
+      if (reEncrypted) {
+        authService.cloudPassword.value = newPass;
+      }
+    }
+
     setState(() => _isLoading = false);
 
     if (success) {
       Navigator.pop(context);
-      _showSuccess('Password changed! Re-sync tokens with new password.');
+      _showSuccess('Password changed! Tokens re-encrypted with new password.');
     } else {
       _showError(authService.errorMessage.value);
     }
@@ -184,12 +185,6 @@ class _SettingsCloudState extends State<SettingsCloud> {
       return;
     }
 
-    final encryptionSalt = CloudKeys.encryptionSalt.get<String?>();
-    if (encryptionSalt == null || encryptionSalt.isEmpty) {
-      _showError('Encryption salt not set. Please re-login.');
-      return;
-    }
-
     setState(() => _isLoading = true);
 
     final success = await syncService.fullSyncPush(
@@ -198,7 +193,6 @@ class _SettingsCloudState extends State<SettingsCloud> {
       encryptionPassword: authService.cloudPassword.value.isNotEmpty
           ? authService.cloudPassword.value
           : await _askForEncryptionPassword(),
-      encryptionSalt: encryptionSalt,
     );
 
     if (!mounted) return;

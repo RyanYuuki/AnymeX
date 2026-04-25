@@ -104,7 +104,6 @@ class NovelReaderController extends GetxController {
   int _ttsResumeOffset = 0;
   String _rawNovelContent = '';
 
-  // Overscroll
   RxBool overscrollToChapter = true.obs;
   RxBool isOverscrolling = false.obs;
   RxBool isOverscrollingNext = true.obs;
@@ -482,7 +481,6 @@ class NovelReaderController extends GetxController {
 
     while (i < html.length) {
       if (html[i] == '<') {
-        // Skip entire tag
         final tagEnd = html.indexOf('>', i);
         if (tagEnd == -1) break;
         i = tagEnd + 1;
@@ -577,7 +575,6 @@ class NovelReaderController extends GetxController {
     }
     if (ttsHighlightedElement.value >= 0 &&
         ttsHighlightedElement.value == ttsCurrentElement.value) {
-      // reusume state
       final fullText = ttsSegments[ttsCurrentElement.value];
       final resumeFrom = ttsCurrentWordEnd.value.clamp(0, fullText.length);
       if (resumeFrom > 0 && resumeFrom < fullText.length) {
@@ -1085,7 +1082,6 @@ class NovelReaderController extends GetxController {
     _saveSettings();
   }
 
-  // Overscroll
 
   bool onScrollNotification(ScrollNotification notification) {
     if (!overscrollToChapter.value || _isNavigating) return false;

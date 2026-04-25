@@ -85,13 +85,11 @@ class MalService extends GetxController implements BaseService, OnlineService {
   @override
   RxList<TrackedMedia> mangaList = <TrackedMedia>[].obs;
 
-  // Anime Lists
   RxList<Media> trendingAnimes = <Media>[].obs;
   RxList<Media> popularAnimes = <Media>[].obs;
   RxList<Media> topAnimes = <Media>[].obs;
   RxList<Media> upcomingAnimes = <Media>[].obs;
 
-  // Manga Lists
   RxList<Media> trendingManga = <Media>[].obs;
   RxList<Media> topManhwa = <Media>[].obs;
   RxList<Media> topManga = <Media>[].obs;
@@ -128,7 +126,6 @@ class MalService extends GetxController implements BaseService, OnlineService {
                   buildSectionIfNotEmpty("Popular Anime", popularAnimes),
                   buildSectionIfNotEmpty("Top Anime", topAnimes),
                   buildSectionIfNotEmpty("Upcoming Anime", upcomingAnimes),
-                  // Underrated Anime section at the bottom (filtered for logged-in users)
                   Obx(() {
                     final filteredList =
                         communityService.getFilteredCommunityAnimes();
@@ -162,7 +159,6 @@ class MalService extends GetxController implements BaseService, OnlineService {
                   buildSectionIfNotEmpty("Top Manhua", topManhua,
                       isManga: true),
                   ...sourceController.novelSections.value,
-                  // Underrated Manga section at the bottom (filtered for logged-in users)
                   Obx(() {
                     final filteredList =
                         communityService.getFilteredCommunityMangas();
@@ -213,7 +209,6 @@ class MalService extends GetxController implements BaseService, OnlineService {
               'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manhua&limit=15'))
           .removeDupes();
 
-      // Fetch underrated content
       await communityService.fetchAll();
     } catch (e) {
       Logger.i('Error fetching home page data: $e');
@@ -739,8 +734,6 @@ class MalService extends GetxController implements BaseService, OnlineService {
     }
 
     if (req.statusCode == 200) {
-      // snackBar(
-      //     "${isAnime ? 'Anime' : 'Manga'} Tracked to ${isAnime ? 'Episode' : 'Chapter'} $progress Successfully!");
 
       final newMedia = currentMedia.value
         ..episodeCount = progress.toString()
@@ -826,8 +819,6 @@ class MalService extends GetxController implements BaseService, OnlineService {
     AuthKeys.malSessionId.delete();
     isLoggedIn.value = false;
     profileData.value = Profile();
-    // animeList.value = [];
-    // mangaList.value = [];
     continueWatching.value = [];
     continueReading.value = [];
   }

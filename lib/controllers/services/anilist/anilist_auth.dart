@@ -1,4 +1,3 @@
-// ignore_for_file: invalid_use_of_protected_member
 
 import 'dart:convert';
 
@@ -98,7 +97,6 @@ class AnilistAuth extends GetxController {
         return response;
       }
 
-      // Parse Retry After header
       final retryAfter = response.headers['retry-after'];
       final waitSeconds = retryAfter != null
           ? (int.tryParse(retryAfter) ?? (2 << attempt))
@@ -595,7 +593,6 @@ class AnilistAuth extends GetxController {
         Logger.i(
             'User profile fetched: ${userProfile.name} (ID: ${userProfile.id})');
 
-        // fetchFollowersAndFollowing(userProfile.id ?? '');
         CommentsDatabase().login();
       } else if (response.statusCode == 403) {
         _handle403(response);

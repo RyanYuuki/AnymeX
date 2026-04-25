@@ -3,9 +3,9 @@ import 'dart:convert';
 
 import 'package:anymex/controllers/profile/profile_manager.dart';
 import 'package:anymex/controllers/services/cloud/cloud_auth_service.dart';
-import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/custom_list.dart';
 import 'package:anymex/database/isar_models/key_value.dart';
+import 'package:anymex/database/kv_helper.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
@@ -650,7 +650,6 @@ class CloudSyncService extends GetxController with WidgetsBindingObserver {
     required String localProfileId,
     required String cloudProfileId,
     required String? encryptionPassword,
-    required String encryptionSalt,
   }) async {
     isSyncing.value = true;
     syncStatus.value = 'Syncing settings...';
@@ -702,6 +701,7 @@ class CloudSyncService extends GetxController with WidgetsBindingObserver {
 
       if (encryptionPassword != null && encryptionPassword.isNotEmpty) {
         syncStatus.value = 'Syncing tokens...';
+        final salt = CloudEncryption.deriveSaltBase64FromUsername(_auth.username.value);
 
         final anilistToken = _getLocalToken('AuthKeys_authToken');
         if (anilistToken != null) {
@@ -710,7 +710,7 @@ class CloudSyncService extends GetxController with WidgetsBindingObserver {
             service: 'anilist',
             tokens: {'authToken': anilistToken},
             password: encryptionPassword,
-            saltBase64: encryptionSalt,
+            saltBase64: salt,
           );
         }
 
@@ -727,7 +727,7 @@ class CloudSyncService extends GetxController with WidgetsBindingObserver {
               'sessionId': malSession,
             },
             password: encryptionPassword,
-            saltBase64: encryptionSalt,
+            saltBase64: salt,
           );
         }
 
@@ -738,7 +738,7 @@ class CloudSyncService extends GetxController with WidgetsBindingObserver {
             service: 'simkl',
             tokens: {'authToken': simklToken},
             password: encryptionPassword,
-            saltBase64: encryptionSalt,
+            saltBase64: salt,
           );
         }
       }
@@ -792,8 +792,7 @@ class CloudSyncService extends GetxController with WidgetsBindingObserver {
       final cloudId = _getCloudProfileId(profileId) ?? profileId;
       if (cloudId.isEmpty) return;
 
-      final salt = CloudKeys.encryptionSalt.get<String?>();
-      if (salt == null || salt.isEmpty) return;
+      final salt = CloudEncryption.deriveSaltBase64FromUsername(_auth.username.value);
 
       Map<String, dynamic>? tokens;
       switch (service) {
@@ -835,8 +834,7 @@ class CloudSyncService extends GetxController with WidgetsBindingObserver {
       final password = _auth.cloudPassword.value;
       if (password.isEmpty) return;
 
-      final salt = CloudKeys.encryptionSalt.get<String?>();
-      if (salt == null || salt.isEmpty) return;
+      final salt = CloudEncryption.deriveSaltBase64FromUsername(_auth.username.value);
 
       for (final service in ['anilist', 'mal', 'simkl']) {
         final tokens = await pullTokens(
@@ -948,6 +946,51 @@ class CloudSyncService extends GetxController with WidgetsBindingObserver {
       syncStatus.value = 'Pull failed';
     } finally {
       isSyncing.value = false;
+    }
+  }
+
+  Future<bool> reEncryptTokensWithNewPassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    try {
+      if (!_auth.isCloudMode) return false;
+      final username = _auth.username.value;
+      if (username.isEmpty) return false;
+
+      final salt = CloudEncryption.deriveSaltBase64FromUsername(username);
+
+      final manager = Get.find<ProfileManager>();
+      final profileId = manager.currentProfileId.value;
+      final cloudId = _getCloudProfileId(profileId) ?? profileId;
+      if (cloudId.isEmpty) return false;
+
+      for (final service in ['anilist', 'mal', 'simkl']) {
+        final tokens = await pullTokens(
+          cloudProfileId: cloudId,
+          service: service,
+          password: currentPassword,
+          saltBase64: salt,
+        );
+
+        if (tokens == null) continue;
+
+        final hasData = tokens.values.any((v) => v != null && v.toString().isNotEmpty);
+        if (!hasData) continue;
+
+        await pushTokens(
+          cloudProfileId: cloudId,
+          service: service,
+          tokens: tokens,
+          password: newPassword,
+          saltBase64: salt,
+        );
+      }
+
+      return true;
+    } catch (e) {
+      Logger.i('Re-encrypt tokens error: $e');
+      return false;
     }
   }
 }

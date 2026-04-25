@@ -22,7 +22,6 @@ class CloudAuthService extends GetxController {
     final base = envBase.endsWith('/')
         ? envBase.substring(0, envBase.length - 1)
         : envBase;
-    // Handle both "https://example.com" and "https://example.com/functions/v1"
     if (base.endsWith('/functions/v1')) return base;
     return '$base/functions/v1';
   }

@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:anymex/models/Service/app_profile.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:image/image.dart' as img;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
@@ -119,8 +121,7 @@ class ProfileAvatar extends StatelessWidget {
 
 Future<String?> pickAndSaveProfileImage() async {
   final result = await FilePicker.platform.pickFiles(
-    type: FileType.custom,
-    allowedExtensions: ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp'],
+    type: FileType.image,
   );
 
   if (result == null || result.files.isEmpty) return null;
@@ -139,13 +140,35 @@ Future<String?> pickAndSaveProfileImage() async {
     }
 
     final ext = p.extension(pickedFile.name).toLowerCase();
-    final destPath = p.join(
-      profilesDir.path,
-      '${DateTime.now().millisecondsSinceEpoch}$ext',
-    );
+    final allowedExts = ['.jpg', '.jpeg', '.png', '.webp', '.gif'];
 
-    final destFile = await srcFile.copy(destPath);
-    return destFile.path;
+    String destPath;
+    if (allowedExts.contains(ext)) {
+      destPath = p.join(
+        profilesDir.path,
+        '${DateTime.now().millisecondsSinceEpoch}$ext',
+      );
+      await srcFile.copy(destPath);
+    } else {
+      final bytes = await srcFile.readAsBytes();
+      final image = img.decodeImage(Uint8List.fromList(bytes));
+      if (image == null) {
+        destPath = p.join(
+          profilesDir.path,
+          '${DateTime.now().millisecondsSinceEpoch}.jpg',
+        );
+        await srcFile.copy(destPath);
+      } else {
+        final jpgBytes = img.encodeJpg(image, quality: 85);
+        destPath = p.join(
+          profilesDir.path,
+          '${DateTime.now().millisecondsSinceEpoch}.jpg',
+        );
+        await File(destPath).writeAsBytes(jpgBytes);
+      }
+    }
+
+    return destPath;
   } catch (e) {
     debugPrint('Error saving profile image: $e');
     return null;

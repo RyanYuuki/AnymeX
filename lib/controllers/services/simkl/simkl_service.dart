@@ -1,4 +1,3 @@
-// ignore_for_file: invalid_use_of_protected_member
 
 import 'dart:convert';
 import 'dart:math' as math;
@@ -325,17 +324,6 @@ class SimklService extends GetxController
             child: AnymexProgressIndicator(),
           )
         else ...[
-          // TappableSearchBar(
-          //   onSubmitted: () {
-          //     // navigate(() => const SearchPage(
-          //     //       searchTerm: "",
-          //     //       isManga: false,
-          //     //     ));
-          //     searchTypeSheet(context, "");
-          //   },
-          //   chipLabel: ("MOVIES"),
-          //   hintText: "Search Movie...",
-          // ),
           buildBigCarousel(trendingMovies.value.sublist(0, 10), false,
               type: CarouselType.simkl),
           if (trendingMovies.value.isNotEmpty)
@@ -369,17 +357,6 @@ class SimklService extends GetxController
             child: AnymexProgressIndicator(),
           )
         else ...[
-          // CustomSearchBar(
-          //   onSubmitted: (val) {
-          //     navigate(() => SearchPage(
-          //           searchTerm: val,
-          //           isManga: false,
-          //         ));
-          //   },
-          //   suffixIconWidget: buildChip("SERIES"),
-          //   disableIcons: true,
-          //   hintText: "Search Series...",
-          // ),
           buildBigCarousel(trendingSeries.value.sublist(0, 10), false,
               type: CarouselType.simkl),
           if (trendingSeries.value.isNotEmpty)
@@ -595,7 +572,6 @@ class SimklService extends GetxController
       if (progress != null) {
         currentMedia.value.episodeCount = progress.toString();
       }
-      // snackBar('${isMovie ? "Movie" : "Series"} Tracked Successfully');
       isMovie ? fetchUserMovieList() : fetchUserSeriesList();
     } catch (e, stack) {
       Logger.i('Exception: $e\n$stack');
@@ -659,7 +635,6 @@ class SimklService extends GetxController
     }
   }
 
-  // Series
   @override
   RxList<TrackedMedia> mangaList = <TrackedMedia>[].obs;
 

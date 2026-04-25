@@ -1,8 +1,6 @@
 import 'package:anymex/controllers/profile/profile_manager.dart';
 import 'package:anymex/controllers/services/cloud/cloud_auth_service.dart';
 import 'package:anymex/controllers/services/cloud/cloud_profile_service.dart';
-import 'package:anymex/database/data_keys/keys.dart';
-import 'package:anymex/utils/cloud_encryption.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
@@ -78,7 +76,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     if (!success) {
       _setError(authService.errorMessage.value);
     } else {
-      _ensureEncryptionSalt();
       final authService = Get.find<CloudAuthService>();
       if (authService.cloudPassword.value.isEmpty) {
         authService.cloudPassword.value = _passwordController.text;
@@ -98,14 +95,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       }
     } catch (e) {
       Logger.i('Error fetching cloud profiles after auth: $e');
-    }
-  }
-
-  void _ensureEncryptionSalt() {
-    final existingSalt = CloudKeys.encryptionSalt.get<String?>();
-    if (existingSalt == null || existingSalt.isEmpty) {
-      final salt = CloudEncryption.generateSaltBase64();
-      CloudKeys.encryptionSalt.set(salt);
     }
   }
 

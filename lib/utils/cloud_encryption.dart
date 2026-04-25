@@ -47,12 +47,18 @@ class CloudEncryption {
     return decrypted;
   }
 
-  static String generateSaltBase64() {
-    final salt = enc.IV.fromSecureRandom(16);
-    return base64.encode(salt.bytes);
-  }
-
   static Uint8List saltFromBase64(String saltBase64) {
     return Uint8List.fromList(base64.decode(saltBase64));
+  }
+
+  static Uint8List deriveSaltFromUsername(String username) {
+    final appSecret = 'AnymeXCloudSync2024SecureSalt';
+    final combined = '$username:$appSecret';
+    final hash = sha256.convert(utf8.encode(combined));
+    return Uint8List.fromList(hash.bytes);
+  }
+
+  static String deriveSaltBase64FromUsername(String username) {
+    return base64.encode(deriveSaltFromUsername(username));
   }
 }
