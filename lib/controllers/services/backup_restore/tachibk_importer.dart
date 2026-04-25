@@ -75,16 +75,65 @@ class _ProtoReader {
   }
 }
 
-class _TachiAnimeTracking {
+const int _kSyncIdMal = 1;
+const int _kSyncIdAniList = 2;
+const int _kSyncIdKitsu = 3;
+const int _kSyncIdSimkl = 6;
+const int _kServiceAniList = 0;
+const int _kServiceMal = 1;
+const int _kServiceSimkl = 2;
+const int _kStatusCurrent = 1;
+const int _kStatusCompleted = 2;
+const int _kStatusOnHold = 3;
+const int _kStatusDropped = 4;
+const int _kStatusPlanning = 5;
+const int _kStatusRepeating = 6;
+
+String _animeListName(int status) {
+  switch (status) {
+    case _kStatusCompleted:
+      return 'Completed';
+    case _kStatusOnHold:
+      return 'On Hold';
+    case _kStatusDropped:
+      return 'Dropped';
+    case _kStatusPlanning:
+      return 'Plan to Watch';
+    case _kStatusRepeating:
+      return 'Rewatching';
+    case _kStatusCurrent:
+    default:
+      return 'Watching';
+  }
+}
+
+String _mangaListName(int status) {
+  switch (status) {
+    case _kStatusCompleted:
+      return 'Completed';
+    case _kStatusOnHold:
+      return 'On Hold';
+    case _kStatusDropped:
+      return 'Dropped';
+    case _kStatusPlanning:
+      return 'Plan to Read';
+    case _kStatusRepeating:
+      return 'Rereading';
+    case _kStatusCurrent:
+    default:
+      return 'Reading';
+  }
+}
+
+class _TachiTracking {
   int syncId = 0;
   int mediaIdInt = 0;
-  double lastEpisodeSeen = 0;
-  int status = 0;
   int mediaId = 0;
+  int status = 0;
 
-  static _TachiAnimeTracking decode(Uint8List bytes) {
+  static _TachiTracking decode(Uint8List bytes) {
     final r = _ProtoReader(bytes);
-    final obj = _TachiAnimeTracking();
+    final obj = _TachiTracking();
     while (r.hasMore) {
       final tag = r.readTag();
       if (tag == null) break;
@@ -97,7 +146,7 @@ class _TachiAnimeTracking {
           break;
         case 6:
           if (tag.wireType == 5) {
-            obj.lastEpisodeSeen = r.readFloat32();
+            r.readFloat32();
           } else {
             r.skip(tag.wireType);
           }
@@ -124,7 +173,7 @@ class _TachiAnime {
   String title = '';
   String? thumbnailUrl;
   bool favorite = true;
-  List<_TachiAnimeTracking> tracking = [];
+  List<_TachiTracking> tracking = [];
 
   static _TachiAnime decode(Uint8List bytes) {
     final r = _ProtoReader(bytes);
@@ -146,7 +195,7 @@ class _TachiAnime {
           obj.thumbnailUrl = utf8.decode(r.readBytes());
           break;
         case 18:
-          obj.tracking.add(_TachiAnimeTracking.decode(r.readBytes()));
+          obj.tracking.add(_TachiTracking.decode(r.readBytes()));
           break;
         case 100:
           obj.favorite = r.readVarint() != 0;
@@ -157,49 +206,25 @@ class _TachiAnime {
     }
     return obj;
   }
-}
 
-class _TachiMangaTracking {
-  int syncId = 0;
-  int mediaIdInt = 0;
-  double lastChapterRead = 0;
-  int status = 0;
-  int mediaId = 0;
-
-  static _TachiMangaTracking decode(Uint8List bytes) {
-    final r = _ProtoReader(bytes);
-    final obj = _TachiMangaTracking();
-    while (r.hasMore) {
-      final tag = r.readTag();
-      if (tag == null) break;
-      switch (tag.fieldNumber) {
-        case 1:
-          obj.syncId = r.readVarint();
-          break;
-        case 3:
-          obj.mediaIdInt = r.readVarint();
-          break;
-        case 6:
-          if (tag.wireType == 5) {
-            obj.lastChapterRead = r.readFloat32();
-          } else {
-            r.skip(tag.wireType);
-          }
-          break;
-        case 9:
-          obj.status = r.readVarint();
-          break;
-        case 100:
-          obj.mediaId = r.readVarint();
-          break;
-        default:
-          r.skip(tag.wireType);
+  ({String? mediaId, int serviceIndex, int status}) get resolvedTracking {
+    final priority = [
+      (_kSyncIdAniList, _kServiceAniList),
+      (_kSyncIdSimkl, _kServiceSimkl),
+      (_kSyncIdMal, _kServiceMal),
+    ];
+    for (final (syncId, serviceIdx) in priority) {
+      final t = tracking.where((t) => t.syncId == syncId).firstOrNull;
+      if (t != null && t.resolvedMediaId != 0) {
+        return (
+          mediaId: t.resolvedMediaId.toString(),
+          serviceIndex: serviceIdx,
+          status: t.status,
+        );
       }
     }
-    return obj;
+    return (mediaId: null, serviceIndex: _kServiceAniList, status: _kStatusCurrent);
   }
-
-  int get resolvedMediaId => mediaIdInt != 0 ? mediaIdInt : mediaId;
 }
 
 class _TachiManga {
@@ -208,7 +233,7 @@ class _TachiManga {
   String title = '';
   String? thumbnailUrl;
   bool favorite = true;
-  List<_TachiMangaTracking> tracking = [];
+  List<_TachiTracking> tracking = [];
 
   static _TachiManga decode(Uint8List bytes) {
     final r = _ProtoReader(bytes);
@@ -230,7 +255,7 @@ class _TachiManga {
           obj.thumbnailUrl = utf8.decode(r.readBytes());
           break;
         case 18:
-          obj.tracking.add(_TachiMangaTracking.decode(r.readBytes()));
+          obj.tracking.add(_TachiTracking.decode(r.readBytes()));
           break;
         case 100:
           obj.favorite = r.readVarint() != 0;
@@ -240,6 +265,25 @@ class _TachiManga {
       }
     }
     return obj;
+  }
+
+  ({String? mediaId, int serviceIndex, int status}) get resolvedTracking {
+    final priority = [
+      (_kSyncIdAniList, _kServiceAniList),
+      (_kSyncIdSimkl, _kServiceSimkl),
+      (_kSyncIdMal, _kServiceMal),
+    ];
+    for (final (syncId, serviceIdx) in priority) {
+      final t = tracking.where((t) => t.syncId == syncId).firstOrNull;
+      if (t != null && t.resolvedMediaId != 0) {
+        return (
+          mediaId: t.resolvedMediaId.toString(),
+          serviceIndex: serviceIdx,
+          status: t.status,
+        );
+      }
+    }
+    return (mediaId: null, serviceIndex: _kServiceAniList, status: _kStatusCurrent);
   }
 }
 
@@ -270,10 +314,6 @@ class _TachiBackup {
     return obj;
   }
 }
-
-const int _kSyncIdMal = 1;
-const int _kSyncIdAniList = 2;
-const int _kSyncIdKitsu = 3;
 
 class TachibkImporter extends GetxController {
   final OfflineStorageController _storageController = Get.find();
@@ -322,9 +362,14 @@ class TachibkImporter extends GetxController {
       final favoriteAnime = backup.backupAnime.where((a) => a.favorite).toList();
       final favoriteManga = backup.backupManga.where((m) => m.favorite).toList();
 
+      final animeTracked = favoriteAnime.where((a) => a.resolvedTracking.mediaId != null).length;
+      final mangaTracked = favoriteManga.where((m) => m.resolvedTracking.mediaId != null).length;
+
       return {
         'animeCount': favoriteAnime.length,
         'mangaCount': favoriteManga.length,
+        'animeTracked': animeTracked,
+        'mangaTracked': mangaTracked,
         'totalAnime': backup.backupAnime.length,
         'totalManga': backup.backupManga.length,
         'sampleAnime': favoriteAnime.take(6).map((a) => {
@@ -372,7 +417,10 @@ class TachibkImporter extends GetxController {
 
       if (animeToImport.isNotEmpty) {
         statusMessage.value = 'Importing anime (${animeToImport.length})...';
-        final mediaList = animeToImport.map(_animeToOfflineMedia).toList();
+
+        for (final listName in ['Watching', 'Completed', 'On Hold', 'Dropped', 'Plan to Watch', 'Rewatching']) {
+          await _storageController.addCustomList(listName, mediaType: ItemType.anime);
+        }
 
         final existingAnimeItems = await isar.offlineMedias
             .filter()
@@ -381,44 +429,60 @@ class TachibkImporter extends GetxController {
         final existingIds = existingAnimeItems.map((e) => e.mediaId).toSet();
         final existingNames = existingAnimeItems.map((e) => e.name).toSet();
 
-        await _storageController.addCustomList("Watching", mediaType: ItemType.anime);
-
-        final animeLookupIds = <String>[];
+        final animeLookupIds = <({String lookupId, String listName})>[];
 
         await isar.writeTxn(() async {
-          for (final media in mediaList) {
+          for (final anime in animeToImport) {
+            final tracked = anime.resolvedTracking;
+            final media = OfflineMedia()
+              ..mediaId = tracked.mediaId
+              ..name = anime.title
+              ..poster = anime.thumbnailUrl
+              ..mediaTypeIndex = 1
+              ..serviceIndex = tracked.serviceIndex;
+
             bool shouldAdd = true;
-            final lookupId = media.mediaId ?? media.name ?? '';
+            final lookupId = tracked.mediaId ?? anime.title;
 
             if (merge) {
-              final id = media.mediaId ?? '';
-              if (id.isEmpty || id == '0') {
-                if (existingNames.contains(media.name)) shouldAdd = false;
+              if (tracked.mediaId == null) {
+                if (existingNames.contains(anime.title)) shouldAdd = false;
               } else {
-                if (existingIds.contains(id)) shouldAdd = false;
+                if (existingIds.contains(tracked.mediaId)) shouldAdd = false;
               }
             }
 
             if (shouldAdd) {
               await isar.offlineMedias.put(media);
-              if (media.mediaId != null) existingIds.add(media.mediaId);
-              if (media.name != null) existingNames.add(media.name);
+              existingIds.add(tracked.mediaId);
+              existingNames.add(anime.title);
             }
 
-            animeLookupIds.add(lookupId);
+            animeLookupIds.add((
+              lookupId: lookupId,
+              listName: _animeListName(tracked.status),
+            ));
+
             processed++;
             importProgress.value = processed / total;
           }
         });
 
-        for (final lookupId in animeLookupIds) {
-          await _storageController.addMediaToList("Watching", lookupId, mediaType: ItemType.anime);
+        for (final entry in animeLookupIds) {
+          await _storageController.addMediaToList(
+            entry.listName,
+            entry.lookupId,
+            mediaType: ItemType.anime,
+          );
         }
       }
 
       if (mangaToImport.isNotEmpty) {
         statusMessage.value = 'Importing manga (${mangaToImport.length})...';
-        final mediaList = mangaToImport.map(_mangaToOfflineMedia).toList();
+
+        for (final listName in ['Reading', 'Completed', 'On Hold', 'Dropped', 'Plan to Read', 'Rereading']) {
+          await _storageController.addCustomList(listName, mediaType: ItemType.manga);
+        }
 
         final existingMangaItems = await isar.offlineMedias
             .filter()
@@ -427,38 +491,51 @@ class TachibkImporter extends GetxController {
         final existingMangaIds = existingMangaItems.map((e) => e.mediaId).toSet();
         final existingMangaNames = existingMangaItems.map((e) => e.name).toSet();
 
-        await _storageController.addCustomList("Reading", mediaType: ItemType.manga);
-
-        final mangaLookupIds = <String>[];
+        final mangaLookupIds = <({String lookupId, String listName})>[];
 
         await isar.writeTxn(() async {
-          for (final media in mediaList) {
+          for (final manga in mangaToImport) {
+            final tracked = manga.resolvedTracking;
+            final media = OfflineMedia()
+              ..mediaId = tracked.mediaId
+              ..name = manga.title
+              ..poster = manga.thumbnailUrl
+              ..mediaTypeIndex = 0
+              ..serviceIndex = tracked.serviceIndex;
+
             bool shouldAdd = true;
-            final lookupId = media.mediaId ?? media.name ?? '';
+            final lookupId = tracked.mediaId ?? manga.title;
 
             if (merge) {
-              final id = media.mediaId ?? '';
-              if (id.isEmpty || id == '0') {
-                if (existingMangaNames.contains(media.name)) shouldAdd = false;
+              if (tracked.mediaId == null) {
+                if (existingMangaNames.contains(manga.title)) shouldAdd = false;
               } else {
-                if (existingMangaIds.contains(id)) shouldAdd = false;
+                if (existingMangaIds.contains(tracked.mediaId)) shouldAdd = false;
               }
             }
 
             if (shouldAdd) {
               await isar.offlineMedias.put(media);
-              if (media.mediaId != null) existingMangaIds.add(media.mediaId);
-              if (media.name != null) existingMangaNames.add(media.name);
+              existingMangaIds.add(tracked.mediaId);
+              existingMangaNames.add(manga.title);
             }
 
-            mangaLookupIds.add(lookupId);
+            mangaLookupIds.add((
+              lookupId: lookupId,
+              listName: _mangaListName(tracked.status),
+            ));
+
             processed++;
             importProgress.value = processed / total;
           }
         });
 
-        for (final lookupId in mangaLookupIds) {
-          await _storageController.addMediaToList("Reading", lookupId, mediaType: ItemType.manga);
+        for (final entry in mangaLookupIds) {
+          await _storageController.addMediaToList(
+            entry.listName,
+            entry.lookupId,
+            mediaType: ItemType.manga,
+          );
         }
       }
 
@@ -484,40 +561,6 @@ class TachibkImporter extends GetxController {
     }
 
     return _TachiBackup.decode(bytes);
-  }
-
-  OfflineMedia _animeToOfflineMedia(_TachiAnime anime) {
-    int trackId = 0;
-    for (final syncId in [_kSyncIdAniList, _kSyncIdMal, _kSyncIdKitsu]) {
-      final t = anime.tracking.where((t) => t.syncId == syncId).firstOrNull;
-      if (t != null && t.resolvedMediaId != 0) {
-        trackId = t.resolvedMediaId;
-        break;
-      }
-    }
-
-    return OfflineMedia()
-      ..mediaId = trackId != 0 ? trackId.toString() : null
-      ..name = anime.title
-      ..poster = anime.thumbnailUrl
-      ..mediaTypeIndex = 1;
-  }
-
-  OfflineMedia _mangaToOfflineMedia(_TachiManga manga) {
-    int trackId = 0;
-    for (final syncId in [_kSyncIdAniList, _kSyncIdMal, _kSyncIdKitsu]) {
-      final t = manga.tracking.where((t) => t.syncId == syncId).firstOrNull;
-      if (t != null && t.resolvedMediaId != 0) {
-        trackId = t.resolvedMediaId;
-        break;
-      }
-    }
-
-    return OfflineMedia()
-      ..mediaId = trackId != 0 ? trackId.toString() : null
-      ..name = manga.title
-      ..poster = manga.thumbnailUrl
-      ..mediaTypeIndex = 0;
   }
 
   void resetState() {
