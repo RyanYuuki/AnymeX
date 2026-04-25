@@ -1028,3 +1028,254 @@ class GlassContainer extends StatelessWidget {
     );
   }
 }
+
+class TachibkImportPreviewSheet extends StatelessWidget {
+  final Map<String, dynamic> preview;
+  final Function(bool importAnime, bool importManga, bool merge) onConfirm;
+
+  const TachibkImportPreviewSheet({
+    super.key,
+    required this.preview,
+    required this.onConfirm,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final animeCount = preview['animeCount'] as int? ?? 0;
+    final mangaCount = preview['mangaCount'] as int? ?? 0;
+
+    final importAnime = true.obs;
+    final importManga = true.obs;
+    final merge = true.obs;
+
+    return DraggableScrollableSheet(
+      initialChildSize: 0.85,
+      maxChildSize: 0.95,
+      minChildSize: 0.5,
+      builder: (_, scrollController) => Container(
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+          border: Border.all(color: theme.colorScheme.outlineVariant),
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.outline,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            Expanded(
+              child: ListView(
+                controller: scrollController,
+                padding: const EdgeInsets.all(24),
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.secondary.opaque(0.12),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          Icons.import_export_rounded,
+                          color: theme.colorScheme.secondary,
+                          size: 22,
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Import from Aniyomi / Mihon",
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              "Only favorited library entries will be imported",
+                              style: TextStyle(
+                                color: theme.colorScheme.onSurfaceVariant,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  GlassContainer(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          _CountBadge(
+                            label: "Anime",
+                            count: animeCount,
+                            icon: Icons.movie_filter,
+                            color: theme.colorScheme.primary,
+                          ),
+                          Container(
+                            width: 1,
+                            height: 48,
+                            color: theme.colorScheme.outline.opaque(0.2),
+                          ),
+                          _CountBadge(
+                            label: "Manga",
+                            count: mangaCount,
+                            icon: Icons.menu_book,
+                            color: theme.colorScheme.secondary,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.tertiaryContainer.opaque(0.15),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                          color: theme.colorScheme.tertiary.opaque(0.25)),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.info_outline,
+                            color: theme.colorScheme.tertiary, size: 18),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            "Tracker IDs (AniList, MAL) are used to link entries. "
+                            "Entries without any tracker ID will be stored by title only.",
+                            style: TextStyle(
+                              color: theme.colorScheme.tertiary,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    "IMPORT OPTIONS",
+                    style: TextStyle(
+                      color: theme.colorScheme.primary,
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  if (animeCount > 0)
+                    Obx(() => CheckboxListTile(
+                          value: importAnime.value,
+                          onChanged: (v) => importAnime.value = v ?? true,
+                          title: Text("Import Anime ($animeCount entries)"),
+                          controlAffinity: ListTileControlAffinity.trailing,
+                          contentPadding: EdgeInsets.zero,
+                        )),
+                  if (mangaCount > 0)
+                    Obx(() => CheckboxListTile(
+                          value: importManga.value,
+                          onChanged: (v) => importManga.value = v ?? true,
+                          title: Text("Import Manga ($mangaCount entries)"),
+                          controlAffinity: ListTileControlAffinity.trailing,
+                          contentPadding: EdgeInsets.zero,
+                        )),
+                  const SizedBox(height: 8),
+                  Obx(() => CheckboxListTile(
+                        value: merge.value,
+                        onChanged: (v) => merge.value = v ?? true,
+                        title: const Text("Merge with existing library"),
+                        subtitle: const Text(
+                            "Skip entries already in your library. Uncheck to overwrite."),
+                        controlAffinity: ListTileControlAffinity.trailing,
+                        contentPadding: EdgeInsets.zero,
+                      )),
+                  const SizedBox(height: 24),
+                  Obx(() => ElevatedButton(
+                        onPressed: (importAnime.value && animeCount > 0) ||
+                                (importManga.value && mangaCount > 0)
+                            ? () => onConfirm(
+                                importAnime.value,
+                                importManga.value,
+                                merge.value)
+                            : null,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: theme.colorScheme.secondary,
+                          foregroundColor: theme.colorScheme.onSecondary,
+                          minimumSize: const Size(double.infinity, 60),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                        ),
+                        child: const Text(
+                          "CONFIRM & IMPORT",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.1,
+                          ),
+                        ),
+                      )),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CountBadge extends StatelessWidget {
+  final String label;
+  final int count;
+  final IconData icon;
+  final Color color;
+
+  const _CountBadge({
+    required this.label,
+    required this.count,
+    required this.icon,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Icon(icon, color: color, size: 22),
+        const SizedBox(height: 8),
+        Text(
+          count.toString(),
+          style: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
+        ),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 13,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ],
+    );
+  }
+}
