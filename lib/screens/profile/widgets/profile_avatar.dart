@@ -24,6 +24,10 @@ class ProfileAvatar extends StatelessWidget {
     return path.toLowerCase().endsWith('.gif');
   }
 
+  bool _isNetworkUrl(String path) {
+    return path.startsWith('http://') || path.startsWith('https://');
+  }
+
   @override
   Widget build(BuildContext context) {
     if (showLocked) {
@@ -40,6 +44,10 @@ class ProfileAvatar extends StatelessWidget {
     }
 
     if (profile.avatarPath.isNotEmpty) {
+      if (_isNetworkUrl(profile.avatarPath)) {
+        return _buildNetworkAvatar(context);
+      }
+
       final file = File(profile.avatarPath);
       if (file.existsSync()) {
         if (_isGif(profile.avatarPath)) {
@@ -54,20 +62,7 @@ class ProfileAvatar extends StatelessWidget {
                 height: radius * 2,
                 filterQuality: FilterQuality.medium,
                 errorBuilder: (context, error, stackTrace) {
-                  return CircleAvatar(
-                    radius: radius,
-                    backgroundColor: fallbackColor ??
-                        Theme.of(context).colorScheme.primaryContainer,
-                    child: Text(
-                      profile.initials,
-                      style: TextStyle(
-                        fontSize: radius * 0.7,
-                        fontWeight: FontWeight.bold,
-                        color:
-                            Theme.of(context).colorScheme.onPrimaryContainer,
-                      ),
-                    ),
-                  );
+                  return _buildFallback(context);
                 },
               ),
             ),
@@ -82,6 +77,30 @@ class ProfileAvatar extends StatelessWidget {
       }
     }
 
+    return _buildFallback(context);
+  }
+
+  Widget _buildNetworkAvatar(BuildContext context) {
+    final size = radius * 2;
+    return ClipOval(
+      child: SizedBox(
+        width: size,
+        height: size,
+        child: Image.network(
+          profile.avatarPath,
+          fit: BoxFit.cover,
+          width: size,
+          height: size,
+          filterQuality: FilterQuality.medium,
+          errorBuilder: (context, error, stackTrace) {
+            return _buildFallback(context);
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFallback(BuildContext context) {
     return CircleAvatar(
       radius: radius,
       backgroundColor:

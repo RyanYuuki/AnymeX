@@ -5,6 +5,8 @@ import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/cloud/cloud_auth_service.dart';
+import 'package:anymex/controllers/services/cloud/cloud_sync_service.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
@@ -403,6 +405,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       case AppLifecycleState.paused:
         Logger.i('App paused - saving reading progress');
         _performSave(reason: 'App paused');
+        _triggerCloudAutoSync();
         break;
       case AppLifecycleState.detached:
         Logger.i('App detached - performing final save');
@@ -416,6 +419,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         break;
       case AppLifecycleState.inactive:
         _performSave(reason: "App inactive");
+        _triggerCloudAutoSync();
         Logger.i('App inactive');
         break;
       case AppLifecycleState.hidden:
@@ -467,6 +471,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
       unawaited(_syncCloudProgressOnExit(chapter));
 
+      _triggerCloudAutoSync(force: true);
+
       if (!shouldTrack) return;
       if (chapter.pageNumber != null &&
           chapter.totalPages != null &&
@@ -490,6 +496,21 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       }
     } catch (e) {
       Logger.i('Error during final save: ${e.toString()}');
+    }
+  }
+
+  void _triggerCloudAutoSync({bool force = false}) {
+    try {
+      if (!Get.isRegistered<CloudAuthService>()) return;
+      if (!Get.isRegistered<CloudSyncService>()) return;
+      final syncService = Get.find<CloudSyncService>();
+      if (force) {
+        syncService.forceAutoSyncToCloud();
+      } else {
+        syncService.scheduleAutoSyncToCloud();
+      }
+    } catch (e) {
+      Logger.i('Error triggering cloud auto-sync: $e');
     }
   }
 

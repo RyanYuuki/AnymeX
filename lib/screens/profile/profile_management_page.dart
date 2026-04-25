@@ -1,8 +1,13 @@
+import 'dart:io';
+
 import 'package:anymex/controllers/profile/profile_manager.dart';
 import 'package:anymex/controllers/services/backup_restore/backup_restore_service.dart';
+import 'package:anymex/controllers/services/cloud/cloud_auth_service.dart';
+import 'package:anymex/controllers/services/cloud/cloud_profile_service.dart';
 import 'package:anymex/models/Service/app_profile.dart';
 import 'package:anymex/screens/profile/profile_creation_page.dart';
 import 'package:anymex/screens/profile/widgets/profile_avatar.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
@@ -630,6 +635,29 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
       final manager = Get.find<ProfileManager>();
       manager.updateProfileAvatar(profile.id, path);
       snackBar('Avatar updated');
+
+      try {
+        final authService = Get.find<CloudAuthService>();
+        if (authService.isLoggedIn.value) {
+          final profileService = Get.find<CloudProfileService>();
+          final file = File(path);
+          if (file.existsSync()) {
+            final uploadedUrl = await profileService.uploadAvatar(
+              profile.id,
+              file,
+            );
+            if (uploadedUrl != null && uploadedUrl.isNotEmpty) {
+              manager.updateProfileAvatar(profile.id, uploadedUrl);
+              await profileService.updateProfile(
+                profileId: profile.id,
+                avatarUrl: uploadedUrl,
+              );
+            }
+          }
+        }
+      } catch (e) {
+        Logger.i('Error uploading avatar to cloud: $e');
+      }
     }
   }
 

@@ -1,6 +1,9 @@
 import 'package:anymex/controllers/profile/profile_manager.dart';
 import 'package:anymex/controllers/services/cloud/cloud_auth_service.dart';
 import 'package:anymex/controllers/services/cloud/cloud_profile_service.dart';
+import 'package:anymex/controllers/services/cloud/cloud_sync_service.dart';
+import 'package:anymex/database/data_keys/keys.dart';
+import 'package:anymex/utils/cloud_encryption.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
@@ -76,6 +79,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     if (!success) {
       _setError(authService.errorMessage.value);
     } else {
+      _ensureEncryptionSalt();
+      final authService = Get.find<CloudAuthService>();
+      if (authService.cloudPassword.value.isEmpty) {
+        authService.cloudPassword.value = _passwordController.text;
+      }
       await _fetchCloudProfiles();
     }
   }
@@ -83,14 +91,30 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   Future<void> _fetchCloudProfiles() async {
     try {
       final profileService = Get.find<CloudProfileService>();
+      final syncService = Get.find<CloudSyncService>();
       final manager = Get.find<ProfileManager>();
 
       final cloudProfiles = await profileService.listProfiles();
       if (cloudProfiles != null && cloudProfiles.isNotEmpty) {
         await manager.importFromCloud(cloudProfiles);
+        for (final cp in cloudProfiles) {
+          final cloudId = cp['cloud_profile_id'] as String? ??
+              cp['id'] as String? ?? '';
+          if (cloudId.isNotEmpty) {
+            await syncService.restoreServiceTokens(cloudId);
+          }
+        }
       }
     } catch (e) {
       Logger.i('Error fetching cloud profiles after auth: $e');
+    }
+  }
+
+  void _ensureEncryptionSalt() {
+    final existingSalt = CloudKeys.encryptionSalt.get<String?>();
+    if (existingSalt == null || existingSalt.isEmpty) {
+      final salt = CloudEncryption.generateSaltBase64();
+      CloudKeys.encryptionSalt.set(salt);
     }
   }
 

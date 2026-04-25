@@ -33,6 +33,7 @@ class CloudAuthService extends GetxController {
   RxBool isLoggedIn = false.obs;
   RxBool isLoading = false.obs;
   RxString errorMessage = ''.obs;
+  RxString cloudPassword = ''.obs;
 
   Future<bool> register({
     required String username,
@@ -60,6 +61,7 @@ class CloudAuthService extends GetxController {
         this.username.value = data['user']?['username']?.toString() ?? '';
         this.email.value = data['user']?['email']?.toString() ?? '';
         isLoggedIn.value = true;
+        cloudPassword.value = password;
         unskipCloud();
         cloudMode.value = CloudMode.cloud;
         _saveAuth();
@@ -101,6 +103,7 @@ class CloudAuthService extends GetxController {
         this.username.value = data['user']?['username']?.toString() ?? '';
         this.email.value = data['user']?['email']?.toString() ?? '';
         isLoggedIn.value = true;
+        cloudPassword.value = password;
         unskipCloud();
         cloudMode.value = CloudMode.cloud;
         _saveAuth();
@@ -215,6 +218,7 @@ class CloudAuthService extends GetxController {
     token.value = '';
     username.value = '';
     email.value = '';
+    cloudPassword.value = '';
     isLoggedIn.value = false;
     cloudMode.value = CloudMode.guest;
     skipCloud();

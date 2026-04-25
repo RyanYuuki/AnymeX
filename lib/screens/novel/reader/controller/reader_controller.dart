@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
+import 'package:anymex/controllers/services/cloud/cloud_auth_service.dart';
+import 'package:anymex/controllers/services/cloud/cloud_sync_service.dart';
 import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
@@ -131,6 +133,7 @@ class NovelReaderController extends GetxController {
   void onClose() {
     _saveTracking(syncToCloud: false);
     unawaited(_syncCloudProgressOnExit());
+    _triggerCloudAutoSync(force: true);
     scrollController.removeListener(_scrollListener);
     _stopAutoScroll();
     _hideTimer?.cancel();
@@ -778,6 +781,21 @@ class NovelReaderController extends GetxController {
             media.id, currentChapter.value,
             source: source, syncToCloud: syncToCloud);
       });
+    }
+  }
+
+  void _triggerCloudAutoSync({bool force = false}) {
+    try {
+      if (!Get.isRegistered<CloudAuthService>()) return;
+      if (!Get.isRegistered<CloudSyncService>()) return;
+      final syncService = Get.find<CloudSyncService>();
+      if (force) {
+        syncService.forceAutoSyncToCloud();
+      } else {
+        syncService.scheduleAutoSyncToCloud();
+      }
+    } catch (e) {
+      Logger.i('Error triggering cloud auto-sync: $e');
     }
   }
 

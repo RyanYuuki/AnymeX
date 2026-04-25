@@ -6,6 +6,7 @@ import 'dart:math' as math;
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/cloud/cloud_sync_service.dart';
 import 'package:anymex/controllers/services/community_service.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
 import 'package:anymex/screens/community/community_recommendations_page.dart';
@@ -34,6 +35,15 @@ import 'package:http/http.dart';
 
 class SimklService extends GetxController
     implements BaseService, OnlineService {
+
+  void _triggerCloudTokenSync() {
+    try {
+      if (Get.isRegistered<CloudSyncService>()) {
+        Get.find<CloudSyncService>().autoSyncServiceTokens('simkl');
+      }
+    } catch (_) {}
+  }
+
   RxList<Media> trendingMovies = <Media>[].obs;
   RxList<Media> trendingSeries = <Media>[].obs;
   Rx<Media> detailsData = Media(
@@ -700,6 +710,7 @@ class SimklService extends GetxController
       isLoggedIn.value = true;
       await fetchUserInfo();
       snackBar("Simkl Logined Successfully!");
+      _triggerCloudTokenSync();
     } else {
       Logger.i('${req.statusCode}: ${req.body}');
       snackBar("Yep, Failed");

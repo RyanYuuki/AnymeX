@@ -4,6 +4,7 @@ import 'package:anymex/controllers/profile/profile_manager.dart';
 import 'package:anymex/controllers/services/cloud/cloud_auth_service.dart';
 import 'package:anymex/controllers/services/cloud/cloud_profile_service.dart';
 import 'package:anymex/screens/profile/widgets/profile_avatar.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:flutter/material.dart';
@@ -100,14 +101,37 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
       final authService = Get.find<CloudAuthService>();
       if (authService.isLoggedIn.value) {
         final profileService = Get.find<CloudProfileService>();
+        String? avatarToUpload;
+        if (_avatarPath.isNotEmpty) {
+          final file = File(_avatarPath);
+          if (file.existsSync()) {
+            avatarToUpload = _avatarPath;
+          }
+        }
         await profileService.createProfile(
           localProfileId: profile.id,
           displayName: profile.name,
-          avatarUrl: profile.avatarPath.isNotEmpty ? profile.avatarPath : null,
+          avatarUrl: avatarToUpload,
           pinHash: profile.pinHash,
         );
+        if (avatarToUpload != null) {
+          final uploadedUrl = await profileService.uploadAvatar(
+            profile.id,
+            File(avatarToUpload),
+          );
+          if (uploadedUrl != null && uploadedUrl.isNotEmpty) {
+            final mgr = Get.find<ProfileManager>();
+            mgr.updateProfileAvatar(profile.id, uploadedUrl);
+            await profileService.updateProfile(
+              profileId: profile.id,
+              avatarUrl: uploadedUrl,
+            );
+          }
+        }
       }
-    } catch (_) {}
+    } catch (e) {
+      Logger.i('Cloud profile creation error: $e');
+    }
 
     await manager.switchToProfile(profile.id);
 

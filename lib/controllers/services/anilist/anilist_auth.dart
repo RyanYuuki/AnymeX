@@ -16,6 +16,7 @@ import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/controllers/services/cloud/cloud_sync_service.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -28,6 +29,14 @@ class AnilistAuth extends GetxController {
   RxBool isLoggedIn = false.obs;
   Rx<Profile> profileData = Profile().obs;
   final offlineStorage = Get.find<OfflineStorageController>();
+
+  void _triggerCloudTokenSync() {
+    try {
+      if (Get.isRegistered<CloudSyncService>()) {
+        Get.find<CloudSyncService>().autoSyncServiceTokens('anilist');
+      }
+    } catch (_) {}
+  }
 
   Rx<TrackedMedia> currentMedia = TrackedMedia().obs;
 
@@ -380,6 +389,7 @@ class AnilistAuth extends GetxController {
                   await fetchUserProfile();
                   await fetchUserAnimeList();
                   await fetchUserMangaList();
+                  _triggerCloudTokenSync();
                   try {
                     final commentumService = Get.find<CommentumService>();
                     await commentumService.getUserRole();
@@ -433,6 +443,7 @@ class AnilistAuth extends GetxController {
       await fetchUserProfile();
       await fetchUserAnimeList();
       await fetchUserMangaList();
+      _triggerCloudTokenSync();
       try {
         final commentumService = Get.find<CommentumService>();
         await commentumService.getUserRole();

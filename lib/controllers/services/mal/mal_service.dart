@@ -7,6 +7,7 @@ import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
 import 'package:anymex/screens/community/community_recommendations_page.dart';
+import 'package:anymex/controllers/services/cloud/cloud_sync_service.dart';
 import 'package:anymex/controllers/services/community_service.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
@@ -39,6 +40,14 @@ import 'package:http/http.dart' as http;
 
 class MalService extends GetxController implements BaseService, OnlineService {
   final communityService = Get.find<CommunityService>();
+
+  void _triggerCloudTokenSync() {
+    try {
+      if (Get.isRegistered<CloudSyncService>()) {
+        Get.find<CloudSyncService>().autoSyncServiceTokens('mal');
+      }
+    } catch (_) {}
+  }
 
   Media? _firstMediaWithCover(Iterable<Media> mediaList) {
     for (final media in mediaList) {
@@ -636,6 +645,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
       Logger.i("MAL Access token: $token");
       await fetchUserInfo();
       Logger.i("Login Succesfull!");
+      _triggerCloudTokenSync();
     } else {
       throw Exception(
           'Failed to exchange code for token: ${response.body}, ${response.statusCode}');

@@ -7,6 +7,8 @@ import 'package:path/path.dart' as p;
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
+import 'package:anymex/controllers/services/cloud/cloud_auth_service.dart';
+import 'package:anymex/controllers/services/cloud/cloud_sync_service.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/sync/gist_sync_controller.dart';
@@ -370,6 +372,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       if (!kDebugMode) {
         _trackLocally();
       }
+      _triggerCloudAutoSync();
     }
   }
 
@@ -1300,6 +1303,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         _trackOnline(hasCrossedLimit);
         _syncCloudProgressOnExit();
       }
+      _triggerCloudAutoSync(force: true);
     } catch (e) {
       Logger.e('Error saving during dispose: $e');
     }
@@ -1991,6 +1995,21 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           'Online tracking completed for episode ${currentEpisode.value.number}, progress updated to: $newProgress');
     } catch (e) {
       Logger.i('Failed to track online: $e');
+    }
+  }
+
+  void _triggerCloudAutoSync({bool force = false}) {
+    try {
+      if (!Get.isRegistered<CloudAuthService>()) return;
+      if (!Get.isRegistered<CloudSyncService>()) return;
+      final syncService = Get.find<CloudSyncService>();
+      if (force) {
+        syncService.forceAutoSyncToCloud();
+      } else {
+        syncService.scheduleAutoSyncToCloud();
+      }
+    } catch (e) {
+      Logger.i('Error triggering cloud auto-sync: $e');
     }
   }
 

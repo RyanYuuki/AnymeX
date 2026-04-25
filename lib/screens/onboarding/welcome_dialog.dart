@@ -259,8 +259,9 @@ void showWelcomeDialogg(BuildContext context) {
                                                 BorderRadius.circular(12))),
                                     onPressed: () {
                                       General.isFirstTime.set(false);
-                                      Navigator.of(context).pop();
-                                      navigate(() => const SettingsAccounts());
+                                      Get.back();
+                                      navigate(
+                                          () => const SettingsAccounts());
                                     },
                                     child: Row(
                                       mainAxisAlignment:

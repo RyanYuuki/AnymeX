@@ -73,6 +73,10 @@ class _SettingsCloudState extends State<SettingsCloud> {
 
     if (success) {
       _ensureEncryptionSalt();
+      final authService = Get.find<CloudAuthService>();
+      if (authService.cloudPassword.value.isEmpty) {
+        authService.cloudPassword.value = _passwordController.text;
+      }
       _navigateToCloudMode();
     } else {
       _showError(authService.errorMessage.value);
@@ -109,10 +113,18 @@ class _SettingsCloudState extends State<SettingsCloud> {
 
     try {
       final profileService = Get.find<CloudProfileService>();
+      final syncService = Get.find<CloudSyncService>();
       final cloudProfiles = await profileService.listProfiles();
       if (cloudProfiles != null && cloudProfiles.isNotEmpty) {
         manager.profiles.clear();
         await manager.importFromCloud(cloudProfiles);
+        for (final cp in cloudProfiles) {
+          final cloudId = cp['cloud_profile_id'] as String? ??
+              cp['id'] as String? ?? '';
+          if (cloudId.isNotEmpty) {
+            await syncService.restoreServiceTokens(cloudId);
+          }
+        }
       } else {
         manager.profiles.clear();
       }
@@ -191,7 +203,9 @@ class _SettingsCloudState extends State<SettingsCloud> {
     final success = await syncService.fullSyncPush(
       localProfileId: currentProfile.id,
       cloudProfileId: currentProfile.id,
-      encryptionPassword: '',
+      encryptionPassword: authService.cloudPassword.value.isNotEmpty
+          ? authService.cloudPassword.value
+          : await _askForEncryptionPassword(),
       encryptionSalt: encryptionSalt,
     );
 

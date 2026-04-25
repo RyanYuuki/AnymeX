@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
+import 'package:anymex/controllers/services/cloud/cloud_auth_service.dart';
+import 'package:anymex/controllers/services/cloud/cloud_sync_service.dart';
 import 'package:anymex/controllers/services/mal/mal_service.dart';
 import 'package:anymex/controllers/services/simkl/simkl_service.dart';
 import 'package:anymex/database/data_keys/keys.dart';
@@ -106,6 +108,18 @@ class ProfileManager extends GetxController {
     currentProfileId.value = profile.id;
     KvHelper.profilePrefix = '${profile.id}_';
     _saveCurrentProfileId();
+
+    try {
+      if (Get.isRegistered<CloudAuthService>()) {
+        final auth = Get.find<CloudAuthService>();
+        if (auth.isCloudMode) {
+          final sync = Get.find<CloudSyncService>();
+          sync.pullAllForProfile(profileId);
+        }
+      }
+    } catch (e) {
+      Logger.i('Error triggering cloud data pull: $e');
+    }
 
     if (autoStart) {
       writeGlobal(_kAutoStartProfileIdKey, profile.id);

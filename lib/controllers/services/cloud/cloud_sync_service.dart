@@ -1,10 +1,14 @@
+import 'dart:async';
 import 'dart:convert';
 
+import 'package:anymex/controllers/profile/profile_manager.dart';
 import 'package:anymex/controllers/services/cloud/cloud_auth_service.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/custom_list.dart';
 import 'package:anymex/database/isar_models/key_value.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
-import 'package:anymex/database/kv_helper.dart';
+import 'package:anymex/database/isar_models/episode.dart';
+import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/main.dart';
 import 'package:anymex/utils/cloud_encryption.dart';
 import 'package:anymex/utils/logger.dart';
@@ -27,6 +31,11 @@ class CloudSyncService extends GetxController {
   }
   RxBool isSyncing = false.obs;
   RxString syncStatus = ''.obs;
+
+  Timer? _autoSyncDebounce;
+  DateTime? _lastAutoSync;
+  static const _minAutoSyncInterval = Duration(seconds: 60);
+  static const _debounceDuration = Duration(seconds: 30);
 
   String? _getCloudProfileId(String localProfileId) {
     try {
@@ -393,6 +402,16 @@ class CloudSyncService extends GetxController {
   }
 
   OfflineMedia _cloudJsonToMedia(Map<String, dynamic> json, {String? profileId}) {
+    Episode? parseEp(dynamic e) {
+      if (e == null) return null;
+      return Episode.fromJson(e as Map<String, dynamic>);
+    }
+
+    Chapter? parseCh(dynamic c) {
+      if (c == null) return null;
+      return Chapter.fromJson(c as Map<String, dynamic>);
+    }
+
     return OfflineMedia(
       mediaId: json['media_id'] as String?,
       jname: json['jname'] as String?,
@@ -418,12 +437,32 @@ class CloudSyncService extends GetxController {
       serviceIndex: json['service_index'] as int?,
       mediaTypeIndex: json['media_type_index'] as int? ?? 0,
       profileId: profileId ?? json['profile_id'] as String?,
-      currentEpisode: null,
-      currentChapter: null,
-      watchedEpisodes: [],
-      readChapters: [],
-      chapters: [],
-      episodes: [],
+      currentEpisode: json['current_episode'] != null
+          ? parseEp(json['current_episode'])
+          : null,
+      currentChapter: json['current_chapter'] != null
+          ? parseCh(json['current_chapter'])
+          : null,
+      watchedEpisodes: (json['watched_episodes'] as List?)
+              ?.map(parseEp)
+              .whereType<Episode>()
+              .toList() ??
+          [],
+      readChapters: (json['read_chapters'] as List?)
+              ?.map(parseCh)
+              .whereType<Chapter>()
+              .toList() ??
+          [],
+      chapters: (json['chapters'] as List?)
+              ?.map(parseCh)
+              .whereType<Chapter>()
+              .toList() ??
+          [],
+      episodes: (json['episodes'] as List?)
+              ?.map(parseEp)
+              .whereType<Episode>()
+              .toList() ??
+          [],
     );
   }
 
@@ -548,6 +587,275 @@ class CloudSyncService extends GetxController {
       return data['val']?.toString();
     } catch (e) {
       return null;
+    }
+  }
+
+  void _setLocalToken(String key, String value) {
+    try {
+      final prefix = KvHelper.profilePrefix;
+      final fullKey = prefix.isEmpty ? key : '$prefix$key';
+      final kv = KeyValue()..key = fullKey..value = jsonEncode({'val': value});
+      isar.writeTxnSync(() => isar.collection<KeyValue>().putSync(kv));
+    } catch (e) {
+      Logger.i('Error setting local token: $e');
+    }
+  }
+
+  Future<void> autoSyncServiceTokens(String service) async {
+    try {
+      if (!_auth.isCloudMode) return;
+      final password = _auth.cloudPassword.value;
+      if (password.isEmpty) return;
+
+      final manager = Get.find<ProfileManager>();
+      final profileId = manager.currentProfileId.value;
+      if (profileId.isEmpty) return;
+
+      final cloudId = _getCloudProfileId(profileId) ?? profileId;
+      if (cloudId.isEmpty) return;
+
+      final salt = CloudKeys.encryptionSalt.get<String?>();
+      if (salt == null || salt.isEmpty) return;
+
+      Map<String, dynamic>? tokens;
+      switch (service) {
+        case 'anilist':
+          final t = _getLocalToken('AuthKeys_authToken');
+          if (t != null) tokens = {'authToken': t};
+          break;
+        case 'mal':
+          final a = _getLocalToken('AuthKeys_malAuthToken');
+          final r = _getLocalToken('AuthKeys_malRefreshToken');
+          final s = _getLocalToken('AuthKeys_malSessionId');
+          if (a != null || r != null) {
+            tokens = {'authToken': a, 'refreshToken': r, 'sessionId': s};
+          }
+          break;
+        case 'simkl':
+          final t = _getLocalToken('AuthKeys_simklAuthToken');
+          if (t != null) tokens = {'authToken': t};
+          break;
+      }
+
+      if (tokens != null) {
+        await pushTokens(
+          cloudProfileId: cloudId,
+          service: service,
+          tokens: tokens,
+          password: password,
+          saltBase64: salt,
+        );
+      }
+    } catch (e) {
+      Logger.i('Auto sync $service tokens error: $e');
+    }
+  }
+
+  void scheduleAutoSyncToCloud() {
+    if (!_auth.isCloudMode) return;
+    _autoSyncDebounce?.cancel();
+    _autoSyncDebounce = Timer(_debounceDuration, () {
+      autoSyncToCloud();
+    });
+  }
+
+  Future<void> forceAutoSyncToCloud() async {
+    if (!_auth.isCloudMode) return;
+    _autoSyncDebounce?.cancel();
+    await autoSyncToCloud(force: true);
+  }
+
+  Future<void> autoSyncToCloud({bool force = false}) async {
+    try {
+      if (!_auth.isCloudMode) return;
+      if (isSyncing.value) return;
+
+      if (!force &&
+          _lastAutoSync != null &&
+          DateTime.now().difference(_lastAutoSync!) < _minAutoSyncInterval) {
+        return;
+      }
+
+      final manager = Get.find<ProfileManager>();
+      final profileId = manager.currentProfileId.value;
+      if (profileId.isEmpty) return;
+
+      final cloudId = _getCloudProfileId(profileId) ?? profileId;
+      if (cloudId.isEmpty) return;
+
+      Logger.i('Auto-syncing to cloud (profile: $cloudId)...');
+      isSyncing.value = true;
+
+      await pushSettings(cloudId);
+
+      final pid = profileId;
+      for (final entry in [
+        {'type': 'anime', 'index': 1},
+        {'type': 'manga', 'index': 0},
+        {'type': 'novel', 'index': 2},
+      ]) {
+        final items = await isar
+            .offlineMedias
+            .filter()
+            .profileIdEqualTo(pid)
+            .and()
+            .mediaTypeIndexEqualTo(entry['index'] as int)
+            .findAll();
+        if (items.isNotEmpty) {
+          await pushLibrary(cloudId, entry['type'] as String, items);
+        }
+      }
+
+      for (final entry in [
+        {'type': 'anime', 'index': 1},
+        {'type': 'manga', 'index': 0},
+        {'type': 'novel', 'index': 2},
+      ]) {
+        final lists = await isar
+            .customLists
+            .filter()
+            .profileIdEqualTo(pid)
+            .and()
+            .mediaTypeIndexEqualTo(entry['index'] as int)
+            .findAll();
+        if (lists.isNotEmpty) {
+          await pushCustomLists(cloudId, entry['type'] as String, lists);
+        }
+      }
+
+      _lastAutoSync = DateTime.now();
+      Logger.i('Auto-sync to cloud completed');
+    } catch (e) {
+      Logger.i('Auto-sync to cloud error: $e');
+    } finally {
+      isSyncing.value = false;
+    }
+  }
+
+  @override
+  void onClose() {
+    _autoSyncDebounce?.cancel();
+    super.onClose();
+  }
+
+  Future<void> restoreServiceTokens(String cloudProfileId) async {
+    try {
+      if (!_auth.isCloudMode) return;
+      final password = _auth.cloudPassword.value;
+      if (password.isEmpty) return;
+
+      final salt = CloudKeys.encryptionSalt.get<String?>();
+      if (salt == null || salt.isEmpty) return;
+
+      for (final service in ['anilist', 'mal', 'simkl']) {
+        final tokens = await pullTokens(
+          cloudProfileId: cloudProfileId,
+          service: service,
+          password: password,
+          saltBase64: salt,
+        );
+        if (tokens == null) continue;
+
+        switch (service) {
+          case 'anilist':
+            final t = tokens['authToken']?.toString();
+            if (t != null && t.isNotEmpty) {
+              _setLocalToken('AuthKeys_authToken', t);
+            }
+            break;
+          case 'mal':
+            final a = tokens['authToken']?.toString();
+            final r = tokens['refreshToken']?.toString();
+            final s = tokens['sessionId']?.toString();
+            if (a != null && a.isNotEmpty) _setLocalToken('AuthKeys_malAuthToken', a);
+            if (r != null && r.isNotEmpty) _setLocalToken('AuthKeys_malRefreshToken', r);
+            if (s != null && s.isNotEmpty) _setLocalToken('AuthKeys_malSessionId', s);
+            break;
+          case 'simkl':
+            final t = tokens['authToken']?.toString();
+            if (t != null && t.isNotEmpty) {
+              _setLocalToken('AuthKeys_simklAuthToken', t);
+            }
+            break;
+        }
+      }
+    } catch (e) {
+      Logger.i('Restore tokens error: $e');
+    }
+  }
+
+  Future<void> pullAllForProfile(String cloudProfileId) async {
+    try {
+      if (!_auth.isCloudMode) return;
+      if (cloudProfileId.isEmpty) return;
+
+      isSyncing.value = true;
+      syncStatus.value = 'Pulling settings...';
+
+      await pullSettings(cloudProfileId);
+
+      for (final entry in [
+        {'type': 'anime', 'index': 1},
+        {'type': 'manga', 'index': 0},
+        {'type': 'novel', 'index': 2},
+      ]) {
+        syncStatus.value = 'Pulling ${entry['type']}...';
+        final items = await pullLibrary(
+          cloudProfileId,
+          entry['type'] as String,
+        );
+        if (items.isNotEmpty) {
+          await isar.writeTxn(() async {
+            final existing = await isar.offlineMedias
+                .filter()
+                .profileIdEqualTo(cloudProfileId)
+                .and()
+                .mediaTypeIndexEqualTo(entry['index'] as int)
+                .findAll();
+            for (final e in existing) {
+              await isar.offlineMedias.delete(e.id);
+            }
+            for (final item in items) {
+              await isar.offlineMedias.put(item);
+            }
+          });
+        }
+      }
+
+      for (final entry in [
+        {'type': 'anime', 'index': 1},
+        {'type': 'manga', 'index': 0},
+        {'type': 'novel', 'index': 2},
+      ]) {
+        syncStatus.value = 'Pulling ${entry['type']} lists...';
+        final lists = await pullCustomLists(
+          cloudProfileId,
+          entry['type'] as String,
+        );
+        if (lists.isNotEmpty) {
+          await isar.writeTxn(() async {
+            final existing = await isar.customLists
+                .filter()
+                .profileIdEqualTo(cloudProfileId)
+                .and()
+                .mediaTypeIndexEqualTo(entry['index'] as int)
+                .findAll();
+            for (final e in existing) {
+              await isar.customLists.delete(e.id);
+            }
+            for (final list in lists) {
+              await isar.customLists.put(list);
+            }
+          });
+        }
+      }
+
+      syncStatus.value = 'Pull complete!';
+    } catch (e) {
+      Logger.i('Pull all for profile error: $e');
+      syncStatus.value = 'Pull failed';
+    } finally {
+      isSyncing.value = false;
     }
   }
 }
