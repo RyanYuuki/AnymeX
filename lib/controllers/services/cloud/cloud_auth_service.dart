@@ -238,6 +238,7 @@ class CloudAuthService extends GetxController {
         'token': token.value,
         'username': username.value,
         'email': email.value,
+        'password': cloudPassword.value,
       });
       final kvJson = jsonEncode({'val': kvData});
       _writeGlobalKV('__cloud_auth__', kvJson);
@@ -257,6 +258,7 @@ class CloudAuthService extends GetxController {
       token.value = inner['token'] as String? ?? '';
       username.value = inner['username'] as String? ?? '';
       email.value = inner['email'] as String? ?? '';
+      cloudPassword.value = inner['password'] as String? ?? '';
       isLoggedIn.value = token.value.isNotEmpty;
     } catch (e) {
       Logger.i('Error loading cloud auth: $e');

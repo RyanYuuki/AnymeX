@@ -13,11 +13,12 @@ import 'package:anymex/main.dart';
 import 'package:anymex/utils/cloud_encryption.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:isar_community/isar.dart';
 
-class CloudSyncService extends GetxController {
+class CloudSyncService extends GetxController with WidgetsBindingObserver {
   CloudAuthService get _auth => Get.find<CloudAuthService>();
 
   String get _functionsUrl {
@@ -32,10 +33,12 @@ class CloudSyncService extends GetxController {
   RxBool isSyncing = false.obs;
   RxString syncStatus = ''.obs;
 
-  Timer? _autoSyncDebounce;
-  DateTime? _lastAutoSync;
-  static const _minAutoSyncInterval = Duration(seconds: 60);
-  static const _debounceDuration = Duration(seconds: 30);
+  static const _itemDebounce = Duration(seconds: 10);
+  final Map<String, Timer> _itemSyncTimers = {};
+  final Set<String> _pendingMediaIds = {};
+  Timer? _settingsSyncTimer;
+  DateTime? _lastPull;
+  static const _minPullInterval = Duration(seconds: 30);
 
   String? _getCloudProfileId(String localProfileId) {
     try {
@@ -60,6 +63,181 @@ class CloudSyncService extends GetxController {
       isar.writeTxnSync(() => isar.collection<KeyValue>().putSync(kv));
     } catch (e) {
       Logger.i('Error saving cloud profile map: $e');
+    }
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _pullOnResume();
+    }
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.detached ||
+        state == AppLifecycleState.inactive) {
+      _flushOnPause();
+    }
+  }
+
+  @override
+  void onClose() {
+    WidgetsBinding.instance.removeObserver(this);
+    for (final timer in _itemSyncTimers.values) {
+      timer.cancel();
+    }
+    _itemSyncTimers.clear();
+    _settingsSyncTimer?.cancel();
+    super.onClose();
+  }
+
+  Future<void> _pullOnResume() async {
+    if (!_auth.isCloudMode) return;
+    if (_lastPull != null &&
+        DateTime.now().difference(_lastPull!) < _minPullInterval) {
+      return;
+    }
+    try {
+      final manager = Get.find<ProfileManager>();
+      final profileId = manager.currentProfileId.value;
+      if (profileId.isEmpty) return;
+      await _pushDirtyThenPull(profileId);
+    } catch (e) {
+      Logger.i('Pull on resume error: $e');
+    }
+  }
+
+  Future<void> _flushOnPause() async {
+    if (!_auth.isCloudMode) return;
+    await flushPendingSyncs();
+  }
+
+  void scheduleItemSync(String mediaId, int mediaTypeIndex) {
+    if (!_auth.isCloudMode) return;
+    _pendingMediaIds.add(mediaId);
+    _itemSyncTimers[mediaId]?.cancel();
+    _itemSyncTimers[mediaId] = Timer(_itemDebounce, () async {
+      await _pushItemFromDb(mediaId);
+      _pendingMediaIds.remove(mediaId);
+      _itemSyncTimers.remove(mediaId);
+    });
+  }
+
+  void scheduleSettingsSync() {
+    if (!_auth.isCloudMode) return;
+    _settingsSyncTimer?.cancel();
+    _settingsSyncTimer = Timer(_itemDebounce, () async {
+      await _pushSettingsOnly();
+      _settingsSyncTimer = null;
+    });
+  }
+
+  Future<void> flushPendingSyncs() async {
+    for (final timer in _itemSyncTimers.values) {
+      timer.cancel();
+    }
+    _itemSyncTimers.clear();
+    _settingsSyncTimer?.cancel();
+    _settingsSyncTimer = null;
+
+    if (!_auth.isCloudMode || _pendingMediaIds.isEmpty) return;
+
+    try {
+      final manager = Get.find<ProfileManager>();
+      final profileId = manager.currentProfileId.value;
+      if (profileId.isEmpty) return;
+      final cloudId = _getCloudProfileId(profileId) ?? profileId;
+      if (cloudId.isEmpty) return;
+
+      final mediaTypeMap = {0: 'manga', 1: 'anime', 2: 'novel'};
+      final grouped = <String, List<String>>{'anime': [], 'manga': [], 'novel': []};
+
+      for (final mediaId in _pendingMediaIds) {
+        final item = await isar.offlineMedias
+            .filter()
+            .mediaIdEqualTo(mediaId)
+            .and()
+            .profileIdEqualTo(profileId)
+            .findFirst();
+        if (item != null) {
+          final type = mediaTypeMap[item.mediaTypeIndex] ?? 'anime';
+          grouped[type]!.add(mediaId);
+        }
+      }
+
+      for (final entry in grouped.entries) {
+        final mediaIds = entry.value;
+        if (mediaIds.isEmpty) continue;
+        final items = await isar.offlineMedias
+            .filter()
+            .anyOf(mediaIds, (q, id) => q.mediaIdEqualTo(id))
+            .and()
+            .profileIdEqualTo(profileId)
+            .findAll();
+        if (items.isNotEmpty) {
+          await pushLibrary(cloudId, entry.key, items);
+        }
+      }
+
+      _pendingMediaIds.clear();
+    } catch (e) {
+      Logger.i('Flush pending syncs error: $e');
+    }
+  }
+
+  Future<void> _pushItemFromDb(String mediaId) async {
+    try {
+      final manager = Get.find<ProfileManager>();
+      final profileId = manager.currentProfileId.value;
+      if (profileId.isEmpty) return;
+      final cloudId = _getCloudProfileId(profileId) ?? profileId;
+      if (cloudId.isEmpty) return;
+
+      final item = await isar.offlineMedias
+          .filter()
+          .mediaIdEqualTo(mediaId)
+          .and()
+          .profileIdEqualTo(profileId)
+          .findFirst();
+
+      if (item == null) return;
+
+      final mediaTypeMap = {0: 'manga', 1: 'anime', 2: 'novel'};
+      final mediaType = mediaTypeMap[item.mediaTypeIndex] ?? 'anime';
+      await pushLibrary(cloudId, mediaType, [item]);
+    } catch (e) {
+      Logger.i('Push single item error: $e');
+    }
+  }
+
+  Future<void> _pushSettingsOnly() async {
+    try {
+      final manager = Get.find<ProfileManager>();
+      final profileId = manager.currentProfileId.value;
+      if (profileId.isEmpty) return;
+      final cloudId = _getCloudProfileId(profileId) ?? profileId;
+      if (cloudId.isEmpty) return;
+      await pushSettings(cloudId);
+    } catch (e) {
+      Logger.i('Push settings error: $e');
+    }
+  }
+
+  Future<void> _pushDirtyThenPull(String profileId) async {
+    try {
+      final cloudId = _getCloudProfileId(profileId) ?? profileId;
+      if (cloudId.isEmpty) return;
+
+      isSyncing.value = true;
+      await flushPendingSyncs();
+      await pullAllForProfile(profileId);
+      _lastPull = DateTime.now();
+    } finally {
+      isSyncing.value = false;
     }
   }
 
@@ -651,93 +829,6 @@ class CloudSyncService extends GetxController {
     }
   }
 
-  void scheduleAutoSyncToCloud() {
-    if (!_auth.isCloudMode) return;
-    _autoSyncDebounce?.cancel();
-    _autoSyncDebounce = Timer(_debounceDuration, () {
-      autoSyncToCloud();
-    });
-  }
-
-  Future<void> forceAutoSyncToCloud() async {
-    if (!_auth.isCloudMode) return;
-    _autoSyncDebounce?.cancel();
-    await autoSyncToCloud(force: true);
-  }
-
-  Future<void> autoSyncToCloud({bool force = false}) async {
-    try {
-      if (!_auth.isCloudMode) return;
-      if (isSyncing.value) return;
-
-      if (!force &&
-          _lastAutoSync != null &&
-          DateTime.now().difference(_lastAutoSync!) < _minAutoSyncInterval) {
-        return;
-      }
-
-      final manager = Get.find<ProfileManager>();
-      final profileId = manager.currentProfileId.value;
-      if (profileId.isEmpty) return;
-
-      final cloudId = _getCloudProfileId(profileId) ?? profileId;
-      if (cloudId.isEmpty) return;
-
-      Logger.i('Auto-syncing to cloud (profile: $cloudId)...');
-      isSyncing.value = true;
-
-      await pushSettings(cloudId);
-
-      final pid = profileId;
-      for (final entry in [
-        {'type': 'anime', 'index': 1},
-        {'type': 'manga', 'index': 0},
-        {'type': 'novel', 'index': 2},
-      ]) {
-        final items = await isar
-            .offlineMedias
-            .filter()
-            .profileIdEqualTo(pid)
-            .and()
-            .mediaTypeIndexEqualTo(entry['index'] as int)
-            .findAll();
-        if (items.isNotEmpty) {
-          await pushLibrary(cloudId, entry['type'] as String, items);
-        }
-      }
-
-      for (final entry in [
-        {'type': 'anime', 'index': 1},
-        {'type': 'manga', 'index': 0},
-        {'type': 'novel', 'index': 2},
-      ]) {
-        final lists = await isar
-            .customLists
-            .filter()
-            .profileIdEqualTo(pid)
-            .and()
-            .mediaTypeIndexEqualTo(entry['index'] as int)
-            .findAll();
-        if (lists.isNotEmpty) {
-          await pushCustomLists(cloudId, entry['type'] as String, lists);
-        }
-      }
-
-      _lastAutoSync = DateTime.now();
-      Logger.i('Auto-sync to cloud completed');
-    } catch (e) {
-      Logger.i('Auto-sync to cloud error: $e');
-    } finally {
-      isSyncing.value = false;
-    }
-  }
-
-  @override
-  void onClose() {
-    _autoSyncDebounce?.cancel();
-    super.onClose();
-  }
-
   Future<void> restoreServiceTokens(String cloudProfileId) async {
     try {
       if (!_auth.isCloudMode) return;
@@ -850,6 +941,7 @@ class CloudSyncService extends GetxController {
         }
       }
 
+      _pendingMediaIds.clear();
       syncStatus.value = 'Pull complete!';
     } catch (e) {
       Logger.i('Pull all for profile error: $e');

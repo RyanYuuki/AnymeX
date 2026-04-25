@@ -114,7 +114,9 @@ class ProfileManager extends GetxController {
         final auth = Get.find<CloudAuthService>();
         if (auth.isCloudMode) {
           final sync = Get.find<CloudSyncService>();
-          sync.pullAllForProfile(profileId);
+          await sync.restoreServiceTokens(profileId);
+          await sync.flushPendingSyncs();
+          await sync.pullAllForProfile(profileId);
         }
       }
     } catch (e) {

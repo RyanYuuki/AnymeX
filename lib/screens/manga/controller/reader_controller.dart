@@ -405,7 +405,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       case AppLifecycleState.paused:
         Logger.i('App paused - saving reading progress');
         _performSave(reason: 'App paused');
-        _triggerCloudAutoSync();
+        _triggerCloudItemSync();
         break;
       case AppLifecycleState.detached:
         Logger.i('App detached - performing final save');
@@ -419,7 +419,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         break;
       case AppLifecycleState.inactive:
         _performSave(reason: "App inactive");
-        _triggerCloudAutoSync();
+        _triggerCloudItemSync();
         Logger.i('App inactive');
         break;
       case AppLifecycleState.hidden:
@@ -471,7 +471,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
       unawaited(_syncCloudProgressOnExit(chapter));
 
-      _triggerCloudAutoSync(force: true);
+      _triggerCloudItemSync(force: true);
 
       if (!shouldTrack) return;
       if (chapter.pageNumber != null &&
@@ -499,18 +499,18 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  void _triggerCloudAutoSync({bool force = false}) {
+  void _triggerCloudItemSync({bool force = false}) {
     try {
       if (!Get.isRegistered<CloudAuthService>()) return;
       if (!Get.isRegistered<CloudSyncService>()) return;
       final syncService = Get.find<CloudSyncService>();
       if (force) {
-        syncService.forceAutoSyncToCloud();
+        syncService.flushPendingSyncs();
       } else {
-        syncService.scheduleAutoSyncToCloud();
+        syncService.scheduleItemSync(media.id, media.mediaType.index);
       }
     } catch (e) {
-      Logger.i('Error triggering cloud auto-sync: $e');
+      Logger.i('Error triggering cloud item sync: $e');
     }
   }
 

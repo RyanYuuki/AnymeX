@@ -113,18 +113,10 @@ class _SettingsCloudState extends State<SettingsCloud> {
 
     try {
       final profileService = Get.find<CloudProfileService>();
-      final syncService = Get.find<CloudSyncService>();
       final cloudProfiles = await profileService.listProfiles();
       if (cloudProfiles != null && cloudProfiles.isNotEmpty) {
         manager.profiles.clear();
         await manager.importFromCloud(cloudProfiles);
-        for (final cp in cloudProfiles) {
-          final cloudId = cp['cloud_profile_id'] as String? ??
-              cp['id'] as String? ?? '';
-          if (cloudId.isNotEmpty) {
-            await syncService.restoreServiceTokens(cloudId);
-          }
-        }
       } else {
         manager.profiles.clear();
       }

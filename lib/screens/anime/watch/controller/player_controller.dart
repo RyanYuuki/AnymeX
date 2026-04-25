@@ -372,7 +372,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       if (!kDebugMode) {
         _trackLocally();
       }
-      _triggerCloudAutoSync();
+      _triggerCloudItemSync();
     }
   }
 
@@ -1303,7 +1303,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         _trackOnline(hasCrossedLimit);
         _syncCloudProgressOnExit();
       }
-      _triggerCloudAutoSync(force: true);
+      _triggerCloudItemSync(force: true);
     } catch (e) {
       Logger.e('Error saving during dispose: $e');
     }
@@ -1998,18 +1998,18 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  void _triggerCloudAutoSync({bool force = false}) {
+  void _triggerCloudItemSync({bool force = false}) {
     try {
       if (!Get.isRegistered<CloudAuthService>()) return;
       if (!Get.isRegistered<CloudSyncService>()) return;
       final syncService = Get.find<CloudSyncService>();
       if (force) {
-        syncService.forceAutoSyncToCloud();
+        syncService.flushPendingSyncs();
       } else {
-        syncService.scheduleAutoSyncToCloud();
+        syncService.scheduleItemSync(anilistData.id.toString(), 1);
       }
     } catch (e) {
-      Logger.i('Error triggering cloud auto-sync: $e');
+      Logger.i('Error triggering cloud item sync: $e');
     }
   }
 

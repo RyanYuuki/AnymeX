@@ -1,7 +1,6 @@
 import 'package:anymex/controllers/profile/profile_manager.dart';
 import 'package:anymex/controllers/services/cloud/cloud_auth_service.dart';
 import 'package:anymex/controllers/services/cloud/cloud_profile_service.dart';
-import 'package:anymex/controllers/services/cloud/cloud_sync_service.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/cloud_encryption.dart';
 import 'package:anymex/utils/logger.dart';
@@ -91,19 +90,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   Future<void> _fetchCloudProfiles() async {
     try {
       final profileService = Get.find<CloudProfileService>();
-      final syncService = Get.find<CloudSyncService>();
       final manager = Get.find<ProfileManager>();
 
       final cloudProfiles = await profileService.listProfiles();
       if (cloudProfiles != null && cloudProfiles.isNotEmpty) {
         await manager.importFromCloud(cloudProfiles);
-        for (final cp in cloudProfiles) {
-          final cloudId = cp['cloud_profile_id'] as String? ??
-              cp['id'] as String? ?? '';
-          if (cloudId.isNotEmpty) {
-            await syncService.restoreServiceTokens(cloudId);
-          }
-        }
       }
     } catch (e) {
       Logger.i('Error fetching cloud profiles after auth: $e');

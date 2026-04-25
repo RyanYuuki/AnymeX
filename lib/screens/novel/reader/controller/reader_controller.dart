@@ -133,7 +133,7 @@ class NovelReaderController extends GetxController {
   void onClose() {
     _saveTracking(syncToCloud: false);
     unawaited(_syncCloudProgressOnExit());
-    _triggerCloudAutoSync(force: true);
+    _triggerCloudItemSync(force: true);
     scrollController.removeListener(_scrollListener);
     _stopAutoScroll();
     _hideTimer?.cancel();
@@ -784,18 +784,18 @@ class NovelReaderController extends GetxController {
     }
   }
 
-  void _triggerCloudAutoSync({bool force = false}) {
+  void _triggerCloudItemSync({bool force = false}) {
     try {
       if (!Get.isRegistered<CloudAuthService>()) return;
       if (!Get.isRegistered<CloudSyncService>()) return;
       final syncService = Get.find<CloudSyncService>();
       if (force) {
-        syncService.forceAutoSyncToCloud();
+        syncService.flushPendingSyncs();
       } else {
-        syncService.scheduleAutoSyncToCloud();
+        syncService.scheduleItemSync(media.id, media.mediaType.index);
       }
     } catch (e) {
-      Logger.i('Error triggering cloud auto-sync: $e');
+      Logger.i('Error triggering cloud item sync: $e');
     }
   }
 
