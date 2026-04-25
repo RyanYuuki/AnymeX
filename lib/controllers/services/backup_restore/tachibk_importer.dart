@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
+import 'package:anymex/database/isar_models/custom_list.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/logger.dart';
@@ -387,7 +388,7 @@ class TachibkImporter extends GetxController {
           for (final media in mediaList) {
             bool shouldAdd = true;
             String lookupId = media.mediaId ?? media.name ?? '';
-            
+
             if (merge) {
               final id = media.mediaId ?? '';
               if (id.isEmpty || id == '0') {
@@ -402,7 +403,7 @@ class TachibkImporter extends GetxController {
               if (media.mediaId != null) existingIds.add(media.mediaId);
               if (media.name != null) existingNames.add(media.name);
             }
-            
+
             await _storageController.addMediaToList("Watching", lookupId, mediaType: ItemType.anime);
 
             processed++;
