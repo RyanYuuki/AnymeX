@@ -464,7 +464,7 @@ class OfflineStorageController extends GetxController {
     await isar.writeTxn(() async {
       await isar.offlineMedias.put(original);
     });
-    _cloudSync?.scheduleItemSync(original.mediaId ?? '', original.mediaTypeIndex);
+    _cloudSync?.scheduleItemSync(original.mediaId ?? '', original.mediaTypeIndex ?? 0);
   }
 
   Future<void> addMedia(String listName, Media original) async {
@@ -674,7 +674,7 @@ class OfflineStorageController extends GetxController {
         mediaType: existingManga.mediaTypeIndex == 2 ? 'novel' : 'manga',
         chapter: chapter,
       );
-      _cloudSync?.scheduleItemSync(mangaId, existingManga.mediaTypeIndex);
+      _cloudSync?.scheduleItemSync(mangaId, existingManga.mediaTypeIndex ?? 0);
     }
   }
 

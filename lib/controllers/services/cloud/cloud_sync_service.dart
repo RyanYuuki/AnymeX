@@ -420,11 +420,13 @@ class CloudSyncService extends GetxController with WidgetsBindingObserver {
         if (item.currentEpisode != null || item.currentChapter != null) {
           entries.add({
             'mediaId': item.mediaId,
-            'currentEpisode': item.currentEpisode,
-            'currentChapter': item.currentChapter,
-            'mediaType': item.mediaTypeIndex,
-            'completedAt': item.completedAt?.toIso8601String(),
-            'extraData': item.extraData,
+            'name': item.name ?? item.english ?? '',
+            'poster': item.poster ?? item.cover ?? '',
+            'currentEpisode': item.currentEpisode?.toJson(),
+            'currentChapter': item.currentChapter?.toJson(),
+            'mediaType': item.mediaTypeIndex ?? 0,
+            'totalEpisodes': item.totalEpisodes,
+            'totalChapters': item.totalChapters,
           });
         }
       }
@@ -455,11 +457,13 @@ class CloudSyncService extends GetxController with WidgetsBindingObserver {
 
       final cwItems = <Map<String, dynamic>>[];
       for (final item in items) {
-        if (item.currentEpisode != null && item.extraData != null) {
+        if (item.currentEpisode != null && item.name != null) {
           cwItems.add({
             'mediaId': item.mediaId,
-            'currentEpisode': item.currentEpisode,
-            'extraData': item.extraData,
+            'name': item.name ?? item.english ?? '',
+            'poster': item.poster ?? item.cover ?? '',
+            'currentEpisode': item.currentEpisode?.toJson(),
+            'totalEpisodes': item.totalEpisodes,
           });
         }
       }
@@ -1272,7 +1276,6 @@ class CloudSyncService extends GetxController with WidgetsBindingObserver {
       }
 
       // Push library for each media type
-      final mediaTypeMap = {0: 'manga', 1: 'anime', 2: 'novel'};
       for (final entry in [
         {'type': 'anime', 'index': 1},
         {'type': 'manga', 'index': 0},
