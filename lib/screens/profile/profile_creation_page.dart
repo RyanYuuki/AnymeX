@@ -1,16 +1,22 @@
 import 'dart:io';
 
 import 'package:anymex/controllers/profile/profile_manager.dart';
+import 'package:anymex/controllers/services/backup_restore/backup_restore_service.dart';
 import 'package:anymex/models/Service/app_profile.dart';
 import 'package:anymex/screens/profile/widgets/pattern_lock.dart';
 import 'package:anymex/screens/profile/widgets/profile_avatar.dart';
+import 'package:anymex/screens/settings/sub_settings/widgets/backup_and_restore_widgets.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ProfileCreationPage extends StatefulWidget {
-  const ProfileCreationPage({super.key});
+  final bool isFirstLaunch;
+
+  const ProfileCreationPage({super.key, this.isFirstLaunch = false});
 
   @override
   State<ProfileCreationPage> createState() => _ProfileCreationPageState();
@@ -25,7 +31,9 @@ class _ProfileCreationPageState extends State<ProfileCreationPage>
   final TextEditingController _confirmPasswordController = TextEditingController();
   String _avatarPath = '';
   bool _isCreating = false;
+  bool _isRestoring = false;
   bool _showSetupForm = false;
+  bool get _showWelcome => widget.isFirstLaunch && !_showSetupForm;
   ProfileLockType _lockType = ProfileLockType.none;
   List<int> _pattern = [];
   bool _patternConfirmed = false;
@@ -50,6 +58,12 @@ class _ProfileCreationPageState extends State<ProfileCreationPage>
       parent: _animController,
       curve: Curves.easeIn,
     );
+    if (!widget.isFirstLaunch) {
+      _showSetupForm = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _animController.value = 1.0;
+      });
+    }
   }
 
   @override
@@ -193,6 +207,75 @@ class _ProfileCreationPageState extends State<ProfileCreationPage>
     await manager.skipMultiProfileSetup();
   }
 
+  Future<void> _restoreFromBackup() async {
+    setState(() => _isRestoring = true);
+    try {
+      final controller = Get.put(BackupRestoreService());
+      final path = await controller.pickBackupFile();
+      if (path == null || path.isEmpty) {
+        setState(() => _isRestoring = false);
+        return;
+      }
+
+      final isEncrypted = await controller.isBackupEncrypted(path);
+      String? password;
+
+      if (isEncrypted) {
+        if (!mounted) return;
+        final pwController = TextEditingController();
+        password = await showDialog<String>(
+          context: context,
+          builder: (context) => PasswordInputDialog(controller: pwController),
+        );
+        pwController.dispose();
+        if (password == null) {
+          setState(() => _isRestoring = false);
+          return;
+        }
+      }
+
+      final info = await controller.getBackupInfo(path, password: password);
+      if (info == null) {
+        if (mounted) snackBar('Invalid backup file or incorrect password');
+        setState(() => _isRestoring = false);
+        return;
+      }
+
+      if (!mounted) return;
+      await showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => RestorePreviewSheet(
+          info: info,
+          isEncrypted: isEncrypted,
+          onConfirm: (restoreSettings, restoreAuthTokens, createNew) async {
+            Navigator.pop(context);
+            try {
+              await controller.restoreBackup(
+                path,
+                password: password,
+                merge: false,
+                restoreSettings: restoreSettings,
+                restoreAuthTokens: restoreAuthTokens,
+                createNewProfile: createNew,
+              );
+              if (mounted) {
+                snackBar('Profile restored successfully!');
+              }
+            } catch (e) {
+              if (mounted) snackBar('Restore failed: $e');
+            }
+          },
+        ),
+      );
+      Get.delete<BackupRestoreService>();
+    } catch (e) {
+      if (mounted) snackBar('Error: $e');
+    }
+    setState(() => _isRestoring = false);
+  }
+
   IconData _getLockIcon(ProfileLockType type) {
     switch (type) {
       case ProfileLockType.none:
@@ -229,81 +312,55 @@ class _ProfileCreationPageState extends State<ProfileCreationPage>
       body: SafeArea(
         child: Column(
           children: [
-            // App bar - only show back button when in form mode
             Padding(
               padding: const EdgeInsets.fromLTRB(8, 8, 16, 0),
               child: Row(
                 children: [
-                  if (_showSetupForm)
+                  if (_showWelcome)
+                    const SizedBox(width: 48)
+                  else
                     IconButton(
                       icon: Icon(Icons.arrow_back, color: theme.onSurface),
-                      onPressed: () {
-                        setState(() => _showSetupForm = false);
-                        _animController.reverse();
-                      },
-                    )
-                  else
-                    const SizedBox(width: 48),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
                 ],
               ),
             ),
 
-            // Scrollable content
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 32),
                 child: Column(
                   children: [
-                    // Welcome icon
-                    Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: colorScheme.primaryContainer,
-                        border: Border.all(
-                          color: colorScheme.primary,
-                          width: 2.5,
+                    if (_showWelcome) ...[
+                      const SizedBox(height: 40),
+                      AnymeXAnimatedLogo(
+                        size: 120,
+                        autoPlay: true,
+                      ),
+                      const SizedBox(height: 28),
+                      Text(
+                        'Welcome to AnymeX',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 26,
+                          color: theme.onSurface,
                         ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: colorScheme.primary.withOpacity(0.25),
-                            blurRadius: 24,
-                            spreadRadius: 2,
-                          ),
-                        ],
                       ),
-                      child: Icon(
-                        Icons.person_rounded,
-                        size: 36,
-                        color: colorScheme.primary,
+                      const SizedBox(height: 10),
+                      Text(
+                        'Set up separate profiles to keep your watch history, accounts, and settings organized — or skip and start using the app right away.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 14,
+                          color: theme.onSurface.withOpacity(0.55),
+                          height: 1.5,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 28),
-                    Text(
-                      'Welcome to AnymeX',
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontWeight: FontWeight.bold,
-                        fontSize: 26,
-                        color: theme.onSurface,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      _showSetupForm
-                          ? 'Set up your first profile to get started.'
-                          : 'Set up separate profiles to keep your watch history, accounts, and settings organized — or skip and start using the app right away.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 14,
-                        color: theme.onSurface.withOpacity(0.55),
-                        height: 1.5,
-                      ),
-                    ),
+                    ],
 
-                    // Expandable creation form
                     SizeTransition(
                       sizeFactor: _expandAnimation,
                       axisAlignment: -1.0,
@@ -378,7 +435,7 @@ class _ProfileCreationPageState extends State<ProfileCreationPage>
                             const SizedBox(height: 24),
                             TextField(
                               controller: _nameController,
-                              autofocus: true,
+                              autofocus: false,
                               textCapitalization: TextCapitalization.words,
                               maxLength: 20,
                               style: TextStyle(
@@ -582,7 +639,7 @@ class _ProfileCreationPageState extends State<ProfileCreationPage>
                 padding: const EdgeInsets.fromLTRB(32, 16, 32, 12),
                 child: Column(
                   children: [
-                    if (!_showSetupForm) ...[
+                    if (_showWelcome) ...[
                       SizedBox(
                         width: double.infinity,
                         height: 54,
@@ -607,7 +664,47 @@ class _ProfileCreationPageState extends State<ProfileCreationPage>
                           ),
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        child: OutlinedButton.icon(
+                          onPressed: _isRestoring ? null : _restoreFromBackup,
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor:
+                                theme.onSurface.withOpacity(0.7),
+                            side: BorderSide(
+                              color: colorScheme.outline.withOpacity(0.3),
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          icon: _isRestoring
+                              ? const SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: AnymexProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : Icon(
+                                  Icons.restore_rounded,
+                                  size: 18,
+                                  color: theme.onSurface.withOpacity(0.7),
+                                ),
+                          label: Text(
+                            'Restore from Backup',
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                              color: theme.onSurface.withOpacity(0.7),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
                       SizedBox(
                         width: double.infinity,
                         height: 54,

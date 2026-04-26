@@ -738,9 +738,8 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
   Future<bool?> _showPatternVerification(AppProfile profile) async {
     final manager = Get.find<ProfileManager>();
     final colorScheme = Theme.of(context).colorScheme;
-    bool? result;
 
-    await showDialog(
+    final result = await showDialog<bool?>(
       context: context,
       barrierDismissible: false,
       builder: (ctx) => StatefulBuilder(
@@ -853,18 +852,6 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
   }
 
   Future<void> _switchToProfile(AppProfile profile) async {
-    if (profile.hasLock) {
-      if (profile.isLocked) {
-        final remaining =
-            profile.lockedUntil!.difference(DateTime.now()).inMinutes + 1;
-        snackBar(
-            'Profile is locked. Try again in $remaining minute${remaining != 1 ? 's' : ''}');
-        return;
-      }
-      final verified = await _showLockVerification(profile);
-      if (verified != true) return;
-    }
-
     final manager = Get.find<ProfileManager>();
     await manager.switchToProfile(profile.id);
 
@@ -1205,8 +1192,12 @@ class _PasswordVerifyContentState extends State<_PasswordVerifyContent> {
           }),
           onSubmitted: (_) {
             if (widget.controller.text.isNotEmpty) {
-              final parentCtx = context;
-              Navigator.of(parentCtx).pop(true);
+              final manager = Get.find<ProfileManager>();
+              final result = manager.verifyLock(
+                  widget.profile.id, widget.controller.text);
+              if (result == true) {
+                Navigator.of(context).pop(true);
+              }
             }
           },
         ),

@@ -376,6 +376,7 @@ class ProfileManager extends GetxController {
     if (index == -1) return;
 
     profiles[index] = updated;
+    profiles.refresh();
     if (currentProfile.value?.id == updated.id) {
       currentProfile.value = updated;
     }
@@ -392,6 +393,19 @@ class ProfileManager extends GetxController {
     final profile = profiles.firstWhereOrNull((p) => p.id == profileId);
     if (profile == null) return;
     _updateProfile(profile.copyWith(avatarPath: avatarPath));
+  }
+
+  void restoreProfileFromBackup(String profileId, AppProfile source) {
+    final index = profiles.indexWhere((p) => p.id == profileId);
+    if (index == -1) return;
+    final updated = profiles[index].copyWith(
+      lockHash: source.lockHash,
+      lockType: source.lockType,
+      anilistLinked: source.anilistLinked,
+      malLinked: source.malLinked,
+      simklLinked: source.simklLinked,
+    );
+    _updateProfile(updated);
   }
 
   static String? _readGlobal(String key) {

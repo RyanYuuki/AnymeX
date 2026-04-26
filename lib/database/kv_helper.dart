@@ -17,9 +17,14 @@ extension KvExtensions on Enum {
 class KvHelper {
   static String profilePrefix = '';
 
+  static const _globalKeys = {
+    'isFirstTime',
+  };
+
   static String _prefixKey(String key) {
     if (profilePrefix.isEmpty) return key;
     if (key.startsWith('__') && key.endsWith('__')) return key;
+    if (_globalKeys.contains(key)) return key;
     return '$profilePrefix$key';
   }
 

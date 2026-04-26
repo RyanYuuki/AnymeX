@@ -8,6 +8,7 @@ import 'package:anymex/database/kv_helper.dart';
 import 'package:anymex/database/isar_models/custom_list.dart';
 import 'package:anymex/database/isar_models/key_value.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
+import 'package:anymex/models/Service/app_profile.dart';
 import 'package:anymex/screens/library/controller/library_controller.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -95,6 +96,11 @@ class BackupRestoreService extends GetxController {
       return backupSettings && _isCurrentProfileKey(e.key);
     }).map((e) => {'key': e.key, 'value': e.value}).toList();
 
+    AppProfile? profile;
+    if (Get.isRegistered<ProfileManager>()) {
+      profile = Get.find<ProfileManager>().currentProfile.value;
+    }
+
     return {
       'date': DateFormat('dd MM yyyy hh:mm a').format(DateTime.now()),
       'appVersion': '',
@@ -113,24 +119,49 @@ class BackupRestoreService extends GetxController {
       'settings': filteredSettings,
       'profilePrefix': KvHelper.profilePrefix,
       'profileId': _getCurrentPid(),
-      'profileName': Get.isRegistered<ProfileManager>()
-          ? Get.find<ProfileManager>().currentProfile.value?.name ?? ''
-          : '',
+      'profileName': profile?.name ?? '',
+      'profileData': profile?.toJson(),
+      'isMultiProfileEnabled': Get.isRegistered<ProfileManager>() &&
+          Get.find<ProfileManager>().isMultiProfileEnabled.value,
     };
   }
 
-  Future<void> _applyBackupData(Map<String, dynamic> data,
+  Future<String?> _applyBackupData(Map<String, dynamic> data,
       {bool merge = false,
       bool restoreSettings = true,
-      bool restoreAuthTokens = false}) async {
-    final currentPid = _getCurrentPid();
+      bool restoreAuthTokens = false,
+      bool createNewProfile = false}) async {
+    String? newProfileId;
+    String targetPid;
+
+    if (createNewProfile && Get.isRegistered<ProfileManager>()) {
+      final manager = Get.find<ProfileManager>();
+      final profileData = data['profileData'] as Map<String, dynamic>?;
+      final profileName = data['profileName'] as String? ?? 'Restored Profile';
+
+      final newProfile = manager.createProfile(name: profileName);
+      if (newProfile == null) {
+        throw Exception('Cannot create profile (max $kMaxProfiles reached)');
+      }
+      newProfileId = newProfile.id;
+
+      if (profileData != null) {
+        final restoredProfile = AppProfile.fromJson(profileData);
+        manager.restoreProfileFromBackup(newProfileId, restoredProfile);
+      }
+
+      targetPid = newProfileId;
+    } else {
+      targetPid = _getCurrentPid() ?? '';
+    }
+
     final backupPrefix = (data['profilePrefix'] as String?) ?? '';
 
     final animeList = (data['animeLibrary'] as List?)
             ?.map((e) {
               final media = OfflineMedia.fromJson(
                   (e as Map<String, dynamic>)..["mediaTypeIndex"] = 1);
-              media.profileId = currentPid;
+              media.profileId = targetPid;
               return media;
             })
             .toList() ??
@@ -140,7 +171,7 @@ class BackupRestoreService extends GetxController {
             ?.map((e) {
               final media = OfflineMedia.fromJson(
                   (e as Map<String, dynamic>)..["mediaTypeIndex"] = 0);
-              media.profileId = currentPid;
+              media.profileId = targetPid;
               return media;
             })
             .toList() ??
@@ -150,106 +181,110 @@ class BackupRestoreService extends GetxController {
             ?.map((e) {
               final media = OfflineMedia.fromJson(
                   (e as Map<String, dynamic>)..["mediaTypeIndex"] = 2);
-              media.profileId = currentPid;
+              media.profileId = targetPid;
               return media;
             })
             .toList() ??
         [];
 
-    await isar.writeTxn(() async {
+    final animeCustomLists = !merge
+        ? ((data['animeCustomLists'] as List?)
+                ?.map((e) {
+                  final list = CustomList.fromJson(
+                      (e as Map<String, dynamic>)..['mediaTypeIndex'] = 1);
+                  list.profileId = targetPid;
+                  return list;
+                })
+                .toList() ??
+            [])
+        : <CustomList>[];
+
+    final mangaCustomLists = !merge
+        ? ((data['mangaCustomLists'] as List?)
+                ?.map((e) {
+                  final list = CustomList.fromJson(
+                      (e as Map<String, dynamic>)..['mediaTypeIndex'] = 0);
+                  list.profileId = targetPid;
+                  return list;
+                })
+                .toList() ??
+            [])
+        : <CustomList>[];
+
+    final novelCustomLists = !merge
+        ? ((data['novelCustomLists'] as List?)
+                ?.map((e) {
+                  final list = CustomList.fromJson(
+                      (e as Map<String, dynamic>)..['mediaTypeIndex'] = 2);
+                  list.profileId = targetPid;
+                  return list;
+                })
+                .toList() ??
+            [])
+        : <CustomList>[];
+
+    final settingsList = data['settings'] as List? ?? [];
+
+    isar.writeTxnSync(() {
+      final mediaCol = isar.collection<OfflineMedia>();
+      final listCol = isar.collection<CustomList>();
+      final kvCol = isar.collection<KeyValue>();
+
       if (!merge) {
-        final mediaToDelete = isar.offlineMedias
+        final mediaToDelete = mediaCol
             .filter()
-            .profileIdEqualTo(currentPid)
+            .profileIdEqualTo(targetPid)
             .findAllSync();
         for (final m in mediaToDelete) {
-          await isar.offlineMedias.delete(m.id);
+          mediaCol.deleteSync(m.id);
         }
 
-        final listsToDelete = isar.customLists
+        final listsToDelete = listCol
             .filter()
-            .profileIdEqualTo(currentPid)
+            .profileIdEqualTo(targetPid)
             .findAllSync();
         for (final l in listsToDelete) {
-          await isar.customLists.delete(l.id);
+          listCol.deleteSync(l.id);
         }
       }
 
       if (merge) {
-        final existingIds = isar.offlineMedias
+        final existingIds = mediaCol
             .filter()
-            .profileIdEqualTo(currentPid)
+            .profileIdEqualTo(targetPid)
             .mediaIdProperty()
             .findAllSync();
 
         for (var anime in animeList) {
           if (!existingIds.contains(anime.mediaId)) {
-            await isar.offlineMedias.put(anime);
+            mediaCol.putSync(anime);
           }
         }
 
         for (var manga in mangaList) {
           if (!existingIds.contains(manga.mediaId)) {
-            await isar.offlineMedias.put(manga);
+            mediaCol.putSync(manga);
           }
         }
 
         for (var novel in novelList) {
           if (!existingIds.contains(novel.mediaId)) {
-            await isar.offlineMedias.put(novel);
+            mediaCol.putSync(novel);
           }
         }
       } else {
-        await isar.offlineMedias.putAll([
+        mediaCol.putAllSync([
           ...animeList,
           ...mangaList,
           ...novelList,
         ]);
-      }
-    });
-
-    if (!merge) {
-      final animeCustomLists = (data['animeCustomLists'] as List?)
-              ?.map((e) {
-                final list = CustomList.fromJson(
-                    (e as Map<String, dynamic>)..['mediaTypeIndex'] = 1);
-                list.profileId = currentPid;
-                return list;
-              })
-              .toList() ??
-          [];
-
-      final mangaCustomLists = (data['mangaCustomLists'] as List?)
-              ?.map((e) {
-                final list = CustomList.fromJson(
-                    (e as Map<String, dynamic>)..['mediaTypeIndex'] = 0);
-                list.profileId = currentPid;
-                return list;
-              })
-              .toList() ??
-          [];
-
-      final novelCustomLists = (data['novelCustomLists'] as List?)
-              ?.map((e) {
-                final list = CustomList.fromJson(
-                    (e as Map<String, dynamic>)..['mediaTypeIndex'] = 2);
-                list.profileId = currentPid;
-                return list;
-              })
-              .toList() ??
-          [];
-
-      await isar.writeTxn(() async {
-        await isar.customLists.putAll([
+        listCol.putAllSync([
           ...animeCustomLists,
           ...mangaCustomLists,
           ...novelCustomLists,
         ]);
-      });
-    }
+      }
 
-    final settingsList = data['settings'] as List? ?? [];
-    await isar.writeTxn(() async {
       for (var setting in settingsList) {
         final originalKey = setting['key'] as String?;
         if (originalKey == null) continue;
@@ -263,11 +298,17 @@ class BackupRestoreService extends GetxController {
         final kv = KeyValue()
           ..key = remappedKey
           ..value = setting['value'];
-        await isar.collection<KeyValue>().put(kv);
+        kvCol.putSync(kv);
       }
     });
 
     Get.delete<LibraryController>();
+
+    if (createNewProfile && newProfileId != null) {
+      await Get.find<ProfileManager>().switchToProfile(newProfileId);
+    }
+
+    return newProfileId;
   }
 
   String _encryptData(Map<String, dynamic> data, String password) {
@@ -423,7 +464,8 @@ class BackupRestoreService extends GetxController {
       {String? password,
       bool merge = false,
       bool restoreSettings = true,
-      bool restoreAuthTokens = false}) async {
+      bool restoreAuthTokens = false,
+      bool createNewProfile = false}) async {
     try {
       final file = File(filePath);
 
@@ -440,7 +482,8 @@ class BackupRestoreService extends GetxController {
       await _applyBackupData(data,
           merge: merge,
           restoreSettings: restoreSettings,
-          restoreAuthTokens: restoreAuthTokens);
+          restoreAuthTokens: restoreAuthTokens,
+          createNewProfile: createNewProfile);
 
       Logger.i('Backup restored successfully from: $filePath');
     } catch (e) {
@@ -527,6 +570,8 @@ class BackupRestoreService extends GetxController {
       final mangaCount = data['mangaCount'] ?? 0;
       final novelCount = data['novelCount'] ?? 0;
 
+      final profileData = data['profileData'] as Map<String, dynamic>?;
+
       return {
         'date': data['date'],
         'username': data['username'],
@@ -560,6 +605,11 @@ class BackupRestoreService extends GetxController {
         'profilePrefix': data['profilePrefix'] ?? '',
         'profileId': data['profileId'] ?? '',
         'profileName': data['profileName'] ?? '',
+        'profileData': profileData,
+        'hasProfileLock': profileData != null &&
+            (profileData['lockHash'] as String?)?.isNotEmpty == true,
+        'profileLockType': profileData?['lockType'] as String? ?? 'none',
+        'canCreateNewProfile': data['isMultiProfileEnabled'] == true,
       };
     } catch (e) {
       Logger.i('Failed to get backup info: $e');

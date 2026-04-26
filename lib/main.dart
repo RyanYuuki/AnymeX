@@ -341,7 +341,7 @@ class _ProfileGateState extends State<ProfileGate> {
       }
 
       if (!manager.hasProfiles) {
-        return const ProfileCreationPage();
+        return const ProfileCreationPage(isFirstLaunch: true);
       }
 
       if (!manager.isMultiProfileEnabled.value && manager.hasSingleProfile) {

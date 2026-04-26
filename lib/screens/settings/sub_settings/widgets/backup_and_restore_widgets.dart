@@ -165,7 +165,8 @@ class LoadingDialog extends StatelessWidget {
 class RestorePreviewSheet extends StatelessWidget {
   final Map<String, dynamic> info;
   final bool isEncrypted;
-  final Function(bool restoreSettings, bool restoreAuthTokens) onConfirm;
+  final Function(bool restoreSettings, bool restoreAuthTokens,
+      bool createNewProfile) onConfirm;
 
   const RestorePreviewSheet({
     super.key,
@@ -183,6 +184,11 @@ class RestorePreviewSheet extends StatelessWidget {
 
     final restoreSettings = true.obs;
     final restoreAuthTokens = false.obs;
+    final createNewProfile = false.obs;
+
+    final hasProfileLock = info['hasProfileLock'] as bool? ?? false;
+    final profileLockType = info['profileLockType'] as String? ?? 'none';
+    final canCreateNewProfile = info['canCreateNewProfile'] as bool? ?? false;
 
     return DraggableScrollableSheet(
       initialChildSize: 0.9,
@@ -269,38 +275,7 @@ class RestorePreviewSheet extends StatelessWidget {
                     novelCustomListsCount: info['novelCustomListsCount'] ?? 0,
                   ),
                   const SizedBox(height: 12),
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.errorContainer.opaque(0.2),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: theme.colorScheme.error.opaque(0.3),
-                      ),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(
-                          Icons.warning_amber_rounded,
-                          color: theme.colorScheme.error,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            "Data will replace the CURRENT profile's library & settings. Create a new profile first if you want to keep existing data separate.",
-                            style: TextStyle(
-                              color: theme.colorScheme.error,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  if (hasSettings || hasAuthTokens) ...[
+                  if (hasProfileLock || hasSettings || hasAuthTokens) ...[
                     Text(
                       "RESTORE OPTIONS",
                       style: TextStyle(
@@ -332,11 +307,208 @@ class RestorePreviewSheet extends StatelessWidget {
                             controlAffinity: ListTileControlAffinity.trailing,
                             contentPadding: EdgeInsets.zero,
                           )),
+                    if (hasProfileLock)
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.secondaryContainer
+                              .opaque(0.3),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.lock_rounded,
+                                size: 16, color: theme.colorScheme.primary),
+                            const SizedBox(width: 8),
+                            Text(
+                              "Profile has ${profileLockType == 'pin' ? 'PIN' : profileLockType == 'pattern' ? 'pattern' : 'password'} lock — will be restored",
+                              style: TextStyle(
+                                color: theme.colorScheme.onSurfaceVariant,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    const SizedBox(height: 16),
+                    if (canCreateNewProfile)
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.surfaceContainerHighest
+                              .opaque(0.3),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "RESTORE TO",
+                              style: TextStyle(
+                                color: theme.colorScheme.primary,
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.5,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Obx(() => Row(
+                                children: [
+                                  Expanded(
+                                    child: GestureDetector(
+                                      onTap: () =>
+                                          createNewProfile.value = false,
+                                      child: AnimatedContainer(
+                                        duration:
+                                            const Duration(milliseconds: 200),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 12, vertical: 12),
+                                        decoration: BoxDecoration(
+                                          color: !createNewProfile.value
+                                              ? theme.colorScheme.primary
+                                                  .opaque(0.1)
+                                              : Colors.transparent,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border: Border.all(
+                                            color: !createNewProfile.value
+                                                ? theme.colorScheme.primary
+                                                : theme.colorScheme.outline
+                                                    .opaque(0.2),
+                                            width: 1.5,
+                                          ),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              !createNewProfile.value
+                                                  ? Icons
+                                                      .radio_button_checked
+                                                  : Icons
+                                                      .radio_button_unchecked,
+                                              size: 18,
+                                              color:
+                                                  !createNewProfile.value
+                                                      ? theme
+                                                          .colorScheme.primary
+                                                      : theme.colorScheme
+                                                          .onSurfaceVariant,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    "Current Profile",
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize: 13,
+                                                      color: theme.colorScheme
+                                                          .onSurface,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    "Replace existing data",
+                                                    style: TextStyle(
+                                                      fontSize: 11,
+                                                      color: theme.colorScheme
+                                                          .onSurfaceVariant,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: GestureDetector(
+                                      onTap: () =>
+                                          createNewProfile.value = true,
+                                      child: AnimatedContainer(
+                                        duration:
+                                            const Duration(milliseconds: 200),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 12, vertical: 12),
+                                        decoration: BoxDecoration(
+                                          color: createNewProfile.value
+                                              ? theme.colorScheme.primary
+                                                  .opaque(0.1)
+                                              : Colors.transparent,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border: Border.all(
+                                            color: createNewProfile.value
+                                                ? theme.colorScheme.primary
+                                                : theme.colorScheme.outline
+                                                    .opaque(0.2),
+                                            width: 1.5,
+                                          ),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              createNewProfile.value
+                                                  ? Icons
+                                                      .radio_button_checked
+                                                  : Icons
+                                                      .radio_button_unchecked,
+                                              size: 18,
+                                              color: createNewProfile.value
+                                                  ? theme
+                                                      .colorScheme.primary
+                                                  : theme.colorScheme
+                                                      .onSurfaceVariant,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    "New Profile",
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize: 13,
+                                                      color: theme.colorScheme
+                                                          .onSurface,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    "Create fresh profile",
+                                                    style: TextStyle(
+                                                      fontSize: 11,
+                                                      color: theme.colorScheme
+                                                          .onSurfaceVariant,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )),
+                        ],
+                      ),
+                    ),
                     const SizedBox(height: 24),
                   ],
                   ElevatedButton(
-                    onPressed: () => onConfirm(
-                        restoreSettings.value, restoreAuthTokens.value),
+                    onPressed: () => onConfirm(restoreSettings.value,
+                        restoreAuthTokens.value, createNewProfile.value),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: theme.colorScheme.primary,
                       foregroundColor: theme.colorScheme.onPrimary,
