@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:anymex/controllers/profile/profile_manager.dart';
 import 'package:anymex/database/isar_models/key_value.dart';
 import 'package:anymex/main.dart';
 import 'package:anymex/utils/logger.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -67,6 +69,55 @@ class CloudAuthService extends GetxController {
         if (accessToken.value.isNotEmpty)
           'Authorization': 'Bearer ${accessToken.value}',
       };
+
+  // ──────────────────────────────────────────────────────────
+  // Device info for sessions
+  // ──────────────────────────────────────────────────────────
+
+  Future<Map<String, String>> _getDeviceInfo() async {
+    try {
+      final deviceInfo = DeviceInfoPlugin();
+      String deviceName = 'Unknown';
+      String deviceType = 'unknown';
+      String platform = '';
+
+      if (Platform.isAndroid) {
+        final android = await deviceInfo.androidInfo;
+        deviceName = '${android.brand} ${android.model}';
+        deviceType = 'android';
+        platform = 'Android ${android.version.release}';
+      } else if (Platform.isIOS) {
+        final ios = await deviceInfo.iosInfo;
+        deviceName = ios.utsname.machine;
+        deviceType = 'ios';
+        platform = 'iOS ${ios.systemVersion}';
+      } else if (Platform.isMacOS) {
+        final mac = await deviceInfo.macOsInfo;
+        deviceName = mac.computerName;
+        deviceType = 'macos';
+        platform = 'macOS ${mac.kernelVersion}';
+      } else if (Platform.isWindows) {
+        final win = await deviceInfo.windowsInfo;
+        deviceName = win.computerName;
+        deviceType = 'windows';
+        platform = 'Windows ${win.majorVersion}.${win.minorVersion}';
+      } else if (Platform.isLinux) {
+        final linux = await deviceInfo.linuxInfo;
+        deviceName = linux.prettyName;
+        deviceType = 'linux';
+        platform = 'Linux';
+      }
+
+      return {
+        'device_name': deviceName,
+        'device_type': deviceType,
+        'platform': platform,
+      };
+    } catch (e) {
+      Logger.i('Error getting device info: $e');
+      return {'device_name': 'Unknown', 'device_type': 'unknown', 'platform': ''};
+    }
+  }
 
   // ══════════════════════════════════════════════════════════
   // Token management
@@ -191,6 +242,7 @@ class CloudAuthService extends GetxController {
     errorMessage.value = '';
 
     try {
+      final deviceInfo = await _getDeviceInfo();
       final response = await http.post(
         Uri.parse('$_functionsUrl/auth/register'),
         headers: {'Content-Type': 'application/json'},
@@ -198,6 +250,7 @@ class CloudAuthService extends GetxController {
           'username': username,
           'password': password,
           if (email != null && email.isNotEmpty) 'email': email,
+          ...deviceInfo,
         }),
       );
 
@@ -233,12 +286,14 @@ class CloudAuthService extends GetxController {
     errorMessage.value = '';
 
     try {
+      final deviceInfo = await _getDeviceInfo();
       final response = await http.post(
         Uri.parse('$_functionsUrl/auth/login'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'username': username,
           'password': password,
+          ...deviceInfo,
         }),
       );
 
