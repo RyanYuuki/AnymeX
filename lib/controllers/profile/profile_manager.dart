@@ -126,11 +126,29 @@ class ProfileManager extends GetxController {
 
           await sync.restoreServiceTokens(profileId);
           await sync.flushPendingSyncs();
-          await sync.pullAllForProfile(profileId);
+
+          // Check if this profile has ever been synced to cloud.
+          // If version is 0 (never synced), push all local data first,
+          // then pull so cloud becomes the source of truth.
+          final hasSynced = await sync.hasEverSynced(profileId);
+          if (!hasSynced) {
+            // First time — push all local data to cloud
+            await sync.fullSyncPush(
+              localProfileId: profileId,
+              cloudProfileId: cloudId,
+            );
+          } else {
+            await sync.pullAllForProfile(profileId);
+          }
 
           // Start realtime subscription for cross-device sync pings
           if (Get.isRegistered<CloudRealtimeService>()) {
             Get.find<CloudRealtimeService>().subscribe(cloudId);
+          }
+
+          // Mark initial sync as done so future switches just pull
+          if (!hasSynced) {
+            await sync.markSynced(profileId);
           }
         }
       }

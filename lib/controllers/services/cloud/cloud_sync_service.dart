@@ -42,8 +42,13 @@ class CloudSyncService extends GetxController with WidgetsBindingObserver {
   final Map<String, Timer> _itemSyncTimers = {};
   final Set<String> _pendingMediaIds = {};
   Timer? _settingsSyncTimer;
+  Timer? _listSyncTimer;
+  Timer? _watchHistorySyncTimer;
+  Timer? _continueWatchingSyncTimer;
   DateTime? _lastPull;
   static const _minPullInterval = Duration(seconds: 30);
+
+  static const _kInitialSyncKey = '__cloud_initial_sync_done__';
 
   // ---------------------------------------------------------------------------
   // Profile ID mapping: local ↔ cloud
@@ -141,6 +146,9 @@ class CloudSyncService extends GetxController with WidgetsBindingObserver {
     }
     _itemSyncTimers.clear();
     _settingsSyncTimer?.cancel();
+    _listSyncTimer?.cancel();
+    _watchHistorySyncTimer?.cancel();
+    _continueWatchingSyncTimer?.cancel();
     super.onClose();
   }
 
@@ -192,6 +200,35 @@ class CloudSyncService extends GetxController with WidgetsBindingObserver {
   }
 
   // ---------------------------------------------------------------------------
+  // Initial sync tracking per profile
+  // ---------------------------------------------------------------------------
+
+  Future<bool> hasEverSynced(String profileId) async {
+    try {
+      final key = '${profileId}_$_kInitialSyncKey';
+      final col = isar.collection<KeyValue>();
+      final result = await col.filter().keyEqualTo(key).findFirst();
+      if (result?.value == null) return false;
+      final data = jsonDecode(result!.value!);
+      return data['val'] == true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> markSynced(String profileId) async {
+    try {
+      final key = '${profileId}_$_kInitialSyncKey';
+      final kv = KeyValue()
+        ..key = key
+        ..value = jsonEncode({'val': true});
+      await isar.writeTxn(() => isar.collection<KeyValue>().put(kv));
+    } catch (e) {
+      Logger.i('Error marking profile synced: $e');
+    }
+  }
+
+  // ---------------------------------------------------------------------------
   // Debounced scheduling
   // ---------------------------------------------------------------------------
 
@@ -215,6 +252,33 @@ class CloudSyncService extends GetxController with WidgetsBindingObserver {
     });
   }
 
+  void scheduleListSync(String mediaType) {
+    if (!_auth.isCloudMode || !autoSyncEnabled.value) return;
+    _listSyncTimer?.cancel();
+    _listSyncTimer = Timer(_itemDebounce, () async {
+      await _pushListFromDb(mediaType);
+      _listSyncTimer = null;
+    });
+  }
+
+  void scheduleWatchHistorySync() {
+    if (!_auth.isCloudMode || !autoSyncEnabled.value) return;
+    _watchHistorySyncTimer?.cancel();
+    _watchHistorySyncTimer = Timer(_itemDebounce, () async {
+      await _pushWatchHistoryFromDb();
+      _watchHistorySyncTimer = null;
+    });
+  }
+
+  void scheduleContinueWatchingSync() {
+    if (!_auth.isCloudMode || !autoSyncEnabled.value) return;
+    _continueWatchingSyncTimer?.cancel();
+    _continueWatchingSyncTimer = Timer(_itemDebounce, () async {
+      await _pushContinueWatchingFromDb();
+      _continueWatchingSyncTimer = null;
+    });
+  }
+
   // ---------------------------------------------------------------------------
   // Flush / push helpers (internal)
   // ---------------------------------------------------------------------------
@@ -226,6 +290,12 @@ class CloudSyncService extends GetxController with WidgetsBindingObserver {
     _itemSyncTimers.clear();
     _settingsSyncTimer?.cancel();
     _settingsSyncTimer = null;
+    _listSyncTimer?.cancel();
+    _listSyncTimer = null;
+    _watchHistorySyncTimer?.cancel();
+    _watchHistorySyncTimer = null;
+    _continueWatchingSyncTimer?.cancel();
+    _continueWatchingSyncTimer = null;
 
     if (!_auth.isCloudMode) return;
 
@@ -299,8 +369,106 @@ class CloudSyncService extends GetxController with WidgetsBindingObserver {
       final mediaTypeMap = {0: 'manga', 1: 'anime', 2: 'novel'};
       final mediaType = mediaTypeMap[item.mediaTypeIndex] ?? 'anime';
       await pushLibrary(cloudId, mediaType, [item]);
+
+      // Also sync watch history & continue watching since library changed
+      await _pushWatchHistoryFromDb();
+      await _pushContinueWatchingFromDb();
     } catch (e) {
       Logger.i('Push single item error: $e');
+    }
+  }
+
+  Future<void> _pushListFromDb(String mediaType) async {
+    try {
+      final manager = Get.find<ProfileManager>();
+      final localProfileId = manager.currentProfileId.value;
+      if (localProfileId.isEmpty) return;
+      final cloudId = _getCloudProfileId(localProfileId) ?? localProfileId;
+      if (cloudId.isEmpty) return;
+
+      final indexMap = {'anime': 1, 'manga': 0, 'novel': 2};
+      final index = indexMap[mediaType] ?? 1;
+      final lists = await isar.customLists
+          .filter()
+          .profileIdEqualTo(localProfileId)
+          .and()
+          .mediaTypeIndexEqualTo(index)
+          .findAll();
+
+      await pushCustomLists(cloudId, mediaType, lists);
+    } catch (e) {
+      Logger.i('Push list error: $e');
+    }
+  }
+
+  Future<void> _pushWatchHistoryFromDb() async {
+    try {
+      final manager = Get.find<ProfileManager>();
+      final localProfileId = manager.currentProfileId.value;
+      if (localProfileId.isEmpty) return;
+      final cloudId = _getCloudProfileId(localProfileId) ?? localProfileId;
+      if (cloudId.isEmpty) return;
+
+      // Watch history is derived from library items with progress
+      final items = await isar.offlineMedias
+          .filter()
+          .profileIdEqualTo(localProfileId)
+          .findAll();
+
+      final entries = <Map<String, dynamic>>[];
+      for (final item in items) {
+        if (item.currentEpisode != null || item.currentChapter != null) {
+          entries.add({
+            'mediaId': item.mediaId,
+            'currentEpisode': item.currentEpisode,
+            'currentChapter': item.currentChapter,
+            'mediaType': item.mediaTypeIndex,
+            'completedAt': item.completedAt?.toIso8601String(),
+            'extraData': item.extraData,
+          });
+        }
+      }
+
+      if (entries.isNotEmpty) {
+        await pushWatchHistory(cloudProfileId: cloudId, entries: entries);
+      }
+    } catch (e) {
+      Logger.i('Push watch history from db error: $e');
+    }
+  }
+
+  Future<void> _pushContinueWatchingFromDb() async {
+    try {
+      final manager = Get.find<ProfileManager>();
+      final localProfileId = manager.currentProfileId.value;
+      if (localProfileId.isEmpty) return;
+      final cloudId = _getCloudProfileId(localProfileId) ?? localProfileId;
+      if (cloudId.isEmpty) return;
+
+      // Continue watching = anime/manga with progress but not completed
+      final items = await isar.offlineMedias
+          .filter()
+          .profileIdEqualTo(localProfileId)
+          .and()
+          .mediaTypeIndexEqualTo(1) // anime
+          .findAll();
+
+      final cwItems = <Map<String, dynamic>>[];
+      for (final item in items) {
+        if (item.currentEpisode != null && item.extraData != null) {
+          cwItems.add({
+            'mediaId': item.mediaId,
+            'currentEpisode': item.currentEpisode,
+            'extraData': item.extraData,
+          });
+        }
+      }
+
+      if (cwItems.isNotEmpty) {
+        await pushContinueWatching(cloudProfileId: cloudId, items: cwItems);
+      }
+    } catch (e) {
+      Logger.i('Push continue watching from db error: $e');
     }
   }
 

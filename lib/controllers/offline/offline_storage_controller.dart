@@ -1,4 +1,5 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/cloud/cloud_sync_service.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
@@ -22,6 +23,10 @@ enum MediaLibraryType {
 class OfflineStorageController extends GetxController {
   GistSyncController? get _syncCtrl => Get.isRegistered<GistSyncController>()
       ? Get.find<GistSyncController>()
+      : null;
+
+  CloudSyncService? get _cloudSync => Get.isRegistered<CloudSyncService>()
+      ? Get.find<CloudSyncService>()
       : null;
 
   String? get _pid {
@@ -268,6 +273,8 @@ class OfflineStorageController extends GetxController {
       await isar.offlineMedias.put(media);
     });
 
+    _cloudSync?.scheduleWatchHistorySync();
+
     return true;
   }
 
@@ -303,6 +310,8 @@ class OfflineStorageController extends GetxController {
         clearedCount++;
       }
     });
+
+    if (clearedCount > 0) _cloudSync?.scheduleWatchHistorySync();
 
     return clearedCount;
   }
@@ -349,6 +358,7 @@ class OfflineStorageController extends GetxController {
     });
 
     Logger.i('Created custom list: $listName');
+    _cloudSync?.scheduleListSync(mediaType.name);
   }
 
   Future<void> removeCustomList(String listName,
@@ -363,6 +373,7 @@ class OfflineStorageController extends GetxController {
     });
 
     Logger.i('Removed custom list: $listName');
+    _cloudSync?.scheduleListSync(mediaType.name);
   }
 
   Future<void> renameCustomList(String oldName, String newName,
@@ -384,6 +395,7 @@ class OfflineStorageController extends GetxController {
     });
 
     Logger.i('Renamed list: $oldName -> $newName');
+    _cloudSync?.scheduleListSync(mediaType.name);
   }
 
   Future<void> addMediaToList(String listName, String mediaId,
@@ -404,6 +416,7 @@ class OfflineStorageController extends GetxController {
         Logger.i('Added media $mediaId to list $listName');
       }
     });
+    _cloudSync?.scheduleListSync(mediaType?.name ?? 'anime');
   }
 
   Future<void> removeMediaFromList(
@@ -422,6 +435,7 @@ class OfflineStorageController extends GetxController {
       await isar.customLists.put(list);
       Logger.i('Removed media $mediaId from list $listName');
     });
+    _cloudSync?.scheduleListSync(mediaType?.name ?? 'anime');
   }
 
   Future<List<OfflineMedia>> getMediaFromCustomList(String listName,
@@ -450,6 +464,7 @@ class OfflineStorageController extends GetxController {
     await isar.writeTxn(() async {
       await isar.offlineMedias.put(original);
     });
+    _cloudSync?.scheduleItemSync(original.mediaId ?? '', original.mediaTypeIndex);
   }
 
   Future<void> addMedia(String listName, Media original) async {
@@ -470,6 +485,7 @@ class OfflineStorageController extends GetxController {
           );
         }
       });
+      _cloudSync?.scheduleItemSync(original.id, type.index);
     }
 
     await addMediaToList(listName, original.id, mediaType: type);
@@ -503,6 +519,7 @@ class OfflineStorageController extends GetxController {
         Logger.i('Added new anime: ${original.title}');
       }
     });
+    _cloudSync?.scheduleItemSync(original.id, 1);
   }
 
   Future<void> addOrUpdateManga(
@@ -529,6 +546,7 @@ class OfflineStorageController extends GetxController {
         Logger.i('Added new manga: ${original.title}');
       }
     });
+    _cloudSync?.scheduleItemSync(original.id, 0);
   }
 
   Future<void> addOrUpdateNovel(
@@ -555,6 +573,7 @@ class OfflineStorageController extends GetxController {
         Logger.i('Added new novel: ${original.title}');
       }
     });
+    _cloudSync?.scheduleItemSync(original.id, 2);
   }
 
   Future<void> addOrUpdateWatchedEpisode(
@@ -598,6 +617,7 @@ class OfflineStorageController extends GetxController {
         mediaId: animeId,
         episode: episode,
       );
+      _cloudSync?.scheduleItemSync(animeId, 1);
     }
   }
 
@@ -654,6 +674,7 @@ class OfflineStorageController extends GetxController {
         mediaType: existingManga.mediaTypeIndex == 2 ? 'novel' : 'manga',
         chapter: chapter,
       );
+      _cloudSync?.scheduleItemSync(mangaId, existingManga.mediaTypeIndex);
     }
   }
 
@@ -694,6 +715,7 @@ class OfflineStorageController extends GetxController {
 
       await isar.offlineMedias.put(existingNovel);
     });
+    _cloudSync?.scheduleItemSync(novelId, 2);
   }
 
   Future<Chapter?> getReadNovelChapter(String novelId, double number) async {
