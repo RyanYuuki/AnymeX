@@ -76,10 +76,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     if (!success) {
       _setError(authService.errorMessage.value);
     } else {
-      final authService = Get.find<CloudAuthService>();
-      if (authService.cloudPassword.value.isEmpty) {
-        authService.cloudPassword.value = _passwordController.text;
-      }
       await _fetchCloudProfiles();
     }
   }

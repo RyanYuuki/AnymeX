@@ -1,8 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:anymex/controllers/profile/profile_manager.dart';
 import 'package:anymex/controllers/services/cloud/cloud_auth_service.dart';
 import 'package:anymex/controllers/services/cloud/cloud_profile_service.dart';
+import 'package:anymex/database/isar_models/key_value.dart';
+import 'package:anymex/main.dart';
 import 'package:anymex/screens/profile/widgets/profile_avatar.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -101,31 +104,49 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
       final authService = Get.find<CloudAuthService>();
       if (authService.isLoggedIn.value) {
         final profileService = Get.find<CloudProfileService>();
-        String? avatarToUpload;
-        if (_avatarPath.isNotEmpty) {
-          final file = File(_avatarPath);
-          if (file.existsSync()) {
-            avatarToUpload = _avatarPath;
-          }
-        }
-        await profileService.createProfile(
+
+        // Send raw PIN, not hash — server handles PBKDF2 hashing
+        final rawPin = _enablePin ? _pinController.text.trim() : null;
+
+        final cloudProfile = await profileService.createProfile(
           localProfileId: profile.id,
           displayName: profile.name,
-          avatarUrl: avatarToUpload,
-          pinHash: profile.pinHash,
+          avatarUrl: _avatarPath.isNotEmpty ? _avatarPath : null,
+          pin: rawPin,
         );
-        if (avatarToUpload != null) {
-          final uploadedUrl = await profileService.uploadAvatar(
-            profile.id,
-            File(avatarToUpload),
-          );
-          if (uploadedUrl != null && uploadedUrl.isNotEmpty) {
-            final mgr = Get.find<ProfileManager>();
-            mgr.updateProfileAvatar(profile.id, uploadedUrl);
-            await profileService.updateProfile(
-              profileId: profile.id,
-              avatarUrl: uploadedUrl,
-            );
+
+        if (cloudProfile != null) {
+          // Store cloud profile ID mapping inline
+          final cloudId = cloudProfile['id'] as String? ?? '';
+          if (cloudId.isNotEmpty) {
+            try {
+              final col = isar.collection<KeyValue>();
+              final kv = KeyValue()
+                ..key = '__cloud_profile_map__${profile.id}'
+                ..value = jsonEncode({'cloud_id': cloudId});
+              isar.writeTxnSync(() => col.putSync(kv));
+            } catch (e) {
+              Logger.i('Error saving cloud profile map: $e');
+            }
+          }
+
+          // Upload avatar if a local file was selected
+          if (_avatarPath.isNotEmpty) {
+            final file = File(_avatarPath);
+            if (file.existsSync()) {
+              final uploadedUrl = await profileService.uploadAvatar(
+                cloudId.isNotEmpty ? cloudId : profile.id,
+                file,
+              );
+              if (uploadedUrl != null && uploadedUrl.isNotEmpty) {
+                final mgr = Get.find<ProfileManager>();
+                mgr.updateProfileAvatar(profile.id, uploadedUrl);
+                await profileService.updateProfile(
+                  profileId: cloudId.isNotEmpty ? cloudId : profile.id,
+                  avatarUrl: uploadedUrl,
+                );
+              }
+            }
           }
         }
       }
