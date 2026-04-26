@@ -315,30 +315,27 @@ class SourceController extends GetxController implements BaseService {
     return list.firstWhereOrNull((s) => s.id.toString() == savedId);
   }
 
-  Source? getExtensionByValue(String value, {String? mediaId}) => _activateByName(
-      installedExtensions,
-      value,
-      activeSource,
-      SourceKeys.activeSourceId,
-      'ANIME',
-      mediaId: mediaId);
+  void savePreferredSource(String titleId, String sourceId) {
+    DynamicKeys.stickySource.set(titleId, sourceId);
+  }
+
+  String? getPreferredSource(String titleId) {
+    return DynamicKeys.stickySource.get<String?>(titleId);
+  }
+
+  Source? getExtensionByValue(String value, {String? mediaId}) =>
+      _activateByName(installedExtensions, value, activeSource,
+          SourceKeys.activeSourceId, 'ANIME',
+          mediaId: mediaId);
 
   Source? getMangaExtensionByName(String name, {String? mediaId}) =>
-      _activateByName(
-          installedMangaExtensions,
-          name,
-          activeMangaSource,
-          SourceKeys.activeMangaSourceId,
-          'MANGA',
+      _activateByName(installedMangaExtensions, name, activeMangaSource,
+          SourceKeys.activeMangaSourceId, 'MANGA',
           mediaId: mediaId);
 
   Source? getNovelExtensionByName(String name, {String? mediaId}) =>
-      _activateByName(
-          installedNovelExtensions,
-          name,
-          activeNovelSource,
-          SourceKeys.activeNovelSourceId,
-          'NOVEL',
+      _activateByName(installedNovelExtensions, name, activeNovelSource,
+          SourceKeys.activeNovelSourceId, 'NOVEL',
           mediaId: mediaId);
 
   Source? _activateByName(
