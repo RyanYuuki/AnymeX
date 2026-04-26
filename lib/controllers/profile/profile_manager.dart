@@ -4,6 +4,8 @@ import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/cloud/cloud_auth_service.dart';
+import 'package:anymex/controllers/services/cloud/cloud_profile_service.dart';
+import 'package:anymex/controllers/services/cloud/cloud_realtime_service.dart';
 import 'package:anymex/controllers/services/cloud/cloud_sync_service.dart';
 import 'package:anymex/controllers/services/mal/mal_service.dart';
 import 'package:anymex/controllers/services/simkl/simkl_service.dart';
@@ -114,9 +116,22 @@ class ProfileManager extends GetxController {
         final auth = Get.find<CloudAuthService>();
         if (auth.isCloudMode) {
           final sync = Get.find<CloudSyncService>();
+          final profileService = Get.find<CloudProfileService>();
+
+          // Update last used on cloud.
+          // For cloud-imported profiles, profileId IS the cloud UUID
+          // so getCloudProfileId returns null — fall back to profileId.
+          final cloudId = getCloudProfileId(profileId) ?? profileId;
+          profileService.updateLastUsed(cloudId);
+
           await sync.restoreServiceTokens(profileId);
           await sync.flushPendingSyncs();
           await sync.pullAllForProfile(profileId);
+
+          // Start realtime subscription for cross-device sync pings
+          if (Get.isRegistered<CloudRealtimeService>()) {
+            Get.find<CloudRealtimeService>().subscribe(cloudId);
+          }
         }
       }
     } catch (e) {
@@ -291,6 +306,27 @@ class ProfileManager extends GetxController {
       Logger.i('Error deleting profile library data: $e');
     }
 
+    // Delete from cloud if logged in
+    try {
+      if (Get.isRegistered<CloudAuthService>()) {
+        final auth = Get.find<CloudAuthService>();
+        if (auth.isCloudMode) {
+          final profileService = Get.find<CloudProfileService>();
+          // Resolve cloud ID: mapping exists for locally-created profiles,
+          // for cloud-imported profiles the profileId IS the cloud UUID.
+          final mappedId = getCloudProfileId(profileId);
+          final cloudId = mappedId ?? profileId;
+          await profileService.deleteProfile(cloudId);
+          // Only remove mapping if one was stored
+          if (mappedId != null) {
+            _removeCloudProfileId(profileId);
+          }
+        }
+      }
+    } catch (e) {
+      Logger.i('Error deleting cloud profile: $e');
+    }
+
     profiles.removeWhere((p) => p.id == profileId);
     _saveProfiles();
 
@@ -319,6 +355,13 @@ class ProfileManager extends GetxController {
   Future<bool> importFromCloud(List<Map<String, dynamic>> cloudProfiles) async {
     if (cloudProfiles.isEmpty) return false;
 
+    CloudProfileService? cloudProfileService;
+    try {
+      cloudProfileService = Get.find<CloudProfileService>();
+    } catch (_) {
+      cloudProfileService = null;
+    }
+
     bool anyNew = false;
     for (final cp in cloudProfiles) {
       final cloudId = cp['cloud_profile_id'] as String? ??
@@ -333,11 +376,20 @@ class ProfileManager extends GetxController {
           ? DateTime.tryParse(cp['last_used_at'].toString())
           : null;
 
+      // Download cloud avatar URL to local cache so the ProfileAvatar widget
+      // doesn't need to fetch from the network every time.
+      String localAvatar = avatarUrl;
+      if (avatarUrl.isNotEmpty &&
+          avatarUrl.startsWith('http') &&
+          cloudProfileService != null) {
+        localAvatar = await cloudProfileService.downloadAvatarToLocal(avatarUrl);
+      }
+
       final existing = profiles.firstWhereOrNull((p) => p.id == cloudId);
       if (existing != null) {
         _updateProfile(existing.copyWith(
           name: displayName,
-          avatarPath: avatarUrl.isNotEmpty ? avatarUrl : existing.avatarPath,
+          avatarPath: localAvatar.isNotEmpty ? localAvatar : existing.avatarPath,
           pinHash: pinHash ?? existing.pinHash,
           lastUsedAt: lastUsed ?? existing.lastUsedAt,
         ));
@@ -345,7 +397,7 @@ class ProfileManager extends GetxController {
         final profile = AppProfile(
           id: cloudId,
           name: displayName,
-          avatarPath: avatarUrl.isNotEmpty ? avatarUrl : '',
+          avatarPath: localAvatar.isNotEmpty ? localAvatar : '',
           createdAt: createdAt,
           lastUsedAt: lastUsed ?? DateTime.now(),
           pinHash: pinHash,
@@ -382,6 +434,34 @@ class ProfileManager extends GetxController {
     _updateProfile(profile.copyWith(name: newName));
   }
 
+  /// Reorders profiles by moving the item at [oldIndex] to [newIndex].
+  /// Saves locally and syncs the new order to cloud if logged in.
+  void reorderProfiles(int oldIndex, int newIndex) {
+    if (oldIndex < 0 || oldIndex >= profiles.length) return;
+    if (newIndex < 0 || newIndex >= profiles.length) return;
+    if (oldIndex == newIndex) return;
+
+    final profile = profiles.removeAt(oldIndex);
+    profiles.insert(newIndex, profile);
+    _saveProfiles();
+
+    // Sync reorder to cloud
+    try {
+      if (Get.isRegistered<CloudAuthService>()) {
+        final auth = Get.find<CloudAuthService>();
+        if (auth.isCloudMode) {
+          final profileService = Get.find<CloudProfileService>();
+          final cloudIds = profiles
+              .map((p) => getCloudProfileId(p.id) ?? p.id)
+              .toList();
+          profileService.reorderProfiles(cloudIds);
+        }
+      }
+    } catch (e) {
+      Logger.i('Error reordering cloud profiles: $e');
+    }
+  }
+
   void updateProfileAvatar(String profileId, String avatarPath) {
     final profile = profiles.firstWhereOrNull((p) => p.id == profileId);
     if (profile == null) return;
@@ -411,6 +491,45 @@ class ProfileManager extends GetxController {
       });
     } catch (e) {
       Logger.i('Error writing global KV $key: $e');
+    }
+  }
+
+  /// Get the cloud UUID for a local profile ID.
+  /// Public so UI screens can resolve cloud IDs for API calls.
+  static String? getCloudProfileId(String localProfileId) {
+    try {
+      final col = isar.collection<KeyValue>();
+      final result = col.filter().keyEqualTo('__cloud_profile_map__$localProfileId').findFirstSync();
+      if (result?.value == null) return null;
+      final data = jsonDecode(result!.value!);
+      return data['cloud_id'] as String?;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Remove cloud profile mapping
+  static void _removeCloudProfileId(String localProfileId) {
+    try {
+      final col = isar.collection<KeyValue>();
+      final result = col.filter().keyEqualTo('__cloud_profile_map__$localProfileId').findFirstSync();
+      if (result != null) {
+        isar.writeTxnSync(() => col.deleteSync(result.id));
+      }
+    } catch (e) {
+      Logger.i('Error removing cloud profile map: $e');
+    }
+  }
+
+  /// Save cloud profile ID mapping
+  static void _setCloudProfileId(String localProfileId, String cloudProfileId) {
+    try {
+      final kv = KeyValue()
+        ..key = '__cloud_profile_map__$localProfileId'
+        ..value = jsonEncode({'cloud_id': cloudProfileId});
+      isar.writeTxnSync(() => isar.collection<KeyValue>().putSync(kv));
+    } catch (e) {
+      Logger.i('Error saving cloud profile map: $e');
     }
   }
 }

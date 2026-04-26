@@ -21,6 +21,7 @@ import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 
 import 'package:anymex/screens/profile/profile_page.dart';
+import 'package:anymex/widgets/cloud/cloud_status_indicator.dart';
 
 enum PageType { manga, anime, home, novel }
 
@@ -54,6 +55,8 @@ class Header extends StatelessWidget {
                 ],
               ),
               const Spacer(),
+              // Cloud status indicator (sync state badge)
+              const CloudStatusIndicator(),
               if (profileData.serviceType.value == ServicesType.extensions) ...[
                 AnymexOnTap(
                     child: CircleAvatar(

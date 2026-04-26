@@ -1,3 +1,4 @@
+import 'package:anymex/controllers/services/cloud/cloud_auth_service.dart';
 import 'package:anymex/controllers/services/storage/storage_manager_service.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -5,6 +6,7 @@ import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class SettingsStorageManager extends StatefulWidget {
   const SettingsStorageManager({super.key});
@@ -20,6 +22,14 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
   bool _isRunningAction = false;
   int _imageCacheBytes = 0;
   late double _thresholdGb;
+
+  bool get _isCloudLoggedIn {
+    try {
+      return Get.find<CloudAuthService>().isLoggedIn.value;
+    } catch (_) {
+      return false;
+    }
+  }
 
   @override
   void initState() {
@@ -56,13 +66,18 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
   Future<void> _factoryResetIsar() async {
     if (_isRunningAction) return;
 
+    String warningMessage = _isCloudLoggedIn
+        ? 'This will permanently delete all LOCAL data stored by AnymeX on this device. This cannot be undone.\n\n'
+            '⚠️ Your cloud data (profiles, library, settings) will NOT be affected. '
+            'You can restore it by signing back into your cloud account.'
+        : 'This will permanently delete all data stored by AnymeX. This cannot be undone.\n\n'
+            'This includes your profiles, library, settings, and all cached data.';
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Factory Reset'),
-        content: const Text(
-          'This will permanently delete all data stored of AnymeX. This cannot be undone.',
-        ),
+        content: Text(warningMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -70,7 +85,7 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete All'),
+            child: const Text('Reset'),
           ),
         ],
       ),
@@ -81,7 +96,9 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
     setState(() => _isRunningAction = true);
     try {
       await _service.factoryResetIsar();
-      snackBar('Isar data deleted');
+      if (mounted) {
+        snackBar('Local data deleted. App will restart.');
+      }
     } catch (e) {
       snackBar('Factory reset failed: $e');
     } finally {
@@ -107,6 +124,37 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
                 child: Column(
                   children: [
+                    // ── Cloud warning banner ──
+                    if (_isCloudLoggedIn)
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(12),
+                        margin: const EdgeInsets.only(bottom: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.withOpacity(0.08),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                              color: Colors.orange.withOpacity(0.2)),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.cloud_rounded,
+                                size: 20, color: Colors.orange[700]),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                'You are signed into cloud sync. Factory reset only clears LOCAL data — your cloud data is safe.',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.orange[800],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    // ── Cached images card ──
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(16),
@@ -160,6 +208,8 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
                             ),
                     ),
                     const SizedBox(height: 12),
+
+                    // ── Actions card ──
                     Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
@@ -211,8 +261,9 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
                           CustomTile(
                             icon: Icons.warning_rounded,
                             title: 'Factory reset',
-                            description:
-                                'Delete everything stored of AnymeX permanently.',
+                            description: _isCloudLoggedIn
+                                ? 'Delete all local data (cloud data is safe)'
+                                : 'Delete everything stored of AnymeX permanently.',
                             descColor: context.colors.error,
                             onTap: _factoryResetIsar,
                           ),

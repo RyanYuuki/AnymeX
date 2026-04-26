@@ -12,6 +12,7 @@ import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/controllers/services/cloud/cloud_auth_service.dart';
 import 'package:anymex/controllers/services/cloud/cloud_profile_service.dart';
+import 'package:anymex/controllers/services/cloud/cloud_realtime_service.dart';
 import 'package:anymex/controllers/services/cloud/cloud_sync_service.dart';
 import 'package:anymex/controllers/services/mal/mal_service.dart';
 import 'package:anymex/controllers/services/simkl/simkl_service.dart';
@@ -198,6 +199,7 @@ void _initializeGetxController() async {
   Get.put(CloudAuthService(), permanent: true);
   Get.put(CloudProfileService());
   Get.put(CloudSyncService());
+  Get.put(CloudRealtimeService());
   Get.put(CommentPreloader());
   Get.put(GistSyncController(), permanent: true);
   Get.put(DownloadController(), permanent: true);
@@ -937,6 +939,44 @@ class _FilterScreenState extends State<FilterScreen> {
               selectedIcon: HugeIcons.strokeRoundedLibrary,
               onTap: _onMobileItemTapped,
               label: 'Library',
+            ),
+            NavItem(
+              unselectedIcon: IconlyBold.profile,
+              selectedIcon: IconlyBold.profile,
+              onTap: (index) {
+                return SettingsSheet.show(context);
+              },
+              label: 'Profile',
+              altIcon: Builder(
+                builder: (avatarContext) {
+                  final cloudAuth = Get.find<CloudAuthService>();
+                  final manager = Get.find<ProfileManager>();
+                  return GestureDetector(
+                    onLongPress: cloudAuth.isCloudMode
+                        ? () => showProfileSwitcher(avatarContext)
+                        : null,
+                    child: CircleAvatar(
+                        radius: 14,
+                        backgroundColor: Theme.of(avatarContext)
+                            .colorScheme
+                            .surfaceContainer
+                            .withValues(alpha: 0.3),
+                        child: manager.profiles.isNotEmpty &&
+                                manager.profiles.first.avatarPath.isNotEmpty
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(59),
+                                child: AnymeXImage(
+                                    width: 24,
+                                    height: 24,
+                                    fit: BoxFit.cover,
+                                    radius: 0,
+                                    imageUrl: manager
+                                            .profiles.first.avatarPath,
+                              ))
+                            : const Icon(IconlyBold.profile, size: 16)),
+                  );
+                },
+              ),
             ),
           ],
         ));

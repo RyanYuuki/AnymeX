@@ -49,67 +49,121 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
         final currentId = manager.currentProfileId.value;
         final autoStartId = manager.autoStartProfileId.value;
 
-        return ListView(
-          padding: const EdgeInsets.all(16),
+        return Column(
           children: [
-            if (autoStartId.isNotEmpty) ...[
-              _buildTile(
-                icon: Icons.auto_awesome_rounded,
-                title: 'Auto-start Profile',
-                subtitle:
-                    'Profile "${profiles.firstWhereOrNull((p) => p.id == autoStartId)?.name ?? "Unknown"}" opens automatically',
-                trailing: TextButton(
-                  onPressed: () {
-                    manager.resetAutoStart();
-                    snackBar('Auto-start disabled');
-                  },
-                  child: Text('Reset',
-                      style: TextStyle(color: colorScheme.primary)),
-                ),
-                colorScheme: colorScheme,
-                theme: theme,
-              ),
-              const SizedBox(height: 8),
-            ],
+            // Header section (auto-start tile, count label) — not reorderable
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-              child: Text(
-                '$profiles.length / $kMaxProfiles Profiles',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                  color: theme.onSurface.withOpacity(0.6),
-                ),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+              child: Column(
+                children: [
+                  if (autoStartId.isNotEmpty) ...[
+                    _buildTile(
+                      icon: Icons.auto_awesome_rounded,
+                      title: 'Auto-start Profile',
+                      subtitle:
+                          'Profile "${profiles.firstWhereOrNull((p) => p.id == autoStartId)?.name ?? "Unknown"}" opens automatically',
+                      trailing: TextButton(
+                        onPressed: () {
+                          manager.resetAutoStart();
+                          snackBar('Auto-start disabled');
+                        },
+                        child: Text('Reset',
+                            style: TextStyle(color: colorScheme.primary)),
+                      ),
+                      colorScheme: colorScheme,
+                      theme: theme,
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                    child: Row(
+                      children: [
+                        Text(
+                          '$profiles.length / $kMaxProfiles Profiles',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                            color: theme.onSurface.withOpacity(0.6),
+                          ),
+                        ),
+                        const Spacer(),
+                        if (profiles.length > 1)
+                          Text(
+                            'Long press drag handle to reorder',
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 11,
+                              color: theme.onSurface.withOpacity(0.35),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 8),
-            ...profiles.map((profile) => _buildProfileCard(
-                  profile,
-                  profile.id == currentId,
-                  colorScheme,
-                  theme,
-                )),
-            const SizedBox(height: 16),
-            if (profiles.length < kMaxProfiles)
-              _buildAddButton(colorScheme, theme),
+            // Reorderable profile list
+            Expanded(
+              child: ReorderableListView(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                shrinkWrap: false,
+                buildDefaultDragHandles: false,
+                proxyDecorator: (child, index, animation) {
+                  return Material(
+                    color: Colors.transparent,
+                    elevation: 6,
+                    shadowColor: colorScheme.primary.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(16),
+                    child: child,
+                  );
+                },
+                onReorder: (oldIndex, newIndex) {
+                  // ReorderableListView passes newIndex after removal,
+                  // so adjust if dragging downward.
+                  if (oldIndex < newIndex) newIndex--;
+                  manager.reorderProfiles(oldIndex, newIndex);
+                },
+                children: [
+                  for (final profile in profiles)
+                    _buildProfileCard(
+                      key: ValueKey(profile.id),
+                      profile: profile,
+                      isCurrent: profile.id == currentId,
+                      colorScheme: colorScheme,
+                      theme: theme,
+                    ),
+                ],
+              ),
+            ),
+            // Add button — not reorderable
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+              child: profiles.length < kMaxProfiles
+                  ? _buildAddButton(colorScheme, theme)
+                  : const SizedBox.shrink(),
+            ),
           ],
         );
       }),
     );
   }
 
-  Widget _buildProfileCard(
-    AppProfile profile,
-    bool isCurrent,
-    ColorScheme colorScheme,
-    dynamic theme,
-  ) {
+  Widget _buildProfileCard({
+    required Key key,
+    required AppProfile profile,
+    required bool isCurrent,
+    required ColorScheme colorScheme,
+    required dynamic theme,
+  }) {
     final needsPin =
         !isCurrent && profile.hasPin;
 
     return Container(
+      key: key,
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -126,6 +180,18 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
         children: [
           Row(
             children: [
+              // Drag handle
+              ReorderableDragStartListener(
+                index: 0, // Index is ignored when buildDefaultDragHandles is false
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Icon(
+                    Icons.drag_indicator_rounded,
+                    color: theme.onSurface.withOpacity(0.25),
+                    size: 20,
+                  ),
+                ),
+              ),
               ProfileAvatar(
                 profile: profile,
                 radius: 24,
@@ -225,6 +291,15 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
                             Icon(Icons.photo_camera, size: 18),
                             SizedBox(width: 10),
                             Text('Change Avatar'),
+                          ],
+                        )),
+                    const PopupMenuItem(
+                        value: 'rename',
+                        child: Row(
+                          children: [
+                            Icon(Icons.edit_outlined, size: 18),
+                            SizedBox(width: 10),
+                            Text('Rename Profile'),
                           ],
                         )),
                     const PopupMenuItem(
@@ -448,6 +523,9 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
       case 'change_avatar':
         _changeAvatar(profile);
         break;
+      case 'rename':
+        _showRenameDialog(profile);
+        break;
       case 'pin':
         if (!isCurrent && profile.hasPin) {
           _showChangePinAfterVerify(profile);
@@ -504,6 +582,14 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
                 onTap: () {
                   Navigator.pop(ctx);
                   _changeAvatar(profile);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.edit_outlined),
+                title: const Text('Rename Profile'),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _showRenameDialog(profile);
                 },
               ),
               ListTile(
@@ -602,15 +688,16 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
                 snackBar('PIN must be at least 4 digits');
                 return;
               }
-              final result = manager.verifyPin(profile.id, pin);
-              if (result == true) {
-                Navigator.pop(ctx, true);
-              } else {
-                snackBar(result == null
-                    ? 'Profile is temporarily locked'
-                    : 'Wrong PIN');
-                if (result == null) Navigator.pop(ctx, false);
-              }
+              _verifyPinWithCloud(profile, pin).then((result) {
+                if (result == true) {
+                  Navigator.pop(ctx, true);
+                } else {
+                  snackBar(result == null
+                      ? 'Profile is temporarily locked'
+                      : 'Wrong PIN');
+                  if (result == null) Navigator.pop(ctx, false);
+                }
+              });
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: colorScheme.primary,
@@ -642,14 +729,18 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
           final profileService = Get.find<CloudProfileService>();
           final file = File(path);
           if (file.existsSync()) {
+            // Resolve cloud ID: for cloud-imported profiles, profile.id IS
+            // the cloud UUID so getCloudProfileId returns null (no mapping).
+            // For locally-created profiles, the mapping stores the cloud UUID.
+            final cloudId = ProfileManager.getCloudProfileId(profile.id) ?? profile.id;
             final uploadedUrl = await profileService.uploadAvatar(
-              profile.id,
+              cloudId,
               file,
             );
             if (uploadedUrl != null && uploadedUrl.isNotEmpty) {
               manager.updateProfileAvatar(profile.id, uploadedUrl);
               await profileService.updateProfile(
-                profileId: profile.id,
+                profileId: cloudId,
                 avatarUrl: uploadedUrl,
               );
             }
@@ -664,6 +755,20 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
   Future<void> _switchToProfile(AppProfile profile) async {
     if (profile.hasPin) {
       if (profile.isLocked) {
+        // For cloud profiles, check server lockout state
+        final cloudId = ProfileManager.getCloudProfileId(profile.id) ?? profile.id;
+        try {
+          final authService = Get.find<CloudAuthService>();
+          final profileService = Get.find<CloudProfileService>();
+          if (authService.isLoggedIn.value) {
+            final result = await profileService.verifyPin(cloudId, '');
+            if (result != null && result['locked'] == true) {
+              final mins = (result['remaining_minutes'] as num?)?.ceil() ?? 1;
+              snackBar('Profile is locked. Try again in $mins minute${mins != 1 ? 's' : ''}');
+              return;
+            }
+          }
+        } catch (_) {}
         final remaining =
             profile.lockedUntil!.difference(DateTime.now()).inMinutes + 1;
         snackBar(
@@ -672,7 +777,7 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
       }
       final verified = await _showPinVerification(profile);
       if (verified != true) return;
-    }
+ }
 
     final manager = Get.find<ProfileManager>();
     await manager.switchToProfile(profile.id);
@@ -744,7 +849,7 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
                     color: colorScheme.onSurface.withOpacity(0.7))),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               final pin = controller.text.trim();
               if (pin.length < 4 || pin.length > 6) {
                 snackBar('PIN must be 4-6 digits');
@@ -756,6 +861,7 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
               }
               final manager = Get.find<ProfileManager>();
               manager.setPin(profile.id, pin);
+              await _syncPinToCloud(profile.id, pin);
               Navigator.pop(ctx);
               snackBar('PIN ${isNew ? "set" : "updated"} successfully');
             },
@@ -830,7 +936,7 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
                     color: colorScheme.onSurface.withOpacity(0.7))),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               final pin = controller.text.trim();
               if (pin.length < 4 || pin.length > 6) {
                 snackBar('PIN must be 4-6 digits');
@@ -842,6 +948,7 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
               }
               final manager = Get.find<ProfileManager>();
               manager.setPin(profile.id, pin);
+              await _syncPinToCloud(profile.id, pin);
               Navigator.pop(ctx);
               snackBar('PIN updated successfully');
             },
@@ -888,10 +995,11 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
                     color: colorScheme.onSurface.withOpacity(0.7))),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(ctx);
               final manager = Get.find<ProfileManager>();
               manager.removePin(profile.id);
+              await _syncPinRemoveToCloud(profile.id);
               snackBar('PIN removed from "${profile.name}"');
             },
             style: ElevatedButton.styleFrom(
@@ -906,6 +1014,160 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
         ],
       ),
     );
+  }
+
+  /// Verifies a PIN — delegates to cloud for cloud profiles, falls back to local.
+  Future<bool?> _verifyPinWithCloud(AppProfile profile, String pin) async {
+    final manager = Get.find<ProfileManager>();
+    final cloudId = ProfileManager.getCloudProfileId(profile.id) ?? profile.id;
+    final isCloudProfile = Get.find<CloudAuthService>().isLoggedIn.value;
+
+    // For cloud profiles, verify via server (PBKDF2)
+    if (isCloudProfile) {
+      try {
+        final authService = Get.find<CloudAuthService>();
+        final profileService = Get.find<CloudProfileService>();
+        if (authService.isLoggedIn.value) {
+          final result = await profileService.verifyPin(cloudId, pin);
+          if (result != null) {
+            // Sync server lockout state back to local profile
+            if (result['locked'] == true) {
+              final mins = (result['remaining_minutes'] as num?)?.ceil() ?? 1;
+              snackBar('Profile is locked for $mins minute${mins != 1 ? 's' : ''}');
+              return null;
+            }
+            if (result['valid'] == true) {
+              // Clear local failed attempts since server accepted
+              manager.setPin(profile.id, pin); // refreshes local hash
+              return true;
+            }
+            final remaining = result['remaining_attempts'] as int?;
+            if (remaining != null) {
+              snackBar('Wrong PIN. $remaining attempt${remaining != 1 ? 's' : ''} remaining');
+            } else {
+              snackBar('Wrong PIN');
+            }
+            return false;
+          }
+        }
+      } catch (e) {
+        Logger.i('Cloud PIN verify error, falling back to local: $e');
+      }
+    } else {
+      // Guest profile — local only
+    }
+
+    // Fallback to local SHA-256 verification
+    return manager.verifyPin(profile.id, pin);
+  }
+
+  /// Syncs PIN to cloud after setting locally.
+  Future<void> _syncPinToCloud(String profileId, String rawPin) async {
+    try {
+      final authService = Get.find<CloudAuthService>();
+      if (!authService.isLoggedIn.value) return;
+      final cloudId = ProfileManager.getCloudProfileId(profileId) ?? profileId;
+      final profileService = Get.find<CloudProfileService>();
+      await profileService.setPin(cloudId, rawPin);
+    } catch (e) {
+      Logger.i('Error syncing PIN to cloud: $e');
+    }
+  }
+
+  /// Removes PIN from cloud after removing locally.
+  Future<void> _syncPinRemoveToCloud(String profileId) async {
+    try {
+      final authService = Get.find<CloudAuthService>();
+      if (!authService.isLoggedIn.value) return;
+      final cloudId = ProfileManager.getCloudProfileId(profileId) ?? profileId;
+      final profileService = Get.find<CloudProfileService>();
+      await profileService.removePin(cloudId);
+    } catch (e) {
+      Logger.i('Error removing PIN from cloud: $e');
+  }
+  }
+
+  void _showRenameDialog(AppProfile profile) {
+    final controller = TextEditingController(text: profile.name);
+    final colorScheme = Theme.of(context).colorScheme;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: colorScheme.surfaceContainer,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20)),
+        title: Text(
+          'Rename Profile',
+          style: TextStyle(
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.bold,
+              color: colorScheme.onSurface),
+        ),
+        content: TextField(
+          controller: controller,
+          maxLength: 20,
+          autofocus: true,
+          style: TextStyle(
+              color: colorScheme.onSurface,
+              fontFamily: 'Poppins'),
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: colorScheme.surface,
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none),
+            hintText: 'Enter new name',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Cancel',
+                style: TextStyle(
+                    color: colorScheme.onSurface.withOpacity(0.7))),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+            final newName = controller.text.trim();
+            if (newName.isEmpty || newName.length > 20) {
+              snackBar('Name must be 1-20 characters');
+              return;
+            }
+            Navigator.pop(ctx);
+            final manager = Get.find<ProfileManager>();
+            manager.updateProfileName(profile.id, newName);
+            // Sync to cloud
+            try {
+              final authService = Get.find<CloudAuthService>();
+              if (authService.isLoggedIn.value) {
+                // For cloud-imported profiles, profile.id IS the cloud UUID
+                // so getCloudProfileId returns null. For locally-created
+                // profiles, the mapping stores the cloud UUID.
+                final cloudId = ProfileManager.getCloudProfileId(profile.id) ?? profile.id;
+                final profileService = Get.find<CloudProfileService>();
+                await profileService.updateProfile(
+                  profileId: cloudId,
+                  displayName: newName,
+                );
+              }
+            } catch (e) {
+              Logger.i('Error renaming profile in cloud: $e');
+            }
+            snackBar('Profile renamed');
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: colorScheme.primary,
+            foregroundColor: colorScheme.onPrimary,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12)),
+          ),
+          child: const Text('Rename'),
+        ),
+      ],
+    ),
+    );
+    controller.dispose();
   }
 
   BackupRestoreService _getBackupService() {
