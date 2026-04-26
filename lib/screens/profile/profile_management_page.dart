@@ -66,19 +66,6 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
               ),
               const SizedBox(height: 8),
             ],
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-              child: Text(
-                '$profiles.length / $kMaxProfiles Profiles',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                  color: theme.onSurface.withOpacity(0.6),
-                ),
-              ),
-            ),
             const SizedBox(height: 8),
             ...profiles.map((profile) => _buildProfileCard(
                   profile,
@@ -545,6 +532,7 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
 
     final pinController = TextEditingController();
     final colorScheme = Theme.of(context).colorScheme;
+    final pinContentKey = GlobalKey<_PinVerifyContentState>();
 
     final verified = await showDialog<bool>(
       context: context,
@@ -580,6 +568,7 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
           ],
         ),
         content: _PinVerifyContent(
+          key: pinContentKey,
           controller: pinController,
           profile: profile,
         ),
@@ -594,17 +583,23 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
             onPressed: () {
               final pin = pinController.text.trim();
               if (pin.length < 4) {
-                snackBar('PIN must be at least 4 digits');
+                pinContentKey.currentState?.setError('PIN must be at least 4 digits');
                 return;
               }
               final result = manager.verifyPin(profile.id, pin);
               if (result == true) {
                 Navigator.pop(ctx, true);
+              } else if (result == false) {
+                final remaining = kMaxPinAttempts -
+                    (manager.profiles
+                            .firstWhereOrNull((p) => p.id == profile.id)
+                            ?.failedPinAttempts ??
+                        0);
+                pinContentKey.currentState?.setError(
+                    'Wrong PIN. $remaining attempt${remaining != 1 ? 's' : ''} remaining');
+                pinContentKey.currentState?.clearInput();
               } else {
-                snackBar(result == null
-                    ? 'Profile is temporarily locked'
-                    : 'Wrong PIN');
-                if (result == null) Navigator.pop(ctx, false);
+                Navigator.pop(ctx, false);
               }
             },
             style: ElevatedButton.styleFrom(
@@ -1003,7 +998,7 @@ class _PinVerifyContent extends StatefulWidget {
   final TextEditingController controller;
   final AppProfile profile;
   const _PinVerifyContent(
-      {required this.controller, required this.profile});
+      {super.key, required this.controller, required this.profile});
 
   @override
   State<_PinVerifyContent> createState() => _PinVerifyContentState();
@@ -1012,6 +1007,17 @@ class _PinVerifyContent extends StatefulWidget {
 class _PinVerifyContentState extends State<_PinVerifyContent> {
   bool _isError = false;
   String _errorMessage = '';
+
+  void setError(String message) {
+    setState(() {
+      _isError = true;
+      _errorMessage = message;
+    });
+  }
+
+  void clearInput() {
+    widget.controller.clear();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1052,12 +1058,6 @@ class _PinVerifyContentState extends State<_PinVerifyContent> {
             _isError = false;
             _errorMessage = '';
           }),
-          onSubmitted: (_) {
-            final pin = widget.controller.text.trim();
-            if (pin.length >= 4) {
-              Navigator.pop(context, true);
-            }
-          },
         ),
         if (_isError) ...[
           const SizedBox(height: 8),
