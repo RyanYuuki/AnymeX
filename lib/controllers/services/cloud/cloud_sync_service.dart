@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:anymex/controllers/profile/profile_manager.dart';
 import 'package:anymex/controllers/services/cloud/cloud_auth_service.dart';
+import 'package:anymex/controllers/services/cloud/cloud_profile_service.dart';
 import 'package:anymex/database/isar_models/custom_list.dart';
 import 'package:anymex/database/isar_models/key_value.dart';
 import 'package:anymex/database/kv_helper.dart';
@@ -546,11 +547,17 @@ class CloudSyncService extends GetxController with WidgetsBindingObserver {
         final key = kv.key;
         if (key.startsWith('__') && key.endsWith('__')) continue;
         if (prefix.isNotEmpty && !key.startsWith(prefix)) continue;
-        if (key.startsWith('AuthKeys_')) continue;
 
         final suffix = prefix.isNotEmpty && key.startsWith(prefix)
             ? key.substring(prefix.length)
             : key;
+
+        // Skip auth token keys — they are synced via dedicated pushTokens endpoint
+        if (suffix == 'authToken' ||
+            suffix == 'malAuthToken' ||
+            suffix == 'malRefreshToken' ||
+            suffix == 'malSessionId' ||
+            suffix == 'simklAuthToken') continue;
 
         // Decode the stored value to get the actual typed value
         try {
@@ -626,6 +633,13 @@ class CloudSyncService extends GetxController with WidgetsBindingObserver {
 
       await isar.writeTxn(() async {
         for (final entry in settings.entries) {
+          // Skip auth token keys — they are restored via restoreServiceTokens
+          if (entry.key == 'authToken' ||
+              entry.key == 'malAuthToken' ||
+              entry.key == 'malRefreshToken' ||
+              entry.key == 'malSessionId' ||
+              entry.key == 'simklAuthToken') continue;
+
           final fullKey = prefix.isEmpty ? entry.key : '$prefix${entry.key}';
           final rawValue = entry.value;
           // Server returns retyped values — store as jsonEncode({'val': value})
@@ -1037,19 +1051,24 @@ class CloudSyncService extends GetxController with WidgetsBindingObserver {
         final key = kv.key;
         if (key.startsWith('__') && key.endsWith('__')) continue;
         if (prefix.isNotEmpty && !key.startsWith(prefix)) continue;
-        if (key.startsWith('AuthKeys_')) continue;
-        final suffix = prefix.isNotEmpty && key.startsWith(prefix)
+        final batchSuffix = prefix.isNotEmpty && key.startsWith(prefix)
             ? key.substring(prefix.length)
             : key;
+        // Skip auth token keys — synced via dedicated pushTokens endpoint
+        if (batchSuffix == 'authToken' ||
+            batchSuffix == 'malAuthToken' ||
+            batchSuffix == 'malRefreshToken' ||
+            batchSuffix == 'malSessionId' ||
+            batchSuffix == 'simklAuthToken') continue;
         try {
           final decoded = jsonDecode(kv.value ?? '');
           if (decoded is Map && decoded.containsKey('val')) {
-            settings[suffix] = decoded['val'];
+            settings[batchSuffix] = decoded['val'];
           } else {
-            settings[suffix] = kv.value ?? '';
+            settings[batchSuffix] = kv.value ?? '';
           }
         } catch (_) {
-          settings[suffix] = kv.value ?? '';
+          settings[batchSuffix] = kv.value ?? '';
         }
       }
       batchBody['settings'] = settings;
@@ -1095,22 +1114,22 @@ class CloudSyncService extends GetxController with WidgetsBindingObserver {
       }
 
       // Tokens
-      final anilistToken = _getLocalToken('AuthKeys_authToken');
+      final anilistToken = _getLocalToken('authToken');
       if (anilistToken != null) {
         batchBody['tokens'] = {
           'anilist': {'access_token': anilistToken},
         };
       }
-      final malToken = _getLocalToken('AuthKeys_malAuthToken');
+      final malToken = _getLocalToken('malAuthToken');
       if (malToken != null) {
         batchBody['tokens'] ??= {};
         (batchBody['tokens'] as Map)['mal'] = {
           'access_token': malToken,
-          'refresh_token': _getLocalToken('AuthKeys_malRefreshToken'),
-          'session_id': _getLocalToken('AuthKeys_malSessionId'),
+          'refresh_token': _getLocalToken('malRefreshToken'),
+          'session_id': _getLocalToken('malSessionId'),
         };
       }
-      final simklToken = _getLocalToken('AuthKeys_simklAuthToken');
+      final simklToken = _getLocalToken('simklAuthToken');
       if (simklToken != null) {
         batchBody['tokens'] ??= {};
         (batchBody['tokens'] as Map)['simkl'] = {
@@ -1319,7 +1338,7 @@ class CloudSyncService extends GetxController with WidgetsBindingObserver {
       // Push tokens (raw — no client encryption)
       syncStatus.value = 'Syncing tokens...';
 
-      final anilistToken = _getLocalToken('AuthKeys_authToken');
+      final anilistToken = _getLocalToken('authToken');
       if (anilistToken != null) {
         await pushTokens(
           cloudProfileId: cloudProfileId,
@@ -1328,9 +1347,9 @@ class CloudSyncService extends GetxController with WidgetsBindingObserver {
         );
       }
 
-      final malToken = _getLocalToken('AuthKeys_malAuthToken');
-      final malRefresh = _getLocalToken('AuthKeys_malRefreshToken');
-      final malSession = _getLocalToken('AuthKeys_malSessionId');
+      final malToken = _getLocalToken('malAuthToken');
+      final malRefresh = _getLocalToken('malRefreshToken');
+      final malSession = _getLocalToken('malSessionId');
       if (malToken != null || malRefresh != null) {
         await pushTokens(
           cloudProfileId: cloudProfileId,
@@ -1343,7 +1362,7 @@ class CloudSyncService extends GetxController with WidgetsBindingObserver {
         );
       }
 
-      final simklToken = _getLocalToken('AuthKeys_simklAuthToken');
+      final simklToken = _getLocalToken('simklAuthToken');
       if (simklToken != null) {
         await pushTokens(
           cloudProfileId: cloudProfileId,
@@ -1351,6 +1370,11 @@ class CloudSyncService extends GetxController with WidgetsBindingObserver {
           tokens: {'access_token': simklToken},
         );
       }
+
+      // Push watch history & continue watching
+      syncStatus.value = 'Syncing watch history...';
+      await _pushWatchHistoryFromDb();
+      await _pushContinueWatchingFromDb();
 
       // Pull after push (bidirectional sync)
       syncStatus.value = 'Pulling latest data...';
@@ -1416,19 +1440,19 @@ class CloudSyncService extends GetxController with WidgetsBindingObserver {
       Map<String, dynamic>? tokens;
       switch (service) {
         case 'anilist':
-          final t = _getLocalToken('AuthKeys_authToken');
+          final t = _getLocalToken('authToken');
           if (t != null) tokens = {'access_token': t};
           break;
         case 'mal':
-          final a = _getLocalToken('AuthKeys_malAuthToken');
-          final r = _getLocalToken('AuthKeys_malRefreshToken');
-          final s = _getLocalToken('AuthKeys_malSessionId');
+          final a = _getLocalToken('malAuthToken');
+          final r = _getLocalToken('malRefreshToken');
+          final s = _getLocalToken('malSessionId');
           if (a != null || r != null) {
             tokens = {'access_token': a, 'refresh_token': r, 'session_id': s};
           }
           break;
         case 'simkl':
-          final t = _getLocalToken('AuthKeys_simklAuthToken');
+          final t = _getLocalToken('simklAuthToken');
           if (t != null) tokens = {'access_token': t};
           break;
       }
@@ -1440,6 +1464,26 @@ class CloudSyncService extends GetxController with WidgetsBindingObserver {
           tokens: tokens,
         );
       }
+
+      // Update profile metadata on cloud (anilist_linked, mal_linked, simkl_linked)
+      try {
+        final profileService = Get.find<CloudProfileService>();
+        final linkedValue = tokens != null;
+        switch (service) {
+          case 'anilist':
+            await profileService.updateProfile(
+                profileId: cloudId, anilistLinked: linkedValue);
+            break;
+          case 'mal':
+            await profileService.updateProfile(
+                profileId: cloudId, malLinked: linkedValue);
+            break;
+          case 'simkl':
+            await profileService.updateProfile(
+                profileId: cloudId, simklLinked: linkedValue);
+            break;
+        }
+      } catch (_) {}
     } catch (e) {
       Logger.i('Auto sync $service tokens error: $e');
     }
@@ -1463,20 +1507,20 @@ class CloudSyncService extends GetxController with WidgetsBindingObserver {
 
         switch (service) {
           case 'anilist':
-            final t = tokens['authToken']?.toString();
-            if (t != null) _setLocalToken('AuthKeys_authToken', t);
+            final t = tokens['access_token']?.toString();
+            if (t != null) _setLocalToken('authToken', t);
             break;
           case 'mal':
-            final a = tokens['authToken']?.toString();
-            final r = tokens['refreshToken']?.toString();
-            final s = tokens['sessionId']?.toString();
-            if (a != null) _setLocalToken('AuthKeys_malAuthToken', a);
-            if (r != null) _setLocalToken('AuthKeys_malRefreshToken', r);
-            if (s != null) _setLocalToken('AuthKeys_malSessionId', s);
+            final a = tokens['access_token']?.toString();
+            final r = tokens['refresh_token']?.toString();
+            final s = tokens['session_id']?.toString();
+            if (a != null) _setLocalToken('malAuthToken', a);
+            if (r != null) _setLocalToken('malRefreshToken', r);
+            if (s != null) _setLocalToken('malSessionId', s);
             break;
           case 'simkl':
-            final t = tokens['authToken']?.toString();
-            if (t != null) _setLocalToken('AuthKeys_simklAuthToken', t);
+            final t = tokens['access_token']?.toString();
+            if (t != null) _setLocalToken('simklAuthToken', t);
             break;
         }
       }
@@ -1501,6 +1545,10 @@ class CloudSyncService extends GetxController with WidgetsBindingObserver {
       syncStatus.value = 'Pulling settings...';
 
       await pullSettings(cloudId);
+
+      // Restore service tokens (Anilist, MAL, Simkl) from cloud
+      syncStatus.value = 'Restoring tokens...';
+      await restoreServiceTokens(localProfileId);
 
       // Pull library for each media type — use localProfileId for Isar
       for (final entry in [

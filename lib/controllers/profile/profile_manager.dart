@@ -445,8 +445,35 @@ class ProfileManager extends GetxController {
         localAvatar = await cloudProfileService.downloadAvatarToLocal(avatarUrl);
       }
 
-      final existing = profiles.firstWhereOrNull((p) => p.id == cloudId);
+      // First check if we already have a local profile mapped to this cloud ID.
+      final existingByCloudId = profiles.firstWhereOrNull((p) => p.id == cloudId);
+
+      // Also check by local_profile_id from the cloud record — this handles
+      // the case where the profile was created locally before cloud was enabled.
+      final localProfileId = cp['local_profile_id'] as String?;
+      AppProfile? existingByLocalId;
+      if (localProfileId != null && localProfileId.isNotEmpty) {
+        existingByLocalId = profiles.firstWhereOrNull((p) => p.id == localProfileId);
+      }
+
+      // Dedup: if both a cloud-ID profile AND a local-ID profile exist for
+      // the same cloud profile, remove the cloud-ID duplicate (it was likely
+      // created by a previous buggy importFromCloud call).
+      if (existingByCloudId != null && existingByLocalId != null) {
+        profiles.remove(existingByCloudId);
+        _removeCloudProfileId(existingByCloudId.id);
+      }
+
+      final existing = existingByLocalId ?? existingByCloudId;
+
       if (existing != null) {
+        // Update the existing profile's name, avatar, PIN, etc.
+        // If matched by local ID, also save the cloud→local mapping so
+        // getCloudProfileId() can resolve it later.
+        if (existingByLocalId != null && existingByCloudId == null) {
+          // Local profile exists but was never linked to cloud — link it now.
+          _setCloudProfileId(existing.id, cloudId);
+        }
         _updateProfile(existing.copyWith(
           name: displayName,
           avatarPath: localAvatar.isNotEmpty ? localAvatar : existing.avatarPath,
