@@ -88,10 +88,94 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       final cloudProfiles = await profileService.listProfiles();
       if (cloudProfiles != null && cloudProfiles.isNotEmpty) {
         await manager.importFromCloud(cloudProfiles);
+
+        // Trigger profile selection so user can pick a profile.
+        // switchToProfile will handle data restoration (tokens, library,
+        // settings, custom lists) when the user selects one.
+        manager.requestProfileSelection();
       }
     } catch (e) {
       Logger.i('Error fetching cloud profiles after auth: $e');
     }
+  }
+
+  void _showForgotPasswordDialog() {
+    final emailController = TextEditingController();
+    bool isSending = false;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          title: const Text('Reset Password'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                  'Enter the email address associated with your account.'),
+              const SizedBox(height: 16),
+              TextField(
+                controller: emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  prefixIcon: Icon(Icons.email_outlined),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: isSending
+                  ? null
+                  : () async {
+                      final email = emailController.text.trim();
+                      if (email.isEmpty || !email.contains('@')) {
+                        ScaffoldMessenger.of(ctx).showSnackBar(
+                          const SnackBar(
+                            content:
+                                Text('Please enter a valid email address'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                        return;
+                      }
+
+                      setDialogState(() => isSending = true);
+                      final authService = Get.find<CloudAuthService>();
+                      await authService.forgotPassword(email: email);
+
+                      if (ctx.mounted) {
+                        Navigator.pop(ctx);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                                'If an account with this email exists, a reset link has been sent.'),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                      }
+                    },
+              child: isSending
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Colors.white),
+                    )
+                  : const Text('Send Reset Link'),
+            ),
+          ],
+        ),
+      ),
+    ).then((_) => emailController.dispose());
   }
 
   void _setError(String message) {
@@ -294,6 +378,22 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                      ],
+                      if (_isLoginMode) ...[
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: _isLoading ? null : _showForgotPasswordDialog,
+                            child: Text(
+                              'Forgot Password?',
+                              style: TextStyle(
+                                color: colorScheme.primary,
+                                fontSize: 13,
+                                fontFamily: 'Poppins',
+                              ),
                             ),
                           ),
                         ),

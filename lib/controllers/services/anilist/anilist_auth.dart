@@ -116,6 +116,7 @@ class AnilistAuth extends GetxController {
 
   Future<void> tryAutoLogin() async {
     isLoggedIn.value = false;
+    profileData.value = Profile();
     final token = AuthKeys.authToken.get<String?>();
     if (token != null) {
       await fetchUserProfile();

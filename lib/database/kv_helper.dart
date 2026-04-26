@@ -1,8 +1,10 @@
 import 'dart:convert';
 
+import 'package:anymex/controllers/services/cloud/cloud_sync_service.dart';
 import 'package:anymex/database/isar_models/key_value.dart';
 import 'package:anymex/main.dart';
 import 'package:anymex/utils/logger.dart';
+import 'package:get/get.dart';
 import 'package:isar_community/isar.dart';
 
 extension KvExtensions on Enum {
@@ -73,6 +75,28 @@ class KvHelper {
     isar.writeTxnSync(() {
       isar.collection<KeyValue>().putSync(data);
     });
+
+    // Auto-schedule cloud settings sync when a non-auth setting changes.
+    // Auth token changes are handled separately by autoSyncServiceTokens().
+    _notifyCloudSettingsChanged(key);
+  }
+
+  /// Triggers a debounced cloud settings sync when a user-facing setting
+  /// is modified. Skips auth keys (handled by token-specific sync) and
+  /// internal cloud metadata keys (double-write prevention).
+  static void _notifyCloudSettingsChanged(String key) {
+    try {
+      // Skip auth keys — they have their own dedicated sync path
+      if (key.startsWith('AuthKeys_')) return;
+      // Skip internal cloud metadata to prevent double-writes
+      if (key.startsWith('__cloud_')) return;
+
+      if (Get.isRegistered<CloudSyncService>()) {
+        Get.find<CloudSyncService>().scheduleSettingsSync();
+      }
+    } catch (_) {
+      // Silently ignore — cloud may not be active
+    }
   }
 
   static void remove(String key) {

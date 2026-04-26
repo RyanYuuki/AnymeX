@@ -162,6 +162,14 @@ class ProfileManager extends GetxController {
   void _reauthServices() {
     try {
       final handler = Get.find<ServiceHandler>();
+
+      // Before autoLogin, explicitly logout any service that does NOT have
+      // a saved token for the current profile.  This prevents stale username
+      // data from a previously-active profile leaking into the UI (e.g. Profile A
+      // logged into AniList → switch to Profile B → B's settings still shows
+      // A's AniList username because the global singleton was never cleared).
+      _logoutServicesWithoutToken(handler);
+
       handler.autoLogin().then((_) {
         handler.fetchHomePage();
       }).then((_) {
@@ -169,6 +177,40 @@ class ProfileManager extends GetxController {
       });
     } catch (e) {
       Logger.i('Error re-authenticating on profile switch: $e');
+    }
+  }
+
+  /// Checks per-profile saved tokens for each tracking service and logs out
+  /// any service whose token is missing for the current profile.
+  void _logoutServicesWithoutToken(ServiceHandler handler) {
+    try {
+      final prefix = KvHelper.profilePrefix;
+
+      // AniList
+      final anilistKey = prefix.isEmpty ? 'AuthKeys_authToken' : '${prefix}AuthKeys_authToken';
+      final anilistResult = isar.collection<KeyValue>().filter().keyEqualTo(anilistKey).findFirstSync();
+      final hasAnilistToken = anilistResult?.value != null;
+      if (!hasAnilistToken && handler.anilistService.isLoggedIn.value) {
+        handler.anilistService.logout();
+      }
+
+      // MAL
+      final malKey = prefix.isEmpty ? 'AuthKeys_malAuthToken' : '${prefix}AuthKeys_malAuthToken';
+      final malResult = isar.collection<KeyValue>().filter().keyEqualTo(malKey).findFirstSync();
+      final hasMalToken = malResult?.value != null;
+      if (!hasMalToken && handler.malService.isLoggedIn.value) {
+        handler.malService.logout();
+      }
+
+      // Simkl
+      final simklKey = prefix.isEmpty ? 'AuthKeys_simklAuthToken' : '${prefix}AuthKeys_simklAuthToken';
+      final simklResult = isar.collection<KeyValue>().filter().keyEqualTo(simklKey).findFirstSync();
+      final hasSimklToken = simklResult?.value != null;
+      if (!hasSimklToken && handler.simklService.isLoggedIn.value) {
+        handler.simklService.logout();
+      }
+    } catch (e) {
+      Logger.i('Error in _logoutServicesWithoutToken: $e');
     }
   }
 
