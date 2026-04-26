@@ -33,6 +33,7 @@ import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/deeplink.dart';
 import 'package:anymex/utils/register_protocol/register_protocol.dart';
 import 'package:anymex/models/Service/app_profile.dart';
+import 'package:anymex/screens/profile/widgets/pattern_lock.dart';
 import 'package:anymex/screens/profile/widgets/profile_avatar.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/adaptive_wrapper.dart';
@@ -343,6 +344,11 @@ class _ProfileGateState extends State<ProfileGate> {
         return const ProfileCreationPage();
       }
 
+      if (!manager.isMultiProfileEnabled.value && manager.hasSingleProfile) {
+        return _AutoStartHandler(
+            profileId: manager.profiles.first.id);
+      }
+
       if (manager.hasAutoStart) {
         return _AutoStartHandler(profileId: manager.autoStartProfileId.value);
       }
@@ -389,23 +395,25 @@ class _AutoStartHandlerState extends State<_AutoStartHandler> {
       return;
     }
 
-    if (profile.hasPin) {
+    if (profile.hasLock) {
       setState(() => _needsPin = true);
     } else {
       await manager.switchToProfile(profile.id);
     }
   }
 
-  Future<void> _submitPin(String pin) async {
+  Future<void> _submitLock(String input) async {
     final manager = Get.find<ProfileManager>();
-    final result = manager.verifyPin(widget.profileId, pin);
+    final result = manager.verifyLock(widget.profileId, input);
 
     if (result == true) {
       await manager.switchToProfile(widget.profileId);
     } else {
+      final profile = manager.profiles.firstWhereOrNull((p) => p.id == widget.profileId);
+      final label = profile?.lockLabel ?? 'lock';
       snackBar(result == null
           ? 'Profile is temporarily locked'
-          : 'Wrong PIN');
+          : 'Wrong $label');
       if (result == null && mounted) {
         setState(() => _needsPin = false);
       }
@@ -454,10 +462,10 @@ class _AutoStartHandlerState extends State<_AutoStartHandler> {
                   ),
                 ),
                 Expanded(
-                  child: _PinAutoStartWidget(
+                  child: _LockAutoStartWidget(
                     profile: manager.profiles.firstWhere(
                         (p) => p.id == widget.profileId),
-                    onSubmit: _submitPin,
+                    onSubmit: _submitLock,
                     onSwitchProfile: _goToProfileSelection,
                   ),
                 ),
@@ -479,21 +487,21 @@ class _AutoStartHandlerState extends State<_AutoStartHandler> {
   }
 }
 
-class _PinAutoStartWidget extends StatefulWidget {
+class _LockAutoStartWidget extends StatefulWidget {
   final AppProfile profile;
-  final Future<void> Function(String pin) onSubmit;
+  final Future<void> Function(String input) onSubmit;
   final VoidCallback onSwitchProfile;
-  const _PinAutoStartWidget({
+  const _LockAutoStartWidget({
     required this.profile,
     required this.onSubmit,
     required this.onSwitchProfile,
   });
 
   @override
-  State<_PinAutoStartWidget> createState() => _PinAutoStartWidgetState();
+  State<_LockAutoStartWidget> createState() => _LockAutoStartWidgetState();
 }
 
-class _PinAutoStartWidgetState extends State<_PinAutoStartWidget> {
+class _LockAutoStartWidgetState extends State<_LockAutoStartWidget> {
   final _controller = TextEditingController();
   bool _error = false;
   String _errorMessage = '';
@@ -505,9 +513,13 @@ class _PinAutoStartWidgetState extends State<_PinAutoStartWidget> {
   }
 
   void _submit() {
-    final pin = _controller.text.trim();
-    if (pin.length < 4) return;
-    widget.onSubmit(pin);
+    final profile = widget.profile;
+    if (profile.isPatternLocked) return;
+    final input = profile.isPinLocked
+        ? _controller.text.trim()
+        : _controller.text;
+    if (input.length < 4) return;
+    widget.onSubmit(input);
   }
 
   @override
@@ -597,11 +609,16 @@ class _PinAutoStartWidgetState extends State<_PinAutoStartWidget> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.lock_outline_rounded,
+                    Icon(
+                        profile.isPinLocked
+                            ? Icons.dialpad_rounded
+                            : profile.isPasswordLocked
+                                ? Icons.password_rounded
+                                : Icons.grid_3x3_rounded,
                         size: 20,
                         color: colorScheme.primary.withOpacity(0.8)),
                     const SizedBox(width: 8),
-                    Text('Enter PIN to unlock',
+                    Text('Enter ${profile.lockLabel} to unlock',
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontWeight: FontWeight.w600,
@@ -611,11 +628,24 @@ class _PinAutoStartWidgetState extends State<_PinAutoStartWidget> {
                   ],
                 ),
                 const SizedBox(height: 20),
-                TextField(
+                if (profile.isPatternLocked)
+                  SizedBox(
+                    width: 220,
+                    height: 220,
+                    child: PatternLock(
+                      onPatternComplete: (pattern) {
+                        widget.onSubmit(pattern.join(','));
+                      },
+                    ),
+                  )
+                else
+                  TextField(
                   controller: _controller,
-                  keyboardType: TextInputType.number,
+                  keyboardType: profile.isPinLocked
+                      ? TextInputType.number
+                      : TextInputType.text,
                   obscureText: true,
-                  maxLength: 6,
+                  maxLength: profile.isPinLocked ? 6 : 32,
                   autofocus: true,
                   style: TextStyle(
                     color: colorScheme.onSurface,
@@ -652,11 +682,11 @@ class _PinAutoStartWidgetState extends State<_PinAutoStartWidget> {
                   final manager = Get.find<ProfileManager>();
                   final attempts = manager.profiles
                           .firstWhereOrNull((p) => p.id == profile.id)
-                          ?.failedPinAttempts ??
+                          ?.failedAttempts ??
                       0;
                   if (attempts > 0) {
                     return Text(
-                      '$attempts / $kMaxPinAttempts attempts',
+                      '$attempts / $kMaxLockAttempts attempts',
                       style: TextStyle(
                           color: onSurface.withOpacity(0.4), fontSize: 12),
                     );
@@ -811,32 +841,36 @@ class _FilterScreenState extends State<FilterScreen> {
                             return SettingsSheet.show(context);
                           },
                           label: 'Profile',
-                          altIcon: GestureDetector(
-                            onLongPress: () =>
-                                showProfileSwitcher(context),
-                            child: CircleAvatar(
-                                radius: 24,
-                                backgroundColor: Theme.of(context)
-                                    .colorScheme
-                                    .surfaceContainer
-                                    .withValues(alpha: 0.3),
-                                child: authService.isLoggedIn.value
-                                    ? ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(59),
-                                        child: AnymeXImage(
-                                            width: 40,
-                                            height: 40,
-                                            fit: BoxFit.cover,
-                                            radius: 0,
-                                            imageUrl: authService
-                                                    .profileData
-                                                    .value
-                                                    .avatar ??
-                                                ''),
-                                      )
-                                    : const Icon((IconlyBold.profile))),
-                          )),
+                          altIcon: Obx(() {
+                            final multiProfile = Get.find<ProfileManager>().isMultiProfileEnabled.value;
+                            return GestureDetector(
+                              onLongPress: multiProfile
+                                  ? () => showProfileSwitcher(context)
+                                  : null,
+                              child: CircleAvatar(
+                                  radius: 24,
+                                  backgroundColor: Theme.of(context)
+                                      .colorScheme
+                                      .surfaceContainer
+                                      .withValues(alpha: 0.3),
+                                  child: authService.isLoggedIn.value
+                                      ? ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(59),
+                                          child: AnymeXImage(
+                                              width: 40,
+                                              height: 40,
+                                              fit: BoxFit.cover,
+                                              radius: 0,
+                                              imageUrl: authService
+                                                      .profileData
+                                                      .value
+                                                      .avatar ??
+                                                  ''),
+                                        )
+                                      : const Icon((IconlyBold.profile))),
+                            );
+                          })),
                       NavItem(
                         unselectedIcon: IconlyLight.home,
                         selectedIcon: IconlyBold.home,

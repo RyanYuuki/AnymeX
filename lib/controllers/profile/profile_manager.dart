@@ -18,12 +18,13 @@ import 'package:get/get.dart';
 import 'package:isar_community/isar.dart';
 
 const int kMaxProfiles = 5;
-const int kMaxPinAttempts = 5;
+const int kMaxLockAttempts = 5;
 const int kLockoutMinutes = 5;
 
 const String _kProfilesKey = '__app_profiles__';
 const String _kCurrentProfileIdKey = '__current_profile_id__';
 const String _kAutoStartProfileIdKey = '__auto_start_profile_id__';
+const String _kMultiProfileEnabledKey = '__multi_profile_enabled__';
 
 class ProfileManager extends GetxController {
   RxList<AppProfile> profiles = <AppProfile>[].obs;
@@ -32,6 +33,7 @@ class ProfileManager extends GetxController {
   RxBool isProfileReady = false.obs;
   RxString autoStartProfileId = ''.obs;
   RxBool showProfileSelection = false.obs;
+  RxBool isMultiProfileEnabled = false.obs;
 
   @override
   void onInit() {
@@ -48,6 +50,11 @@ class ProfileManager extends GetxController {
     final savedAutoStart = _readGlobal(_kAutoStartProfileIdKey);
     if (savedAutoStart != null && savedAutoStart.isNotEmpty) {
       autoStartProfileId.value = savedAutoStart;
+    }
+
+    final savedMultiProfile = _readGlobal(_kMultiProfileEnabledKey);
+    if (savedMultiProfile == 'true') {
+      isMultiProfileEnabled.value = true;
     }
 
     final savedId = _readGlobal(_kCurrentProfileIdKey);
@@ -90,7 +97,34 @@ class ProfileManager extends GetxController {
 
     profiles.add(profile);
     _saveProfiles();
+    if (profiles.isNotEmpty) {
+      isMultiProfileEnabled.value = true;
+      _writeGlobal(_kMultiProfileEnabledKey, 'true');
+    }
     return profile;
+  }
+
+  AppProfile createDefaultProfile() {
+    final profile = AppProfile(
+      id: 'prof_${DateTime.now().millisecondsSinceEpoch}',
+      name: 'My Profile',
+    );
+
+    profiles.add(profile);
+    _saveProfiles();
+    return profile;
+  }
+
+  Future<void> skipMultiProfileSetup() async {
+    final profile = createDefaultProfile();
+    await switchToProfile(profile.id);
+    isMultiProfileEnabled.value = false;
+    _writeGlobal(_kMultiProfileEnabledKey, 'false');
+  }
+
+  void enableMultiProfile() {
+    isMultiProfileEnabled.value = true;
+    _writeGlobal(_kMultiProfileEnabledKey, 'true');
   }
 
   Future<AppProfile?> switchToProfile(String profileId,
@@ -152,52 +186,90 @@ class ProfileManager extends GetxController {
     final hash = sha256.convert(bytes).toString();
 
     _updateProfile(profile.copyWith(
-        pinHash: hash, failedPinAttempts: 0, lockedUntil: null));
+        lockHash: hash,
+        lockType: 'pin',
+        failedAttempts: 0,
+        lockedUntil: null));
     return true;
   }
 
-  bool removePin(String profileId) {
+  bool setPassword(String profileId, String password) {
+    if (password.length < 4 || password.length > 32) return false;
+
     final profile = profiles.firstWhereOrNull((p) => p.id == profileId);
     if (profile == null) return false;
 
-    _updateProfile(
-        profile.copyWith(pinHash: null, failedPinAttempts: 0, lockedUntil: null));
+    final bytes = utf8.encode(password);
+    final hash = sha256.convert(bytes).toString();
+
+    _updateProfile(profile.copyWith(
+        lockHash: hash,
+        lockType: 'password',
+        failedAttempts: 0,
+        lockedUntil: null));
     return true;
   }
 
-  bool? verifyPin(String profileId, String pin) {
+  bool setPattern(String profileId, List<int> pattern) {
+    if (pattern.length < 4) return false;
+
+    final profile = profiles.firstWhereOrNull((p) => p.id == profileId);
+    if (profile == null) return false;
+
+    final patternStr = pattern.join(',');
+    final bytes = utf8.encode(patternStr);
+    final hash = sha256.convert(bytes).toString();
+
+    _updateProfile(profile.copyWith(
+        lockHash: hash,
+        lockType: 'pattern',
+        failedAttempts: 0,
+        lockedUntil: null));
+    return true;
+  }
+
+  bool removeLock(String profileId) {
+    final profile = profiles.firstWhereOrNull((p) => p.id == profileId);
+    if (profile == null) return false;
+
+    _updateProfile(profile.copyWith(clearLock: true));
+    return true;
+  }
+
+  bool? verifyLock(String profileId, String input) {
     final profile = profiles.firstWhereOrNull((p) => p.id == profileId);
     if (profile == null) return false;
 
     if (profile.isLocked) return null;
 
-    final bytes = utf8.encode(pin);
+    final bytes = utf8.encode(input);
     final hash = sha256.convert(bytes).toString();
 
-    if (hash == profile.pinHash) {
+    if (hash == profile.lockHash) {
       _updateProfile(
-          profile.copyWith(failedPinAttempts: 0, lockedUntil: null));
+          profile.copyWith(failedAttempts: 0, lockedUntil: null));
       return true;
     } else {
-      final newAttempts = profile.failedPinAttempts + 1;
+      final newAttempts = profile.failedAttempts + 1;
       DateTime? lockedUntil;
 
-      if (newAttempts >= kMaxPinAttempts) {
+      if (newAttempts >= kMaxLockAttempts) {
         lockedUntil =
             DateTime.now().add(Duration(minutes: kLockoutMinutes));
       }
 
       _updateProfile(profile.copyWith(
-        failedPinAttempts: newAttempts,
+        failedAttempts: newAttempts,
         lockedUntil: lockedUntil,
       ));
       return false;
     }
   }
 
-  void setAniListLinked(bool linked) {
-    if (currentProfile.value == null) return;
+  bool setAniListLinked(bool linked) {
+    if (currentProfile.value == null) return false;
     _updateProfile(currentProfile.value!.copyWith(anilistLinked: linked));
+    return true;
   }
 
   void setMALLinked(bool linked) {

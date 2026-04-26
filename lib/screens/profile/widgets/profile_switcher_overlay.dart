@@ -1,5 +1,6 @@
 import 'package:anymex/controllers/profile/profile_manager.dart';
 import 'package:anymex/models/Service/app_profile.dart';
+import 'package:anymex/screens/profile/widgets/pattern_lock.dart';
 import 'package:anymex/screens/profile/widgets/profile_avatar.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -7,8 +8,25 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+IconData _getLockIcon(ProfileLockType type) {
+  switch (type) {
+    case ProfileLockType.none:
+      return Icons.lock_open_rounded;
+    case ProfileLockType.pin:
+      return Icons.dialpad_rounded;
+    case ProfileLockType.password:
+      return Icons.password_rounded;
+    case ProfileLockType.pattern:
+      return Icons.grid_3x3_rounded;
+  }
+}
+
 Future<void> showProfileSwitcher(BuildContext context) async {
   final manager = Get.find<ProfileManager>();
+  if (!manager.isMultiProfileEnabled.value) {
+    snackBar('Enable profiles in Settings first');
+    return;
+  }
   if (manager.profiles.length <= 1) {
     snackBar('Create another profile to switch');
     return;
@@ -55,7 +73,7 @@ Future<void> showProfileSwitcher(BuildContext context) async {
               const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Row(
             children: [
-              if (profile.hasPin && !isCurrent)
+              if (profile.hasLock && !isCurrent)
                 Container(
                   width: 36,
                   height: 36,
@@ -68,7 +86,7 @@ Future<void> showProfileSwitcher(BuildContext context) async {
                     ),
                   ),
                   child: Center(
-                    child: Icon(Icons.lock_outline,
+                    child: Icon(_getLockIcon(profile.profileLockType),
                         size: 14, color: colorScheme.onSurface.withOpacity(0.5)),
                   ),
                 )
@@ -151,11 +169,11 @@ Future<void> showProfileSwitcher(BuildContext context) async {
         .firstWhereOrNull((p) => p.id == selectedId);
     if (profile == null) return;
 
-    if (profile.hasPin) {
+    if (profile.hasLock) {
       final success = await showDialog<bool>(
         context: context,
         barrierDismissible: false,
-        builder: (context) => _SwitcherPinDialog(profile: profile),
+        builder: (context) => _SwitcherLockDialog(profile: profile),
       );
       if (success != true) return;
     }
@@ -190,22 +208,22 @@ String _formatDate(DateTime date) {
   return DateFormat('MMM d').format(date);
 }
 
-class _SwitcherPinDialog extends StatefulWidget {
+class _SwitcherLockDialog extends StatefulWidget {
   final AppProfile profile;
-  const _SwitcherPinDialog({required this.profile});
+  const _SwitcherLockDialog({required this.profile});
 
   @override
-  State<_SwitcherPinDialog> createState() => _SwitcherPinDialogState();
+  State<_SwitcherLockDialog> createState() => _SwitcherLockDialogState();
 }
 
-class _SwitcherPinDialogState extends State<_SwitcherPinDialog> {
-  final _pinController = TextEditingController();
+class _SwitcherLockDialogState extends State<_SwitcherLockDialog> {
+  final _controller = TextEditingController();
   bool _isError = false;
   String _errorMessage = '';
 
   @override
   void dispose() {
-    _pinController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -239,12 +257,16 @@ class _SwitcherPinDialogState extends State<_SwitcherPinDialog> {
       );
     }
 
+    if (profile.profileLockType == ProfileLockType.pattern) {
+      return _buildPatternDialog(colorScheme, profile);
+    }
+
     return AlertDialog(
       backgroundColor: colorScheme.surfaceContainer,
       shape:
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       title: Text(
-        'Enter PIN for "${profile.name}"',
+        'Enter ${profile.lockLabel} for "${profile.name}"',
         style: TextStyle(
             fontFamily: 'Poppins',
             fontWeight: FontWeight.bold,
@@ -254,17 +276,19 @@ class _SwitcherPinDialogState extends State<_SwitcherPinDialog> {
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
-            controller: _pinController,
-            keyboardType: TextInputType.number,
+            controller: _controller,
+            keyboardType: profile.isPinLocked
+                ? TextInputType.number
+                : TextInputType.text,
             obscureText: true,
-            maxLength: 6,
+            maxLength: profile.isPinLocked ? 6 : 32,
             autofocus: true,
             style: TextStyle(
                 color: colorScheme.onSurface,
                 fontFamily: 'Poppins',
-                fontSize: 22,
-                letterSpacing: 8),
-            textAlign: TextAlign.center,
+                fontSize: profile.isPinLocked ? 22 : 16,
+                letterSpacing: profile.isPinLocked ? 8 : 0),
+            textAlign: profile.isPinLocked ? TextAlign.center : TextAlign.start,
             decoration: InputDecoration(
               filled: true,
               fillColor: colorScheme.surface,
@@ -279,6 +303,11 @@ class _SwitcherPinDialogState extends State<_SwitcherPinDialog> {
             onChanged: (_) {
               if (_isError) setState(() => _isError = false);
             },
+            onSubmitted: profile.isPasswordLocked
+                ? (_) {
+                    if (_controller.text.isNotEmpty) _verify();
+                  }
+                : null,
           ),
           if (_isError) ...[
             const SizedBox(height: 8),
@@ -295,7 +324,7 @@ class _SwitcherPinDialogState extends State<_SwitcherPinDialog> {
                   color: colorScheme.onSurface.withOpacity(0.7))),
         ),
         ElevatedButton(
-          onPressed: _verifyPin,
+          onPressed: _verify,
           style: ElevatedButton.styleFrom(
             backgroundColor: colorScheme.primary,
             foregroundColor: colorScheme.onPrimary,
@@ -308,33 +337,107 @@ class _SwitcherPinDialogState extends State<_SwitcherPinDialog> {
     );
   }
 
-  void _verifyPin() {
-    final pin = _pinController.text.trim();
-    if (pin.length < 4) {
-      setState(() {
-        _isError = true;
-        _errorMessage = 'PIN must be at least 4 digits';
-      });
-      return;
+  Widget _buildPatternDialog(ColorScheme colorScheme, AppProfile profile) {
+    return AlertDialog(
+      backgroundColor: colorScheme.surfaceContainer,
+      shape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      title: Text(
+        'Draw Pattern for "${profile.name}"',
+        style: TextStyle(
+            fontFamily: 'Poppins',
+            fontWeight: FontWeight.bold,
+            color: colorScheme.onSurface),
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: 220,
+            height: 220,
+            child: PatternLock(
+              onPatternComplete: (pattern) {
+                final manager = Get.find<ProfileManager>();
+                final patternStr = pattern.join(',');
+                final result =
+                    manager.verifyLock(profile.id, patternStr);
+                if (result == true) {
+                  Navigator.pop(context, true);
+                } else if (result == false) {
+                  final remaining = kMaxLockAttempts -
+                      (manager.profiles
+                              .firstWhereOrNull(
+                                  (p) => p.id == profile.id)
+                              ?.failedAttempts ??
+                          0);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                          'Wrong pattern. $remaining attempt${remaining != 1 ? 's' : ''} remaining'),
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
+                } else {
+                  Navigator.pop(context, false);
+                }
+              },
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: Text('Cancel',
+              style: TextStyle(
+                  color: colorScheme.onSurface.withOpacity(0.7))),
+        ),
+      ],
+    );
+  }
+
+  void _verify() {
+    final profile = widget.profile;
+    String input;
+
+    if (profile.isPinLocked) {
+      input = _controller.text.trim();
+      if (input.length < 4) {
+        setState(() {
+          _isError = true;
+          _errorMessage = 'PIN must be at least 4 digits';
+        });
+        return;
+      }
+    } else {
+      input = _controller.text;
+      if (input.isEmpty) {
+        setState(() {
+          _isError = true;
+          _errorMessage = 'Enter a password';
+        });
+        return;
+      }
     }
 
-    final result = Get.find<ProfileManager>().verifyPin(widget.profile.id, pin);
+    final result =
+        Get.find<ProfileManager>().verifyLock(widget.profile.id, input);
 
     if (result == true) {
       Navigator.pop(context, true);
     } else if (result == false) {
       setState(() {
         _isError = true;
-        final remaining = kMaxPinAttempts -
+        final remaining = kMaxLockAttempts -
             (Get.find<ProfileManager>()
                     .profiles
                     .firstWhereOrNull((p) => p.id == widget.profile.id)
-                    ?.failedPinAttempts ??
+                    ?.failedAttempts ??
                 0);
         _errorMessage =
-            'Wrong PIN. $remaining attempt${remaining != 1 ? 's' : ''} left';
+            'Wrong ${profile.lockLabel.toLowerCase()}. $remaining attempt${remaining != 1 ? 's' : ''} left';
       });
-      _pinController.clear();
+      _controller.clear();
     } else {
       Navigator.pop(context, false);
     }

@@ -2,6 +2,7 @@ import 'package:anymex/controllers/profile/profile_manager.dart';
 import 'package:anymex/controllers/services/backup_restore/backup_restore_service.dart';
 import 'package:anymex/models/Service/app_profile.dart';
 import 'package:anymex/screens/profile/profile_creation_page.dart';
+import 'package:anymex/screens/profile/widgets/pattern_lock.dart';
 import 'package:anymex/screens/profile/widgets/profile_avatar.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -88,8 +89,7 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
     ColorScheme colorScheme,
     dynamic theme,
   ) {
-    final needsPin =
-        !isCurrent && profile.hasPin;
+    final needsLock = !isCurrent && profile.hasLock;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -148,11 +148,13 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
                             ),
                           ),
                         ],
-                        if (profile.hasPin) ...[
+                        if (profile.hasLock) ...[
                           const SizedBox(width: 6),
-                          Icon(Icons.lock_outline,
-                              size: 14,
-                              color: theme.onSurface.withOpacity(0.5)),
+                          Icon(
+                            _getLockIcon(profile.profileLockType),
+                            size: 14,
+                            color: theme.onSurface.withOpacity(0.5),
+                          ),
                         ],
                       ],
                     ),
@@ -175,11 +177,11 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
                                       .withOpacity(0.4))),
                       ],
                     ),
-                    if (needsPin)
+                    if (needsLock)
                       Padding(
                         padding: const EdgeInsets.only(top: 6),
                         child: Text(
-                          'PIN required to make changes',
+                          '${profile.lockLabel} required to make changes',
                           style: TextStyle(
                             fontSize: 11,
                             color: colorScheme.primary.withOpacity(0.7),
@@ -210,22 +212,22 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
                           ],
                         )),
                     const PopupMenuItem(
-                        value: 'pin',
+                        value: 'lock',
                         child: Row(
                           children: [
                             Icon(Icons.lock_outline, size: 18),
                             SizedBox(width: 10),
-                            Text('Set / Change PIN'),
+                            Text('Change Protection'),
                           ],
                         )),
-                    if (profile.hasPin)
+                    if (profile.hasLock)
                       const PopupMenuItem(
-                          value: 'remove_pin',
+                          value: 'remove_lock',
                           child: Row(
                             children: [
                               Icon(Icons.lock_open, size: 18),
                               SizedBox(width: 10),
-                              Text('Remove PIN'),
+                              Text('Remove Protection'),
                             ],
                           )),
                     const PopupMenuItem(
@@ -238,14 +240,14 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
                           ],
                         )),
                   ] else ...[
-                    if (needsPin)
-                      const PopupMenuItem(
+                    if (needsLock)
+                      PopupMenuItem(
                           value: 'verify',
                           child: Row(
                             children: [
                               Icon(Icons.lock_person, size: 18),
                               SizedBox(width: 10),
-                              Text('Enter PIN to Manage'),
+                              Text('Enter ${profile.lockLabel} to Manage'),
                             ],
                           ))
                     else ...[
@@ -259,22 +261,22 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
                             ],
                           )),
                       const PopupMenuItem(
-                          value: 'pin',
+                          value: 'lock',
                           child: Row(
                             children: [
                               Icon(Icons.lock_outline, size: 18),
                               SizedBox(width: 10),
-                              Text('Set / Change PIN'),
+                              Text('Change Protection'),
                             ],
                           )),
-                      if (profile.hasPin)
+                      if (profile.hasLock)
                         const PopupMenuItem(
-                            value: 'remove_pin',
+                            value: 'remove_lock',
                             child: Row(
                               children: [
                                 Icon(Icons.lock_open, size: 18),
                                 SizedBox(width: 10),
-                                Text('Remove PIN'),
+                                Text('Remove Protection'),
                               ],
                             )),
                       const PopupMenuItem(
@@ -316,6 +318,19 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
         ],
       ),
     );
+  }
+
+  IconData _getLockIcon(ProfileLockType type) {
+    switch (type) {
+      case ProfileLockType.none:
+        return Icons.lock_open_rounded;
+      case ProfileLockType.pin:
+        return Icons.dialpad_rounded;
+      case ProfileLockType.password:
+        return Icons.password_rounded;
+      case ProfileLockType.pattern:
+        return Icons.grid_3x3_rounded;
+    }
   }
 
   Widget _buildAddButton(ColorScheme colorScheme, dynamic theme) {
@@ -415,14 +430,14 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
 
   Future<void> _handleAction(
       String action, AppProfile profile, bool isCurrent) async {
-    if (!isCurrent && profile.hasPin) {
+    if (!isCurrent && profile.hasLock) {
       if (action == 'verify') {
-        final verified = await _showPinVerification(profile);
+        final verified = await _showLockVerification(profile);
         if (verified != true) return;
         _showUnlockedMenu(profile);
         return;
       }
-      final verified = await _showPinVerification(profile);
+      final verified = await _showLockVerification(profile);
       if (verified != true) return;
     }
 
@@ -430,15 +445,11 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
       case 'change_avatar':
         _changeAvatar(profile);
         break;
-      case 'pin':
-        if (!isCurrent && profile.hasPin) {
-          _showChangePinAfterVerify(profile);
-        } else {
-          _showPinSetupDialog(profile);
-        }
+      case 'lock':
+        _showLockSetupDialog(profile);
         break;
-      case 'remove_pin':
-        _confirmRemovePin(profile);
+      case 'remove_lock':
+        _confirmRemoveLock(profile);
         break;
       case 'export':
         _exportProfile(profile);
@@ -489,19 +500,19 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.lock_outline),
-                title: const Text('Change PIN'),
+                leading: Icon(_getLockIcon(profile.profileLockType)),
+                title: Text('Change ${profile.lockLabel}'),
                 onTap: () {
                   Navigator.pop(ctx);
-                  _showChangePinAfterVerify(profile);
+                  _showLockSetupDialog(profile);
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.lock_open),
-                title: const Text('Remove PIN'),
+                title: Text('Remove ${profile.lockLabel}'),
                 onTap: () {
                   Navigator.pop(ctx);
-                  _confirmRemovePin(profile);
+                  _confirmRemoveLock(profile);
                 },
               ),
               ListTile(
@@ -519,7 +530,7 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
     );
   }
 
-  Future<bool?> _showPinVerification(AppProfile profile) async {
+  Future<bool?> _showLockVerification(AppProfile profile) async {
     final manager = Get.find<ProfileManager>();
 
     if (profile.isLocked) {
@@ -530,9 +541,23 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
       return null;
     }
 
+    switch (profile.profileLockType) {
+      case ProfileLockType.pin:
+        return _showPinVerification(profile);
+      case ProfileLockType.password:
+        return _showPasswordVerification(profile);
+      case ProfileLockType.pattern:
+        return _showPatternVerification(profile);
+      case ProfileLockType.none:
+        return true;
+    }
+  }
+
+  Future<bool?> _showPinVerification(AppProfile profile) async {
+    final manager = Get.find<ProfileManager>();
     final pinController = TextEditingController();
     final colorScheme = Theme.of(context).colorScheme;
-    final pinContentKey = GlobalKey<_PinVerifyContentState>();
+    final contentKey = GlobalKey<_PinVerifyContentState>();
 
     final verified = await showDialog<bool>(
       context: context,
@@ -557,7 +582,7 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
                         color: colorScheme.onSurface),
                   ),
                   Text(
-                    'Enter this profile\'s PIN to continue',
+                    'Enter PIN to continue',
                     style: TextStyle(
                         fontSize: 12,
                         color: colorScheme.onSurface.withOpacity(0.6)),
@@ -568,7 +593,7 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
           ],
         ),
         content: _PinVerifyContent(
-          key: pinContentKey,
+          key: contentKey,
           controller: pinController,
           profile: profile,
         ),
@@ -583,21 +608,21 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
             onPressed: () {
               final pin = pinController.text.trim();
               if (pin.length < 4) {
-                pinContentKey.currentState?.setError('PIN must be at least 4 digits');
+                contentKey.currentState?.setError('PIN must be at least 4 digits');
                 return;
               }
-              final result = manager.verifyPin(profile.id, pin);
+              final result = manager.verifyLock(profile.id, pin);
               if (result == true) {
                 Navigator.pop(ctx, true);
               } else if (result == false) {
-                final remaining = kMaxPinAttempts -
+                final remaining = kMaxLockAttempts -
                     (manager.profiles
                             .firstWhereOrNull((p) => p.id == profile.id)
-                            ?.failedPinAttempts ??
+                            ?.failedAttempts ??
                         0);
-                pinContentKey.currentState?.setError(
+                contentKey.currentState?.setError(
                     'Wrong PIN. $remaining attempt${remaining != 1 ? 's' : ''} remaining');
-                pinContentKey.currentState?.clearInput();
+                contentKey.currentState?.clearInput();
               } else {
                 Navigator.pop(ctx, false);
               }
@@ -619,6 +644,205 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
     return verified;
   }
 
+  Future<bool?> _showPasswordVerification(AppProfile profile) async {
+    final manager = Get.find<ProfileManager>();
+    final passwordController = TextEditingController();
+    final colorScheme = Theme.of(context).colorScheme;
+    final contentKey = GlobalKey<_PasswordVerifyContentState>();
+
+    final verified = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: colorScheme.surfaceContainer,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            ProfileAvatar(profile: profile, radius: 20),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Verify ${profile.name}',
+                    style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onSurface),
+                  ),
+                  Text(
+                    'Enter password to continue',
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: colorScheme.onSurface.withOpacity(0.6)),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        content: _PasswordVerifyContent(
+          key: contentKey,
+          controller: passwordController,
+          profile: profile,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('Cancel',
+                style: TextStyle(
+                    color: colorScheme.onSurface.withOpacity(0.7))),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final password = passwordController.text;
+              if (password.isEmpty) {
+                contentKey.currentState?.setError('Enter a password');
+                return;
+              }
+              final result = manager.verifyLock(profile.id, password);
+              if (result == true) {
+                Navigator.pop(ctx, true);
+              } else if (result == false) {
+                final remaining = kMaxLockAttempts -
+                    (manager.profiles
+                            .firstWhereOrNull((p) => p.id == profile.id)
+                            ?.failedAttempts ??
+                        0);
+                contentKey.currentState?.setError(
+                    'Wrong password. $remaining attempt${remaining != 1 ? 's' : ''} remaining');
+                contentKey.currentState?.clearInput();
+              } else {
+                Navigator.pop(ctx, false);
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: colorScheme.primary,
+              foregroundColor: colorScheme.onPrimary,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+            ),
+            child: const Text('Verify',
+                style: TextStyle(
+                    fontFamily: 'Poppins', fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+    passwordController.dispose();
+    return verified;
+  }
+
+  Future<bool?> _showPatternVerification(AppProfile profile) async {
+    final manager = Get.find<ProfileManager>();
+    final colorScheme = Theme.of(context).colorScheme;
+    bool? result;
+
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          return AlertDialog(
+            backgroundColor: colorScheme.surfaceContainer,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20)),
+            title: Row(
+              children: [
+                ProfileAvatar(profile: profile, radius: 20),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Verify ${profile.name}',
+                        style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.bold,
+                            color: colorScheme.onSurface),
+                      ),
+                      Text(
+                        'Draw pattern to continue',
+                        style: TextStyle(
+                            fontSize: 12,
+                            color:
+                                colorScheme.onSurface.withOpacity(0.6)),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  width: 220,
+                  height: 220,
+                  child: PatternLock(
+                    onPatternComplete: (pattern) {
+                      final patternStr = pattern.join(',');
+                      final verifyResult =
+                          manager.verifyLock(profile.id, patternStr);
+                      if (verifyResult == true) {
+                        Navigator.pop(ctx, true);
+                      } else if (verifyResult == false) {
+                        final remaining = kMaxLockAttempts -
+                            (manager.profiles
+                                    .firstWhereOrNull(
+                                        (p) => p.id == profile.id)
+                                    ?.failedAttempts ??
+                                0);
+                        setDialogState(() {});
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                                'Wrong pattern. $remaining attempt${remaining != 1 ? 's' : ''} remaining'),
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                      } else {
+                        Navigator.pop(ctx, false);
+                      }
+                    },
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Obx(() {
+                  final attempts = manager.profiles
+                          .firstWhereOrNull((p) => p.id == profile.id)
+                          ?.failedAttempts ?? 0;
+                  if (attempts > 0) {
+                    return Text(
+                      '$attempts / $kMaxLockAttempts attempts',
+                      style: TextStyle(
+                          color: colorScheme.onSurface.withOpacity(0.4),
+                          fontSize: 12),
+                    );
+                  }
+                  return const SizedBox.shrink();
+                }),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: Text('Cancel',
+                    style: TextStyle(
+                        color: colorScheme.onSurface.withOpacity(0.7))),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    return result;
+  }
+
   Future<void> _changeAvatar(AppProfile profile) async {
     final path = await pickAndSaveProfileImage();
     if (path != null) {
@@ -629,7 +853,7 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
   }
 
   Future<void> _switchToProfile(AppProfile profile) async {
-    if (profile.hasPin) {
+    if (profile.hasLock) {
       if (profile.isLocked) {
         final remaining =
             profile.lockedUntil!.difference(DateTime.now()).inMinutes + 1;
@@ -637,7 +861,7 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
             'Profile is locked. Try again in $remaining minute${remaining != 1 ? 's' : ''}');
         return;
       }
-      final verified = await _showPinVerification(profile);
+      final verified = await _showLockVerification(profile);
       if (verified != true) return;
     }
 
@@ -650,98 +874,18 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
     }
   }
 
-  void _showPinSetupDialog(AppProfile profile) {
-    final controller = TextEditingController();
+  void _showLockSetupDialog(AppProfile profile) {
     final colorScheme = Theme.of(context).colorScheme;
-    final isNew = !profile.hasPin;
 
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: colorScheme.surfaceContainer,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20)),
-        title: Text(
-          isNew ? 'Set PIN' : 'Change PIN',
-          style: TextStyle(
-              fontFamily: 'Poppins',
-              fontWeight: FontWeight.bold,
-              color: colorScheme.onSurface),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              isNew
-                  ? 'Set a 4-6 digit PIN for "${profile.name}"'
-                  : 'Enter new PIN for "${profile.name}"',
-              style: TextStyle(
-                  color: colorScheme.onSurface.withOpacity(0.7)),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: controller,
-              keyboardType: TextInputType.number,
-              obscureText: true,
-              maxLength: 6,
-              autofocus: true,
-              style: TextStyle(
-                  color: colorScheme.onSurface,
-                  fontFamily: 'Poppins',
-                  fontSize: 22,
-                  letterSpacing: 8),
-              textAlign: TextAlign.center,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: colorScheme.surface,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                counterText: '',
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancel',
-                style: TextStyle(
-                    color: colorScheme.onSurface.withOpacity(0.7))),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final pin = controller.text.trim();
-              if (pin.length < 4 || pin.length > 6) {
-                snackBar('PIN must be 4-6 digits');
-                return;
-              }
-              if (!RegExp(r'^\d+$').hasMatch(pin)) {
-                snackBar('PIN must contain only numbers');
-                return;
-              }
-              final manager = Get.find<ProfileManager>();
-              manager.setPin(profile.id, pin);
-              Navigator.pop(ctx);
-              snackBar('PIN ${isNew ? "set" : "updated"} successfully');
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: colorScheme.primary,
-              foregroundColor: colorScheme.onPrimary,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-            ),
-            child: Text(isNew ? 'Set PIN' : 'Update'),
-          ),
-        ],
-      ),
+      builder: (ctx) => _LockSetupSheet(profile: profile),
     );
   }
 
-  void _showChangePinAfterVerify(AppProfile profile) {
-    final controller = TextEditingController();
+  void _confirmRemoveLock(AppProfile profile) {
     final colorScheme = Theme.of(context).colorScheme;
+    final lockLabel = profile.lockLabel;
 
     showDialog(
       context: context,
@@ -750,93 +894,7 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20)),
         title: Text(
-          'Change PIN for "${profile.name}"',
-          style: TextStyle(
-              fontFamily: 'Poppins',
-              fontWeight: FontWeight.bold,
-              color: colorScheme.onSurface),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Enter new PIN (4-6 digits)',
-              style: TextStyle(
-                  color: colorScheme.onSurface.withOpacity(0.7)),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: controller,
-              keyboardType: TextInputType.number,
-              obscureText: true,
-              maxLength: 6,
-              autofocus: true,
-              style: TextStyle(
-                  color: colorScheme.onSurface,
-                  fontFamily: 'Poppins',
-                  fontSize: 22,
-                  letterSpacing: 8),
-              textAlign: TextAlign.center,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: colorScheme.surface,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                counterText: '',
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancel',
-                style: TextStyle(
-                    color: colorScheme.onSurface.withOpacity(0.7))),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final pin = controller.text.trim();
-              if (pin.length < 4 || pin.length > 6) {
-                snackBar('PIN must be 4-6 digits');
-                return;
-              }
-              if (!RegExp(r'^\d+$').hasMatch(pin)) {
-                snackBar('PIN must contain only numbers');
-                return;
-              }
-              final manager = Get.find<ProfileManager>();
-              manager.setPin(profile.id, pin);
-              Navigator.pop(ctx);
-              snackBar('PIN updated successfully');
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: colorScheme.primary,
-              foregroundColor: colorScheme.onPrimary,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-            ),
-            child: const Text('Update PIN',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _confirmRemovePin(AppProfile profile) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: colorScheme.surfaceContainer,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20)),
-        title: Text(
-          'Remove PIN from "${profile.name}"?',
+          'Remove $lockLabel from "${profile.name}"?',
           style: TextStyle(
               fontFamily: 'Poppins',
               fontWeight: FontWeight.bold,
@@ -858,8 +916,8 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
             onPressed: () {
               Navigator.pop(ctx);
               final manager = Get.find<ProfileManager>();
-              manager.removePin(profile.id);
-              snackBar('PIN removed from "${profile.name}"');
+              manager.removeLock(profile.id);
+              snackBar('$lockLabel removed from "${profile.name}"');
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
@@ -867,8 +925,8 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
             ),
-            child: const Text('Remove PIN',
-                style: TextStyle(fontWeight: FontWeight.bold)),
+            child: Text('Remove $lockLabel',
+                style: const TextStyle(fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -1047,7 +1105,7 @@ class _PinVerifyContentState extends State<_PinVerifyContent> {
                   ? const BorderSide(color: Colors.red, width: 2)
                   : BorderSide.none,
             ),
-            hintText: '• • • •',
+            hintText: '\u2022 \u2022 \u2022 \u2022',
             hintStyle: TextStyle(
               color: colorScheme.onSurface.withOpacity(0.2),
               letterSpacing: 4,
@@ -1069,11 +1127,11 @@ class _PinVerifyContentState extends State<_PinVerifyContent> {
           final manager = Get.find<ProfileManager>();
           final attempts = manager.profiles
                   .firstWhereOrNull((p) => p.id == widget.profile.id)
-                  ?.failedPinAttempts ??
+                  ?.failedAttempts ??
               0;
           if (attempts > 0) {
             return Text(
-              '$attempts / $kMaxPinAttempts attempts',
+              '$attempts / $kMaxLockAttempts attempts',
               style: TextStyle(
                   color: colorScheme.onSurface.withOpacity(0.4),
                   fontSize: 12),
@@ -1083,5 +1141,449 @@ class _PinVerifyContentState extends State<_PinVerifyContent> {
         }),
       ],
     );
+  }
+}
+
+class _PasswordVerifyContent extends StatefulWidget {
+  final TextEditingController controller;
+  final AppProfile profile;
+  const _PasswordVerifyContent(
+      {super.key, required this.controller, required this.profile});
+
+  @override
+  State<_PasswordVerifyContent> createState() =>
+      _PasswordVerifyContentState();
+}
+
+class _PasswordVerifyContentState extends State<_PasswordVerifyContent> {
+  bool _isError = false;
+  String _errorMessage = '';
+
+  void setError(String message) {
+    setState(() {
+      _isError = true;
+      _errorMessage = message;
+    });
+  }
+
+  void clearInput() {
+    widget.controller.clear();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        TextField(
+          controller: widget.controller,
+          obscureText: true,
+          autofocus: true,
+          style: TextStyle(
+              color: colorScheme.onSurface,
+              fontFamily: 'Poppins',
+              fontSize: 18),
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: colorScheme.surface,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: _isError
+                  ? const BorderSide(color: Colors.red, width: 2)
+                  : BorderSide.none,
+            ),
+            hintText: 'Enter password',
+            hintStyle: TextStyle(
+              color: colorScheme.onSurface.withOpacity(0.3),
+            ),
+          ),
+          onChanged: (_) => setState(() {
+            _isError = false;
+            _errorMessage = '';
+          }),
+          onSubmitted: (_) {
+            if (widget.controller.text.isNotEmpty) {
+              final parentCtx = context;
+              Navigator.of(parentCtx).pop(true);
+            }
+          },
+        ),
+        if (_isError) ...[
+          const SizedBox(height: 8),
+          Text(_errorMessage,
+              style: const TextStyle(color: Colors.red, fontSize: 13)),
+        ],
+        const SizedBox(height: 4),
+        Obx(() {
+          final manager = Get.find<ProfileManager>();
+          final attempts = manager.profiles
+                  .firstWhereOrNull((p) => p.id == widget.profile.id)
+                  ?.failedAttempts ??
+              0;
+          if (attempts > 0) {
+            return Text(
+              '$attempts / $kMaxLockAttempts attempts',
+              style: TextStyle(
+                  color: colorScheme.onSurface.withOpacity(0.4),
+                  fontSize: 12),
+            );
+          }
+          return const SizedBox.shrink();
+        }),
+      ],
+    );
+  }
+}
+
+class _LockSetupSheet extends StatefulWidget {
+  final AppProfile profile;
+  const _LockSetupSheet({required this.profile});
+
+  @override
+  State<_LockSetupSheet> createState() => _LockSetupSheetState();
+}
+
+class _LockSetupSheetState extends State<_LockSetupSheet> {
+  ProfileLockType _selectedType = ProfileLockType.none;
+  final TextEditingController _pinController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  List<int> _firstPattern = [];
+  List<int> _confirmedPattern = [];
+  bool _patternConfirmed = false;
+  String? _error;
+
+  @override
+  void dispose() {
+    _pinController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  void _resetInputs() {
+    _pinController.clear();
+    _passwordController.clear();
+    _firstPattern.clear();
+    _confirmedPattern.clear();
+    _patternConfirmed = false;
+    _error = null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final theme = context.colors;
+    final isNew = !widget.profile.hasLock;
+
+    return Dialog(
+      backgroundColor: colorScheme.surfaceContainer,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 360),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.lock_outline_rounded, color: colorScheme.primary),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      isNew ? 'Set Protection' : 'Change Protection',
+                      style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: colorScheme.onSurface),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Choose how to protect "${widget.profile.name}"',
+                style: TextStyle(
+                    fontSize: 13,
+                    color: colorScheme.onSurface.withOpacity(0.6)),
+              ),
+              const SizedBox(height: 16),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: ProfileLockType.values.map((type) {
+                  final isSelected = _selectedType == type;
+                  return ChoiceChip(
+                    avatar: Icon(
+                      _chipIcon(type),
+                      size: 16,
+                      color: isSelected
+                          ? colorScheme.onPrimary
+                          : colorScheme.onSurface.withOpacity(0.6),
+                    ),
+                    label: Text(
+                      type == ProfileLockType.none
+                          ? 'None'
+                          : type == ProfileLockType.pin
+                              ? 'PIN'
+                              : type == ProfileLockType.password
+                                  ? 'Password'
+                                  : 'Pattern',
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 13,
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.w400,
+                      ),
+                    ),
+                    selected: isSelected,
+                    selectedColor: colorScheme.primary,
+                    onSelected: (val) {
+                      setState(() {
+                        _selectedType = type;
+                        _resetInputs();
+                      });
+                    },
+                    labelStyle: TextStyle(
+                      color: isSelected
+                          ? colorScheme.onPrimary
+                          : colorScheme.onSurface,
+                    ),
+                    side: BorderSide(
+                      color: isSelected
+                          ? colorScheme.primary
+                          : colorScheme.outline.withOpacity(0.3),
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  );
+                }).toList(),
+              ),
+              if (_error != null) ...[
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    const Icon(Icons.error_outline_rounded,
+                        color: Colors.red, size: 14),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(_error!,
+                          style:
+                              const TextStyle(color: Colors.red, fontSize: 12)),
+                    ),
+                  ],
+                ),
+              ],
+              if (_selectedType == ProfileLockType.pin) ...[
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _pinController,
+                  keyboardType: TextInputType.number,
+                  obscureText: true,
+                  maxLength: 6,
+                  autofocus: true,
+                  style: const TextStyle(
+                      fontFamily: 'Poppins', fontSize: 22, letterSpacing: 8),
+                  textAlign: TextAlign.center,
+                  decoration: InputDecoration(
+                    labelText: isNew ? 'Create PIN' : 'New PIN',
+                    labelStyle: TextStyle(
+                      color: colorScheme.onSurface.withOpacity(0.6),
+                    ),
+                    filled: true,
+                    fillColor: colorScheme.surface,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                    counterText: '',
+                  ),
+                ),
+              ],
+              if (_selectedType == ProfileLockType.password) ...[
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _passwordController,
+                  obscureText: true,
+                  maxLength: 32,
+                  autofocus: true,
+                  style: const TextStyle(
+                      fontFamily: 'Poppins', fontSize: 16),
+                  decoration: InputDecoration(
+                    labelText: isNew ? 'Create Password' : 'New Password',
+                    labelStyle: TextStyle(
+                      color: colorScheme.onSurface.withOpacity(0.6),
+                    ),
+                    filled: true,
+                    fillColor: colorScheme.surface,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                    counterText: '',
+                  ),
+                ),
+              ],
+              if (_selectedType == ProfileLockType.pattern) ...[
+                const SizedBox(height: 16),
+                Center(
+                  child: Text(
+                    _firstPattern.isEmpty
+                        ? 'Draw a pattern (min 4 dots)'
+                        : _patternConfirmed
+                            ? 'Pattern confirmed'
+                            : 'Draw pattern again to confirm',
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: _patternConfirmed
+                            ? Colors.green.shade400
+                            : colorScheme.onSurface.withOpacity(0.6)),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Center(
+                  child: SizedBox(
+                    width: 220,
+                    height: 220,
+                    child: PatternLock(
+                      onPatternComplete: (pattern) {
+                        if (pattern.length < 4) {
+                          setState(() {
+                            _error = 'Connect at least 4 dots';
+                          });
+                          return;
+                        }
+                        if (_firstPattern.isEmpty) {
+                          setState(() {
+                            _firstPattern = pattern;
+                            _error = null;
+                          });
+                        } else {
+                          bool same = pattern.length == _firstPattern.length;
+                          if (same) {
+                            for (int i = 0; i < pattern.length; i++) {
+                              if (pattern[i] != _firstPattern[i]) {
+                                same = false;
+                                break;
+                              }
+                            }
+                          }
+                          if (same) {
+                            setState(() {
+                              _confirmedPattern = pattern;
+                              _patternConfirmed = true;
+                              _error = null;
+                            });
+                          } else {
+                            setState(() {
+                              _firstPattern.clear();
+                              _error = 'Patterns do not match. Try again.';
+                            });
+                          }
+                        }
+                      },
+                    ),
+                  ),
+                ),
+              ],
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text('Cancel',
+                        style: TextStyle(
+                            color: colorScheme.onSurface.withOpacity(0.7))),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: () {
+                      final manager = Get.find<ProfileManager>();
+                      setState(() => _error = null);
+
+                      switch (_selectedType) {
+                        case ProfileLockType.none:
+                          manager.removeLock(widget.profile.id);
+                          Navigator.pop(context);
+                          snackBar('Protection removed');
+                          break;
+                        case ProfileLockType.pin:
+                          final pin = _pinController.text.trim();
+                          if (pin.length < 4 || pin.length > 6) {
+                            setState(() => _error = 'PIN must be 4-6 digits');
+                            return;
+                          }
+                          if (!RegExp(r'^\d+$').hasMatch(pin)) {
+                            setState(
+                                () => _error = 'PIN must be numbers only');
+                            return;
+                          }
+                          manager.setPin(widget.profile.id, pin);
+                          Navigator.pop(context);
+                          snackBar('PIN ${isNew ? "set" : "updated"} successfully');
+                          break;
+                        case ProfileLockType.password:
+                          final password = _passwordController.text;
+                          if (password.length < 4 || password.length > 32) {
+                            setState(
+                                () => _error = 'Password must be 4-32 characters');
+                            return;
+                          }
+                          manager.setPassword(
+                              widget.profile.id, password);
+                          Navigator.pop(context);
+                          snackBar(
+                              'Password ${isNew ? "set" : "updated"} successfully');
+                          break;
+                        case ProfileLockType.pattern:
+                          if (!_patternConfirmed) {
+                            setState(() => _error = 'Draw and confirm a pattern first');
+                            return;
+                          }
+                          manager.setPattern(
+                              widget.profile.id, _confirmedPattern);
+                          Navigator.pop(context);
+                          snackBar(
+                              'Pattern ${isNew ? "set" : "updated"} successfully');
+                          break;
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: colorScheme.primary,
+                      foregroundColor: colorScheme.onPrimary,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                    ),
+                    child: Text(
+                      isNew ? 'Save' : 'Update',
+                      style: const TextStyle(
+                          fontFamily: 'Poppins', fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  IconData _chipIcon(ProfileLockType type) {
+    switch (type) {
+      case ProfileLockType.none:
+        return Icons.lock_open_rounded;
+      case ProfileLockType.pin:
+        return Icons.dialpad_rounded;
+      case ProfileLockType.password:
+        return Icons.password_rounded;
+      case ProfileLockType.pattern:
+        return Icons.grid_3x3_rounded;
+    }
   }
 }

@@ -1,6 +1,7 @@
 import 'package:anymex/controllers/profile/profile_manager.dart';
 import 'package:anymex/models/Service/app_profile.dart';
 import 'package:anymex/screens/profile/profile_creation_page.dart';
+import 'package:anymex/screens/profile/widgets/pattern_lock.dart';
 import 'package:anymex/screens/profile/widgets/profile_avatar.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -23,6 +24,19 @@ class _ProfileSelectionPageState extends State<ProfileSelectionPage> {
     super.initState();
     final manager = Get.find<ProfileManager>();
     autoStart = (manager.hasAutoStart).obs;
+  }
+
+  IconData _getLockIcon(ProfileLockType type) {
+    switch (type) {
+      case ProfileLockType.none:
+        return Icons.lock_open_rounded;
+      case ProfileLockType.pin:
+        return Icons.dialpad_rounded;
+      case ProfileLockType.password:
+        return Icons.password_rounded;
+      case ProfileLockType.pattern:
+        return Icons.grid_3x3_rounded;
+    }
   }
 
   @override
@@ -190,9 +204,9 @@ class _ProfileSelectionPageState extends State<ProfileSelectionPage> {
                             color: theme.onSurface,
                           ),
                         ),
-                        if (profile.hasPin) ...[
+                        if (profile.hasLock) ...[
                           const SizedBox(width: 8),
-                          Icon(Icons.lock_outline,
+                          Icon(_getLockIcon(profile.profileLockType),
                               size: 14,
                               color: theme.onSurface.withOpacity(0.5)),
                         ],
@@ -302,8 +316,8 @@ class _ProfileSelectionPageState extends State<ProfileSelectionPage> {
   }
 
   Future<void> _selectProfile(AppProfile profile) async {
-    if (profile.hasPin) {
-      final success = await _showPinDialog(profile);
+    if (profile.hasLock) {
+      final success = await _showLockDialog(profile);
       if (success != true) return;
     }
 
@@ -311,12 +325,29 @@ class _ProfileSelectionPageState extends State<ProfileSelectionPage> {
     await manager.switchToProfile(profile.id, autoStart: autoStart.value);
   }
 
-  Future<bool?> _showPinDialog(AppProfile profile) async {
-    return showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => _PinEntryDialog(profile: profile),
-    );
+  Future<bool?> _showLockDialog(AppProfile profile) async {
+    switch (profile.profileLockType) {
+      case ProfileLockType.pin:
+        return showDialog<bool>(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => _LockEntryDialog(profile: profile),
+        );
+      case ProfileLockType.password:
+        return showDialog<bool>(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => _PasswordEntryDialog(profile: profile),
+        );
+      case ProfileLockType.pattern:
+        return showDialog<bool>(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => _PatternEntryDialog(profile: profile),
+        );
+      case ProfileLockType.none:
+        return true;
+    }
   }
 
   String _formatDate(DateTime date) {
@@ -331,22 +362,22 @@ class _ProfileSelectionPageState extends State<ProfileSelectionPage> {
   }
 }
 
-class _PinEntryDialog extends StatefulWidget {
+class _LockEntryDialog extends StatefulWidget {
   final AppProfile profile;
-  const _PinEntryDialog({required this.profile});
+  const _LockEntryDialog({required this.profile});
 
   @override
-  State<_PinEntryDialog> createState() => _PinEntryDialogState();
+  State<_LockEntryDialog> createState() => _LockEntryDialogState();
 }
 
-class _PinEntryDialogState extends State<_PinEntryDialog> {
-  final TextEditingController _pinController = TextEditingController();
+class _LockEntryDialogState extends State<_LockEntryDialog> {
+  final TextEditingController _controller = TextEditingController();
   bool _isError = false;
   String _errorMessage = '';
 
   @override
   void dispose() {
-    _pinController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -398,26 +429,38 @@ class _PinEntryDialogState extends State<_PinEntryDialog> {
       backgroundColor: colorScheme.surfaceContainer,
       shape:
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      title: Text(
-        'Enter PIN',
-        style: TextStyle(
-          fontFamily: 'Poppins',
-          fontWeight: FontWeight.bold,
-          color: colorScheme.onSurface,
-        ),
+      title: Row(
+        children: [
+          ProfileAvatar(profile: profile, radius: 20),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Enter ${profile.lockLabel}',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+                Text(
+                  'Enter ${profile.lockLabel.toLowerCase()} for "${profile.name}"',
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: colorScheme.onSurface.withOpacity(0.6)),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            'Enter PIN for "${profile.name}"',
-            style: TextStyle(
-              color: colorScheme.onSurface.withOpacity(0.7),
-            ),
-          ),
-          const SizedBox(height: 16),
           TextField(
-            controller: _pinController,
+            controller: _controller,
             keyboardType: TextInputType.number,
             obscureText: true,
             maxLength: 6,
@@ -435,10 +478,10 @@ class _PinEntryDialogState extends State<_PinEntryDialog> {
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: _isError
-                    ? BorderSide(color: Colors.red, width: 2)
+                    ? const BorderSide(color: Colors.red, width: 2)
                     : BorderSide.none,
               ),
-              hintText: '• • • •',
+              hintText: '\u2022 \u2022 \u2022 \u2022',
               hintStyle: TextStyle(
                 color: colorScheme.onSurface.withOpacity(0.2),
                 letterSpacing: 4,
@@ -466,11 +509,11 @@ class _PinEntryDialogState extends State<_PinEntryDialog> {
             final manager = Get.find<ProfileManager>();
             final attempts = manager.profiles
                     .firstWhereOrNull((p) => p.id == profile.id)
-                    ?.failedPinAttempts ??
+                    ?.failedAttempts ??
                 0;
             if (attempts > 0) {
               return Text(
-                '$attempts / $kMaxPinAttempts attempts',
+                '$attempts / $kMaxLockAttempts attempts',
                 style: TextStyle(
                   color: colorScheme.onSurface.withOpacity(0.4),
                   fontSize: 12,
@@ -489,7 +532,7 @@ class _PinEntryDialogState extends State<_PinEntryDialog> {
                   color: colorScheme.onSurface.withOpacity(0.7))),
         ),
         ElevatedButton(
-          onPressed: () => _verifyPin(),
+          onPressed: () => _verify(),
           style: ElevatedButton.styleFrom(
             backgroundColor: colorScheme.primary,
             foregroundColor: colorScheme.onPrimary,
@@ -503,35 +546,398 @@ class _PinEntryDialogState extends State<_PinEntryDialog> {
     );
   }
 
-  void _verifyPin() {
-    final pin = _pinController.text.trim();
-    if (pin.length < 4) {
+  void _verify() {
+    final input = _controller.text.trim();
+    if (input.length < 4) {
       setState(() {
         _isError = true;
-        _errorMessage = 'PIN must be at least 4 digits';
+        _errorMessage = '${widget.profile.lockLabel} must be at least 4 characters';
       });
       return;
     }
 
     final manager = Get.find<ProfileManager>();
-    final result = manager.verifyPin(widget.profile.id, pin);
+    final result = manager.verifyLock(widget.profile.id, input);
 
     if (result == true) {
       Navigator.pop(context, true);
     } else if (result == false) {
       setState(() {
         _isError = true;
-        final remaining = kMaxPinAttempts -
+        final remaining = kMaxLockAttempts -
             (manager.profiles
                     .firstWhereOrNull((p) => p.id == widget.profile.id)
-                    ?.failedPinAttempts ??
+                    ?.failedAttempts ??
                 0);
         _errorMessage =
-            'Wrong PIN. $remaining attempt${remaining != 1 ? 's' : ''} remaining';
+            'Wrong ${widget.profile.lockLabel.toLowerCase()}. $remaining attempt${remaining != 1 ? 's' : ''} remaining';
       });
-      _pinController.clear();
+      _controller.clear();
     } else {
       Navigator.pop(context, false);
     }
+  }
+}
+
+class _PasswordEntryDialog extends StatefulWidget {
+  final AppProfile profile;
+  const _PasswordEntryDialog({required this.profile});
+
+  @override
+  State<_PasswordEntryDialog> createState() => _PasswordEntryDialogState();
+}
+
+class _PasswordEntryDialogState extends State<_PasswordEntryDialog> {
+  final TextEditingController _controller = TextEditingController();
+  bool _isError = false;
+  String _errorMessage = '';
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final profile = widget.profile;
+
+    if (profile.isLocked) {
+      final remaining =
+          profile.lockedUntil!.difference(DateTime.now()).inMinutes + 1;
+      return AlertDialog(
+        backgroundColor: colorScheme.surfaceContainer,
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text('Profile Locked',
+            style: TextStyle(
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onSurface)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Too many failed attempts.',
+              style: TextStyle(color: colorScheme.onSurface.withOpacity(0.7)),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Try again in $remaining minute${remaining != 1 ? 's' : ''}',
+              style: TextStyle(
+                  color: Colors.red,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Poppins'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('OK',
+                style: TextStyle(color: colorScheme.primary)),
+          ),
+        ],
+      );
+    }
+
+    return AlertDialog(
+      backgroundColor: colorScheme.surfaceContainer,
+      shape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      title: Row(
+        children: [
+          ProfileAvatar(profile: profile, radius: 20),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Enter Password',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+                Text(
+                  'Enter password for "${profile.name}"',
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: colorScheme.onSurface.withOpacity(0.6)),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: _controller,
+            obscureText: true,
+            autofocus: true,
+            style: const TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 18,
+            ),
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: colorScheme.surface,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: _isError
+                    ? const BorderSide(color: Colors.red, width: 2)
+                    : BorderSide.none,
+              ),
+              hintText: 'Enter password',
+              hintStyle: TextStyle(
+                color: colorScheme.onSurface.withOpacity(0.3),
+              ),
+            ),
+            onChanged: (_) {
+              if (_isError) {
+                setState(() {
+                  _isError = false;
+                  _errorMessage = '';
+                });
+              }
+            },
+            onSubmitted: (_) {
+              if (_controller.text.isNotEmpty) _verify();
+            },
+          ),
+          if (_isError) ...[
+            const SizedBox(height: 8),
+            Text(
+              _errorMessage,
+              style: const TextStyle(color: Colors.red, fontSize: 13),
+            ),
+          ],
+          const SizedBox(height: 4),
+          Obx(() {
+            final manager = Get.find<ProfileManager>();
+            final attempts = manager.profiles
+                    .firstWhereOrNull((p) => p.id == profile.id)
+                    ?.failedAttempts ??
+                0;
+            if (attempts > 0) {
+              return Text(
+                '$attempts / $kMaxLockAttempts attempts',
+                style: TextStyle(
+                  color: colorScheme.onSurface.withOpacity(0.4),
+                  fontSize: 12,
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          }),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: Text('Cancel',
+              style: TextStyle(
+                  color: colorScheme.onSurface.withOpacity(0.7))),
+        ),
+        ElevatedButton(
+          onPressed: _verify,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: colorScheme.primary,
+            foregroundColor: colorScheme.onPrimary,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          child: const Text('Unlock'),
+        ),
+      ],
+    );
+  }
+
+  void _verify() {
+    final input = _controller.text;
+    if (input.isEmpty) {
+      setState(() {
+        _isError = true;
+        _errorMessage = 'Enter a password';
+      });
+      return;
+    }
+
+    final manager = Get.find<ProfileManager>();
+    final result = manager.verifyLock(widget.profile.id, input);
+
+    if (result == true) {
+      Navigator.pop(context, true);
+    } else if (result == false) {
+      setState(() {
+        _isError = true;
+        final remaining = kMaxLockAttempts -
+            (manager.profiles
+                    .firstWhereOrNull((p) => p.id == widget.profile.id)
+                    ?.failedAttempts ??
+                0);
+        _errorMessage =
+            'Wrong password. $remaining attempt${remaining != 1 ? 's' : ''} remaining';
+      });
+      _controller.clear();
+    } else {
+      Navigator.pop(context, false);
+    }
+  }
+}
+
+class _PatternEntryDialog extends StatefulWidget {
+  final AppProfile profile;
+  const _PatternEntryDialog({required this.profile});
+
+  @override
+  State<_PatternEntryDialog> createState() => _PatternEntryDialogState();
+}
+
+class _PatternEntryDialogState extends State<_PatternEntryDialog> {
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final profile = widget.profile;
+
+    if (profile.isLocked) {
+      final remaining =
+          profile.lockedUntil!.difference(DateTime.now()).inMinutes + 1;
+      return AlertDialog(
+        backgroundColor: colorScheme.surfaceContainer,
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text('Profile Locked',
+            style: TextStyle(
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onSurface)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Too many failed attempts.',
+              style: TextStyle(color: colorScheme.onSurface.withOpacity(0.7)),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Try again in $remaining minute${remaining != 1 ? 's' : ''}',
+              style: TextStyle(
+                  color: Colors.red,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Poppins'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('OK',
+                style: TextStyle(color: colorScheme.primary)),
+          ),
+        ],
+      );
+    }
+
+    return AlertDialog(
+      backgroundColor: colorScheme.surfaceContainer,
+      shape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      title: Row(
+        children: [
+          ProfileAvatar(profile: profile, radius: 20),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Draw Pattern',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+                Text(
+                  'Draw pattern for "${profile.name}"',
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: colorScheme.onSurface.withOpacity(0.6)),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: 220,
+            height: 220,
+            child: PatternLock(
+              onPatternComplete: (pattern) {
+                final manager = Get.find<ProfileManager>();
+                final patternStr = pattern.join(',');
+                final result =
+                    manager.verifyLock(widget.profile.id, patternStr);
+                if (result == true) {
+                  Navigator.pop(context, true);
+                } else if (result == false) {
+                  final remaining = kMaxLockAttempts -
+                      (manager.profiles
+                              .firstWhereOrNull(
+                                  (p) => p.id == widget.profile.id)
+                              ?.failedAttempts ??
+                          0);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                          'Wrong pattern. $remaining attempt${remaining != 1 ? 's' : ''} remaining'),
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
+                } else {
+                  Navigator.pop(context, false);
+                }
+              },
+            ),
+          ),
+          const SizedBox(height: 8),
+          Obx(() {
+            final manager = Get.find<ProfileManager>();
+            final attempts = manager.profiles
+                    .firstWhereOrNull((p) => p.id == profile.id)
+                    ?.failedAttempts ??
+                0;
+            if (attempts > 0) {
+              return Text(
+                '$attempts / $kMaxLockAttempts attempts',
+                style: TextStyle(
+                  color: colorScheme.onSurface.withOpacity(0.4),
+                  fontSize: 12,
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          }),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: Text('Cancel',
+              style: TextStyle(
+                  color: colorScheme.onSurface.withOpacity(0.7))),
+        ),
+      ],
+    );
   }
 }
