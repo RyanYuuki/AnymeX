@@ -153,7 +153,7 @@ class ProfileManager extends GetxController {
     isProfileReady.value = true;
     showProfileSelection.value = false;
 
-    _reauthServices();
+    await _reauthServices();
 
     if (Get.isRegistered<OfflineStorageController>()) {
       Get.find<OfflineStorageController>().migrateOrphanedData();
@@ -162,14 +162,12 @@ class ProfileManager extends GetxController {
     return profile;
   }
 
-  void _reauthServices() {
+  Future<void> _reauthServices() async {
     try {
       final handler = Get.find<ServiceHandler>();
-      handler.autoLogin().then((_) {
-        handler.fetchHomePage();
-      }).then((_) {
-        updateServiceBadges();
-      });
+      await handler.autoLogin();
+      await handler.fetchHomePage();
+      updateServiceBadges();
     } catch (e) {
       Logger.i('Error re-authenticating on profile switch: $e');
     }
@@ -241,6 +239,11 @@ class ProfileManager extends GetxController {
     if (profile == null) return false;
 
     if (profile.isLocked) return null;
+
+    if (profile.failedAttempts >= kMaxLockAttempts) {
+      profile = profile.copyWith(failedAttempts: 0, lockedUntil: null);
+      _updateProfile(profile);
+    }
 
     final bytes = utf8.encode(input);
     final hash = sha256.convert(bytes).toString();

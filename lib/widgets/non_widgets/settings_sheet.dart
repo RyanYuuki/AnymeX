@@ -334,6 +334,7 @@ class SettingsSheet extends StatelessWidget {
   }
 
   Widget _buildProfileHeader(BuildContext context, ColorScheme theme) {
+    return Obx(() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
@@ -441,9 +442,11 @@ class SettingsSheet extends StatelessWidget {
         ],
       ),
     );
+    });
   }
 
   Widget _buildMenuSection(BuildContext context, ColorScheme theme) {
+    return Obx(() {
     final items = <_SheetMenuItem>[
       if (serviceHandler.isLoggedIn.value &&
           serviceHandler.serviceType.value == ServicesType.anilist)
@@ -523,6 +526,7 @@ class SettingsSheet extends StatelessWidget {
         }).toList(),
       ),
     );
+    });
   }
 
   Widget _buildMenuItem(
