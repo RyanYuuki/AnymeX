@@ -1,6 +1,7 @@
 import 'package:anymex/controllers/profile/profile_manager.dart';
 import 'package:anymex/models/Service/app_profile.dart';
 import 'package:anymex/screens/profile/profile_creation_page.dart';
+import 'package:anymex/screens/profile/widgets/forgot_lock_dialog.dart';
 import 'package:anymex/screens/profile/widgets/pattern_lock.dart';
 import 'package:anymex/screens/profile/widgets/profile_avatar.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -525,6 +526,26 @@ class _LockEntryDialogState extends State<_LockEntryDialog> {
         ],
       ),
       actions: [
+        if (profile.hasSecurityQuestions)
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton(
+              onPressed: () async {
+                final bypassed = await showDialog<bool>(
+                  context: context,
+                  builder: (c) => ForgotLockDialog(profile: profile),
+                );
+                if (bypassed == true) {
+                  Navigator.pop(context, true);
+                }
+              },
+              child: Text('Forgot PIN?',
+                  style: TextStyle(
+                      color: colorScheme.primary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600)),
+            ),
+          ),
         TextButton(
           onPressed: () => Navigator.pop(context, false),
           child: Text('Cancel',
@@ -738,6 +759,26 @@ class _PasswordEntryDialogState extends State<_PasswordEntryDialog> {
         ],
       ),
       actions: [
+        if (profile.hasSecurityQuestions)
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton(
+              onPressed: () async {
+                final bypassed = await showDialog<bool>(
+                  context: context,
+                  builder: (c) => ForgotLockDialog(profile: profile),
+                );
+                if (bypassed == true) {
+                  Navigator.pop(context, true);
+                }
+              },
+              child: Text('Forgot Password?',
+                  style: TextStyle(
+                      color: colorScheme.primary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600)),
+            ),
+          ),
         TextButton(
           onPressed: () => Navigator.pop(context, false),
           child: Text('Cancel',
@@ -931,6 +972,26 @@ class _PatternEntryDialogState extends State<_PatternEntryDialog> {
         ],
       ),
       actions: [
+        if (profile.hasSecurityQuestions)
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton(
+              onPressed: () async {
+                final bypassed = await showDialog<bool>(
+                  context: context,
+                  builder: (c) => ForgotLockDialog(profile: profile),
+                );
+                if (bypassed == true) {
+                  Navigator.pop(context, true);
+                }
+              },
+              child: Text('Forgot Pattern?',
+                  style: TextStyle(
+                      color: colorScheme.primary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600)),
+            ),
+          ),
         TextButton(
           onPressed: () => Navigator.pop(context, false),
           child: Text('Cancel',
