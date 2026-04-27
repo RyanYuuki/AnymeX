@@ -157,7 +157,7 @@ class Settings extends GetxController {
     _updateBridgeDispatcher();
   }
 
-  void saveDownloadPath(String value) {
+  bool saveDownloadPath(String value) {
     if (value.isNotEmpty) {
       try {
         final manager = Get.find<ProfileManager>();
@@ -169,8 +169,7 @@ class Settings extends GetxController {
           final otherPath = DownloadKeys.downloadPath.get<String>('');
           if (otherPath.isNotEmpty && otherPath == value) {
             KvHelper.profilePrefix = savedPrefix;
-            snackBar('Folder already used by "${profile.name}"');
-            return;
+            return false;
           }
         }
         KvHelper.profilePrefix = savedPrefix;
@@ -178,6 +177,7 @@ class Settings extends GetxController {
     }
     downloadPath.value = value;
     DownloadKeys.downloadPath.set(value);
+    return true;
   }
 
   void saveConcurrentDownloads(int value) {

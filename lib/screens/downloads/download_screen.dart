@@ -223,8 +223,12 @@ class _DownloadScreenState extends State<DownloadScreen> {
   Future<void> _pickDownloadDirectory() async {
     final result = await FilePicker.platform.getDirectoryPath();
     if (result != null && mounted) {
-      _settings.saveDownloadPath(result);
-      setState(() => _hasDownloadDir = true);
+      final accepted = _settings.saveDownloadPath(result);
+      if (accepted) {
+        setState(() => _hasDownloadDir = true);
+      } else {
+        snackBar('This folder is already used by another profile. Please choose a different folder.');
+      }
     }
   }
 
