@@ -179,6 +179,34 @@ class Settings extends GetxController {
     DownloadKeys.enableJxlCompression.set(value);
   }
 
+  void reloadForProfile() {
+    playerSettings = Rx<PlayerSettings>(PlayerSettings.fromDB());
+    uiSettings = Rx<UISettings>(UISettings.fromDB());
+    uiSettings.value.normalizeMaps();
+
+    selectedShader = PlayerUiKeys.selectedShaderLegacy.get<String>("");
+    selectedProfile = PlayerUiKeys.selectedProfile.get<String>("MID-END");
+    playerControlThemeRx.value =
+        PlayerUiKeys.playerControlTheme.get<String>('default');
+    mediaIndicatorThemeRx.value =
+        PlayerUiKeys.mediaIndicatorTheme.get<String>('default');
+    readerControlThemeRx.value =
+        ReaderKeys.readerControlTheme.get<String>('default');
+
+    enableBetaUpdates.value = General.enableBetaUpdates.get<bool>(false);
+    writeLogToFile.value = General.writeLogToFile.get<bool>(false);
+    customLogDirectory.value = General.customLogDirectory.get<String>("");
+
+    downloadPath.value = DownloadKeys.downloadPath.get<String>("");
+    concurrentDownloads.value = DownloadKeys.concurrentDownloads.get<int>(3);
+    downloadChunks.value = DownloadKeys.downloadChunks.get<int>(1);
+    hlsParallelSegments.value = DownloadKeys.hlsParallelSegments.get<int>(3);
+    enableJxlCompression.value = DownloadKeys.enableJxlCompression.get<bool>(false);
+
+    Logger.setFileLoggingEnabled(writeLogToFile.value,
+        customPath: customLogDirectory.value);
+  }
+
   void showWelcomeDialog(BuildContext context) {
     if (General.isFirstTime.get<bool>(true)) {
       showWelcomeDialogg(context);

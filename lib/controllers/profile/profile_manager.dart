@@ -5,6 +5,7 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/mal/mal_service.dart';
 import 'package:anymex/controllers/services/simkl/simkl_service.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/key_value.dart';
 import 'package:anymex/database/kv_helper.dart';
@@ -140,6 +141,10 @@ class ProfileManager extends GetxController {
     currentProfileId.value = profile.id;
     KvHelper.profilePrefix = '${profile.id}_';
     _saveCurrentProfileId();
+
+    if (Get.isRegistered<Settings>()) {
+      Get.find<Settings>().reloadForProfile();
+    }
 
     if (autoStart) {
       _writeGlobal(_kAutoStartProfileIdKey, profile.id);
