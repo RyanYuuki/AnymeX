@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:anymex/controllers/profile/profile_manager.dart';
 import 'package:anymex/controllers/discord/discord_login.dart';
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -443,6 +444,7 @@ class TrackingServiceCard extends StatelessWidget {
               title: const Text("Log Out"),
               onTap: () {
                 service.logout();
+                Get.find<ProfileManager>().updateServiceBadges();
                 Navigator.pop(context);
               },
               shape: RoundedRectangleBorder(

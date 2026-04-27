@@ -97,7 +97,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
         RestorePreviewSheet(
           info: info,
           isEncrypted: isEncrypted,
-        onConfirm: (restoreSettings, restoreAuthTokens) async {
+        onConfirm: (restoreSettings, restoreAuthTokens, createNewProfile) async {
             Get.back();
             try {
               await controller.restoreBackup(
@@ -106,6 +106,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                 merge: false,
                 restoreSettings: restoreSettings,
                 restoreAuthTokens: restoreAuthTokens,
+                createNewProfile: createNewProfile,
               );
               if (mounted) {
                 snackBar("Backup restored successfully!");

@@ -12,6 +12,9 @@ class OfflineMedia {
   Id id = Isar.autoIncrement;
 
   @Index()
+  String? profileId;
+
+  @Index()
   String? mediaId;
 
   String? jname;
@@ -49,6 +52,7 @@ class OfflineMedia {
   int? mediaTypeIndex;
 
   OfflineMedia({
+    this.profileId,
     this.mediaId,
     this.jname,
     this.name,
@@ -82,6 +86,7 @@ class OfflineMedia {
 
   Map<String, dynamic> toJson() {
     return {
+      'profileId': profileId,
       'id': mediaId,
       'jname': jname,
       'name': name,
@@ -116,6 +121,7 @@ class OfflineMedia {
 
   factory OfflineMedia.fromJson(Map<String, dynamic> json) {
     return OfflineMedia(
+      profileId: json['profileId'] as String?,
       mediaId: json['id'] as String?,
       jname: json['jname'] as String?,
       name: json['name'] as String?,

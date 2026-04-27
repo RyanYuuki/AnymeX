@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:anymex/controllers/cacher/cache_controller.dart';
+import 'package:anymex/controllers/profile/profile_manager.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/community_service.dart';
@@ -739,6 +740,11 @@ class SimklService extends GetxController
               mangaStats: MangaStats(
                   mangaCount:
                       stats['tv']?['completed']?['count']?.toString())));
+      try {
+        if (Get.isRegistered<ProfileManager>()) {
+          Get.find<ProfileManager>().updateServiceBadges();
+        }
+      } catch (_) {}
       fetchUserMovieList();
       fetchUserSeriesList();
     } else {
@@ -794,10 +800,17 @@ class SimklService extends GetxController
     AuthKeys.simklAuthToken.delete();
     isLoggedIn.value = false;
     profileData.value = Profile();
+    try {
+      if (Get.isRegistered<ProfileManager>()) {
+        Get.find<ProfileManager>().updateServiceBadges();
+      }
+    } catch (_) {}
   }
 
   @override
   Future<void> autoLogin() async {
+    isLoggedIn.value = false;
+    profileData.value = Profile();
     final token = AuthKeys.simklAuthToken.get<String?>();
     if (token != null) {
       await fetchUserInfo();
