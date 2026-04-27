@@ -33,6 +33,7 @@ class AppProfile {
   String lockType;
   int failedAttempts;
   DateTime? lockedUntil;
+  String? securityQuestionsJson;
 
   AppProfile({
     required this.id,
@@ -44,6 +45,7 @@ class AppProfile {
     this.lockType = 'none',
     this.failedAttempts = 0,
     this.lockedUntil,
+    this.securityQuestionsJson,
   })  : createdAt = createdAt ?? DateTime.now(),
         lastUsedAt = lastUsedAt ?? DateTime.now();
 
@@ -58,6 +60,24 @@ class AppProfile {
   bool get isLocked {
     if (lockedUntil == null) return false;
     return DateTime.now().isBefore(lockedUntil!);
+  }
+
+  List<Map<String, dynamic>> get securityQAs {
+    if (securityQuestionsJson == null || securityQuestionsJson!.isEmpty) {
+      return [];
+    }
+    try {
+      final list = jsonDecode(securityQuestionsJson!) as List<dynamic>;
+      return list.cast<Map<String, dynamic>>();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  bool get hasSecurityQuestions => securityQAs.isNotEmpty;
+
+  List<String> get securityQuestionTexts {
+    return securityQAs.map((e) => e['q'] as String).toList();
   }
 
   bool get hasLock => lockHash != null && lockHash!.isNotEmpty;
@@ -106,6 +126,7 @@ class AppProfile {
         'anilistLinked': anilistLinked,
         'malLinked': malLinked,
         'simklLinked': simklLinked,
+        'securityQuestionsJson': securityQuestionsJson,
       };
 
   factory AppProfile.fromJson(Map<String, dynamic> json) {
@@ -135,10 +156,23 @@ class AppProfile {
       lockedUntil: json['lockedUntil'] != null
           ? DateTime.parse(json['lockedUntil'] as String)
           : null,
+      securityQuestionsJson: json['securityQuestionsJson'] as String? ??
+          _migrateOldSecurityFields(json),
     )
       ..anilistLinked = json['anilistLinked'] as bool? ?? false
       ..malLinked = json['malLinked'] as bool? ?? false
       ..simklLinked = json['simklLinked'] as bool? ?? false;
+  }
+
+  static String? _migrateOldSecurityFields(Map<String, dynamic> json) {
+    final oldQ = json['securityQuestion'] as String?;
+    final oldA = json['securityAnswerHash'] as String?;
+    if (oldQ != null && oldA != null) {
+      return jsonEncode([
+        {'q': oldQ, 'a': oldA, 'c': false}
+      ]);
+    }
+    return null;
   }
 
   static List<AppProfile> fromJsonList(String jsonStr) {
@@ -168,6 +202,8 @@ class AppProfile {
     bool? simklLinked,
     DateTime? lastUsedAt,
     bool clearLock = false,
+    String? securityQuestionsJson,
+    bool clearSecurityQuestions = false,
   }) {
     return AppProfile(
       id: id,
@@ -183,6 +219,9 @@ class AppProfile {
       lockedUntil: clearLock
           ? null
           : (lockedUntil ?? this.lockedUntil),
+      securityQuestionsJson: clearSecurityQuestions
+          ? null
+          : (securityQuestionsJson ?? this.securityQuestionsJson),
     )
       ..anilistLinked = anilistLinked ?? this.anilistLinked
       ..malLinked = malLinked ?? this.malLinked

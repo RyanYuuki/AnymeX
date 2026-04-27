@@ -1,12 +1,15 @@
 import 'dart:convert';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/database/kv_helper.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:get/get.dart';
 
 final cacheController = Get.find<CacheController>();
+
+const _kCacheStorageKey = '__recently_opened_cache__';
 
 class CacheController extends GetxController {
   RxList<String> cachedAnilistData = <String>[].obs;
@@ -17,6 +20,67 @@ class CacheController extends GetxController {
   RxString detailsData = ''.obs;
 
   RxList<String> get currentPool => getCacheContainer();
+
+  @override
+  void onInit() {
+    super.onInit();
+    _loadFromStorage();
+  }
+
+  void saveToStorage() {
+    try {
+      final service = Get.find<ServiceHandler>().serviceType.value;
+      final String serviceKey = service.name;
+      final List<String> pool = getCacheContainer().toList();
+
+      KvHelper.set<List<String>>('${_kCacheStorageKey}_$serviceKey', pool);
+      Logger.i('Saved recently opened cache for ${service.name}: ${pool.length} items');
+    } catch (e) {
+      Logger.i('Error saving cache to storage: $e');
+    }
+  }
+
+  void loadFromStorage() {
+    _loadFromStorage();
+  }
+
+  void _loadFromStorage() {
+    try {
+      final service = Get.find<ServiceHandler>().serviceType.value;
+      final String serviceKey = service.name;
+      final List<String>? saved = KvHelper.get<List<String>>(
+        '${_kCacheStorageKey}_$serviceKey',
+        defaultVal: [],
+      );
+
+      if (saved != null && saved.isNotEmpty) {
+        final targetPool = getCacheContainer();
+        targetPool.assignAll(saved);
+        Logger.i('Loaded recently opened cache for ${service.name}: ${saved.length} items');
+      } else {
+        final targetPool = getCacheContainer();
+        targetPool.clear();
+      }
+    } catch (e) {
+      Logger.i('Error loading cache from storage: $e');
+    }
+  }
+
+  void clearAllCache() {
+    try {
+      final services = ['anilist', 'mal', 'simkl', 'extensions'];
+      for (final service in services) {
+        KvHelper.remove('${_kCacheStorageKey}_$service');
+      }
+      cachedAnilistData.clear();
+      cachedMalData.clear();
+      cachedSimklData.clear();
+      cachedExtensionData.clear();
+      Logger.i('Cleared all recently opened cache');
+    } catch (e) {
+      Logger.i('Error clearing cache: $e');
+    }
+  }
 
   void addCache(Map<String, dynamic> data) {
     if (!data.containsKey('id') ||
@@ -51,6 +115,20 @@ class CacheController extends GetxController {
             'Warning: currentPool index out of sync for ID $id, adding as new');
         currentPool.add(encodedData);
       }
+    }
+
+    _persistCurrentPool();
+  }
+
+  void _persistCurrentPool() {
+    try {
+      final service = Get.find<ServiceHandler>().serviceType.value;
+      final String serviceKey = service.name;
+      final pool = currentPool.length > 30
+          ? currentPool.sublist(currentPool.length - 30)
+          : currentPool.toList();
+      KvHelper.set<List<String>>('${_kCacheStorageKey}_$serviceKey', pool);
+    } catch (e) {
     }
   }
 

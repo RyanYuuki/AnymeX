@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
@@ -21,6 +22,26 @@ import 'package:isar_community/isar.dart';
 const int kMaxProfiles = 5;
 const int kMaxLockAttempts = 5;
 const int kLockoutMinutes = 5;
+const int kMaxSecurityQuestions = 3;
+const String kCustomQuestionLabel = '✏️ Write your own question';
+
+const List<String> kSecurityQuestions = [
+  'First anime/manga you ever watched/read?',
+  'Favorite anime/manga character?',
+  'Anime/manga that made you cry?',
+  'Anime/manga you\'ve rewatched/reread the most?',
+  'Favorite anime/manga opening song?',
+  'Favorite anime/manga villain?',
+  'First video game you played?',
+  'Your favorite game of all time?',
+  'Favorite J-pop/K-pop artist?',
+  'A fictional world you\'d want to live in?',
+  'Your anime/manga waifu/husbando?',
+  'Favorite anime/manga studio?',
+  'Anime/manga you\'d recommend to everyone?',
+  'Manga you want to see animated?',
+  'Your go-to comfort anime/manga?',
+];
 
 const String _kProfilesKey = '__app_profiles__';
 const String _kCurrentProfileIdKey = '__current_profile_id__';
@@ -137,6 +158,10 @@ class ProfileManager extends GetxController {
     profile.lastUsedAt = DateTime.now();
     _updateProfile(profile);
 
+    if (Get.isRegistered<CacheController>()) {
+      Get.find<CacheController>().saveToStorage();
+    }
+
     currentProfile.value = profile;
     currentProfileId.value = profile.id;
     KvHelper.profilePrefix = '${profile.id}_';
@@ -160,6 +185,10 @@ class ProfileManager extends GetxController {
 
     await _reauthServices();
 
+    if (Get.isRegistered<CacheController>()) {
+      Get.find<CacheController>().loadFromStorage();
+    }
+
     if (Get.isRegistered<OfflineStorageController>()) {
       Get.find<OfflineStorageController>().migrateOrphanedData();
     }
@@ -178,7 +207,7 @@ class ProfileManager extends GetxController {
     }
   }
 
-  bool setPin(String profileId, String pin) {
+  bool setPin(String profileId, String pin, {List<Map<String, String>>? securityQAs}) {
     if (pin.length < 4 || pin.length > 6) return false;
     if (!RegExp(r'^\d+$').hasMatch(pin)) return false;
 
@@ -188,15 +217,18 @@ class ProfileManager extends GetxController {
     final bytes = utf8.encode(pin);
     final hash = sha256.convert(bytes).toString();
 
+    final qaJson = _encodeSecurityQAs(securityQAs);
+
     _updateProfile(profile.copyWith(
         lockHash: hash,
         lockType: 'pin',
         failedAttempts: 0,
-        lockedUntil: null));
+        lockedUntil: null,
+        securityQuestionsJson: qaJson));
     return true;
   }
 
-  bool setPassword(String profileId, String password) {
+  bool setPassword(String profileId, String password, {List<Map<String, String>>? securityQAs}) {
     if (password.length < 4 || password.length > 32) return false;
 
     final profile = profiles.firstWhereOrNull((p) => p.id == profileId);
@@ -205,15 +237,18 @@ class ProfileManager extends GetxController {
     final bytes = utf8.encode(password);
     final hash = sha256.convert(bytes).toString();
 
+    final qaJson = _encodeSecurityQAs(securityQAs);
+
     _updateProfile(profile.copyWith(
         lockHash: hash,
         lockType: 'password',
         failedAttempts: 0,
-        lockedUntil: null));
+        lockedUntil: null,
+        securityQuestionsJson: qaJson));
     return true;
   }
 
-  bool setPattern(String profileId, List<int> pattern) {
+  bool setPattern(String profileId, List<int> pattern, {List<Map<String, String>>? securityQAs}) {
     if (pattern.length < 4) return false;
 
     final profile = profiles.firstWhereOrNull((p) => p.id == profileId);
@@ -223,11 +258,14 @@ class ProfileManager extends GetxController {
     final bytes = utf8.encode(patternStr);
     final hash = sha256.convert(bytes).toString();
 
+    final qaJson = _encodeSecurityQAs(securityQAs);
+
     _updateProfile(profile.copyWith(
         lockHash: hash,
         lockType: 'pattern',
         failedAttempts: 0,
-        lockedUntil: null));
+        lockedUntil: null,
+        securityQuestionsJson: qaJson));
     return true;
   }
 
@@ -235,12 +273,38 @@ class ProfileManager extends GetxController {
     final profile = profiles.firstWhereOrNull((p) => p.id == profileId);
     if (profile == null) return false;
 
-    _updateProfile(profile.copyWith(clearLock: true));
+    _updateProfile(profile.copyWith(clearLock: true, clearSecurityQuestions: true));
+    return true;
+  }
+
+  bool verifySecurityAnswer(String profileId, String answer) {
+    final profile = profiles.firstWhereOrNull((p) => p.id == profileId);
+    if (profile == null) return false;
+
+    final qas = profile.securityQAs;
+    if (qas.isEmpty) return false;
+
+    final ansBytes = utf8.encode(answer.trim().toLowerCase());
+    final hash = sha256.convert(ansBytes).toString();
+
+    return qas.any((qa) => qa['a'] == hash);
+  }
+
+  bool bypassLock(String profileId) {
+    final profile = profiles.firstWhereOrNull((p) => p.id == profileId);
+    if (profile == null) return false;
+
+    _updateProfile(profile.copyWith(
+      lockHash: null,
+      lockType: 'none',
+      failedAttempts: 0,
+      lockedUntil: null,
+    ));
     return true;
   }
 
   bool? verifyLock(String profileId, String input) {
-    final profile = profiles.firstWhereOrNull((p) => p.id == profileId);
+    var profile = profiles.firstWhereOrNull((p) => p.id == profileId);
     if (profile == null) return false;
 
     if (profile.isLocked) return null;
@@ -426,6 +490,21 @@ class ProfileManager extends GetxController {
       Logger.i('Error reading global KV $key: $e');
       return null;
     }
+  }
+
+  static String? _encodeSecurityQAs(List<Map<String, String>>? qas) {
+    if (qas == null || qas.isEmpty) return null;
+
+    final encoded = qas.map((qa) {
+      final question = qa['q'] ?? '';
+      final answer = qa['a'] ?? '';
+      final isCustom = qa['c'] == 'true';
+      final ansBytes = utf8.encode(answer.trim().toLowerCase());
+      final hash = sha256.convert(ansBytes).toString();
+      return {'q': question, 'a': hash, 'c': isCustom};
+    }).toList();
+
+    return jsonEncode(encoded);
   }
 
   static void _writeGlobal(String key, String value) {

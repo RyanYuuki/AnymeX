@@ -632,7 +632,6 @@ class _ProfileCreationPageState extends State<ProfileCreationPage>
               ),
             ),
 
-            // Bottom buttons
             SafeArea(
               top: false,
               child: Padding(

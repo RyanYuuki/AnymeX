@@ -9,6 +9,8 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+const String _kCustomQuestionLabel = '✏️ Write your own question';
+
 class ProfileManagementPage extends StatefulWidget {
   const ProfileManagementPage({super.key});
 
@@ -598,6 +600,28 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
           profile: profile,
         ),
         actions: [
+          if (profile.hasSecurityQuestions)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton(
+                onPressed: () async {
+                  final bypassed = await showDialog<bool>(
+                    context: context,
+                    builder: (c) => _ForgotLockDialog(profile: profile),
+                  );
+                  if (bypassed == true) {
+                    Navigator.pop(ctx, true);
+                  }
+                },
+                child: Text('Forgot PIN?',
+                    style: TextStyle(
+                        color: colorScheme.primary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600)),
+              ),
+            ),
+          if (profile.hasSecurityQuestions)
+            const Spacer(),
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
             child: Text('Cancel',
@@ -689,6 +713,28 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
           profile: profile,
         ),
         actions: [
+          if (profile.hasSecurityQuestions)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton(
+                onPressed: () async {
+                  final bypassed = await showDialog<bool>(
+                    context: context,
+                    builder: (c) => _ForgotLockDialog(profile: profile),
+                  );
+                  if (bypassed == true) {
+                    Navigator.pop(ctx, true);
+                  }
+                },
+                child: Text('Forgot Password?',
+                    style: TextStyle(
+                        color: colorScheme.primary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600)),
+              ),
+            ),
+          if (profile.hasSecurityQuestions)
+            const Spacer(),
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
             child: Text('Cancel',
@@ -827,6 +873,28 @@ class _ProfileManagementPageState extends State<ProfileManagementPage> {
               ],
             ),
             actions: [
+              if (profile.hasSecurityQuestions)
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton(
+                    onPressed: () async {
+                      final bypassed = await showDialog<bool>(
+                        context: context,
+                        builder: (c) => _ForgotLockDialog(profile: profile),
+                      );
+                      if (bypassed == true) {
+                        Navigator.pop(ctx, true);
+                      }
+                    },
+                    child: Text('Forgot Pattern?',
+                        style: TextStyle(
+                            color: colorScheme.primary,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600)),
+                  ),
+                ),
+              if (profile.hasSecurityQuestions)
+                const Spacer(),
               TextButton(
                 onPressed: () => Navigator.pop(ctx, false),
                 child: Text('Cancel',
@@ -1245,10 +1313,47 @@ class _LockSetupSheetState extends State<_LockSetupSheet> {
   bool _patternConfirmed = false;
   String? _error;
 
+  final List<Map<String, String>> _qaEntries = [
+    {'q': '', 'a': '', 'isCustom': 'false', 'customQ': ''},
+  ];
+  final Map<int, TextEditingController> _answerControllers = {};
+  final Map<int, TextEditingController> _customQuestionControllers = {};
+
+  @override
+  void initState() {
+    super.initState();
+    final existingQAs = widget.profile.securityQAs;
+    if (existingQAs.isNotEmpty) {
+      _qaEntries.clear();
+      for (final qa in existingQAs) {
+        final isCustom = qa['c'] == true;
+        _qaEntries.add({
+          'q': qa['q'] as String,
+          'a': '',
+          'isCustom': isCustom ? 'true' : 'false',
+          'customQ': isCustom ? qa['q'] as String : '',
+        });
+        if (isCustom) {
+          _customQuestionControllers[_qaEntries.length - 1] =
+              TextEditingController(text: qa['q'] as String);
+        }
+      }
+    }
+    if (_qaEntries.isEmpty) {
+      _qaEntries.add({'q': '', 'a': '', 'isCustom': 'false', 'customQ': ''});
+    }
+  }
+
   @override
   void dispose() {
     _pinController.dispose();
     _passwordController.dispose();
+    for (final c in _answerControllers.values) {
+      c.dispose();
+    }
+    for (final c in _customQuestionControllers.values) {
+      c.dispose();
+    }
     super.dispose();
   }
 
@@ -1261,6 +1366,47 @@ class _LockSetupSheetState extends State<_LockSetupSheet> {
     _error = null;
   }
 
+  List<String> get _allQuestions => [
+        ...kSecurityQuestions,
+        _kCustomQuestionLabel,
+      ];
+
+  bool get _canAddMoreQA => _qaEntries.length < kMaxSecurityQuestions;
+
+  void _addQAEntry() {
+    if (!_canAddMoreQA) return;
+    setState(() {
+      _qaEntries.add({'q': '', 'a': '', 'isCustom': 'false', 'customQ': ''});
+    });
+  }
+
+  void _removeQAEntry(int index) {
+    if (_qaEntries.length <= 1) return;
+    _answerControllers[index]?.dispose();
+    _customQuestionControllers[index]?.dispose();
+    _answerControllers.remove(index);
+    _customQuestionControllers.remove(index);
+    setState(() {
+      _qaEntries.removeAt(index);
+    });
+  }
+
+  void _updateQAQuestion(int index, String? question) {
+    if (question == null) return;
+    final isCustom = question == _kCustomQuestionLabel;
+    setState(() {
+      _qaEntries[index]['q'] = isCustom ? '' : question;
+      _qaEntries[index]['isCustom'] = isCustom ? 'true' : 'false';
+      if (isCustom) {
+        _customQuestionControllers.putIfAbsent(
+            index, () => TextEditingController());
+      } else {
+        final ctrl = _customQuestionControllers.remove(index);
+        ctrl?.dispose();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -1271,8 +1417,8 @@ class _LockSetupSheetState extends State<_LockSetupSheet> {
       backgroundColor: colorScheme.surfaceContainer,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 360),
-        child: Padding(
+        constraints: const BoxConstraints(maxWidth: 400),
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -1354,21 +1500,6 @@ class _LockSetupSheetState extends State<_LockSetupSheet> {
                   );
                 }).toList(),
               ),
-              if (_error != null) ...[
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    const Icon(Icons.error_outline_rounded,
-                        color: Colors.red, size: 14),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(_error!,
-                          style:
-                              const TextStyle(color: Colors.red, fontSize: 12)),
-                    ),
-                  ],
-                ),
-              ],
               if (_selectedType == ProfileLockType.pin) ...[
                 const SizedBox(height: 16),
                 TextField(
@@ -1481,6 +1612,226 @@ class _LockSetupSheetState extends State<_LockSetupSheet> {
                   ),
                 ),
               ],
+              if (_selectedType != ProfileLockType.none) ...[
+                const SizedBox(height: 20),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: colorScheme.primary.withOpacity(0.06),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: colorScheme.primary.withOpacity(0.15),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.help_outline_rounded,
+                              size: 16, color: colorScheme.primary),
+                          const SizedBox(width: 6),
+                          Text(
+                            'Recovery Questions',
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                              color: colorScheme.onSurface,
+                            ),
+                          ),
+                          const Spacer(),
+                          Text(
+                            '${_qaEntries.length}/$kMaxSecurityQuestions',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: colorScheme.onSurface.withOpacity(0.5),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Add 1-${kMaxSecurityQuestions} questions. Answer any one to recover.',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: colorScheme.onSurface.withOpacity(0.5),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      ..._qaEntries.asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final qa = entry.value;
+                        final isCustom = qa['isCustom'] == 'true';
+                        final selectedQ = qa['q'];
+                        final showCustomField = isCustom || selectedQ == '';
+
+                        return Padding(
+                          padding: EdgeInsets.only(
+                              bottom: index < _qaEntries.length - 1 ? 10 : 0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    'Q${index + 1}',
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins',
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 11,
+                                      color: colorScheme.primary,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  if (_qaEntries.length > 1)
+                                    GestureDetector(
+                                      onTap: () => _removeQAEntry(index),
+                                      child: Icon(Icons.close_rounded,
+                                          size: 16,
+                                          color: colorScheme.onSurface
+                                              .withOpacity(0.4)),
+                                    ),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              DropdownButtonFormField<String>(
+                                value: isCustom
+                                    ? _kCustomQuestionLabel
+                                    : (selectedQ != null && selectedQ.isNotEmpty
+                                        ? selectedQ
+                                        : null),
+                                hint: Text(
+                                  'Select a question',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color:
+                                        colorScheme.onSurface.withOpacity(0.5),
+                                  ),
+                                ),
+                                isExpanded: true,
+                                isDense: true,
+                                decoration: InputDecoration(
+                                  filled: true,
+                                  fillColor: colorScheme.surface,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 8),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                ),
+                                items: _allQuestions.map((q) {
+                                  return DropdownMenuItem(
+                                    value: q,
+                                    child: Text(q,
+                                        style: const TextStyle(fontSize: 12),
+                                        overflow: TextOverflow.ellipsis),
+                                  );
+                                }).toList(),
+                                onChanged: (val) =>
+                                    _updateQAQuestion(index, val),
+                              ),
+                              if (showCustomField) ...[
+                                const SizedBox(height: 4),
+                                TextField(
+                                  controller: _customQuestionControllers[
+                                          index] ??
+                                      TextEditingController(),
+                                  style: const TextStyle(
+                                      fontFamily: 'Poppins', fontSize: 12),
+                                  decoration: InputDecoration(
+                                    hintText: 'Type your custom question...',
+                                    hintStyle: TextStyle(
+                                      color: colorScheme.onSurface
+                                          .withOpacity(0.4),
+                                      fontSize: 12,
+                                    ),
+                                    filled: true,
+                                    fillColor: colorScheme.surface,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 8),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                  ),
+                                  onChanged: (val) {
+                                    setState(() {
+                                      _qaEntries[index]['customQ'] = val;
+                                      if (isCustom) {
+                                        _qaEntries[index]['q'] = val;
+                                      }
+                                    });
+                                  },
+                                ),
+                              ],
+                              const SizedBox(height: 4),
+                              TextField(
+                                controller: _answerControllers[index] ??
+                                    (_answerControllers[index] =
+                                        TextEditingController()),
+                                style: const TextStyle(
+                                    fontFamily: 'Poppins', fontSize: 12),
+                                decoration: InputDecoration(
+                                  hintText: 'Your answer',
+                                  hintStyle: TextStyle(
+                                    color: colorScheme.onSurface
+                                        .withOpacity(0.4),
+                                    fontSize: 12,
+                                  ),
+                                  filled: true,
+                                  fillColor: colorScheme.surface,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 8),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                ),
+                                onChanged: (val) {
+                                  setState(() {
+                                    _qaEntries[index]['a'] = val;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
+                      if (_canAddMoreQA) ...[
+                        const SizedBox(height: 8),
+                        Center(
+                          child: TextButton.icon(
+                            onPressed: _addQAEntry,
+                            icon: const Icon(Icons.add_rounded, size: 16),
+                            label: const Text('Add another question',
+                                style: TextStyle(fontSize: 12)),
+                            style: TextButton.styleFrom(
+                              foregroundColor: colorScheme.primary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
+              if (_error != null) ...[
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    const Icon(Icons.error_outline_rounded,
+                        color: Colors.red, size: 14),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(_error!,
+                          style:
+                              const TextStyle(color: Colors.red, fontSize: 12)),
+                    ),
+                  ],
+                ),
+              ],
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -1493,57 +1844,7 @@ class _LockSetupSheetState extends State<_LockSetupSheet> {
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton(
-                    onPressed: () {
-                      final manager = Get.find<ProfileManager>();
-                      setState(() => _error = null);
-
-                      switch (_selectedType) {
-                        case ProfileLockType.none:
-                          manager.removeLock(widget.profile.id);
-                          Navigator.pop(context);
-                          snackBar('Protection removed');
-                          break;
-                        case ProfileLockType.pin:
-                          final pin = _pinController.text.trim();
-                          if (pin.length < 4 || pin.length > 6) {
-                            setState(() => _error = 'PIN must be 4-6 digits');
-                            return;
-                          }
-                          if (!RegExp(r'^\d+$').hasMatch(pin)) {
-                            setState(
-                                () => _error = 'PIN must be numbers only');
-                            return;
-                          }
-                          manager.setPin(widget.profile.id, pin);
-                          Navigator.pop(context);
-                          snackBar('PIN ${isNew ? "set" : "updated"} successfully');
-                          break;
-                        case ProfileLockType.password:
-                          final password = _passwordController.text;
-                          if (password.length < 4 || password.length > 32) {
-                            setState(
-                                () => _error = 'Password must be 4-32 characters');
-                            return;
-                          }
-                          manager.setPassword(
-                              widget.profile.id, password);
-                          Navigator.pop(context);
-                          snackBar(
-                              'Password ${isNew ? "set" : "updated"} successfully');
-                          break;
-                        case ProfileLockType.pattern:
-                          if (!_patternConfirmed) {
-                            setState(() => _error = 'Draw and confirm a pattern first');
-                            return;
-                          }
-                          manager.setPattern(
-                              widget.profile.id, _confirmedPattern);
-                          Navigator.pop(context);
-                          snackBar(
-                              'Pattern ${isNew ? "set" : "updated"} successfully');
-                          break;
-                      }
-                    },
+                    onPressed: () => _handleSave(),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: colorScheme.primary,
                       foregroundColor: colorScheme.onPrimary,
@@ -1565,6 +1866,85 @@ class _LockSetupSheetState extends State<_LockSetupSheet> {
     );
   }
 
+  void _handleSave() {
+    final manager = Get.find<ProfileManager>();
+    setState(() => _error = null);
+
+    List<Map<String, String>>? securityQAs;
+    if (_selectedType != ProfileLockType.none) {
+      securityQAs = [];
+      for (final qa in _qaEntries) {
+        final question = qa['isCustom'] == 'true'
+            ? (qa['customQ'] ?? '').trim()
+            : (qa['q'] ?? '').trim();
+        final answer = (qa['a'] ?? '').trim();
+
+        if (question.isEmpty) {
+          setState(() => _error =
+              'Please select or type a question for each entry');
+          return;
+        }
+        if (answer.isEmpty) {
+          setState(() => _error = 'Please provide an answer for each question');
+          return;
+        }
+        securityQAs.add({
+          'q': question,
+          'a': answer,
+          'c': qa['isCustom'] ?? 'false',
+        });
+      }
+      if (securityQAs.isEmpty) {
+        setState(() => _error = 'Add at least one recovery question');
+        return;
+      }
+    }
+
+    switch (_selectedType) {
+      case ProfileLockType.none:
+        manager.removeLock(widget.profile.id);
+        Navigator.pop(context);
+        snackBar('Protection removed');
+        break;
+      case ProfileLockType.pin:
+        final pin = _pinController.text.trim();
+        if (pin.length < 4 || pin.length > 6) {
+          setState(() => _error = 'PIN must be 4-6 digits');
+          return;
+        }
+        if (!RegExp(r'^\d+$').hasMatch(pin)) {
+          setState(() => _error = 'PIN must be numbers only');
+          return;
+        }
+        manager.setPin(widget.profile.id, pin,
+            securityQAs: securityQAs);
+        Navigator.pop(context);
+        snackBar('PIN set successfully');
+        break;
+      case ProfileLockType.password:
+        final password = _passwordController.text;
+        if (password.length < 4 || password.length > 32) {
+          setState(() => _error = 'Password must be 4-32 characters');
+          return;
+        }
+        manager.setPassword(widget.profile.id, password,
+            securityQAs: securityQAs);
+        Navigator.pop(context);
+        snackBar('Password set successfully');
+        break;
+      case ProfileLockType.pattern:
+        if (!_patternConfirmed) {
+          setState(() => _error = 'Draw and confirm a pattern first');
+          return;
+        }
+        manager.setPattern(widget.profile.id, _confirmedPattern,
+            securityQAs: securityQAs);
+        Navigator.pop(context);
+        snackBar('Pattern set successfully');
+        break;
+    }
+  }
+
   IconData _chipIcon(ProfileLockType type) {
     switch (type) {
       case ProfileLockType.none:
@@ -1576,5 +1956,278 @@ class _LockSetupSheetState extends State<_LockSetupSheet> {
       case ProfileLockType.pattern:
         return Icons.grid_3x3_rounded;
     }
+  }
+}
+
+class _ForgotLockDialog extends StatefulWidget {
+  final AppProfile profile;
+  const _ForgotLockDialog({super.key, required this.profile});
+
+  @override
+  State<_ForgotLockDialog> createState() => _ForgotLockDialogState();
+}
+
+class _ForgotLockDialogState extends State<_ForgotLockDialog> {
+  final _answerController = TextEditingController();
+  bool _isError = false;
+  String _errorMessage = '';
+  bool _isLoading = false;
+  int _selectedQuestionIndex = 0;
+
+  List<String> get _questions => widget.profile.securityQuestionTexts;
+
+  @override
+  void initState() {
+    super.initState();
+    if (_questions.isEmpty) return;
+    _selectedQuestionIndex = 0;
+  }
+
+  @override
+  void dispose() {
+    _answerController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    if (_questions.isEmpty) {
+      return AlertDialog(
+        backgroundColor: colorScheme.surfaceContainer,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('No Recovery Questions'),
+        content: const Text('This profile has no recovery questions set.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      );
+    }
+
+    final currentQuestion = _questions[_selectedQuestionIndex];
+    final hasMultiple = _questions.length > 1;
+
+    return AlertDialog(
+      backgroundColor: colorScheme.surfaceContainer,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.help_outline_rounded,
+                  color: Colors.orange, size: 20),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Recovery',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            hasMultiple
+                ? 'Pick a question and answer it to remove the lock from "${widget.profile.name}"'
+                : 'Answer correctly to remove the lock from "${widget.profile.name}"',
+            style: TextStyle(
+              fontSize: 12,
+              color: colorScheme.onSurface.withOpacity(0.6),
+            ),
+          ),
+        ],
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (hasMultiple) ...[
+            DropdownButtonFormField<int>(
+              value: _selectedQuestionIndex,
+              isExpanded: true,
+              isDense: true,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: colorScheme.surface,
+                prefixIcon: Icon(Icons.quiz_rounded,
+                    size: 18, color: colorScheme.primary),
+                contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12, vertical: 8),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+              items: _questions.asMap().entries.map((entry) {
+                return DropdownMenuItem(
+                  value: entry.key,
+                  child: Text(
+                    'Q${entry.key + 1}: ${entry.value}',
+                    style: const TextStyle(fontSize: 12),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                );
+              }).toList(),
+              onChanged: (val) {
+                if (val != null) {
+                  setState(() {
+                    _selectedQuestionIndex = val;
+                    _isError = false;
+                    _errorMessage = '';
+                    _answerController.clear();
+                  });
+                }
+              },
+            ),
+          ] else ...[
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: colorScheme.primary.withOpacity(0.06),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: colorScheme.primary.withOpacity(0.15),
+                ),
+              ),
+              child: Text(
+                currentQuestion,
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                  color: colorScheme.onSurface,
+                ),
+              ),
+            ),
+          ],
+          if (hasMultiple) ...[
+            const SizedBox(height: 8),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: colorScheme.primary.withOpacity(0.06),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: colorScheme.primary.withOpacity(0.15),
+                ),
+              ),
+              child: Text(
+                currentQuestion,
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                  color: colorScheme.onSurface,
+                ),
+              ),
+            ),
+          ],
+          const SizedBox(height: 12),
+          TextField(
+            controller: _answerController,
+            autofocus: true,
+            style: const TextStyle(fontFamily: 'Poppins', fontSize: 15),
+            decoration: InputDecoration(
+              hintText: 'Your answer',
+              hintStyle: TextStyle(
+                color: colorScheme.onSurface.withOpacity(0.4),
+              ),
+              filled: true,
+              fillColor: colorScheme.surface,
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: _isError
+                    ? const BorderSide(color: Colors.red, width: 2)
+                    : BorderSide.none,
+              ),
+            ),
+            onChanged: (_) => setState(() {
+              _isError = false;
+              _errorMessage = '';
+            }),
+          ),
+          if (_isError) ...[
+            const SizedBox(height: 8),
+            Text(_errorMessage,
+                style: const TextStyle(color: Colors.red, fontSize: 13)),
+          ],
+          const SizedBox(height: 8),
+          Text(
+            'The lock will be removed. You can set a new one later.',
+            style: TextStyle(
+              fontSize: 11,
+              color: colorScheme.onSurface.withOpacity(0.4),
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed:
+              _isLoading ? null : () => Navigator.pop(context, false),
+          child: Text('Cancel',
+              style: TextStyle(
+                  color: colorScheme.onSurface.withOpacity(0.7))),
+        ),
+        ElevatedButton(
+          onPressed: _isLoading
+              ? null
+              : () {
+                  final answer = _answerController.text.trim();
+                  if (answer.isEmpty) {
+                    setState(() {
+                      _isError = true;
+                      _errorMessage = 'Please enter your answer';
+                    });
+                    return;
+                  }
+                  setState(() => _isLoading = true);
+                  final manager = Get.find<ProfileManager>();
+                  if (manager.verifySecurityAnswer(
+                      widget.profile.id, answer)) {
+                    manager.bypassLock(widget.profile.id);
+                    Navigator.pop(context, true);
+                  } else {
+                    setState(() {
+                      _isError = true;
+                      _errorMessage = 'Wrong answer. Try again.';
+                      _isLoading = false;
+                    });
+                    _answerController.clear();
+                  }
+                },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.orange,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12)),
+          ),
+          child: _isLoading
+              ? const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+              : const Text('Verify & Remove Lock',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+        ),
+      ],
+    );
   }
 }
