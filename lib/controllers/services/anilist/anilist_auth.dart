@@ -1293,7 +1293,6 @@ class AnilistAuth extends GetxController {
         'MESSAGE'
       ]}) async {
     final token = AuthKeys.authToken.get<String?>();
-    if (token == null || token.isEmpty) return (<AnilistActivity>[], false);
 
     const query = r'''
   query ($userId: Int, $page: Int, $typeIn: [ActivityType]) {
@@ -1381,9 +1380,10 @@ class AnilistAuth extends GetxController {
     try {
       final response = await _anilistPost(
         headers: {
-          'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          if (token != null && token.isNotEmpty)
+            'Authorization': 'Bearer $token',
         },
         body: {
           'query': query,

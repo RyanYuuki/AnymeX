@@ -161,7 +161,10 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                       // Avatar
                       Container(
                         width: 190,
-                        height: 190,
+                        constraints: const BoxConstraints(
+                          minHeight: 190,
+                          maxHeight: 280,
+                        ),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
@@ -186,6 +189,7 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                           child: CachedNetworkImage(
                             imageUrl: user.avatar ?? '',
                             fit: BoxFit.cover,
+                            alignment: Alignment.topCenter,
                             errorWidget: (context, url, error) =>
                                 const Icon(Icons.person, size: 50),
                           ),

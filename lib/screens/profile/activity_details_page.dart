@@ -64,6 +64,16 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
   }
 
   Future<bool> _postReply(String text) async {
+    if (!Get.find<AnilistAuth>().isLoggedIn.value) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please login first'),
+          duration: Duration(milliseconds: 1500),
+        ),
+      );
+      return false;
+    }
+
     if (_editingReplyId != null) {
       final success = await Get.find<AnilistAuth>()
           .editActivityReply(_editingReplyId!, text);
@@ -93,6 +103,16 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
   }
 
   void _toggleReplyLike(ActivityReply reply) async {
+    if (!Get.find<AnilistAuth>().isLoggedIn.value) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please login first'),
+          duration: Duration(milliseconds: 1500),
+        ),
+      );
+      return;
+    }
+
     setState(() {
       reply.isLiked = !reply.isLiked;
       reply.likeCount += reply.isLiked ? 1 : -1;
