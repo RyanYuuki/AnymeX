@@ -10,8 +10,10 @@ import 'package:anymex/screens/anime/watch/controls/widgets/double_tap_seek.dart
 import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/overlay.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/subtitle_text.dart';
-import 'package:anymex/screens/anime/watch/subtitles/subtitle_view.dart';
 import 'package:anymex/screens/anime/widgets/media_indicator.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/source_popup.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/sync_subs_popup.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/tracks_popup.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -36,6 +38,7 @@ class DownloadedWatchPage extends StatefulWidget {
 class _DownloadedWatchPageState extends State<DownloadedWatchPage> {
   late PlayerController _controller;
   late DownloadedEpisodeMeta _currentEpMeta;
+  final downloadController = Get.find<DownloadController>();
 
   @override
   void initState() {
@@ -80,8 +83,13 @@ class _DownloadedWatchPageState extends State<DownloadedWatchPage> {
   }
 
   @override
-  void dispose() {
+  void deactivate() {
     _saveProgress();
+    super.deactivate();
+  }
+
+  @override
+  void dispose() {
     Get.delete<PlayerController>(force: true);
     super.dispose();
   }
@@ -121,7 +129,21 @@ class _DownloadedWatchPageState extends State<DownloadedWatchPage> {
             top: 0,
             bottom: 0,
             left: 0,
-            child: SubtitleSearchBottomSheet(controller: _controller),
+            child: SourcePopup(controller: _controller),
+          ),
+          Positioned(
+            right: 0,
+            top: 0,
+            bottom: 0,
+            left: 0,
+            child: TracksPopup(controller: _controller),
+          ),
+          Positioned(
+            right: 0,
+            top: 0,
+            bottom: 0,
+            left: 0,
+            child: SyncSubsPopup(controller: _controller),
           ),
           Positioned(
             right: 0,

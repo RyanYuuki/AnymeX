@@ -11,6 +11,8 @@ class AnymexDialog extends StatelessWidget {
   final VoidCallback onConfirm;
   final bool enableV2;
   final EdgeInsets padding;
+  final bool showCancelButton;
+  final String confirmText;
 
   const AnymexDialog({
     super.key,
@@ -20,6 +22,8 @@ class AnymexDialog extends StatelessWidget {
     required this.onConfirm,
     this.enableV2 = false,
     this.padding = const EdgeInsets.all(25),
+    this.showCancelButton = true,
+    this.confirmText = 'Confirm',
   });
 
   void show(BuildContext context) {
@@ -62,26 +66,28 @@ class AnymexDialog extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30)),
-                      backgroundColor:
-                          context.colors.surfaceContainer,
+                if (showCancelButton) ...[
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30)),
+                        backgroundColor:
+                            context.colors.surfaceContainer,
+                      ),
+                      child: AnymexText(
+                          text: 'Cancel',
+                          size: 14,
+                          color: context.colors.primary,
+                          variant: TextVariant.bold),
                     ),
-                    child: AnymexText(
-                        text: 'Cancel',
-                        size: 14,
-                        color: context.colors.primary,
-                        variant: TextVariant.bold),
                   ),
-                ),
-                const SizedBox(width: 10),
+                  const SizedBox(width: 10),
+                ],
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
@@ -95,8 +101,8 @@ class AnymexDialog extends StatelessWidget {
                       backgroundColor:
                           context.colors.primaryFixed,
                     ),
-                    child: const AnymexText(
-                        text: 'Confirm',
+                    child: AnymexText(
+                        text: confirmText,
                         size: 14,
                         color: Colors.black,
                         variant: TextVariant.bold),

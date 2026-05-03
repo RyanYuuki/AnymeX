@@ -23,6 +23,7 @@ enum General {
   filterPaused,
   filterRepeating,
   communityListViewIsGrid,
+  hasJoinedNewDiscord,
 }
 
 enum ThemeKeys {
@@ -87,6 +88,7 @@ enum ReaderKeys {
   displayRefreshDurationMs,
   displayRefreshInterval,
   displayRefreshColor,
+  imageFilterQuality,
 }
 
 enum NovelReaderKeys {
@@ -235,6 +237,7 @@ enum PlayerSettingsKeys {
   subtitleBottomMargin,
   subtitleOutlineType,
   playerMenuAnimation,
+  hardwareDecoder,
 }
 
 enum UISettingsKeys {
@@ -271,5 +274,6 @@ enum DownloadKeys {
   saveActiveTasks,
   downloadChunks,
   hlsParallelSegments,
+  enableJxlCompression,
 }
 

@@ -55,6 +55,18 @@ class _BottomControl {
   });
 }
 
+class _DecoderOption {
+  final String value;
+  final String title;
+  final String description;
+
+  const _DecoderOption({
+    required this.value,
+    required this.title,
+    required this.description,
+  });
+}
+
 final List<_BottomControl> _bottomControls = [
   const _BottomControl(
       id: 'playlist',
@@ -64,14 +76,14 @@ final List<_BottomControl> _bottomControls = [
   const _BottomControl(
       id: 'shaders', name: 'Shaders', icon: Symbols.tune_rounded),
   const _BottomControl(
-      id: 'subtitles', name: 'Subtitles', icon: Symbols.subtitles_rounded),
+      id: 'source', name: 'Source', icon: Symbols.cloud_rounded),
   const _BottomControl(
-      id: 'server', name: 'Server', icon: Symbols.cloud_rounded),
+      id: 'tracks',
+      name: 'Tracks (Audio/Subs)',
+      icon: Symbols.library_music_rounded),
   const _BottomControl(
-      id: 'quality', name: 'Quality', icon: Symbols.high_quality_rounded),
+      id: 'sync_subs', name: 'Sync Subs', icon: Symbols.sync_rounded),
   const _BottomControl(id: 'speed', name: 'Speed', icon: Symbols.speed_rounded),
-  const _BottomControl(
-      id: 'audio_track', name: 'Audio Track', icon: Symbols.music_note_rounded),
   const _BottomControl(
       id: 'orientation',
       name: 'Orientation',
@@ -94,7 +106,6 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
   late List<String> _hiddenButtonIds;
   late Map<String, dynamic> _buttonConfigs;
   bool _shouldApplyResizeModeOnClose = false;
-  late bool _useMediaKit;
   late bool _useLibass;
 
   @override
@@ -107,7 +118,6 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
     _rightButtonIds = [];
     _hiddenButtonIds = [];
     _buttonConfigs = {};
-    _useMediaKit = PlayerKeys.useMediaKit.get<bool>(false);
     _useLibass = PlayerKeys.useLibass.get<bool>(false);
 
     final String jsonString =
@@ -129,7 +139,61 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
         _bottomControls.isNotEmpty) {
       _initializeDefaultButtonLayout();
     } else {
+      _migrateLegacyButtons();
       _pruneRemovedButtons();
+    }
+  }
+
+  void _migrateLegacyButtons() {
+    final legacyToNew = {
+      'server': 'source',
+      'subtitles': 'tracks',
+      'audio_track': 'tracks',
+      'quality': 'source',
+    };
+
+    bool migrated = false;
+
+    void replaceInList(List<String> list) {
+      for (int i = 0; i < list.length; i++) {
+        if (legacyToNew.containsKey(list[i])) {
+          list[i] = legacyToNew[list[i]]!;
+          migrated = true;
+        }
+      }
+    }
+
+    replaceInList(_leftButtonIds);
+    replaceInList(_rightButtonIds);
+    replaceInList(_hiddenButtonIds);
+
+    final seen = <String>{};
+    void deduplicate(List<String> list) {
+      list.removeWhere((id) {
+        if (seen.contains(id)) {
+          migrated = true;
+          return true;
+        }
+        seen.add(id);
+        return false;
+      });
+    }
+
+    deduplicate(_leftButtonIds);
+    deduplicate(_rightButtonIds);
+    deduplicate(_hiddenButtonIds);
+
+    final essential = ['source', 'tracks', 'sync_subs'];
+    for (final id in essential) {
+      if (!seen.contains(id)) {
+        _rightButtonIds.add(id);
+        _buttonConfigs[id] = {'visible': true};
+        migrated = true;
+      }
+    }
+
+    if (migrated) {
+      _saveButtonConfig();
     }
   }
 
@@ -484,6 +548,126 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
     return PlayerKeys.useMediaKit.get<bool>(false);
   }
 
+  bool get _supportsDecoderSelection =>
+      Platform.isAndroid ||
+      Platform.isIOS ||
+      Platform.isLinux ||
+      Platform.isMacOS ||
+      Platform.isWindows;
+
+  List<_DecoderOption> get _decoderOptions {
+    if (Platform.isAndroid) {
+      return const [
+        _DecoderOption(
+          value: 'hw+',
+          title: 'HW+',
+          description: 'mediacodec-copy',
+        ),
+        _DecoderOption(
+          value: 'hw',
+          title: 'HW',
+          description: 'mediacodec',
+        ),
+        _DecoderOption(
+          value: 'sw',
+          title: 'SW',
+          description: 'no',
+        ),
+      ];
+    }
+
+    if (Platform.isIOS || Platform.isMacOS) {
+      return const [
+        _DecoderOption(
+          value: 'hw',
+          title: 'HW',
+          description: 'videotoolbox',
+        ),
+        _DecoderOption(
+          value: 'sw',
+          title: 'SW',
+          description: 'no',
+        ),
+      ];
+    }
+
+    if (Platform.isWindows) {
+      return const [
+        _DecoderOption(
+          value: 'hw',
+          title: 'HW',
+          description: 'd3d11va',
+        ),
+        _DecoderOption(
+          value: 'sw',
+          title: 'SW',
+          description: 'no',
+        ),
+      ];
+    }
+
+    if (Platform.isLinux) {
+      return const [
+        _DecoderOption(
+          value: 'hw',
+          title: 'HW',
+          description: 'vaapi',
+        ),
+        _DecoderOption(
+          value: 'sw',
+          title: 'SW',
+          description: 'no',
+        ),
+      ];
+    }
+
+    return const [
+      _DecoderOption(
+        value: 'hw',
+        title: 'HW',
+        description: 'auto',
+      ),
+      _DecoderOption(
+        value: 'sw',
+        title: 'SW',
+        description: 'no',
+      ),
+    ];
+  }
+
+  String _decoderTitle(String value) {
+    final match = _decoderOptions.firstWhere(
+      (option) => option.value == value,
+      orElse: () => _decoderOptions.first,
+    );
+    return match.title;
+  }
+
+  String _decoderDescription(String value) {
+    final match = _decoderOptions.firstWhere(
+      (option) => option.value == value,
+      orElse: () => _decoderOptions.first,
+    );
+    return match.description;
+  }
+
+  void _showDecoderModeDialog() {
+    final options = _decoderOptions;
+    if (options.isEmpty) return;
+
+    showSelectionDialog<String>(
+      title: 'Decoder',
+      items: options.map((option) => option.value).toList(),
+      selectedItem: settings.hardwareDecoder.obs,
+      getTitle: _decoderTitle,
+      onItemSelected: (value) {
+        settings.hardwareDecoder = value;
+        setState(() {});
+      },
+      leadingIcon: Icons.memory_rounded,
+    );
+  }
+
   void _showMpvCoreSelectionDialog({
     required String title,
     required List<String> items,
@@ -529,6 +713,26 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
               Obx(() => Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      if (_supportsDecoderSelection)
+                        AnymexExpansionTile(
+                            title: 'Playback',
+                            initialExpanded: true,
+                            content: Column(
+                              children: [
+                                CustomTile(
+                                  padding: 10,
+                                  icon: Icons.memory_rounded,
+                                  title: 'Decoder',
+                                  isDescBold: true,
+                                  descColor: Theme.of(context)
+                                      .colorScheme
+                                      .primary,
+                                  description:
+                                      _decoderDescription(settings.hardwareDecoder),
+                                  onTap: _showDecoderModeDialog,
+                                ),
+                              ],
+                            )),
                       AnymexExpansionTile(
                           title: 'Experimental',
                           initialExpanded: false,
@@ -536,11 +740,8 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                             final experimentalEnabled = PlayerUiKeys
                                 .playerExperimentalEnabled
                                 .get<bool>(false);
-                            final usingMpv = _isUsingMpvEngine();
                             final mpvCore =
                                 PlayerCoreVisualSettings.getMpvCoreSettings();
-                            final betterCore = PlayerCoreVisualSettings
-                                .getBetterPlayerCoreSettings();
 
                             return Column(
                               children: [
@@ -560,39 +761,9 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                 if (!experimentalEnabled)
                                   _buildExperimentalGateMessage(
                                       'Core and Visual settings are disabled. Enable Experimental to use them.'),
-                                if (experimentalEnabled && usingMpv)
+                                if (experimentalEnabled && _isUsingMpvEngine())
                                   Column(
                                     children: [
-                                      CustomTile(
-                                        padding: 10,
-                                        icon: Icons.memory_rounded,
-                                        title: 'Decoder (HWDec)',
-                                        isDescBold: true,
-                                        descColor: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                        description:
-                                            (mpvCore['hwdec'] as String?) ??
-                                                'auto-safe',
-                                        onTap: () =>
-                                            _showMpvCoreSelectionDialog(
-                                          title: 'Mpv Decoder (HWDec)',
-                                          items: const [
-                                            'no',
-                                            'auto-safe',
-                                            'auto',
-                                            'mediacodec-copy',
-                                            'vaapi',
-                                            'videotoolbox',
-                                            'd3d11va',
-                                          ],
-                                          selected:
-                                              (mpvCore['hwdec'] as String?) ??
-                                                  'auto-safe',
-                                          getTitle: (item) => item,
-                                          key: 'hwdec',
-                                        ),
-                                      ),
                                       CustomTile(
                                         padding: 10,
                                         icon: Icons.sync_rounded,
@@ -756,69 +927,6 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                                       ),
                                     ],
                                   ),
-                                if (experimentalEnabled && !usingMpv)
-                                  Column(
-                                    children: [
-                                      CustomSliderTile(
-                                        icon: Icons.storage_rounded,
-                                        title: 'Buffer Size',
-                                        description:
-                                            'Network buffer size in MB',
-                                        sliderValue:
-                                            ((betterCore['bufferSizeMb']
-                                                        as num?) ??
-                                                    32)
-                                                .toDouble(),
-                                        min: 8,
-                                        max: 256,
-                                        divisions: 31,
-                                        label: ((betterCore['bufferSizeMb']
-                                                    as num?) ??
-                                                32)
-                                            .toInt()
-                                            .toString(),
-                                        onChanged: (value) {
-                                          PlayerCoreVisualSettings
-                                              .setBetterPlayerCoreSetting(
-                                                  'bufferSizeMb',
-                                                  value.round());
-                                          setState(() {});
-                                        },
-                                      ),
-                                      CustomSwitchTile(
-                                        padding: const EdgeInsets.all(10),
-                                        icon: Icons.play_arrow_rounded,
-                                        title: 'Auto Play',
-                                        description:
-                                            'Start playback automatically after load',
-                                        switchValue:
-                                            (betterCore['autoPlay'] as bool?) ??
-                                                true,
-                                        onChanged: (val) {
-                                          PlayerCoreVisualSettings
-                                              .setBetterPlayerCoreSetting(
-                                                  'autoPlay', val);
-                                          setState(() {});
-                                        },
-                                      ),
-                                      CustomSwitchTile(
-                                        padding: const EdgeInsets.all(10),
-                                        icon: Icons.network_check_rounded,
-                                        title: 'Use Buffering',
-                                        description:
-                                            'Enable buffering strategy for unstable networks',
-                                        switchValue: (betterCore['useBuffering']
-                                                as bool?) ??
-                                            true,
-                                        onChanged: (val) {
-                                          PlayerCoreVisualSettings
-                                              .setBetterPlayerCoreSetting(
-                                                  'useBuffering', val);
-                                          setState(() {});
-                                        },
-                                      ),
-                                    ],
-                                  ),
                               ],
                             );
                           })),
@@ -827,20 +935,6 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                           title: 'Common',
                           content: Column(
                             children: [
-                              if (Platform.isAndroid || Platform.isIOS)
-                                CustomSwitchTile(
-                                    icon: Icons.subtitles,
-                                    padding: const EdgeInsets.all(10),
-                                    title: "Use LibMpv for Playback",
-                                    description:
-                                        "Pick wisely! (LibMpv -> FEATURES, ExoPlayer -> PERFORMANCE)",
-                                    switchValue: _useMediaKit,
-                                    onChanged: (val) {
-                                      setState(() {
-                                        _useMediaKit = val;
-                                      });
-                                      PlayerKeys.useMediaKit.set<bool>(val);
-                                    }),
                               CustomSwitchTile(
                                   icon: Icons.subtitles,
                                   padding: const EdgeInsets.all(10),

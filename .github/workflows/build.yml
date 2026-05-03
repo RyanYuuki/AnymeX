@@ -341,15 +341,20 @@ jobs:
             brew install maven
           fi
           flutter pub get
-          dart run jni:setup
+          flutter clean
           flutter build macos --release
-          APP_PATH="build/macos/Build/Products/Release/anymex.app"
-          [ ! -d "$APP_PATH" ] && echo "Error: anymex.app not found" && exit 1
+        
+          APP_PATH=$(find build/macos/Build/Products/Release -maxdepth 1 -name "*.app" | head -n 1)
+          [ -z "$APP_PATH" ] && echo "❌ Error: No .app found!" && exit 1
+          echo "Found app: $APP_PATH"
+          
+          APP_NAME=$(basename "$APP_PATH" .app)
           mkdir -p build/macos/Release temp_dir
-          cp -r "$APP_PATH" temp_dir/
+          cp -R "$APP_PATH" temp_dir/
           ln -s /Applications temp_dir/Applications
-          hdiutil create -volname "AnymeX" -srcfolder temp_dir -ov -format UDZO build/macos/Release/AnymeX.dmg
+          hdiutil create -volname "$APP_NAME" -srcfolder temp_dir -ov -format UDZO build/macos/Release/AnymeX.dmg
           rm -rf temp_dir
+          echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
       
       - uses: actions/upload-artifact@v4
         if: matrix.platform == 'android'

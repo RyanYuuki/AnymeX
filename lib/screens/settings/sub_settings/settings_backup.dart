@@ -27,17 +27,26 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
     final passwordController = TextEditingController();
     final confirmPasswordController = TextEditingController();
     bool usePassword = false;
+    bool backupSettings = true;
+    bool backupAuthTokens = false;
+    bool hasSelected = false;
 
-    final result = await showDialog<bool>(
+    await showDialog(
       context: context,
       builder: (context) => BackupPasswordDialog(
         passwordController: passwordController,
         confirmPasswordController: confirmPasswordController,
-        onUsePasswordChanged: (value) => usePassword = value,
+        onConfirm: (usePass, backSettings, backAuthTokens) {
+          usePassword = usePass;
+          backupSettings = backSettings;
+          backupAuthTokens = backAuthTokens;
+          hasSelected = true;
+          Navigator.of(context).pop();
+        },
       ),
     );
 
-    if (result != true) return;
+    if (!hasSelected) return;
 
     try {
       String? password;
@@ -49,7 +58,11 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
         password = passwordController.text;
       }
 
-      final path = await controller.exportBackupToExternal(password: password);
+      final path = await controller.exportBackupToExternal(
+        password: password,
+        backupSettings: backupSettings,
+        backupAuthTokens: backupAuthTokens,
+      );
       if (path != null && mounted) {
         snackBar("Backup saved successfully!");
       }
@@ -84,11 +97,16 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
         RestorePreviewSheet(
           info: info,
           isEncrypted: isEncrypted,
-          onConfirm: () async {
+        onConfirm: (restoreSettings, restoreAuthTokens) async {
             Get.back();
             try {
-              await controller.restoreBackup(path,
-                  password: password, merge: false);
+              await controller.restoreBackup(
+                path,
+                password: password,
+                merge: false,
+                restoreSettings: restoreSettings,
+                restoreAuthTokens: restoreAuthTokens,
+              );
               if (mounted) {
                 snackBar("Backup restored successfully!");
               }

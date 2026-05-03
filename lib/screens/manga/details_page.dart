@@ -33,6 +33,7 @@ import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
@@ -208,6 +209,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
         _processExtensionData(tempData);
       } else {
         _fetchSecondaryData(tempData);
+        await _restorePreferredSource();
         await _mapToService();
       }
     } catch (e, stackTrace) {
@@ -228,6 +230,18 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
       }
     } catch (e) {
       Logger.i("Secondary Data Fetch Failed => $e");
+    }
+  }
+
+  Future<void> _restorePreferredSource() async {
+    final titleId = widget.media.id.toString();
+    final savedSourceId = sourceController.getPreferredSource(titleId);
+    if (savedSourceId != null) {
+      final savedSource =
+          sourceController.getSavedSource(titleId, ItemType.manga);
+      if (savedSource != null) {
+        sourceController.setActiveSource(savedSource, mediaId: titleId);
+      }
     }
   }
 

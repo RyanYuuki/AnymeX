@@ -21,7 +21,7 @@ Uint8List base64ToBytes(String base64) {
   return base64Decode(cleaned);
 }
 
-class AnymeXImage extends StatelessWidget {
+class AnymeXImage extends StatefulWidget {
   final String imageUrl;
   final double? width;
   final double? height;
@@ -46,63 +46,100 @@ class AnymeXImage extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final isBase64 = isBase64Image(imageUrl);
+  State<AnymeXImage> createState() => _AnymeXImageState();
+}
 
-    if (onColorExtracted != null) {
+class _AnymeXImageState extends State<AnymeXImage> {
+  Uint8List? _cachedBytes;
+  String? _lastImageUrl;
+  Color? _extractedColor;
+
+  @override
+  void initState() {
+    super.initState();
+    _handleImageChange();
+  }
+
+  @override
+  void didUpdateWidget(AnymeXImage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.imageUrl != widget.imageUrl) {
+      _handleImageChange();
+    }
+  }
+
+  void _handleImageChange() {
+    final isBase64 = isBase64Image(widget.imageUrl);
+    if (isBase64) {
+      _cachedBytes = base64ToBytes(widget.imageUrl);
+    } else {
+      _cachedBytes = null;
+    }
+    _lastImageUrl = widget.imageUrl;
+    _extractedColor = null;
+
+    if (widget.onColorExtracted != null) {
       _extractDominantColor(isBase64);
     }
+  }
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(radius),
-      child: isBase64
-          ? Image.memory(
-              base64ToBytes(imageUrl),
-              width: width,
-              height: height,
-              fit: fit,
-              alignment: alignment,
-              color: color,
-              colorBlendMode: color != null ? BlendMode.color : null,
-              errorBuilder: (_, __, ___) => _fallback(context),
-            )
-          : CachedNetworkImage(
-              cacheManager: AnymeXCacheManager.instance,
-              imageUrl: imageUrl,
-              width: width,
-              height: height,
-              fit: fit,
-              alignment: alignment,
-              color: color,
-              colorBlendMode: color != null ? BlendMode.color : null,
-              placeholder: (_, __) => _placeholder(context),
-              errorWidget: (_, __, ___) {
-                if (errorImage != null && errorImage!.isNotEmpty) {
-                  return CachedNetworkImage(
-                    cacheManager: AnymeXCacheManager.instance,
-                    imageUrl: errorImage!,
-                    width: width,
-                    height: height,
-                    fit: fit,
-                    placeholder: (_, __) => _placeholder(context),
-                    errorWidget: (_, __, ___) => _fallback(context),
-                  );
-                }
-                return _fallback(context);
-              },
-            ),
+  @override
+  Widget build(BuildContext context) {
+    final isBase64 = _cachedBytes != null;
+
+    return RepaintBoundary(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(widget.radius),
+        child: isBase64
+            ? Image.memory(
+                _cachedBytes!,
+                width: widget.width,
+                height: widget.height,
+                fit: widget.fit,
+                alignment: widget.alignment,
+                color: widget.color,
+                colorBlendMode: widget.color != null ? BlendMode.color : null,
+                errorBuilder: (_, __, ___) => _fallback(context),
+              )
+            : CachedNetworkImage(
+                cacheManager: AnymeXCacheManager.instance,
+                imageUrl: widget.imageUrl,
+                width: widget.width,
+                height: widget.height,
+                fit: widget.fit,
+                alignment: widget.alignment,
+                color: widget.color,
+                colorBlendMode: widget.color != null ? BlendMode.color : null,
+                placeholder: (_, __) => _placeholder(context),
+                errorWidget: (_, __, ___) {
+                  if (widget.errorImage != null && widget.errorImage!.isNotEmpty) {
+                    return CachedNetworkImage(
+                      cacheManager: AnymeXCacheManager.instance,
+                      imageUrl: widget.errorImage!,
+                      width: widget.width,
+                      height: widget.height,
+                      fit: widget.fit,
+                      placeholder: (_, __) => _placeholder(context),
+                      errorWidget: (_, __, ___) => _fallback(context),
+                    );
+                  }
+                  return _fallback(context);
+                },
+              ),
+      ),
     );
   }
 
   Future<void> _extractDominantColor(bool isBase64) async {
+    if (_extractedColor != null) return;
     try {
       ImageProvider imageProvider;
 
       if (isBase64) {
-        imageProvider = MemoryImage(base64ToBytes(imageUrl));
+        imageProvider = MemoryImage(_cachedBytes!);
       } else {
         imageProvider = CachedNetworkImageProvider(
-          imageUrl,
+          widget.imageUrl,
           cacheManager: AnymeXCacheManager.instance,
         );
       }
@@ -117,16 +154,17 @@ class AnymeXImage extends StatelessWidget {
           paletteGenerator.vibrantColor?.color ??
           paletteGenerator.mutedColor?.color;
 
-      if (dominantColor != null) {
-        onColorExtracted?.call(dominantColor);
+      if (dominantColor != null && mounted) {
+        _extractedColor = dominantColor;
+        widget.onColorExtracted?.call(dominantColor);
       }
     } catch (_) {}
   }
 
   Widget _placeholder(BuildContext context) {
     return Container(
-      width: width,
-      height: height,
+      width: widget.width,
+      height: widget.height,
       alignment: Alignment.center,
       color: Theme.of(context)
           .colorScheme
@@ -138,8 +176,8 @@ class AnymeXImage extends StatelessWidget {
 
   Widget _fallback(BuildContext context) {
     return Container(
-      width: width,
-      height: height,
+      width: widget.width,
+      height: widget.height,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,

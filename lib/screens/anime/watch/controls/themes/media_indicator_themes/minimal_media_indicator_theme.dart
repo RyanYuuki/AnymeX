@@ -82,7 +82,7 @@ class _TopLineBar extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Icon on the left
+          
           Icon(
             icon,
             color: Colors.white,
@@ -90,7 +90,7 @@ class _TopLineBar extends StatelessWidget {
           ),
           const SizedBox(width: 10),
 
-          // Animated progress line
+          
           SizedBox(
             width: 160,
             child: TweenAnimationBuilder<double>(
@@ -108,7 +108,7 @@ class _TopLineBar extends StatelessWidget {
 
           const SizedBox(width: 10),
 
-          // Percentage label on the right
+          
           TweenAnimationBuilder<double>(
             tween: Tween<double>(end: value),
             duration: valueAnimationDuration,
@@ -135,7 +135,7 @@ class _TopLineBar extends StatelessWidget {
   }
 }
 
-/// A rounded progress bar with a soft glow on the filled portion.
+
 class _GlowProgressBar extends StatelessWidget {
   const _GlowProgressBar({
     required this.value,
@@ -156,7 +156,7 @@ class _GlowProgressBar extends StatelessWidget {
           height: 4,
           child: Stack(
             children: [
-              // Track
+              
               Container(
                 width: totalWidth,
                 height: 4,
@@ -166,7 +166,7 @@ class _GlowProgressBar extends StatelessWidget {
                 ),
               ),
 
-              // Filled portion with glow
+              
               Container(
                 width: filledWidth,
                 height: 4,
@@ -183,7 +183,7 @@ class _GlowProgressBar extends StatelessWidget {
                 ),
               ),
 
-              // Leading dot / thumb
+              
               if (filledWidth > 4)
                 Positioned(
                   left: filledWidth - 4,

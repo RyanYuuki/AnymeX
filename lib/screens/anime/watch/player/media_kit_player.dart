@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:anymex/utils/logger.dart';
@@ -76,6 +77,7 @@ class MediaKitPlayer extends base.BasePlayer {
       configuration: PlayerConfiguration(
         bufferSize: config.bufferSize,
         libass: config.useLibass,
+        vo: 'gpu'
       ),
     );
 
@@ -83,6 +85,7 @@ class MediaKitPlayer extends base.BasePlayer {
       _player,
       configuration: VideoControllerConfiguration(
         hwdec: config.hwdec,
+        enableHardwareAcceleration: config.hwdec != 'no',
         androidAttachSurfaceAfterVideoParameters: true,
       ),
     );
@@ -179,10 +182,22 @@ class MediaKitPlayer extends base.BasePlayer {
     Map<String, String>? headers,
     Duration? startPosition,
   }) async {
-    print('Opening video: $url with headers: $headers');
+    final resolvedUrl = _resolveMediaUrl(url);
+    print('Opening video: $resolvedUrl with headers: $headers');
     await _player.open(
-      Media(url, httpHeaders: headers, start: startPosition),
+      Media(resolvedUrl, httpHeaders: headers, start: startPosition),
     );
+  }
+
+  String _resolveMediaUrl(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri != null &&
+        uri.hasScheme &&
+        !(Platform.isWindows &&
+            RegExp(r'^[a-zA-Z]:[\\/]').hasMatch(url))) {
+      return url;
+    }
+    return Uri.file(url).toString();
   }
 
   @override
@@ -218,10 +233,15 @@ class MediaKitPlayer extends base.BasePlayer {
 
   @override
   Future<void> setVideoTrack(base.VideoTrack track) async {
+    print(
+        'trying video track: ${track.id} - ${track.title} (${track.width}x${track.height})');
     final mediaKitTrack = _player.state.tracks.video.firstWhere(
       (t) => t.id == track.id,
       orElse: () => _player.state.tracks.video.first,
     );
+    print(
+        'Setting video track: ${mediaKitTrack.id} - ${mediaKitTrack.title} (${mediaKitTrack.w}x${mediaKitTrack.h})');
+
     await _player.setVideoTrack(mediaKitTrack);
   }
 

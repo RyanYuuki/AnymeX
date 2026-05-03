@@ -93,14 +93,12 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
   }
 
   void _handleLeftSeek() {
-    // Block seek if locked
     if (widget.controller.isLocked.value) return;
     HapticFeedback.lightImpact();
     _performSeek(isLeft: true);
   }
 
   void _handleRightSeek() {
-    // Block seek if locked
     if (widget.controller.isLocked.value) return;
     HapticFeedback.lightImpact();
     _performSeek(isLeft: false);

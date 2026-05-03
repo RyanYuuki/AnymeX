@@ -310,6 +310,18 @@ class _GeneralPage extends StatelessWidget {
               icon: Icons.format_paint_rounded,
               onTap: () => _showThemePicker(context),
             ),
+            CustomTile(
+              title: 'Image Filter Quality',
+              description: switch (controller.imageFilterQuality.value) {
+                0 => 'None (Nearest)',
+                1 => 'Low (Bilinear)',
+                3 => 'High (Bicubic)',
+                4 => 'Lanczos Pre-scale (Best)',
+                _ => 'Medium (Default)',
+              },
+              icon: Icons.image_search_rounded,
+              onTap: () => _showFilterQualityDialog(context),
+            ),
             CustomSwitchTile(
               icon: Iconsax.eye,
               title: 'Persistent Page Indicator',
@@ -577,6 +589,51 @@ class _GeneralPage extends StatelessWidget {
       controller.readerTheme.value = v;
       controller.savePreferences();
     }
+    Get.back();
+  }
+
+  void _showFilterQualityDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Image Filter Quality'),
+        content: Obx(() => Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                RadioListTile<int>(
+                    title: const Text('None (Nearest-neighbor)'),
+                    value: 0,
+                    groupValue: controller.imageFilterQuality.value,
+                    onChanged: _setFilterQuality),
+                RadioListTile<int>(
+                    title: const Text('Low (Bilinear)'),
+                    value: 1,
+                    groupValue: controller.imageFilterQuality.value,
+                    onChanged: _setFilterQuality),
+                RadioListTile<int>(
+                    title: const Text('Medium (Default)'),
+                    value: 2,
+                    groupValue: controller.imageFilterQuality.value,
+                    onChanged: _setFilterQuality),
+                RadioListTile<int>(
+                    title: const Text('High (Bicubic)'),
+                    value: 3,
+                    groupValue: controller.imageFilterQuality.value,
+                    onChanged: _setFilterQuality),
+                RadioListTile<int>(
+                    title:
+                        const Text('Lanczos Pre-scale (Best quality, slower)'),
+                    value: 4,
+                    groupValue: controller.imageFilterQuality.value,
+                    onChanged: _setFilterQuality),
+              ],
+            )),
+      ),
+    );
+  }
+
+  void _setFilterQuality(int? v) {
+    if (v != null) controller.setImageFilterQuality(v);
     Get.back();
   }
 }

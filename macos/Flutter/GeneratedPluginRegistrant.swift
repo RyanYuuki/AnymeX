@@ -20,6 +20,7 @@ import flutter_tts
 import flutter_web_auth_2
 import isar_community_flutter_libs
 import just_audio
+import jxl_coder
 import media_kit_libs_macos_video
 import media_kit_video
 import mobile_scanner
@@ -28,6 +29,7 @@ import path_provider_foundation
 import screen_brightness_macos
 import screen_retriever_macos
 import share_plus
+import shared_preferences_foundation
 import sqflite_darwin
 import url_launcher_macos
 import video_player_avfoundation
@@ -53,6 +55,7 @@ func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
   FlutterWebAuth2Plugin.register(with: registry.registrar(forPlugin: "FlutterWebAuth2Plugin"))
   IsarFlutterLibsPlugin.register(with: registry.registrar(forPlugin: "IsarFlutterLibsPlugin"))
   JustAudioPlugin.register(with: registry.registrar(forPlugin: "JustAudioPlugin"))
+  JxlCoderPlugin.register(with: registry.registrar(forPlugin: "JxlCoderPlugin"))
   MediaKitLibsMacosVideoPlugin.register(with: registry.registrar(forPlugin: "MediaKitLibsMacosVideoPlugin"))
   MediaKitVideoPlugin.register(with: registry.registrar(forPlugin: "MediaKitVideoPlugin"))
   MobileScannerPlugin.register(with: registry.registrar(forPlugin: "MobileScannerPlugin"))
@@ -61,6 +64,7 @@ func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
   ScreenBrightnessMacosPlugin.register(with: registry.registrar(forPlugin: "ScreenBrightnessMacosPlugin"))
   ScreenRetrieverMacosPlugin.register(with: registry.registrar(forPlugin: "ScreenRetrieverMacosPlugin"))
   SharePlusMacosPlugin.register(with: registry.registrar(forPlugin: "SharePlusMacosPlugin"))
+  SharedPreferencesPlugin.register(with: registry.registrar(forPlugin: "SharedPreferencesPlugin"))
   SqflitePlugin.register(with: registry.registrar(forPlugin: "SqflitePlugin"))
   UrlLauncherPlugin.register(with: registry.registrar(forPlugin: "UrlLauncherPlugin"))
   FVPVideoPlayerPlugin.register(with: registry.registrar(forPlugin: "FVPVideoPlayerPlugin"))

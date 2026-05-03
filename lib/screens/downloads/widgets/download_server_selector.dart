@@ -67,6 +67,10 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
     _servers.clear();
     _selectedQuality.value = null;
     try {
+      if (widget.episodes.isEmpty) {
+        throw Exception('No episodes selected for download.');
+      }
+      
       final firstEp = widget.episodes.first;
       final deEpisode = DEpisode(
         episodeNumber: firstEp.number,
@@ -101,14 +105,16 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
           _selectedQuality.value = vids.first.quality;
         }
       }
-    } catch (e) {
+    } catch (e, s) {
       _errorMsg.value = e.toString();
+      print('Error fetching servers: $e - $s');
     } finally {
       _isLoading.value = false;
     }
   }
 
   Future<void> _startDownload() async {
+    final downloadController = Get.find<DownloadController>();
     if (_selectedQuality.value == null) return;
     Navigator.pop(context, true);
     await downloadController.enqueueDownloadBatch(
@@ -173,7 +179,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AnymexText(
+                const AnymexText(
                     text: 'Choose Quality',
                     variant: TextVariant.bold,
                     size: 16),
@@ -224,7 +230,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
               Icon(Icons.error_outline_rounded,
                   size: 48, color: theme.error.opaque(0.6)),
               const SizedBox(height: 12),
-              AnymexText(
+              const AnymexText(
                   text: 'Failed to fetch servers',
                   variant: TextVariant.semiBold,
                   size: 15),

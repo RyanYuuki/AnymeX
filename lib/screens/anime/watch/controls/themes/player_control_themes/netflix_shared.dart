@@ -15,7 +15,7 @@ class NFColors {
 String buildNFTitle(PlayerController c) {
   final epNum = c.currentEpisode.value.number;
   final epTitle = c.currentEpisode.value.title;
-  if (epNum != null && epNum != 'Offline') {
+  if (epNum != 'Offline') {
     if (epTitle != null && epTitle.isNotEmpty) return 'E$epNum: $epTitle';
     return 'Episode $epNum';
   }

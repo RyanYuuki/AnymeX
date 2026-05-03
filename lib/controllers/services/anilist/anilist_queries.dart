@@ -39,6 +39,12 @@ const detailsPrimaryQuery = '''
           day
         }
         genres
+        tags {
+          name
+          rank
+          isMediaSpoiler
+          isGeneralSpoiler
+        }
         studios {
           nodes {
             id

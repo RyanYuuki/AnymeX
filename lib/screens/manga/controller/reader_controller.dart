@@ -153,6 +153,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   final RxInt displayRefreshDurationMs = 200.obs;
   final RxInt displayRefreshInterval = 1.obs;
   final RxString displayRefreshColor = 'black'.obs;
+  final RxInt imageFilterQuality = 2.obs;
   final RxBool showingTransition = false.obs;
   final RxBool transitionIsNext = true.obs;
   final Rx<Chapter?> transitionTargetChapter = Rx<Chapter?>(null);
@@ -742,6 +743,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         ReaderKeys.displayRefreshInterval.get<int>(1);
     displayRefreshColor.value =
         ReaderKeys.displayRefreshColor.get<String>('black');
+    imageFilterQuality.value =
+        ReaderKeys.imageFilterQuality.get<int>(2);
 
     if (!keepScreenOn.value) WakelockPlus.disable();
 
@@ -783,6 +786,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     ReaderKeys.displayRefreshDurationMs.set(displayRefreshDurationMs.value);
     ReaderKeys.displayRefreshInterval.set(displayRefreshInterval.value);
     ReaderKeys.displayRefreshColor.set(displayRefreshColor.value);
+    ReaderKeys.imageFilterQuality.set(imageFilterQuality.value);
   }
 
   void _setupPositionListener() {
@@ -1317,6 +1321,11 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     savePreferences();
   }
 
+  void setImageFilterQuality(int value) {
+    imageFilterQuality.value = value;
+    savePreferences();
+  }
+
   void maybeShowChapterTransition(bool next) {
     final current = currentChapter.value;
     if (current == null) return;
@@ -1424,6 +1433,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> fetchImages(String url) async {
+    final curChapter = currentChapter.value;
     _isNavigating = true;
     _resetOverscroll();
     WidgetsBinding.instance.addPostFrameCallback((_) => _initTracking());
@@ -1435,8 +1445,28 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       pageList.clear();
       errorMessage.value = '';
 
-      final data = await sourceController.activeMangaSource.value!.methods
-          .getPageList(DEpisode(episodeNumber: '1', url: url));
+      List<PageUrl> data = [];
+
+      if (curChapter?.localPath != null &&
+          Directory(curChapter!.localPath!).existsSync()) {
+        final dir = Directory(curChapter.localPath!);
+        final files = dir
+            .listSync()
+            .whereType<File>()
+            .where((f) =>
+                f.path.endsWith('.jpg') ||
+                f.path.endsWith('.jpeg') ||
+                f.path.endsWith('.png') ||
+                f.path.endsWith('.webp'))
+            .toList();
+
+        files.sort((a, b) => a.path.compareTo(b.path));
+
+        data = files.map((f) => PageUrl(f.path)).toList();
+      } else {
+        data = await sourceController.activeMangaSource.value!.methods
+            .getPageList(DEpisode(episodeNumber: '1', url: url));
+      }
 
       if (data.isNotEmpty) {
         pageList.value = data;

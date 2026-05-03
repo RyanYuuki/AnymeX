@@ -293,6 +293,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         _processExtensionData(tempData);
       } else {
         _fetchSecondaryData(tempData);
+        await _restorePreferredSource();
         Future.wait([_mapToService(), _syncMediaIds(), _fetchFillerInfo()]);
       }
     } catch (e) {
@@ -316,6 +317,18 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       }
     } catch (e) {
       Logger.i("Secondary Data Fetch Failed => $e");
+    }
+  }
+
+  Future<void> _restorePreferredSource() async {
+    final titleId = widget.media.id.toString();
+    final savedSourceId = sourceController.getPreferredSource(titleId);
+    if (savedSourceId != null) {
+      final savedSource =
+          sourceController.getSavedSource(titleId, ItemType.anime);
+      if (savedSource != null) {
+        sourceController.setActiveSource(savedSource, mediaId: titleId);
+      }
     }
   }
 

@@ -15,6 +15,7 @@ class Chapter {
   double? currentOffset;
   double? maxOffset;
   String? sourceName;
+  String? localPath;
 
   List<String>? headerKeys;
   List<String>? headerValues;
@@ -31,6 +32,7 @@ class Chapter {
       this.currentOffset,
       this.maxOffset,
       this.sourceName,
+      this.localPath,
       this.headerKeys,
       this.headerValues});
 
@@ -47,6 +49,7 @@ class Chapter {
       'currentOffset': currentOffset,
       'maxOffset': maxOffset,
       'sourceName': sourceName,
+      'localPath': localPath,
       'headerKeys': headerKeys,
       'headerValues': headerValues
     };
@@ -65,6 +68,7 @@ class Chapter {
       currentOffset: (json['currentOffset'] as num?)?.toDouble(),
       maxOffset: (json['maxOffset'] as num?)?.toDouble(),
       sourceName: json['sourceName'] as String?,
+      localPath: json['localPath'] as String?,
       headerKeys: json['headerKeys'] as List<String>?,
       headerValues: json['headerValues'] as List<String>?,
     );
