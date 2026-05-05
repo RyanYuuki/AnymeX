@@ -669,37 +669,18 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                                 const SizedBox(width: 7),
                                 _buildActionIconButton(
                                   context: context,
-                                  icon: Icons.share_rounded,
-                                  onTap: _showShareOptions,
-                                ),
-                                const SizedBox(width: 7),
-                                if (CommunityService.votingEnabled)
-                                  RecommendIconButton(
-                                    media: anilistData!,
-                                    mediaItemType: ItemType.anime,
-                                    buttonBuilder: (onTap, icon) =>
-                                        _buildActionIconButton(
-                                      context: context,
-                                      icon: Icons.recommend_rounded,
-                                      onTap: onTap,
-                                    ),
-                                  ),
-                                if (CommunityService.votingEnabled)
-                                  const SizedBox(width: 7),
-                                _buildActionIconButton(
-                                  context: context,
                                   icon: HugeIcons.strokeRoundedLibrary,
                                   onTap: () {
                                     showCustomListDialog(context, anilistData!);
                                   },
                                 ),
-                              ] else ...[
+                                const SizedBox(width: 7),
                                 _buildActionIconButton(
                                   context: context,
                                   icon: Icons.share_rounded,
                                   onTap: _showShareOptions,
                                 ),
-                                const SizedBox(width: 7),
+                              ] else ...[
                                 Expanded(
                                   child: AnymexButton2(
                                     onTap: () {
@@ -709,7 +690,13 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                                     label: 'Add to Library',
                                     icon: HugeIcons.strokeRoundedLibrary,
                                   ),
-                                )
+                                ),
+                                const SizedBox(width: 7),
+                                _buildActionIconButton(
+                                  context: context,
+                                  icon: Icons.share_rounded,
+                                  onTap: _showShareOptions,
+                                ),
                               ]
                             ],
                           );

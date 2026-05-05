@@ -59,25 +59,6 @@ final Map<String, ContributorModel> _curatedContributors = {
         'https://s4.anilist.co/file/anilistcdn/user/banner/b5724017-owslY4fmWD6L.jpg',
     isPinnedCoreTeam: true,
   ),
-  'aayush2622': const ContributorModel(
-    githubLogin: 'aayush2622',
-    githubId: '99584765',
-    displayName: 'Aayush',
-    avatarUrl:
-        'https://s4.anilist.co/file/anilistcdn/user/avatar/large/b5144645-vGCFGixZUVSY.png',
-    profileUrl: 'https://github.com/aayush2622',
-    roleTitle: 'Extension Bridge Developer',
-    prCount: 0,
-    commitCount: 0,
-    bannerUrl:
-        'https://s4.anilist.co/file/anilistcdn/user/banner/b5144645-aRu1A0QFBin4.jpg',
-    isSpecialThanks: true,
-    roleLinks: {
-      'DartotsuExtension Bridge':
-          'https://github.com/aayush2622/DartotsuExtensionBridge',
-      'Dartotsu': 'https://github.com/aayush2622/Dartotsu',
-    },
-  ),
   'pandatech-sx': const ContributorModel(
     githubLogin: 'PandaTech-SX',
     githubId: '74928953',
@@ -88,7 +69,6 @@ final Map<String, ContributorModel> _curatedContributors = {
     prCount: 0,
     commitCount: 0,
     bannerUrl: 'https://i.ibb.co/zhy5G1Tv/Walpaper-1.png',
-    isSpecialThanks: false,
   ),
 };
 
@@ -228,8 +208,7 @@ Future<List<ContributorModel>> fetchContributors() async {
 
     final commitCount = profileContributor?.commitCount ?? 0;
     if (curatedContributor == null &&
-        !(curatedContributor?.isPinnedCoreTeam == true ||
-            curatedContributor?.isSpecialThanks == true) &&
+        !(curatedContributor?.isPinnedCoreTeam == true) &&
         commitCount == 0) {
       continue;
     }
@@ -258,7 +237,6 @@ Future<List<ContributorModel>> fetchContributors() async {
           curatedContributor?.bannerUrl ?? profileContributor?.bannerUrl ?? '',
       roleLinks: curatedContributor?.roleLinks ?? const <String, String>{},
       isPinnedCoreTeam: curatedContributor?.isPinnedCoreTeam ?? false,
-      isSpecialThanks: curatedContributor?.isSpecialThanks ?? false,
     ));
   }
 
@@ -300,7 +278,6 @@ class _ContributorsPageState extends State<ContributorsPage> {
   final RxBool isLoading = true.obs;
   final RxString errorMessage = ''.obs;
   final RxList<ContributorModel> coreTeam = <ContributorModel>[].obs;
-  final RxList<ContributorModel> specialThanks = <ContributorModel>[].obs;
   final RxList<ContributorModel> communityContributors =
       <ContributorModel>[].obs;
   final RxList<StaffModel> staff = <StaffModel>[].obs;
@@ -330,10 +307,8 @@ class _ContributorsPageState extends State<ContributorsPage> {
 
       final coreTeamList = allContributors
           .where(
-            (c) =>
-                !c.isSpecialThanks &&
-                (c.isPinnedCoreTeam ||
-                    c.commitCount >= _coreTeamCommitThreshold),
+            (c) => (c.isPinnedCoreTeam ||
+                c.commitCount >= _coreTeamCommitThreshold),
           )
           .toList();
       coreTeamList.sort((left, right) {
@@ -346,15 +321,10 @@ class _ContributorsPageState extends State<ContributorsPage> {
         return right.prCount.compareTo(left.prCount);
       });
 
-      final specialThanksList =
-          allContributors.where((c) => c.isSpecialThanks).toList();
-
       final communityList = allContributors
           .where(
             (c) =>
-                !c.isSpecialThanks &&
-                !c.isPinnedCoreTeam &&
-                c.commitCount < _coreTeamCommitThreshold,
+                !c.isPinnedCoreTeam && c.commitCount < _coreTeamCommitThreshold,
           )
           .toList();
       final xerusIndex = communityList.indexWhere(
@@ -369,7 +339,6 @@ class _ContributorsPageState extends State<ContributorsPage> {
       }
 
       coreTeam.assignAll(coreTeamList);
-      specialThanks.assignAll(specialThanksList);
       communityContributors.assignAll(communityList);
       staff.assignAll(staffList);
     } catch (error) {
@@ -907,9 +876,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
                     ),
                   ),
                 )
-              else if (coreTeam.isEmpty &&
-                  specialThanks.isEmpty &&
-                  communityContributors.isEmpty)
+              else if (coreTeam.isEmpty && communityContributors.isEmpty)
                 const SliverFillRemaining(
                   child: Center(child: Text('No contributors found.')),
                 )
@@ -919,14 +886,6 @@ class _ContributorsPageState extends State<ContributorsPage> {
                   title: 'Core Team',
                   contributors: coreTeam,
                 ),
-                if (specialThanks.isNotEmpty)
-                  _buildFeaturedSection(
-                    context,
-                    title: 'Special Thanks',
-                    subtitle:
-                        'The extension system is available thanks to Aayush.',
-                    contributors: specialThanks,
-                  ),
                 _buildSectionHeader(context, 'Community Contributors'),
                 _buildContributorsList(context, communityContributors),
                 _buildSectionHeader(context, 'Staff'),
