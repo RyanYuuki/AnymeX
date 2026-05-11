@@ -59,7 +59,7 @@ Use [CPU-Z](https://play.google.com/store/apps/details?id=com.cpuid.cpu_z) or [D
 2. **Add the Anymex bucket:**
    In Command Prompt or PowerShell, run:
    ```powershell
-   scoop bucket add Anymex https://github.com/MiraiEnoki/Anymex_Scoop
+   scoop bucket add hoilc_scoop-lemon https://github.com/hoilc/scoop-lemon
    ```
 3. **Install the app:**
    In Command Prompt or PowerShell, run:
