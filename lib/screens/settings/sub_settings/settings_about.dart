@@ -190,7 +190,7 @@ class AboutPage extends StatelessWidget {
                         CustomListTile(
                           onTap: () async {
                             await launchUrlHelper(
-                                'https://discord.gg/5gAHhMvTcx');
+                                'https://discord.gg/hDwQ3heJ8V');
                           },
                           leading: const Icon(HugeIcons.strokeRoundedDiscord),
                           title: "Discord",
