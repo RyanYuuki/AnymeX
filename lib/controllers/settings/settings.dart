@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:anymex/controllers/profile/profile_manager.dart';
 import 'package:anymex/database/data_keys/keys.dart';
+import 'package:anymex/database/kv_helper.dart';
 import 'package:anymex/models/player/player_adaptor.dart';
 import 'package:anymex/models/ui/ui_adaptor.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
@@ -11,6 +13,7 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/shaders.dart';
 import 'package:anymex/utils/updater.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
@@ -154,9 +157,27 @@ class Settings extends GetxController {
     _updateBridgeDispatcher();
   }
 
-  void saveDownloadPath(String value) {
+  bool saveDownloadPath(String value) {
+    if (value.isNotEmpty) {
+      try {
+        final manager = Get.find<ProfileManager>();
+        final currentId = manager.currentProfileId.value;
+        final savedPrefix = KvHelper.profilePrefix;
+        for (final profile in manager.profiles) {
+          if (profile.id == currentId) continue;
+          KvHelper.profilePrefix = '${profile.id}_';
+          final otherPath = DownloadKeys.downloadPath.get<String>('');
+          if (otherPath.isNotEmpty && otherPath == value) {
+            KvHelper.profilePrefix = savedPrefix;
+            return false;
+          }
+        }
+        KvHelper.profilePrefix = savedPrefix;
+      } catch (_) {}
+    }
     downloadPath.value = value;
     DownloadKeys.downloadPath.set(value);
+    return true;
   }
 
   void saveConcurrentDownloads(int value) {
@@ -177,6 +198,34 @@ class Settings extends GetxController {
   void saveEnableJxlCompression(bool value) {
     enableJxlCompression.value = value;
     DownloadKeys.enableJxlCompression.set(value);
+  }
+
+  void reloadForProfile() {
+    playerSettings = Rx<PlayerSettings>(PlayerSettings.fromDB());
+    uiSettings = Rx<UISettings>(UISettings.fromDB());
+    uiSettings.value.normalizeMaps();
+
+    selectedShader = PlayerUiKeys.selectedShaderLegacy.get<String>("");
+    selectedProfile = PlayerUiKeys.selectedProfile.get<String>("MID-END");
+    playerControlThemeRx.value =
+        PlayerUiKeys.playerControlTheme.get<String>('default');
+    mediaIndicatorThemeRx.value =
+        PlayerUiKeys.mediaIndicatorTheme.get<String>('default');
+    readerControlThemeRx.value =
+        ReaderKeys.readerControlTheme.get<String>('default');
+
+    enableBetaUpdates.value = General.enableBetaUpdates.get<bool>(false);
+    writeLogToFile.value = General.writeLogToFile.get<bool>(false);
+    customLogDirectory.value = General.customLogDirectory.get<String>("");
+
+    downloadPath.value = DownloadKeys.downloadPath.get<String>("");
+    concurrentDownloads.value = DownloadKeys.concurrentDownloads.get<int>(3);
+    downloadChunks.value = DownloadKeys.downloadChunks.get<int>(1);
+    hlsParallelSegments.value = DownloadKeys.hlsParallelSegments.get<int>(3);
+    enableJxlCompression.value = DownloadKeys.enableJxlCompression.get<bool>(false);
+
+    Logger.setFileLoggingEnabled(writeLogToFile.value,
+        customPath: customLogDirectory.value);
   }
 
   void showWelcomeDialog(BuildContext context) {

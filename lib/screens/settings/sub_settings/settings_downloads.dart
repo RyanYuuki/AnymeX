@@ -7,6 +7,7 @@ import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:iconsax/iconsax.dart';
 
 class SettingsDownloads extends StatelessWidget {
@@ -50,7 +51,9 @@ class SettingsDownloads extends StatelessWidget {
                                       String? result = await FilePicker.platform
                                           .getDirectoryPath();
                                       if (result != null) {
-                                        settings.saveDownloadPath(result);
+                                        if (!settings.saveDownloadPath(result)) {
+                                          snackBar('This folder is already used by another profile. Please choose a different folder.');
+                                        }
                                       }
                                     },
                                   ),

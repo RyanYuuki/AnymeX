@@ -3,6 +3,7 @@
 import 'dart:convert';
 
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
+import 'package:anymex/controllers/profile/profile_manager.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/database/comments/comments_db.dart';
@@ -112,6 +113,7 @@ class AnilistAuth extends GetxController {
 
   Future<void> tryAutoLogin() async {
     isLoggedIn.value = false;
+    profileData.value = Profile();
     final token = AuthKeys.authToken.get<String?>();
     if (token != null) {
       await fetchUserProfile();
@@ -587,8 +589,13 @@ class AnilistAuth extends GetxController {
         Logger.i(
             'User profile fetched: ${userProfile.name} (ID: ${userProfile.id})');
 
-        // fetchFollowersAndFollowing(userProfile.id ?? '');
         CommentsDatabase().login();
+
+        try {
+          if (Get.isRegistered<ProfileManager>()) {
+            Get.find<ProfileManager>().updateServiceBadges();
+          }
+        } catch (_) {}
       } else if (response.statusCode == 403) {
         _handle403(response);
       } else {
@@ -2508,5 +2515,10 @@ class AnilistAuth extends GetxController {
     AuthKeys.authToken.delete();
     profileData.value = Profile();
     isLoggedIn.value = false;
+    try {
+      if (Get.isRegistered<ProfileManager>()) {
+        Get.find<ProfileManager>().updateServiceBadges();
+      }
+    } catch (_) {}
   }
 }

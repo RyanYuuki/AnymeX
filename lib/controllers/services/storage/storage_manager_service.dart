@@ -2,7 +2,13 @@ import 'dart:io';
 
 import 'package:anymex/controllers/services/storage/anymex_cache_manager.dart';
 import 'package:anymex/database/data_keys/keys.dart';
+import 'package:anymex/database/isar_models/custom_list.dart';
+import 'package:anymex/database/isar_models/key_value.dart';
+import 'package:anymex/database/isar_models/offline_media.dart';
+import 'package:anymex/database/kv_helper.dart';
 import 'package:anymex/main.dart';
+import 'package:isar_community/isar.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:flutter/painting.dart';
 
 class StorageManagerService {
@@ -53,9 +59,46 @@ class StorageManagerService {
   }
 
   Future<void> factoryResetIsar() async {
-    await isar.writeTxn(() async {
-      await isar.clear();
-    });
+    try {
+      final prefix = KvHelper.profilePrefix;
+      final pid = prefix.isNotEmpty
+          ? prefix.substring(0, prefix.length - 1)
+          : null;
+
+      isar.writeTxnSync(() {
+        if (pid != null) {
+          final mediaToDelete = isar.offlineMedias
+              .filter()
+              .profileIdEqualTo(pid)
+              .findAllSync();
+          for (final m in mediaToDelete) {
+            isar.offlineMedias.deleteSync(m.id);
+          }
+
+          final listsToDelete = isar.customLists
+              .filter()
+              .profileIdEqualTo(pid)
+              .findAllSync();
+          for (final l in listsToDelete) {
+            isar.customLists.deleteSync(l.id);
+          }
+
+          final allKeys =
+              isar.collection<KeyValue>().where().findAllSync();
+          final toDelete = allKeys
+              .where((kv) => kv.key.startsWith(prefix))
+              .toList();
+          for (final kv in toDelete) {
+            isar.collection<KeyValue>().deleteSync(kv.id);
+          }
+        } else {
+          isar.clearSync();
+        }
+      });
+    } catch (e) {
+      Logger.i('Error during profile data reset: $e');
+      rethrow;
+    }
   }
 
   String formatBytes(int bytes) {

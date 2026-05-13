@@ -3,6 +3,7 @@ import 'dart:math' show Random;
 
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
+import 'package:anymex/controllers/profile/profile_manager.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
@@ -402,11 +403,18 @@ class MalService extends GetxController implements BaseService, OnlineService {
         auth: true, useAuthHeader: true, token: tokenn);
     profileData.value = Profile.fromKitsu(data);
     isLoggedIn.value = true;
+    try {
+      if (Get.isRegistered<ProfileManager>()) {
+        Get.find<ProfileManager>().updateServiceBadges();
+      }
+    } catch (_) {}
     Future.wait([fetchUserAnimeList(), fetchUserMangaList()]);
   }
 
   @override
   Future<void> autoLogin() async {
+    isLoggedIn.value = false;
+    profileData.value = Profile();
     try {
       final token = AuthKeys.malAuthToken.get<String?>();
       final refreshToken = AuthKeys.malRefreshToken.get<String?>();
@@ -814,10 +822,13 @@ class MalService extends GetxController implements BaseService, OnlineService {
     AuthKeys.malSessionId.delete();
     isLoggedIn.value = false;
     profileData.value = Profile();
-    // animeList.value = [];
-    // mangaList.value = [];
     continueWatching.value = [];
     continueReading.value = [];
+    try {
+      if (Get.isRegistered<ProfileManager>()) {
+        Get.find<ProfileManager>().updateServiceBadges();
+      }
+    } catch (_) {}
   }
 
   @override

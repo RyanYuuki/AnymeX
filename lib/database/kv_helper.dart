@@ -15,13 +15,27 @@ extension KvExtensions on Enum {
 }
 
 class KvHelper {
+  static String profilePrefix = '';
+
+  static const _globalKeys = {
+    'isFirstTime',
+  };
+
+  static String _prefixKey(String key) {
+    if (profilePrefix.isEmpty) return key;
+    if (key.startsWith('__') && key.endsWith('__')) return key;
+    if (_globalKeys.contains(key)) return key;
+    return '$profilePrefix$key';
+  }
+
   static T get<T>(String key, {T? defaultVal}) {
+    final qualifiedKey = _prefixKey(key);
     final col = isar.collection<KeyValue>();
-    final result = col.filter().keyEqualTo(key).findFirstSync();
+    final result = col.filter().keyEqualTo(qualifiedKey).findFirstSync();
 
     if (result?.value == null) {
       if (defaultVal != null) return defaultVal;
-      Logger.e('Key $key not found');
+      Logger.e('Key $qualifiedKey not found');
       return null as T;
     }
 
@@ -46,7 +60,7 @@ class KvHelper {
 
     if (val is! T) {
       print(
-        'Key $key expected type $T but got ${val.runtimeType}',
+        'Key $qualifiedKey expected type $T but got ${val.runtimeType}',
       );
       if (defaultVal != null) return defaultVal;
       return null as T;
@@ -56,8 +70,9 @@ class KvHelper {
   }
 
   static void set<T>(String key, T value) {
+    final qualifiedKey = _prefixKey(key);
     final data = KeyValue()
-      ..key = key
+      ..key = qualifiedKey
       ..value = jsonEncode({'val': value});
 
     isar.writeTxnSync(() {
@@ -66,8 +81,9 @@ class KvHelper {
   }
 
   static void remove(String key) {
+    final qualifiedKey = _prefixKey(key);
     final col = isar.collection<KeyValue>();
-    final data = col.filter().keyEqualTo(key).findFirstSync();
+    final data = col.filter().keyEqualTo(qualifiedKey).findFirstSync();
 
     if (data == null) return;
 

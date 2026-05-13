@@ -1,4 +1,5 @@
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
+import 'package:anymex/database/kv_helper.dart';
 import 'package:anymex/main.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -43,10 +44,19 @@ class _CustomListDialogState extends State<CustomListDialog> {
   }
 
   void _init() {
-    final raw = isar.customLists
+    final pid = KvHelper.profilePrefix.isNotEmpty
+        ? KvHelper.profilePrefix.substring(0, KvHelper.profilePrefix.length - 1)
+        : null;
+
+    var query = isar.customLists
         .filter()
-        .mediaTypeIndexEqualTo(widget.original.mediaType.index)
-        .findAllSync();
+        .mediaTypeIndexEqualTo(widget.original.mediaType.index);
+
+    if (pid != null) {
+      query = query.profileIdEqualTo(pid);
+    }
+
+    final raw = query.findAllSync();
 
     customList = raw
         .map((l) => CustomList(

@@ -1,10 +1,13 @@
 import 'dart:io';
 
+import 'package:anymex/controllers/profile/profile_manager.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/screens/downloads/download_screen.dart';
 import 'package:anymex/screens/extensions/ExtensionScreen.dart';
 import 'package:anymex/screens/local_source/local_source_view.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
+import 'package:anymex/screens/profile/widgets/profile_avatar.dart';
+import 'package:anymex/screens/profile/widgets/profile_switcher_overlay.dart';
 import 'package:anymex/screens/settings/settings.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -25,6 +28,7 @@ class SettingsSheet extends StatelessWidget {
   SettingsSheet({super.key});
 
   final serviceHandler = Get.find<ServiceHandler>();
+  final profileManager = Get.find<ProfileManager>();
 
   static void show(BuildContext context) {
     showModalBottomSheet(
@@ -251,6 +255,17 @@ class SettingsSheet extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
+              Obx(() {
+                if (profileManager.isMultiProfileEnabled.value) {
+                  return Column(
+                    children: [
+                      _buildProfileSwitchRow(context, theme),
+                      const SizedBox(height: 10),
+                    ],
+                  );
+                }
+                return const SizedBox.shrink();
+              }),
               _buildProfileHeader(context, theme),
               const SizedBox(height: 10),
               _buildMenuSection(context, theme),
@@ -262,7 +277,64 @@ class SettingsSheet extends StatelessWidget {
     );
   }
 
+  Widget _buildProfileSwitchRow(BuildContext context, ColorScheme theme) {
+    return Obx(() {
+      final profile = profileManager.currentProfile.value;
+      if (profile == null) return const SizedBox.shrink();
+
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: theme.surfaceContainer.opaque(0.35),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: theme.outline.opaque(0.12)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: theme.primary.opaque(0.3),
+                  width: 2,
+                ),
+              ),
+              child: ProfileAvatar(
+                profile: profile,
+                radius: 22,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: AnymexText(
+                text: profile.name,
+                variant: TextVariant.semiBold,
+                size: 14,
+              ),
+            ),
+            AnymexOnTap(
+              onTap: () => showProfileSwitcher(context),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: theme.surfaceContainerHighest.opaque(0.5),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  Icons.swap_horiz_rounded,
+                  size: 18,
+                  color: theme.onSurface.opaque(0.7),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
   Widget _buildProfileHeader(BuildContext context, ColorScheme theme) {
+    return Obx(() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
@@ -328,6 +400,7 @@ class SettingsSheet extends StatelessWidget {
                       } else {
                         await serviceHandler.login(context);
                       }
+                      profileManager.updateServiceBadges();
                       Get.back();
                     },
                     child: Row(
@@ -369,9 +442,11 @@ class SettingsSheet extends StatelessWidget {
         ],
       ),
     );
+    });
   }
 
   Widget _buildMenuSection(BuildContext context, ColorScheme theme) {
+    return Obx(() {
     final items = <_SheetMenuItem>[
       if (serviceHandler.isLoggedIn.value &&
           serviceHandler.serviceType.value == ServicesType.anilist)
@@ -451,6 +526,7 @@ class SettingsSheet extends StatelessWidget {
         }).toList(),
       ),
     );
+    });
   }
 
   Widget _buildMenuItem(

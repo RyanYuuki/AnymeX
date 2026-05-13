@@ -1,5 +1,6 @@
-import 'package:anymex/screens/downloads/download_screen.dart';
+import 'package:anymex/controllers/profile/profile_manager.dart';
 import 'package:anymex/screens/other_features.dart';
+import 'package:anymex/screens/profile/profile_management_page.dart';
 import 'package:anymex/screens/settings/search/settings_registry.dart';
 import 'package:anymex/screens/settings/search/settings_search_icons.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_about.dart';
@@ -22,6 +23,7 @@ import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +40,7 @@ class _CategoryItem {
   final void Function()? customTap;
   final bool isDebugOnly;
   final bool addDividerAbove;
+  final bool Function()? isVisible;
 
   const _CategoryItem({
     required this.icon,
@@ -47,6 +50,7 @@ class _CategoryItem {
     this.customTap,
     this.isDebugOnly = false,
     this.addDividerAbove = false,
+    this.isVisible,
   });
 }
 
@@ -233,28 +237,55 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Widget _buildCategoryList(EdgeInsets padding) {
-    return SuperListView(
-      padding: padding,
-      children: [
-        const SizedBox(height: 16),
-        Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color:
-                  Theme.of(context).colorScheme.surfaceContainer.opaque(0.3)),
-          child: Column(
-            children: [
-              ..._buildCategoryWidgets(),
-            ],
+    return Obx(() {
+      return SuperListView(
+        padding: padding,
+        children: [
+          const SizedBox(height: 16),
+          Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color:
+                    Theme.of(context).colorScheme.surfaceContainer.opaque(0.3)),
+            child: Column(
+              children: [
+                ..._buildCategoryWidgets(),
+              ],
+            ),
           ),
-        ),
-        30.height(),
-      ],
-    );
+          30.height(),
+        ],
+      );
+    });
   }
 
   List<Widget> _buildCategoryWidgets() {
     final items = [
+      _CategoryItem(
+          icon: HugeIcons.strokeRoundedUser02,
+          title: "Profiles",
+          description: "Manage profiles, PIN locks, and switching",
+          destination: () => const ProfileManagementPage(),
+          isVisible: () {
+            final manager = Get.find<ProfileManager>();
+            return manager.isMultiProfileEnabled.value;
+          }),
+      _CategoryItem(
+          icon: Icons.person_add_rounded,
+          title: "Enable Profiles",
+          description: "Set up multiple profiles to keep your data separate",
+          customTap: () {
+            final manager = Get.find<ProfileManager>();
+            manager.enableMultiProfile();
+            snackBar('Profiles enabled');
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const ProfileManagementPage()),
+            );
+          },
+          isVisible: () {
+            final manager = Get.find<ProfileManager>();
+            return !manager.isMultiProfileEnabled.value;
+          }),
       _CategoryItem(
           icon: IconlyLight.profile,
           title: "Accounts",
@@ -349,6 +380,7 @@ class _SettingsPageState extends State<SettingsPage> {
     final widgets = <Widget>[];
     for (final item in items) {
       if (item.isDebugOnly && !kDebugMode) continue;
+      if (item.isVisible != null && !item.isVisible!()) continue;
 
       if (item.addDividerAbove) {
         widgets.add(const SizedBox(height: 10));

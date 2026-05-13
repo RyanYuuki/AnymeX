@@ -116,54 +116,59 @@ const OfflineMediaSchema = CollectionSchema(
       name: r'premiered',
       type: IsarType.string,
     ),
-    r'rating': PropertySchema(
+    r'profileId': PropertySchema(
       id: 19,
+      name: r'profileId',
+      type: IsarType.string,
+    ),
+    r'rating': PropertySchema(
+      id: 20,
       name: r'rating',
       type: IsarType.string,
     ),
     r'readChapters': PropertySchema(
-      id: 20,
+      id: 21,
       name: r'readChapters',
       type: IsarType.objectList,
       target: r'Chapter',
     ),
     r'season': PropertySchema(
-      id: 21,
+      id: 22,
       name: r'season',
       type: IsarType.string,
     ),
     r'serviceIndex': PropertySchema(
-      id: 22,
+      id: 23,
       name: r'serviceIndex',
       type: IsarType.long,
     ),
     r'status': PropertySchema(
-      id: 23,
+      id: 24,
       name: r'status',
       type: IsarType.string,
     ),
     r'studios': PropertySchema(
-      id: 24,
+      id: 25,
       name: r'studios',
       type: IsarType.stringList,
     ),
     r'totalChapters': PropertySchema(
-      id: 25,
+      id: 26,
       name: r'totalChapters',
       type: IsarType.string,
     ),
     r'totalEpisodes': PropertySchema(
-      id: 26,
+      id: 27,
       name: r'totalEpisodes',
       type: IsarType.string,
     ),
     r'type': PropertySchema(
-      id: 27,
+      id: 28,
       name: r'type',
       type: IsarType.string,
     ),
     r'watchedEpisodes': PropertySchema(
-      id: 28,
+      id: 29,
       name: r'watchedEpisodes',
       type: IsarType.objectList,
       target: r'Episode',
@@ -175,6 +180,19 @@ const OfflineMediaSchema = CollectionSchema(
   deserializeProp: _offlineMediaDeserializeProp,
   idName: r'id',
   indexes: {
+    r'profileId': IndexSchema(
+      id: 6052971939042612300,
+      name: r'profileId',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'profileId',
+          type: IndexType.hash,
+          caseSensitive: true,
+        )
+      ],
+    ),
     r'mediaId': IndexSchema(
       id: -8001372983137409759,
       name: r'mediaId',
@@ -339,6 +357,12 @@ int _offlineMediaEstimateSize(
     }
   }
   {
+    final value = object.profileId;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
     final value = object.rating;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
@@ -460,22 +484,23 @@ void _offlineMediaSerialize(
   writer.writeString(offsets[16], object.popularity);
   writer.writeString(offsets[17], object.poster);
   writer.writeString(offsets[18], object.premiered);
-  writer.writeString(offsets[19], object.rating);
+  writer.writeString(offsets[19], object.profileId);
+  writer.writeString(offsets[20], object.rating);
   writer.writeObjectList<Chapter>(
-    offsets[20],
+    offsets[21],
     allOffsets,
     ChapterSchema.serialize,
     object.readChapters,
   );
-  writer.writeString(offsets[21], object.season);
-  writer.writeLong(offsets[22], object.serviceIndex);
-  writer.writeString(offsets[23], object.status);
-  writer.writeStringList(offsets[24], object.studios);
-  writer.writeString(offsets[25], object.totalChapters);
-  writer.writeString(offsets[26], object.totalEpisodes);
-  writer.writeString(offsets[27], object.type);
+  writer.writeString(offsets[22], object.season);
+  writer.writeLong(offsets[23], object.serviceIndex);
+  writer.writeString(offsets[24], object.status);
+  writer.writeStringList(offsets[25], object.studios);
+  writer.writeString(offsets[26], object.totalChapters);
+  writer.writeString(offsets[27], object.totalEpisodes);
+  writer.writeString(offsets[28], object.type);
   writer.writeObjectList<Episode>(
-    offsets[28],
+    offsets[29],
     allOffsets,
     EpisodeSchema.serialize,
     object.watchedEpisodes,
@@ -526,22 +551,23 @@ OfflineMedia _offlineMediaDeserialize(
     popularity: reader.readStringOrNull(offsets[16]),
     poster: reader.readStringOrNull(offsets[17]),
     premiered: reader.readStringOrNull(offsets[18]),
-    rating: reader.readStringOrNull(offsets[19]),
+    profileId: reader.readStringOrNull(offsets[19]),
+    rating: reader.readStringOrNull(offsets[20]),
     readChapters: reader.readObjectList<Chapter>(
-      offsets[20],
+      offsets[21],
       ChapterSchema.deserialize,
       allOffsets,
       Chapter(),
     ),
-    season: reader.readStringOrNull(offsets[21]),
-    serviceIndex: reader.readLongOrNull(offsets[22]),
-    status: reader.readStringOrNull(offsets[23]),
-    studios: reader.readStringList(offsets[24]),
-    totalChapters: reader.readStringOrNull(offsets[25]),
-    totalEpisodes: reader.readStringOrNull(offsets[26]),
-    type: reader.readStringOrNull(offsets[27]),
+    season: reader.readStringOrNull(offsets[22]),
+    serviceIndex: reader.readLongOrNull(offsets[23]),
+    status: reader.readStringOrNull(offsets[24]),
+    studios: reader.readStringList(offsets[25]),
+    totalChapters: reader.readStringOrNull(offsets[26]),
+    totalEpisodes: reader.readStringOrNull(offsets[27]),
+    type: reader.readStringOrNull(offsets[28]),
     watchedEpisodes: reader.readObjectList<Episode>(
-      offsets[28],
+      offsets[29],
       EpisodeSchema.deserialize,
       allOffsets,
       Episode(),
@@ -617,27 +643,29 @@ P _offlineMediaDeserializeProp<P>(
     case 19:
       return (reader.readStringOrNull(offset)) as P;
     case 20:
+      return (reader.readStringOrNull(offset)) as P;
+    case 21:
       return (reader.readObjectList<Chapter>(
         offset,
         ChapterSchema.deserialize,
         allOffsets,
         Chapter(),
       )) as P;
-    case 21:
-      return (reader.readStringOrNull(offset)) as P;
     case 22:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 23:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 24:
-      return (reader.readStringList(offset)) as P;
-    case 25:
       return (reader.readStringOrNull(offset)) as P;
+    case 25:
+      return (reader.readStringList(offset)) as P;
     case 26:
       return (reader.readStringOrNull(offset)) as P;
     case 27:
       return (reader.readStringOrNull(offset)) as P;
     case 28:
+      return (reader.readStringOrNull(offset)) as P;
+    case 29:
       return (reader.readObjectList<Episode>(
         offset,
         EpisodeSchema.deserialize,
@@ -737,6 +765,73 @@ extension OfflineMediaQueryWhere
         upper: upperId,
         includeUpper: includeUpper,
       ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterWhereClause>
+      profileIdIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'profileId',
+        value: [null],
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterWhereClause>
+      profileIdIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'profileId',
+        lower: [null],
+        includeLower: false,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterWhereClause> profileIdEqualTo(
+      String? profileId) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'profileId',
+        value: [profileId],
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterWhereClause>
+      profileIdNotEqualTo(String? profileId) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'profileId',
+              lower: [],
+              upper: [profileId],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'profileId',
+              lower: [profileId],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'profileId',
+              lower: [profileId],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'profileId',
+              lower: [],
+              upper: [profileId],
+              includeUpper: false,
+            ));
+      }
     });
   }
 
@@ -3421,6 +3516,160 @@ extension OfflineMediaQueryFilter
   }
 
   QueryBuilder<OfflineMedia, OfflineMedia, QAfterFilterCondition>
+      profileIdIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'profileId',
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterFilterCondition>
+      profileIdIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'profileId',
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterFilterCondition>
+      profileIdEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'profileId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterFilterCondition>
+      profileIdGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'profileId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterFilterCondition>
+      profileIdLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'profileId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterFilterCondition>
+      profileIdBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'profileId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterFilterCondition>
+      profileIdStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'profileId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterFilterCondition>
+      profileIdEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'profileId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterFilterCondition>
+      profileIdContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'profileId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterFilterCondition>
+      profileIdMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'profileId',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterFilterCondition>
+      profileIdIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'profileId',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterFilterCondition>
+      profileIdIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'profileId',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterFilterCondition>
       ratingIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -5092,6 +5341,18 @@ extension OfflineMediaQuerySortBy
     });
   }
 
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterSortBy> sortByProfileId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'profileId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterSortBy> sortByProfileIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'profileId', Sort.desc);
+    });
+  }
+
   QueryBuilder<OfflineMedia, OfflineMedia, QAfterSortBy> sortByRating() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'rating', Sort.asc);
@@ -5366,6 +5627,18 @@ extension OfflineMediaQuerySortThenBy
     });
   }
 
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterSortBy> thenByProfileId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'profileId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterSortBy> thenByProfileIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'profileId', Sort.desc);
+    });
+  }
+
   QueryBuilder<OfflineMedia, OfflineMedia, QAfterSortBy> thenByRating() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'rating', Sort.asc);
@@ -5560,6 +5833,13 @@ extension OfflineMediaQueryWhereDistinct
     });
   }
 
+  QueryBuilder<OfflineMedia, OfflineMedia, QDistinct> distinctByProfileId(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'profileId', caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<OfflineMedia, OfflineMedia, QDistinct> distinctByRating(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -5740,6 +6020,12 @@ extension OfflineMediaQueryProperty
   QueryBuilder<OfflineMedia, String?, QQueryOperations> premieredProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'premiered');
+    });
+  }
+
+  QueryBuilder<OfflineMedia, String?, QQueryOperations> profileIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'profileId');
     });
   }
 

@@ -59,9 +59,9 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Factory Reset'),
+        title: const Text('Reset Profile Data'),
         content: const Text(
-          'This will permanently delete all data stored of AnymeX. This cannot be undone.',
+          'This will permanently delete all data for the current profile (library, custom lists, settings). Other profiles will not be affected. This cannot be undone.',
         ),
         actions: [
           TextButton(
@@ -70,7 +70,7 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete All'),
+            child: const Text('Delete Profile Data'),
           ),
         ],
       ),
@@ -81,7 +81,7 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
     setState(() => _isRunningAction = true);
     try {
       await _service.factoryResetIsar();
-      snackBar('Isar data deleted');
+      snackBar('Profile data reset successfully');
     } catch (e) {
       snackBar('Factory reset failed: $e');
     } finally {
@@ -210,9 +210,9 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
                           ),
                           CustomTile(
                             icon: Icons.warning_rounded,
-                            title: 'Factory reset',
+                            title: 'Reset profile data',
                             description:
-                                'Delete everything stored of AnymeX permanently.',
+                                'Delete library, lists & settings for the current profile only.',
                             descColor: context.colors.error,
                             onTap: _factoryResetIsar,
                           ),
