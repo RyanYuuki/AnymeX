@@ -272,7 +272,15 @@ class _UserProfilePageState extends State<UserProfilePage>
       return const Center(child: CircularProgressIndicator());
     }
     if (_userProfile == null) {
-      return const Center(child: Text('Failed to load profile'));
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Text(
+            'Failed to load profile — account may be private or not found',
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
     }
 
     final user = _userProfile!;
@@ -480,7 +488,18 @@ class _UserProfilePageState extends State<UserProfilePage>
               if (!isOwner)
                 IconButton(
                   icon: const Icon(Icons.add),
-                  onPressed: () => _showCreateMessageSheet(context),
+                  onPressed: () {
+                    if (!Get.find<AnilistAuth>().isLoggedIn.value) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Please login first'),
+                          duration: Duration(milliseconds: 1500),
+                        ),
+                      );
+                      return;
+                    }
+                    _showCreateMessageSheet(context);
+                  },
                   tooltip: "Message Friend",
                   style: IconButton.styleFrom(
                     backgroundColor: context.theme.colorScheme.primaryContainer,
