@@ -515,20 +515,20 @@ class CommentsDatabase {
     }
   }
 
-  Future<List<LeaderboardEntry>> getLeaderboard({
+  Future<Map<String, dynamic>> getLeaderboard({
     String? targetClientType,
+    int page = 1,
     int limit = 50,
-    int offset = 0,
   }) async {
     try {
       return await commentumService.getLeaderboard(
         targetClientType: targetClientType,
+        page: page,
         limit: limit,
-        offset: offset,
       );
     } catch (e) {
       log("Error fetching leaderboard: $e");
-      return [];
+      return {'entries': <LeaderboardEntry>[], 'pagination': null};
     }
   }
 

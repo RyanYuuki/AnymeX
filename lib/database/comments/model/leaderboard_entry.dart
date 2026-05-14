@@ -5,8 +5,10 @@ class LeaderboardEntry {
   final int totalPoints;
   final String tier;
   final String tierEmoji;
+  final String tierLabel;
   final int currentStreak;
   final String? role;
+  final String? clientType;
   final int rank;
 
   LeaderboardEntry({
@@ -15,22 +17,57 @@ class LeaderboardEntry {
     required this.totalPoints,
     required this.tier,
     required this.tierEmoji,
+    required this.tierLabel,
     required this.currentStreak,
     this.avatarUrl,
     this.role,
+    this.clientType,
     required this.rank,
   });
 
+  static String _getTierEmoji(String tier) {
+    switch (tier.toLowerCase()) {
+      case 'elite':
+        return '💎';
+      case 'veteran':
+        return '⭐';
+      case 'active':
+        return '🌸';
+      case 'regular':
+        return '🍃';
+      default:
+        return '🌱';
+    }
+  }
+
+  static String _getTierLabel(String tier) {
+    switch (tier.toLowerCase()) {
+      case 'elite':
+        return 'Elite';
+      case 'veteran':
+        return 'Veteran';
+      case 'active':
+        return 'Active';
+      case 'regular':
+        return 'Regular';
+      default:
+        return 'Newcomer';
+    }
+  }
+
   factory LeaderboardEntry.fromMap(Map m, {int? rank}) {
+    final tier = m['tier']?.toString() ?? 'newcomer';
     return LeaderboardEntry(
       userId: m['user_id']?.toString() ?? '',
       username: m['username']?.toString() ?? 'Unknown',
-      avatarUrl: m['avatar_url']?.toString(),
-      totalPoints: _parseInt(m['total_points']),
-      tier: m['tier']?.toString() ?? 'Newcomer',
-      tierEmoji: m['tier_emoji']?.toString() ?? '🌱',
-      currentStreak: _parseInt(m['current_streak']),
+      avatarUrl: m['avatar_url']?.toString() ?? m['avatar']?.toString(),
+      totalPoints: _parseInt(m['total_points'] ?? m['points']),
+      tier: tier,
+      tierEmoji: m['tier_emoji']?.toString() ?? _getTierEmoji(tier),
+      tierLabel: _getTierLabel(tier),
+      currentStreak: _parseInt(m['current_streak'] ?? m['streak']),
       role: m['role']?.toString(),
+      clientType: m['client_type']?.toString(),
       rank: rank ?? _parseInt(m['rank']),
     );
   }

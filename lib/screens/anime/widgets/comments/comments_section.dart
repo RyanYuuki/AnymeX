@@ -1,6 +1,7 @@
-import 'dart:math';
 import 'package:anymex/database/comments/model/comment.dart';
+import 'package:anymex/database/comments/model/leaderboard_entry.dart';
 import 'package:anymex/database/comments/model/user_points.dart';
+import 'package:anymex/database/comments/comments_db.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
@@ -227,6 +228,15 @@ class _CommentSectionState extends State<CommentSection> {
     );
   }
 
+  void _showLeaderboardSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const _LeaderboardSheet(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -323,6 +333,20 @@ class _CommentSectionState extends State<CommentSection> {
               ),
               _buildSortChip(context, controller),
               const SizedBox(width: 4),
+              SizedBox(
+                width: 36,
+                height: 36,
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: () => _showLeaderboardSheet(context),
+                  icon: Icon(
+                    Icons.emoji_events_rounded,
+                    color: Colors.amber.shade700,
+                    size: 20,
+                  ),
+                  tooltip: 'Leaderboard',
+                ),
+              ),
               SizedBox(
                 width: 36,
                 height: 36,
@@ -2598,7 +2622,6 @@ class _CommentSectionState extends State<CommentSection> {
                         final data = snapshot.data!;
                         final history = data['history'] as List<dynamic>? ?? [];
 
-                        // Filter only comment entries
                         final comments = history.where((e) {
                           final action = (e as Map<String, dynamic>)['action']?.toString() ?? '';
                           return action == 'comment';
@@ -3554,7 +3577,6 @@ class _UserProfileSheetState extends State<_UserProfileSheet> {
     final colorScheme = theme.colorScheme;
     final isMod = widget.userRole != null && widget.userRole != 'user';
 
-    // Determine tier display from points or fallback
     final tierName = _points?.tier ?? widget.fallbackTier;
     final tierEmoji = tierName != null ? UserPoints.getTierEmoji(tierName) : null;
 
@@ -3960,5 +3982,520 @@ class _UserProfileSheetState extends State<_UserProfileSheet> {
       default:
         return Colors.grey.shade500;
     }
+  }
+}
+
+
+class _LeaderboardSheet extends StatefulWidget {
+  const _LeaderboardSheet();
+
+  @override
+  State<_LeaderboardSheet> createState() => _LeaderboardSheetState();
+}
+
+class _LeaderboardSheetState extends State<_LeaderboardSheet> {
+  List<LeaderboardEntry> _entries = [];
+  bool _isLoading = true;
+  bool _isLoadingMore = false;
+  String? _error;
+  int _currentPage = 1;
+  int _totalUsers = 0;
+  bool _hasMore = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchLeaderboard();
+  }
+
+  Future<void> _fetchLeaderboard({bool loadMore = false}) async {
+    if (_isLoadingMore) return;
+
+    if (loadMore) {
+      setState(() => _isLoadingMore = true);
+    } else {
+      setState(() {
+        _isLoading = true;
+        _error = null;
+      });
+    }
+
+    try {
+      final db = CommentsDatabase();
+      final result = await db.getLeaderboard(
+        page: loadMore ? _currentPage + 1 : 1,
+        limit: 50,
+      );
+
+      final entries = (result['entries'] as List<LeaderboardEntry>?) ?? [];
+      final pagination = result['pagination'] as Map<String, dynamic>?;
+
+      if (mounted) {
+        setState(() {
+          if (loadMore) {
+            _entries.addAll(entries);
+            _currentPage++;
+          } else {
+            _entries = entries;
+            _currentPage = 1;
+          }
+          _totalUsers = (pagination?['total'] as int?) ?? 0;
+          _hasMore = _entries.length < _totalUsers;
+          _isLoading = false;
+          _isLoadingMore = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _error = 'Failed to load leaderboard';
+          _isLoading = false;
+          _isLoadingMore = false;
+        });
+      }
+    }
+  }
+
+  Color _getRankColor(int rank) {
+    switch (rank) {
+      case 1:
+        return const Color(0xFFFFD700); // Gold
+      case 2:
+        return const Color(0xFFC0C0C0); // Silver
+      case 3:
+        return const Color(0xFFCD7F32); // Bronze
+      default:
+        return Colors.transparent;
+    }
+  }
+
+  Widget _buildRankBadge(int rank, ColorScheme colorScheme) {
+    if (rank <= 3) {
+      final colors = {
+        1: const Color(0xFFFFD700),
+        2: const Color(0xFFC0C0C0),
+        3: const Color(0xFFCD7F32),
+      };
+      return Container(
+        width: 32,
+        height: 32,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              colors[rank]!,
+              colors[rank]!.withOpacity(0.7),
+            ],
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: colors[rank]!.withOpacity(0.4),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Center(
+          child: Text(
+            '$rank',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w800,
+              fontSize: 14,
+            ),
+          ),
+        ),
+      );
+    }
+    return Container(
+      width: 32,
+      height: 32,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
+      ),
+      child: Center(
+        child: Text(
+          '$rank',
+          style: TextStyle(
+            color: colorScheme.onSurfaceVariant,
+            fontWeight: FontWeight.w600,
+            fontSize: 13,
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _getDisplayRole(String? role) {
+    if (role == null || role == 'user') return '';
+    switch (role) {
+      case 'owner':
+        return '👑';
+      case 'super_admin':
+        return '🛡️';
+      case 'admin':
+        return '⚡';
+      case 'moderator':
+        return '🔧';
+      default:
+        return '';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.8,
+      ),
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Center(
+            child: Container(
+              margin: const EdgeInsets.only(top: 12),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: colorScheme.onSurfaceVariant.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 20, 24, 16),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.emoji_events_rounded,
+                  color: Colors.amber.shade700,
+                  size: 28,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Leaderboard',
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w800,
+                          color: colorScheme.onSurface,
+                        ),
+                      ),
+                      if (_totalUsers > 0)
+                        Text(
+                          '$_totalUsers users ranked',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: Icon(
+                    Icons.close_rounded,
+                    color: colorScheme.onSurfaceVariant,
+                    size: 22,
+                  ),
+                  style: IconButton.styleFrom(
+                    backgroundColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  _buildTierChip('🌱 Newcomer', '0-99', colorScheme),
+                  const SizedBox(width: 8),
+                  _buildTierChip('🍃 Regular', '100-499', colorScheme),
+                  const SizedBox(width: 8),
+                  _buildTierChip('🌸 Active', '500-1499', colorScheme),
+                  const SizedBox(width: 8),
+                  _buildTierChip('⭐ Veteran', '1500-4999', colorScheme),
+                  const SizedBox(width: 8),
+                  _buildTierChip('💎 Elite', '5000+', colorScheme),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Divider(height: 1, color: colorScheme.outlineVariant.withOpacity(0.3)),
+          Expanded(child: _buildContent(context, colorScheme, theme)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTierChip(String label, String range, ColorScheme colorScheme) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: colorScheme.outlineVariant.withOpacity(0.2),
+        ),
+      ),
+      child: Text(
+        '$label ($range)',
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          color: colorScheme.onSurfaceVariant,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContent(BuildContext context, ColorScheme colorScheme, ThemeData theme) {
+    if (_isLoading) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ExpressiveLoadingIndicator(color: colorScheme.primary),
+            const SizedBox(height: 16),
+            Text(
+              'Loading leaderboard...',
+              style: TextStyle(
+                color: colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_error != null) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.error_outline_rounded, size: 40, color: colorScheme.error),
+            const SizedBox(height: 12),
+            Text(
+              _error!,
+              style: TextStyle(
+                color: colorScheme.error,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 16),
+            FilledButton.icon(
+              onPressed: _fetchLeaderboard,
+              icon: const Icon(Icons.refresh_rounded, size: 18),
+              label: const Text('Retry'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_entries.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.emoji_events_outlined, size: 48, color: colorScheme.onSurfaceVariant),
+            const SizedBox(height: 12),
+            Text(
+              'No users ranked yet',
+              style: TextStyle(
+                color: colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Be the first to comment and earn points!',
+              style: TextStyle(
+                color: colorScheme.onSurfaceVariant.withOpacity(0.7),
+                fontWeight: FontWeight.w500,
+                fontSize: 13,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return NotificationListener<ScrollNotification>(
+      onNotification: (scrollInfo) {
+        if (!_isLoadingMore &&
+            _hasMore &&
+            scrollInfo is ScrollUpdateNotification &&
+            scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 200) {
+          _fetchLeaderboard(loadMore: true);
+        }
+        return false;
+      },
+      child: RefreshIndicator(
+        onRefresh: () => _fetchLeaderboard(),
+        child: ListView.builder(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          itemCount: _entries.length + (_hasMore ? 1 : 0),
+          itemBuilder: (context, index) {
+            if (index >= _entries.length) {
+              return Padding(
+                padding: const EdgeInsets.all(20),
+                child: Center(
+                  child: ExpressiveLoadingIndicator(color: colorScheme.primary),
+                ),
+              );
+            }
+
+            final entry = _entries[index];
+            return _buildLeaderboardEntry(entry, index, colorScheme, theme);
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLeaderboardEntry(
+    LeaderboardEntry entry,
+    int index,
+    ColorScheme colorScheme,
+    ThemeData theme,
+  ) {
+    final isTop3 = entry.rank <= 3;
+    final roleEmoji = _getDisplayRole(entry.role);
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Material(
+        color: isTop3
+            ? _getRankColor(entry.rank).withOpacity(0.06)
+            : Colors.transparent,
+        borderRadius: BorderRadius.circular(14),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: () {
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: isTop3
+                ? BoxDecoration(
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: _getRankColor(entry.rank).withOpacity(0.2),
+                    ),
+                  )
+                : null,
+            child: Row(
+              children: [
+                _buildRankBadge(entry.rank, colorScheme),
+                const SizedBox(width: 12),
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: colorScheme.surfaceContainer,
+                    border: Border.all(
+                      color: isTop3
+                          ? _getRankColor(entry.rank).withOpacity(0.4)
+                          : colorScheme.outlineVariant.withOpacity(0.3),
+                      width: isTop3 ? 2 : 1,
+                    ),
+                  ),
+                  child: ClipOval(
+                    child: entry.avatarUrl != null && entry.avatarUrl!.isNotEmpty
+                        ? AnymeXImage(
+                            imageUrl: entry.avatarUrl!,
+                            fit: BoxFit.cover,
+                            radius: 0,
+                          )
+                        : Icon(
+                            Icons.person_rounded,
+                            color: colorScheme.onSurfaceVariant,
+                            size: 20,
+                          ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              entry.username,
+                              style: TextStyle(
+                                fontWeight: isTop3 ? FontWeight.w700 : FontWeight.w600,
+                                fontSize: 14,
+                                color: colorScheme.onSurface,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (roleEmoji.isNotEmpty) ...[
+                            const SizedBox(width: 4),
+                            Text(roleEmoji, style: const TextStyle(fontSize: 14)),
+                          ],
+                        ],
+                      ),
+                      const SizedBox(height: 2),
+                      Row(
+                        children: [
+                          Text(
+                            '${entry.tierEmoji} ${entry.tierLabel}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: colorScheme.surfaceContainerHighest.withOpacity(0.4),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    '${entry.totalPoints}',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                      color: isTop3
+                          ? _getRankColor(entry.rank)
+                          : colorScheme.onSurface,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

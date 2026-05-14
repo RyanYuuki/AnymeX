@@ -948,17 +948,17 @@ class CommentumService extends GetxController {
     }
   }
 
-  Future<List<LeaderboardEntry>> getLeaderboard({
+  Future<Map<String, dynamic>> getLeaderboard({
     String? targetClientType,
+    int page = 1,
     int limit = 50,
-    int offset = 0,
   }) async {
     try {
       final body = <String, dynamic>{
         'action': 'get_leaderboard',
-        'client_type': targetClientType ?? _clientType,
+        'target_client_type': targetClientType ?? _clientType,
+        'page': page,
         'limit': limit,
-        'offset': offset,
       };
 
       final response = await http.post(
@@ -969,20 +969,27 @@ class CommentumService extends GetxController {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final entries = data['leaderboard'] as List? ?? [];
-        return entries.asMap().entries.map((entry) {
+        final entries = (data['leaderboard'] as List? ?? [])
+            .asMap()
+            .entries
+            .map((entry) {
           return LeaderboardEntry.fromMap(
             entry.value as Map,
-            rank: entry.key + 1 + offset,
+            rank: entry.key + 1 + ((page - 1) * limit),
           );
         }).toList();
+        final pagination = data['pagination'] as Map<String, dynamic>?;
+        return {
+          'entries': entries,
+          'pagination': pagination,
+        };
       } else {
         Logger.i('Failed to get leaderboard');
-        return [];
+        return {'entries': <LeaderboardEntry>[], 'pagination': null};
       }
     } catch (e) {
       Logger.i('Error getting leaderboard: $e');
-      return [];
+      return {'entries': <LeaderboardEntry>[], 'pagination': null};
     }
   }
 
