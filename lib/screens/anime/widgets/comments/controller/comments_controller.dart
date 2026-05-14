@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/database/comments/comments_db.dart';
 import 'package:anymex/database/comments/model/comment.dart';
+import 'package:anymex/database/comments/model/user_points.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/services/commentum_service.dart';
@@ -45,6 +46,8 @@ class CommentSectionController extends GetxController
   final RxBool isAdmin = false.obs;
   final RxBool isSuperAdmin = false.obs;
   final RxString currentUserRole = 'user'.obs;
+
+  final RxMap<String, UserPoints> userPointsCache = <String, UserPoints>{}.obs;
 
   late AnimationController expandController;
   late AnimationController fadeController;
@@ -575,5 +578,24 @@ class CommentSectionController extends GetxController
   void onUserAuthChanged() {
     _checkUserRole();
     refreshComments(silent: false);
+  }
+
+  UserPoints? getUserPoints(String userId) {
+    return userPointsCache[userId];
+  }
+
+  Future<UserPoints?> fetchUserPoints(String userId) async {
+    if (userPointsCache.containsKey(userId)) {
+      return userPointsCache[userId];
+    }
+    try {
+      final points = await commentsDB.getUserPoints(targetUserId: userId);
+      if (points != null) {
+        userPointsCache[userId] = points;
+      }
+      return points;
+    } catch (_) {
+      return null;
+    }
   }
 }

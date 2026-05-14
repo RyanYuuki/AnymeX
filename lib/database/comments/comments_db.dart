@@ -1,6 +1,8 @@
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:anymex/database/comments/model/user_points.dart';
+import 'package:anymex/database/comments/model/leaderboard_entry.dart';
 import 'package:get/get.dart';
 
 import 'model/comment.dart';
@@ -481,5 +483,65 @@ class CommentsDatabase {
 
   Future<void> syncUserDataWithAniList() async {
     log("User data sync handled by Commentum v2 API");
+  }
+
+  Future<UserPoints?> getUserPoints({
+    required String targetUserId,
+    String? targetClientType,
+  }) async {
+    try {
+      return await commentumService.getUserPoints(
+        targetUserId: targetUserId,
+        targetClientType: targetClientType,
+      );
+    } catch (e) {
+      log("Error fetching user points: $e");
+      return null;
+    }
+  }
+
+  Future<Map<String, UserPoints>> getBatchUserPoints({
+    required List<String> userIds,
+    String? targetClientType,
+  }) async {
+    try {
+      return await commentumService.getBatchUserPoints(
+        userIds: userIds,
+        targetClientType: targetClientType,
+      );
+    } catch (e) {
+      log("Error fetching batch user points: $e");
+      return {};
+    }
+  }
+
+  Future<List<LeaderboardEntry>> getLeaderboard({
+    String? targetClientType,
+    int limit = 50,
+    int offset = 0,
+  }) async {
+    try {
+      return await commentumService.getLeaderboard(
+        targetClientType: targetClientType,
+        limit: limit,
+        offset: offset,
+      );
+    } catch (e) {
+      log("Error fetching leaderboard: $e");
+      return [];
+    }
+  }
+
+  Future<Map<String, dynamic>?> getPointsConfig({
+    String? targetClientType,
+  }) async {
+    try {
+      return await commentumService.getPointsConfig(
+        targetClientType: targetClientType,
+      );
+    } catch (e) {
+      log("Error fetching points config: $e");
+      return null;
+    }
   }
 }

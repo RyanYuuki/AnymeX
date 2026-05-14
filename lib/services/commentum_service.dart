@@ -5,6 +5,8 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/comments/model/comment.dart';
+import 'package:anymex/database/comments/model/user_points.dart';
+import 'package:anymex/database/comments/model/leaderboard_entry.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/logger.dart';
@@ -873,6 +875,144 @@ class CommentumService extends GetxController {
     );
   }
 
+  Future<UserPoints?> getUserPoints({
+    required String targetUserId,
+    String? targetClientType,
+  }) async {
+    try {
+      final effectiveClientType = targetClientType ?? _clientType;
+      final body = <String, dynamic>{
+        'action': 'get_user_points',
+        'target_user_id': targetUserId,
+        'target_client_type': effectiveClientType,
+        // Send requester info so backend can determine privacy level
+        if (currentUserId != null) 'requester_user_id': currentUserId,
+        if (currentUserId != null) 'requester_client_type': _clientType,
+      };
+
+      final response = await http.post(
+        Uri.parse('$_baseUrl/points'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(body),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        // Backend wraps in { success: true, data: {...} }
+        final pointsData = data['data'] as Map? ?? data;
+        return UserPoints.fromMap(pointsData);
+      } else {
+        final error = json.decode(response.body);
+        Logger.i('Failed to get user points: ${error['error'] ?? 'Unknown error'}');
+        return null;
+      }
+    } catch (e) {
+      Logger.i('Error getting user points: $e');
+      return null;
+    }
+  }
+
+  Future<Map<String, UserPoints>> getBatchUserPoints({
+    required List<String> userIds,
+    String? targetClientType,
+  }) async {
+    try {
+      final body = <String, dynamic>{
+        'action': 'get_batch_user_points',
+        'user_ids': userIds,
+        'client_type': targetClientType ?? _clientType,
+      };
+
+      final response = await http.post(
+        Uri.parse('$_baseUrl/points'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(body),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final pointsMap = <String, UserPoints>{};
+        // Backend returns { success: true, users: {...} }
+        final entries = data['users'] as Map? ?? {};
+        entries.forEach((key, value) {
+          pointsMap[key.toString()] = UserPoints.fromMap(value as Map);
+        });
+        return pointsMap;
+      } else {
+        Logger.i('Failed to get batch user points');
+        return {};
+      }
+    } catch (e) {
+      Logger.i('Error getting batch user points: $e');
+      return {};
+    }
+  }
+
+  Future<List<LeaderboardEntry>> getLeaderboard({
+    String? targetClientType,
+    int limit = 50,
+    int offset = 0,
+  }) async {
+    try {
+      final body = <String, dynamic>{
+        'action': 'get_leaderboard',
+        'client_type': targetClientType ?? _clientType,
+        'limit': limit,
+        'offset': offset,
+      };
+
+      final response = await http.post(
+        Uri.parse('$_baseUrl/points'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(body),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final entries = data['leaderboard'] as List? ?? [];
+        return entries.asMap().entries.map((entry) {
+          return LeaderboardEntry.fromMap(
+            entry.value as Map,
+            rank: entry.key + 1 + offset,
+          );
+        }).toList();
+      } else {
+        Logger.i('Failed to get leaderboard');
+        return [];
+      }
+    } catch (e) {
+      Logger.i('Error getting leaderboard: $e');
+      return [];
+    }
+  }
+
+  Future<Map<String, dynamic>?> getPointsConfig({
+    String? targetClientType,
+  }) async {
+    try {
+      final body = <String, dynamic>{
+        'action': 'get_points_config',
+        'client_type': targetClientType ?? _clientType,
+      };
+
+      final response = await http.post(
+        Uri.parse('$_baseUrl/points'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(body),
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        Logger.i('Failed to get points config');
+        return null;
+      }
+    } catch (e) {
+      Logger.i('Error getting points config: $e');
+      return null;
+    }
+  }
+
   Comment _mapCommentumToAnymeXComment(Map<String, dynamic> commentData) {
     final userVotesData = commentData['user_votes'];
     Map<String, dynamic> userVotes = {};
@@ -950,6 +1090,8 @@ class CommentumService extends GetxController {
       reportCount: commentData['report_count'] as int?,
       reportStatus: commentData['report_status']?.toString(),
       userRole: commentData['user_role']?.toString(),
+      userTier: commentData['user_tier']?.toString(),
+      userPoints: commentData['user_points'] as int?,
       replies: replies,
     );
   }

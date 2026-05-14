@@ -31,8 +31,10 @@ class Comment {
   String? moderationAction;
   bool? moderated;
   String? userRole;
-  int? parentId; // For nested comments
-  List<Comment>? replies; // For nested comments
+  String? userTier;
+  int? userPoints;
+  int? parentId;
+  List<Comment>? replies;
 
   Comment({
     required this.id,
@@ -65,6 +67,8 @@ class Comment {
     this.moderationAction,
     this.moderated,
     this.userRole,
+    this.userTier,
+    this.userPoints,
     this.parentId,
     this.replies,
   });
@@ -102,6 +106,8 @@ class Comment {
       moderationAction: m['moderation_action'],
       moderated: m['moderated'],
       userRole: m['user_role'],
+      userTier: m['user_tier'],
+      userPoints: m['user_points'],
       parentId: m['parent_id'],
       replies: m['replies'] != null 
           ? (m['replies'] as List).map((reply) => Comment.fromMap(reply)).toList()
@@ -141,6 +147,8 @@ class Comment {
     String? moderationAction,
     bool? moderated,
     String? userRole,
+    String? userTier,
+    int? userPoints,
     int? parentId,
     List<Comment>? replies,
   }) {
@@ -175,6 +183,8 @@ class Comment {
       moderationAction: moderationAction ?? this.moderationAction,
       moderated: moderated ?? this.moderated,
       userRole: userRole ?? this.userRole,
+      userTier: userTier ?? this.userTier,
+      userPoints: userPoints ?? this.userPoints,
       parentId: parentId ?? this.parentId,
       replies: replies ?? this.replies,
     );

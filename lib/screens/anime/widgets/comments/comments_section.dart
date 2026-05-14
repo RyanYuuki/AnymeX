@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:anymex/database/comments/model/comment.dart';
+import 'package:anymex/database/comments/model/user_points.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
@@ -18,6 +19,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/screens/profile/user_profile_page.dart';
 
@@ -1309,17 +1311,21 @@ class _CommentSectionState extends State<CommentSection> {
                 runSpacing: 4,
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  Text(
-                    comment.username,
-                    style: TextStyle(
-                      color: colorScheme.onSurface,
-                      fontSize: nameFontSize,
-                      fontWeight: FontWeight.w700,
+                  GestureDetector(
+                    onTap: () => _showUserProfileSheet(context, comment),
+                    child: Text(
+                      comment.username,
+                      style: TextStyle(
+                        color: colorScheme.onSurface,
+                        fontSize: nameFontSize,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                   if (comment.userRole != null &&
                       comment.userRole != 'user')
                     _buildRoleBadge(context, comment.userRole!),
+                  _buildTierBadge(context, comment.userTier, comment.userPoints),
                   if (comment.tag.isNotEmpty && comment.tag != 'General')
                     _buildTag(context, comment.tag),
                   Text(
@@ -1493,25 +1499,89 @@ class _CommentSectionState extends State<CommentSection> {
   }
 
   Widget _buildRoleBadge(BuildContext context, String role) {
-    final emoji = switch (role) {
-      'super_admin' => '👑',
-      'admin' => '🛡️',
-      'moderator' => '⚙️',
-      'owner' => '💎',
-      _ => null,
-    };
+    final roleConfig = _getRoleBadgeConfig(role);
+    if (roleConfig == null) return const SizedBox.shrink();
 
-    if (emoji == null) {
-      return const SizedBox.shrink();
-    }
-
-    return Padding(
-      padding: const EdgeInsets.only(left: 4, right: 0),
+    return Container(
+      margin: const EdgeInsets.only(left: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+      decoration: BoxDecoration(
+        color: roleConfig.$2.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: roleConfig.$2.withOpacity(0.3),
+          width: 0.5,
+        ),
+      ),
       child: Text(
-        emoji,
-        style: const TextStyle(fontSize: 14, height: 1),
+        '${roleConfig.$1} ${roleConfig.$3}',
+        style: TextStyle(
+          fontSize: 10,
+          fontWeight: FontWeight.w700,
+          color: roleConfig.$2,
+          height: 1.2,
+        ),
       ),
     );
+  }
+
+  (String, Color, String)? _getRoleBadgeConfig(String role) {
+    switch (role) {
+      case 'owner':
+        return ('👑', Colors.amber.shade800, 'Owner');
+      case 'super_admin':
+        return ('🛡️', Colors.red, 'S.Admin');
+      case 'admin':
+        return ('⚔️', Colors.orange, 'Admin');
+      case 'moderator':
+        return ('🔨', Colors.teal, 'Mod');
+      default:
+        return null;
+    }
+  }
+
+  Widget _buildTierBadge(BuildContext context, String? tier, int? points) {
+    if (tier == null) return const SizedBox.shrink();
+
+    final emoji = UserPoints.getTierEmoji(tier);
+    final displayName = tier[0].toUpperCase() + tier.substring(1).toLowerCase();
+
+    return Container(
+      margin: const EdgeInsets.only(left: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+      decoration: BoxDecoration(
+        color: _getTierColor(tier).withOpacity(0.12),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: _getTierColor(tier).withOpacity(0.2),
+          width: 0.5,
+        ),
+      ),
+      child: Text(
+        '$displayName $emoji',
+        style: TextStyle(
+          fontSize: 10,
+          fontWeight: FontWeight.w600,
+          color: _getTierColor(tier),
+          height: 1.2,
+        ),
+      ),
+    );
+  }
+
+  Color _getTierColor(String tier) {
+    switch (tier.toLowerCase()) {
+      case 'elite':
+        return Colors.purple.shade400;
+      case 'veteran':
+        return Colors.amber.shade600;
+      case 'active':
+        return Colors.pink.shade400;
+      case 'regular':
+        return Colors.green.shade400;
+      default:
+        return Colors.grey.shade500;
+    }
   }
 
   Widget _buildActionButton({
@@ -2673,6 +2743,33 @@ class _CommentSectionState extends State<CommentSection> {
     }
   }
 
+  void _showUserProfileSheet(BuildContext context, Comment comment) async {
+    final controller = CommentPreloader.to.getPreloadedController(widget.media.uniqueId);
+    UserPoints? points;
+
+    if (controller != null) {
+      points = controller.getUserPoints(comment.userId);
+      points ??= await controller.fetchUserPoints(comment.userId);
+    }
+
+    if (!context.mounted) return;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => _UserProfileSheet(
+        username: comment.username,
+        avatarUrl: comment.avatarUrl,
+        userRole: comment.userRole,
+        points: points,
+        fallbackTier: comment.userTier,
+        fallbackPoints: comment.userPoints,
+        userId: comment.userId,
+      ),
+    );
+  }
+
   Widget _buildInfoRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
@@ -3381,5 +3478,487 @@ class _SpoilerTextState extends State<_SpoilerText> {
         ),
       ),
     );
+  }
+}
+
+class _UserProfileSheet extends StatefulWidget {
+  final String username;
+  final String? avatarUrl;
+  final String? userRole;
+  final UserPoints? points;
+  final String? fallbackTier;
+  final int? fallbackPoints;
+  final String? userId;
+
+  const _UserProfileSheet({
+    required this.username,
+    this.avatarUrl,
+    this.userRole,
+    this.points,
+    this.fallbackTier,
+    this.fallbackPoints,
+    this.userId,
+  });
+
+  @override
+  State<_UserProfileSheet> createState() => _UserProfileSheetState();
+}
+
+class _UserProfileSheetState extends State<_UserProfileSheet> {
+  UserPoints? _points;
+  bool _isLoading = false;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _points = widget.points;
+    if (_points == null && widget.userId != null) {
+      _retryFetch();
+    }
+  }
+
+  Future<void> _retryFetch() async {
+    if (_isLoading) return;
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+    try {
+      final service = Get.find<CommentumService>();
+      final result = await service.getUserPoints(
+        targetUserId: widget.userId!,
+      );
+      if (mounted) {
+        setState(() {
+          _points = result;
+          _isLoading = false;
+          if (result == null) {
+            _error = 'Failed to load points';
+          }
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _error = 'Failed to load points';
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isMod = widget.userRole != null && widget.userRole != 'user';
+
+    // Determine tier display from points or fallback
+    final tierName = _points?.tier ?? widget.fallbackTier;
+    final tierEmoji = tierName != null ? UserPoints.getTierEmoji(tierName) : null;
+
+    return Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.7,
+      ),
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 12),
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: colorScheme.onSurfaceVariant.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          Flexible(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                children: [
+                  if (widget.avatarUrl != null)
+                    CircleAvatar(
+                      radius: 36,
+                      backgroundImage: NetworkImage(widget.avatarUrl!),
+                    )
+                  else
+                    CircleAvatar(
+                      radius: 36,
+                      backgroundColor: colorScheme.primaryContainer,
+                      child: Text(
+                        widget.username.isNotEmpty ? widget.username[0].toUpperCase() : '?',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onPrimaryContainer,
+                        ),
+                      ),
+                    ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          widget.username,
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (isMod)
+                        Container(
+                          margin: const EdgeInsets.only(left: 8),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: _getRoleColor(widget.userRole!).withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color:
+                                  _getRoleColor(widget.userRole!).withOpacity(0.3),
+                            ),
+                          ),
+                          child: Text(
+                            _getRoleLabel(widget.userRole!),
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: _getRoleColor(widget.userRole!),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  if (tierName != null) ...[
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: _getTierColor(tierName)
+                            .withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: _getTierColor(tierName)
+                              .withOpacity(0.2),
+                        ),
+                      ),
+                      child: Text(
+                        _points != null
+                            ? '${_points!.tierEmoji} ${_points!.tier} • ${_formatPoints(_points!.totalPoints)} pts'
+                            : '$tierEmoji $tierName',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: _getTierColor(tierName),
+                        ),
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 20),
+                  if (_points != null) ...[
+                    _buildSectionTitle(context, 'Points Breakdown'),
+                    const SizedBox(height: 8),
+                    _buildBreakdownCard(context, _points!),
+                    const SizedBox(height: 16),
+                    _buildSectionTitle(context, 'Streak'),
+                    const SizedBox(height: 8),
+                    _buildStreakCard(context, _points!),
+                    const SizedBox(height: 16),
+                    _buildSectionTitle(context, 'Stats'),
+                    const SizedBox(height: 8),
+                    _buildStatsCard(context, _points!),
+                  ] else if (_isLoading) ...[
+                    const SizedBox(height: 20),
+                    CircularProgressIndicator(
+                        color: colorScheme.primary),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Loading points...',
+                      style: TextStyle(
+                          color: colorScheme.onSurfaceVariant),
+                    ),
+                  ] else if (_error != null) ...[
+                    const SizedBox(height: 20),
+                    Icon(Icons.error_outline, color: colorScheme.error, size: 32),
+                    const SizedBox(height: 8),
+                    Text(
+                      _error!,
+                      style: TextStyle(color: colorScheme.error),
+                    ),
+                    const SizedBox(height: 8),
+                    TextButton.icon(
+                      onPressed: _retryFetch,
+                      icon: const Icon(Icons.refresh, size: 16),
+                      label: const Text('Retry'),
+                    ),
+                  ],
+                  const SizedBox(height: 24),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(BuildContext context, String title) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Text(
+        title,
+        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+      ),
+    );
+  }
+
+  Widget _buildBreakdownCard(BuildContext context, UserPoints p) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        children: [
+          _buildPointRow(context, '💬', 'Comments', p.breakdown.commentsPoints),
+          _buildPointRow(context, '💭', 'Replies', p.breakdown.repliesPoints),
+          _buildPointRow(context, '👍', 'Upvotes received', p.breakdown.upvotesReceivedPoints),
+          _buildPointRow(context, '🗳️', 'Votes cast', p.breakdown.votesCastPoints),
+          _buildPointRow(context, '📌', 'Pinned', p.breakdown.pinnedPoints),
+          if (p.breakdown.streakBonus > 0)
+            _buildPointRow(context, '🔥', 'Streak bonus', p.breakdown.streakBonus),
+          if (p.breakdown.roleBonus > 0)
+            _buildPointRow(context, '🛡️', 'Role bonus', p.breakdown.roleBonus),
+          if (p.breakdown.downvotesReceivedPoints < 0)
+            _buildPointRow(context, '👎', 'Downvotes received', p.breakdown.downvotesReceivedPoints),
+          if (p.breakdown.warningsPoints < 0)
+            _buildPointRow(context, '⚠️', 'Warnings', p.breakdown.warningsPoints),
+          if (p.breakdown.deletedPoints < 0)
+            _buildPointRow(context, '🗑️', 'Deleted', p.breakdown.deletedPoints),
+          if (p.breakdown.bannedPoints < 0)
+            _buildPointRow(context, '🚫', 'Banned', p.breakdown.bannedPoints),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPointRow(BuildContext context, String emoji, String label, int value) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isNeg = value < 0;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        children: [
+          Text(emoji, style: const TextStyle(fontSize: 14)),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 13,
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+          Text(
+            isNeg ? '$value' : '+$value',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: isNeg ? Colors.red.shade400 : Colors.green.shade400,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStreakCard(BuildContext context, UserPoints p) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              children: [
+                Text('🔥', style: const TextStyle(fontSize: 24)),
+                const SizedBox(height: 4),
+                Text(
+                  '${p.currentStreak}',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  'Current',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            width: 1,
+            height: 40,
+            color: colorScheme.onSurfaceVariant.withOpacity(0.15),
+          ),
+          Expanded(
+            child: Column(
+              children: [
+                Text('🏆', style: const TextStyle(fontSize: 24)),
+                const SizedBox(height: 4),
+                Text(
+                  '${p.longestStreak}',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  'Longest',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatsCard(BuildContext context, UserPoints p) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Wrap(
+        spacing: 12,
+        runSpacing: 10,
+        children: [
+          _buildStatItem(context, '${p.stats.totalComments}', 'Comments'),
+          _buildStatItem(context, '${p.stats.totalReplies}', 'Replies'),
+          _buildStatItem(context, '${p.stats.totalUpvotesReceived}', 'Upvotes'),
+          _buildStatItem(context, '${p.stats.totalVotesCast}', 'Votes cast'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatItem(BuildContext context, String value, String label) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return SizedBox(
+      width: (MediaQuery.of(context).size.width - 64) / 4,
+      child: Column(
+        children: [
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: colorScheme.onSurface,
+            ),
+          ),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 10,
+              color: colorScheme.onSurfaceVariant,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatPoints(int points) {
+    if (points >= 1000000) {
+      return '${(points / 1000000).toStringAsFixed(1)}M';
+    } else if (points >= 1000) {
+      return '${(points / 1000).toStringAsFixed(1)}K';
+    }
+    return points.toString();
+  }
+
+  Color _getRoleColor(String role) {
+    switch (role) {
+      case 'owner':
+        return Colors.amber.shade800;
+      case 'super_admin':
+        return Colors.red;
+      case 'admin':
+        return Colors.orange;
+      case 'moderator':
+        return Colors.teal;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  String _getRoleLabel(String role) {
+    switch (role) {
+      case 'owner':
+        return '👑 Owner';
+      case 'super_admin':
+        return '🛡️ S.Admin';
+      case 'admin':
+        return '⚔️ Admin';
+      case 'moderator':
+        return '🔨 Mod';
+      default:
+        return role;
+    }
+  }
+
+  Color _getTierColor(String tier) {
+    switch (tier.toLowerCase()) {
+      case 'elite':
+        return Colors.purple.shade400;
+      case 'veteran':
+        return Colors.amber.shade600;
+      case 'active':
+        return Colors.pink.shade400;
+      case 'regular':
+        return Colors.green.shade400;
+      default:
+        return Colors.grey.shade500;
+    }
   }
 }
