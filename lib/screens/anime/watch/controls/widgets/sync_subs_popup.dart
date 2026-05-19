@@ -76,7 +76,7 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
     final theme = context.theme;
     final cs = theme.colorScheme;
     // final isBetterPlayer = widget.controller.basePlayer is BetterPlayerImpl;
-    const isBetterPlayer = false;
+
 
     return Column(
       children: [
@@ -326,7 +326,9 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
 
             return GestureDetector(
               onTap: () {
-                widget.controller.seekTo(cue.start + delay);
+                final currentPos = widget.controller.currentPosition.value;
+                final newDelay = currentPos - cue.start;
+                widget.controller.setSubtitleDelay(newDelay);
                 _userScrolling = false;
               },
               child: AnimatedContainer(
@@ -409,10 +411,15 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
             ),
           ),
           const SizedBox(height: 8),
-          Text(
-            'Select a subtitle track first',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: cs.onSurface.withOpacity(0.35),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Text(
+              'Cues are only available for external subtitles. Use the delay controls above to sync embedded tracks.',
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: cs.onSurface.withOpacity(0.35),
+                height: 1.5,
+              ),
             ),
           ),
         ],

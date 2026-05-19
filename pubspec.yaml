@@ -45,6 +45,7 @@ dependencies:
     install_plugin: ^2.1.0
     intl: ^0.20.1
     kenburns_nullsafety: ^1.0.1
+    subtitle: any
 
     outlined_text: ^1.0.1
     # media_kit:
@@ -112,12 +113,12 @@ dependencies:
     # better_player_plus: any
     marquee: ^2.3.0
     material_symbols_icons: any
-    anymex_extension_runtime_bridge:
-        git:
-            url: https://github.com/RyanYuuki/AnymeXExtensionRuntimeBridge.git
-            ref: main
-    # anymex_extension_runtime_bridge: 
-    #     path: ../AnymeXExtensionRuntimeBridge
+    # anymex_extension_runtime_bridge:
+    #     git:
+    #         url: https://github.com/RyanYuuki/AnymeXExtensionRuntimeBridge.git
+    #         ref: main
+    anymex_extension_runtime_bridge: 
+        path: ../AnymeXExtensionRuntimeBridge
     jxl_coder: ^0.1.0
 
 dev_dependencies:

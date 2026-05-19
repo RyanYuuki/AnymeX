@@ -215,20 +215,31 @@ class EpisodesPane extends StatelessWidget {
                   ],
                 ),
               ),
-              if (controller.currentEpisode.value.number != "Offline")
+              if (controller.episodeList.isNotEmpty)
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: ScrollablePositionedList.separated(
-                      initialScrollIndex:
-                          controller.currentEpisode.value.number.toInt() - 1,
+                      initialScrollIndex: (() {
+                        if (controller.isOffline.value) {
+                          final idx = controller.episodeList.indexWhere(
+                              (e) => e.link == controller.selectedVideo.value?.url);
+                          return idx >= 0 ? idx : 0;
+                        }
+                        final numIdx =
+                            controller.currentEpisode.value.number.toInt() - 1;
+                        return numIdx.clamp(
+                            0, controller.episodeList.length - 1);
+                      })(),
                       separatorBuilder: (context, i) =>
                           const SizedBox(height: 8),
                       itemCount: controller.episodeList.length,
                       itemBuilder: (context, index) {
                         final episode = controller.episodeList[index];
-                        final isSelected =
-                            episode == controller.currentEpisode.value;
+                        final isSelected = controller.isOffline.value
+                            ? episode.link ==
+                                controller.selectedVideo.value?.url
+                            : episode == controller.currentEpisode.value;
                         final offlineEpisode = controller.offlineStorage
                             .getAnimeById(controller.anilistData.id)
                             ?.episodes;
