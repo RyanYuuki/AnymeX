@@ -236,23 +236,49 @@ class ColorProfileBottomSheet extends StatefulWidget {
 
   static void showColorProfileSheet(
       BuildContext context, PlayerController controller, dynamic player) {
-    showModalBottomSheet(
+    showGeneralDialog(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => ColorProfileBottomSheet(
-        activeSettings: controller.customSettings,
-        currentProfile: controller.currentVisualProfile.value,
-        player: player,
-        onProfileSelected: (profile) {
-          controller.currentVisualProfile.value = profile;
-          PlayerUiKeys.currentVisualProfile.set(profile);
-        },
-        onCustomSettingsChanged: (sett) {
-          controller.customSettings.value = sett;
-          PlayerUiKeys.currentVisualSettings.set(sett);
-        },
-      ),
+      barrierDismissible: true,
+      barrierLabel: 'Color Profile',
+      barrierColor: Colors.black54,
+      transitionDuration: const Duration(milliseconds: 300),
+      transitionBuilder: (context, anim1, anim2, child) {
+        return SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(1.0, 0.0),
+            end: Offset.zero,
+          ).animate(CurvedAnimation(
+            parent: anim1,
+            curve: Curves.easeOutCubic,
+          )),
+          child: child,
+        );
+      },
+      pageBuilder: (context, anim1, anim2) {
+        return Align(
+          alignment: Alignment.centerRight,
+          child: Material(
+            color: Colors.transparent,
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.85,
+              height: double.infinity,
+              child: ColorProfileBottomSheet(
+                activeSettings: controller.customSettings.value,
+                currentProfile: controller.currentVisualProfile.value,
+                player: player,
+                onProfileSelected: (profile) {
+                  controller.currentVisualProfile.value = profile;
+                  PlayerUiKeys.currentVisualProfile.set(profile);
+                },
+                onCustomSettingsChanged: (sett) {
+                  controller.customSettings.value = sett;
+                  PlayerUiKeys.currentVisualSettings.set(sett);
+                },
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -274,6 +300,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
     "hue": 0,
   };
   late Map<String, dynamic> _visualSettings;
+  bool _areShadersDownloaded = false;
 
   bool get _experimentalEnabled =>
       PlayerUiKeys.playerExperimentalEnabled.get<bool>(false);
@@ -292,6 +319,16 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
       _customSettings = Map.from(ColorProfileManager.profiles['natural']!);
     }
     _visualSettings = PlayerCoreVisualSettings.getMpvVisualSettings();
+    _checkShaders();
+  }
+
+  Future<void> _checkShaders() async {
+    final downloaded = await PlayerShaders.areShadersDownloaded();
+    if (mounted) {
+      setState(() {
+        _areShadersDownloaded = downloaded;
+      });
+    }
   }
 
   @override
@@ -413,22 +450,12 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
     final theme = Theme.of(context);
 
     return Container(
-      height: MediaQuery.of(context).size.height * 0.95,
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+        color: theme.colorScheme.surface.withValues(alpha: 0.90),
+        borderRadius: const BorderRadius.horizontal(left: Radius.circular(28)),
       ),
       child: Column(
         children: [
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 12),
-            width: 32,
-            height: 4,
-            decoration: BoxDecoration(
-              color: theme.colorScheme.onSurfaceVariant.opaque(0.4),
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
           Padding(
             padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
             child: Row(
@@ -556,14 +583,14 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
   }
 
   Widget _buildShadersTab(ThemeData theme) {
-    bool enableShaders = PlayerUiKeys.shadersEnabled.get<bool>(false);
+    bool enableShaders = PlayerUiKeys.shadersEnabled.get<bool>(false) && _areShadersDownloaded;
     return Column(
       children: [
         Expanded(
           child: Opacity(
             opacity: enableShaders ? 1 : 0.3,
             child: ListView(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(20),
               children: [
                 Container(
                   padding: const EdgeInsets.all(16),
@@ -590,7 +617,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                         child: Text(
                           enableShaders
                               ? 'Choose a shader that matches your viewing preference'
-                              : 'Shaders are disabled (Enable them from Settings > Experimental)',
+                              : 'Shaders are not installed or disabled. Enable and download them from Settings > Experimental',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                             fontWeight: FontWeight.w500,
@@ -604,30 +631,42 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                 AnymexExpansionTile(
                   title: 'ANIME 4K',
                   initialExpanded: true,
-                  content: Column(
-                    children: ["Default", ...PlayerShaders.getShaders()]
-                        .map((shader) {
-                      return Obx(() {
+                  content: Obx(() {
+                    final shaders = ["Default", ...PlayerShaders.getShaders()];
+                    return GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        mainAxisExtent: 64,
+                      ),
+                      itemCount: shaders.length,
+                      itemBuilder: (context, index) {
+                        final shader = shaders[index];
                         final isSelected = shader == "Default"
                             ? settingsController.selectedShader.isEmpty ||
                                 settingsController.selectedShader == shader
                             : settingsController.selectedShader == shader;
+
                         return IgnorePointer(
                           ignoring: !enableShaders,
-                          child: AnymexOnTap(
-                            onTap: () => setShaders(shader),
-                            child: Container(
-                              margin: const EdgeInsets.only(bottom: 12),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () => setShaders(shader),
+                              borderRadius: BorderRadius.circular(16),
                               child: AnimatedContainer(
                                 duration: const Duration(milliseconds: 200),
-                                padding: const EdgeInsets.all(16),
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                                 decoration: BoxDecoration(
                                   gradient: isSelected
                                       ? LinearGradient(
                                           colors: [
                                             theme.colorScheme.primaryContainer,
-                                            theme.colorScheme.primaryContainer
-                                                .opaque(0.8),
+                                            theme.colorScheme.primaryContainer.opaque(0.8),
                                           ],
                                           begin: Alignment.topLeft,
                                           end: Alignment.bottomRight,
@@ -635,24 +674,15 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                                       : null,
                                   color: isSelected
                                       ? null
-                                      : theme.colorScheme.surfaceVariant
-                                          .opaque(0.5),
+                                      : theme.colorScheme.surfaceVariant.opaque(0.5),
                                   borderRadius: BorderRadius.circular(16),
                                   border: isSelected
-                                      ? Border.all(
-                                          color: theme.colorScheme.primary,
-                                          width: 2,
-                                        )
-                                      : Border.all(
-                                          color: theme.colorScheme.outline
-                                              .opaque(0.2),
-                                          width: 1,
-                                        ),
+                                      ? Border.all(color: theme.colorScheme.primary, width: 2)
+                                      : Border.all(color: theme.colorScheme.outline.opaque(0.2), width: 1),
                                   boxShadow: isSelected
                                       ? [
                                           BoxShadow(
-                                            color: theme.colorScheme.primary
-                                                .opaque(0.2),
+                                            color: theme.colorScheme.primary.opaque(0.2),
                                             blurRadius: 12,
                                             offset: const Offset(0, 4),
                                           ),
@@ -662,22 +692,17 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                                 child: Row(
                                   children: [
                                     Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            shader,
-                                            style: theme.textTheme.titleSmall
-                                                ?.copyWith(
-                                              fontWeight: FontWeight.w700,
-                                              color: isSelected
-                                                  ? theme.colorScheme
-                                                      .onPrimaryContainer
-                                                  : theme.colorScheme.onSurface,
-                                            ),
-                                          ),
-                                        ],
+                                      child: Text(
+                                        shader,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: theme.textTheme.titleSmall?.copyWith(
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 12,
+                                          color: isSelected
+                                              ? theme.colorScheme.onPrimaryContainer
+                                              : theme.colorScheme.onSurface,
+                                        ),
                                       ),
                                     ),
                                     if (isSelected)
@@ -690,7 +715,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                                         child: Icon(
                                           Icons.check,
                                           color: theme.colorScheme.onPrimary,
-                                          size: 16,
+                                          size: 14,
                                         ),
                                       ),
                                   ],
@@ -699,9 +724,9 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                             ),
                           ),
                         );
-                      });
-                    }).toList(),
-                  ),
+                      },
+                    );
+                  }),
                 ),
               ],
             ),
@@ -760,7 +785,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
       children: [
         Expanded(
           child: ListView(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(20),
             children: [
               Container(
                 padding: const EdgeInsets.all(16),
@@ -997,7 +1022,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
       children: [
         Expanded(
           child: ListView(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(20),
             children: [
               Container(
                 padding: const EdgeInsets.all(16),
@@ -1275,7 +1300,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
       children: [
         Expanded(
           child: ListView(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(20),
             children: [
               Container(
                 padding: const EdgeInsets.all(16),
