@@ -79,7 +79,7 @@ class _SettingsExperimentalState extends State<SettingsExperimental>
 
   Future<void> _checkShadersAvailability() async {
     try {
-      final shadersPath = PlayerShaders.getShaderBasePath();
+      final shadersPath = await PlayerShaders.getShaderBasePath();
       final shadersDir = Directory(shadersPath);
 
       if (await shadersDir.exists()) {
@@ -100,7 +100,7 @@ class _SettingsExperimentalState extends State<SettingsExperimental>
       await _updateStatus('Connecting to server...', 0.05);
       await Future.delayed(const Duration(milliseconds: 500));
 
-      final shadersPath = PlayerShaders.getShaderBasePath();
+      final shadersPath = await PlayerShaders.getShaderBasePath();
       final mpvPath = Directory(shadersPath).path;
 
       final tempDir = await getTemporaryDirectory();

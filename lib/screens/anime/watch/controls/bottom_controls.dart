@@ -281,7 +281,6 @@ class BottomControls extends StatelessWidget {
         tooltip: 'Tracks',
         compact: true,
       ),
-      if (!controller.isOffline.value)
         'sync_subs': ControlButton(
           icon: Symbols.sync_rounded,
           onPressed: () {
@@ -320,7 +319,7 @@ class BottomControls extends StatelessWidget {
       for (var id in ids) {
         if (!isVisible(id)) continue;
         if (id == 'source' &&
-            (controller.isOffline.value ||
+(controller.isOffline.value ||
                 (serverCount <= 1 &&
                     controller.getCurrentStreamSubtitleOptions().isEmpty)))
           continue;
