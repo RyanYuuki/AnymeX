@@ -108,6 +108,7 @@ dependencies:
     auto_size_text: ^3.0.0
     vibration: ^3.1.5
     palette_generator: ^0.3.3+7
+    pointycastle: any
     # better_player_plus: any
     marquee: ^2.3.0
     material_symbols_icons: any
