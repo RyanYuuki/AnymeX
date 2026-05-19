@@ -18,13 +18,14 @@ import 'package:anymex/models/player/player_adaptor.dart';
 import 'package:anymex/screens/anime/watch/controller/player_utils.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
 import 'package:anymex/screens/anime/watch/player/base_player.dart';
-import 'package:anymex/screens/anime/watch/player/better_player.dart';
 import 'package:anymex/screens/anime/watch/player/media_kit_player.dart';
 
 import 'package:anymex/utils/aniskip.dart' as aniskip;
 import 'package:anymex/utils/color_profiler.dart';
+import 'package:anymex/utils/sub_parser.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/player_core_visual_settings.dart';
+import 'package:anymex/utils/shaders.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/subtitle_pre_translator.dart';
 import 'package:anymex/utils/subtitle_translator.dart';
@@ -37,8 +38,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:path/path.dart' as p;
-import 'package:rxdart/rxdart.dart' show ThrottleExtensions;
+import 'package:rxdart/rxdart.dart' show ThrottleExtensions, WhereTypeExtension;
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:volume_controller/volume_controller.dart';
@@ -111,6 +111,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     required Episode episode,
     required List<Episode> episodeList,
     required anymex.Media anilistData,
+    List<model.Track>? subtitles,
   }) {
     final offlineVideo = model.Video(
       url: videoPath,
@@ -118,6 +119,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       originalUrl: videoPath,
       headerKeys: [],
       headerValues: [],
+      subtitles: subtitles,
     );
 
     return PlayerController(
@@ -248,8 +250,27 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void applySavedProfile() {
     if (_basePlayer is MediaKitPlayer) {
-      ColorProfileManager().applyColorProfile(currentVisualProfile.value,
-          (_basePlayer as MediaKitPlayer).nativePlayer);
+      final nativePlayer = (_basePlayer as MediaKitPlayer).nativePlayer;
+      ColorProfileManager()
+          .applyColorProfile(currentVisualProfile.value, nativePlayer);
+      applySavedShader(nativePlayer);
+    }
+  }
+
+  Future<void> applySavedShader(dynamic nativePlayer) async {
+    final shadersEnabled = PlayerUiKeys.shadersEnabled.get<bool>(false);
+    if (!shadersEnabled) return;
+
+    final shadersDownloaded = await PlayerShaders.areShadersDownloaded();
+    if (!shadersDownloaded) return;
+
+    final savedShader = PlayerUiKeys.selectedShader.get<String>('');
+    if (savedShader.isEmpty || savedShader == 'Default') return;
+    try {
+      await PlayerShaders.setShaders(nativePlayer, savedShader);
+      Logger.i('Auto-applied saved shader: $savedShader');
+    } catch (e) {
+      Logger.e('Failed to auto-apply shader: $e');
     }
   }
 
@@ -857,9 +878,21 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       for (var i in e.audio) {
         embeddedAudioTracks.value.add(i);
       }
-      embeddedSubs.value = e.subtitle
+      final subs = e.subtitle
           .where((track) => !_isExternalSubtitleTrack(track))
           .toList();
+          
+      if (isOffline.value) {
+        if (embeddedSubs.value.isEmpty) {
+          final offlineTracks = externalSubs.value.map((s) => 
+              SubtitleTrack.uri(s.file ?? '', title: s.label, language: s.label)
+          ).toList();
+          subs.addAll(offlineTracks);
+          embeddedSubs.value = subs;
+        }
+      } else {
+        embeddedSubs.value = subs;
+      }
       embeddedQuality.value = e.video;
     }));
 
@@ -869,7 +902,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     _playerSubscriptions.add(_basePlayer.errorStream.listen((e) {
       Logger.i('${e} => ${selectedVideo.value?.headers}');
-      if (e.toString().contains('Failed to open')) {
+      final errorStr = e.toString();
+      if (errorStr.contains('Failed to open') &&
+          !errorStr.contains('.glsl') &&
+          !errorStr.contains('Cannot open file')) {
         snackBar('Failed to open stream. Please try other server');
       }
     }));
@@ -953,13 +989,42 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void _loadLocalSubtitles() async {
     if (offlineVideoPath == null) return;
+
+    if (selectedVideo.value?.subtitles != null &&
+        selectedVideo.value!.subtitles!.isNotEmpty) {
+      
+      final validSubs = selectedVideo.value!.subtitles!
+          .where((s) => s.file != null && !s.file!.startsWith('http'))
+          .toList();
+
+      if (validSubs.isNotEmpty) {
+        for (var sub in validSubs) {
+          if (!sub.file!.startsWith('file://')) {
+            sub.file = Uri.file(sub.file!).toString();
+          }
+        }
+        externalSubs.value = validSubs;
+
+        final subtitleTracks = validSubs
+            .map((s) => SubtitleTrack.uri(s.file ?? '',
+                title: s.label, language: s.label))
+            .toList();
+
+        embeddedSubs.update((val) {
+          val?.addAll(subtitleTracks);
+        });
+        return;
+      }
+    }
+
     try {
       final videoFile = File(offlineVideoPath!);
       final parentDir = videoFile.parent;
-      final subsDir = Directory(p.join(
-          parentDir.path, 'Episode_${currentEpisode.value.number}_subs'));
+      final dirs = await parentDir.list().whereType<Directory>().toList();
+      final expectedSubsDirName = 'Episode_${currentEpisode.value.number}_subs';
+      final subsDir = dirs.firstWhereOrNull((d) => p.basename(d.path) == expectedSubsDirName);
 
-      if (await subsDir.exists()) {
+      if (subsDir != null && await subsDir.exists()) {
         final files = await subsDir.list().toList();
         final subFiles = files.whereType<File>().where((f) {
           final ext = p.extension(f.path).toLowerCase();
@@ -972,13 +1037,22 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         final tracks = subFiles.map((f) {
           final label = p.basenameWithoutExtension(f.path);
           return model.Track(
-            file: f.path,
+            file: Uri.file(f.path).toString(),
             label: label,
           );
         }).toList();
 
         externalSubs.update((val) {
           val?.addAll(tracks);
+        });
+
+        final subtitleTracks = tracks
+            .map((s) => SubtitleTrack.uri(s.file ?? '',
+                title: s.label, language: s.label))
+            .toList();
+
+        embeddedSubs.update((val) {
+          val?.addAll(subtitleTracks);
         });
       }
     } catch (e) {
@@ -1072,7 +1146,32 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> fetchEpisode(Episode episode, {Duration? savedPosition}) async {
-    if (isOffline.value) return;
+    if (isOffline.value) {
+      // Support local file switching for offline episode list
+      final videoPath = episode.link;
+      if (videoPath == null || videoPath.isEmpty) return;
+      _basePlayer.pause();
+      DynamicKeys.offlineVideoProgress
+          .set(offlineVideoPath, currentPosition.value.inMilliseconds);
+      resetListeners();
+      isEpisodePaneOpened.value = false;
+      currentEpisode.value = episode;
+      final stamp = DynamicKeys.offlineVideoProgress.get<int?>(videoPath, null);
+      await _basePlayer.open(
+        videoPath,
+        startPosition: Duration(milliseconds: stamp ?? 0),
+      );
+      // Update the selected video and offline path tracking
+      selectedVideo.value = model.Video(
+        url: videoPath,
+        quality: 'Offline',
+        originalUrl: videoPath,
+        headerKeys: [],
+        headerValues: [],
+      );
+      applySavedProfile();
+      return;
+    }
 
     try {
       PlayerBottomSheets.showLoader();
@@ -1378,6 +1477,24 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void setSubtitleTrack(SubtitleTrack track) {
     selectedSubsTrack.value = track.id == 'no' ? null : track;
+
+    if (track.id != 'no' && track.id != 'auto' && _isExternalSubtitleTrack(track)) {
+      final match = externalSubs.value.firstWhere(
+        (sub) {
+          final isUrlMatch = sub.file == track.url;
+          final trackTitle = track.title?.trim().toLowerCase() ?? '';
+          final label = sub.label?.trim().toLowerCase() ?? '';
+          final isLabelMatch =
+              label.contains(trackTitle) || trackTitle.contains(label);
+          return isUrlMatch || isLabelMatch;
+        },
+        orElse: () => externalSubs.value.first,
+      );
+      selectedExternalSub.value = match;
+    } else {
+      selectedExternalSub.value = model.Track();
+    }
+
     _applySubtitleTrack(track);
   }
 
@@ -1612,74 +1729,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     setAudioTrack(AudioTrack.uri(track.file!));
   }
 
-  void parseSubtitleCues(String subtitleContent) {
-    final cues = <SubtitleCue>[];
 
-    final content = subtitleContent.replaceAll('\r\n', '\n');
-    final blocks = content.split(RegExp(r'\n\s*\n'));
-
-    final timestampPattern = RegExp(
-      r'(\d{1,2}:\d{2}:\d{2}[,.]\d{3})\s*-->\s*(\d{1,2}:\d{2}:\d{2}[,.]\d{3})',
-    );
-
-    for (var block in blocks) {
-      final match = timestampPattern.firstMatch(block);
-      if (match != null) {
-        final start = _parseDuration(match.group(1)!);
-        final end = _parseDuration(match.group(2)!);
-
-        final lines = block.split('\n');
-        final timestampLineIndex = lines.indexWhere((l) => l.contains('-->'));
-
-        if (timestampLineIndex != -1 && timestampLineIndex < lines.length - 1) {
-          final text = lines
-              .sublist(timestampLineIndex + 1)
-              .join('\n')
-              .replaceAll(RegExp(r'<[^>]*>'), '')
-              .replaceAll(RegExp(r'\{[^}]*\}'), '')
-              .replaceAll(RegExp(r'\\[nN]'), '\n')
-              .trim();
-
-          if (text.isNotEmpty) {
-            cues.add(SubtitleCue(start: start, end: end, text: text));
-          }
-        }
-      }
-    }
-
-    parsedSubtitleCues.assignAll(cues);
-  }
-
-  Duration _parseDuration(String timestamp) {
-    timestamp = timestamp.replaceAll(',', '.');
-    final parts = timestamp.split(':');
-    if (parts.length == 3) {
-      final hours = int.tryParse(parts[0]) ?? 0;
-      final minutes = int.tryParse(parts[1]) ?? 0;
-      final secParts = parts[2].split('.');
-      final seconds = int.tryParse(secParts[0]) ?? 0;
-      final millis = int.tryParse(secParts.length > 1
-              ? secParts[1].padRight(3, '0').substring(0, 3)
-              : '0') ??
-          0;
-      return Duration(
-          hours: hours,
-          minutes: minutes,
-          seconds: seconds,
-          milliseconds: millis);
-    }
-    if (parts.length == 2) {
-      final minutes = int.tryParse(parts[0]) ?? 0;
-      final secParts = parts[1].split('.');
-      final seconds = int.tryParse(secParts[0]) ?? 0;
-      final millis = int.tryParse(secParts.length > 1
-              ? secParts[1].padRight(3, '0').substring(0, 3)
-              : '0') ??
-          0;
-      return Duration(minutes: minutes, seconds: seconds, milliseconds: millis);
-    }
-    return Duration.zero;
-  }
 
   Future<void> loadSubtitleCuesFromUrl(String url) async {
     try {
@@ -1687,14 +1737,29 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       final uri = Uri.tryParse(url);
       if (uri == null) return;
 
-      final client = HttpClient();
-      final request = await client.getUrl(uri);
-      final response = await request.close();
-      final content = await response
-          .transform(const Utf8Decoder(allowMalformed: true))
-          .join();
-      client.close();
-      parseSubtitleCues(content);
+      String content;
+      if (uri.scheme == 'http' || uri.scheme == 'https') {
+        final client = HttpClient();
+        final request = await client.getUrl(uri);
+        final response = await request.close();
+        content = await response
+            .transform(const Utf8Decoder(allowMalformed: true))
+            .join();
+        client.close();
+      } else {
+        print('[SUBS] Attempting to load local subtitle from path: $url');
+        final file = File(url.replaceFirst('file://', '').replaceAll('%20', ' '));
+        print('[SUBS] file exists? ${await file.exists()}');
+        if (await file.exists()) {
+          final bytes = await file.readAsBytes();
+          content = utf8.decode(bytes, allowMalformed: true);
+        } else {
+          return;
+        }
+      }
+      
+      final cues = await SubParser.parseSubtitles(content);
+      parsedSubtitleCues.assignAll(cues);
     } catch (e) {
       Logger.e('Failed to load subtitle cues: $e');
     }
@@ -1766,9 +1831,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   bool _isExternalSubtitleTrack(SubtitleTrack track) {
-    if (track.url?.isEmpty ?? true) return false;
+    final trackUrl = track.url?.isNotEmpty == true ? track.url! : track.id;
+    if (trackUrl.isEmpty) return false;
 
-    final isUrlMatch = externalSubs.value.any((sub) => sub.file == track.url);
+    final isUrlMatch = externalSubs.value.any((sub) => sub.file == trackUrl);
     if (isUrlMatch) return true;
 
     final trackTitle = track.title?.trim().toLowerCase() ?? '';
