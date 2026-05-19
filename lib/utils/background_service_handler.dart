@@ -103,6 +103,13 @@ class BackgroundDownloadTaskHandler extends TaskHandler {
           _sendNotificationTapped();
           _pendingTap = false;
         }
+      } else if (type == 'UPDATE_NOTIFICATION') {
+        final title = payload['title'] as String? ?? 'AnymeX Downloads';
+        final text = payload['text'] as String? ?? 'Downloading...';
+        FlutterForegroundTask.updateService(
+          notificationTitle: title,
+          notificationText: text,
+        );
       }
     } catch (e) {
       debugPrint(e.toString());

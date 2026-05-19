@@ -1,5 +1,7 @@
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/database/isar_models/episode.dart';
+import 'package:anymex/database/isar_models/track.dart' as t;
+import 'package:anymex/database/isar_models/video.dart' as hive;
 
 enum DownloadStatus {
   queued,
@@ -7,7 +9,9 @@ enum DownloadStatus {
   completed,
   failed,
   cancelled,
-  paused
+  paused,
+  fetchingServer,
+  awaitingServerSelection,
 }
 
 enum VideoLinkType { direct, hls, unknown }
@@ -42,6 +46,8 @@ class ActiveDownloadTask {
   double progress;
   String? filePath;
   String? errorMessage;
+  List<t.Track>? subtitles;
+  List<hive.Video>? availableServers;
 
   ActiveDownloadTask({
     required this.taskId,
@@ -56,6 +62,8 @@ class ActiveDownloadTask {
     this.progress = 0.0,
     this.filePath,
     this.errorMessage,
+    this.subtitles,
+    this.availableServers,
   });
 
   Map<String, dynamic> toJson() => {
@@ -71,6 +79,7 @@ class ActiveDownloadTask {
         'progress': progress,
         'filePath': filePath,
         'errorMessage': errorMessage,
+        'subtitles': subtitles?.map((t) => t.toJson()).toList(),
       };
 
   factory ActiveDownloadTask.fromJson(Map<String, dynamic> json) =>
@@ -88,13 +97,15 @@ class ActiveDownloadTask {
         progress: (json['progress'] as num? ?? 0.0).toDouble(),
         filePath: json['filePath'] as String?,
         errorMessage: json['errorMessage'] as String?,
+        subtitles: (json['subtitles'] as List<dynamic>?)
+            ?.map((e) => t.Track.fromJson(e as Map<String, dynamic>))
+            .toList(),
       );
 
   String get episodeDisplayId {
-    final sortPart = episode.sortMap.isNotEmpty
-        ? ' (${episode.sortMap.values.join(', ')})'
-        : '';
-    return 'Ep ${episode.number}$sortPart';
+    final title = episode.title;
+    if (title != null && title.isNotEmpty) return 'Ep ${episode.number} · $title';
+    return 'Episode ${episode.number}';
   }
 }
 
@@ -104,6 +115,7 @@ class DownloadedEpisodeMeta {
   final int downloadedAt;
   final String filePath;
   final String? quality;
+  final List<t.Track>? subtitles;
 
   const DownloadedEpisodeMeta({
     required this.episode,
@@ -111,6 +123,7 @@ class DownloadedEpisodeMeta {
     required this.downloadedAt,
     required this.filePath,
     this.quality,
+    this.subtitles,
   });
 
   Map<String, dynamic> toJson() => {
@@ -119,6 +132,7 @@ class DownloadedEpisodeMeta {
         'downloadedAt': downloadedAt,
         'filePath': filePath,
         'quality': quality,
+        'subtitles': subtitles?.map((t) => t.toJson()).toList(),
       };
 
   factory DownloadedEpisodeMeta.fromJson(Map<String, dynamic> json) =>
@@ -128,6 +142,9 @@ class DownloadedEpisodeMeta {
         downloadedAt: json['downloadedAt'] as int? ?? 0,
         filePath: json['filePath'] as String? ?? '',
         quality: json['quality'] as String?,
+        subtitles: (json['subtitles'] as List<dynamic>?)
+            ?.map((e) => t.Track.fromJson(e as Map<String, dynamic>))
+            .toList(),
       );
 
   String get number => episode.number;

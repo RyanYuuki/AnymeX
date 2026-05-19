@@ -12,8 +12,13 @@ import 'package:anymex/screens/anime/watch/controls/widgets/subtitle_text.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/sync_subs_popup.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/tracks_popup.dart';
 import 'package:anymex/screens/anime/widgets/media_indicator.dart';
+import 'dart:io';
+import 'dart:convert';
+import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/screens/downloads/model/download_models.dart';
+import 'package:anymex/database/isar_models/track.dart' as hive;
 
 class LocalEpisode {
   final String folderName;
@@ -46,12 +51,48 @@ class _OfflineWatchPageState extends State<OfflineWatchPage> {
   @override
   initState() {
     super.initState();
+    final episodes = widget.episodeList
+        .asMap()
+        .entries
+        .map((e) => Episode(
+              number: (e.key + 1).toString(),
+              title: e.value.name,
+              link: e.value.path,
+            ))
+        .toList();
+
+    final currentIndex = widget.episodeList
+        .indexWhere((e) => e.path == widget.episode.path);
+    final currentEpisodeNumber =
+        currentIndex >= 0 ? (currentIndex + 1).toString() : '1';
+
+    List<hive.Track>? offlineSubtitles;
+    try {
+      final parentDir = File(widget.episode.path).parent;
+      final metaFile = File(p.join(parentDir.path, 'metadata.json'));
+      if (metaFile.existsSync()) {
+        final raw = jsonDecode(metaFile.readAsStringSync()) as Map<String, dynamic>;
+        final meta = DownloadedMediaMeta.fromJson(raw);
+        final epMeta = meta.episodes.firstWhereOrNull((e) => 
+            e.filePath == widget.episode.path || 
+            e.fileName == p.basename(widget.episode.path));
+        offlineSubtitles = epMeta?.subtitles;
+      }
+    } catch (e) {
+      debugPrint('Failed to read metadata for subtitles: $e');
+    }
+
     controller = Get.put(PlayerController.offline(
         folderName: widget.episode.folderName,
         itemName: widget.episode.name,
         videoPath: widget.episode.path,
-        episode: Episode(number: 'Offline'),
-        episodeList: [],
+        subtitles: offlineSubtitles,
+        episode: Episode(
+          number: currentEpisodeNumber,
+          title: widget.episode.name,
+          link: widget.episode.path,
+        ),
+        episodeList: episodes,
         anilistData: Media(serviceType: ServicesType.simkl)));
   }
 

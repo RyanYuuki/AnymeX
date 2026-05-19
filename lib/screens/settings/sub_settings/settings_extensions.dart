@@ -44,6 +44,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
   Future<void> _addRepos(ItemType type, List<String> urls) async {
     await em.addRepos(urls, type, _manager.id);
     widget.onSave?.call();
+    if (mounted) setState(() {});
   }
 
   Future<void> _removeRepo(Repo repo, ItemType type) async {

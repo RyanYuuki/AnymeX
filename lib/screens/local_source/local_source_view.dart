@@ -1148,12 +1148,27 @@ class _WatchOfflineState extends State<WatchOffline> {
         if (isDirectory) {
           controller.navigateToFolder(item.path);
         } else {
+          // Build episode list from all video files in the current directory
+          final allVideoFiles = controller.currentModeItems
+              .whereType<File>()
+              .where((f) => controller.watchableExtensions
+                  .contains(path.extension(f.path).toLowerCase()))
+              .toList();
+
+          final episodeList = allVideoFiles
+              .map((f) => LocalEpisode(
+                    path: f.path,
+                    name: path.basename(f.path),
+                    folderName: controller.currentDirectoryName,
+                  ))
+              .toList();
+
           navigate(() => OfflineWatchPage(
-              episodeList: const [],
+              episodeList: episodeList,
               episode: LocalEpisode(
                   path: item.path,
                   name: itemName,
-                  folderName: path.basename(controller.currentPath.value))));
+                  folderName: controller.currentDirectoryName)));
         }
       },
       child: Container(

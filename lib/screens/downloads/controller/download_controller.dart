@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
@@ -38,6 +39,7 @@ class DownloadController extends GetxController {
   final Queue<_MangaScrapeRequest> _mangaScrapeQueue = Queue();
   final Map<String, String> _scrapeTokens = {};
   int _activeTaskCount = 0;
+  bool _isFetching = false;   
   final List<String> _activeFileTasks = [];
   SendPort? _bgSendPort;
 
@@ -353,7 +355,7 @@ class DownloadController extends GetxController {
   }
 
   Future<List<hive.Video>> fetchServersForEpisode(Source source, Episode ep,
-      {String? passedToken}) async {
+      {String? passedToken, String? preferredQuality, Duration timeout = const Duration(seconds: 20)}) async {
     final deEpisode = DEpisode(
       episodeNumber: ep.number,
       url: ep.link,
@@ -371,21 +373,32 @@ class DownloadController extends GetxController {
 
     if (videoStream != null) {
       final videos = <hive.Video>[];
-      await for (final v in videoStream) {
-        final next = hive.Video.fromVideo(v);
-        final alreadyExists = videos.any(
-          (existing) =>
-              existing.quality == next.quality &&
-              existing.originalUrl == next.originalUrl,
-        );
-        if (!alreadyExists) videos.add(next);
+      try {
+        await videoStream.timeout(timeout).forEach((v) {
+          final next = hive.Video.fromVideo(v);
+          final alreadyExists = videos.any(
+            (existing) =>
+                existing.quality == next.quality &&
+                existing.originalUrl == next.originalUrl,
+          );
+          if (!alreadyExists) {
+            videos.add(next);
+            if (preferredQuality != null && next.quality == preferredQuality) {
+              throw _EarlyExitException();
+            }
+          }
+        });
+      } on _EarlyExitException {
+        //
+      } on TimeoutException {
+        debugPrint('[DownloadController] fetchServersForEpisode timed out');
       }
       return videos;
     } else {
       final videoList = await methods.getVideoList(
         deEpisode,
         parameters: SourceParams(cancelToken: token),
-      );
+      ).timeout(timeout, onTimeout: () => []);
       return videoList.map((v) => hive.Video.fromVideo(v)).toList();
     }
   }
@@ -395,6 +408,9 @@ class DownloadController extends GetxController {
     required Source source,
     required OfflineMedia media,
     required String preferredQuality,
+    String? firstEpisodeVideoUrl,
+    Map<String, String>? firstEpisodeHeaders,
+    List<hive.Track>? firstEpisodeSubtitles,
   }) async {
     final mediaTitle = media.name ?? 'Unknown';
     final sanitizedTitle = MediaDownloader.sanitizePathSegment(mediaTitle);
@@ -403,13 +419,17 @@ class DownloadController extends GetxController {
 
     await setMediaMeta(sanitizedExt, sanitizedTitle, media, mediaType: 'Anime');
 
-    for (final ep in episodes) {
+    for (int i = 0; i < episodes.length; i++) {
+      final ep = episodes[i];
       _enqueueEpisode(
         episode: ep,
         source: source,
         sanitizedTitle: sanitizedTitle,
         sanitizedExt: sanitizedExt,
         preferredQuality: preferredQuality,
+        videoUrl: i == 0 ? firstEpisodeVideoUrl : null,
+        videoHeaders: i == 0 ? firstEpisodeHeaders : null,
+        videoSubtitles: i == 0 ? firstEpisodeSubtitles : null,
       );
     }
   }
@@ -420,6 +440,9 @@ class DownloadController extends GetxController {
     required String sanitizedTitle,
     required String sanitizedExt,
     required String preferredQuality,
+    String? videoUrl,
+    Map<String, String>? videoHeaders,
+    List<hive.Track>? videoSubtitles,
   }) {
     final taskId = MediaDownloader.buildTaskId(
       extensionName: sanitizedExt,
@@ -433,10 +456,12 @@ class DownloadController extends GetxController {
       mediaTitle: sanitizedTitle,
       extensionName: sanitizedExt,
       episode: episode,
-      videoUrl: '',
+      videoUrl: videoUrl ?? '',
       videoQuality: preferredQuality,
       linkType: VideoLinkType.unknown,
       status: DownloadStatus.queued,
+      videoHeaders: videoHeaders,
+      subtitles: videoSubtitles,
     );
 
     activeTasks.add(placeholder);
@@ -454,16 +479,25 @@ class DownloadController extends GetxController {
     if (_scrapeQueue.isEmpty) return;
 
     final maxConcurrent = Get.find<Settings>().concurrentDownloads.value;
-    while (_scrapeQueue.isNotEmpty && _activeTaskCount < maxConcurrent) {
-      final request = _scrapeQueue.removeFirst();
-      if (request.task.status == DownloadStatus.cancelled) continue;
 
+    while (_scrapeQueue.isNotEmpty && _activeTaskCount < maxConcurrent) {
+      final request = _scrapeQueue.first;
+      if (request.task.status == DownloadStatus.cancelled) {
+        _scrapeQueue.removeFirst();
+        continue;
+      }
+      final needsFetch = request.task.videoUrl.isEmpty;
+      if (needsFetch && _isFetching) break;
+
+      _scrapeQueue.removeFirst();
       _activeTaskCount++;
       _runEpisodeDownload(
         task: request.task,
         source: request.source,
         preferredQuality: request.preferredQuality,
-      ).catchError((e) {
+      ).then((_) {
+        _processScrapeQueue();
+      }).catchError((e) {
         _activeTaskCount--;
         _processScrapeQueue();
       });
@@ -476,44 +510,69 @@ class DownloadController extends GetxController {
     String? preferredQuality,
   }) async {
     if (task.status == DownloadStatus.paused) return;
+    if (task.status == DownloadStatus.awaitingServerSelection) return;
 
     try {
-      task.status = DownloadStatus.downloading;
-      activeTasks.refresh();
-      _saveActiveTasks();
-
       hive.Video? chosenVideo;
       if (task.videoUrl.isEmpty) {
         if (source == null) {
           task.status = DownloadStatus.failed;
           task.errorMessage = 'Source not found for resuming scrape';
           activeTasks.refresh();
+          _activeTaskCount--;
           return;
         }
+
+        _isFetching = true;
+        task.status = DownloadStatus.fetchingServer;
+        activeTasks.refresh();
+        _saveActiveTasks();
+        _updateNotification();
 
         final token =
             'dl_scrape_${task.taskId}_${DateTime.now().millisecondsSinceEpoch}';
         _scrapeTokens[task.taskId] = token;
 
-        final videos = await fetchServersForEpisode(source, task.episode,
-            passedToken: token);
-        _scrapeTokens.remove(task.taskId);
+        late List<hive.Video> videos;
+        try {
+          videos = await fetchServersForEpisode(
+            source,
+            task.episode,
+            passedToken: token,
+            preferredQuality: preferredQuality,
+            timeout: const Duration(seconds: 20),
+          );
+        } finally {
+          _isFetching = false;
+          _scrapeTokens.remove(task.taskId);
+          _processScrapeQueue();
+        }
 
         if (videos.isEmpty) {
-          task.status = DownloadStatus.failed;
-          task.errorMessage = 'No servers found for this episode';
+          task.status = DownloadStatus.awaitingServerSelection;
+          task.errorMessage = 'No servers found. Please select manually.';
+          task.availableServers = [];
           activeTasks.refresh();
+          _saveActiveTasks();
+          _activeTaskCount--;
+          _processScrapeQueue(); 
           return;
         }
+
+        task.availableServers = videos;
 
         final qualityLabels = videos.map((v) => v.quality ?? '').toList();
         final bestLabel = MediaDownloader.pickBestMatchingVideo(
             qualityLabels, preferredQuality ?? '720p');
 
         if (bestLabel.isEmpty) {
-          task.status = DownloadStatus.failed;
-          task.errorMessage = 'Could not find a server with matching quality';
+          task.status = DownloadStatus.awaitingServerSelection;
+          task.errorMessage =
+              'No server matched "${preferredQuality ?? '720p'}". Please select manually.';
           activeTasks.refresh();
+          _saveActiveTasks();
+          _activeTaskCount--;
+          _processScrapeQueue(); 
           return;
         }
 
@@ -522,6 +581,7 @@ class DownloadController extends GetxController {
         task.videoUrl = chosenVideo.url ?? chosenVideo.originalUrl ?? '';
         task.videoHeaders ??= {};
         task.videoHeaders!.addAll(chosenVideo.headers ?? {});
+        task.subtitles ??= chosenVideo.subtitles;
       }
 
       final linkType = detectLinkType(task.videoUrl);
@@ -530,8 +590,14 @@ class DownloadController extends GetxController {
         task.status = DownloadStatus.failed;
         task.errorMessage = 'Empty video URL';
         activeTasks.refresh();
+        _activeTaskCount--;
         return;
       }
+
+      task.status = DownloadStatus.downloading;
+      activeTasks.refresh();
+      _saveActiveTasks();
+      _updateNotification();
 
       final isHls = linkType == VideoLinkType.hls;
       final fileName = MediaDownloader.buildFileName(
@@ -557,7 +623,7 @@ class DownloadController extends GetxController {
                   fileName: p.join(fullDirPath, fileName),
                 )
               ],
-        subtitles: chosenVideo?.subtitles,
+        subtitles: task.subtitles,
         subDownloadDir: fullDirPath,
         m3u8Url: isHls ? task.videoUrl : null,
         videoFileName: fileName,
@@ -565,6 +631,13 @@ class DownloadController extends GetxController {
         concurrentDownloads: Get.find<Settings>().hlsParallelSegments.value,
         episodeNumber: task.episode.number,
       );
+
+      final subFolder = p.join(fullDirPath, 'Episode_${task.episode.number}_subs');
+      final localSubs = task.subtitles?.map((s) => hive.Track(
+        file: p.join(subFolder, '${s.label}.srt'),
+        label: s.label,
+      )).toList();
+      task.subtitles = localSubs;
 
       _activeFileTasks.add(task.taskId);
 
@@ -577,6 +650,7 @@ class DownloadController extends GetxController {
             now.difference(last).inMilliseconds > _progressThrottleMs) {
           _lastProgressUpdate[task.taskId] = now;
           activeTasks.refresh();
+          _updateNotification();
         }
       });
 
@@ -589,6 +663,7 @@ class DownloadController extends GetxController {
       _activeFileTasks.remove(task.taskId);
       _activeTaskCount--;
       _processScrapeQueue();
+      _updateNotification();
     } catch (e) {
       task.status = DownloadStatus.failed;
       task.errorMessage = e.toString();
@@ -599,6 +674,33 @@ class DownloadController extends GetxController {
       activeTasks.refresh();
       _saveActiveTasks();
     }
+  }
+
+  void _updateNotification() {
+    final downloading = activeTasks
+        .where((t) => t.status == DownloadStatus.downloading)
+        .toList();
+    final queued = activeTasks
+        .where((t) =>
+            t.status == DownloadStatus.queued ||
+            t.status == DownloadStatus.fetchingServer)
+        .length;
+    if (downloading.isEmpty && queued == 0) {
+      _sendToBackground({'type': 'UPDATE_NOTIFICATION', 'title': 'AnymeX Downloads', 'text': 'All downloads complete.'});
+      return;
+    }
+    final active = downloading.isNotEmpty ? downloading.first : null;
+    final title = active != null
+        ? '${active.mediaTitle} · Ep ${active.episode.number}'
+        : 'AnymeX Downloads';
+    final pct = active != null
+        ? '${(active.progress * 100).toStringAsFixed(0)}%'
+        : '';
+    final text = [
+      if (pct.isNotEmpty) pct,
+      if (queued > 0) '$queued queued',
+    ].join(' · ');
+    _sendToBackground({'type': 'UPDATE_NOTIFICATION', 'title': title, 'text': text.isNotEmpty ? text : 'Downloading…'});
   }
 
   Future<void> enqueueMangaDownloadBatch({
@@ -962,6 +1064,7 @@ class DownloadController extends GetxController {
           downloadedAt: DateTime.now().millisecondsSinceEpoch,
           filePath: task.filePath ?? '',
           quality: task.videoQuality,
+          subtitles: task.subtitles,
         ),
       ];
       updatedEps.sort((a, b) {
@@ -1311,3 +1414,5 @@ class _MangaScrapeRequest {
 
   _MangaScrapeRequest({required this.task, required this.source});
 }
+
+class _EarlyExitException implements Exception {}
