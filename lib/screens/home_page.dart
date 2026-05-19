@@ -186,7 +186,7 @@ class _HomePageState extends State<HomePage> {
             confirmText: 'Join Discord',
             onConfirm: () async {
               General.hasJoinedNewDiscord.set(true);
-              final url = Uri.parse('https://discord.gg/C9abCZjC8K');
+              final url = Uri.parse(Get.find<Settings>().discordUrl.value);
               await launchUrl(url, mode: LaunchMode.externalApplication);
             },
             contentWidget: const Text(

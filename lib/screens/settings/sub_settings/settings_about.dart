@@ -182,7 +182,7 @@ class AboutPage extends StatelessWidget {
                         CustomListTile(
                           onTap: () async {
                             await launchUrlHelper(
-                                'https://t.me/AnymeX_Discussion');
+                                Get.find<Settings>().telegramUrl.value);
                           },
                           leading: const Icon(HugeIcons.strokeRoundedTelegram),
                           title: "Telegram",
@@ -190,7 +190,7 @@ class AboutPage extends StatelessWidget {
                         CustomListTile(
                           onTap: () async {
                             await launchUrlHelper(
-                                'https://discord.gg/5gAHhMvTcx');
+                                Get.find<Settings>().discordUrl.value);
                           },
                           leading: const Icon(HugeIcons.strokeRoundedDiscord),
                           title: "Discord",
