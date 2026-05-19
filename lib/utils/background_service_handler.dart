@@ -1,14 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
-import 'package:flutter/foundation.dart';
+import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
-import 'package:anymex/utils/download_engine.dart';
+import 'package:anymex/utils/media_downloader.dart';
+import 'package:anymex/utils/download_isolate_pool.dart' as dl;
 import 'package:path/path.dart' as p;
-import 'package:http/http.dart' as http;
 
 @pragma('vm:entry-point')
 void startBackgroundService() {
@@ -22,17 +21,17 @@ class BackgroundDownloadTaskHandler extends TaskHandler {
 
   final List<Map<String, dynamic>> _hlsQueue = [];
   final List<Map<String, dynamic>> _mangaQueue = [];
-  
+
   bool _isProcessingHls = false;
   bool _isProcessingManga = false;
   bool _isUiReady = false;
   bool _pendingTap = false;
-  
+
   Map<String, dynamic>? _activeHlsTask;
   Map<String, dynamic>? _activeMangaTask;
   double _hlsProgress = 0.0;
   double _mangaProgress = 0.0;
-  
+
   final Set<String> _cancelledTasks = {};
   final Map<String, Map<String, dynamic>> _completedResults = {};
 
@@ -41,9 +40,10 @@ class BackgroundDownloadTaskHandler extends TaskHandler {
     WidgetsFlutterBinding.ensureInitialized();
     _uiSendPort = sendPort;
     _bgReceivePort = ReceivePort();
-    
+
     IsolateNameServer.removePortNameMapping('anymex_bg_port');
-    IsolateNameServer.registerPortWithName(_bgReceivePort!.sendPort, 'anymex_bg_port');
+    IsolateNameServer.registerPortWithName(
+        _bgReceivePort!.sendPort, 'anymex_bg_port');
 
     _bgReceivePort?.listen((message) {
       if (message is String) {
@@ -90,7 +90,7 @@ class BackgroundDownloadTaskHandler extends TaskHandler {
         _processMangaQueue();
       } else if (type == 'CANCEL_TASK') {
         _cancelledTasks.add(taskId);
-        DownloadEngine.cancel(taskId);
+        dl.DownloadIsolatePool.instance.cancelTask(taskId);
         _uiSendPort?.send(jsonEncode({
           'type': 'TASK_CANCELLED',
           'taskId': taskId,
@@ -109,15 +109,12 @@ class BackgroundDownloadTaskHandler extends TaskHandler {
     }
   }
 
-
-
   Future<void> _executeHlsTask(Map<String, dynamic> task) async {
     final taskId = task['taskId'] as String;
     final m3u8Url = task['m3u8Url'] as String;
     final fileName = task['fileName'] as String;
     final subDirectory = task['subDirectory'] as String;
     final headersraw = task['headers'] as Map<String, dynamic>?;
-    final preferredQuality = task['preferredQuality'] as String?;
     final parallelSegments = task['parallelSegments'] as int? ?? 3;
     final docsPath = task['docsPath'] as String?;
 
@@ -130,51 +127,53 @@ class BackgroundDownloadTaskHandler extends TaskHandler {
       'progress': 0.0,
     }));
 
-    final result = await DownloadEngine.downloadHls(
+    final fullDirPath = p.join(docsPath ?? '', subDirectory);
+
+    final mDownloader = MediaDownloader(
       taskId: taskId,
+      itemType: ItemType.anime,
       m3u8Url: m3u8Url,
-      fileName: fileName,
-      subDirectory: subDirectory,
-      docsPath: docsPath,
-      preferredQuality: preferredQuality,
-      parallelSegments: parallelSegments,
+      videoFileName: fileName,
+      subDownloadDir: fullDirPath,
       headers: headers,
-      onProgress: (prog) {
-        _hlsProgress = prog;
+      concurrentDownloads: parallelSegments,
+    );
+
+    try {
+      await mDownloader.download((prog) {
+        _hlsProgress = prog.completed / prog.total;
         FlutterForegroundTask.updateService(
           notificationTitle: 'Downloading Anime',
-          notificationText: '$fileName: ${(prog * 100).toStringAsFixed(0)}%',
+          notificationText:
+              '$fileName: ${(_hlsProgress * 100).toStringAsFixed(0)}%',
         );
 
         _uiSendPort?.send(jsonEncode({
           'type': 'TASK_UPDATE',
           'taskId': taskId,
           'status': 'downloading',
-          'progress': prog,
+          'progress': _hlsProgress,
         }));
-      },
-    );
+      });
 
-    if (_cancelledTasks.contains(taskId)) {
-      return;
-    }
+      if (_cancelledTasks.contains(taskId)) return;
 
-    if (result.success) {
       final msg = {
         'type': 'TASK_UPDATE',
         'taskId': taskId,
         'status': 'completed',
         'progress': 1.0,
-        'filePath': result.filePath,
+        'filePath': p.join(fullDirPath, fileName),
       };
       _completedResults[taskId] = msg;
       _uiSendPort?.send(jsonEncode(msg));
-    } else {
+    } catch (e) {
+      if (_cancelledTasks.contains(taskId)) return;
       _uiSendPort?.send(jsonEncode({
         'type': 'TASK_UPDATE',
         'taskId': taskId,
         'status': 'failed',
-        'errorMessage': result.error,
+        'errorMessage': e.toString(),
       }));
     }
   }
@@ -233,14 +232,7 @@ class BackgroundDownloadTaskHandler extends TaskHandler {
     final chapterDirPath = task['chapterDirPath'] as String;
     final mediaTitle = task['mediaTitle'] as String;
     final chapterName = task['chapterName'] as String;
-    
-    final chapterDir = Directory(chapterDirPath);
-    await chapterDir.create(recursive: true);
 
-    int downloaded = 0;
-    const concurrentPages = 3;
-    final List<Future<void>> downloadFutures = [];
-    
     _uiSendPort?.send(jsonEncode({
       'type': 'MANGA_TASK_UPDATE',
       'taskId': taskId,
@@ -248,91 +240,82 @@ class BackgroundDownloadTaskHandler extends TaskHandler {
       'progress': 0.0,
     }));
 
-    for (int i = 0; i < pagesRaw.length; i++) {
-        if (_cancelledTasks.contains(taskId)) break;
-        
-        while (downloadFutures.length >= concurrentPages) {
-            await Future.any(downloadFutures);
+    final pageUrls = pagesRaw.map((pageMap) {
+      final idx = pagesRaw.indexWhere((p) => p == pageMap);
+      final pMap = pageMap as Map<String, dynamic>;
+      final url = pMap['url'] as String;
+      final headersRaw = pMap['headers'] as Map<String, dynamic>?;
+      final headers = headersRaw?.map((k, v) => MapEntry(k, v.toString()));
+
+      final lower = url.toLowerCase().split('?').first;
+      String ext = '.jpg';
+      for (final e in ['.jpg', '.jpeg', '.png', '.webp', '.gif']) {
+        if (lower.endsWith(e)) {
+          ext = e;
+          break;
         }
+      }
 
-        final pIndex = i;
-        final pageMap = pagesRaw[pIndex] as Map<String, dynamic>?;
-        if (pageMap == null) continue;
-        
-        final url = pageMap['url'] as String?;
-        if (url == null || url.isEmpty) continue;
-        
-        final headersRaw = pageMap['headers'] as Map<String, dynamic>?;
-        final headers = headersRaw?.map((k, v) => MapEntry(k, v.toString()));
+      final fileName = 'page_${(idx + 1).toString().padLeft(3, '0')}$ext';
+      return dl.PageUrl(
+        url: url,
+        headers: headers,
+        fileName: p.join(chapterDirPath, fileName),
+      );
+    }).toList();
 
-        final f = () async {
-          try {
-            var ext = _imageExtension(url);
-            final fileName = 'page_${(pIndex + 1).toString().padLeft(3, '0')}$ext';
-            final filePath = p.join(chapterDir.path, fileName);
-            final file = File(filePath);
-            
-            if (await file.exists() && (await file.length()) > 0) {
-              return;
-            }
+    final mDownloader = MediaDownloader(
+      taskId: taskId,
+      itemType: ItemType.manga,
+      pageUrls: pageUrls,
+      concurrentDownloads: 3,
+    );
 
-            final response = await http.get(Uri.parse(url), headers: headers);
-            if (response.statusCode == 200) {
-              await file.writeAsBytes(response.bodyBytes);
-            }
-          } catch (e) {
-            debugPrint(e.toString());
-          } finally {
-            downloaded++;
-            final prog = downloaded / pagesRaw.length;
-            _mangaProgress = prog;
-            
-            FlutterForegroundTask.updateService(
-              notificationTitle: 'Downloading Manga',
-              notificationText: '$mediaTitle - $chapterName: ${(prog * 100).toStringAsFixed(0)}%',
-            );
+    try {
+      await mDownloader.download((prog) {
+        _mangaProgress = prog.completed / prog.total;
+        FlutterForegroundTask.updateService(
+          notificationTitle: 'Downloading Manga',
+          notificationText:
+              '$mediaTitle - $chapterName: ${(_mangaProgress * 100).toStringAsFixed(0)}%',
+        );
 
-            _uiSendPort?.send(jsonEncode({
-              'type': 'MANGA_TASK_UPDATE',
-              'taskId': taskId,
-              'status': 'downloading',
-              'progress': prog,
-            }));
-          }
-        }();
+        _uiSendPort?.send(jsonEncode({
+          'type': 'MANGA_TASK_UPDATE',
+          'taskId': taskId,
+          'status': 'downloading',
+          'progress': _mangaProgress,
+        }));
+      });
 
-        downloadFutures.add(f);
-        f.whenComplete(() => downloadFutures.remove(f));
+      if (_cancelledTasks.contains(taskId)) return;
+
+      final msg = {
+        'type': 'MANGA_TASK_UPDATE',
+        'taskId': taskId,
+        'status': 'completed',
+        'progress': 1.0,
+        'pageCount': pagesRaw.length,
+      };
+      _completedResults[taskId] = msg;
+      _uiSendPort?.send(jsonEncode(msg));
+    } catch (e) {
+      if (_cancelledTasks.contains(taskId)) return;
+      _uiSendPort?.send(jsonEncode({
+        'type': 'MANGA_TASK_UPDATE',
+        'taskId': taskId,
+        'status': 'failed',
+        'errorMessage': e.toString(),
+      }));
     }
-    await Future.wait(downloadFutures);
-
-    if (_cancelledTasks.contains(taskId)) return;
-
-    final msg = {
-      'type': 'MANGA_TASK_UPDATE',
-      'taskId': taskId,
-      'status': 'completed',
-      'progress': 1.0,
-      'pageCount': pagesRaw.length,
-    };
-    _completedResults[taskId] = msg;
-    _uiSendPort?.send(jsonEncode(msg));
-  }
-
-  String _imageExtension(String url) {
-    final lower = url.toLowerCase().split('?').first;
-    for (final ext in ['.jpg', '.jpeg', '.png', '.webp', '.gif']) {
-      if (lower.endsWith(ext)) return ext;
-    }
-    return '.jpg';
   }
 
   void _updateIdleNotification() {
     if (!_isProcessingHls && !_isProcessingManga) {
-       FlutterForegroundTask.updateService(
-          notificationTitle: 'AnymeX Downloads',
-          notificationText: 'Running in background...',
-       );
+      FlutterForegroundTask.updateService(
+        notificationTitle: 'AnymeX Downloads',
+        notificationText: 'Running in background...',
+      );
     }
   }
 
@@ -342,37 +325,37 @@ class BackgroundDownloadTaskHandler extends TaskHandler {
     }
 
     if (_activeHlsTask != null) {
-       _uiSendPort?.send(jsonEncode({
-         'type': 'TASK_UPDATE',
-         'taskId': _activeHlsTask!['taskId'],
-         'status': 'downloading',
-         'progress': _hlsProgress,
-       }));
+      _uiSendPort?.send(jsonEncode({
+        'type': 'TASK_UPDATE',
+        'taskId': _activeHlsTask!['taskId'],
+        'status': 'downloading',
+        'progress': _hlsProgress,
+      }));
     }
     for (var task in _hlsQueue) {
-       _uiSendPort?.send(jsonEncode({
-         'type': 'TASK_UPDATE',
-         'taskId': task['taskId'],
-         'status': 'downloading',
-         'progress': 0.0,
-       }));
+      _uiSendPort?.send(jsonEncode({
+        'type': 'TASK_UPDATE',
+        'taskId': task['taskId'],
+        'status': 'downloading',
+        'progress': 0.0,
+      }));
     }
 
     if (_activeMangaTask != null) {
-       _uiSendPort?.send(jsonEncode({
-         'type': 'MANGA_TASK_UPDATE',
-         'taskId': _activeMangaTask!['taskId'],
-         'status': 'downloading',
-         'progress': _mangaProgress,
-       }));
+      _uiSendPort?.send(jsonEncode({
+        'type': 'MANGA_TASK_UPDATE',
+        'taskId': _activeMangaTask!['taskId'],
+        'status': 'downloading',
+        'progress': _mangaProgress,
+      }));
     }
     for (var task in _mangaQueue) {
-       _uiSendPort?.send(jsonEncode({
-         'type': 'MANGA_TASK_UPDATE',
-         'taskId': task['taskId'],
-         'status': 'downloading',
-         'progress': 0.0,
-       }));
+      _uiSendPort?.send(jsonEncode({
+        'type': 'MANGA_TASK_UPDATE',
+        'taskId': task['taskId'],
+        'status': 'downloading',
+        'progress': 0.0,
+      }));
     }
   }
 }

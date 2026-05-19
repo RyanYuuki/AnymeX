@@ -29,14 +29,6 @@ VideoLinkType detectLinkType(String url) {
   return VideoLinkType.unknown;
 }
 
-class DownloadResult {
-  final bool success;
-  final String? filePath;
-  final String? error;
-
-  const DownloadResult({required this.success, this.filePath, this.error});
-}
-
 class ActiveDownloadTask {
   String taskId;
   String mediaTitle;
@@ -50,8 +42,6 @@ class ActiveDownloadTask {
   double progress;
   String? filePath;
   String? errorMessage;
-  String? pendingFileName;
-  String? pendingMediaDir;
 
   ActiveDownloadTask({
     required this.taskId,

@@ -1,5 +1,4 @@
 import 'package:anymex/screens/downloads/controller/download_controller.dart';
-import 'package:anymex/utils/download_engine.dart';
 import 'package:anymex/screens/downloads/model/download_models.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/database/isar_models/video.dart' as hive;
@@ -70,7 +69,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
       if (widget.episodes.isEmpty) {
         throw Exception('No episodes selected for download.');
       }
-      
+
       final firstEp = widget.episodes.first;
       final deEpisode = DEpisode(
         episodeNumber: firstEp.number,
