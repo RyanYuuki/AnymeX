@@ -248,12 +248,14 @@ Future<void> _handleAnimeTap(OfflineMedia media) async {
   logSession.log("Checking saved stream URL...");
   try {
     final playbackData = await _resolveAnimePlaybackData(
-        media: media, source: source, log: logSession.log);
+        media: media, source: source, log: logSession.log, session: logSession);
     if (playbackData == null) {
+      if (logSession.isCancelled) return;
       logSession.log("Playback preparation failed.");
       return;
     }
 
+    if (logSession.isCancelled) return;
     logSession.log("Playback is ready.");
     logSession.close();
 
@@ -265,6 +267,7 @@ Future<void> _handleAnimeTap(OfflineMedia media) async {
           episodeTracks: playbackData.tracks,
         ));
   } catch (e) {
+    if (logSession.isCancelled) return;
     Logger.i("Error preparing anime playback: $e");
     logSession.log("Failed to prepare playback.");
     snackBar("Unable to prepare playback right now. Please try again.");
@@ -277,13 +280,18 @@ Future<_AnimePlaybackData?> _resolveAnimePlaybackData({
   required OfflineMedia media,
   required Source source,
   required _LogFn log,
+  required _LoaderLogSession session,
 }) async {
   final currentEpisode = media.currentEpisode!;
   var tracks =
       List<local_video.Video>.from(currentEpisode.videoTracks ?? const []);
 
+  if (session.isCancelled) return null;
+
   final firstStoredTrack = tracks.isNotEmpty ? tracks.first : null;
-  final isStoredLinkValid = await _pingVideoUrl(firstStoredTrack, log: log);
+  final isStoredLinkValid = await _pingVideoUrl(firstStoredTrack, log: log, session: session);
+
+  if (session.isCancelled) return null;
 
   if (!isStoredLinkValid) {
     log("Saved link is expired.");
@@ -291,7 +299,7 @@ Future<_AnimePlaybackData?> _resolveAnimePlaybackData({
     log("Fetching fresh stream URLs from source...");
 
     final episodeUrl = currentEpisode.link ?? "";
-    if (episodeUrl.isEmpty) {
+    if (episodeUrl.isEmpty || session.isCancelled) {
       log("Episode URL is missing.");
       snackBar("Link has expired and episode URL is unavailable.");
       return null;
@@ -304,6 +312,8 @@ Future<_AnimePlaybackData?> _resolveAnimePlaybackData({
       ),
     );
 
+    if (session.isCancelled) return null;
+
     if (refreshedVideos.isEmpty) {
       log("Source returned no stream URLs.");
       snackBar("Link has expired and no alternative stream was found.");
@@ -315,7 +325,7 @@ Future<_AnimePlaybackData?> _resolveAnimePlaybackData({
         .map(local_video.Video.fromVideo)
         .where((video) => (video.url ?? '').isNotEmpty)
         .toList();
-    if (tracks.isEmpty) {
+    if (tracks.isEmpty || session.isCancelled) {
       log("No playable URL in returned streams.");
       snackBar("No playable stream was returned by this source.");
       return null;
@@ -324,12 +334,14 @@ Future<_AnimePlaybackData?> _resolveAnimePlaybackData({
     log("Saved stream URL is valid.");
   }
 
+  if (session.isCancelled) return null;
+
   log("Choosing best quality/track...");
   final selectedTrack = _selectTrack(
     tracks: tracks,
     previousTrack: currentEpisode.currentTrack,
   );
-  if (selectedTrack == null) {
+  if (selectedTrack == null || session.isCancelled) {
     log("No playable track selected.");
     snackBar("No playable stream available for this episode.");
     return null;
@@ -367,9 +379,10 @@ local_video.Video? _selectTrack({
 Future<bool> _pingVideoUrl(
   local_video.Video? video, {
   required _LogFn log,
+  required _LoaderLogSession session,
 }) async {
   final url = video?.url?.trim();
-  if (url == null || url.isEmpty) {
+  if (url == null || url.isEmpty || session.isCancelled) {
     log("Saved URL is empty.");
     return false;
   }
@@ -560,11 +573,15 @@ class _AnimePlaybackData {
 class _LoaderLogSession {
   final RxList<String> _logs = <String>[].obs;
   var _isClosed = false;
+  var isCancelled = false;
 
   void show() {
     Get.dialog(
       WillPopScope(
-        onWillPop: () async => false,
+        onWillPop: () async {
+          cancel();
+          return true;
+        },
         child: Dialog(
           insetPadding:
               const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
@@ -574,11 +591,11 @@ class _LoaderLogSession {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Row(
+                Row(
                   children: [
-                    AnymexProgressIndicator(),
-                    SizedBox(width: 12),
-                    Expanded(
+                    const AnymexProgressIndicator(),
+                    const SizedBox(width: 12),
+                    const Expanded(
                       child: Text(
                         'Preparing stream',
                         style: TextStyle(
@@ -586,6 +603,12 @@ class _LoaderLogSession {
                           fontWeight: FontWeight.w700,
                         ),
                       ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close_rounded),
+                      onPressed: () {
+                        cancel();
+                      },
                     ),
                   ],
                 ),
@@ -606,18 +629,36 @@ class _LoaderLogSession {
                     ),
                   ),
                 ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        cancel();
+                      },
+                      child: const Text('Cancel'),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
         ),
       ),
-      barrierDismissible: false,
+      barrierDismissible: true,
     );
   }
 
   void log(String message) {
-    if (_isClosed) return;
+    if (_isClosed || isCancelled) return;
     _logs.add(message);
+  }
+
+  void cancel() {
+    if (isCancelled) return;
+    isCancelled = true;
+    close();
   }
 
   void close() {
