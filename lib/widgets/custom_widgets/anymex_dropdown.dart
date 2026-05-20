@@ -9,6 +9,8 @@ class AnymexDropdown extends StatefulWidget {
   final IconData icon;
   final IconData? actionIcon;
   final VoidCallback? onActionPressed;
+  final IconData? secondaryActionIcon;
+  final VoidCallback? onSecondaryActionPressed;
 
   const AnymexDropdown({
     super.key,
@@ -19,6 +21,8 @@ class AnymexDropdown extends StatefulWidget {
     required this.icon,
     this.actionIcon,
     this.onActionPressed,
+    this.secondaryActionIcon,
+    this.onSecondaryActionPressed,
   });
 
   @override
@@ -479,6 +483,31 @@ class _AnymexDropdownState extends State<AnymexDropdown>
                       ],
                     ),
                   ),
+                  if (widget.secondaryActionIcon != null &&
+                      widget.onSecondaryActionPressed != null &&
+                      widget.selectedItem != null)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: Material(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.circular(20),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(20),
+                          onTap: widget.onSecondaryActionPressed,
+                          child: Padding(
+                            padding: const EdgeInsets.all(6.0),
+                            child: Icon(
+                              widget.secondaryActionIcon,
+                              size: 20,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .tertiary
+                                  .opaque(0.8, iReallyMeanIt: true),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   if (widget.actionIcon != null &&
                       widget.onActionPressed != null &&
                       widget.selectedItem != null)

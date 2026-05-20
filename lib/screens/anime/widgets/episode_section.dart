@@ -227,6 +227,19 @@ class _EpisodeSectionState extends State<EpisodeSection> {
       label: "SELECT SOURCE",
       icon: Icons.extension_rounded,
       onChanged: (DropdownItem item) => handleSourceChange(item.value),
+      secondaryActionIcon: Icons.cookie_outlined,
+      onSecondaryActionPressed: () {
+        final activeSource = sourceController.activeSource.value;
+        if (activeSource != null) {
+          final baseUrl = activeSource.baseUrl ?? '';
+          if (baseUrl.isNotEmpty) {
+            context.openExtensionWebView(
+              url: baseUrl,
+              sourceName: activeSource.name ?? 'Extension',
+            );
+          }
+        }
+      },
       actionIcon: Icons.settings_outlined,
       onActionPressed: () => openSourcePreferences(context),
     );
@@ -494,58 +507,7 @@ class _EpisodeSectionState extends State<EpisodeSection> {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Row(
-                  children: [
-                    Expanded(child: buildSourceDropdown()),
-                    const SizedBox(width: 8),
-                    Obx(() {
-                      final activeSource = sourceController.activeSource.value;
-                      if (activeSource == null) return const SizedBox.shrink();
-                      return Container(
-                        decoration: BoxDecoration(
-                          color: context.colors.tertiaryContainer.opaque(0.3),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: context.colors.outline.opaque(0.2),
-                          ),
-                        ),
-                        child: AnymexOnTap(
-                          onTap: () {
-                            final baseUrl = activeSource.baseUrl ?? '';
-                            if (baseUrl.isNotEmpty) {
-                              context.openExtensionWebView(
-                                url: baseUrl,
-                                sourceName: activeSource.name ?? 'Extension',
-                              );
-                            }
-                          },
-                          child: IconButton(
-                            onPressed: () {
-                              final baseUrl = activeSource.baseUrl ?? '';
-                              if (baseUrl.isNotEmpty) {
-                                context.openExtensionWebView(
-                                  url: baseUrl,
-                                  sourceName: activeSource.name ?? 'Extension',
-                                );
-                              }
-                            },
-                            icon: Icon(
-                              Icons.cookie_outlined,
-                              size: 18,
-                              color: context.colors.tertiary,
-                            ),
-                            tooltip: "WebView",
-                            padding: const EdgeInsets.all(8),
-                            constraints: const BoxConstraints(
-                              minWidth: 36,
-                              minHeight: 36,
-                            ),
-                          ),
-                        ),
-                      );
-                    }),
-                  ],
-                ),
+                child: buildSourceDropdown(),
               ),
             ),
             SliverToBoxAdapter(
