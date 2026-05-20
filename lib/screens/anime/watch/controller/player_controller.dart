@@ -199,6 +199,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final brightnessIndicator = false.obs;
   final RxBool volumeIndicator = false.obs;
   final currentVisualProfile = 'natural'.obs;
+  final RxString activeShaderName = 'Default'.obs;
+  final RxBool showShaderOsd = false.obs;
+  Timer? _shaderOsdTimer;
   final Rx<Duration> subtitleDelay = Duration.zero.obs;
   RxMap<String, int> customSettings = <String, int>{}.obs;
   bool _hasTrackedInitialOnline = false;
@@ -271,10 +274,44 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     if (savedShader.isEmpty || savedShader == 'Default') return;
     try {
       await PlayerShaders.setShaders(nativePlayer, savedShader);
+      activeShaderName.value = savedShader;
       Logger.i('Auto-applied saved shader: $savedShader');
     } catch (e) {
       Logger.e('Failed to auto-apply shader: $e');
     }
+  }
+
+  Future<void> applyShader(String shaderName) async {
+    final cleanShaderName = shaderName == "Default" ? "" : shaderName;
+    settingsController.selectedShader = cleanShaderName;
+    PlayerUiKeys.selectedShader.set(cleanShaderName);
+    
+    if (_basePlayer is MediaKitPlayer) {
+      final nativePlayer = (_basePlayer as MediaKitPlayer).nativePlayer;
+      try {
+        await PlayerShaders.setShaders(nativePlayer, shaderName);
+      } catch (e) {
+        Logger.e('Failed to apply shader: $e');
+      }
+    }
+    
+    activeShaderName.value = shaderName;
+    showShaderOsd.value = true;
+    _shaderOsdTimer?.cancel();
+    _shaderOsdTimer = Timer(const Duration(seconds: 2), () {
+      showShaderOsd.value = false;
+    });
+  }
+
+  void applyShaderByIndex(int index) {
+    final shaders = PlayerShaders.getShaders();
+    if (index >= 0 && index < shaders.length) {
+      applyShader(shaders[index]);
+    }
+  }
+
+  void clearShaders() {
+    applyShader("Default");
   }
 
   final settings = Get.find<Settings>();

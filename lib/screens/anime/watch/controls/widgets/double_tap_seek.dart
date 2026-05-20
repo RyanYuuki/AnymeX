@@ -490,14 +490,33 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
   }
 
   void _handleKeyboard(KeyEvent event) {
-      if (widget.controller.isLocked.value) return;
+    if (widget.controller.isLocked.value) return;
     if (event is KeyDownEvent) {
-      if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-        _handleLeftSeek();
-      } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-        _handleRightSeek();
-      } else if (event.logicalKey == LogicalKeyboardKey.space) {
-        widget.controller.togglePlayPause();
+      final isControlPressed = HardwareKeyboard.instance.isControlPressed;
+      if (isControlPressed) {
+        if (event.logicalKey == LogicalKeyboardKey.digit1) {
+          widget.controller.applyShaderByIndex(0);
+        } else if (event.logicalKey == LogicalKeyboardKey.digit2) {
+          widget.controller.applyShaderByIndex(1);
+        } else if (event.logicalKey == LogicalKeyboardKey.digit3) {
+          widget.controller.applyShaderByIndex(2);
+        } else if (event.logicalKey == LogicalKeyboardKey.digit4) {
+          widget.controller.applyShaderByIndex(3);
+        } else if (event.logicalKey == LogicalKeyboardKey.digit5) {
+          widget.controller.applyShaderByIndex(4);
+        } else if (event.logicalKey == LogicalKeyboardKey.digit6) {
+          widget.controller.applyShaderByIndex(5);
+        } else if (event.logicalKey == LogicalKeyboardKey.digit0) {
+          widget.controller.clearShaders();
+        }
+      } else {
+        if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+          _handleLeftSeek();
+        } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+          _handleRightSeek();
+        } else if (event.logicalKey == LogicalKeyboardKey.space) {
+          widget.controller.togglePlayPause();
+        }
       }
     }
   }
