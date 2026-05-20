@@ -118,6 +118,16 @@ install(FILES "${FLUTTER_LIBRARY}" DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
   COMPONENT Runtime)
 
 foreach(bundled_library ${PLUGIN_BUNDLED_LIBRARIES})
+  if(NOT EXISTS "${bundled_library}" AND bundled_library MATCHES "anymex_extension_runtime_bridge/.*/build/linux-jni/(libdartjni\\.so|jni\\.jar)$")
+    string(REPLACE "/build/linux-jni/" "/build/jni_libs/" bundled_library_fallback "${bundled_library}")
+    if(EXISTS "${bundled_library_fallback}")
+      list(REMOVE_ITEM PLUGIN_BUNDLED_LIBRARIES "${bundled_library}")
+      list(APPEND PLUGIN_BUNDLED_LIBRARIES "${bundled_library_fallback}")
+    endif()
+  endif()
+endforeach()
+
+foreach(bundled_library ${PLUGIN_BUNDLED_LIBRARIES})
   install(FILES "${bundled_library}"
     DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
     COMPONENT Runtime)
