@@ -1,18 +1,14 @@
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
-import 'package:anymex/screens/extensions/extension_webview.dart';
 import 'package:anymex/screens/manga/widgets/chapter_ranges.dart';
 import 'package:anymex/screens/novel/details/controller/details_controller.dart';
 import 'package:anymex/screens/novel/details/widgets/chapter_item.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/string_extensions.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/animation/animations.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
-import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex_extension_runtime_bridge/Models/DEpisode.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -116,48 +112,6 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
                 size: 18,
               ),
               const Spacer(),
-              AnymexOnTap(
-                onTap: () {
-                  final activeSource = sourceController.activeNovelSource.value;
-                  if (activeSource != null) {
-                    final baseUrl = activeSource.baseUrl ?? '';
-                    if (baseUrl.isNotEmpty) {
-                      context.openExtensionWebView(
-                        url: baseUrl,
-                        sourceName: activeSource.name ?? 'Extension',
-                      );
-                    }
-                  }
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: context.colors.tertiaryContainer.opaque(0.4),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: context.colors.outline.opaque(0.3),
-                      width: 1,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.cookie_outlined,
-                        size: 14,
-                        color: context.colors.tertiary,
-                      ),
-                      const SizedBox(width: 4),
-                      AnymexText(
-                        text: "WebView",
-                        size: 11,
-                        color: context.colors.tertiary,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
               IconButton(
                   onPressed: sortToggle, icon: const Icon(Icons.sort_rounded))
             ],

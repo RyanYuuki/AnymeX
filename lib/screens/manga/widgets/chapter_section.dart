@@ -134,59 +134,6 @@ class ChapterSection extends StatelessWidget {
                       const SizedBox(width: 12),
                       AnymexOnTap(
                         onTap: () {
-                          final activeSource = sourceController.activeMangaSource.value;
-                          if (activeSource != null) {
-                            final baseUrl = activeSource.baseUrl ?? '';
-                            if (baseUrl.isNotEmpty) {
-                              context.openExtensionWebView(
-                                url: baseUrl,
-                                sourceName: activeSource.name ?? 'Extension',
-                              );
-                            } else {
-                              navigate(
-                                () => SourcePreferenceScreen(source: activeSource),
-                              );
-                            }
-                          }
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .tertiaryContainer
-                                .opaque(0.4),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .outline
-                                  .opaque(0.3),
-                              width: 1,
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.cookie_outlined,
-                                size: 14,
-                                color: context.colors.tertiary,
-                              ),
-                              const SizedBox(width: 6),
-                              AnymexText(
-                                text: "WebView",
-                                size: 12,
-                                color: context.colors.tertiary,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      AnymexOnTap(
-                        onTap: () {
                           showWrongTitleModal(
                             context,
                             anilistData.title,
@@ -246,7 +193,58 @@ class ChapterSection extends StatelessWidget {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: buildMangaSourceDropdown(),
+                child: Row(
+                  children: [
+                    Expanded(child: buildMangaSourceDropdown()),
+                    const SizedBox(width: 8),
+                    Obx(() {
+                      final activeSource = sourceController.activeMangaSource.value;
+                      if (activeSource == null) return const SizedBox.shrink();
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: context.colors.tertiaryContainer.opaque(0.3),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: context.colors.outline.opaque(0.2),
+                          ),
+                        ),
+                        child: AnymexOnTap(
+                          onTap: () {
+                            final baseUrl = activeSource.baseUrl ?? '';
+                            if (baseUrl.isNotEmpty) {
+                              context.openExtensionWebView(
+                                url: baseUrl,
+                                sourceName: activeSource.name ?? 'Extension',
+                              );
+                            }
+                          },
+                          child: IconButton(
+                            onPressed: () {
+                              final baseUrl = activeSource.baseUrl ?? '';
+                              if (baseUrl.isNotEmpty) {
+                                context.openExtensionWebView(
+                                  url: baseUrl,
+                                  sourceName: activeSource.name ?? 'Extension',
+                                );
+                              }
+                            },
+                            icon: Icon(
+                              Icons.cookie_outlined,
+                              size: 18,
+                              color: context.colors.tertiary,
+                            ),
+                            tooltip: "WebView",
+                            padding: const EdgeInsets.all(8),
+                            constraints: const BoxConstraints(
+                              minWidth: 36,
+                              minHeight: 36,
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+                  ],
+                ),
               ),
             ),
             SliverToBoxAdapter(
