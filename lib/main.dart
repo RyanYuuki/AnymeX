@@ -55,6 +55,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:isar_community/isar.dart';
 import 'package:media_kit/media_kit.dart';
+import 'package:anymex/utils/torrent/torrent_stream_resolver.dart';
 import 'package:provider/provider.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 import 'package:window_manager/window_manager.dart';
@@ -186,6 +187,12 @@ void _initializeGetxController() async {
   Get.put(DownloadController(), permanent: true);
   Get.lazyPut(() => CacheController());
   await StorageManagerService().enforceImageCacheLimit();
+
+  TorrentStreamResolver.initialize().then((_) {
+    debugPrint('Torrent engine initialized');
+  }).catchError((e) {
+    debugPrint('Torrent engine init failed (non-critical): $e');
+  });
 }
 
 class MainApp extends StatefulWidget {

@@ -4,6 +4,9 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
+import 'package:anymex/utils/torrent/torrent_url_detector.dart';
+import 'package:anymex/utils/torrent/torrent_stream_resolver.dart';
+
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
@@ -696,7 +699,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   Future<void> _openWithCloudFallback({Duration? startPositionOverride}) async {
     final localStamp = savedEpisode?.timeStampInMilliseconds ?? 0;
-    final url = selectedVideo.value?.url ?? '';
+    var url = selectedVideo.value?.url ?? '';
     final headers = selectedVideo.value?.headers;
     final episodeNum = currentEpisode.value.number;
 
@@ -723,6 +726,19 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         }
       }
     } catch (_) {}
+
+    if (isTorrentUrl(url)) {
+      try {
+        Logger.i('Torrent URL detected from extension, resolving stream...');
+        final resolved = await TorrentStreamResolver.resolve(url);
+        url = resolved.streamUrl;
+        Logger.i('Torrent stream resolved: $url');
+      } catch (e) {
+        Logger.e('Failed to resolve torrent stream: $e');
+        snackBar('Failed to start torrent stream: $e');
+        return;
+      }
+    }
 
     await _basePlayer.open(url, headers: headers, startPosition: startPosition);
   }
@@ -1376,6 +1392,20 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     if (_basePlayer is MediaKitPlayer) {
       await _basePlayer.open("");
     }
+
+    if (isTorrentUrl(url)) {
+      try {
+        Logger.i('Torrent URL detected (switch), resolving stream...');
+        final resolved = await TorrentStreamResolver.resolve(url);
+        url = resolved.streamUrl;
+        Logger.i('Torrent stream resolved: $url');
+      } catch (e) {
+        Logger.e('Failed to resolve torrent stream: $e');
+        snackBar('Failed to start torrent stream: $e');
+        return;
+      }
+    }
+
     await _basePlayer.open(url, headers: headers, startPosition: startPosition);
   }
 
@@ -1420,6 +1450,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _playerSubscriptions.clear();
 
     await _basePlayer.dispose();
+
+    TorrentStreamResolver.stopActiveStream();
+
     ScreenBrightness.instance.resetApplicationScreenBrightness();
   }
 
