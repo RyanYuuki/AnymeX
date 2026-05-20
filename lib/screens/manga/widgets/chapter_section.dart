@@ -3,6 +3,7 @@ import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/extensions/ExtensionSettings/ExtensionSettings.dart';
+import 'package:anymex/screens/extensions/extension_webview.dart';
 import 'package:anymex/screens/manga/widgets/chapter_list_builder.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/language.dart';
@@ -131,6 +132,59 @@ class ChapterSection extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 12),
+                      AnymexOnTap(
+                        onTap: () {
+                          final activeSource = sourceController.activeMangaSource.value;
+                          if (activeSource != null) {
+                            final baseUrl = activeSource.baseUrl ?? '';
+                            if (baseUrl.isNotEmpty) {
+                              context.openExtensionWebView(
+                                url: baseUrl,
+                                sourceName: activeSource.name ?? 'Extension',
+                              );
+                            } else {
+                              navigate(
+                                () => SourcePreferenceScreen(source: activeSource),
+                              );
+                            }
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .tertiaryContainer
+                                .opaque(0.4),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .outline
+                                  .opaque(0.3),
+                              width: 1,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.cookie_outlined,
+                                size: 14,
+                                color: context.colors.tertiary,
+                              ),
+                              const SizedBox(width: 6),
+                              AnymexText(
+                                text: "WebView",
+                                size: 12,
+                                color: context.colors.tertiary,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
                       AnymexOnTap(
                         onTap: () {
                           showWrongTitleModal(

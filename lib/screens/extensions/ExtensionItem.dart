@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/screens/extensions/ExtensionSettings/ExtensionSettings.dart';
+import 'package:anymex/screens/extensions/extension_webview.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/logger.dart';
@@ -105,7 +106,6 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
     final theme = context.colors;
     final updateAvailable = widget.source.hasUpdate ?? false;
 
-    // Use Obx only for the installed check that depends on reactive lists
     return Obx(() {
       final isInstalled = _isInstalled;
 
@@ -165,7 +165,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
     }
 
     return SizedBox(
-      width: updateAvailable ? 150 : 104,
+      width: updateAvailable ? 196 : 150,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -190,6 +190,34 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
             ),
             const SizedBox(width: 8),
           ],
+          Container(
+            decoration: BoxDecoration(
+              color: theme.primaryContainer.withOpacity(0.6),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: AnymexOnTap(
+              child: IconButton(
+                onPressed: () {
+                  final baseUrl = widget.source.baseUrl ?? '';
+                  if (baseUrl.isNotEmpty) {
+                    context.openExtensionWebView(
+                      url: baseUrl,
+                      sourceName: widget.source.name ?? 'Extension',
+                    );
+                  } else {
+                    _showWebViewUrlDialog(theme);
+                  }
+                },
+                icon: Icon(
+                  Icons.language_rounded,
+                  size: 18,
+                  color: theme.onPrimaryContainer,
+                ),
+                tooltip: "Open WebView",
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
           Container(
             decoration: BoxDecoration(
               color: theme.errorContainer.withAlpha(122),
@@ -227,6 +255,77 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
                 tooltip: "Settings",
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showWebViewUrlDialog(ColorScheme theme) {
+    final urlController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
+        title: const Text(
+          'Open WebView',
+          style: TextStyle(fontFamily: 'Poppins-SemiBold'),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'This extension doesn\'t have a base URL. Enter the website URL to open in WebView for login/cookie management:',
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 13,
+                color: theme.onSurface.withOpacity(0.7),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: urlController,
+              style: const TextStyle(fontFamily: 'Poppins', fontSize: 14),
+              decoration: InputDecoration(
+                hintText: 'https://example.com',
+                hintStyle: TextStyle(
+                  fontFamily: 'Poppins',
+                  color: theme.onSurface.withOpacity(0.4),
+                ),
+                filled: true,
+                fillColor: theme.surfaceContainerHighest.withOpacity(0.3),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: theme.outline),
+                ),
+                prefixIcon: const Icon(Icons.language_rounded, size: 20),
+              ),
+              keyboardType: TextInputType.url,
+              autocorrect: false,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              final url = urlController.text.trim();
+              if (url.isNotEmpty) {
+                String finalUrl = url;
+                if (!finalUrl.startsWith('http')) {
+                  finalUrl = 'https://$finalUrl';
+                }
+                context.openExtensionWebView(
+                  url: finalUrl,
+                  sourceName: widget.source.name ?? 'Extension',
+                );
+              }
+            },
+            child: const Text('Open'),
           ),
         ],
       ),
@@ -358,7 +457,6 @@ class _ExtensionIcon extends StatelessWidget {
   }
 }
 
-/// Extracted stateless subtitle widget
 class _ExtensionSubtitle extends StatelessWidget {
   final Source source;
   final ColorScheme theme;

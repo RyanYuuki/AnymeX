@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:anymex/controllers/cacher/cache_controller.dart';
+import 'package:anymex/utils/cloudflare_helper.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
@@ -506,12 +507,21 @@ class SourceController extends GetxController implements BaseService {
   Future<Media> fetchDetails(FetchDetailsParams params) async {
     final isAnime = lastUpdatedSource.value == 'ANIME';
     final source = isAnime ? activeSource.value! : activeMangaSource.value!;
-    final data = await source.methods.getDetail(DMedia.withUrl(params.id));
+    try {
+      final data = await source.methods.getDetail(DMedia.withUrl(params.id));
 
-    if (serviceHandler.serviceType.value != ServicesType.extensions) {
-      cacheController.addCache(data.toJson());
+      if (serviceHandler.serviceType.value != ServicesType.extensions) {
+        cacheController.addCache(data.toJson());
+      }
+      return Media.froDMedia(data, isAnime ? ItemType.anime : ItemType.manga);
+    } catch (e) {
+      if (Get.context != null &&
+          (CloudflareHelper.isCloudflareError(e) ||
+              CloudflareHelper.isAuthError(e))) {
+        CloudflareHelper.promptWebView(Get.context!, source, e);
+      }
+      rethrow;
     }
-    return Media.froDMedia(data, isAnime ? ItemType.anime : ItemType.manga);
   }
 
   @override
@@ -519,15 +529,23 @@ class SourceController extends GetxController implements BaseService {
     final source =
         params.isManga ? activeMangaSource.value : activeSource.value;
     final type = params.isManga ? ItemType.manga : ItemType.anime;
-    return (await source!.methods.search(params.query, params.page, []))
-        .list
-        .map((e) => Media.froDMedia(e, type))
-        .toList();
+    try {
+      return (await source!.methods.search(params.query, params.page, []))
+          .list
+          .map((e) => Media.froDMedia(e, type))
+          .toList();
+    } catch (e) {
+      if (Get.context != null &&
+          (CloudflareHelper.isCloudflareError(e) ||
+              CloudflareHelper.isAuthError(e))) {
+        CloudflareHelper.promptWebView(Get.context!, source!, e);
+      }
+      rethrow;
+    }
   }
 
   Future<void> checkForUpdates(BuildContext context) async {
     try {
-      // await _bridge.checkForUpdates();
       final updatesCount = [
         ...availableExtensions,
         ...availableMangaExtensions,
