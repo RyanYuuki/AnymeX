@@ -21,7 +21,6 @@ class SettingsExtensionManager extends StatefulWidget {
 }
 
 class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
-  late bool _extensionsEnabled;
   final _pluginManager = PluginManager();
   bool _isCheckingUpdate = false;
 
@@ -32,17 +31,6 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
       PluginKeys.runtimeHostInstalledReleaseTitle.get<String>('');
 
   bool get _isPluginInstalled => _installedVersion.isNotEmpty;
-
-  @override
-  void initState() {
-    super.initState();
-    _extensionsEnabled = SourceKeys.extensionsEnabled.get<bool>(false);
-  }
-
-  void _onToggleChanged(bool value) {
-    setState(() => _extensionsEnabled = value);
-    SourceKeys.extensionsEnabled.set(value);
-  }
 
   void _showInstallPopup() async {
     await _pluginManager.showInstallSheet(context);
@@ -135,33 +123,15 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                     children: [
                       AnymexExpansionTile(
                         initialExpanded: true,
-                        title: 'General',
+                        title: 'Plugin Status',
                         content: Column(
                           children: [
-                            CustomSwitchTile(
-                              icon: Icons.extension_rounded,
-                              title: 'Install Aniyomi & Cloudstream',
-                              description:
-                                  'Download the runtime plugin to unlock Aniyomi & Cloudstream extensions',
-                              switchValue: _extensionsEnabled,
-                              onChanged: _onToggleChanged,
-                            ),
+                            _buildPluginStatusCard(context),
+                            const SizedBox(height: 10),
+                            _buildPluginActions(context),
                           ],
                         ),
                       ),
-                      if (_extensionsEnabled) ...[
-                        AnymexExpansionTile(
-                          initialExpanded: true,
-                          title: 'Plugin Status',
-                          content: Column(
-                            children: [
-                              _buildPluginStatusCard(context),
-                              const SizedBox(height: 10),
-                              _buildPluginActions(context),
-                            ],
-                          ),
-                        ),
-                      ],
                     ],
                   ),
                 ),

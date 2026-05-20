@@ -33,7 +33,6 @@ const settingsSearchCategoryIcons = <String, IconData>{
   'Reader': Icons.menu_book_rounded,
   'Theme': HugeIcons.strokeRoundedPaintBrush01,
   'Extensions': Icons.extension_rounded,
-  'Experimental': HugeIcons.strokeRoundedInformationCircle,
   'Logs': HugeIcons.strokeRoundedFile01,
   'About': HugeIcons.strokeRoundedInformationCircle,
 };
@@ -189,9 +188,6 @@ const settingsSearchIndex = <String, Map<String?, List<String>>>{
   },
   'Extensions': {
     null: ['Anime', 'Manga', 'Novel'],
-  },
-  'Experimental': {
-    'Reader': ['Cache Duration'],
   },
   'Logs': {
     null: ['Write log to a file', 'Share logs', 'Log directory'],

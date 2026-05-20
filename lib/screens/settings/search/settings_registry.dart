@@ -2,7 +2,6 @@ import 'package:anymex/screens/settings/sub_settings/settings_about.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_accounts.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_backup.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_common.dart';
-import 'package:anymex/screens/settings/sub_settings/settings_experimental.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_extensions.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_logs.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
@@ -96,7 +95,6 @@ final categoryRoutes = <String, Widget Function()>{
   'Theme': () => const SettingsTheme(),
   'Extensions': () => const SettingsExtensions(),
   'Downloads': () => const SettingsDownloads(),
-  'Experimental': () => const SettingsExperimental(),
   'Logs': () => const SettingsLogs(),
   'About': () => const AboutPage(),
 };
