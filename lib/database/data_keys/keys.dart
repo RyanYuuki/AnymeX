@@ -150,6 +150,7 @@ enum SourceKeys {
   animeExtensionOrder,
   mangaExtensionOrder,
   novelExtensionOrder,
+  extensionsEnabled,
 }
 
 enum PluginKeys {

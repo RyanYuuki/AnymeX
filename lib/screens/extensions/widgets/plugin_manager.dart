@@ -26,7 +26,7 @@ class PluginManager {
     final isLoaded = await AnymeXRuntimeBridge.isLoaded();
     if (isLoaded) return;
 
-    final release = await _fetchLatestRelease();
+    final release = await fetchLatestRelease();
     if (release == null) {
       errorSnackBar('Failed to fetch plugin release details.');
       return;
@@ -40,7 +40,7 @@ class PluginManager {
     BuildContext context, {
     bool showIfUpToDate = false,
   }) async {
-    final release = await _fetchLatestRelease();
+    final release = await fetchLatestRelease();
     if (release == null) {
       errorSnackBar('Failed to check plugin updates.');
       return;
@@ -53,7 +53,7 @@ class PluginManager {
       return;
     }
 
-    if (_isNewerVersion(currentVersion, release.tagName)) {
+    if (isNewerVersion(currentVersion, release.tagName)) {
       if (!context.mounted) return;
       await showUpdateSheet(
         context,
@@ -71,9 +71,9 @@ class PluginManager {
 
   Future<void> showInstallSheet(
     BuildContext context, {
-    _PluginRelease? release,
+    PluginRelease? release,
   }) async {
-    final resolvedRelease = release ?? await _fetchLatestRelease();
+    final resolvedRelease = release ?? await fetchLatestRelease();
     if (resolvedRelease == null) {
       errorSnackBar('Failed to load plugin release.');
       return;
@@ -97,7 +97,7 @@ class PluginManager {
 
   Future<void> showUpdateSheet(
     BuildContext context, {
-    required _PluginRelease release,
+    required PluginRelease release,
     required String installedVersion,
   }) async {
     if (!context.mounted) return;
@@ -116,7 +116,7 @@ class PluginManager {
     );
   }
 
-  Future<_PluginRelease?> _fetchLatestRelease() async {
+  Future<PluginRelease?> fetchLatestRelease() async {
     try {
       final response = await http.get(
         Uri.parse(_latestReleaseUrl),
@@ -147,14 +147,14 @@ class PluginManager {
         return null;
       }
 
-      return _PluginRelease(
+      return PluginRelease(
         tagName: (json['tag_name'] as String? ?? '').trim(),
         title: ((json['name'] as String?)?.trim().isNotEmpty ?? false)
             ? (json['name'] as String).trim()
             : (json['tag_name'] as String? ?? 'Latest Plugin Release').trim(),
         body: (json['body'] as String? ?? '').trim(),
         publishedAt: DateTime.tryParse(json['published_at'] as String? ?? ''),
-        asset: _PluginAsset(
+        asset: PluginAsset(
           name: (assetJson['name'] as String? ?? 'anymex_bridge').trim(),
           downloadUrl:
               (assetJson['browser_download_url'] as String? ?? '').trim(),
@@ -171,7 +171,7 @@ class PluginManager {
     }
   }
 
-  bool _isNewerVersion(String installed, String latest) {
+  bool isNewerVersion(String installed, String latest) {
     final installedParts = _normalizeVersion(installed);
     final latestParts = _normalizeVersion(latest);
     final maxLength = installedParts.length > latestParts.length
@@ -199,7 +199,7 @@ class PluginManager {
         .toList();
   }
 
-  void persistInstalledRelease(_PluginRelease release) {
+  void persistInstalledRelease(PluginRelease release) {
     PluginKeys.runtimeHostInstalledVersion.set(release.tagName);
     PluginKeys.runtimeHostInstalledReleaseTitle.set(release.title);
   }
@@ -237,7 +237,7 @@ class _PluginReleaseSheet extends StatefulWidget {
   });
 
   final PluginManager manager;
-  final _PluginRelease release;
+  final PluginRelease release;
   final String installedVersion;
   final _PluginSheetMode mode;
 
@@ -636,8 +636,8 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
   }
 }
 
-class _PluginRelease {
-  const _PluginRelease({
+class PluginRelease {
+  const PluginRelease({
     required this.tagName,
     required this.title,
     required this.body,
@@ -649,11 +649,11 @@ class _PluginRelease {
   final String title;
   final String body;
   final DateTime? publishedAt;
-  final _PluginAsset asset;
+  final PluginAsset asset;
 }
 
-class _PluginAsset {
-  const _PluginAsset({
+class PluginAsset {
+  const PluginAsset({
     required this.name,
     required this.downloadUrl,
     required this.sizeBytes,
