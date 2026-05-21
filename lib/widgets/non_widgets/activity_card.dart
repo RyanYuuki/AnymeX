@@ -1071,7 +1071,7 @@ class _ActivityAnilistCardState extends State<_ActivityAnilistCard> {
     _dataFuture = handler.anilistService.fetchDetails(
       FetchDetailsParams(
         id: widget.id.toString(),
-        isManga: widget.isManga,
+        type: widget.isManga ? ItemType.manga : ItemType.anime,
       ),
     );
   }

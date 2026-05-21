@@ -148,7 +148,7 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
       final child = AnymexOnTap(
         onTap: () => _navigateToDetailsPage(itemData, tag),
         child: GestureDetector(
-          onLongPress: () => _showPeekPopup(context, itemData, tag),
+          onLongPress: () => widget.type == ItemType.novel ? {} : _showPeekPopup(context, itemData, tag),
           child: card,
         ),
       );
@@ -183,7 +183,7 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
     final media = Media.fromCarouselData(itemData, mediaType);
 
     void onTapHandler() {
-      if (mediaType == ItemType.novel) {
+      if (mediaType == ItemType.novel || widget.type == ItemType.novel) {
         final source =
             widget.source ?? sourceController.installedNovelExtensions.first;
         navigate(() => NovelDetailsPage(

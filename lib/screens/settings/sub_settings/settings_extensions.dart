@@ -44,51 +44,25 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
     final List<Map<String, dynamic>> list = [];
     final activeManagers = em.managers;
 
-    final mangayomi = activeManagers
-        .where((m) => m.name.toLowerCase().contains('mangayomi'))
-        .firstOrNull;
-    final aniyomi = activeManagers
-        .where((m) => m.name.toLowerCase().contains('aniyomi'))
-        .firstOrNull;
-    final cloudstream = activeManagers
-        .where((m) => m.name.toLowerCase().contains('cloudstream'))
-        .firstOrNull;
-
-    if (mangayomi != null) {
+    for (final m in activeManagers) {
       list.add({
-        'name': mangayomi.name,
-        'manager': mangayomi,
-        'isMock': false,
-      });
-    } else if (activeManagers.isNotEmpty) {
-      list.add({
-        'name': activeManagers.first.name,
-        'manager': activeManagers.first,
+        'name': m.name,
+        'manager': m,
         'isMock': false,
       });
     }
 
-    if (aniyomi != null) {
-      list.add({
-        'name': aniyomi.name,
-        'manager': aniyomi,
-        'isMock': false,
-      });
-    } else {
+    final hasAniyomi = activeManagers.any((m) => m.name.toLowerCase().contains('aniyomi'));
+    final hasCloudStream = activeManagers.any((m) => m.name.toLowerCase().contains('cloudstream'));
+
+    if (!hasAniyomi) {
       list.add({
         'name': 'Aniyomi',
         'manager': null,
         'isMock': true,
       });
     }
-
-    if (cloudstream != null) {
-      list.add({
-        'name': cloudstream.name,
-        'manager': cloudstream,
-        'isMock': false,
-      });
-    } else {
+    if (!hasCloudStream) {
       list.add({
         'name': 'CloudStream',
         'manager': null,
@@ -96,20 +70,31 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
       });
     }
 
-    for (final m in activeManagers) {
-      if (m != mangayomi &&
-          m != aniyomi &&
-          m != cloudstream &&
-          (activeManagers.isEmpty || m != activeManagers.first)) {
-        list.add({
-          'name': m.name,
-          'manager': m,
-          'isMock': false,
-        });
+    list.sort((a, b) {
+      final managerA = a['manager'] as Extension?;
+      final managerB = b['manager'] as Extension?;
+
+      final aRequires = managerA?.requiresPlugin ?? _isMockPluginRequired(a['name'] as String);
+      final bRequires = managerB?.requiresPlugin ?? _isMockPluginRequired(b['name'] as String);
+
+      if (aRequires != bRequires) {
+        return aRequires ? 1 : -1;
       }
-    }
+
+      final aName = (a['name'] as String).toLowerCase();
+      final bName = (b['name'] as String).toLowerCase();
+      if (aName.contains('mangayomi')) return -1;
+      if (bName.contains('mangayomi')) return 1;
+
+      return aName.compareTo(bName);
+    });
 
     return list;
+  }
+
+  bool _isMockPluginRequired(String name) {
+    final lower = name.toLowerCase();
+    return lower.contains('aniyomi') || lower.contains('cloudstream');
   }
 
 
@@ -172,12 +157,36 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
-    final displayList = _displayManagers;
-    if (displayList.isEmpty) {
-      return Glow(
-        child: Scaffold(
-          body: Column(children: [
+    return Glow(
+      child: Scaffold(
+        body: Obx(() {
+          final displayList = _displayManagers;
+          if (displayList.isEmpty) {
+            return Column(children: [
+              NestedHeader(
+                title: 'Extensions',
+                action: IconButton(
+                  onPressed: () => Get.to(() => const SettingsExtensionManager()),
+                  icon: const Icon(Icons.settings_suggest_rounded),
+                  tooltip: 'Extension Manager',
+                ),
+              ),
+              Expanded(
+                child: Center(
+                  child: Text('No extension managers found.',
+                      style: TextStyle(color: context.colors.onSurfaceVariant)),
+                ),
+              ),
+            ]);
+          }
+
+          if (_managerIndex >= displayList.length) {
+            _managerIndex = 0;
+          }
+
+          return Column(children: [
             NestedHeader(
               title: 'Extensions',
               action: IconButton(
@@ -186,44 +195,23 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                 tooltip: 'Extension Manager',
               ),
             ),
-            Expanded(
-              child: Center(
-                child: Text('No extension managers found.',
-                    style: TextStyle(color: context.colors.onSurfaceVariant)),
+            const SizedBox(height: 10),
+            if (displayList.length > 1) ...[
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: _buildManagerBar(),
               ),
-            ),
-          ]),
-        ),
-      );
-    }
-
-    return Glow(
-      child: Scaffold(
-        body: Column(children: [
-          NestedHeader(
-            title: 'Extensions',
-            action: IconButton(
-              onPressed: () => Get.to(() => const SettingsExtensionManager()),
-              icon: const Icon(Icons.settings_suggest_rounded),
-              tooltip: 'Extension Manager',
-            ),
-          ),
-          const SizedBox(height: 10),
-          if (displayList.length > 1) ...[
+              const SizedBox(height: 8),
+            ],
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: _buildManagerBar(),
+              child: _buildTypeBar(),
             ),
-            const SizedBox(height: 8),
-          ],
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: _buildTypeBar(),
-          ),
-          const SizedBox(height: 4),
-          Expanded(child: _buildBody()),
-        ]),
-        floatingActionButton: _buildFab(),
+            const SizedBox(height: 4),
+            Expanded(child: _buildBody()),
+          ]);
+        }),
+        floatingActionButton: Obx(() => _buildFab() ?? const SizedBox.shrink()),
       ),
     );
   }

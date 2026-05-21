@@ -11,6 +11,7 @@ import 'package:anymex/utils/al_about_me_helpers.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/markdown.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -30,14 +31,13 @@ String preprocessAnilistAbout(String raw) {
       .replaceAll('&lrm;', '')
       .replaceAll('&rlm;', '');
 
-  
   final hasHtml = RegExp(r'<[a-zA-Z][^>]*>').hasMatch(html);
   if (!hasHtml) {
     // Raw convert to HTML using alparser
     html = parseMarkdown(html);
   }
 
-  // Handles al  markdown_spoiler 
+  // Handles al  markdown_spoiler
   html = html.replaceAllMapped(
     RegExp(
       r"""<span\s+class=['"]markdown_spoiler['"][^>]*>(?:\s*<span>)?([\s\S]*?)(?:</span>\s*)?</span>""",
@@ -80,7 +80,7 @@ String preprocessAnilistAbout(String raw) {
     (m) => '<details><summary>Spoiler</summary>${m[1] ?? ''}</details>',
   );
 
-  // Handle centering 
+  // Handle centering
   html = html.replaceAllMapped(
     RegExp(r'~~~([\s\S]*?)~~~'),
     (m) => '<center>${m[1] ?? ''}</center>',
@@ -111,7 +111,6 @@ String preprocessAnilistAbout(String raw) {
         '<a href="${m[3] ?? ''}"><img src="${m[2] ?? ''}" alt="${m[1] ?? ''}"></a>',
   );
 
- 
   html = html.replaceAllMapped(
     RegExp(r'!\[([^\]]*?)\]\((https?://[^\)]+)\)'),
     (m) => '<img src="${m[2] ?? ''}" alt="${m[1] ?? ''}">',
@@ -152,7 +151,6 @@ String preprocessAnilistAbout(String raw) {
       .replaceAll('&quot;', '"')
       .replaceAll('&apos;', "'");
 
- 
   html = html.replaceAllMapped(
     RegExp(r'(<img[^>]*>\s*(?:</a>)?)[ \t]*\n[ \t]*(?=(?:<a[^>]*>\s*)?<img)'),
     (m) =>
@@ -161,7 +159,6 @@ String preprocessAnilistAbout(String raw) {
 
   html = html.replaceAll('\n', '<br>');
 
- 
   html = html.replaceAll(RegExp(r'(<br\s*/?>\s*){3,}'), '<br><br>');
 
   return html;
@@ -331,7 +328,7 @@ class _AnilistAboutMeState extends State<AnilistAboutMe> {
                   }
                 }
 
-                // Iframe 
+                // Iframe
                 if (element.localName == 'iframe') {
                   final src = (element.attributes['src'] ?? '').trim();
                   if (src.isNotEmpty) {
@@ -375,7 +372,6 @@ class _AnilistAboutMeState extends State<AnilistAboutMe> {
                     final type = mediaMatch.group(1) ?? 'anime';
                     final id = int.tryParse(mediaMatch.group(2) ?? '');
                     if (id != null) {
-                     
                       var isCentered = false;
                       var parent = element.parent;
                       while (parent != null) {
@@ -473,7 +469,7 @@ class _AnilistAboutMeState extends State<AnilistAboutMe> {
     final data = await handler.anilistService.fetchDetails(
       FetchDetailsParams(
         id: id.toString(),
-        isManga: type == 'manga',
+        type: type == 'manga' ? ItemType.manga : ItemType.anime,
       ),
     );
 
@@ -513,7 +509,7 @@ class _AnilistMediaCardState extends State<_AnilistMediaCard> {
     _dataFuture = Get.find<ServiceHandler>().anilistService.fetchDetails(
           FetchDetailsParams(
             id: widget.id.toString(),
-            isManga: widget.type == 'manga',
+            type: widget.type == 'manga' ? ItemType.manga : ItemType.anime,
           ),
         );
   }
@@ -666,7 +662,6 @@ class _SmartImageWidgetState extends State<_SmartImageWidget> {
       height: widget.height,
       fit: BoxFit.contain,
       errorWidget: (_, __, ___) {
-        
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) setState(() => _useFallback = true);
         });
