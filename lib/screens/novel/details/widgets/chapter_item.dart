@@ -3,6 +3,7 @@ import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/screens/novel/details/controller/details_controller.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/widgets/animation/animations.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
@@ -38,26 +39,31 @@ class ChapterListItem extends StatelessWidget {
     final alreadyRead = chapter.number! < (readChapter?.number ?? 1) ||
         ((savedChaps?.pageNumber ?? 1) == (savedChaps?.totalPages ?? 100));
 
-    return AnymexOnTap(
-      onTap: onTap,
-      child: Opacity(
-        opacity: alreadyRead ? 0.5 : 1,
-        child: Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: isSelected
-                ? context.colors.secondary.withAlpha(100)
-                : Theme.of(context).colorScheme.secondaryContainer.opaque(0.4),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            children: [
-              _buildChapterProgress(context, savedChaps ?? Chapter()),
-              const SizedBox(width: 15),
-              _buildChapterInfo(context, savedChaps),
-              const Spacer(),
-              _buildReadButton(context),
-            ],
+    return StaggeredAnimatedItemWrapper(
+      child: AnymexOnTap(
+        onTap: onTap,
+        child: Opacity(
+          opacity: alreadyRead ? 0.5 : 1,
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? context.colors.secondary.withAlpha(100)
+                  : Theme.of(context)
+                      .colorScheme
+                      .secondaryContainer
+                      .opaque(0.4),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                _buildChapterProgress(context, savedChaps ?? Chapter()),
+                const SizedBox(width: 15),
+                _buildChapterInfo(context, savedChaps),
+                const Spacer(),
+                _buildReadButton(context),
+              ],
+            ),
           ),
         ),
       ),
@@ -133,6 +139,15 @@ class ChapterListItem extends StatelessWidget {
     final progressText = savedChaps?.pageNumber != null
         ? ' (${savedChaps?.pageNumber}/${savedChaps?.totalPages})'
         : '';
+    final chapterMetaLabel = (chapter.scanlator?.isNotEmpty ?? false)
+        ? chapter.scanlator!
+        : (chapter.sourceName?.isNotEmpty ?? false)
+            ? chapter.sourceName!
+            : controller.source.name ?? '';
+    final chapterMetaText = [
+      if (chapter.releaseDate?.isNotEmpty ?? false) chapter.releaseDate!,
+      if (chapterMetaLabel.isNotEmpty) chapterMetaLabel,
+    ].join(' • ');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -153,7 +168,9 @@ class ChapterListItem extends StatelessWidget {
           width: getResponsiveSize(context,
               mobileSize: Get.width * 0.4, desktopSize: 200),
           child: AnymexText(
-            text: calcTime(chapter.releaseDate ?? '0'),
+            text: chapterMetaText.isNotEmpty
+                ? chapterMetaText
+                : calcTime(chapter.releaseDate ?? '0'),
             color: context.colors.inverseSurface.opaque(0.9),
             fontStyle: FontStyle.italic,
             maxLines: 2,

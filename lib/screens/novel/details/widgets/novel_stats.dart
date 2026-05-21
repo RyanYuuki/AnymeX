@@ -90,46 +90,47 @@ class NovelStats extends StatelessWidget {
             ],
           ),
           content: Html(
-              data: data.description,
-              style: {
-                "body": Style(
-                  fontSize: FontSize(14.0),
-                  color:
-                      context.colors.onSurface.opaque(0.9),
-                ),
-                "b": Style(fontWeight: FontWeight.bold),
-                "i": Style(fontStyle: FontStyle.italic),
-              },
-            ),
+            data: data.description,
+            style: {
+              "body": Style(
+                fontSize: FontSize(14.0),
+                color: context.colors.onSurface.opaque(0.9),
+              ),
+              "b": Style(fontWeight: FontWeight.bold),
+              "i": Style(fontStyle: FontStyle.italic),
+            },
+          ),
         ),
         const SizedBox(height: 16),
-        const AnymexText(
-          text: "Genres",
-          variant: TextVariant.bold,
-          size: 17,
-        ),
-        GridView.builder(
-          physics: NeverScrollableScrollPhysics(),
-          padding: EdgeInsets.only(top: 15),
-          shrinkWrap: true,
-          itemCount: data.genres.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              childAspectRatio: 1,
-              crossAxisCount: getResponsiveCrossAxisCount(context,
-                  baseColumns: 2, maxColumns: 4),
-              mainAxisSpacing: 10,
-              mainAxisExtent: isDesktop ? 80 : 60,
-              crossAxisSpacing: 10),
-          itemBuilder: (context, index) {
-            final e = data.genres[index];
-            return ImageButton(
-                buttonText: e,
-                height: 80,
-                width: 1000,
-                onPressed: () {},
-                backgroundImage: covers[index].cover!);
-          },
-        ),
+        if (data.genres.isNotEmpty) ...[
+          const AnymexText(
+            text: "Genres",
+            variant: TextVariant.bold,
+            size: 17,
+          ),
+          GridView.builder(
+            physics: NeverScrollableScrollPhysics(),
+            padding: EdgeInsets.only(top: 15),
+            shrinkWrap: true,
+            itemCount: data.genres.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                childAspectRatio: 1,
+                crossAxisCount: getResponsiveCrossAxisCount(context,
+                    baseColumns: 2, maxColumns: 4),
+                mainAxisSpacing: 10,
+                mainAxisExtent: isDesktop ? 80 : 60,
+                crossAxisSpacing: 10),
+            itemBuilder: (context, index) {
+              final e = data.genres[index];
+              return ImageButton(
+                  buttonText: e,
+                  height: 80,
+                  width: 1000,
+                  onPressed: () {},
+                  backgroundImage: covers[index].cover!);
+            },
+          ),
+        ],
       ],
     );
   }
@@ -212,7 +213,8 @@ class _CollapsibleBox extends StatefulWidget {
   State<_CollapsibleBox> createState() => _CollapsibleBoxState();
 }
 
-class _CollapsibleBoxState extends State<_CollapsibleBox> with SingleTickerProviderStateMixin {
+class _CollapsibleBoxState extends State<_CollapsibleBox>
+    with SingleTickerProviderStateMixin {
   late bool isExpanded;
   late AnimationController _controller;
   late Animation<double> _iconTurns;
@@ -221,8 +223,10 @@ class _CollapsibleBoxState extends State<_CollapsibleBox> with SingleTickerProvi
   void initState() {
     super.initState();
     isExpanded = widget.isInitiallyExpanded;
-    _controller = AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
-    _iconTurns = Tween<double>(begin: 0.0, end: 0.5).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+    _controller = AnimationController(
+        duration: const Duration(milliseconds: 300), vsync: this);
+    _iconTurns = Tween<double>(begin: 0.0, end: 0.5)
+        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
     if (isExpanded) {
       _controller.value = 1.0;
     }
@@ -282,7 +286,9 @@ class _CollapsibleBoxState extends State<_CollapsibleBox> with SingleTickerProvi
                   widget.content,
                 ],
               ),
-              crossFadeState: isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+              crossFadeState: isExpanded
+                  ? CrossFadeState.showSecond
+                  : CrossFadeState.showFirst,
               duration: const Duration(milliseconds: 300),
               sizeCurve: Curves.easeInOut,
             ),
