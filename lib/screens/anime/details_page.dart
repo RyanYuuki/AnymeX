@@ -296,12 +296,12 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         await _restorePreferredSource();
         Future.wait([_mapToService(), _syncMediaIds(), _fetchFillerInfo()]);
       }
-    } catch (e) {
+    } catch (e, s) {
       if (e.toString().contains('author')) {
         Logger.i("Hianime Error Handling");
         await _mapToService();
       }
-      Logger.i("Media Details Fetch Failed => $e");
+      Logger.i("Media Details Fetch Failed => $e - $s");
     } finally {}
   }
 

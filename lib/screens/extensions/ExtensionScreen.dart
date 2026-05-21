@@ -178,10 +178,20 @@ class _ExtensionScreenState extends State<ExtensionScreen>
   bool get _isPluginInstalled =>
       PluginKeys.runtimeHostInstalledVersion.get<String>('').isNotEmpty;
 
+  bool _typeRequiresPlugin(String type) {
+    if (type == 'all') return false;
+    final activeManager = Get.find<ExtensionManager>().managers.firstWhereOrNull(
+      (m) => m.name.toLowerCase().contains(type.toLowerCase()),
+    );
+    if (activeManager != null) {
+      return activeManager.requiresPlugin;
+    }
+    return type == 'Aniyomi' || type == 'Cloudstream';
+  }
+
   void _showSortDialog(BuildContext context) {
     final languages = sortedLanguagesMap.keys.toList();
     final sourceTypes = ['all', 'Mangayomi', 'Aniyomi', 'Cloudstream', 'Sora'];
-    final pluginRequiredTypes = {'Aniyomi', 'Cloudstream'};
 
     showDialog(
       context: context,
@@ -203,7 +213,7 @@ class _ExtensionScreenState extends State<ExtensionScreen>
                   content: Column(
                     children: sourceTypes
                         .map((type) {
-                          final needsPlugin = pluginRequiredTypes.contains(type) && !_isPluginInstalled;
+                          final needsPlugin = _typeRequiresPlugin(type) && !_isPluginInstalled;
                           return Padding(
                               padding: const EdgeInsets.only(bottom: 8),
                               child: _SortOptionTile(
