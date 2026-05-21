@@ -354,6 +354,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.4+2"
+  cross_platform_video_thumbnails:
+    dependency: "direct main"
+    description:
+      name: cross_platform_video_thumbnails
+      sha256: "05f3910738f35f34a2f6b308a5747c591be5c7b3edf4ebae258326e6e04f2362"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.1"
   crypto:
     dependency: transitive
     description:

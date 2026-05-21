@@ -46,6 +46,7 @@ dependencies:
     intl: ^0.20.1
     kenburns_nullsafety: ^1.0.1
     subtitle: any
+    cross_platform_video_thumbnails: ^0.1.0
 
     outlined_text: ^1.0.1
     # media_kit:
