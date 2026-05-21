@@ -389,7 +389,7 @@ class _ExtensionListState extends State<ExtensionList>
               itemBuilder: (context, index) {
                 final source = installed[index];
                 return _DraggableExtensionTile(
-                  key: ValueKey(source.id),
+                  key: ValueKey(source.uniqueId),
                   index: index,
                   source: source,
                   mediaType: widget.itemType,
@@ -416,7 +416,7 @@ class _ExtensionListState extends State<ExtensionList>
             itemBuilder: (context, index) {
               final source = installed[index];
               return _DraggableExtensionTile(
-                key: ValueKey(source.id),
+                key: ValueKey(source.uniqueId),
                 index: index,
                 source: source,
                 mediaType: widget.itemType,
@@ -496,7 +496,7 @@ class _ExtensionListState extends State<ExtensionList>
           }
           final source = entries[itemIndex];
           return ExtensionListTileWidget(
-            key: ValueKey(source.id),
+            key: ValueKey(source.uniqueId),
             source: source,
             mediaType: widget.itemType,
           );
@@ -535,7 +535,7 @@ class _ExtensionListState extends State<ExtensionList>
           }
           final source = updates[index - 1];
           return ExtensionListTileWidget(
-            key: ValueKey('update_${source.id}'),
+            key: ValueKey('update_${source.uniqueId}'),
             source: source,
             mediaType: widget.itemType,
           );
@@ -579,7 +579,7 @@ class _ExtensionListState extends State<ExtensionList>
             );
           }
           return ExtensionListTileWidget(
-            key: ValueKey(item.source!.id),
+            key: ValueKey(item.source!.uniqueId),
             source: item.source!,
             mediaType: widget.itemType,
           );
