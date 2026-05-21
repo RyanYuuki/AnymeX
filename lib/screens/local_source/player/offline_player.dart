@@ -12,6 +12,7 @@ import 'package:anymex/screens/anime/watch/controls/widgets/subtitle_text.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/sync_subs_popup.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/tracks_popup.dart';
 import 'package:anymex/screens/anime/widgets/media_indicator.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/shader_osd.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:path/path.dart' as p;
@@ -136,6 +137,7 @@ class _OfflineWatchPageState extends State<OfflineWatchPage> {
           isVolumeIndicator: true,
           controller: controller,
         ),
+        ShaderOsd(controller: controller),
         Positioned(
           right: 0,
           top: 0,

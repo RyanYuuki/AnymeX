@@ -11,6 +11,7 @@ import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/overlay.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/subtitle_text.dart';
 import 'package:anymex/screens/anime/widgets/media_indicator.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/shader_osd.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/source_popup.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/sync_subs_popup.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/tracks_popup.dart';
@@ -124,6 +125,7 @@ class _DownloadedWatchPageState extends State<DownloadedWatchPage> {
             isVolumeIndicator: true,
             controller: _controller,
           ),
+          ShaderOsd(controller: _controller),
           Positioned(
             right: 0,
             top: 0,
