@@ -320,6 +320,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   Timer? _controlsTimer;
   bool _wasControlsVisible = false;
   bool isLeftLandscaped = true;
+  final Rx<DeviceOrientation> currentOrientation = DeviceOrientation.landscapeLeft.obs;
 
   final Rx<BoxFit> videoFit = Rx<BoxFit>(BoxFit.contain);
   final RxBool isLocked = false.obs;
@@ -484,8 +485,12 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
     if (Platform.isAndroid || Platform.isIOS) {
-      final orientation = await _getClosestLandscapeOrientation();
-      _applyOrientation(orientation);
+      if (playerSettings.defaultPortraitMode) {
+        _applyOrientation(DeviceOrientation.portraitUp);
+      } else {
+        final orientation = await _getClosestLandscapeOrientation();
+        _applyOrientation(orientation);
+      }
     }
   }
 
@@ -519,6 +524,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void _applyOrientation(DeviceOrientation orientation) {
     SystemChrome.setPreferredOrientations([orientation]);
+    currentOrientation.value = orientation;
     isLeftLandscaped = orientation != DeviceOrientation.landscapeRight;
   }
 
@@ -529,9 +535,15 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void toggleOrientation() {
-    _applyOrientation(isLeftLandscaped
-        ? DeviceOrientation.landscapeRight
-        : DeviceOrientation.landscapeLeft);
+    DeviceOrientation next;
+    if (currentOrientation.value == DeviceOrientation.landscapeLeft) {
+      next = DeviceOrientation.portraitUp;
+    } else if (currentOrientation.value == DeviceOrientation.portraitUp) {
+      next = DeviceOrientation.landscapeRight;
+    } else {
+      next = DeviceOrientation.landscapeLeft;
+    }
+    _applyOrientation(next);
   }
 
   void _performSegmentSkip(aniskip.SkipIntervals interval) {
