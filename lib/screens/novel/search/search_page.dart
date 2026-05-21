@@ -269,7 +269,6 @@ class _NovelSearchPageState extends State<NovelSearchPage>
   }
 
   Widget _buildInitialState() {
-    // Show "Search to get started" if no history, otherwise show history
     if (_searchedTerms.isEmpty) {
       return _buildSearchToGetStartedState();
     } else {
@@ -463,10 +462,10 @@ class _NovelSearchPageState extends State<NovelSearchPage>
     }
 
     return ListView.separated(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(0),
       physics: const BouncingScrollPhysics(),
       itemCount: _extensionResults.length,
-      separatorBuilder: (context, index) => const SizedBox(height: 20),
+      separatorBuilder: (context, index) => const SizedBox(height: 5),
       itemBuilder: (context, index) {
         final result = _extensionResults[index];
 
