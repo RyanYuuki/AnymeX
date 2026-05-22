@@ -85,9 +85,33 @@ install(FILES "${FLUTTER_LIBRARY}" DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
   COMPONENT Runtime)
 
 if(PLUGIN_BUNDLED_LIBRARIES)
-  install(FILES "${PLUGIN_BUNDLED_LIBRARIES}"
-    DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
-    COMPONENT Runtime)
+  set(RESOLVED_BUNDLED_LIBRARIES "")
+  foreach(bundled_library ${PLUGIN_BUNDLED_LIBRARIES})
+    set(resolved_library "${bundled_library}")
+    if(NOT EXISTS "${resolved_library}")
+      if(resolved_library MATCHES "anymex_extension_runtime_bridge/.*/build/windows-jni/dartjni\\.dll$")
+        string(REPLACE "/build/windows-jni/" "/build/jni_libs/" fallback_library "${resolved_library}")
+        if(EXISTS "${fallback_library}")
+          set(resolved_library "${fallback_library}")
+        endif()
+      elseif(resolved_library MATCHES "anymex_extension_runtime_bridge/.*/build/linux-jni/jni\\.jar$")
+        string(REPLACE "/build/linux-jni/" "/build/jni_libs/" fallback_library "${resolved_library}")
+        if(EXISTS "${fallback_library}")
+          set(resolved_library "${fallback_library}")
+        endif()
+      endif()
+    endif()
+    
+    if(EXISTS "${resolved_library}")
+      list(APPEND RESOLVED_BUNDLED_LIBRARIES "${resolved_library}")
+    endif()
+  endforeach()
+
+  if(RESOLVED_BUNDLED_LIBRARIES)
+    install(FILES "${RESOLVED_BUNDLED_LIBRARIES}"
+      DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
+      COMPONENT Runtime)
+  endif()
 endif()
 
 # Copy the native assets provided by the build.dart from all packages.
