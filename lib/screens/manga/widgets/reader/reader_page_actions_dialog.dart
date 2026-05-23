@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -111,11 +112,67 @@ class _ReaderPageActionsSheet extends StatelessWidget {
     try {
       final bytes = await _fetchImageBytes();
       if (bytes == null) throw Exception('Failed to fetch image');
-      final dir = await getApplicationDocumentsDirectory();
-      final file = File(
-          '${dir.path}/page_${DateTime.now().millisecondsSinceEpoch}.jpg');
-      await file.writeAsBytes(bytes);
-      snackBar('Page saved to ${file.path}', duration: 2500);
+
+      final fileName = 'anymex_${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+      if (Platform.isAndroid) {
+        Future<bool> check(Permission p) async {
+          var status = await p.status;
+          if (!status.isGranted) status = await p.request();
+          return status.isGranted;
+        }
+
+        await check(Permission.storage);
+        await check(Permission.photos);
+        await check(Permission.manageExternalStorage);
+
+        final directory = Directory('/storage/emulated/0/Pictures/AnymeX');
+        if (!await directory.exists()) {
+          await directory.create(recursive: true);
+        }
+        final file = File('${directory.path}/$fileName');
+        await file.writeAsBytes(bytes);
+
+        try {
+          const platform = MethodChannel('com.ryan.anymex/utils');
+          await platform.invokeMethod('scanFile', {'path': file.path});
+        } catch (_) {}
+
+        snackBar('Page saved to Pictures/AnymeX', duration: 2500);
+      } else if (Platform.isIOS) {
+        final dir = await getTemporaryDirectory();
+        final file = File('${dir.path}/$fileName');
+        await file.writeAsBytes(bytes);
+        await Share.shareXFiles([XFile(file.path)], text: 'Manga page');
+      } else {
+        String? downloadPath = (await getDownloadsDirectory())?.path;
+
+        if (Platform.isLinux || Platform.isMacOS) {
+          final home = Platform.environment['HOME'];
+          if (home != null) {
+            final cleanDownload = downloadPath?.replaceAll(RegExp(r'/$'), '');
+            final cleanHome = home.replaceAll(RegExp(r'/$'), '');
+            if (cleanDownload == null || cleanDownload == cleanHome) {
+              downloadPath = '$cleanHome/Downloads';
+            }
+          }
+        } else if (Platform.isWindows) {
+          final userProfile = Platform.environment['USERPROFILE'];
+          if (userProfile != null &&
+              (downloadPath == null || downloadPath == userProfile)) {
+            downloadPath = '$userProfile\\Downloads';
+          }
+        }
+
+        final path = downloadPath ?? '.';
+        final saveDir = Directory('$path/AnymeX');
+        if (!await saveDir.exists()) {
+          await saveDir.create(recursive: true);
+        }
+        final file = File('${saveDir.path}/$fileName');
+        await file.writeAsBytes(bytes);
+        snackBar('Page saved to $path/AnymeX', duration: 2500);
+      }
     } catch (e) {
       snackBar('Failed to save page: $e', duration: 2500);
     }
