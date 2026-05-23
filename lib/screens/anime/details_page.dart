@@ -402,7 +402,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       episodeList.clear();
       rawEpisodes.clear();
       final episodeFuture = await sourceController.activeSource.value!.methods
-          .getDetail(DMedia.withUrl(media.id));
+          .getDetail(DMedia.withUrl(media.id));    
       if (_isStaleSourceRequest(activeRequestId) || !mounted) {
         return;
       }
@@ -923,24 +923,6 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         ],
       ),
     );
-  }
-
-  Widget _buildEpisodeSection(BuildContext context) {
-    return Obx(() {
-      return EpisodeSection(
-        searchedTitle: searchedTitle,
-        anilistData: anilistData ?? widget.media,
-        episodeList: (!disableAnifyForCurrentSource.value && isAnify.value)
-            ? episodeList
-            : rawEpisodes,
-        episodeError: episodeError,
-        mapToAnilist: () => _mapToService(),
-        getDetailsFromSource: (media) => _fetchSourceDetails(media),
-        isAnify: isAnify,
-        showAnify: showAnify,
-        disableAnifyForCurrentSource: disableAnifyForCurrentSource,
-      );
-    });
   }
 
   Widget _buildCommentsSection(BuildContext context) {
