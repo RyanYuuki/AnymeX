@@ -1964,8 +1964,8 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                 sliderValue: settings
                                     .playerSettings.value.subtitleBottomMargin,
                                 min: 0.0,
-                                max: 100.0,
-                                divisions: 20,
+                                max: 500.0,
+                                divisions: 500,
                                 onChanged: (val) {
                                   final current = settings.playerSettings.value;
                                   current.subtitleBottomMargin = val;
