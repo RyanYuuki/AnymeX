@@ -85,30 +85,39 @@ install(FILES "${FLUTTER_LIBRARY}" DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
   COMPONENT Runtime)
 
 if(PLUGIN_BUNDLED_LIBRARIES)
-  set(RESOLVED_BUNDLED_LIBRARIES "")
+  set(GENEX_BUNDLED_LIBRARIES "")
+  set(PLAIN_BUNDLED_LIBRARIES "")
+
   foreach(bundled_library ${PLUGIN_BUNDLED_LIBRARIES})
-    set(resolved_library "${bundled_library}")
-    if(NOT EXISTS "${resolved_library}")
-      if(resolved_library MATCHES "anymex_extension_runtime_bridge/.*/build/windows-jni/dartjni\\.dll$")
-        string(REPLACE "/build/windows-jni/" "/build/jni_libs/" fallback_library "${resolved_library}")
-        if(EXISTS "${fallback_library}")
-          set(resolved_library "${fallback_library}")
-        endif()
-      elseif(resolved_library MATCHES "anymex_extension_runtime_bridge/.*/build/linux-jni/jni\\.jar$")
-        string(REPLACE "/build/linux-jni/" "/build/jni_libs/" fallback_library "${resolved_library}")
-        if(EXISTS "${fallback_library}")
-          set(resolved_library "${fallback_library}")
-        endif()
-      endif()
-    endif()
-    
-    if(EXISTS "${resolved_library}")
-      list(APPEND RESOLVED_BUNDLED_LIBRARIES "${resolved_library}")
+    if(bundled_library MATCHES "^\\$<")
+      list(APPEND GENEX_BUNDLED_LIBRARIES "${bundled_library}")
+    else()
+      list(APPEND PLAIN_BUNDLED_LIBRARIES "${bundled_library}")
     endif()
   endforeach()
 
-  if(RESOLVED_BUNDLED_LIBRARIES)
-    install(FILES "${RESOLVED_BUNDLED_LIBRARIES}"
+  if(GENEX_BUNDLED_LIBRARIES)
+    install(FILES ${GENEX_BUNDLED_LIBRARIES}
+      DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
+      COMPONENT Runtime)
+  endif()
+
+  set(RESOLVED_PLAIN_LIBRARIES "")
+  foreach(bundled_library ${PLAIN_BUNDLED_LIBRARIES})
+    set(resolved_library "${bundled_library}")
+    if(NOT EXISTS "${resolved_library}")
+      string(REPLACE "/build/windows-jni/" "/build/jni_libs/" fallback_library "${resolved_library}")
+      if(EXISTS "${fallback_library}")
+        set(resolved_library "${fallback_library}")
+      endif()
+    endif()
+    if(EXISTS "${resolved_library}")
+      list(APPEND RESOLVED_PLAIN_LIBRARIES "${resolved_library}")
+    endif()
+  endforeach()
+
+  if(RESOLVED_PLAIN_LIBRARIES)
+    install(FILES "${RESOLVED_PLAIN_LIBRARIES}"
       DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
       COMPONENT Runtime)
   endif()
