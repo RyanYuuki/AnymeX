@@ -72,7 +72,7 @@ class LibraryHeader extends StatelessWidget {
                   'Discover your favorite series',
                   style: TextStyle(
                     fontSize: 14,
-                    color: context.colors.primary,
+                    color: context.colors.onSurface.withOpacity(0.55),
                   ),
                 ),
               ],
@@ -103,21 +103,16 @@ class LibraryHeader extends StatelessWidget {
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                      color: context.colors.primary,
+                      color: context.colors.surfaceContainer,
                       borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color:
-                              Theme.of(context).colorScheme.primary.opaque(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
+                      border: Border.all(
+                        color: context.colors.outline.withOpacity(0.08),
+                      ),
                     ),
                     child: IconButton(
                       onPressed: controller.toggleSearch,
                       icon: Icon(Icons.arrow_back_ios_new,
-                          color: context.colors.onPrimary),
+                          color: context.colors.onSurface),
                       constraints: const BoxConstraints(
                         minHeight: 40,
                         minWidth: 40,
@@ -130,6 +125,7 @@ class LibraryHeader extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: CustomSearchBar(
                       controller: controller.searchController,
+                      backgroundColor: context.colors.surfaceContainer.opaque(0.5, iReallyMeanIt: true),
                       onChanged: controller.search,
                       hintText: _getSearchHint(),
                     ),
@@ -159,39 +155,31 @@ class LibraryHeader extends StatelessWidget {
                   key: const ValueKey('searchButton'),
                   margin: const EdgeInsets.only(right: 8),
                   decoration: BoxDecoration(
-                    color: context.colors.primary,
+                    color: context.colors.surfaceContainer.opaque(0.4),
                     borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: context.colors.primary.opaque(0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
+                    border: Border.all(
+                      color: context.colors.outline.withOpacity(0.08),
+                    ),
                   ),
                   child: IconButton(
                     onPressed: controller.toggleSearch,
                     icon: Icon(IconlyLight.search,
-                        color: context.colors.onPrimary),
+                        color: context.colors.onSurface),
                   ),
                 )
               : const SizedBox(key: ValueKey('emptySearch'), width: 0),
         ),
         Container(
           decoration: BoxDecoration(
-            color: context.colors.primary,
+            color: context.colors.surfaceContainer.opaque(0.4),
             borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: context.colors.primary.opaque(0.3),
-                blurRadius: 8,
-                offset: const Offset(0, 3),
-              ),
-            ],
+            border: Border.all(
+              color: context.colors.outline.withOpacity(0.08),
+            ),
           ),
           child: IconButton(
             onPressed: () => _showSortingSettings(context),
-            icon: Icon(Icons.sort, color: context.colors.onPrimary),
+            icon: Icon(Icons.sort, color: context.colors.onSurface),
           ),
         ),
       ],
@@ -504,6 +492,62 @@ class ChipTabs extends StatelessWidget {
 
   const ChipTabs({super.key, required this.controller});
 
+  Widget _buildCustomPill({
+    required BuildContext context,
+    required String label,
+    required bool isSelected,
+    required VoidCallback onTap,
+    VoidCallback? onLongPress,
+    Widget? icon,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          onLongPress: onLongPress,
+          borderRadius: BorderRadius.circular(30),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? context.colors.primary.withOpacity(0.08)
+                  : context.colors.surfaceContainer.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(30),
+              border: Border.all(
+                color: isSelected
+                    ? context.colors.primary.withOpacity(0.3)
+                    : context.colors.outline.withOpacity(0.08),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (icon != null) ...[
+                  icon,
+                  const SizedBox(width: 6),
+                ],
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: isSelected
+                        ? context.colors.primary
+                        : context.colors.onSurfaceVariant,
+                    fontSize: 12,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -527,33 +571,21 @@ class ChipTabs extends StatelessWidget {
                   final historyCount = historySnapshot.data?.length ?? 0;
 
                   return Row(children: [
-                    InkWell(
+                    _buildCustomPill(
+                      context: context,
+                      label: 'History ($historyCount)',
+                      isSelected: controller.selectedListIndex.value == -1,
+                      onTap: () => controller.selectList(-1),
                       onLongPress: () => Get.to(
                           () => HistoryEditor(type: controller.type.value)),
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: AnymexIconChip(
-                          icon: Row(
-                            children: [
-                              Icon(
-                                  controller.selectedListIndex.value == -1
-                                      ? Iconsax.clock5
-                                      : Iconsax.clock,
-                                  color:
-                                      controller.selectedListIndex.value == -1
-                                          ? context.colors.onPrimary
-                                          : context.colors.onSurfaceVariant),
-                              5.width(),
-                              AnymexText(text: '($historyCount)')
-                            ],
-                          ),
-                          isSelected: controller.selectedListIndex.value == -1,
-                          onSelected: (selected) {
-                            if (selected) {
-                              controller.selectList(-1);
-                            }
-                          },
-                        ),
+                      icon: Icon(
+                        controller.selectedListIndex.value == -1
+                            ? Iconsax.clock5
+                            : Iconsax.clock,
+                        size: 16,
+                        color: controller.selectedListIndex.value == -1
+                            ? context.colors.primary
+                            : context.colors.onSurfaceVariant,
                       ),
                     ),
                     ...List.generate(
@@ -569,39 +601,27 @@ class ChipTabs extends StatelessWidget {
                             final itemCount =
                                 listDataSnapshot.data?.listData.length ?? 0;
 
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 8),
-                              child: AnymexChip(
-                                label: '$listName ($itemCount)',
-                                isSelected:
-                                    controller.selectedListIndex.value == index,
-                                onSelected: (selected) {
-                                  if (selected) {
-                                    controller.selectList(index);
-                                  }
-                                },
-                              ),
+                            return _buildCustomPill(
+                              context: context,
+                              label: '$listName ($itemCount)',
+                              isSelected:
+                                  controller.selectedListIndex.value == index,
+                              onTap: () => controller.selectList(index),
                             );
                           },
                         );
                       },
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: AnymexIconChip(
-                        icon: Row(
-                          children: [
-                            Icon(Iconsax.edit,
-                                color: context.colors.onSurfaceVariant),
-                            5.width(),
-                            const AnymexText(text: 'Edit')
-                          ],
-                        ),
-                        isSelected: false,
-                        onSelected: (selected) {
-                          navigate(() =>
-                              CustomListsEditor(type: controller.type.value));
-                        },
+                    _buildCustomPill(
+                      context: context,
+                      label: 'Edit',
+                      isSelected: false,
+                      onTap: () => navigate(
+                          () => CustomListsEditor(type: controller.type.value)),
+                      icon: Icon(
+                        Iconsax.edit,
+                        size: 16,
+                        color: context.colors.onSurfaceVariant,
                       ),
                     ),
                   ]);
@@ -632,14 +652,14 @@ class _SegmentedControl extends StatelessWidget {
     final totalItems = availableTypes.length;
 
     return Container(
-      height: 54,
+      height: 52,
       margin: const EdgeInsets.symmetric(horizontal: 0),
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.opaque(0.4),
-        borderRadius: BorderRadius.circular(20),
+        color: colorScheme.surfaceContainer.opaque(0.5),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: colorScheme.outline.opaque(0.1),
+          color: colorScheme.outline.withOpacity(0.08),
           width: 1,
         ),
       ),
@@ -662,15 +682,12 @@ class _SegmentedControl extends StatelessWidget {
                 heightFactor: 1.0,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: colorScheme.primary,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: colorScheme.primary.opaque(0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
+                    color: colorScheme.surfaceContainerHighest.opaque(0.5),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: colorScheme.outline.withOpacity(0.12),
+                      width: 1,
+                    ),
                   ),
                 ),
               ),
@@ -691,11 +708,11 @@ class _SegmentedControl extends StatelessWidget {
                       }
                     },
                     child: AnimatedScale(
-                      scale: isSelected ? 1.05 : 1.0,
+                      scale: isSelected ? 1.02 : 1.0,
                       duration: const Duration(milliseconds: 250),
                       curve: Curves.easeInOut,
                       child: AnimatedOpacity(
-                        opacity: isSelected ? 1.0 : 0.7,
+                        opacity: isSelected ? 1.0 : 0.6,
                         duration: const Duration(milliseconds: 200),
                         child: SizedBox.expand(
                           child: Row(
@@ -706,7 +723,7 @@ class _SegmentedControl extends StatelessWidget {
                                 _getTypeIcon(itemType),
                                 size: 18,
                                 color: isSelected
-                                    ? colorScheme.onPrimary
+                                    ? colorScheme.primary
                                     : colorScheme.onSurfaceVariant,
                               ),
                               const SizedBox(width: 8),
@@ -718,7 +735,7 @@ class _SegmentedControl extends StatelessWidget {
                                     fontSize: 13,
                                     fontWeight: FontWeight.w700,
                                     color: isSelected
-                                        ? colorScheme.onPrimary
+                                        ? colorScheme.primary
                                         : colorScheme.onSurfaceVariant,
                                   ),
                                   child: Text(

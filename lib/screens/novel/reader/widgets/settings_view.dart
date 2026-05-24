@@ -18,67 +18,87 @@ class NovelSettingsPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final animatedWidth = MediaQuery.of(context).size.width * 0.85;
     return Obx(() {
-      return AnimatedPositioned(
-        duration: const Duration(milliseconds: 300),
-        top: 0,
-        bottom: 0,
-        right: controller.showSettings.value ? 0 : -animatedWidth,
-        width: animatedWidth,
-        child: Container(
-          decoration: BoxDecoration(
-            color: context.colors.surface.opaque(0.95),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.opaque(0.2),
-                blurRadius: 10,
-                offset: const Offset(-2, 0),
+      return Stack(
+        children: [
+          Positioned.fill(
+            child: IgnorePointer(
+              ignoring: !controller.showSettings.value,
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  controller.showSettings.value = false;
+                },
               ),
-            ],
-          ),
-          child: SafeArea(
-            child: Column(
-              children: [
-                _buildSettingsHeader(context),
-                Expanded(
-                  child: DefaultTabController(
-                    length: 4,
-                    child: Column(
-                      children: [
-                        TabBar(
-                          padding: const EdgeInsets.all(0),
-                          isScrollable: true,
-                          tabAlignment: TabAlignment.center,
-                          tabs: const [
-                            Tab(icon: Icon(Icons.format_size), text: 'Display'),
-                            Tab(icon: Icon(Icons.palette), text: 'Theme'),
-                            Tab(icon: Icon(Icons.gesture), text: 'Navigation'),
-                            Tab(
-                                icon: Icon(Icons.record_voice_over),
-                                text: 'TTS'),
-                          ],
-                          labelColor: context.colors.primary,
-                          unselectedLabelColor:
-                              context.colors.onSurface.opaque(0.6),
-                          indicatorColor: context.colors.primary,
-                        ),
-                        Expanded(
-                          child: TabBarView(
-                            children: [
-                              _buildDisplayTab(context),
-                              _buildThemeTab(context),
-                              _buildNavigationTab(context),
-                              _buildTtsTab(context),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
             ),
           ),
-        ),
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 300),
+            top: 0,
+            bottom: 0,
+            right: controller.showSettings.value ? 0 : -animatedWidth,
+            width: animatedWidth,
+            child: Container(
+              decoration: BoxDecoration(
+                color: context.colors.surface.opaque(0.95),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.opaque(0.2),
+                    blurRadius: 10,
+                    offset: const Offset(-2, 0),
+                  ),
+                ],
+              ),
+              child: SafeArea(
+                child: Column(
+                  children: [
+                    _buildSettingsHeader(context),
+                    Expanded(
+                      child: DefaultTabController(
+                        length: 4,
+                        child: Column(
+                          children: [
+                            TabBar(
+                              padding: const EdgeInsets.all(0),
+                              isScrollable: true,
+                              tabAlignment: TabAlignment.center,
+                              tabs: const [
+                                Tab(
+                                    icon: Icon(Icons.format_size),
+                                    text: 'Display'),
+                                Tab(icon: Icon(Icons.palette), text: 'Theme'),
+                                Tab(
+                                    icon: Icon(Icons.gesture),
+                                    text: 'Navigation'),
+                                Tab(
+                                    icon: Icon(Icons.record_voice_over),
+                                    text: 'TTS'),
+                              ],
+                              labelColor: context.colors.primary,
+                              unselectedLabelColor:
+                                  context.colors.onSurface.opaque(0.6),
+                              indicatorColor: context.colors.primary,
+                            ),
+                            Expanded(
+                              child: TabBarView(
+                                children: [
+                                  _buildDisplayTab(context),
+                                  _buildThemeTab(context),
+                                  _buildNavigationTab(context),
+                                  _buildTtsTab(context),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       );
     });
   }

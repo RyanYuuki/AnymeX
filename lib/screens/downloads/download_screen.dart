@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:anymex/controllers/settings/settings.dart';
-import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/screens/downloads/controller/download_controller.dart';
 import 'package:anymex/screens/downloads/controller/download_search_controller.dart';
 import 'package:anymex/screens/downloads/model/download_models.dart';
@@ -31,7 +30,6 @@ import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:anymex/database/database.dart';
-import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'dart:io';
 
 Widget _buildDynamicTabBar({
@@ -175,12 +173,18 @@ class _DownloadScreenState extends State<DownloadScreen> {
   Future<void> _checkPermissions() async {
     if (mounted) setState(() => _isCheckingPermissions = true);
 
-    if (Platform.isIOS) {
-      if (mounted) setState(() {
-        _isPermissionsGranted = true;
-        _hasDownloadDir = true;
-        _isCheckingPermissions = false;
-      });
+    final savedPath = _settings.downloadPath.value;
+    final dirAlreadySet =
+        savedPath.isNotEmpty && await Directory(savedPath).exists();
+
+    if (!Platform.isAndroid) {
+      if (mounted) {
+        setState(() {
+          _isPermissionsGranted = true;
+          _hasDownloadDir = Platform.isIOS || dirAlreadySet;
+          _isCheckingPermissions = false;
+        });
+      }
       return;
     }
 
@@ -207,9 +211,6 @@ class _DownloadScreenState extends State<DownloadScreen> {
     if (await FlutterForegroundTask.isIgnoringBatteryOptimizations == false) {
       await FlutterForegroundTask.requestIgnoreBatteryOptimization();
     }
-
-    final savedPath = _settings.downloadPath.value;
-    final dirAlreadySet = savedPath.isNotEmpty && await Directory(savedPath).exists();
 
     if (mounted) {
       setState(() {
@@ -305,7 +306,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(HugeIcons.strokeRoundedFolder01, size: 64, color: theme.primary),
+            Icon(HugeIcons.strokeRoundedFolder01,
+                size: 64, color: theme.primary),
             const SizedBox(height: 24),
             const AnymexText(
               text: 'Choose Download Folder',
@@ -314,7 +316,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
             ),
             const SizedBox(height: 12),
             AnymexText(
-              text: 'Select a folder where AnymeX will save your downloaded anime episodes and manga chapters.',
+              text:
+                  'Select a folder where AnymeX will save your downloaded anime episodes and manga chapters.',
               textAlign: TextAlign.center,
               color: theme.onSurface.opaque(0.7),
             ),
@@ -944,7 +947,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                         controller.selectedChunkIndex.value = 0;
                       },
                     );
-                  }).toList(),
+                  }),
                 if (chunkedEpisodes.isNotEmpty && chunkedEpisodes.length > 2)
                   Padding(
                     padding: const EdgeInsets.only(top: 10),
@@ -1123,7 +1126,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                       ),
                     ),
                   );
-                }).toList(),
+                }),
               ],
             );
           }),

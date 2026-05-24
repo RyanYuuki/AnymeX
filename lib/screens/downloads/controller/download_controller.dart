@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
@@ -10,7 +11,8 @@ import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/database/isar_models/track.dart' as hive;
 import 'package:anymex/screens/downloads/model/download_models.dart';
-import 'package:anymex/utils/download_engine.dart';
+import 'package:anymex/utils/media_downloader.dart';
+import 'package:anymex/utils/download_isolate_pool.dart' as dl;
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
@@ -22,10 +24,8 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
-import 'package:background_downloader/background_downloader.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:anymex/utils/background_service_handler.dart';
-import 'package:flutter/foundation.dart';
 
 class DownloadController extends GetxController {
   final RxList<ActiveDownloadTask> activeTasks = <ActiveDownloadTask>[].obs;
@@ -39,6 +39,7 @@ class DownloadController extends GetxController {
   final Queue<_MangaScrapeRequest> _mangaScrapeQueue = Queue();
   final Map<String, String> _scrapeTokens = {};
   int _activeTaskCount = 0;
+  bool _isFetching = false;   
   final List<String> _activeFileTasks = [];
   SendPort? _bgSendPort;
 
@@ -54,52 +55,19 @@ class DownloadController extends GetxController {
 
   Future<void> _initialize() async {
     final concurrency = DownloadKeys.concurrentDownloads.get<int>(3);
-    await FileDownloader().configure(
-      globalConfig: [
-        (Config.requestTimeout, const Duration(seconds: 90)),
-        (Config.holdingQueue, (concurrency, null, null)),
-      ],
-    );
-
-    FileDownloader().configureNotification(
-      running: const TaskNotification('AnymeX', 'Downloading {filename}'),
-      complete:
-          const TaskNotification('AnymeX', 'Finished downloading {filename}'),
-      progressBar: true,
-      tapOpensFile: false,
-    );
-
-    FileDownloader().registerCallbacks(
-      taskNotificationTapCallback: (task, notificationType) {
-        if (!Get.isRegistered<DownloadController>()) return;
-        Get.to(() => const ActiveDownloads());
-      },
-    );
-
-    FileDownloader().updates.listen((update) {
-      if (update is TaskStatusUpdate) {
-        _handleStatusUpdate(update);
-      } else if (update is TaskProgressUpdate) {
-        _handleProgressUpdate(update);
-      }
-    });
+    await MediaDownloader.initializeIsolatePool(poolSize: concurrency);
 
     await _loadIndex();
     await _loadActiveTasks();
     await _loadMangaActiveTasks();
 
     ever(Get.find<Settings>().concurrentDownloads, (val) {
-      FileDownloader().configure(
-        globalConfig: [
-          (Config.holdingQueue, (val, null, null)),
-        ],
-      );
       _processScrapeQueue();
       _processMangaScrapeQueue();
     });
 
     final sourceController = Get.find<SourceController>();
-    
+
     _initForegroundTask();
 
     Future.delayed(const Duration(seconds: 3), () async {
@@ -192,7 +160,8 @@ class DownloadController extends GetxController {
           if (task != null) {
             final statusStr = payload['status'] as String;
             final prog = (payload['progress'] as num).toDouble();
-            final isTerminal = statusStr == 'completed' || statusStr == 'failed';
+            final isTerminal =
+                statusStr == 'completed' || statusStr == 'failed';
 
             if (statusStr == 'downloading') {
               task.status = DownloadStatus.downloading;
@@ -219,18 +188,21 @@ class DownloadController extends GetxController {
             } else {
               final now = DateTime.now();
               final last = _lastProgressUpdate[taskId];
-              if (last == null || now.difference(last).inMilliseconds > _progressThrottleMs) {
+              if (last == null ||
+                  now.difference(last).inMilliseconds > _progressThrottleMs) {
                 _lastProgressUpdate[taskId] = now;
                 activeTasks.refresh();
               }
             }
           }
         } else if (type == 'MANGA_TASK_UPDATE') {
-          final task = activeMangaTasks.firstWhereOrNull((t) => t.taskId == taskId);
+          final task =
+              activeMangaTasks.firstWhereOrNull((t) => t.taskId == taskId);
           if (task != null) {
             final statusStr = payload['status'] as String;
             final prog = (payload['progress'] as num).toDouble();
-            final isTerminal = statusStr == 'completed' || statusStr == 'failed';
+            final isTerminal =
+                statusStr == 'completed' || statusStr == 'failed';
 
             if (statusStr == 'downloading') {
               task.status = MangaDownloadStatus.downloading;
@@ -246,12 +218,14 @@ class DownloadController extends GetxController {
               activeMangaTasks.refresh();
               _saveMangaActiveTasks();
               if (statusStr == 'completed') {
-                _onForegroundMangaTaskFinished(task, payload['pageCount'] as int);
+                _onForegroundMangaTaskFinished(
+                    task, payload['pageCount'] as int);
               }
             } else {
               final now = DateTime.now();
               final last = _lastProgressUpdate[taskId];
-              if (last == null || now.difference(last).inMilliseconds > _progressThrottleMs) {
+              if (last == null ||
+                  now.difference(last).inMilliseconds > _progressThrottleMs) {
                 _lastProgressUpdate[taskId] = now;
                 activeMangaTasks.refresh();
               }
@@ -275,7 +249,7 @@ class DownloadController extends GetxController {
   }
 
   Future<void> _onForegroundTaskFinished(ActiveDownloadTask task) async {
-    final fileName = DownloadEngine.buildFileName(
+    final fileName = MediaDownloader.buildFileName(
       episodeNumber: task.episode.number,
       sortMap: task.episode.sortMap,
       url: task.videoUrl,
@@ -289,7 +263,7 @@ class DownloadController extends GetxController {
     final mediaDir =
         await _getMangaMediaDirPath(task.mediaTitle, task.extensionName);
     final chapterDir = Directory(p.join(
-        mediaDir, DownloadEngine.sanitizePathSegment(task.chapterDisplay)));
+        mediaDir, MediaDownloader.sanitizePathSegment(task.chapterDisplay)));
     await _writeChapterMeta(task, chapterDir.path, pageCount);
     await _loadIndex();
   }
@@ -313,75 +287,7 @@ class DownloadController extends GetxController {
     }
   }
 
-  void _handleStatusUpdate(TaskStatusUpdate update) async {
-    final task =
-        activeTasks.firstWhereOrNull((t) => t.taskId == update.task.taskId);
-    if (task == null) return;
-
-    switch (update.status) {
-      case TaskStatus.enqueued:
-        task.status = DownloadStatus.queued;
-        break;
-      case TaskStatus.running:
-        task.status = DownloadStatus.downloading;
-        if (!_activeFileTasks.contains(update.task.taskId)) {
-          _activeFileTasks.add(update.task.taskId);
-        }
-        break;
-      case TaskStatus.complete:
-        task.status = DownloadStatus.completed;
-        task.progress = 1.0;
-        if (_activeFileTasks.contains(update.task.taskId)) {
-          _activeFileTasks.remove(update.task.taskId);
-          _activeTaskCount--;
-          _processScrapeQueue();
-          _processMangaScrapeQueue();
-        }
-        _onTaskFinished(task, update.task.filename);
-        break;
-      case TaskStatus.failed:
-      case TaskStatus.canceled:
-        if (_activeFileTasks.contains(update.task.taskId)) {
-          _activeFileTasks.remove(update.task.taskId);
-          _activeTaskCount--;
-          _processScrapeQueue();
-          _processMangaScrapeQueue();
-        }
-        task.status = update.status == TaskStatus.failed
-            ? DownloadStatus.failed
-            : DownloadStatus.cancelled;
-        if (update.status == TaskStatus.failed) {
-          task.errorMessage = 'Download failed';
-        }
-        break;
-      case TaskStatus.paused:
-        task.status = DownloadStatus.paused;
-        break;
-      default:
-        break;
-    }
-    activeTasks.refresh();
-  }
-
-  void _handleProgressUpdate(TaskProgressUpdate update) {
-    final task =
-        activeTasks.firstWhereOrNull((t) => t.taskId == update.task.taskId);
-    if (task != null) {
-      task.progress = update.progress;
-      activeTasks.refresh();
-    }
-  }
-
   Future<void> _onTaskFinished(ActiveDownloadTask task, String fileName) async {
-    String filePath = '';
-    if (task.pendingMediaDir != null && task.pendingFileName != null) {
-      filePath = p.join(task.pendingMediaDir!, task.pendingFileName!);
-    } else {
-      filePath =
-          await (await FileDownloader().taskForId(task.taskId))?.filePath() ??
-              '';
-    }
-    task.filePath = filePath;
     await _writeEpisodeMeta(task, fileName);
     await _loadIndex();
     _saveActiveTasks();
@@ -449,7 +355,7 @@ class DownloadController extends GetxController {
   }
 
   Future<List<hive.Video>> fetchServersForEpisode(Source source, Episode ep,
-      {String? passedToken}) async {
+      {String? passedToken, String? preferredQuality, Duration timeout = const Duration(seconds: 20)}) async {
     final deEpisode = DEpisode(
       episodeNumber: ep.number,
       url: ep.link,
@@ -467,21 +373,32 @@ class DownloadController extends GetxController {
 
     if (videoStream != null) {
       final videos = <hive.Video>[];
-      await for (final v in videoStream) {
-        final next = hive.Video.fromVideo(v);
-        final alreadyExists = videos.any(
-          (existing) =>
-              existing.quality == next.quality &&
-              existing.originalUrl == next.originalUrl,
-        );
-        if (!alreadyExists) videos.add(next);
+      try {
+        await videoStream.timeout(timeout).forEach((v) {
+          final next = hive.Video.fromVideo(v);
+          final alreadyExists = videos.any(
+            (existing) =>
+                existing.quality == next.quality &&
+                existing.originalUrl == next.originalUrl,
+          );
+          if (!alreadyExists) {
+            videos.add(next);
+            if (preferredQuality != null && next.quality == preferredQuality) {
+              throw _EarlyExitException();
+            }
+          }
+        });
+      } on _EarlyExitException {
+        //
+      } on TimeoutException {
+        debugPrint('[DownloadController] fetchServersForEpisode timed out');
       }
       return videos;
     } else {
       final videoList = await methods.getVideoList(
         deEpisode,
         parameters: SourceParams(cancelToken: token),
-      );
+      ).timeout(timeout, onTimeout: () => []);
       return videoList.map((v) => hive.Video.fromVideo(v)).toList();
     }
   }
@@ -491,21 +408,28 @@ class DownloadController extends GetxController {
     required Source source,
     required OfflineMedia media,
     required String preferredQuality,
+    String? firstEpisodeVideoUrl,
+    Map<String, String>? firstEpisodeHeaders,
+    List<hive.Track>? firstEpisodeSubtitles,
   }) async {
     final mediaTitle = media.name ?? 'Unknown';
-    final sanitizedTitle = DownloadEngine.sanitizePathSegment(mediaTitle);
+    final sanitizedTitle = MediaDownloader.sanitizePathSegment(mediaTitle);
     final sanitizedExt =
-        DownloadEngine.sanitizePathSegment(source.name ?? 'unknown');
+        MediaDownloader.sanitizePathSegment(source.name ?? 'unknown');
 
     await setMediaMeta(sanitizedExt, sanitizedTitle, media, mediaType: 'Anime');
 
-    for (final ep in episodes) {
+    for (int i = 0; i < episodes.length; i++) {
+      final ep = episodes[i];
       _enqueueEpisode(
         episode: ep,
         source: source,
         sanitizedTitle: sanitizedTitle,
         sanitizedExt: sanitizedExt,
         preferredQuality: preferredQuality,
+        videoUrl: i == 0 ? firstEpisodeVideoUrl : null,
+        videoHeaders: i == 0 ? firstEpisodeHeaders : null,
+        videoSubtitles: i == 0 ? firstEpisodeSubtitles : null,
       );
     }
   }
@@ -516,8 +440,11 @@ class DownloadController extends GetxController {
     required String sanitizedTitle,
     required String sanitizedExt,
     required String preferredQuality,
+    String? videoUrl,
+    Map<String, String>? videoHeaders,
+    List<hive.Track>? videoSubtitles,
   }) {
-    final taskId = DownloadEngine.buildTaskId(
+    final taskId = MediaDownloader.buildTaskId(
       extensionName: sanitizedExt,
       mediaTitle: sanitizedTitle,
       episodeNumber: episode.number,
@@ -529,10 +456,12 @@ class DownloadController extends GetxController {
       mediaTitle: sanitizedTitle,
       extensionName: sanitizedExt,
       episode: episode,
-      videoUrl: '',
+      videoUrl: videoUrl ?? '',
       videoQuality: preferredQuality,
       linkType: VideoLinkType.unknown,
       status: DownloadStatus.queued,
+      videoHeaders: videoHeaders,
+      subtitles: videoSubtitles,
     );
 
     activeTasks.add(placeholder);
@@ -550,16 +479,25 @@ class DownloadController extends GetxController {
     if (_scrapeQueue.isEmpty) return;
 
     final maxConcurrent = Get.find<Settings>().concurrentDownloads.value;
-    while (_scrapeQueue.isNotEmpty && _activeTaskCount < maxConcurrent) {
-      final request = _scrapeQueue.removeFirst();
-      if (request.task.status == DownloadStatus.cancelled) continue;
 
+    while (_scrapeQueue.isNotEmpty && _activeTaskCount < maxConcurrent) {
+      final request = _scrapeQueue.first;
+      if (request.task.status == DownloadStatus.cancelled) {
+        _scrapeQueue.removeFirst();
+        continue;
+      }
+      final needsFetch = request.task.videoUrl.isEmpty;
+      if (needsFetch && _isFetching) break;
+
+      _scrapeQueue.removeFirst();
       _activeTaskCount++;
       _runEpisodeDownload(
         task: request.task,
         source: request.source,
         preferredQuality: request.preferredQuality,
-      ).catchError((e) {
+      ).then((_) {
+        _processScrapeQueue();
+      }).catchError((e) {
         _activeTaskCount--;
         _processScrapeQueue();
       });
@@ -572,156 +510,197 @@ class DownloadController extends GetxController {
     String? preferredQuality,
   }) async {
     if (task.status == DownloadStatus.paused) return;
+    if (task.status == DownloadStatus.awaitingServerSelection) return;
 
     try {
-      task.status = DownloadStatus.downloading;
-      activeTasks.refresh();
-      _saveActiveTasks();
-
       hive.Video? chosenVideo;
       if (task.videoUrl.isEmpty) {
         if (source == null) {
           task.status = DownloadStatus.failed;
           task.errorMessage = 'Source not found for resuming scrape';
           activeTasks.refresh();
+          _activeTaskCount--;
           return;
         }
+
+        _isFetching = true;
+        task.status = DownloadStatus.fetchingServer;
+        activeTasks.refresh();
+        _saveActiveTasks();
+        _updateNotification();
 
         final token =
             'dl_scrape_${task.taskId}_${DateTime.now().millisecondsSinceEpoch}';
         _scrapeTokens[task.taskId] = token;
 
-        final videos = await fetchServersForEpisode(source, task.episode,
-            passedToken: token);
-        _scrapeTokens.remove(task.taskId);
+        late List<hive.Video> videos;
+        try {
+          videos = await fetchServersForEpisode(
+            source,
+            task.episode,
+            passedToken: token,
+            preferredQuality: preferredQuality,
+            timeout: const Duration(seconds: 20),
+          );
+        } finally {
+          _isFetching = false;
+          _scrapeTokens.remove(task.taskId);
+          _processScrapeQueue();
+        }
 
         if (videos.isEmpty) {
-          task.status = DownloadStatus.failed;
-          task.errorMessage = 'No servers found for this episode';
+          task.status = DownloadStatus.awaitingServerSelection;
+          task.errorMessage = 'No servers found. Please select manually.';
+          task.availableServers = [];
           activeTasks.refresh();
+          _saveActiveTasks();
+          _activeTaskCount--;
+          _processScrapeQueue(); 
           return;
         }
 
+        task.availableServers = videos;
+
         final qualityLabels = videos.map((v) => v.quality ?? '').toList();
-        final bestLabel = DownloadEngine.pickBestMatchingVideo(
+        final bestLabel = MediaDownloader.pickBestMatchingVideo(
             qualityLabels, preferredQuality ?? '720p');
 
-        if (bestLabel == null) {
-          task.status = DownloadStatus.failed;
+        if (bestLabel.isEmpty) {
+          task.status = DownloadStatus.awaitingServerSelection;
           task.errorMessage =
-              'Could not find a server with matching quality and sub/dub preference';
+              'No server matched "${preferredQuality ?? '720p'}". Please select manually.';
           activeTasks.refresh();
+          _saveActiveTasks();
+          _activeTaskCount--;
+          _processScrapeQueue(); 
           return;
         }
 
         chosenVideo = videos.firstWhereOrNull((v) => v.quality == bestLabel) ??
             videos.first;
-
-        if (chosenVideo.subtitles != null &&
-            chosenVideo.subtitles!.isNotEmpty) {
-          await _downloadSubtitles(task, chosenVideo.subtitles!);
-        }
-
         task.videoUrl = chosenVideo.url ?? chosenVideo.originalUrl ?? '';
         task.videoHeaders ??= {};
         task.videoHeaders!.addAll(chosenVideo.headers ?? {});
+        task.subtitles ??= chosenVideo.subtitles;
       }
+
       final linkType = detectLinkType(task.videoUrl);
 
       if (task.videoUrl.isEmpty) {
         task.status = DownloadStatus.failed;
-        task.errorMessage = 'Empty video URL returned by extension';
+        task.errorMessage = 'Empty video URL';
         activeTasks.refresh();
+        _activeTaskCount--;
         return;
       }
 
-      DownloadResult result;
+      task.status = DownloadStatus.downloading;
+      activeTasks.refresh();
+      _saveActiveTasks();
+      _updateNotification();
 
-      if (linkType == VideoLinkType.hls) {
-        final fileName = DownloadEngine.buildFileName(
-          episodeNumber: task.episode.number,
-          sortMap: task.episode.sortMap,
-          url: task.videoUrl,
-        );
+      final isHls = linkType == VideoLinkType.hls;
+      final fileName = MediaDownloader.buildFileName(
+        episodeNumber: task.episode.number,
+        sortMap: task.episode.sortMap,
+        url: task.videoUrl,
+        isHls: isHls,
+      );
 
-        if (Platform.isIOS) {
-          final mediaDir = await _getMediaDirPath(task.mediaTitle, task.extensionName, mediaType: 'Anime');
-          final result = await DownloadEngine.downloadHls(
-            taskId: task.taskId,
-            m3u8Url: task.videoUrl,
-            fileName: fileName,
-            subDirectory: '',
-            docsPath: mediaDir,
-            preferredQuality: preferredQuality,
-            parallelSegments: Get.find<Settings>().hlsParallelSegments.value,
-            headers: chosenVideo?.headers ?? task.videoHeaders,
-            onProgress: (prog) {
-              task.progress = prog;
-              task.status = DownloadStatus.downloading;
-              final now = DateTime.now();
-              final last = _lastProgressUpdate[task.taskId];
-              if (last == null || now.difference(last).inMilliseconds > _progressThrottleMs) {
-                _lastProgressUpdate[task.taskId] = now;
-                activeTasks.refresh();
-              }
-            },
-          );
-          _lastProgressUpdate.remove(task.taskId);
-          if (result.success) {
-            task.status = DownloadStatus.completed;
-            task.filePath = result.filePath;
-            task.progress = 1.0;
-            await _onTaskFinished(task, fileName);
-          } else {
-            task.status = DownloadStatus.failed;
-            task.errorMessage = result.error;
-          }
+      final rootDir = await _getRootDir();
+      final subDir = p.join('Anime', task.extensionName, task.mediaTitle);
+      final fullDirPath = p.join(rootDir.path, subDir);
+
+      final mDownloader = MediaDownloader(
+        taskId: task.taskId,
+        itemType: ItemType.anime,
+        pageUrls: isHls
+            ? null
+            : [
+                dl.PageUrl(
+                  url: task.videoUrl,
+                  headers: chosenVideo?.headers ?? task.videoHeaders,
+                  fileName: p.join(fullDirPath, fileName),
+                )
+              ],
+        subtitles: task.subtitles,
+        subDownloadDir: fullDirPath,
+        m3u8Url: isHls ? task.videoUrl : null,
+        videoFileName: fileName,
+        headers: chosenVideo?.headers ?? task.videoHeaders,
+        concurrentDownloads: Get.find<Settings>().hlsParallelSegments.value,
+        episodeNumber: task.episode.number,
+      );
+
+      final subFolder = p.join(fullDirPath, 'Episode_${task.episode.number}_subs');
+      final localSubs = task.subtitles?.map((s) => hive.Track(
+        file: p.join(subFolder, '${s.label}.srt'),
+        label: s.label,
+      )).toList();
+      task.subtitles = localSubs;
+
+      _activeFileTasks.add(task.taskId);
+
+      await mDownloader.download((progress) {
+        task.progress = progress.completed / progress.total;
+        task.status = DownloadStatus.downloading;
+        final now = DateTime.now();
+        final last = _lastProgressUpdate[task.taskId];
+        if (last == null ||
+            now.difference(last).inMilliseconds > _progressThrottleMs) {
+          _lastProgressUpdate[task.taskId] = now;
           activeTasks.refresh();
-          _saveActiveTasks();
-        } else {
-          _activeFileTasks.add(task.taskId);
-          final rootDir = await _getRootDir();
-          final subDir = p.join('Anime', task.extensionName, task.mediaTitle);
-          final payload = {
-            'type': 'ADD_HLS',
-            'taskId': task.taskId,
-            'm3u8Url': task.videoUrl,
-            'fileName': fileName,
-            'subDirectory': subDir,
-            'docsPath': rootDir.path,
-            'preferredQuality': preferredQuality,
-            'parallelSegments': Get.find<Settings>().hlsParallelSegments.value,
-            'headers': chosenVideo?.headers ?? task.videoHeaders,
-          };
-          _sendToBackground(payload);
+          _updateNotification();
         }
-      } else {
-        final fileName = DownloadEngine.buildFileName(
-          episodeNumber: task.episode.number,
-          sortMap: task.episode.sortMap,
-          url: task.videoUrl,
-        );
-        final mediaDir = await _getMediaDirPath(task.mediaTitle, task.extensionName, mediaType: 'Anime');
-        task.pendingFileName = fileName;
-        task.pendingMediaDir = mediaDir;
-        final standardTask = DownloadTask(
-          taskId: task.taskId,
-          url: task.videoUrl,
-          filename: fileName,
-          directory: mediaDir,
-          baseDirectory: BaseDirectory.root,
-          updates: Updates.statusAndProgress,
-          headers: chosenVideo?.headers ?? task.videoHeaders,
-          allowPause: true,
-        );
-        await FileDownloader().enqueue(standardTask);
-      }
+      });
+
+      _lastProgressUpdate.remove(task.taskId);
+      task.status = DownloadStatus.completed;
+      task.filePath = p.join(fullDirPath, fileName);
+      task.progress = 1.0;
+      await _onTaskFinished(task, fileName);
+
+      _activeFileTasks.remove(task.taskId);
+      _activeTaskCount--;
+      _processScrapeQueue();
+      _updateNotification();
     } catch (e) {
       task.status = DownloadStatus.failed;
       task.errorMessage = e.toString();
+      _activeFileTasks.remove(task.taskId);
+      _activeTaskCount--;
+      _processScrapeQueue();
+    } finally {
       activeTasks.refresh();
       _saveActiveTasks();
     }
+  }
+
+  void _updateNotification() {
+    final downloading = activeTasks
+        .where((t) => t.status == DownloadStatus.downloading)
+        .toList();
+    final queued = activeTasks
+        .where((t) =>
+            t.status == DownloadStatus.queued ||
+            t.status == DownloadStatus.fetchingServer)
+        .length;
+    if (downloading.isEmpty && queued == 0) {
+      _sendToBackground({'type': 'UPDATE_NOTIFICATION', 'title': 'AnymeX Downloads', 'text': 'All downloads complete.'});
+      return;
+    }
+    final active = downloading.isNotEmpty ? downloading.first : null;
+    final title = active != null
+        ? '${active.mediaTitle} · Ep ${active.episode.number}'
+        : 'AnymeX Downloads';
+    final pct = active != null
+        ? '${(active.progress * 100).toStringAsFixed(0)}%'
+        : '';
+    final text = [
+      if (pct.isNotEmpty) pct,
+      if (queued > 0) '$queued queued',
+    ].join(' · ');
+    _sendToBackground({'type': 'UPDATE_NOTIFICATION', 'title': title, 'text': text.isNotEmpty ? text : 'Downloading…'});
   }
 
   Future<void> enqueueMangaDownloadBatch({
@@ -730,9 +709,9 @@ class DownloadController extends GetxController {
     required OfflineMedia media,
   }) async {
     final mediaTitle = media.name ?? 'Unknown';
-    final sanitizedTitle = DownloadEngine.sanitizePathSegment(mediaTitle);
+    final sanitizedTitle = MediaDownloader.sanitizePathSegment(mediaTitle);
     final sanitizedExt =
-        DownloadEngine.sanitizePathSegment(source.name ?? 'unknown');
+        MediaDownloader.sanitizePathSegment(source.name ?? 'unknown');
 
     await setMediaMeta(sanitizedExt, sanitizedTitle, media, mediaType: 'Manga');
 
@@ -815,69 +794,48 @@ class DownloadController extends GetxController {
           await _getMangaMediaDirPath(task.mediaTitle, task.extensionName);
       final chapterDir = Directory(p.join(
         mediaDir,
-        DownloadEngine.sanitizePathSegment(task.chapterDisplay),
+        MediaDownloader.sanitizePathSegment(task.chapterDisplay),
       ));
-      await _startBackgroundServiceIfNotRunning();
 
-      if (Platform.isIOS) {
-        await chapterDir.create(recursive: true);
-        int downloaded = 0;
-        final total = pages.length;
-        for (int i = 0; i < total; i++) {
-          if (task.status == MangaDownloadStatus.cancelled) break;
-          final page = pages[i];
-          final url = page.url;
-          if (url == null || url.isEmpty) { downloaded++; continue; }
-          final headers = page.headers?.map((k, v) => MapEntry(k, v.toString()));
-          try {
-            final ext = _imageExtension(url);
-            final fileName = 'page_${(i + 1).toString().padLeft(3, '0')}$ext';
-            final file = File(p.join(chapterDir.path, fileName));
-            if (!await file.exists() || (await file.length()) == 0) {
-              final response = await http.get(Uri.parse(url), headers: headers);
-              if (response.statusCode == 200) await file.writeAsBytes(response.bodyBytes);
-            }
-          } catch (_) {}
-          downloaded++;
-          final prog = downloaded / total;
-          task.progress = prog;
-          final now = DateTime.now();
-          final last = _lastProgressUpdate[task.taskId];
-          if (last == null || now.difference(last).inMilliseconds > _progressThrottleMs) {
-            _lastProgressUpdate[task.taskId] = now;
-            activeMangaTasks.refresh();
-          }
+      await chapterDir.create(recursive: true);
+
+      final pageUrls = pages.map((page) {
+        final ext = _imageExtension(page.url);
+        final idx = pages.indexOf(page);
+        final fileName = 'page_${(idx + 1).toString().padLeft(3, '0')}$ext';
+        return dl.PageUrl(
+          url: page.url,
+          headers: page.headers?.map((k, v) => MapEntry(k, v.toString())),
+          fileName: p.join(chapterDir.path, fileName),
+        );
+      }).toList();
+
+      final mDownloader = MediaDownloader(
+        taskId: task.taskId,
+        itemType: ItemType.manga,
+        pageUrls: pageUrls,
+        concurrentDownloads: 3, 
+      );
+
+      await mDownloader.download((progress) {
+        task.progress = progress.completed / progress.total;
+        final now = DateTime.now();
+        final last = _lastProgressUpdate[task.taskId];
+        if (last == null ||
+            now.difference(last).inMilliseconds > _progressThrottleMs) {
+          _lastProgressUpdate[task.taskId] = now;
+          activeMangaTasks.refresh();
         }
-        _lastProgressUpdate.remove(task.taskId);
-        if (task.status != MangaDownloadStatus.cancelled) {
-          task.status = MangaDownloadStatus.completed;
-          task.progress = 1.0;
-          await _onForegroundMangaTaskFinished(task, pages.length);
-        }
-        activeMangaTasks.refresh();
-        _saveMangaActiveTasks();
-      } else {
-        final pagesPayload = pages
-            .map((p) => {
-                  'url': p.url,
-                  'headers': p.headers,
-                })
-            .toList();
+      });
 
-        final payload = {
-          'type': 'ADD_MANGA',
-          'taskId': task.taskId,
-          'chapterDirPath': chapterDir.path,
-          'mediaTitle': task.mediaTitle,
-          'chapterName': task.chapterDisplay,
-          'pages': pagesPayload,
-        };
-
-        _sendToBackground(payload);
-      }
+      _lastProgressUpdate.remove(task.taskId);
+      task.status = MangaDownloadStatus.completed;
+      task.progress = 1.0;
+      await _onForegroundMangaTaskFinished(task, pages.length);
     } catch (e) {
       task.status = MangaDownloadStatus.failed;
       task.errorMessage = e.toString();
+    } finally {
       activeMangaTasks.refresh();
       _saveMangaActiveTasks();
     }
@@ -969,17 +927,11 @@ class DownloadController extends GetxController {
         activeMangaTasks.firstWhereOrNull((t) => t.taskId == taskId);
 
     if (task != null) {
-      if (task.linkType == VideoLinkType.hls) {
-        DownloadEngine.pause(taskId);
-      } else {
-        final bdTask = await FileDownloader().taskForId(taskId);
-        if (bdTask != null) {
-          await FileDownloader().pause(bdTask as dynamic);
-        }
-      }
+      dl.DownloadIsolatePool.instance.cancelTask(taskId);
       task.status = DownloadStatus.paused;
       activeTasks.refresh();
     } else if (mangaTask != null) {
+      dl.DownloadIsolatePool.instance.cancelTask(taskId);
       mangaTask.status = MangaDownloadStatus.paused;
       activeMangaTasks.refresh();
     }
@@ -994,19 +946,18 @@ class DownloadController extends GetxController {
         activeMangaTasks.firstWhereOrNull((t) => t.taskId == taskId);
 
     if (task != null) {
-      if (task.linkType == VideoLinkType.hls) {
-        DownloadEngine.resume(taskId);
-      } else {
-        final bdTask = await FileDownloader().taskForId(taskId);
-        if (bdTask != null) {
-          await FileDownloader().resume(bdTask as dynamic);
-        }
-      }
-      task.status = DownloadStatus.downloading;
+      task.status = DownloadStatus.queued;
       activeTasks.refresh();
+      _runEpisodeDownload(task: task);
     } else if (mangaTask != null) {
-      mangaTask.status = MangaDownloadStatus.downloading;
+      mangaTask.status = MangaDownloadStatus.queued;
       activeMangaTasks.refresh();
+      final source = Get.find<SourceController>()
+          .installedMangaExtensions
+          .firstWhereOrNull((s) => s.name == mangaTask.extensionName);
+      if (source != null) {
+        _runChapterDownload(task: mangaTask, source: source);
+      }
     }
 
     _saveActiveTasks();
@@ -1014,8 +965,7 @@ class DownloadController extends GetxController {
   }
 
   Future<void> cancelDownload(String taskId) async {
-    await FileDownloader().cancelTaskWithId(taskId);
-    DownloadEngine.cancel(taskId);
+    dl.DownloadIsolatePool.instance.cancelTask(taskId);
 
     if (await FlutterForegroundTask.isRunningService) {
       _sendToBackground({
@@ -1114,6 +1064,7 @@ class DownloadController extends GetxController {
           downloadedAt: DateTime.now().millisecondsSinceEpoch,
           filePath: task.filePath ?? '',
           quality: task.videoQuality,
+          subtitles: task.subtitles,
         ),
       ];
       updatedEps.sort((a, b) {
@@ -1430,7 +1381,7 @@ class DownloadController extends GetxController {
         try {
           final response = await http.get(Uri.parse(sub.file!));
           if (response.statusCode == 200) {
-            final fileName = DownloadEngine.sanitizePathSegment(
+            final fileName = MediaDownloader.sanitizePathSegment(
                 '${sub.label ?? "Unknown"}.vtt');
             final filePath = p.join(subsDir.path, fileName);
             await File(filePath).writeAsBytes(response.bodyBytes);
@@ -1443,8 +1394,6 @@ class DownloadController extends GetxController {
       debugPrint('Error creating subtitle directory: $e');
     }
   }
-
-
 }
 
 class _ScrapeRequest {
@@ -1465,3 +1414,5 @@ class _MangaScrapeRequest {
 
   _MangaScrapeRequest({required this.task, required this.source});
 }
+
+class _EarlyExitException implements Exception {}

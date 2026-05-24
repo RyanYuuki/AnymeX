@@ -298,7 +298,7 @@ class Deeplink {
       final fetchedMedia = await target.serviceType.service.fetchDetails(
         FetchDetailsParams(
           id: target.mediaId,
-          isManga: target.isManga,
+          type: target.isManga ? ItemType.manga : ItemType.anime,
         ),
       );
 

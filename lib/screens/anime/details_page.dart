@@ -298,12 +298,12 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         await _restorePreferredSource();
         Future.wait([_mapToService(), _syncMediaIds(), _fetchFillerInfo()]);
       }
-    } catch (e) {
+    } catch (e, s) {
       if (e.toString().contains('author')) {
         Logger.i("Hianime Error Handling");
         await _mapToService();
       }
-      Logger.i("Media Details Fetch Failed => $e");
+      Logger.i("Media Details Fetch Failed => $e - $s");
     } finally {}
   }
 
@@ -404,7 +404,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       episodeList.clear();
       rawEpisodes.clear();
       final episodeFuture = await sourceController.activeSource.value!.methods
-          .getDetail(DMedia.withUrl(media.id));
+          .getDetail(DMedia.withUrl(media.id));    
       if (_isStaleSourceRequest(activeRequestId) || !mounted) {
         return;
       }
@@ -671,37 +671,18 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                                 const SizedBox(width: 7),
                                 _buildActionIconButton(
                                   context: context,
-                                  icon: Icons.share_rounded,
-                                  onTap: _showShareOptions,
-                                ),
-                                const SizedBox(width: 7),
-                                if (CommunityService.votingEnabled)
-                                  RecommendIconButton(
-                                    media: anilistData!,
-                                    mediaItemType: ItemType.anime,
-                                    buttonBuilder: (onTap, icon) =>
-                                        _buildActionIconButton(
-                                      context: context,
-                                      icon: Icons.recommend_rounded,
-                                      onTap: onTap,
-                                    ),
-                                  ),
-                                if (CommunityService.votingEnabled)
-                                  const SizedBox(width: 7),
-                                _buildActionIconButton(
-                                  context: context,
                                   icon: HugeIcons.strokeRoundedLibrary,
                                   onTap: () {
                                     showCustomListDialog(context, anilistData!);
                                   },
                                 ),
-                              ] else ...[
+                                const SizedBox(width: 7),
                                 _buildActionIconButton(
                                   context: context,
                                   icon: Icons.share_rounded,
                                   onTap: _showShareOptions,
                                 ),
-                                const SizedBox(width: 7),
+                              ] else ...[
                                 Expanded(
                                   child: AnymexButton2(
                                     onTap: () {
@@ -711,7 +692,13 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                                     label: 'Add to Library',
                                     icon: HugeIcons.strokeRoundedLibrary,
                                   ),
-                                )
+                                ),
+                                const SizedBox(width: 7),
+                                _buildActionIconButton(
+                                  context: context,
+                                  icon: Icons.share_rounded,
+                                  onTap: _showShareOptions,
+                                ),
                               ]
                             ],
                           );
@@ -938,24 +925,6 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         ],
       ),
     );
-  }
-
-  Widget _buildEpisodeSection(BuildContext context) {
-    return Obx(() {
-      return EpisodeSection(
-        searchedTitle: searchedTitle,
-        anilistData: anilistData ?? widget.media,
-        episodeList: (!disableAnifyForCurrentSource.value && isAnify.value)
-            ? episodeList
-            : rawEpisodes,
-        episodeError: episodeError,
-        mapToAnilist: () => _mapToService(),
-        getDetailsFromSource: (media) => _fetchSourceDetails(media),
-        isAnify: isAnify,
-        showAnify: showAnify,
-        disableAnifyForCurrentSource: disableAnifyForCurrentSource,
-      );
-    });
   }
 
   Widget _buildCommentsSection(BuildContext context) {

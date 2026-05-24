@@ -281,16 +281,15 @@ class BottomControls extends StatelessWidget {
         tooltip: 'Tracks',
         compact: true,
       ),
-      if (!controller.isOffline.value)
-        'sync_subs': ControlButton(
-          icon: Symbols.sync_rounded,
-          onPressed: () {
-            controller.isSyncSubsPaneOpened.value =
-                !controller.isSyncSubsPaneOpened.value;
-          },
-          tooltip: 'Sync Subtitles',
-          compact: true,
-        ),
+      'sync_subs': ControlButton(
+        icon: Symbols.sync_rounded,
+        onPressed: () {
+          controller.isSyncSubsPaneOpened.value =
+              !controller.isSyncSubsPaneOpened.value;
+        },
+        tooltip: 'Sync Subtitles',
+        compact: true,
+      ),
       'speed': ControlButton(
         icon: Symbols.speed_rounded,
         onPressed: () =>
@@ -367,6 +366,100 @@ class BottomControls extends StatelessWidget {
 
     final leftButtons = buildButtonList(leftButtonIds);
     final rightButtons = buildButtonList(rightButtonIds);
+
+    final isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
+
+    if (isPortrait) {
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 20, 5),
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: _buildSkipButton(context),
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+            child: const ProgressSlider(),
+          ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? theme.colorScheme.surfaceVariant.opaque(0.3)
+                        : theme.colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: isDark
+                          ? theme.colorScheme.outline.opaque(0.2)
+                          : theme.colorScheme.outline.opaque(0.4),
+                      width: 0.5,
+                    ),
+                  ),
+                  child: Obx(() => Text(
+                        controller.formattedCurrentPosition,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurface,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.5,
+                        ),
+                      )),
+                ),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? theme.colorScheme.surfaceVariant.opaque(0.3)
+                        : theme.colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: isDark
+                          ? theme.colorScheme.outline.opaque(0.2)
+                          : theme.colorScheme.outline.opaque(0.4),
+                      width: 0.5,
+                    ),
+                  ),
+                  child: Obx(() => Text(
+                        controller.formattedEpisodeDuration,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurface,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.5,
+                        ),
+                      )),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ...leftButtons,
+                  if (leftButtons.isNotEmpty && rightButtons.isNotEmpty)
+                    const SizedBox(width: 16),
+                  ...rightButtons,
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+    }
 
     return Column(
       mainAxisSize: MainAxisSize.min,

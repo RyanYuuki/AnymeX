@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:http/http.dart' as http;
 
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/player/player_adaptor.dart';
@@ -21,6 +22,9 @@ Settings get settingsController => Get.find<Settings>();
 class Settings extends GetxController {
   late Rx<UISettings> uiSettings;
   late Rx<PlayerSettings> playerSettings;
+  final RxString discordUrl = 'https://discord.gg/hDwQ3heJ8V'.obs;
+  final RxString telegramUrl = 'https://t.me/AnymeX_Discussion'.obs;
+
   final canShowUpdate = true.obs;
   final playerControlThemeRx = 'default'.obs;
   final mediaIndicatorThemeRx = 'default'.obs;
@@ -63,6 +67,7 @@ class Settings extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _fetchInviteLinks();
 
     playerSettings = Rx<PlayerSettings>(PlayerSettings.fromDB());
     uiSettings = Rx<UISettings>(UISettings.fromDB());
@@ -112,6 +117,24 @@ class Settings extends GetxController {
       await FlutterDisplayMode.setHighRefreshRate();
     } catch (e) {
       Logger.e("Error setting high refresh rate: $e");
+    }
+  }
+
+  Future<void> _fetchInviteLinks() async {
+    try {
+      final response = await http.get(Uri.parse(
+          'https://raw.githubusercontent.com/RyanYuuki/AnymeX/main/github_assets/links.json'));
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['discord'] != null) {
+          discordUrl.value = data['discord'];
+        }
+        if (data['telegram'] != null) {
+          telegramUrl.value = data['telegram'];
+        }
+      }
+    } catch (e) {
+      Logger.e("Failed to fetch invite links: $e");
     }
   }
 

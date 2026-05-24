@@ -33,7 +33,7 @@ set(CMAKE_C_FLAGS_PROFILE "${CMAKE_C_FLAGS_RELEASE}")
 set(CMAKE_CXX_FLAGS_PROFILE "${CMAKE_CXX_FLAGS_RELEASE}")
 
 # Use Unicode for all projects.
-add_definitions(-DUNICODE -D_UNICODE)
+add_definitions(-DUNICODE -D_UNICODE -D_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS)
 
 # Compilation settings that should be applied to most targets.
 #
@@ -85,16 +85,51 @@ install(FILES "${FLUTTER_LIBRARY}" DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
   COMPONENT Runtime)
 
 if(PLUGIN_BUNDLED_LIBRARIES)
-  install(FILES "${PLUGIN_BUNDLED_LIBRARIES}"
-    DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
-    COMPONENT Runtime)
+  set(GENEX_BUNDLED_LIBRARIES "")
+  set(PLAIN_BUNDLED_LIBRARIES "")
+
+  foreach(bundled_library ${PLUGIN_BUNDLED_LIBRARIES})
+    if(bundled_library MATCHES "^\\$<")
+      list(APPEND GENEX_BUNDLED_LIBRARIES "${bundled_library}")
+    else()
+      list(APPEND PLAIN_BUNDLED_LIBRARIES "${bundled_library}")
+    endif()
+  endforeach()
+
+  if(GENEX_BUNDLED_LIBRARIES)
+    install(FILES ${GENEX_BUNDLED_LIBRARIES}
+      DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
+      COMPONENT Runtime)
+  endif()
+
+  set(RESOLVED_PLAIN_LIBRARIES "")
+  foreach(bundled_library ${PLAIN_BUNDLED_LIBRARIES})
+    set(resolved_library "${bundled_library}")
+    if(NOT EXISTS "${resolved_library}")
+      string(REPLACE "/build/windows-jni/" "/build/jni_libs/" fallback_library "${resolved_library}")
+      if(EXISTS "${fallback_library}")
+        set(resolved_library "${fallback_library}")
+      endif()
+    endif()
+    if(EXISTS "${resolved_library}")
+      list(APPEND RESOLVED_PLAIN_LIBRARIES "${resolved_library}")
+    endif()
+  endforeach()
+
+  if(RESOLVED_PLAIN_LIBRARIES)
+    install(FILES "${RESOLVED_PLAIN_LIBRARIES}"
+      DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
+      COMPONENT Runtime)
+  endif()
 endif()
 
 # Copy the native assets provided by the build.dart from all packages.
 set(NATIVE_ASSETS_DIR "${PROJECT_BUILD_DIR}native_assets/windows/")
-install(DIRECTORY "${NATIVE_ASSETS_DIR}"
-   DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
-   COMPONENT Runtime)
+if(EXISTS "${NATIVE_ASSETS_DIR}")
+  install(DIRECTORY "${NATIVE_ASSETS_DIR}"
+     DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
+     COMPONENT Runtime)
+endif()
 
 # Fully re-copy the assets directory on each build to avoid having stale files
 # from a previous install.

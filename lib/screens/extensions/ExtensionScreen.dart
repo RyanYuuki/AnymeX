@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/database.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/screens/extensions/ExtensionList.dart';
 import 'package:anymex/screens/extensions/ExtensionTesting/extension_test_page.dart';
-import 'package:anymex/screens/extensions/widgets/plugin_manager.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_extensions.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/language.dart';
@@ -18,7 +18,6 @@ import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex_extension_runtime_bridge/Services/Aniyomi/Models/Source.dart';
 import 'package:anymex_extension_runtime_bridge/Services/Sora/Models/Source.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -40,7 +39,6 @@ class _ExtensionScreenState extends State<ExtensionScreen>
   final _searchQuery = ''.obs;
   final _selectedLanguage = 'all'.obs;
   final _selectedSourceType = 'all'.obs;
-  final _pluginManager = PluginManager();
 
   Timer? _searchDebounce;
   var _lastTabIndex = 0;
@@ -51,24 +49,6 @@ class _ExtensionScreenState extends State<ExtensionScreen>
     _tabBarController = TabController(length: 6, vsync: this);
     _tabBarController.addListener(_onTabChanged);
     _checkPermission();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _showPluginLoader());
-  }
-
-  void _showPluginLoader() async {
-    final status = await AnymeXRuntimeBridge.isLoaded();
-
-    // if (kDebugMode) {
-    // // _pluginManager.forceSyncLocalApk();
-    // } else {
-    if (AnymeXRuntimeBridge.isSupportedPlatform && !status) {
-      _pluginManager.ensurePluginLoaded(context);
-    } else if (AnymeXRuntimeBridge.isSupportedPlatform && status) {
-      _pluginManager.checkForUpdates(
-        context,
-        showIfUpToDate: true,
-      );
-    }
-    // }
   }
 
   @override
@@ -195,6 +175,20 @@ class _ExtensionScreenState extends State<ExtensionScreen>
     );
   }
 
+  bool get _isPluginInstalled =>
+      PluginKeys.runtimeHostInstalledVersion.get<String>('').isNotEmpty;
+
+  bool _typeRequiresPlugin(String type) {
+    if (type == 'all') return false;
+    final activeManager = Get.find<ExtensionManager>().managers.firstWhereOrNull(
+      (m) => m.name.toLowerCase().contains(type.toLowerCase()),
+    );
+    if (activeManager != null) {
+      return activeManager.requiresPlugin;
+    }
+    return type == 'Aniyomi' || type == 'Cloudstream';
+  }
+
   void _showSortDialog(BuildContext context) {
     final languages = sortedLanguagesMap.keys.toList();
     final sourceTypes = ['all', 'Mangayomi', 'Aniyomi', 'Cloudstream', 'Sora'];
@@ -218,15 +212,19 @@ class _ExtensionScreenState extends State<ExtensionScreen>
                   initialExpanded: true,
                   content: Column(
                     children: sourceTypes
-                        .map((type) => Padding(
+                        .map((type) {
+                          final needsPlugin = _typeRequiresPlugin(type) && !_isPluginInstalled;
+                          return Padding(
                               padding: const EdgeInsets.only(bottom: 8),
                               child: _SortOptionTile(
                                 title: type == 'all' ? 'All Sources' : type,
-                                subtitle: _getSourceSubtitle(type),
-                                isSelected: selectedSourceType == type,
-                                onTap: () => _selectedSourceType.value = type,
+                                subtitle: needsPlugin ? 'Requires plugin — disabled' : _getSourceSubtitle(type),
+                                isSelected: !needsPlugin && selectedSourceType == type,
+                                isDisabled: needsPlugin,
+                                onTap: needsPlugin ? null : () => _selectedSourceType.value = type,
                               ),
-                            ))
+                            );
+                        })
                         .toList(),
                   ),
                 ),
@@ -271,6 +269,12 @@ class _ExtensionScreenState extends State<ExtensionScreen>
       'Sora' => 'Filter by Sora source',
       _ => '',
     };
+  }
+
+  @override
+  void reassemble() {
+    super.reassemble();
+    setState(() {});
   }
 
   Widget _buildTabBar() {
@@ -467,15 +471,18 @@ class _SortOptionTile extends StatelessWidget {
     required this.subtitle,
     required this.isSelected,
     required this.onTap,
+    this.isDisabled = false,
   });
 
   final String title;
   final String subtitle;
   final bool isSelected;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
+  final bool isDisabled;
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -485,14 +492,18 @@ class _SortOptionTile extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: isSelected
-                ? context.colors.primaryContainer.opaque(0.35)
-                : context.colors.surfaceContainerHighest.opaque(0.35),
+            color: isDisabled
+                ? colors.surfaceContainerHighest.opaque(0.15)
+                : isSelected
+                    ? colors.primaryContainer.opaque(0.35)
+                    : colors.surfaceContainerHighest.opaque(0.35),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: isSelected
-                  ? context.colors.primary.opaque(0.4)
-                  : context.colors.outline.opaque(0.2),
+              color: isDisabled
+                  ? colors.outline.opaque(0.1)
+                  : isSelected
+                      ? colors.primary.opaque(0.4)
+                      : colors.outline.opaque(0.2),
             ),
           ),
           child: Row(
@@ -504,24 +515,33 @@ class _SortOptionTile extends StatelessWidget {
                     AnymexText(
                       text: title,
                       variant: TextVariant.semiBold,
+                      color: isDisabled
+                          ? colors.onSurface.opaque(0.35)
+                          : null,
                     ),
                     const SizedBox(height: 4),
                     AnymexText(
                       text: subtitle,
                       size: 11,
-                      color: context.colors.onSurface.opaque(0.7),
+                      color: isDisabled
+                          ? colors.error.opaque(0.6)
+                          : colors.onSurface.opaque(0.7),
                     ),
                   ],
                 ),
               ),
               const SizedBox(width: 12),
               Icon(
-                isSelected
-                    ? Icons.check_circle_rounded
-                    : Icons.radio_button_unchecked_rounded,
-                color: isSelected
-                    ? context.colors.primary
-                    : context.colors.onSurface.opaque(0.5),
+                isDisabled
+                    ? Icons.lock_outline_rounded
+                    : isSelected
+                        ? Icons.check_circle_rounded
+                        : Icons.radio_button_unchecked_rounded,
+                color: isDisabled
+                    ? colors.onSurface.opaque(0.25)
+                    : isSelected
+                        ? colors.primary
+                        : colors.onSurface.opaque(0.5),
               ),
             ],
           ),

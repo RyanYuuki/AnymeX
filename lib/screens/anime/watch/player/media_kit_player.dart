@@ -75,10 +75,7 @@ class MediaKitPlayer extends base.BasePlayer {
   Future<void> initialize() async {
     _player = Player(
       configuration: PlayerConfiguration(
-        bufferSize: config.bufferSize,
-        libass: config.useLibass,
-        vo: 'gpu'
-      ),
+          bufferSize: config.bufferSize, libass: config.useLibass, vo: 'gpu'),
     );
 
     _videoController = VideoController(
@@ -162,6 +159,10 @@ class MediaKitPlayer extends base.BasePlayer {
       _errorController.add(error);
     }));
 
+    _subscriptions.add(_player.stream.log.listen((error) {
+      Logger.e('Player error: $error');
+    }));
+
     _subscriptions.add(_player.stream.subtitle.listen((subtitles) {
       _subtitleController.add(subtitles);
     }));
@@ -193,8 +194,7 @@ class MediaKitPlayer extends base.BasePlayer {
     final uri = Uri.tryParse(url);
     if (uri != null &&
         uri.hasScheme &&
-        !(Platform.isWindows &&
-            RegExp(r'^[a-zA-Z]:[\\/]').hasMatch(url))) {
+        !(Platform.isWindows && RegExp(r'^[a-zA-Z]:[\\/]').hasMatch(url))) {
       return url;
     }
     return Uri.file(url).toString();

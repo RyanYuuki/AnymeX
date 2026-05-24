@@ -14,12 +14,14 @@ class CustomSearchBar extends StatefulWidget {
   final TextEditingController? controller;
   final Function(String)? onChanged;
   final String hintText;
+  final Color? backgroundColor;
 
   const CustomSearchBar({
     super.key,
     this.controller,
     this.onChanged,
     required this.hintText,
+    this.backgroundColor,
   });
 
   @override
@@ -74,7 +76,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
       decoration: InputDecoration(
         hintText: widget.hintText,
         filled: true,
-        fillColor:
+        fillColor: widget.backgroundColor ??
             context.colors.secondaryContainer.opaque(0.5, iReallyMeanIt: true),
         prefixIcon: const Icon(IconlyLight.search),
         focusedBorder: OutlineInputBorder(

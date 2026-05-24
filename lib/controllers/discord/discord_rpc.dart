@@ -442,6 +442,7 @@ class DiscordRPCController extends GetxController {
           'since': null,
           'activities': [
             {
+              'application_id': _applicationId,
               'name': 'AnymeX',
               'type': 3, // Watching
               'details': animeTitle,
@@ -541,6 +542,7 @@ class DiscordRPCController extends GetxController {
           'since': null,
           'activities': [
             {
+              'application_id': _applicationId,
               'name': 'AnymeX',
               'type': 3, // Watching
               'details': animeTitle,
@@ -623,6 +625,7 @@ class DiscordRPCController extends GetxController {
           'since': null,
           'activities': [
             {
+              'application_id': _applicationId,
               'name': 'AnymeX',
               'type': 0, // Playing
               'details': mangaTitle,
@@ -700,6 +703,7 @@ class DiscordRPCController extends GetxController {
           'since': null,
           'activities': [
             {
+              'application_id': _applicationId,
               'name': 'AnymeX',
               'type': 0,
               'details': animeTitle,
@@ -786,6 +790,7 @@ class DiscordRPCController extends GetxController {
           'since': null,
           'activities': [
             {
+              'application_id': _applicationId,
               'name': 'AnymeX',
               'type': 0,
               'details': activity ?? 'Browsing Stuff',

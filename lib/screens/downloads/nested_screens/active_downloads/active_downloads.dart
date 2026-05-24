@@ -1,4 +1,5 @@
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/database/isar_models/video.dart';
 import 'package:anymex/screens/downloads/controller/download_controller.dart';
 import 'package:anymex/screens/downloads/model/download_models.dart';
@@ -8,6 +9,8 @@ import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
+import 'package:anymex_extension_runtime_bridge/Models/DEpisode.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart' hide Video;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -100,11 +103,19 @@ class ActiveDownloads extends StatelessWidget {
     String statusLabel = 'Queued';
     IconData statusIcon = Icons.schedule_rounded;
 
-    if (task.isDownloading) {
+    if (task.status == DownloadStatus.fetchingServer) {
+      statusColor = theme.primary;
+      statusLabel = 'Fetching server...';
+      statusIcon = Icons.cloud_sync_rounded;
+    } else if (task.status == DownloadStatus.awaitingServerSelection) {
+      statusColor = theme.tertiary;
+      statusLabel = 'Needs server selection';
+      statusIcon = Icons.dns_rounded;
+    } else if (task.isDownloading) {
       statusLabel = task.isManga ? 'Downloading' : '${(task.progress * 100).toStringAsFixed(0)}%';
       statusIcon = Icons.downloading_rounded;
     } else if (task.isPaused) {
-      statusColor = Colors.orange.shade400;
+      statusColor = theme.tertiary;
       statusLabel = 'Paused · ${(task.progress * 100).toStringAsFixed(0)}%';
       statusIcon = Icons.pause_circle_rounded;
     } else if (task.isCompleted) {
@@ -121,22 +132,24 @@ class ActiveDownloads extends StatelessWidget {
       statusIcon = Icons.cancel_outlined;
     }
 
-    final isActive = task.isDownloading || task.isQueued || task.isPaused;
+    final isActive = task.isDownloading || task.isQueued || task.isPaused ||
+        task.status == DownloadStatus.fetchingServer;
 
     final controller = Get.find<DownloadController>();
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: theme.surfaceContainer.opaque(0.3),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(color: theme.outline.opaque(0.15)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
                 child: Column(
@@ -145,13 +158,14 @@ class ActiveDownloads extends StatelessWidget {
                     AnymexText(
                         text: task.mediaTitle,
                         variant: TextVariant.semiBold,
-                        size: 14,
-                        maxLines: 1),
-                    const SizedBox(height: 2),
+                        size: 15,
+                        maxLines: 2),
+                    const SizedBox(height: 4),
                     AnymexText(
                       text: task.displayId,
-                      size: 12,
-                      color: theme.onSurface.opaque(0.5),
+                      size: 13,
+                      maxLines: 1,
+                      color: theme.onSurface.opaque(0.55),
                     ),
                   ],
                 ),
@@ -210,7 +224,17 @@ class ActiveDownloads extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 10),
-          if (task.isDownloading || task.isPaused) ...[
+          if (task.status == DownloadStatus.fetchingServer) ...[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: LinearProgressIndicator(
+                backgroundColor: theme.surfaceContainerHighest.opaque(0.4),
+                valueColor: AlwaysStoppedAnimation(theme.primary),
+                minHeight: 5,
+              ),
+            ),
+            const SizedBox(height: 8),
+          ] else if (task.isDownloading || task.isPaused) ...[
             ClipRRect(
               borderRadius: BorderRadius.circular(4),
               child: LinearProgressIndicator(
@@ -239,16 +263,45 @@ class ActiveDownloads extends StatelessWidget {
             children: [
               Icon(statusIcon, size: 14, color: statusColor),
               const SizedBox(width: 6),
-              AnymexText(
-                  text: statusLabel,
-                  size: 12,
-                  color: statusColor,
-                  variant: TextVariant.semiBold),
-              const Spacer(),
-              if (task.isFailed && !task.isManga &&
+              Expanded(
+                child: AnymexText(
+                    text: statusLabel,
+                    size: 12,
+                    color: statusColor,
+                    variant: TextVariant.semiBold,
+                    maxLines: 1),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              if (!task.isManga &&
+                  task.status == DownloadStatus.awaitingServerSelection)
+                GestureDetector(
+                  onTap: () => _showManualServerSelection(
+                      context, task.originalTask!,
+                      preloadedServers: task.originalTask!.availableServers),
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: theme.tertiaryContainer,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: AnymexText(
+                        text: 'Select Server',
+                        size: 11,
+                        color: theme.onTertiaryContainer,
+                        variant: TextVariant.bold),
+                  ),
+                )
+              else if (task.isFailed && !task.isManga &&
                   (task.errorMessage?.contains('matching quality') ?? false))
                 GestureDetector(
-                  onTap: () => _showManualServerSelection(context, task.originalTask!),
+                  onTap: () =>
+                      _showManualServerSelection(context, task.originalTask!),
                   child: Container(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -272,12 +325,14 @@ class ActiveDownloads extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: AnymexText(
-                      text: task.qualityOrStatus, size: 11, color: theme.primary),
+                      text: task.qualityOrStatus,
+                      size: 11,
+                      color: theme.primary),
                 ),
-
               const SizedBox(width: 6),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                 decoration: BoxDecoration(
                   color: theme.surfaceContainerHighest.opaque(0.3),
                   borderRadius: BorderRadius.circular(8),
@@ -304,93 +359,103 @@ class ActiveDownloads extends StatelessWidget {
   }
 
   void _showManualServerSelection(
-      BuildContext context, ActiveDownloadTask task) async {
-    final downloadController = Get.find<DownloadController>();
-    final theme = context.colors;
+      BuildContext context, ActiveDownloadTask task,
+      {List<Video>? preloadedServers}) {
+    if (preloadedServers != null && preloadedServers.isNotEmpty) {
+      _showServerSheet(context, task, preloadedServers);
+      return;
+    }
+
     final sourceController = Get.find<SourceController>();
-    final sources = [
+    final source = [
       ...sourceController.installedExtensions,
-      ...sourceController.installedMangaExtensions
-    ];
-    final source =
-        sources.firstWhereOrNull((s) => s.name == task.extensionName);
+      ...sourceController.installedMangaExtensions,
+    ].firstWhereOrNull((s) => s.name == task.extensionName);
 
     if (source == null) {
       snackBar('Source "${task.extensionName}" not found.');
       return;
     }
 
+    final deEpisode = DEpisode(
+      episodeNumber: task.episode.number,
+      url: task.episode.link,
+      sortMap: task.episode.sortMap.isEmpty ? null : task.episode.sortMap,
+    );
+    final videoStream = source.methods.getVideoListStream(deEpisode);
+
     showModalBottomSheet(
       context: context,
-      backgroundColor: theme.surface,
+      backgroundColor: context.colors.surface,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return FutureBuilder<List<Video>>(
-          future:
-              downloadController.fetchServersForEpisode(source, task.episode),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const SizedBox(
-                height: 200,
-                child: Center(child: CircularProgressIndicator()),
-              );
-            }
-            if (snapshot.hasError ||
-                !snapshot.hasData ||
-                snapshot.data!.isEmpty) {
-              return SizedBox(
-                height: 200,
-                child: Center(
-                  child: AnymexText(
-                      text: 'No servers found for this episode.',
-                      color: theme.onSurface.opaque(0.6)),
-                ),
-              );
-            }
-
-            final servers = snapshot.data!;
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: AnymexText(
-                      text: 'Select Server',
-                      variant: TextVariant.bold,
-                      size: 18),
-                ),
-                Flexible(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: servers.length,
-                    itemBuilder: (context, index) {
-                      final server = servers[index];
-                      return ListTile(
-                        leading: Icon(Icons.dns_rounded, color: theme.primary),
-                        title: AnymexText(
-                            text: server.quality ?? 'Unknown Quality',
-                            variant: TextVariant.semiBold),
-                        subtitle: AnymexText(
-                            text: server.originalUrl ?? 'Unknown URL',
-                            size: 12,
-                            maxLines: 1),
-                        onTap: () {
-                          downloadController.manualSelectServerForTask(
-                              task, server);
-                          Navigator.pop(context);
-                        },
-                      );
-                    },
+        if (videoStream != null) {
+          return _ServerSheetStreamBody(
+            stream: videoStream,
+            task: task,
+            onServerSelected: (server) {
+              Get.find<DownloadController>()
+                  .manualSelectServerForTask(task, server);
+              Navigator.pop(context);
+            },
+          );
+        } else {
+          return FutureBuilder<List<Video>>(
+            future: source.methods
+                .getVideoList(deEpisode)
+                .then((list) => list.map((v) => Video.fromVideo(v)).toList()),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState != ConnectionState.done) {
+                return const SizedBox(
+                    height: 240,
+                    child: Center(child: CircularProgressIndicator()));
+              }
+              if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return SizedBox(
+                  height: 240,
+                  child: Center(
+                    child: AnymexText(
+                        text: 'No servers found.',
+                        color: context.colors.onSurface.opaque(0.5)),
                   ),
-                ),
-                const SizedBox(height: 20),
-              ],
-            );
-          },
-        );
+                );
+              }
+              return _ServerListBody(
+                servers: snapshot.data!,
+                task: task,
+                onServerSelected: (server) {
+                  Get.find<DownloadController>()
+                      .manualSelectServerForTask(task, server);
+                  Navigator.pop(context);
+                },
+              );
+            },
+          );
+        }
       },
+    );
+  }
+
+  void _showServerSheet(
+      BuildContext context, ActiveDownloadTask task, List<Video> servers) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: context.colors.surface,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => _ServerListBody(
+        servers: servers,
+        task: task,
+        onServerSelected: (server) {
+          Get.find<DownloadController>().manualSelectServerForTask(task, server);
+          Navigator.pop(context);
+        },
+      ),
     );
   }
 }
@@ -412,6 +477,7 @@ class _UnifiedTask {
   final bool isFailed;
   final bool isCancelled;
   final bool isQueued;
+  final DownloadStatus? status;
   
   _UnifiedTask.fromAnime(ActiveDownloadTask task) :
     originalTask = task,
@@ -423,6 +489,7 @@ class _UnifiedTask {
     errorMessage = task.errorMessage,
     isManga = false,
     qualityOrStatus = task.videoQuality,
+    status = task.status,
     isDownloading = task.status == DownloadStatus.downloading,
     isPaused = task.status == DownloadStatus.paused,
     isCompleted = task.status == DownloadStatus.completed,
@@ -440,6 +507,7 @@ class _UnifiedTask {
     errorMessage = task.errorMessage,
     isManga = true,
     qualityOrStatus = task.status == MangaDownloadStatus.fetchingPages ? 'Pages' : 'Images',
+    status = null,
     isDownloading = task.status == MangaDownloadStatus.downloading || task.status == MangaDownloadStatus.fetchingPages,
     isPaused = task.status == MangaDownloadStatus.paused,
     isCompleted = task.status == MangaDownloadStatus.completed,
@@ -447,3 +515,181 @@ class _UnifiedTask {
     isCancelled = task.status == MangaDownloadStatus.cancelled,
     isQueued = task.status == MangaDownloadStatus.queued;
 }
+
+class _ServerListBody extends StatelessWidget {
+  final List<Video> servers;
+  final ActiveDownloadTask task;
+  final void Function(Video) onServerSelected;
+
+  const _ServerListBody({
+    required this.servers,
+    required this.task,
+    required this.onServerSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = context.colors;
+    return DraggableScrollableSheet(
+      expand: false,
+      initialChildSize: 0.5,
+      minChildSize: 0.3,
+      maxChildSize: 0.9,
+      builder: (_, controller) => Column(
+        children: [
+          const SizedBox(height: 8),
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: theme.onSurface.opaque(0.2),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 14),
+            child: AnymexText(
+                text: 'Select Server', variant: TextVariant.bold, size: 18),
+          ),
+          Expanded(
+            child: ListView.builder(
+              controller: controller,
+              itemCount: servers.length,
+              itemBuilder: (context, index) {
+                final server = servers[index];
+                return ListTile(
+                  leading: Icon(Icons.dns_rounded, color: theme.primary),
+                  title: AnymexText(
+                      text: server.quality ?? 'Unknown Quality',
+                      variant: TextVariant.semiBold),
+                  subtitle: AnymexText(
+                      text: server.originalUrl ?? server.url ?? '',
+                      size: 12,
+                      maxLines: 1),
+                  onTap: () => onServerSelected(server),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 20),
+        ],
+      ),
+    );
+  }
+}
+
+class _ServerSheetStreamBody extends StatefulWidget {
+  final Stream<dynamic> stream;
+  final ActiveDownloadTask task;
+  final void Function(Video) onServerSelected;
+
+  const _ServerSheetStreamBody({
+    required this.stream,
+    required this.task,
+    required this.onServerSelected,
+  });
+
+  @override
+  State<_ServerSheetStreamBody> createState() => _ServerSheetStreamBodyState();
+}
+
+class _ServerSheetStreamBodyState extends State<_ServerSheetStreamBody> {
+  final List<Video> _servers = [];
+  bool _done = false;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.stream.listen(
+      (v) {
+        final video = Video.fromVideo(v);
+        if (mounted) setState(() => _servers.add(video));
+      },
+      onDone: () {
+        if (mounted) setState(() => _done = true);
+      },
+      onError: (_) {
+        if (mounted) setState(() => _done = true);
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = context.colors;
+    return DraggableScrollableSheet(
+      expand: false,
+      initialChildSize: 0.5,
+      minChildSize: 0.3,
+      maxChildSize: 0.9,
+      builder: (_, controller) => Column(
+        children: [
+          const SizedBox(height: 8),
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: theme.onSurface.opaque(0.2),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const AnymexText(
+                    text: 'Select Server',
+                    variant: TextVariant.bold,
+                    size: 18),
+                if (!_done) ...[
+                  const SizedBox(width: 10),
+                  SizedBox(
+                    width: 14,
+                    height: 14,
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2, color: theme.primary),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          if (_servers.isEmpty && !_done)
+            const Expanded(
+                child: Center(child: CircularProgressIndicator()))
+          else if (_servers.isEmpty && _done)
+            Expanded(
+              child: Center(
+                child: AnymexText(
+                    text: 'No servers found.',
+                    color: theme.onSurface.opaque(0.5)),
+              ),
+            )
+          else
+            Expanded(
+              child: ListView.builder(
+                controller: controller,
+                itemCount: _servers.length,
+                itemBuilder: (context, index) {
+                  final server = _servers[index];
+                  return ListTile(
+                    leading: Icon(Icons.dns_rounded, color: theme.primary),
+                    title: AnymexText(
+                        text: server.quality ?? 'Unknown Quality',
+                        variant: TextVariant.semiBold),
+                    subtitle: AnymexText(
+                        text: server.originalUrl ?? server.url ?? '',
+                        size: 12,
+                        maxLines: 1),
+                    onTap: () => widget.onServerSelected(server),
+                  );
+                },
+              ),
+            ),
+          const SizedBox(height: 20),
+        ],
+      ),
+    );
+  }
+}
+

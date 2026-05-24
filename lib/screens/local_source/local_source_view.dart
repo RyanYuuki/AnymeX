@@ -19,6 +19,7 @@ import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:anymex/screens/downloads/widgets/video_thumbnail_widget.dart';
 import 'package:path/path.dart' as path;
 
 class WatchOffline extends StatefulWidget {
@@ -1148,12 +1149,27 @@ class _WatchOfflineState extends State<WatchOffline> {
         if (isDirectory) {
           controller.navigateToFolder(item.path);
         } else {
+          // Build episode list from all video files in the current directory
+          final allVideoFiles = controller.currentModeItems
+              .whereType<File>()
+              .where((f) => controller.watchableExtensions
+                  .contains(path.extension(f.path).toLowerCase()))
+              .toList();
+
+          final episodeList = allVideoFiles
+              .map((f) => LocalEpisode(
+                    path: f.path,
+                    name: path.basename(f.path),
+                    folderName: controller.currentDirectoryName,
+                  ))
+              .toList();
+
           navigate(() => OfflineWatchPage(
-              episodeList: const [],
+              episodeList: episodeList,
               episode: LocalEpisode(
                   path: item.path,
                   name: itemName,
-                  folderName: path.basename(controller.currentPath.value))));
+                  folderName: controller.currentDirectoryName)));
         }
       },
       child: Container(
@@ -1307,20 +1323,24 @@ class _WatchOfflineState extends State<WatchOffline> {
     }
 
     if (isVideoFile) {
-      return Container(
-        decoration: BoxDecoration(
-          color: theme.colorScheme.primary.opaque(0.1, iReallyMeanIt: true),
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(15),
-            topRight: Radius.circular(15),
+      return VideoThumbnailWidget(
+        videoPath: item.path,
+        width: 60,
+        height: 88,
+        borderRadius: BorderRadius.circular(12),
+        fallback: Container(
+          decoration: BoxDecoration(
+            color: theme.colorScheme.primary.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Center(
+            child: Icon(
+              Icons.movie_outlined,
+              color: theme.colorScheme.primary,
+              size: 32,
+            ),
           ),
         ),
-        child: Center(
-            child: Icon(
-          Icons.movie_outlined,
-          color: theme.colorScheme.primary,
-          size: 32,
-        )),
       );
     }
 

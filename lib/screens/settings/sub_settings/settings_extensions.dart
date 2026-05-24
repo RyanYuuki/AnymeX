@@ -10,6 +10,7 @@ import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_extension_manager.dart';
 
 class SettingsExtensions extends StatefulWidget {
   final Function()? onSave;
@@ -39,11 +40,71 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
     (label: 'Novel', icon: Icons.auto_stories_outlined, type: ItemType.novel),
   ];
 
-  Extension get _manager => em.managers[_managerIndex];
+  List<Map<String, dynamic>> get _displayManagers {
+    final List<Map<String, dynamic>> list = [];
+    final activeManagers = em.managers;
+
+    for (final m in activeManagers) {
+      list.add({
+        'name': m.name,
+        'manager': m,
+        'isMock': false,
+      });
+    }
+
+    final hasAniyomi = activeManagers.any((m) => m.name.toLowerCase().contains('aniyomi'));
+    final hasCloudStream = activeManagers.any((m) => m.name.toLowerCase().contains('cloudstream'));
+
+    if (!hasAniyomi) {
+      list.add({
+        'name': 'Aniyomi',
+        'manager': null,
+        'isMock': true,
+      });
+    }
+    if (!hasCloudStream) {
+      list.add({
+        'name': 'CloudStream',
+        'manager': null,
+        'isMock': true,
+      });
+    }
+
+    list.sort((a, b) {
+      final managerA = a['manager'] as Extension?;
+      final managerB = b['manager'] as Extension?;
+
+      final aRequires = managerA?.requiresPlugin ?? _isMockPluginRequired(a['name'] as String);
+      final bRequires = managerB?.requiresPlugin ?? _isMockPluginRequired(b['name'] as String);
+
+      if (aRequires != bRequires) {
+        return aRequires ? 1 : -1;
+      }
+
+      final aName = (a['name'] as String).toLowerCase();
+      final bName = (b['name'] as String).toLowerCase();
+      if (aName.contains('mangayomi')) return -1;
+      if (bName.contains('mangayomi')) return 1;
+
+      return aName.compareTo(bName);
+    });
+
+    return list;
+  }
+
+  bool _isMockPluginRequired(String name) {
+    final lower = name.toLowerCase();
+    return lower.contains('aniyomi') || lower.contains('cloudstream');
+  }
+
 
   Future<void> _addRepos(ItemType type, List<String> urls) async {
-    await em.addRepos(urls, type, _manager.id);
+    final currentManagerData = _displayManagers[_managerIndex];
+    if (currentManagerData['isMock'] == true) return;
+    final activeManager = currentManagerData['manager'] as Extension;
+    await em.addRepos(urls, type, activeManager.id);
     widget.onSave?.call();
+    if (mounted) setState(() {});
   }
 
   Future<void> _removeRepo(Repo repo, ItemType type) async {
@@ -96,50 +157,68 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
-    if (em.managers.isEmpty) {
-      return Glow(
-        child: Scaffold(
-          body: Column(children: [
-            const NestedHeader(title: 'Extensions'),
-            Expanded(
-              child: Center(
-                child: Text('No extension managers found.',
-                    style: TextStyle(color: context.colors.onSurfaceVariant)),
-              ),
-            ),
-          ]),
-        ),
-      );
-    }
-
     return Glow(
       child: Scaffold(
-        body: Column(children: [
-          const NestedHeader(title: 'Extensions'),
-          const SizedBox(height: 10),
-          if (em.managers.length > 1) ...[
+        body: Obx(() {
+          final displayList = _displayManagers;
+          if (displayList.isEmpty) {
+            return Column(children: [
+              NestedHeader(
+                title: 'Extensions',
+                action: IconButton(
+                  onPressed: () => Get.to(() => const SettingsExtensionManager()),
+                  icon: const Icon(Icons.settings_suggest_rounded),
+                  tooltip: 'Extension Manager',
+                ),
+              ),
+              Expanded(
+                child: Center(
+                  child: Text('No extension managers found.',
+                      style: TextStyle(color: context.colors.onSurfaceVariant)),
+                ),
+              ),
+            ]);
+          }
+
+          if (_managerIndex >= displayList.length) {
+            _managerIndex = 0;
+          }
+
+          return Column(children: [
+            NestedHeader(
+              title: 'Extensions',
+              action: IconButton(
+                onPressed: () => Get.to(() => const SettingsExtensionManager()),
+                icon: const Icon(Icons.settings_suggest_rounded),
+                tooltip: 'Extension Manager',
+              ),
+            ),
+            const SizedBox(height: 10),
+            if (displayList.length > 1) ...[
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: _buildManagerBar(),
+              ),
+              const SizedBox(height: 8),
+            ],
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: _buildManagerBar(),
+              child: _buildTypeBar(),
             ),
-            const SizedBox(height: 8),
-          ],
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: _buildTypeBar(),
-          ),
-          const SizedBox(height: 4),
-          Expanded(child: _buildBody()),
-        ]),
-        floatingActionButton: _buildFab(),
+            const SizedBox(height: 4),
+            Expanded(child: _buildBody()),
+          ]);
+        }),
+        floatingActionButton: Obx(() => _buildFab() ?? const SizedBox.shrink()),
       ),
     );
   }
 
   Widget _buildManagerBar() {
     final colors = context.colors;
-    final managers = em.managers;
+    final managers = _displayManagers;
     final total = managers.length;
 
     double alignX =
@@ -214,7 +293,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                               const SizedBox(width: 5),
                               Flexible(
                                 child: Text(
-                                  e.value.name,
+                                  e.value['name'] as String,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
@@ -359,16 +438,25 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
   }
 
   Widget _buildBody() {
+    if (_managerIndex >= _displayManagers.length) return const SizedBox.shrink();
+    final selectedManagerData = _displayManagers[_managerIndex];
+    final bool isMock = selectedManagerData['isMock'] as bool;
+    
+    if (isMock) {
+      return _buildPluginRequiredPlaceholder(selectedManagerData['name'] as String);
+    }
+    
+    final manager = selectedManagerData['manager'] as Extension;
     final supported = _tab == ItemType.anime
-        ? _manager.supportsAnime
+        ? manager.supportsAnime
         : _tab == ItemType.manga
-            ? _manager.supportsManga
-            : _manager.supportsNovel;
+            ? manager.supportsManga
+            : manager.supportsNovel;
 
     if (!supported) return _buildUnsupported();
 
     return Obx(() {
-      final repos = _manager.getReposRx(_tab).value;
+      final repos = manager.getReposRx(_tab).value;
       return AnimatedSwitcher(
         duration: const Duration(milliseconds: 200),
         child: repos.isEmpty
@@ -376,6 +464,64 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
             : _buildRepoList(repos, key: ValueKey('list_$_tab')),
       );
     });
+  }
+
+  Widget _buildPluginRequiredPlaceholder(String managerName) {
+    final colors = context.colors;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                color: colors.errorContainer.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Icon(
+                Icons.warning_amber_rounded,
+                size: 32,
+                color: colors.error,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Plugin Not Installed',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: colors.onSurface,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'To use the $managerName extension manager, you need to download and install the runtime plugin.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13,
+                color: colors.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 20),
+            FilledButton.icon(
+              onPressed: () => Get.to(() => const SettingsExtensionManager()),
+              icon: const Icon(Icons.download_rounded),
+              label: const Text('Go to Plugin Downloader'),
+              style: FilledButton.styleFrom(
+                backgroundColor: colors.primary,
+                foregroundColor: colors.onPrimary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildUnsupported() {
@@ -518,11 +664,16 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
   }
 
   Widget? _buildFab() {
+    if (_managerIndex >= _displayManagers.length) return null;
+    final selectedManagerData = _displayManagers[_managerIndex];
+    if (selectedManagerData['isMock'] == true) return null;
+
+    final manager = selectedManagerData['manager'] as Extension;
     final supported = _tab == ItemType.anime
-        ? _manager.supportsAnime
+        ? manager.supportsAnime
         : _tab == ItemType.manga
-            ? _manager.supportsManga
-            : _manager.supportsNovel;
+            ? manager.supportsManga
+            : manager.supportsNovel;
     if (!supported) return null;
     final colors = context.colors;
     return FloatingActionButton.extended(

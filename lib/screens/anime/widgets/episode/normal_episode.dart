@@ -1,13 +1,12 @@
 import 'dart:ui';
 
 import 'package:anymex/database/isar_models/episode.dart';
+import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/animation/animations.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 enum EpisodeLayoutType {
   compact,
@@ -45,12 +44,19 @@ class BetterEpisode extends StatelessWidget {
         onTap: onTap,
         onLongPress: onLongPress,
         child: layoutType == EpisodeLayoutType.compact
-            ? _buildCompactLayout(context, episodeProgress, isFiller, hasProgress)
+            ? _buildCompactLayout(
+                context, episodeProgress, isFiller, hasProgress)
             : _buildDetailedLayout(
                 context, episodeProgress, isFiller, hasProgress),
       ),
     );
   }
+
+
+  String get episodeNumber => episode.number.contains('.0') ? episode.number.toInt().toString() : episode.number.toString();
+
+  String get episodeTitle => episode.title ?? 'Episode $episodeNumber'; 
+
 
   double _calculateProgress() {
     if (offlineEpisodes == null) return 0.0;
@@ -112,8 +118,8 @@ class BetterEpisode extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (isFiller)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 2.0),
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 2.0),
                     child: AnymexText(
                       text: "[Filler]",
                       size: 10,
@@ -122,7 +128,7 @@ class BetterEpisode extends StatelessWidget {
                     ),
                   ),
                 AnymexText(
-                  text: episode.title ?? '?',
+                  text: episodeTitle,
                   variant: TextVariant.bold,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -179,7 +185,7 @@ class BetterEpisode extends StatelessWidget {
                               borderRadius: BorderRadius.circular(4),
                               border: Border.all(
                                   color: Colors.orange.withOpacity(0.5))),
-                          child: AnymexText(
+                          child: const AnymexText(
                             text: "FILLER",
                             size: 10,
                             color: Colors.orange,
@@ -188,7 +194,7 @@ class BetterEpisode extends StatelessWidget {
                         ),
                       ),
                     AnymexText(
-                      text: episode.title ?? 'Unknown Title',
+                      text: episodeTitle,
                       variant: TextVariant.bold,
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
@@ -304,7 +310,7 @@ class BetterEpisode extends StatelessWidget {
               ],
             ),
             child: AnymexText(
-              text: "EP ${episode.number}",
+              text: "EP $episodeNumber",
               variant: TextVariant.bold,
               color: Colors.white,
             ),

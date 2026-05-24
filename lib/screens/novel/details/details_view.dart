@@ -15,7 +15,6 @@ import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
-import 'package:expandable_page_view/expandable_page_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -50,7 +49,7 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
   }
 
   @override
-  initState() {
+  void initState() {
     super.initState();
     pageController = PageController();
     controller = Get.put(NovelDetailsController(
@@ -107,83 +106,82 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
   }
 
   Widget _commonLayout(BuildContext context) {
-    return CustomScrollView(
-      slivers: [
-        SliverToBoxAdapter(
-          child: GradientPoster(
-            data: widget.media,
-            tag: widget.tag,
-            posterUrl: widget.media.poster,
+    return NestedScrollView(
+      headerSliverBuilder: (context, innerBoxIsScrolled) {
+        return [
+          SliverToBoxAdapter(
+            child: GradientPoster(
+              data: widget.media,
+              tag: widget.tag,
+              posterUrl: widget.media.poster,
+            ),
           ),
-        ),
-        Obx(() {
-          if (controller.isLoading.value) {
-            return const SliverToBoxAdapter(
-              child: SizedBox(
-                height: 400,
-                child: Center(child: AnymexProgressIndicator()),
-              ),
-            );
-          }
+          Obx(() {
+            if (controller.isLoading.value) {
+              return const SliverToBoxAdapter(child: SizedBox.shrink());
+            }
 
-          return SliverMainAxisGroup(
-            slivers: [
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(20.0, 10, 20, 0),
-                sliver: SliverToBoxAdapter(
-                  child: _buildAddToLibraryButton(context),
+            return SliverMainAxisGroup(
+              slivers: [
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(20.0, 10, 20, 0),
+                  sliver: SliverToBoxAdapter(
+                    child: _buildAddToLibraryButton(context),
+                  ),
                 ),
-              ),
-              if (controller.offlineMedia.value != null &&
-                  controller.offlineMedia.value?.currentChapter != null)
+                if (controller.offlineMedia.value != null &&
+                    controller.offlineMedia.value?.currentChapter != null)
+                  SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    sliver: SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 24.0),
+                        child: _buildContinueButton(context),
+                      ),
+                    ),
+                  ),
                 SliverPadding(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   sliver: SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.only(top: 24.0),
-                      child: _buildContinueButton(context),
+                      padding: const EdgeInsets.only(top: 20.0),
+                      child: _buildProgressContainer(context),
                     ),
                   ),
                 ),
-              SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                sliver: SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 20.0),
-                    child: _buildProgressContainer(context),
-                  ),
-                ),
-              ),
-              SliverToBoxAdapter(child: 10.height()),
-              SliverToBoxAdapter(child: _buildTabContent(context)),
-              SliverToBoxAdapter(child: 150.height()),
-            ],
-          );
-        }),
-      ],
-    );
-  }
+                SliverToBoxAdapter(child: 10.height()),
+              ],
+            );
+          }),
+        ];
+      },
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(child: AnymexProgressIndicator());
+        }
 
-  Widget _buildTabContent(BuildContext context) {
-    return Obx(() {
-      return ExpandablePageView(
-        controller: pageController,
-        physics: const BouncingScrollPhysics(),
-        onPageChanged: (index) {
-          selectedPage.value = index;
-        },
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20.0, 0, 20.0, 0),
-            child: NovelStats(data: controller.media.value),
-          ),
-          ChapterSliverSection(controller: controller),
-          CommentSection(
-            media: controller.media.value,
-          ),
-        ],
-      );
-    });
+        return PageView(
+          controller: pageController,
+          physics: const BouncingScrollPhysics(),
+          onPageChanged: (index) {
+            selectedPage.value = index;
+          },
+          children: [
+            SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(20.0, 0, 20.0, 120.0),
+              child: NovelStats(data: controller.media.value),
+            ),
+            ChapterSliverSection(controller: controller),
+            SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(20.0, 0, 20.0, 120.0),
+              child: CommentSection(
+                media: controller.media.value,
+              ),
+            ),
+          ],
+        );
+      }),
+    );
   }
 
   Widget _buildDesktopNav() {

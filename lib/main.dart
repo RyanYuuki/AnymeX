@@ -34,7 +34,6 @@ import 'package:anymex/screens/notifications/notification_controller.dart';
 import 'package:anymex/utils/notification.dart';
 import 'package:anymex/utils/deeplink.dart';
 import 'package:anymex/utils/register_protocol/register_protocol.dart';
-import 'package:anymex/widgets/adaptive_wrapper.dart';
 import 'package:anymex/widgets/animation/more_page_transitions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/navbar.dart';
@@ -60,6 +59,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:isar_community/isar.dart';
 import 'package:media_kit/media_kit.dart';
+import 'package:anymex/utils/torrent/torrent_stream_resolver.dart';
 import 'package:provider/provider.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 import 'package:window_manager/window_manager.dart';
@@ -89,7 +89,6 @@ class MyCustomScrollBehavior extends MaterialScrollBehavior {
 }
 
 void initDeepLinkListener() async {
-  if (Platform.isLinux) return;
 
   try {
     final initialUri = await appLinks.getInitialLink();
@@ -203,6 +202,12 @@ void _initializeGetxController() async {
   Get.lazyPut(() => NotificationService());
   Get.lazyPut(() => CacheController());
   await StorageManagerService().enforceImageCacheLimit();
+
+  TorrentStreamResolver.initialize().then((_) {
+    debugPrint('Torrent engine initialized');
+  }).catchError((e) {
+    debugPrint('Torrent engine init failed (non-critical): $e');
+  });
 }
 
 class MainApp extends StatefulWidget {

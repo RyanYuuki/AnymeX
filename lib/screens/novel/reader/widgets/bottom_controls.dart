@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:anymex/screens/novel/reader/controller/reader_controller.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
@@ -39,27 +37,30 @@ class NovelBottomControls extends StatelessWidget {
                 ],
                 stops: const [0.0, 0.3, 0.7, 1.0],
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.opaque(0.18),
+                  blurRadius: 28,
+                  spreadRadius: 2,
+                  offset: const Offset(0, -10),
+                ),
+              ],
             ),
-            child: ClipRRect(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: SafeArea(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: isDesktop ? 32 : 20,
-                      vertical: isDesktop ? 20 : 16,
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (controller.showBatteryAndTime.value)
-                          _buildStatusBar(context, isDesktop),
-                        _buildProgressSection(context, isDesktop),
-                        SizedBox(height: isDesktop ? 20 : 16),
-                        _buildControlsRow(context, isDesktop),
-                      ],
-                    ),
-                  ),
+            child: SafeArea(
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: isDesktop ? 32 : 20,
+                  vertical: isDesktop ? 20 : 16,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (controller.showBatteryAndTime.value)
+                      _buildStatusBar(context, isDesktop),
+                    _buildProgressSection(context, isDesktop),
+                    SizedBox(height: isDesktop ? 20 : 16),
+                    _buildControlsRow(context, isDesktop),
+                  ],
                 ),
               ),
             ),

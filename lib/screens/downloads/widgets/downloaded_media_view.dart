@@ -4,6 +4,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/downloads/controller/download_controller.dart';
 import 'package:anymex/screens/downloads/model/download_models.dart';
 import 'package:anymex/screens/downloads/widgets/downloaded_watch_page.dart';
+import 'package:anymex/screens/downloads/widgets/video_thumbnail_widget.dart';
 import 'package:anymex/screens/manga/reading_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -536,6 +537,25 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
     );
   }
 
+  Widget _buildInfoBadge(ColorScheme theme, String text, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: color.withOpacity(0.15), width: 0.5),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          color: color.withOpacity(0.85),
+          fontSize: 9.5,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
   Widget _buildEpisodeTile({
     required BuildContext context,
     required ColorScheme theme,
@@ -545,7 +565,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
     required VoidCallback onDelete,
   }) {
     final hasThumbnail =
-        episode.thumbnail != null && episode.thumbnail!.isNotEmpty;
+        episode.thumbnail != null && episode.thumbnail!.contains('http');
 
     final ts = episode.episode.timeStampInMilliseconds;
     final dur = episode.episode.durationInMilliseconds;
@@ -576,19 +596,25 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
           children: [
             Stack(
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: hasThumbnail
-                      ? AnymeXImage(
+                hasThumbnail
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: AnymeXImage(
                           imageUrl: episode.thumbnail!,
-                          width: 76,
-                          height: 52,
+                          width: 120,
+                          height: 68,
                           fit: BoxFit.cover,
                           radius: 10,
-                        )
-                      : Container(
-                          width: 76,
-                          height: 52,
+                        ),
+                      )
+                    : VideoThumbnailWidget(
+                        videoPath: episode.filePath,
+                        width: 120,
+                        height: 68,
+                        borderRadius: BorderRadius.circular(10),
+                        fallback: Container(
+                          width: 120,
+                          height: 68,
                           decoration: BoxDecoration(
                             color: theme.surfaceContainer.withOpacity(0.5),
                             borderRadius: BorderRadius.circular(10),
@@ -598,34 +624,56 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                               episode.number,
                               style: TextStyle(
                                 color: theme.onSurface.withOpacity(0.3),
-                                fontSize: 14,
+                                fontSize: 16,
                                 fontWeight: FontWeight.w800,
                               ),
                             ),
                           ),
                         ),
-                ),
-                if (hasThumbnail)
-                  Positioned(
-                    left: 4,
-                    bottom: 4,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 4, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.65),
-                        borderRadius: BorderRadius.circular(4),
                       ),
-                      child: Text(
-                        episode.number,
-                        style: const TextStyle(
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Center(
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.45),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.play_arrow_rounded,
                           color: Colors.white,
-                          fontSize: 9,
-                          fontWeight: FontWeight.w800,
+                          size: 20,
                         ),
                       ),
                     ),
                   ),
+                ),
+                Positioned(
+                  left: 6,
+                  top: 6,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.75),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      'EP ${episode.number}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 8.5,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ),
+                ),
                 if (hasProgress)
                   Positioned(
                     left: 0,
@@ -638,8 +686,8 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                       ),
                       child: LinearProgressIndicator(
                         value: progress,
-                        minHeight: 2.5,
-                        backgroundColor: theme.surfaceVariant.withOpacity(0.3),
+                        minHeight: 3,
+                        backgroundColor: Colors.white.withOpacity(0.2),
                         valueColor:
                             AlwaysStoppedAnimation<Color>(theme.primary),
                       ),
@@ -647,11 +695,11 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                   ),
               ],
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     episode.title != null && episode.title!.isNotEmpty
@@ -661,81 +709,47 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                       color: isWatched
                           ? theme.onSurface.withOpacity(0.4)
                           : theme.onSurface,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
                       letterSpacing: -0.2,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 3),
+                  const SizedBox(height: 4),
                   Wrap(
+                    spacing: 6,
+                    runSpacing: 4,
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       Text(
                         relativeTime,
                         style: TextStyle(
-                          color: theme.onSurface.withOpacity(0.28),
+                          color: theme.onSurface.withOpacity(0.35),
                           fontSize: 11,
                         ),
                       ),
-                      if (episode.quality != null) ...[
-                        _buildDot(theme),
-                        Text(
-                          episode.quality!,
-                          style: TextStyle(
-                            color: theme.tertiary.withOpacity(0.7),
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                      if (episode.episode.filler == true) ...[
-                        _buildDot(theme),
-                        Text(
-                          'Filler',
-                          style: TextStyle(
-                            color: theme.secondary.withOpacity(0.65),
-                            fontSize: 11,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                      if (isWatched) ...[
-                        _buildDot(theme),
-                        Text(
-                          'Watched',
-                          style: TextStyle(
-                            color: theme.tertiary.withOpacity(0.65),
-                            fontSize: 11,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                      if (timeLeft != null) ...[
-                        _buildDot(theme),
-                        Text(
-                          timeLeft,
-                          style: TextStyle(
-                            color: theme.primary.withOpacity(0.7),
-                            fontSize: 11,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
+                      if (episode.quality != null)
+                        _buildInfoBadge(theme, episode.quality!, theme.tertiary),
+                      if (episode.episode.filler == true)
+                        _buildInfoBadge(theme, 'Filler', theme.secondary),
+                      if (isWatched)
+                        _buildInfoBadge(theme, 'Watched', theme.primary),
+                      if (timeLeft != null)
+                        _buildInfoBadge(theme, timeLeft, theme.primary),
                     ],
                   ),
                   if (episode.episode.desc != null &&
                       episode.episode.desc!.isNotEmpty) ...[
-                    const SizedBox(height: 3),
+                    const SizedBox(height: 6),
                     Text(
                       episode.episode.desc!,
                       style: TextStyle(
-                        color: theme.onSurface.withOpacity(0.3),
-                        fontSize: 11,
+                        color: theme.onSurface.withOpacity(0.45),
+                        fontSize: 11.5,
                         height: 1.3,
                       ),
-                      maxLines: 1,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
@@ -743,23 +757,15 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
               ),
             ),
             const SizedBox(width: 8),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildTinyBtn(
-                  theme: theme,
-                  icon: Icons.play_arrow_rounded,
-                  color: theme.primary,
-                  onTap: onPlay,
-                ),
-                const SizedBox(height: 5),
-                _buildTinyBtn(
-                  theme: theme,
-                  icon: Icons.delete_outline_rounded,
-                  color: theme.error.withOpacity(0.7),
-                  onTap: onDelete,
-                ),
-              ],
+            IconButton(
+              icon: const Icon(Icons.delete_outline_rounded),
+              color: theme.error.withOpacity(0.7),
+              onPressed: onDelete,
+              style: IconButton.styleFrom(
+                backgroundColor: theme.error.withOpacity(0.06),
+                padding: const EdgeInsets.all(8),
+                minimumSize: const Size(36, 36),
+              ),
             ),
           ],
         ),

@@ -49,6 +49,9 @@ class _ListEditorModalState extends State<ListEditorModal> {
   bool _isLoadingSeasons = false;
   bool _isSaving = false;
 
+  late final TextEditingController _progressController;
+  late final TextEditingController _seasonController;
+
   static const _statuses = [
     ('PLANNING', 'Planning'),
     ('CURRENT', 'Watching'),
@@ -67,6 +70,9 @@ class _ListEditorModalState extends State<ListEditorModal> {
     _localProgress = widget.animeProgress.value;
     _localSeason = 1;
 
+    _progressController = TextEditingController(text: _localProgress.toString());
+    _seasonController = TextEditingController(text: _localSeason.toString());
+
     final tracked = widget.currentAnime.value;
     if (tracked != null) {
       _startedAt = tracked.startedAt;
@@ -77,6 +83,13 @@ class _ListEditorModalState extends State<ListEditorModal> {
     if (widget.media.serviceType == ServicesType.simkl && !widget.isManga) {
       _fetchSimklSeasons();
     }
+  }
+
+  @override
+  void dispose() {
+    _progressController.dispose();
+    _seasonController.dispose();
+    super.dispose();
   }
 
   Future<void> _fetchSimklSeasons() async {
@@ -134,15 +147,20 @@ class _ListEditorModalState extends State<ListEditorModal> {
     return parsed;
   }
 
-  void _setProgress(int value) {
+  void _setProgress(int value, {bool updateController = true}) {
     final max = _maxTotal;
     setState(() {
       _localProgress =
           max != null ? value.clamp(0, max) : value.clamp(0, 99999);
     });
+    if (updateController) {
+      _progressController.text = _localProgress.toString();
+      _progressController.selection = TextSelection.collapsed(
+          offset: _progressController.text.length);
+    }
   }
 
-  void _setSeason(int value) {
+  void _setSeason(int value, {bool updateController = true}) {
     if (_simklSeasons.isNotEmpty) {
       if (!_simklSeasons.containsKey(value)) return;
     }
@@ -152,9 +170,15 @@ class _ListEditorModalState extends State<ListEditorModal> {
         final newMax = _simklSeasons[_localSeason];
         if (newMax != null && _localProgress > newMax) {
           _localProgress = 0;
+          _progressController.text = '0';
         }
       }
     });
+    if (updateController) {
+      _seasonController.text = _localSeason.toString();
+      _seasonController.selection = TextSelection.collapsed(
+          offset: _seasonController.text.length);
+    }
   }
 
   void _applyStatusSideEffects(String newStatus) {
@@ -391,8 +415,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
     return SizedBox(
       height: 40,
       child: TextFormField(
-        key: ValueKey('season_$_localSeason'),
-        initialValue: _localSeason.toString(),
+        controller: _seasonController,
         keyboardType: TextInputType.number,
         inputFormatters: [
           FilteringTextInputFormatter.digitsOnly,
@@ -423,7 +446,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
         ),
         onChanged: (v) {
           final n = int.tryParse(v);
-          if (n != null && n >= 1) _setSeason(n);
+          if (n != null && n >= 1) _setSeason(n, updateController: false);
         },
       ),
     );
@@ -502,8 +525,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
     return SizedBox(
       height: 40,
       child: TextFormField(
-        key: ValueKey('progress_$_localProgress'),
-        initialValue: _localProgress.toString(),
+        controller: _progressController,
         keyboardType: TextInputType.number,
         inputFormatters: [
           FilteringTextInputFormatter.digitsOnly,
@@ -534,7 +556,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
         ),
         onChanged: (v) {
           final n = int.tryParse(v);
-          if (n != null && n >= 0) _setProgress(n);
+          if (n != null && n >= 0) _setProgress(n, updateController: false);
         },
       ),
     );

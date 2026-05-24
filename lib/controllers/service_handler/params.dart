@@ -1,3 +1,5 @@
+import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
+
 class SearchParams {
   String query;
   bool isManga;
@@ -16,11 +18,11 @@ class SearchParams {
 
 class FetchDetailsParams {
   dynamic id;
-  bool isManga;
+  ItemType? type;
 
   FetchDetailsParams({
     required this.id,
-    this.isManga = false,
+    this.type = ItemType.anime,
   });
 }
 

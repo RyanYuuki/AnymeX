@@ -269,7 +269,10 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                         tag: 'profile_avatar_$name',
                         child: Container(
                           width: 92,
-                          height: 92,
+                          constraints: const BoxConstraints(
+                            minHeight: 92,
+                            maxHeight: 150,
+                          ),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(14),
                             boxShadow: [
@@ -285,6 +288,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                             child: CachedNetworkImage(
                               imageUrl: avatarUrl,
                               fit: BoxFit.cover,
+                              alignment: Alignment.topCenter,
                               errorWidget: (context, url, error) =>
                                   const Icon(Icons.person),
                             ),

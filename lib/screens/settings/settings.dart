@@ -8,8 +8,8 @@ import 'package:anymex/screens/settings/sub_settings/settings_accounts.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_backup.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_common.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_downloads.dart';
-import 'package:anymex/screens/settings/sub_settings/settings_experimental.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_extensions.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_logs.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_reader.dart';
@@ -313,12 +313,7 @@ class _SettingsPageState extends State<SettingsPage> {
           description: "Extensions tailored to your needs",
           destination: () => const SettingsExtensions(),
           addDividerAbove: true),
-      _CategoryItem(
-          icon: HugeIcons.strokeRoundedInformationCircle,
-          title: "Experimental",
-          description: "Experimental Settings that are still being tested",
-          destination: () => const SettingsExperimental(),
-          addDividerAbove: true),
+
       _CategoryItem(
           icon: HugeIcons.strokeRoundedFile01,
           title: "Logs",

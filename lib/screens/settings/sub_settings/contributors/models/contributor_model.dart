@@ -11,7 +11,6 @@ class ContributorModel {
     this.bannerUrl,
     this.roleLinks = const <String, String>{},
     this.isPinnedCoreTeam = false,
-    this.isSpecialThanks = false,
   });
 
   final String githubLogin;
@@ -25,5 +24,4 @@ class ContributorModel {
   final String? bannerUrl;
   final Map<String, String> roleLinks;
   final bool isPinnedCoreTeam;
-  final bool isSpecialThanks;
 }

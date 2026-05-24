@@ -1,5 +1,4 @@
 import 'package:anymex/screens/downloads/controller/download_controller.dart';
-import 'package:anymex/utils/download_engine.dart';
 import 'package:anymex/screens/downloads/model/download_models.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/database/isar_models/video.dart' as hive;
@@ -54,11 +53,22 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
   final _isLoading = true.obs;
   final _errorMsg = Rxn<String>();
   final _selectedQuality = RxnString();
+  bool _isDisposed = false;
+  String? _cancelToken;
 
   @override
   void initState() {
     super.initState();
     _fetchServers();
+  }
+
+  @override
+  void dispose() {
+    _isDisposed = true;
+    if (_cancelToken != null) {
+      widget.source.cancelRequest(_cancelToken!);
+    }
+    super.dispose();
   }
 
   Future<void> _fetchServers() async {
@@ -70,7 +80,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
       if (widget.episodes.isEmpty) {
         throw Exception('No episodes selected for download.');
       }
-      
+
       final firstEp = widget.episodes.first;
       final deEpisode = DEpisode(
         episodeNumber: firstEp.number,
@@ -79,12 +89,14 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
       );
       final token =
           'dl_scrape_${DateTime.now().millisecondsSinceEpoch}_${firstEp.number}';
+      _cancelToken = token;
 
       final videoStream = widget.source.methods.getVideoListStream(deEpisode,
           parameters: SourceParams(cancelToken: token));
 
       if (videoStream != null) {
         await for (final v in videoStream) {
+          if (_isDisposed) break;
           final nextVideo = hive.Video.fromVideo(v);
           final exists = _servers.any((existing) =>
               existing.quality == nextVideo.quality &&
@@ -116,12 +128,22 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
   Future<void> _startDownload() async {
     final downloadController = Get.find<DownloadController>();
     if (_selectedQuality.value == null) return;
+    
+    if (_cancelToken != null) {
+      widget.source.cancelRequest(_cancelToken!);
+    }
     Navigator.pop(context, true);
+    
+    final selectedVideo = _servers.firstWhereOrNull((v) => v.quality == _selectedQuality.value);
+
     await downloadController.enqueueDownloadBatch(
       episodes: widget.episodes,
       source: widget.source,
       media: widget.media,
       preferredQuality: _selectedQuality.value!,
+      firstEpisodeVideoUrl: widget.episodes.length == 1 ? (selectedVideo?.url ?? selectedVideo?.originalUrl) : null,
+      firstEpisodeHeaders: widget.episodes.length == 1 ? selectedVideo?.headers : null,
+      firstEpisodeSubtitles: widget.episodes.length == 1 ? selectedVideo?.subtitles : null,
     );
     snackBar(
       'Downloading ${widget.episodes.length} episode${widget.episodes.length != 1 ? 's' : ''}...',

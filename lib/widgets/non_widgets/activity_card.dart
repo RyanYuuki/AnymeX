@@ -17,6 +17,10 @@ import 'package:anymex/utils/markdown.dart';
 import 'package:anymex/widgets/common/marquee_text.dart';
 import 'package:anymex/widgets/non_widgets/activity_composer_sheet.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:anymex/screens/anime/widgets/list_editor.dart';
+import 'package:anymex/models/Media/media.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart'
+    show ItemType;
 
 class ActivityCard extends StatefulWidget {
   final AnilistActivity activity;
@@ -49,14 +53,91 @@ class _ActivityCardState extends State<ActivityCard> {
     );
   }
 
+  void _showListEditor(BuildContext context, AnilistActivity activity) {
+    if (activity.mediaId == null || !Get.find<AnilistAuth>().isLoggedIn.value) return;
+
+    final isManga = activity.type == 'MANGA_LIST';
+    final service = Get.find<ServiceHandler>().onlineService;
+    final media = Media(
+      id: activity.mediaId.toString(),
+      title: activity.mediaTitle ?? 'Unknown',
+      poster: activity.mediaCoverUrl ?? '',
+      cover: activity.mediaBannerUrl,
+      mediaType: isManga ? ItemType.manga : ItemType.anime,
+      serviceType: Get.find<ServiceHandler>().serviceType.value,
+    );
+
+    service.setCurrentMedia(media.id, isManga: isManga);
+    final tracked = service.currentMedia.value;
+    final animeStatus = (tracked.watchingStatus ?? '').obs;
+    final animeScore = (double.tryParse(tracked.score ?? '') ?? 0.0).obs;
+    final animeProgress = (int.tryParse(
+            isManga ? (tracked.chapterCount ?? '') : (tracked.episodeCount ?? '')) ?? 0).obs;
+
+    showModalBottomSheet(
+      backgroundColor: Colors.transparent,
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: false,
+      builder: (ctx) => ListEditorModal(
+        animeStatus: animeStatus,
+        isManga: isManga,
+        animeScore: animeScore,
+        animeProgress: animeProgress,
+        currentAnime: service.currentMedia,
+        media: media,
+        onUpdate: (id, score, status, progress, season, startedAt, completedAt, isPrivate) async {
+          final listId = service.currentMedia.value.id ?? media.id;
+          await service.updateListEntry(UpdateListEntryParams(
+            listId: listId,
+            isAnime: !isManga,
+            score: score,
+            status: status,
+            season: season,
+            progress: progress,
+            startedAt: startedAt,
+            completedAt: completedAt,
+            isPrivate: isPrivate,
+          ));
+          service.currentMedia.value.score = score.toString();
+          service.currentMedia.value.watchingStatus = status;
+          if (isManga) {
+            service.currentMedia.value.chapterCount = progress.toString();
+          } else {
+            service.currentMedia.value.episodeCount = progress.toString();
+          }
+          service.currentMedia.value.startedAt = startedAt;
+          service.currentMedia.value.completedAt = completedAt;
+          service.currentMedia.value.isPrivate = isPrivate;
+          if (mounted) setState(() {});
+        },
+        onDelete: (s) async {
+          final listId = service.currentMedia.value.mediaListId ?? media.id;
+          await service.deleteListEntry(listId, isAnime: !isManga);
+          if (mounted) setState(() {});
+        },
+      ),
+    );
+  }
+
   void _toggleLike() async {
+    final anilistAuth = Get.find<AnilistAuth>();
+    if (!anilistAuth.isLoggedIn.value) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please login first'),
+          duration: Duration(milliseconds: 1500),
+        ),
+      );
+      return;
+    }
+
     final activity = widget.activity;
     setState(() {
       activity.isLiked = !activity.isLiked;
       activity.likeCount += activity.isLiked ? 1 : -1;
     });
 
-    final anilistAuth = Get.find<AnilistAuth>();
     String mutationType = 'ACTIVITY';
     if (activity.type == 'MESSAGE') mutationType = 'MESSAGE';
 
@@ -649,9 +730,14 @@ class _ActivityCardState extends State<ActivityCard> {
 
                   Builder(
                     builder: (context) {
-                      final contentRow = Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+                      final contentRow = GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onLongPress: isListActivity && Get.find<AnilistAuth>().isLoggedIn.value
+                            ? () => _showListEditor(context, activity)
+                            : null,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
                           if (activity.mediaCoverUrl != null)
                             ClipRRect(
                               borderRadius: BorderRadius.circular(12),
@@ -787,7 +873,7 @@ class _ActivityCardState extends State<ActivityCard> {
                             ),
                           ),
                         ],
-                      );
+                      ));
                       return isListActivity
                           ? SizedBox(height: 155, child: contentRow)
                           : contentRow;
@@ -985,7 +1071,7 @@ class _ActivityAnilistCardState extends State<_ActivityAnilistCard> {
     _dataFuture = handler.anilistService.fetchDetails(
       FetchDetailsParams(
         id: widget.id.toString(),
-        isManga: widget.isManga,
+        type: widget.isManga ? ItemType.manga : ItemType.anime,
       ),
     );
   }

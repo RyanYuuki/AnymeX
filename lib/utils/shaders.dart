@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:path_provider/path_provider.dart';
 
 class PlayerShaders {
@@ -114,12 +113,8 @@ class PlayerShaders {
   }
 
   static Future<Directory> _getAppDirectory() async {
-    if (Platform.isAndroid) {
-      return Directory('/storage/emulated/0/AnymeX');
-    } else {
-      final documentsDir = await getApplicationDocumentsDirectory();
-      return Directory('${documentsDir.path}/AnymeX');
-    }
+    final documentsDir = await getApplicationDocumentsDirectory();
+    return Directory('${documentsDir.path}/AnymeX');
   }
 
   static Future<String> getMpvPath() async {
@@ -127,52 +122,31 @@ class PlayerShaders {
     return '${dir.path}/mpv/';
   }
 
-  static String getShaderBasePath() {
-    final path = settingsController.mpvPath.value;
+  static Future<String> getShaderBasePath() async {
+    final path = await getMpvPath();
     return '${path}Shaders/';
   }
 
   static Future<List<String>> getShaderPathsForProfile(
       String configName) async {
     final shaderFiles = getShaderByName(configName);
-    final shaderFolderPath = PlayerShaders.getShaderBasePath();
+    final shaderFolderPath = await PlayerShaders.getShaderBasePath();
 
     return shaderFiles.map((file) => '$shaderFolderPath$file').toList();
   }
 
   static Future<void> setShaders(dynamic player, String shader) async {
-    if (Platform.isLinux || Platform.isAndroid || Platform.isIOS) {
-      await setShadersAlternative(player, shader);
-      return;
-    }
-
     settingsController.selectedShader = shader;
+    final separator = Platform.isWindows ? ';' : ':';
     var paths =
-        (await PlayerShaders.getShaderPathsForProfile(shader)).join(';');
+        (await PlayerShaders.getShaderPathsForProfile(shader)).join(separator);
     Logger.i('Paths: $paths');
     (player.platform as dynamic).setProperty('glsl-shaders', paths);
   }
 
-  static Future<void> setShadersAlternative(
-      dynamic player, String shader) async {
-    settingsController.selectedShader = shader;
-
-    final paths = await PlayerShaders.getShaderPathsForProfile(shader);
-
-    Logger.i('Shader paths: $paths');
-
-    final mpv = player.platform as dynamic;
-
-    mpv.setProperty('glsl-shaders', '');
-
-    for (final path in paths) {
-      mpv.setProperty('glsl-shader', path);
-    }
-  }
-
   static Future<bool> areShadersDownloaded() async {
     try {
-      final basePath = getShaderBasePath();
+      final basePath = await getShaderBasePath();
       final dir = Directory(basePath);
 
       if (!await dir.exists()) return false;
