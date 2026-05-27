@@ -71,8 +71,7 @@ class _ActivityCardState extends State<ActivityCard> {
     final tracked = service.currentMedia.value;
     final animeStatus = (tracked.watchingStatus ?? '').obs;
     final animeScore = (double.tryParse(tracked.score ?? '') ?? 0.0).obs;
-    final animeProgress = (int.tryParse(
-            isManga ? (tracked.chapterCount ?? '') : (tracked.episodeCount ?? '')) ?? 0).obs;
+    final animeProgress = (int.tryParse(tracked.episodeCount ?? '') ?? 0).obs;
 
     showModalBottomSheet(
       backgroundColor: Colors.transparent,
@@ -101,11 +100,7 @@ class _ActivityCardState extends State<ActivityCard> {
           ));
           service.currentMedia.value.score = score.toString();
           service.currentMedia.value.watchingStatus = status;
-          if (isManga) {
-            service.currentMedia.value.chapterCount = progress.toString();
-          } else {
-            service.currentMedia.value.episodeCount = progress.toString();
-          }
+          service.currentMedia.value.episodeCount = progress.toString();
           service.currentMedia.value.startedAt = startedAt;
           service.currentMedia.value.completedAt = completedAt;
           service.currentMedia.value.isPrivate = isPrivate;

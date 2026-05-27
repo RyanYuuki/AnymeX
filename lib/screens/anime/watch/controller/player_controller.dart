@@ -24,6 +24,7 @@ import 'package:anymex/screens/anime/watch/player/base_player.dart';
 import 'package:anymex/screens/anime/watch/player/media_kit_player.dart';
 
 import 'package:anymex/utils/aniskip.dart' as aniskip;
+import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/color_profiler.dart';
 import 'package:anymex/utils/sub_parser.dart';
 import 'package:anymex/utils/logger.dart';
@@ -206,6 +207,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   RxMap<String, int> customSettings = <String, int>{}.obs;
   bool _hasTrackedInitialOnline = false;
   bool _hasTrackedInitialLocal = false;
+  bool _hasAutoSelectedPreferredSub = false;
   aniskip.EpisodeSkipTimes? skipTimes;
   final isOPSkippedOnce = false.obs;
   final isEDSkippedOnce = false.obs;
@@ -362,9 +364,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           .toList();
     });
     if (PlayerKeys.useLibass.get(false)) {
-      snackBar(
-          "if subtitle is not showing up then disable libass in settings and restart",
-          duration: 3000);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        snackBar(
+            "if subtitle is not showing up then disable libass in settings and restart",
+            duration: 3000);
+      });
     }
   }
 
@@ -959,6 +963,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         embeddedSubs.value = subs;
       }
       embeddedQuality.value = e.video;
+      _tryAutoSelectPreferredSubtitle();
     }));
 
     _playerSubscriptions.add(_basePlayer.rateStream.listen((e) {
@@ -1258,6 +1263,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       currentEpisode.value = episode;
       _hasTrackedInitialLocal = false;
       _hasTrackedInitialOnline = false;
+      _hasAutoSelectedPreferredSub = false;
+      selectedSubsTrack.value = null;
 
       episodeTracks.value = data.map((e) => model.Video.fromVideo(e)).toList();
 
@@ -1408,8 +1415,44 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     return a.label!.compareTo(b.label!);
   }
 
+  bool _matchesPreferredLanguage(String? label, String preferredLangCode) {
+    if (label == null || label.isEmpty || preferredLangCode == 'none') return false;
+    final normLabel = label.toLowerCase();
+    final normCode = preferredLangCode.toLowerCase();
+    final fullName = SubtitleTranslator.languages[preferredLangCode]?.toLowerCase();
+    final extName = extensionLanguageNameByCode[normCode]?.toLowerCase();
+    return normLabel.contains(normCode) ||
+        (fullName != null && normLabel.contains(fullName)) ||
+        (extName != null && normLabel.contains(extName));
+  }
+
+  void _tryAutoSelectPreferredSubtitle() {
+    if (_hasAutoSelectedPreferredSub) return;
+
+    if (selectedSubsTrack.value != null) {
+      _hasAutoSelectedPreferredSub = true;
+      Future.delayed(const Duration(milliseconds: 500), () {
+        _applySubtitleTrack(selectedSubsTrack.value!, allowReload: false);
+      });
+      return;
+    }
+
+    final preferredLang = playerSettings.preferredSubtitleLanguage;
+    if (preferredLang == 'none' || embeddedSubs.value.isEmpty) return;
+
+    final match = embeddedSubs.value.firstWhereOrNull((track) =>
+        _matchesPreferredLanguage('${track.language ?? ''} ${track.title ?? ''}', preferredLang));
+
+    if (match != null) {
+      _hasAutoSelectedPreferredSub = true;
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (selectedSubsTrack.value == null) setSubtitleTrack(match);
+      });
+    }
+  }
+
   void _extractSubtitles() {
-    Future.microtask(() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       externalSubs.value = getAllStreamSubtitleOptions();
 
       final currentStreamSubs = getCurrentStreamSubtitleOptions();
@@ -1429,10 +1472,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         return;
       }
 
-      final currentServerEng = currentStreamSubs.firstWhereOrNull(
-        (e) => e.label?.toLowerCase().contains('eng') ?? false,
-      );
-      setExternalSub(currentServerEng ?? currentStreamSubs.first);
+      final preferredLang = playerSettings.preferredSubtitleLanguage;
+      final match = preferredLang != 'none'
+          ? currentStreamSubs.firstWhereOrNull((e) => _matchesPreferredLanguage(e.label, preferredLang))
+          : currentStreamSubs.firstWhereOrNull((e) => e.label?.toLowerCase().contains('eng') ?? false);
+      setExternalSub(match ?? currentStreamSubs.first);
     });
   }
 
@@ -1598,6 +1642,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void onVerticalDragStart(BuildContext context, DragStartDetails details) {
+    if (isLocked.value) return;
     if (settings.enableSwipeControls) {
       _controlsTimer?.cancel();
       _cancelAutoHideTimer();
@@ -1611,6 +1656,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void onVerticalDragUpdate(BuildContext context, DragUpdateDetails e) {
+    if (isLocked.value) return;
     if (!settings.enableSwipeControls) return;
 
     final size = MediaQuery.of(context).size;
@@ -1637,6 +1683,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void onVerticalDragEnd(BuildContext context, DragEndDetails details) {
+    if (isLocked.value) return;
     if (settings.enableSwipeControls) {
       _controlsTimer?.cancel();
       _hideVolumeIndicatorAfterDelay();
