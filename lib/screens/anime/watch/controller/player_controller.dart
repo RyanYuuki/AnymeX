@@ -1459,6 +1459,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> delete() async {
+    await _basePlayer.pause();
     _subSyncWorker?.dispose();
     _seekDebounce?.cancel();
     _brightnessTimer?.cancel();
