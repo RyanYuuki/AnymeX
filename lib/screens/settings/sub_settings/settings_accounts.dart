@@ -95,7 +95,6 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
                           serviceIcon: s['icon'] as String,
                           service: s['service'] as OnlineService,
                           title: s['title'] as String,
-                          brandColor: s['color'] as Color?,
                         ),
                       )),
                   const SizedBox(height: 24),
@@ -292,14 +291,12 @@ class TrackingServiceCard extends StatelessWidget {
   final String serviceIcon;
   final OnlineService service;
   final String title;
-  final Color? brandColor;
 
   const TrackingServiceCard({
     super.key,
     required this.serviceIcon,
     required this.service,
     required this.title,
-    this.brandColor,
   });
 
   @override
@@ -322,7 +319,7 @@ class TrackingServiceCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
               color: isLogged
-                  ? (brandColor ?? colors.primary).withOpacity(0.5)
+                  ? (colors.primary).withOpacity(0.5)
                   : Colors.transparent,
               width: 1,
             ),
@@ -374,16 +371,14 @@ class TrackingServiceCard extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: isLogged
                             ? colors.surfaceContainerHigh
-                            : (brandColor ?? colors.primary).withOpacity(0.1),
+                            : (colors.primary).withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: AnymexText(
                         text: isLogged ? "Manage" : "Connect",
                         variant: TextVariant.bold,
                         size: 12,
-                        color: isLogged
-                            ? colors.onSurface
-                            : (brandColor ?? colors.primary),
+                        color: isLogged ? colors.onSurface : (colors.primary),
                       ),
                     )
                   ],
