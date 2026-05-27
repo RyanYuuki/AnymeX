@@ -1278,7 +1278,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
             savedEpisodeData.durationInMilliseconds ?? 0;
 
         final bool wasCompleted = episodeTotalDuration > 0 &&
-            (savedTimestamp / episodeTotalDuration) >= 0.99;
+            (savedTimestamp / episodeTotalDuration) * 100 >= settingsController.markAsCompleted;
 
         if (!wasCompleted && savedTimestamp > 0) {
           startPosition = Duration(milliseconds: savedTimestamp);
@@ -2064,10 +2064,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         number: episode.number,
         title: episode.title,
         link: episode.link,
-        timeStampInMilliseconds:
-            (currentTimestamp > 0 && currentTimestamp < totalDuration)
-                ? currentTimestamp
-                : 0,
+        timeStampInMilliseconds: currentTimestamp.clamp(0, totalDuration),
         thumbnail: thumbnailBase64 ?? episode.thumbnail,
         currentTrack: selectedVideo.value,
         videoTracks: episodeTracks,
