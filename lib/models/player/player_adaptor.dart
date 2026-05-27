@@ -34,6 +34,7 @@ class PlayerSettings {
   bool enableScreenshot;
   bool playerMenuAnimation;
   String hardwareDecoder;
+  String preferredSubtitleLanguage;
 
   PlayerSettings({
     this.speed = 1.0,
@@ -67,6 +68,7 @@ class PlayerSettings {
     this.enableScreenshot = true,
     this.playerMenuAnimation = true,
     this.hardwareDecoder = 'hw',
+    this.preferredSubtitleLanguage = 'none',
   });
 
   factory PlayerSettings.fromDB() {
@@ -137,6 +139,8 @@ class PlayerSettings {
       playerMenuAnimation: PlayerSettingsKeys.playerMenuAnimation
           .get<bool>(defaults.playerMenuAnimation),
       hardwareDecoder: _readHardwareDecoder(),
+      preferredSubtitleLanguage: PlayerSettingsKeys.preferredSubtitleLanguage
+          .get<String>(defaults.preferredSubtitleLanguage),
     );
   }
 }
