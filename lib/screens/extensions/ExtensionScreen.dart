@@ -176,7 +176,7 @@ class _ExtensionScreenState extends State<ExtensionScreen>
   }
 
   bool get _isPluginInstalled =>
-      PluginKeys.runtimeHostInstalledVersion.get<String>('').isNotEmpty;
+      AnymeXRuntimeBridge.isPluginInstalled;
 
   bool _typeRequiresPlugin(String type) {
     if (type == 'all') return false;

@@ -25,12 +25,13 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
   bool _isCheckingUpdate = false;
 
   String get _installedVersion =>
-      PluginKeys.runtimeHostInstalledVersion.get<String>('');
+      AnymeXRuntimeBridge.installedVersion;
 
   String get _installedReleaseTitle =>
-      PluginKeys.runtimeHostInstalledReleaseTitle.get<String>('');
+      AnymeXRuntimeBridge.installedReleaseTitle;
 
-  bool get _isPluginInstalled => _installedVersion.isNotEmpty;
+  bool get _isPluginInstalled =>
+      AnymeXRuntimeBridge.isPluginInstalled;
 
   void _showInstallPopup() async {
     await _pluginManager.showInstallSheet(context);
