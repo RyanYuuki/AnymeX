@@ -1642,6 +1642,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void onVerticalDragStart(BuildContext context, DragStartDetails details) {
+    if (isLocked.value) return;
     if (settings.enableSwipeControls) {
       _controlsTimer?.cancel();
       _cancelAutoHideTimer();
@@ -1655,6 +1656,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void onVerticalDragUpdate(BuildContext context, DragUpdateDetails e) {
+    if (isLocked.value) return;
     if (!settings.enableSwipeControls) return;
 
     final size = MediaQuery.of(context).size;
@@ -1681,6 +1683,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void onVerticalDragEnd(BuildContext context, DragEndDetails details) {
+    if (isLocked.value) return;
     if (settings.enableSwipeControls) {
       _controlsTimer?.cancel();
       _hideVolumeIndicatorAfterDelay();
