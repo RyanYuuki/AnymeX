@@ -819,40 +819,20 @@ class OfflineStorageController extends GetxController {
   }) async {
     final existingLists = await getCustomListsByType(mediaType);
 
-    final existingListsMap = {
-      for (var list in existingLists) list.listName: list
-    };
-
     await isar.writeTxn(() async {
       for (var existingList in existingLists) {
-        final stillExists = updatedLists.any(
-          (updated) => updated.listName == existingList.listName,
-        );
-        if (!stillExists) {
-          await isar.customLists.delete(existingList.id);
-        }
+        await isar.customLists.delete(existingList.id);
       }
 
       for (var updatedListData in updatedLists) {
-        final existingList = existingListsMap[updatedListData.listName];
-
-        if (existingList != null) {
-          existingList.listName = updatedListData.listName;
-          existingList.mediaIds = updatedListData.listData
+        await isar.customLists.put(CustomList(
+          listName: updatedListData.listName,
+          mediaIds: updatedListData.listData
               .map((media) => media.mediaId ?? '')
               .where((id) => id.isNotEmpty)
-              .toList();
-          await isar.customLists.put(existingList);
-        } else {
-          await isar.customLists.put(CustomList(
-            listName: updatedListData.listName,
-            mediaIds: updatedListData.listData
-                .map((media) => media.mediaId ?? '')
-                .where((id) => id.isNotEmpty)
-                .toList(),
-            mediaTypeIndex: mediaType.index,
-          ));
-        }
+              .toList(),
+          mediaTypeIndex: mediaType.index,
+        ));
       }
     });
 

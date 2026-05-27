@@ -17,10 +17,10 @@ class PluginManager {
       'https://api.github.com/repos/RyanYuuki/AnymeXExtensionRuntimeBridge/releases/latest';
 
   String get installedVersion =>
-      PluginKeys.runtimeHostInstalledVersion.get<String>('');
+      AnymeXRuntimeBridge.installedVersion;
 
   String get installedReleaseTitle =>
-      PluginKeys.runtimeHostInstalledReleaseTitle.get<String>('');
+      AnymeXRuntimeBridge.installedReleaseTitle;
 
   Future<void> ensurePluginLoaded(BuildContext context) async {
     final isLoaded = await AnymeXRuntimeBridge.isLoaded();
@@ -200,8 +200,7 @@ class PluginManager {
   }
 
   void persistInstalledRelease(PluginRelease release) {
-    PluginKeys.runtimeHostInstalledVersion.set(release.tagName);
-    PluginKeys.runtimeHostInstalledReleaseTitle.set(release.title);
+    AnymeXRuntimeBridge.setInstalledRelease(release.tagName, release.title);
   }
 
   Future<void> forceSyncLocalApk() async {

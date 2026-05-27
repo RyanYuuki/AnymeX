@@ -7,6 +7,7 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/ExtensionManager.dart';
 import 'package:anymex_extension_runtime_bridge/Extensions/Extensions.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
+import 'package:anymex_extension_runtime_bridge/AnymeXBridge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -28,6 +29,8 @@ class SettingsExtensions extends StatefulWidget {
 class _SettingsExtensionsState extends State<SettingsExtensions> {
   final em = Get.find<ExtensionManager>();
   final controller = Get.find<SourceController>();
+
+  bool get _isPluginInstalled => AnymeXRuntimeBridge.isPluginInstalled;
 
   int _managerIndex = 0;
   ItemType _tab = ItemType.anime;
@@ -443,6 +446,73 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
     final bool isMock = selectedManagerData['isMock'] as bool;
     
     if (isMock) {
+      if (_isPluginInstalled) {
+        if (AnymeXRuntimeBridge.controller.error.value.isNotEmpty) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.error_outline_rounded,
+                    color: context.colors.error,
+                    size: 48,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Failed to Start Extension Runtime',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: context.colors.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    AnymeXRuntimeBridge.controller.error.value,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: context.colors.error,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  FilledButton.icon(
+                    onPressed: () => AnymeXRuntimeBridge.checkAndInitialize(),
+                    icon: const Icon(Icons.refresh_rounded),
+                    label: const Text('Retry'),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: context.colors.primary,
+                      foregroundColor: context.colors.onPrimary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        return Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircularProgressIndicator(),
+              const SizedBox(height: 16),
+              Text(
+                'Starting extension runtime...',
+                style: TextStyle(
+                  fontSize: 15,
+                  color: context.colors.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        );
+      }
       return _buildPluginRequiredPlaceholder(selectedManagerData['name'] as String);
     }
     
