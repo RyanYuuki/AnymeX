@@ -162,11 +162,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
     _currentMedia = service.currentMedia;
     _animeStatus = (tracked.watchingStatus ?? '').obs;
     _animeScore = (double.tryParse(tracked.score ?? '') ?? 0.0).obs;
-    _animeProgress = (int.tryParse(isManga
-                ? (tracked.chapterCount ?? '')
-                : (tracked.episodeCount ?? '')) ??
-            0)
-        .obs;
+    _animeProgress = (int.tryParse(tracked.episodeCount ?? '') ?? 0).obs;
   }
 
   Future<void> _loadVotes() async {
@@ -364,11 +360,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
           ));
           _currentMedia.value?.score = score.toString();
           _currentMedia.value?.watchingStatus = status;
-          if (isManga) {
-            _currentMedia.value?.chapterCount = progress.toString();
-          } else {
-            _currentMedia.value?.episodeCount = progress.toString();
-          }
+          _currentMedia.value?.episodeCount = progress.toString();
           _currentMedia.value?.startedAt = startedAt;
           _currentMedia.value?.completedAt = completedAt;
           _currentMedia.value?.isPrivate = isPrivate;
