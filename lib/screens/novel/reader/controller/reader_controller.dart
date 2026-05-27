@@ -12,6 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:get/get.dart';
+import 'package:html/dom.dart' as dom;
+import 'package:html/parser.dart';
 import 'package:vibration/vibration.dart';
 
 enum LoadingState { loading, loaded, error }
@@ -814,6 +816,105 @@ class NovelReaderController extends GetxController {
     return chapters.isNotEmpty;
   }
 
+  String _decodeHtmlEntities(String input) {
+    String decoded = input;
+    decoded = decoded
+        .replaceAll(RegExp(r'&#(60|060);', caseSensitive: false), '<')
+        .replaceAll(RegExp(r'&#(62|062);', caseSensitive: false), '>')
+        .replaceAll(RegExp(r'&#x(3c|03c);', caseSensitive: false), '<')
+        .replaceAll(RegExp(r'&#x(3e|03e);', caseSensitive: false), '>');
+
+    for (int i = 0; i < 3; i++) {
+      final next = decoded
+          .replaceAll(RegExp(r'&lt;', caseSensitive: false), '<')
+          .replaceAll(RegExp(r'&gt;', caseSensitive: false), '>')
+          .replaceAll(RegExp(r'&amp;', caseSensitive: false), '&')
+          .replaceAll(RegExp(r'&quot;', caseSensitive: false), '"')
+          .replaceAll(RegExp(r'&apos;', caseSensitive: false), "'")
+          .replaceAll(RegExp(r'&nbsp;', caseSensitive: false), ' ');
+      if (next == decoded) break;
+      decoded = next;
+    }
+    return decoded;
+  }
+
+  String _cleanHtmlTags(String htmlInput) {
+    final decoded = _decodeHtmlEntities(htmlInput);
+
+    String cleaned = decoded.replaceAll(
+        RegExp(r'<script\b[^>]*>([\s\S]*?)<\/script>', caseSensitive: false),
+        '');
+    cleaned = cleaned.replaceAll(
+        RegExp(r'<style\b[^>]*>([\s\S]*?)<\/style>', caseSensitive: false),
+        '');
+
+    final doc = parse(cleaned);
+    final body = doc.body;
+    if (body == null) return cleaned;
+
+    final allowedTags = {
+      'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+      'p',
+      'span',
+      'img',
+      'br',
+    };
+
+    final removeEntirelyTags = {
+      'script',
+      'style',
+      'button',
+      'iframe',
+      'form',
+      'input',
+      'textarea',
+      'select',
+      'option',
+    };
+
+    void cleanNode(dom.Node node) {
+      final children = List<dom.Node>.from(node.nodes);
+      for (final child in children) {
+        cleanNode(child);
+      }
+
+      if (node is dom.Element) {
+        final tagName = node.localName?.toLowerCase();
+        if (removeEntirelyTags.contains(tagName)) {
+          node.remove();
+        } else if (tagName == 'div' || tagName == 'li' || tagName == 'blockquote') {
+          final pElement = dom.Element.tag('p');
+          pElement.attributes.addAll(node.attributes);
+          pElement.nodes.addAll(node.nodes);
+          
+          final parent = node.parentNode;
+          if (parent != null) {
+            final index = parent.nodes.indexOf(node);
+            if (index != -1) {
+              parent.nodes[index] = pElement;
+            }
+          }
+        } else if (!allowedTags.contains(tagName)) {
+          final parent = node.parentNode;
+          if (parent != null) {
+            final index = parent.nodes.indexOf(node);
+            if (index != -1) {
+              parent.nodes.removeAt(index);
+              parent.nodes.insertAll(index, node.nodes);
+            }
+          }
+        }
+      }
+    }
+
+    final topNodes = List<dom.Node>.from(body.nodes);
+    for (final node in topNodes) {
+      cleanNode(node);
+    }
+
+    return body.innerHtml;
+  }
+
   String _buildHtml(String input) {
     final processed = input
         .replaceAll("\\n", "")
@@ -821,7 +922,8 @@ class NovelReaderController extends GetxController {
         .replaceAll("\\\"", "\"")
         .replaceAll('*"', '')
         .replaceAll('"*', '');
-    return '<div id="readerViewContent"><div style="max-width: 800px; margin: 0 auto;">$processed</div></div>';
+    final cleaned = _cleanHtmlTags(processed);
+    return '<div id="readerViewContent"><div style="max-width: 800px; margin: 0 auto;">$cleaned</div></div>';
   }
 
   void toggleControls() {

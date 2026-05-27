@@ -139,13 +139,10 @@ class ChapterListItem extends StatelessWidget {
     final progressText = savedChaps?.pageNumber != null
         ? ' (${savedChaps?.pageNumber}/${savedChaps?.totalPages})'
         : '';
-    final chapterMetaLabel = (chapter.scanlator?.isNotEmpty ?? false)
-        ? chapter.scanlator!
-        : (chapter.sourceName?.isNotEmpty ?? false)
-            ? chapter.sourceName!
-            : controller.source.name ?? '';
+    final chapterMetaLabel =
+        (chapter.scanlator?.isNotEmpty ?? false) ? chapter.scanlator! : '';
     final chapterMetaText = [
-      if (chapter.releaseDate?.isNotEmpty ?? false) chapter.releaseDate!,
+      if (chapter.releaseDate?.isNotEmpty ?? false) calcTime(chapter.releaseDate!),
       if (chapterMetaLabel.isNotEmpty) chapterMetaLabel,
     ].join(' • ');
 

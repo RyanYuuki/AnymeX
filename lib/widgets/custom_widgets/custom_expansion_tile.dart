@@ -9,12 +9,14 @@ class AnymexExpansionTile extends StatelessWidget {
   final String title;
   final Widget content;
   final bool initialExpanded;
+  final Widget? leading;
 
   const AnymexExpansionTile({
     super.key,
     required this.title,
     required this.content,
     this.initialExpanded = false,
+    this.leading,
   });
 
   @override
@@ -30,6 +32,7 @@ class AnymexExpansionTile extends StatelessWidget {
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
           1,
         ),
+        leading: leading,
         title: AnymexText(
           text: title,
           size: 16,

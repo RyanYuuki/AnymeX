@@ -6,6 +6,7 @@ import 'dart:math';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/database/isar_models/video.dart' as hive;
@@ -173,18 +174,28 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     isLogged.value = isExtensions ? false : auth.isLoggedIn.value;
 
     int? progress;
+    bool isCompleted = false;
     if (isLogged.value) {
       final trackedMedia = auth.onlineService.animeList
           .firstWhereOrNull((e) => e.id == widget.anilistData!.id);
       progress = double.tryParse(trackedMedia?.episodeCount ?? '')?.toInt();
+      isCompleted = true;
     } else {
       final savedAnime = offlineStorage.getAnimeById(widget.anilistData!.id);
-      progress = savedAnime?.currentEpisode?.number.toInt();
+      final currentEp = savedAnime?.currentEpisode;
+      progress = currentEp?.number.toInt();
+      if (currentEp != null) {
+        final ts = currentEp.timeStampInMilliseconds ?? 0;
+        final dur = currentEp.durationInMilliseconds ?? 0;
+        if (dur > 0) {
+          isCompleted = (ts / dur) * 100 >= settingsController.markAsCompleted;
+        }
+      }
     }
 
-    final nextProgress = !isLogged.value && progress != null && progress > 1
-        ? progress - 1
-        : progress ?? 0;
+    final nextProgress = isCompleted
+        ? (progress ?? 0)
+        : (progress != null && progress > 0 ? progress - 1 : 0);
     if (userProgress.value != nextProgress) {
       userProgress.value = nextProgress;
     }

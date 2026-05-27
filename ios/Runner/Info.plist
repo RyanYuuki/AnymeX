@@ -92,6 +92,46 @@
           <string>sugoireads</string>
         </array>
       </dict>
+      <dict>
+        <key>CFBundleURLName</key>
+        <string>mangayomi</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>mangayomi</string>
+        </array>
+      </dict>
+      <dict>
+        <key>CFBundleURLName</key>
+        <string>cloudstreamrepo</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>cloudstreamrepo</string>
+        </array>
+      </dict>
+      <dict>
+        <key>CFBundleURLName</key>
+        <string>sora</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>sora</string>
+        </array>
+      </dict>
+      <dict>
+        <key>CFBundleURLName</key>
+        <string>tachiyomi</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>tachiyomi</string>
+        </array>
+      </dict>
+      <dict>
+        <key>CFBundleURLName</key>
+        <string>aniyomi</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>aniyomi</string>
+        </array>
+      </dict>
     </array>
   </dict>
 </plist>
