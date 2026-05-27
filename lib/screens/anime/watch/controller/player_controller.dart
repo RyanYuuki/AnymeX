@@ -1264,6 +1264,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       _hasTrackedInitialLocal = false;
       _hasTrackedInitialOnline = false;
       _hasAutoSelectedPreferredSub = false;
+      selectedSubsTrack.value = null;
 
       episodeTracks.value = data.map((e) => model.Video.fromVideo(e)).toList();
 
