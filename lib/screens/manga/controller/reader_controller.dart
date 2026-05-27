@@ -472,21 +472,28 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       if (chapter.pageNumber != null &&
           chapter.totalPages != null &&
           chapter.number != null &&
-          chapter.pageNumber == chapter.totalPages) {
-        final int currentOnlineProgress = int.tryParse(
-                serviceHandler.onlineService.currentMedia.value.episodeCount ??
-                    '0') ??
-            0;
+          chapter.totalPages! > 0) {
+        final pageNum = chapter.pageNumber!;
+        final totalPgs = chapter.totalPages!;
+        final isChapterComplete = pageNum >= totalPgs ||
+            pageNum >= totalPgs - 1 ||
+            (pageNum / totalPgs) >= 0.95;
+        if (isChapterComplete) {
+          final int currentOnlineProgress = int.tryParse(
+                  serviceHandler.onlineService.currentMedia.value.episodeCount ??
+                      '0') ??
+              0;
 
-        final int newProgress = chapter.number!.toInt();
+          final int newProgress = chapter.number!.toInt();
 
-        if (newProgress > currentOnlineProgress) {
-          serviceHandler.onlineService.updateListEntry(UpdateListEntryParams(
-              listId: media.id,
-              status: "CURRENT",
-              progress: newProgress,
-              syncIds: [media.idMal],
-              isAnime: false));
+          if (newProgress > currentOnlineProgress) {
+            serviceHandler.onlineService.updateListEntry(UpdateListEntryParams(
+                listId: media.id,
+                status: "CURRENT",
+                progress: newProgress,
+                syncIds: [media.idMal],
+                isAnime: false));
+          }
         }
       }
     } catch (e) {
@@ -522,10 +529,15 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     if (chapterNumber == null ||
         pageNumber == null ||
         totalPages == null ||
-        totalPages <= 0 ||
-        pageNumber < totalPages) {
+        totalPages <= 0) {
       return false;
     }
+
+    final isChapterComplete = pageNumber >= totalPages ||
+        pageNumber >= totalPages - 1 ||
+        (pageNumber / totalPages) >= 0.95;
+
+    if (!isChapterComplete) return false;
 
     final totalChapters = double.tryParse(media.totalChapters ?? '');
     if (totalChapters != null && totalChapters > 0) {
@@ -1185,11 +1197,13 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
                   '0') ??
           0;
 
-      if (chapterNumber > currentOnlineProgress) {
+      final int newProgress = chapterNumber - 1;
+
+      if (newProgress > currentOnlineProgress) {
         serviceHandler.onlineService.updateListEntry(UpdateListEntryParams(
             listId: media.id,
             status: "CURRENT",
-            progress: chapterNumber,
+            progress: newProgress,
             syncIds: [media.idMal],
             isAnime: false));
       }

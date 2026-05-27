@@ -108,12 +108,52 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
         auth.serviceType.value != ServicesType.extensions) {
       final tracked =
           auth.onlineService.mangaList.firstWhereOrNull((e) => e.id == mediaId);
-      return int.tryParse(tracked?.chapterCount.toString() ?? '') ?? 1;
+      return int.tryParse(tracked?.chapterCount.toString() ?? '') ?? 0;
     }
 
     final offlineStorage = Get.find<OfflineStorageController>();
-    final saved = offlineStorage.getMangaById(mediaId);
-    return saved?.currentChapter?.number?.toInt() ?? 1;
+    final saved = offlineStorage.getMangaById(mediaId) ??
+        offlineStorage.getNovelById(mediaId);
+    final currentChapter = saved?.currentChapter;
+    final progress = currentChapter?.number?.toInt();
+
+    bool isCompleted = false;
+    if (currentChapter != null) {
+      if (currentChapter.currentOffset != null &&
+          currentChapter.maxOffset != null &&
+          currentChapter.maxOffset! > 0) {
+        isCompleted =
+            (currentChapter.currentOffset! / currentChapter.maxOffset!) >= 0.95;
+      } else if (currentChapter.pageNumber != null &&
+          currentChapter.totalPages != null &&
+          currentChapter.totalPages! > 0) {
+        final pageNum = currentChapter.pageNumber!;
+        final totalPgs = currentChapter.totalPages!;
+        isCompleted = pageNum >= totalPgs ||
+            pageNum >= totalPgs - 1 ||
+            (pageNum / totalPgs) >= 0.95;
+      }
+    }
+
+    return progress != null
+        ? (isCompleted ? progress : (progress > 0 ? progress - 1 : 0))
+        : 0;
+  }
+
+  Chapter? _findContinueChapter(List<Chapter> chapters, int userProgress,
+      Chapter? readChapter, ServiceHandler auth) {
+    if (auth.isLoggedIn.value &&
+        auth.serviceType.value != ServicesType.extensions) {
+      final candidate = chapters
+          .firstWhereOrNull((e) => e.number?.toInt() == userProgress + 1);
+      return candidate ??
+          chapters.firstWhereOrNull((e) => e.number?.toInt() == userProgress);
+    } else {
+      return chapters
+              .firstWhereOrNull((e) => e.number?.toInt() == userProgress + 1) ??
+          readChapter ??
+          (chapters.isNotEmpty ? chapters.first : null);
+    }
   }
 
   void sortToggle() {
@@ -144,9 +184,9 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
                 boxShadow: [
                   BoxShadow(
                     color: Theme.of(context)
-                        .colorScheme
-                        .shadow
-                        .opaque(0.08, iReallyMeanIt: true),
+                      .colorScheme
+                      .shadow
+                      .opaque(0.08, iReallyMeanIt: true),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -216,6 +256,26 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
   }
 
   Widget _buildChapterGrid(BuildContext context) {
+    final auth = Get.find<ServiceHandler>();
+    final userProgress =
+        _getUserProgress(auth, widget.controller.media.value.id);
+    final offlineStorage = Get.find<OfflineStorageController>();
+    final savedManga =
+        offlineStorage.getMangaById(widget.controller.media.value.id) ??
+            offlineStorage.getNovelById(widget.controller.media.value.id);
+    final readChaptersList = savedManga?.readChapters ?? <Chapter>[];
+
+    final readChapter = readChaptersList.firstWhereOrNull(
+      (c) => c.number == userProgress.toDouble(),
+    );
+
+    final continueChapter = _findContinueChapter(
+      filteredChapters,
+      userProgress,
+      readChapter,
+      auth,
+    );
+
     return SuperSliverList(
       delegate: SliverChildBuilderDelegate(
         (context, index) {
@@ -231,6 +291,8 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
                 );
               },
               chapter: chapter,
+              readChapter: readChapter,
+              continueChapter: continueChapter,
             ),
           );
         },
@@ -255,7 +317,9 @@ extension ChapterMapper on DEpisode {
       title: name,
       link: url,
       number: chapterNumber,
-      releaseDate: dateUpload,
+      releaseDate: dateUpload != null && dateUpload!.isNotEmpty
+          ? calcTime(dateUpload!)
+          : "",
       scanlator: scanlator,
     );
   }

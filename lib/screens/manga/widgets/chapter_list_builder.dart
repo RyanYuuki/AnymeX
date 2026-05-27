@@ -116,7 +116,9 @@ class ChapterService {
         final pageNum = currentChapter.pageNumber;
         final totalPgs = currentChapter.totalPages;
         if (pageNum != null && totalPgs != null && totalPgs > 0) {
-          isCompleted = pageNum >= totalPgs;
+          isCompleted = pageNum >= totalPgs ||
+              pageNum >= totalPgs - 1 ||
+              (pageNum / totalPgs) >= 0.95;
         }
       }
 
@@ -608,10 +610,18 @@ class ChapterListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final savedChaps = savedChapter;
-    final currentChapterLink = readChapter?.link ?? continueChapter?.link ?? '';
+    final currentChapterLink = continueChapter?.link ?? '';
     final isSelected = chapter.link == currentChapterLink;
-    final alreadyRead = chapter.number! < (readChapter?.number ?? 1) ||
-        ((savedChaps?.pageNumber ?? 1) == (savedChaps?.totalPages ?? 100));
+    final _savedPage = savedChaps?.pageNumber;
+    final _savedTotal = savedChaps?.totalPages;
+    final _isPageComplete = _savedPage != null &&
+        _savedTotal != null &&
+        _savedTotal > 0 &&
+        (_savedPage >= _savedTotal ||
+            _savedPage >= _savedTotal - 1 ||
+            (_savedPage / _savedTotal) >= 0.95);
+    final alreadyRead =
+        chapter.number! < (readChapter?.number ?? 0.0) || _isPageComplete;
     return StaggeredAnimatedItemWrapper(
       child: AnymexOnTap(
           onTap: onTap,

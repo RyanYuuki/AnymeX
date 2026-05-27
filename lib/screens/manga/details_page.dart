@@ -431,19 +431,6 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                                   onTap: _showShareOptions,
                                 ),
                                 const SizedBox(width: 7),
-                                if (CommunityService.votingEnabled)
-                                  RecommendIconButton(
-                                    media: anilistData!,
-                                    mediaItemType: ItemType.manga,
-                                    buttonBuilder: (onTap, icon) =>
-                                        _buildActionIconButton(
-                                      context: context,
-                                      icon: Icons.recommend_rounded,
-                                      onTap: onTap,
-                                    ),
-                                  ),
-                                if (CommunityService.votingEnabled)
-                                  const SizedBox(width: 7),
                                 _buildActionIconButton(
                                   context: context,
                                   icon: HugeIcons.strokeRoundedLibrary,

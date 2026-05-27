@@ -18,26 +18,42 @@ class ChapterListItem extends StatelessWidget {
   final NovelDetailsController controller;
   final VoidCallback onTap;
   final Chapter chapter;
+  final Chapter? readChapter;
+  final Chapter? continueChapter;
 
   const ChapterListItem({
     super.key,
     required this.onTap,
     required this.controller,
     required this.chapter,
+    this.readChapter,
+    this.continueChapter,
   });
 
   @override
   Widget build(BuildContext context) {
     final anilistData = controller.media.value;
-    final readChapter = controller.offlineMedia.value?.currentChapter;
     final offlineStorage = Get.find<OfflineStorageController>();
 
     final savedChaps =
         offlineStorage.getReadChapter(anilistData.id, chapter.number!);
-    final currentChapterLink = readChapter?.link ?? '';
+    final currentChapterLink = continueChapter?.link ?? '';
     final isSelected = chapter.link == currentChapterLink;
-    final alreadyRead = chapter.number! < (readChapter?.number ?? 1) ||
-        ((savedChaps?.pageNumber ?? 1) == (savedChaps?.totalPages ?? 100));
+    final _novSavedPage = savedChaps?.pageNumber;
+    final _novSavedTotal = savedChaps?.totalPages;
+    final _isPageComplete = _novSavedPage != null &&
+        _novSavedTotal != null &&
+        _novSavedTotal > 0 &&
+        (_novSavedPage >= _novSavedTotal ||
+            _novSavedPage >= _novSavedTotal - 1 ||
+            (_novSavedPage / _novSavedTotal) >= 0.95);
+    final alreadyRead = chapter.number! < (readChapter?.number ?? 0.0) ||
+        _isPageComplete ||
+        (savedChaps != null &&
+            savedChaps.currentOffset != null &&
+            savedChaps.maxOffset != null &&
+            savedChaps.maxOffset! > 0 &&
+            (savedChaps.currentOffset! / savedChaps.maxOffset!) >= 0.95);
 
     return StaggeredAnimatedItemWrapper(
       child: AnymexOnTap(
