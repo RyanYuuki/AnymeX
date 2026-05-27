@@ -21,6 +21,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
+import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -219,69 +220,40 @@ class AnimeStats extends StatelessWidget {
     required List<_ChipData> chips,
   }) {
     final colorScheme = context.colors;
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.opaque(0.35),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: colorScheme.outline.opaque(0.15, iReallyMeanIt: true),
-          width: 1.5,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(6),
+    final color = colorScheme.primary;
+    return _buildCollapsibleInfoCard(
+      context,
+      icon: icon,
+      title: title,
+      isInitiallyExpanded: false,
+      content: Align(
+        alignment: Alignment.topLeft,
+        child: Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: chips.map((chip) {
+            return GestureDetector(
+              onTap: chip.onTap,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: colorScheme.primary.opaque(0.15, iReallyMeanIt: true),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(icon, size: 18, color: colorScheme.primary),
-              ),
-              const SizedBox(width: 10),
-              AnymexText(
-                text: title,
-                variant: TextVariant.bold,
-                size: 16,
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: chips.asMap().entries.map((entry) {
-              final i = entry.key;
-              final chip = entry.value;
-              final color = colorScheme.primary;
-              return GestureDetector(
-                onTap: chip.onTap,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: color.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: color.withOpacity(0.35),
-                      width: 1,
-                    ),
-                  ),
-                  child: AnymexText(
-                    text: chip.label,
-                    size: 12,
-                    variant: TextVariant.semiBold,
-                    color: color,
+                  color: color.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: color.withOpacity(0.35),
+                    width: 1,
                   ),
                 ),
-              );
-            }).toList(),
-          ),
-        ],
+                child: AnymexText(
+                  text: chip.label,
+                  size: 12,
+                  variant: TextVariant.semiBold,
+                  color: color,
+                ),
+              ),
+            );
+          }).toList(),
+        ),
       ),
     );
   }
