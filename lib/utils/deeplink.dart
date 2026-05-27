@@ -11,9 +11,17 @@ import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:get/get.dart';
 
 class Deeplink {
-  static void handleDeepLink(Uri uri) {
+  static Future<void> handleDeepLink(Uri uri) async {
     print("HANDLING DEEEPLIINK => ${uri.toString()}");
-    final illegalSchemes = Get.find<ExtensionManager>()
+    
+    final extensionManager = Get.find<ExtensionManager>();
+    int attempts = 0;
+    while (extensionManager.managers.isEmpty && attempts < 25) {
+      await Future.delayed(const Duration(milliseconds: 200));
+      attempts++;
+    }
+
+    final illegalSchemes = extensionManager
         .managers
         .expand((e) => e.schemes.toList())
         .toList();
@@ -23,7 +31,7 @@ class Deeplink {
       return;
     }
 
-    if (!illegalSchemes.contains(uri.scheme)) {
+    if (!illegalSchemes.contains(uri.scheme.toLowerCase())) {
       final mediaTarget = _parseMediaTarget(uri);
       if (mediaTarget == null) return;
       _openMediaTarget(mediaTarget);
@@ -32,7 +40,7 @@ class Deeplink {
 
     bool isRepoAdded = false;
     snackBar("Adding repo... please wait.");
-    final manager = Get.find<ExtensionManager>().managers;
+    final manager = extensionManager.managers;
     for (final handler in manager) {
       print('Matching ${uri.scheme} with ${handler.schemes.toString()}');
       if (handler.schemes.contains(uri.scheme.toLowerCase())) {
