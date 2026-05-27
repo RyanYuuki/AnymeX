@@ -252,6 +252,11 @@ class MediaKitPlayer extends base.BasePlayer {
       return;
     }
 
+    if (track.id == 'auto') {
+      await _player.setAudioTrack(AudioTrack.auto());
+      return;
+    }
+
     if (track.url != null) {
       await _player
           .setAudioTrack(AudioTrack.uri(track.url!, title: track.title));
@@ -259,7 +264,7 @@ class MediaKitPlayer extends base.BasePlayer {
     }
 
     final mediaKitTrack = _player.state.tracks.audio.firstWhere(
-      (t) => t.id == track.id,
+      (t) => t.id.trim() == track.id.trim(),
       orElse: () => _player.state.tracks.audio.first,
     );
     await _player.setAudioTrack(mediaKitTrack);
@@ -269,6 +274,11 @@ class MediaKitPlayer extends base.BasePlayer {
   Future<void> setSubtitleTrack(base.SubtitleTrack track) async {
     if (track.id == 'no') {
       await _player.setSubtitleTrack(SubtitleTrack.no());
+      return;
+    }
+
+    if (track.id == 'auto') {
+      await _player.setSubtitleTrack(SubtitleTrack.auto());
       return;
     }
 

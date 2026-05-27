@@ -125,10 +125,7 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
               .where((e) => e.height != null && e.width != null)
               .length >
           1;
-      final hasAudio = widget.controller.embeddedAudioTracks.value
-              .where((e) => e.title != null && e.language != null)
-              .length >
-          1;
+      final hasAudio = widget.controller.embeddedAudioTracks.value.length > 1;
 
       final tabs = <_TracksTab>[];
       tabs.add(_TracksTab.subtitles);
@@ -243,9 +240,7 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
 
   Widget _buildAudioTracks(ColorScheme cs, ThemeData theme) {
     return Obx(() {
-      final tracks = widget.controller.embeddedAudioTracks.value
-          .where((e) => e.title != null && e.language != null)
-          .toList();
+      final tracks = widget.controller.embeddedAudioTracks.value.toList();
       final selected = widget.controller.selectedAudioTrack.value;
 
       if (tracks.isEmpty) {
@@ -276,11 +271,20 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
 
           final track = tracks[index - 1];
           final isSelected = selected != null && tracks.indexOf(selected) == index - 1;
+          
+          String displayTitle = 'Audio Track $index';
+          if (track.language != null && track.title != null) {
+            displayTitle = '${completeSubtitleLanguageName(track.language!)} - ${track.title}';
+          } else if (track.language != null) {
+            displayTitle = completeSubtitleLanguageName(track.language!);
+          } else if (track.title != null) {
+            displayTitle = track.title!;
+          }
+
           return _buildListItem(
             cs: cs,
             theme: theme,
-            title: completeSubtitleLanguageName(track.language ?? '') +
-                (track.title != null ? ' - ${track.title}' : ''),
+            title: displayTitle,
             subtitle: 'Audio Track',
             icon: Symbols.music_note_rounded,
             isSelected: isSelected,

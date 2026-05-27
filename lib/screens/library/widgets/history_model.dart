@@ -1,5 +1,9 @@
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
+import 'package:anymex/screens/anime/widgets/track_dialog.dart' as anime_track;
+import 'package:anymex/screens/manga/widgets/track_dialog.dart' as manga_track;
 import 'package:anymex/database/isar_models/video.dart' as local_video;
 import 'package:anymex/screens/anime/watch/watch_view.dart';
 import 'package:anymex/screens/manga/reading_page.dart';
@@ -177,11 +181,30 @@ Future<void> _handleMangaTap(OfflineMedia media) async {
     }
   }
 
+  final mediaModel = convertOfflineToMedia(media);
+  final dbId = '${mediaModel.id}_${mediaModel.serviceType.name}_${mediaModel.type}';
+  final savedTracking = DynamicKeys.trackingPermission.get<bool?>(dbId);
+
+  bool? shouldTrack;
+  if (savedTracking != null) {
+    shouldTrack = savedTracking;
+  } else if (General.shouldAskForTrack.get(true) == false) {
+    shouldTrack = true;
+  } else if (Get.context != null) {
+    shouldTrack = mediaModel.serviceType == ServicesType.extensions
+        ? false
+        : await manga_track.showTrackingDialog(Get.context!, dbId: dbId);
+  } else {
+    shouldTrack = mediaModel.serviceType != ServicesType.extensions;
+  }
+
+  if (shouldTrack == null) return;
+
   navigate(() => ReadingPage(
-        anilistData: convertOfflineToMedia(media),
+        anilistData: mediaModel,
         chapterList: chapters,
         currentChapter: chapter,
-        shouldTrack: true,
+        shouldTrack: shouldTrack!,
       ));
 }
 
@@ -259,12 +282,32 @@ Future<void> _handleAnimeTap(OfflineMedia media) async {
     logSession.log("Playback is ready.");
     logSession.close();
 
+    final mediaModel = convertOfflineToMedia(media);
+    final dbId = '${mediaModel.id}_${mediaModel.serviceType.name}_${mediaModel.type}';
+    final savedTracking = DynamicKeys.trackingPermission.get<bool?>(dbId);
+
+    bool? shouldTrack;
+    if (savedTracking != null) {
+      shouldTrack = savedTracking;
+    } else if (General.shouldAskForTrack.get(true) == false) {
+      shouldTrack = true;
+    } else if (Get.context != null) {
+      shouldTrack = mediaModel.serviceType == ServicesType.extensions
+          ? false
+          : await anime_track.showTrackingDialog(Get.context!, dbId: dbId);
+    } else {
+      shouldTrack = mediaModel.serviceType != ServicesType.extensions;
+    }
+
+    if (shouldTrack == null) return;
+
     navigate(() => WatchScreen(
           episodeSrc: playbackData.currentTrack,
           episodeList: episodeList,
-          anilistData: convertOfflineToMedia(media),
+          anilistData: mediaModel,
           currentEpisode: currentEpisode,
           episodeTracks: playbackData.tracks,
+          shouldTrack: shouldTrack!,
         ));
   } catch (e) {
     if (logSession.isCancelled) return;
