@@ -196,11 +196,38 @@ Episode DEpisodeToEpisode(DEpisode chapter) {
 }
 
 String calcTime(String timestamp, {String format = "dd-MM-yyyy"}) {
-  final dateTime = DateTime.fromMillisecondsSinceEpoch(int.parse(timestamp));
+  if (timestamp.trim().isEmpty) return "";
+  
+  DateTime? dateTime;
+  final cleanTimestamp = timestamp.trim();
+  final parsedInt = int.tryParse(cleanTimestamp);
+  
+  if (parsedInt != null) {
+    if (cleanTimestamp.length == 10) {
+      dateTime = DateTime.fromMillisecondsSinceEpoch(parsedInt * 1000);
+    } else if (cleanTimestamp.length == 13) {
+      dateTime = DateTime.fromMillisecondsSinceEpoch(parsedInt);
+    } else if (cleanTimestamp.length == 16) {
+      dateTime = DateTime.fromMillisecondsSinceEpoch(parsedInt ~/ 1000);
+    } else {
+      if (parsedInt > 9999999999) {
+        dateTime = DateTime.fromMillisecondsSinceEpoch(parsedInt);
+      } else {
+        dateTime = DateTime.fromMillisecondsSinceEpoch(parsedInt * 1000);
+      }
+    }
+  } else {
+    dateTime = DateTime.tryParse(cleanTimestamp);
+  }
+  
+  if (dateTime == null) {
+    return timestamp;
+  }
+  
   final now = DateTime.now();
   final difference = now.difference(dateTime);
 
-  if (difference.inDays <= 14) {
+  if (difference.inDays <= 14 && difference.inDays >= 0) {
     if (difference.inDays == 0) {
       if (difference.inHours < 1) {
         return "${difference.inMinutes} minutes ago";
