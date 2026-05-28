@@ -49,68 +49,70 @@ class AnymexDialog extends StatelessWidget {
         width: getResponsiveValue(context,
             mobileValue: double.infinity, desktopValue: 500.0),
         padding: padding,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            message != null
-                ? AnymexText(
-                    text: message!, textAlign: TextAlign.center, size: 14)
-                : contentWidget ?? const SizedBox.shrink(),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                if (showCancelButton) ...[
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              message != null
+                  ? AnymexText(
+                      text: message!, textAlign: TextAlign.center, size: 14)
+                  : contentWidget ?? const SizedBox.shrink(),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  if (showCancelButton) ...[
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30)),
+                          backgroundColor:
+                              context.colors.surfaceContainer,
+                        ),
+                        child: AnymexText(
+                            text: 'Cancel',
+                            size: 14,
+                            color: context.colors.primary,
+                            variant: TextVariant.bold),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                  ],
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        Get.back();
+                        onConfirm.call();
                       },
                       style: ElevatedButton.styleFrom(
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30)),
                         backgroundColor:
-                            context.colors.surfaceContainer,
+                            context.colors.primaryFixed,
                       ),
                       child: AnymexText(
-                          text: 'Cancel',
+                          text: confirmText,
                           size: 14,
-                          color: context.colors.primary,
+                          color: Colors.black,
                           variant: TextVariant.bold),
                     ),
                   ),
-                  const SizedBox(width: 10),
                 ],
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Get.back();
-                      onConfirm.call();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30)),
-                      backgroundColor:
-                          context.colors.primaryFixed,
-                    ),
-                    child: AnymexText(
-                        text: confirmText,
-                        size: 14,
-                        color: Colors.black,
-                        variant: TextVariant.bold),
-                  ),
-                ),
-              ],
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );
