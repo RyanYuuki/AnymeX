@@ -2020,11 +2020,12 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void changeEpisode(Episode episode) {
-    _basePlayer.pause();
     _trackLocally();
     if (!isOffline.value) {
       _trackOnline(_shouldMarkAsCompleted);
     }
+    _basePlayer.pause();
+    _basePlayer.open('');
     isEpisodePaneOpened.value = false;
     resetListeners();
     fetchEpisode(episode);
