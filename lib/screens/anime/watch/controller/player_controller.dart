@@ -1712,12 +1712,14 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  Future<void> setBrightness(double value, {bool isDragging = false}) async {
+  void setBrightness(double value, {bool isDragging = false}) {
     brightness.value = value;
     brightnessIndicator.value = true;
 
     try {
-      await ScreenBrightness.instance.setApplicationScreenBrightness(value);
+      ScreenBrightness.instance
+          .setApplicationScreenBrightness(value)
+          .catchError((_) => 0.0);
     } catch (_) {}
 
     _brightnessTimer?.cancel();
