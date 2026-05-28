@@ -1298,7 +1298,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       snackBar('Failed to load episode. Check your connection.');
     } finally {
       PlayerBottomSheets.hideLoader();
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
       updateNavigatorState();
     }
   }
@@ -1712,15 +1712,17 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  void setBrightness(double value, {bool isDragging = false}) {
+  Future<void> setBrightness(double value, {bool isDragging = false}) async {
     brightness.value = value;
     brightnessIndicator.value = true;
 
-    try {
+    unawaited(
       ScreenBrightness.instance
           .setApplicationScreenBrightness(value)
-          .catchError((_) => 0.0);
-    } catch (_) {}
+          .catchError((e) {
+        Logger.e("Error setting brightness: $e");
+      }),
+    );
 
     _brightnessTimer?.cancel();
 
