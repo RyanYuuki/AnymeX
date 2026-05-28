@@ -1258,7 +1258,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       }
 
       resetListeners();
-      _basePlayer.open('');
+      await _basePlayer.stop();
       setExternalSub(null);
       currentEpisode.value = episode;
       _hasTrackedInitialLocal = false;
@@ -2029,7 +2029,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       _trackOnline(_shouldMarkAsCompleted);
     }
     _basePlayer.pause();
-    _basePlayer.open('');
+    unawaited(_basePlayer.stop());
     isEpisodePaneOpened.value = false;
     resetListeners();
     fetchEpisode(episode);
