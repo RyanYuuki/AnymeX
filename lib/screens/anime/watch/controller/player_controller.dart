@@ -1298,6 +1298,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       snackBar('Failed to load episode. Check your connection.');
     } finally {
       PlayerBottomSheets.hideLoader();
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
       updateNavigatorState();
     }
   }
