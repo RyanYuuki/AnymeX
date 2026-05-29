@@ -328,13 +328,14 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                                     onTap: controller.isLocked.value
                                         ? null
                                         : controller.performSkipAction,
-                                    countdownProgress: controller
-                                            .isAutoSkipCountdownActive
-                                        ? controller.autoSkipCountdownRemaining
-                                            .value /
-                                            PlayerController
-                                                .autoSkipCountdownSeconds
-                                        : null,
+                                    countdownProgress:
+                                        controller.isAutoSkipCountdownActive
+                                            ? controller
+                                                    .autoSkipCountdownRemaining
+                                                    .value /
+                                                PlayerController
+                                                    .autoSkipCountdownSeconds
+                                            : null,
                                   )),
                             ),
                             const SizedBox(height: 8),
@@ -357,12 +358,13 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                                 onTap: controller.isLocked.value
                                     ? null
                                     : controller.performSkipAction,
-                                countdownProgress: controller
-                                        .isAutoSkipCountdownActive
-                                    ? controller.autoSkipCountdownRemaining
-                                            .value /
-                                        PlayerController.autoSkipCountdownSeconds
-                                    : null,
+                                countdownProgress:
+                                    controller.isAutoSkipCountdownActive
+                                        ? controller.autoSkipCountdownRemaining
+                                                .value /
+                                            PlayerController
+                                                .autoSkipCountdownSeconds
+                                        : null,
                               )),
                         ),
                       ],
@@ -451,8 +453,10 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
       ),
       'speed': ControlButton(
         icon: Symbols.speed_rounded,
-        onPressed: () =>
-            PlayerBottomSheets.showPlaybackSpeed(context, controller),
+        onPressed: () {
+          controller.isSpeedPaneOpened.value =
+              !controller.isSpeedPaneOpened.value;
+        },
         tooltip: 'Speed',
         compact: true,
       ),
@@ -723,7 +727,8 @@ class _GlassActionChip extends StatelessWidget {
                   child: TweenAnimationBuilder<double>(
                     duration: const Duration(milliseconds: 1000),
                     curve: Curves.linear,
-                    tween: Tween<double>(begin: 0.0, end: 1.0 - countdownProgress!),
+                    tween: Tween<double>(
+                        begin: 0.0, end: 1.0 - countdownProgress!),
                     builder: (context, value, child) {
                       return FractionallySizedBox(
                         alignment: Alignment.centerLeft,
@@ -738,7 +743,8 @@ class _GlassActionChip extends StatelessWidget {
                   ),
                 ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [

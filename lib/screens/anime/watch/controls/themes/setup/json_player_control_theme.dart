@@ -562,7 +562,10 @@ class ThemeRenderer {
         final text = _getTitleText();
         if (text.isEmpty) return null;
         return _makeTextThing(
-            value: text, item: item, maxLines: item.grabInt('maxLines', 1), isMarquee: true);
+            value: text,
+            item: item,
+            maxLines: item.grabInt('maxLines', 1),
+            isMarquee: true);
 
       case 'episode_badge':
         return _makeBadgeThing(_getEpisodeLabel(), item);
@@ -867,7 +870,10 @@ class ThemeRenderer {
       _makeBadgeThing(text, item);
 
   Widget _makeTextThing(
-      {required String value, required ThemeItem item, int maxLines = 1, bool isMarquee = false}) {
+      {required String value,
+      required ThemeItem item,
+      int maxLines = 1,
+      bool isMarquee = false}) {
     final style = def.styles.text.mash(item.style);
     final textColor = _resolveColor(style.textColor, fallback: Colors.white);
     final textAlign = _parseTextAlign(item.grabString('textAlign'));
@@ -1148,17 +1154,21 @@ class ThemeRenderer {
         break;
       case 'subtitles':
       case 'source':
-        controller.isSourcePaneOpened.value = !controller.isSourcePaneOpened.value;
+        controller.isSourcePaneOpened.value =
+            !controller.isSourcePaneOpened.value;
         break;
       case 'server':
-        controller.isSourcePaneOpened.value = !controller.isSourcePaneOpened.value;
+        controller.isSourcePaneOpened.value =
+            !controller.isSourcePaneOpened.value;
         break;
       case 'sync_subs':
-        controller.isSyncSubsPaneOpened.value = !controller.isSyncSubsPaneOpened.value;
+        controller.isSyncSubsPaneOpened.value =
+            !controller.isSyncSubsPaneOpened.value;
         break;
       case 'tracks':
       case 'audio_track':
-        controller.isTracksPaneOpened.value = !controller.isTracksPaneOpened.value;
+        controller.isTracksPaneOpened.value =
+            !controller.isTracksPaneOpened.value;
         break;
       case 'quality':
         if (!controller.isOffline.value) {
@@ -1166,8 +1176,8 @@ class ThemeRenderer {
         }
         break;
       case 'speed':
-        PlayerBottomSheets.showPlaybackSpeed(context, controller);
-        break;
+        controller.isSpeedPaneOpened.value =
+            !controller.isSpeedPaneOpened.value;
         break;
       case 'orientation':
         if (_isMobile) controller.toggleOrientation();
