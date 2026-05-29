@@ -13,7 +13,6 @@ import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex_extension_runtime_bridge/Services/Aniyomi/Models/Source.dart';
@@ -175,14 +174,14 @@ class _ExtensionScreenState extends State<ExtensionScreen>
     );
   }
 
-  bool get _isPluginInstalled =>
-      AnymeXRuntimeBridge.isPluginInstalled;
+  bool get _isPluginInstalled => AnymeXRuntimeBridge.isPluginInstalled;
 
   bool _typeRequiresPlugin(String type) {
     if (type == 'all') return false;
-    final activeManager = Get.find<ExtensionManager>().managers.firstWhereOrNull(
-      (m) => m.name.toLowerCase().contains(type.toLowerCase()),
-    );
+    final activeManager =
+        Get.find<ExtensionManager>().managers.firstWhereOrNull(
+              (m) => m.name.toLowerCase().contains(type.toLowerCase()),
+            );
     if (activeManager != null) {
       return activeManager.requiresPlugin;
     }
@@ -199,58 +198,96 @@ class _ExtensionScreenState extends State<ExtensionScreen>
         final selectedSourceType = _selectedSourceType.value;
         final selectedLanguage = _selectedLanguage.value;
 
-        return AnymexDialog(
-          title: 'Sort & Filter',
-          onConfirm: () {},
-          contentWidget: SingleChildScrollView(
+        return Dialog(
+          backgroundColor: context.colors.surface,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(25),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AnymexExpansionTile(
-                  title: "Source Type",
-                  initialExpanded: true,
-                  content: Column(
-                    children: sourceTypes
-                        .map((type) {
-                          final needsPlugin = _typeRequiresPlugin(type) && !_isPluginInstalled;
-                          return Padding(
-                              padding: const EdgeInsets.only(bottom: 8),
-                              child: _SortOptionTile(
-                                title: type == 'all' ? 'All Sources' : type,
-                                subtitle: needsPlugin ? 'Requires plugin — disabled' : _getSourceSubtitle(type),
-                                isSelected: !needsPlugin && selectedSourceType == type,
-                                isDisabled: needsPlugin,
-                                onTap: needsPlugin ? null : () => _selectedSourceType.value = type,
-                              ),
-                            );
-                        })
-                        .toList(),
+                const Text(
+                  'Sort & Filter',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                Flexible(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        AnymexExpansionTile(
+                          title: "Source Type",
+                          initialExpanded: true,
+                          content: Column(
+                            children: sourceTypes.map((type) {
+                              final needsPlugin = _typeRequiresPlugin(type) &&
+                                  !_isPluginInstalled;
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: _SortOptionTile(
+                                  title: type == 'all' ? 'All Sources' : type,
+                                  subtitle: needsPlugin
+                                      ? 'Requires plugin — disabled'
+                                      : _getSourceSubtitle(type),
+                                  isSelected: !needsPlugin &&
+                                      selectedSourceType == type,
+                                  isDisabled: needsPlugin,
+                                  onTap: needsPlugin
+                                      ? null
+                                      : () => _selectedSourceType.value = type,
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        AnymexExpansionTile(
+                          title: "Language",
+                          content: Column(
+                            children: languages.map((lang) {
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: _SortOptionTile(
+                                  title: lang,
+                                  subtitle:
+                                      "Filter by ${lang == 'all' ? 'all languages' : lang}",
+                                  isSelected: selectedLanguage == lang,
+                                  onTap: () => _selectedLanguage.value = lang,
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
-                AnymexExpansionTile(
-                  title: "Language",
-                  content: SizedBox(
-                    height: 250,
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: languages.length,
-                      itemBuilder: (context, index) {
-                        final lang = languages[index];
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: _SortOptionTile(
-                            title: lang,
-                            subtitle:
-                                "Filter by ${lang == 'all' ? 'all languages' : lang}",
-                            isSelected: selectedLanguage == lang,
-                            onTap: () => _selectedLanguage.value = lang,
-                          ),
-                        );
-                      },
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        style: ElevatedButton.styleFrom(
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30)),
+                          backgroundColor: context.colors.surfaceContainer,
+                        ),
+                        child: Text(
+                          'Cancel',
+                          style: TextStyle(
+                              color: context.colors.primary,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ],
             ),
@@ -515,9 +552,7 @@ class _SortOptionTile extends StatelessWidget {
                     AnymexText(
                       text: title,
                       variant: TextVariant.semiBold,
-                      color: isDisabled
-                          ? colors.onSurface.opaque(0.35)
-                          : null,
+                      color: isDisabled ? colors.onSurface.opaque(0.35) : null,
                     ),
                     const SizedBox(height: 4),
                     AnymexText(
