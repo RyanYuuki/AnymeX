@@ -77,7 +77,6 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
     final cs = theme.colorScheme;
     // final isBetterPlayer = widget.controller.basePlayer is BetterPlayerImpl;
 
-
     return Column(
       children: [
         _buildHeader(cs, theme),
@@ -92,7 +91,7 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
 
   Widget _buildHeader(ColorScheme cs, ThemeData theme) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 16 + 40, 16, 16),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
       decoration: BoxDecoration(
         color: cs.surfaceContainerHighest.withOpacity(0.3),
         border: Border(
