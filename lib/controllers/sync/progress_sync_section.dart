@@ -23,15 +23,6 @@ class ProgressSyncSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4.0),
-          child: AnymexText(
-            text: 'PROGRESS SYNC',
-            variant: TextVariant.bold,
-            color: context.colors.onSurfaceVariant.withOpacity(0.7),
-            size: 12,
-          ),
-        ),
         const SizedBox(height: 12),
         _GistSyncCard(ctrl: ctrl),
       ],

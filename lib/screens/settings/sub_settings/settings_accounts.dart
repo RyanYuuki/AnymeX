@@ -1,12 +1,9 @@
-import 'dart:async';
 import 'dart:io';
 
 import 'package:anymex/controllers/discord/discord_login.dart';
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/storage/anymex_cache_manager.dart';
-import 'package:anymex/controllers/sync/gist_sync_controller.dart';
-import 'package:anymex/controllers/sync/progress_sync_section.dart';
 import 'package:anymex/models/Service/online_service.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_anilist_api.dart';
 import 'package:anymex/screens/other_features.dart';
@@ -28,18 +25,6 @@ class SettingsAccounts extends StatefulWidget {
 }
 
 class _SettingsAccountsState extends State<SettingsAccounts> {
-  late final GistSyncController _gistSyncCtrl;
-
-  @override
-  void initState() {
-    super.initState();
-    _gistSyncCtrl = Get.find<GistSyncController>();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || !_gistSyncCtrl.isLoggedIn.value) return;
-      unawaited(_gistSyncCtrl.refreshCloudGistStatus());
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final serviceHandler = Get.find<ServiceHandler>();
@@ -97,8 +82,6 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
                           title: s['title'] as String,
                         ),
                       )),
-                  const SizedBox(height: 24),
-                  const ProgressSyncSection(),
                 ],
               ),
             ),
