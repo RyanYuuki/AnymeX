@@ -112,12 +112,24 @@ class SourceController extends GetxController implements BaseService {
   void _applyOrderToInstalledList(ItemType type, List<String> orderedIds) {
     final list = _installedFor(type);
     final current = list.toList();
-    if (current.isEmpty) return;
+    if (current.isEmpty || orderedIds.isEmpty) return;
 
     final orderMap = <String, int>{};
     for (var i = 0; i < orderedIds.length; i++) {
       orderMap[orderedIds[i]] = i;
     }
+
+    bool isSorted = true;
+    for (int i = 0; i < current.length - 1; i++) {
+      final aIdx = orderMap[current[i].id?.toString() ?? ''] ?? orderedIds.length;
+      final bIdx = orderMap[current[i + 1].id?.toString() ?? ''] ?? orderedIds.length;
+      if (aIdx > bIdx) {
+        isSorted = false;
+        break;
+      }
+    }
+
+    if (isSorted) return;
 
     final sorted = List<Source>.from(current)
       ..sort((a, b) {
@@ -126,7 +138,7 @@ class SourceController extends GetxController implements BaseService {
         return aIdx.compareTo(bIdx);
       });
 
-    list.value = sorted;
+    list.assignAll(sorted);
   }
 
   void _rebuildSectionsOrder(ItemType type, List<String> orderedIds) {
@@ -192,9 +204,21 @@ class SourceController extends GetxController implements BaseService {
   void onInit() {
     super.onInit();
 
-    ever(installedExtensions, (_) => _scheduleRebuild(ItemType.anime));
-    ever(installedMangaExtensions, (_) => _scheduleRebuild(ItemType.manga));
-    ever(installedNovelExtensions, (_) => _scheduleRebuild(ItemType.novel));
+   
+    _loadExtensionOrders();
+
+    ever(installedExtensions, (_) {
+      _applyOrderToInstalledList(ItemType.anime, _extensionOrders[ItemType.anime] ?? []);
+      _scheduleRebuild(ItemType.anime);
+    });
+    ever(installedMangaExtensions, (_) {
+      _applyOrderToInstalledList(ItemType.manga, _extensionOrders[ItemType.manga] ?? []);
+      _scheduleRebuild(ItemType.manga);
+    });
+    ever(installedNovelExtensions, (_) {
+      _applyOrderToInstalledList(ItemType.novel, _extensionOrders[ItemType.novel] ?? []);
+      _scheduleRebuild(ItemType.novel);
+    });
 
     _initialize();
   }
