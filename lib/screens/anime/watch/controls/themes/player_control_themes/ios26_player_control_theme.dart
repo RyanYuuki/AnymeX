@@ -7,6 +7,7 @@ import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/themes/setup/player_control_theme.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/decoder_quick_button.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
@@ -127,6 +128,7 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                       if (qualityText.isEmpty) return const SizedBox.shrink();
                       return _GlassTag(text: qualityText);
                     }),
+                    DecoderQuickButton.glass(isMobile: !isDesktop),
                   ],
                 ),
               ],
@@ -330,13 +332,14 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                                     onTap: controller.isLocked.value
                                         ? null
                                         : controller.performSkipAction,
-                                    countdownProgress: controller
-                                            .isAutoSkipCountdownActive
-                                        ? controller.autoSkipCountdownRemaining
-                                            .value /
-                                            PlayerController
-                                                .autoSkipCountdownSeconds
-                                        : null,
+                                    countdownProgress:
+                                        controller.isAutoSkipCountdownActive
+                                            ? controller
+                                                    .autoSkipCountdownRemaining
+                                                    .value /
+                                                PlayerController
+                                                    .autoSkipCountdownSeconds
+                                            : null,
                                   )),
                             ),
                             const SizedBox(height: 8),
@@ -359,12 +362,13 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                                 onTap: controller.isLocked.value
                                     ? null
                                     : controller.performSkipAction,
-                                countdownProgress: controller
-                                        .isAutoSkipCountdownActive
-                                    ? controller.autoSkipCountdownRemaining
-                                            .value /
-                                        PlayerController.autoSkipCountdownSeconds
-                                    : null,
+                                countdownProgress:
+                                    controller.isAutoSkipCountdownActive
+                                        ? controller.autoSkipCountdownRemaining
+                                                .value /
+                                            PlayerController
+                                                .autoSkipCountdownSeconds
+                                        : null,
                               )),
                         ),
                       ],
@@ -725,7 +729,8 @@ class _GlassActionChip extends StatelessWidget {
                   child: TweenAnimationBuilder<double>(
                     duration: const Duration(milliseconds: 1000),
                     curve: Curves.linear,
-                    tween: Tween<double>(begin: 0.0, end: 1.0 - countdownProgress!),
+                    tween: Tween<double>(
+                        begin: 0.0, end: 1.0 - countdownProgress!),
                     builder: (context, value, child) {
                       return FractionallySizedBox(
                         alignment: Alignment.centerLeft,
@@ -740,7 +745,8 @@ class _GlassActionChip extends StatelessWidget {
                   ),
                 ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
