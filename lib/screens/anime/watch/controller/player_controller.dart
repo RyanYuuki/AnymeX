@@ -1585,6 +1585,16 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     onUserInteraction();
   }
 
+  Future<T?> showSheetWithPause<T>(Future<T?> Function() openSheet) async {
+    final wasPlaying = isPlaying.value;
+    if (wasPlaying) _basePlayer.pause();
+    try {
+      return await openSheet();
+    } finally {
+      if (wasPlaying) _basePlayer.play();
+    }
+  }
+
   void setRate(double rate) {
     playbackSpeed.value = rate;
     _basePlayer.setRate(rate);
@@ -2044,8 +2054,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void openColorProfileBottomSheet(BuildContext context) {
     if (_basePlayer is MediaKitPlayer) {
-      ColorProfileBottomSheet.showColorProfileSheet(
-          context, this, (_basePlayer as MediaKitPlayer).nativePlayer);
+      showSheetWithPause(() async {
+        await ColorProfileBottomSheet.showColorProfileSheet(
+            context, this, (_basePlayer as MediaKitPlayer).nativePlayer);
+      });
     } else {
       snackBar('Color profiles only available with MediaKit player');
     }

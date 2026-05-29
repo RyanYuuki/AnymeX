@@ -200,22 +200,24 @@ class TopControls extends StatelessWidget {
           ControlButton(
             icon: Icons.settings_rounded,
             onPressed: () {
-              showModalBottomSheet(
-                  context: Get.context!,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.transparent,
-                  builder: (context) => Container(
-                        height: MediaQuery.of(context).size.height,
-                        clipBehavior: Clip.antiAlias,
-                        decoration: const BoxDecoration(
-                          color: Colors.transparent,
-                          borderRadius:
-                              BorderRadius.vertical(top: Radius.circular(28)),
-                        ),
-                        child: const SettingsPlayer(
-                          isModal: true,
-                        ),
-                      ));
+              Get.find<PlayerController>().showSheetWithPause(
+                () => showModalBottomSheet(
+                    context: Get.context!,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => Container(
+                          height: MediaQuery.of(context).size.height,
+                          clipBehavior: Clip.antiAlias,
+                          decoration: const BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius:
+                                BorderRadius.vertical(top: Radius.circular(28)),
+                          ),
+                          child: const SettingsPlayer(
+                            isModal: true,
+                          ),
+                        )),
+              );
             },
             tooltip: 'Settings',
             compact: true,
@@ -357,22 +359,24 @@ class TopControls extends StatelessWidget {
               ControlButton(
                 icon: Icons.settings_rounded,
                 onPressed: () {
-                  showModalBottomSheet(
-                      context: Get.context!,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (context) => Container(
-                            height: MediaQuery.of(context).size.height,
-                            clipBehavior: Clip.antiAlias,
-                            decoration: const BoxDecoration(
-                              color: Colors.transparent,
-                              borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(28)),
-                            ),
-                            child: const SettingsPlayer(
-                              isModal: true,
-                            ),
-                          ));
+                  Get.find<PlayerController>().showSheetWithPause(
+                    () => showModalBottomSheet(
+                        context: Get.context!,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => Container(
+                              height: MediaQuery.of(context).size.height,
+                              clipBehavior: Clip.antiAlias,
+                              decoration: const BoxDecoration(
+                                color: Colors.transparent,
+                                borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(28)),
+                              ),
+                              child: const SettingsPlayer(
+                                isModal: true,
+                              ),
+                            )),
+                  );
                 },
                 tooltip: 'Settings',
                 compact: true,
@@ -420,18 +424,20 @@ class TopControls extends StatelessWidget {
               ControlButton(
                 icon: Icons.settings_rounded,
                 onPressed: () {
-                  showModalBottomSheet(
-                    context: Get.context!,
-                    isScrollControlled: true,
-                    backgroundColor: Colors.transparent,
-                    builder: (context) => Container(
-                      height: MediaQuery.of(context).size.height,
-                      clipBehavior: Clip.antiAlias,
-                      decoration: const BoxDecoration(
-                        color: Colors.transparent,
-                        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+                  Get.find<PlayerController>().showSheetWithPause(
+                    () => showModalBottomSheet(
+                      context: Get.context!,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (context) => Container(
+                        height: MediaQuery.of(context).size.height,
+                        clipBehavior: Clip.antiAlias,
+                        decoration: const BoxDecoration(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+                        ),
+                        child: const SettingsPlayer(isModal: true),
                       ),
-                      child: const SettingsPlayer(isModal: true),
                     ),
                   );
                 },

@@ -1186,18 +1186,20 @@ class ThemeRenderer {
   }
 
   void _popSettingsSheet() {
-    showModalBottomSheet(
-      context: Get.context ?? context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (sheetCtx) => Container(
-        height: MediaQuery.of(sheetCtx).size.height,
-        clipBehavior: Clip.antiAlias,
-        decoration: const BoxDecoration(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+    controller.showSheetWithPause(
+      () => showModalBottomSheet(
+        context: Get.context ?? context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (sheetCtx) => Container(
+          height: MediaQuery.of(sheetCtx).size.height,
+          clipBehavior: Clip.antiAlias,
+          decoration: const BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+          ),
+          child: const SettingsPlayer(isModal: true),
         ),
-        child: const SettingsPlayer(isModal: true),
       ),
     );
   }

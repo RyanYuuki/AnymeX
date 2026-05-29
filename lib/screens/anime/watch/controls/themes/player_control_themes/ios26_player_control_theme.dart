@@ -149,19 +149,21 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
             icon: CupertinoIcons.settings_solid,
             tooltip: 'Settings',
             onPressed: () {
-              showModalBottomSheet(
-                context: Get.context!,
-                isScrollControlled: true,
-                backgroundColor: Colors.transparent,
-                builder: (sheetContext) => Container(
-                  height: MediaQuery.of(sheetContext).size.height,
-                  clipBehavior: Clip.antiAlias,
-                  decoration: const BoxDecoration(
-                    color: Colors.transparent,
-                    borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(28)),
+              controller.showSheetWithPause(
+                () => showModalBottomSheet(
+                  context: Get.context!,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (sheetContext) => Container(
+                    height: MediaQuery.of(sheetContext).size.height,
+                    clipBehavior: Clip.antiAlias,
+                    decoration: const BoxDecoration(
+                      color: Colors.transparent,
+                      borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(28)),
+                    ),
+                    child: const SettingsPlayer(isModal: true),
                   ),
-                  child: const SettingsPlayer(isModal: true),
                 ),
               );
             },
