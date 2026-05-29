@@ -293,7 +293,13 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
             child: Align(
               alignment: Alignment.centerRight,
               child: GestureDetector(
-                onTap: () => showOnlyOnList.value = !showOnlyOnList.value,
+                onTap: () {
+                  if (!anilistAuth.isLoggedIn.value) {
+                    snackBar("Please login to use this filter!");
+                    return;
+                  }
+                  showOnlyOnList.value = !showOnlyOnList.value;
+                },
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
