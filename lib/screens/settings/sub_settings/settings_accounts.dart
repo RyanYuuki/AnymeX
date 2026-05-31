@@ -140,69 +140,158 @@ class DiscordTile extends StatelessWidget {
             width: 1.5,
           ),
         ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            borderRadius: BorderRadius.circular(24),
-            onTap: () {
-              if (isLoggedIn) {
-                _showLogoutDialog(context, rpc);
-              } else {
-                context.showDiscordLogin((token) => rpc.onLoginSuccess(token));
-              }
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Row(
-                children: [
-                  _buildAvatar(userData?.avatarUrl, isLoggedIn, colors),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+        child: isLoggedIn
+            ? Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
                       children: [
-                        AnymexText(
-                          text: isLoggedIn
-                              ? (userData?.displayName ?? 'Discord User')
-                              : 'Connect Discord',
-                          variant: TextVariant.bold,
-                          size: 16,
+                        _buildAvatar(userData?.avatarUrl, true, colors),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              AnymexText(
+                                text: userData?.displayName ?? 'Discord User',
+                                variant: TextVariant.bold,
+                                size: 16,
+                              ),
+                              const SizedBox(height: 4),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    width: 7,
+                                    height: 7,
+                                    decoration: BoxDecoration(
+                                      color: rpc.isEnabled
+                                          ? const Color(0xFF43B581)
+                                          : colors.onSurfaceVariant,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  AnymexText(
+                                    text: rpc.isEnabled
+                                        ? 'Rich Presence Active'
+                                        : 'Rich Presence Disabled',
+                                    color: rpc.isEnabled
+                                        ? const Color(0xFF43B581)
+                                        : colors.onSurfaceVariant,
+                                    size: 12,
+                                    maxLines: 1,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                        const SizedBox(height: 4),
-                        AnymexText(
-                          text: isLoggedIn
-                              ? 'Rich Presence Active'
-                              : 'Show what you are watching',
-                          color: isLoggedIn
-                              ? colors.primary
-                              : colors.onSurfaceVariant,
-                          size: 12,
-                          maxLines: 1,
+                        GestureDetector(
+                          onTap: () => _showLogoutDialog(context, rpc),
+                          child: Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: colors.surfaceContainerHighest,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(
+                              IconlyBold.logout,
+                              color: colors.error,
+                              size: 18,
+                            ),
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: isLoggedIn
-                          ? colors.primary
-                          : colors.surfaceContainerHighest,
-                      shape: BoxShape.circle,
+                    const SizedBox(height: 16),
+                    Container(
+                      height: 1,
+                      color: colors.outline.withOpacity(0.12),
                     ),
-                    child: Icon(
-                      isLoggedIn ? IconlyBold.login : IconlyBold.add_user,
-                      color: isLoggedIn
-                          ? colors.onPrimary
-                          : colors.onSurfaceVariant,
-                      size: 20,
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const AnymexText(
+                                text: 'Discord Rich Presence',
+                                variant: TextVariant.semiBold,
+                                size: 14,
+                              ),
+                              const SizedBox(height: 2),
+                              AnymexText(
+                                text: 'Share your activity on Discord',
+                                size: 11,
+                                color: colors.onSurfaceVariant,
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: 40,
+                          child: Switch(
+                            value: rpc.isEnabled,
+                            onChanged: (e) => rpc.setEnabled(e),
+                            activeColor: colors.primary,
+                          ),
+                        ),
+                      ],
                     ),
-                  )
-                ],
+                  ],
+                ),
+              )
+            : Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    _buildAvatar(null, false, colors),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const AnymexText(
+                            text: 'Connect Discord',
+                            variant: TextVariant.bold,
+                            size: 16,
+                          ),
+                          const SizedBox(height: 4),
+                          AnymexText(
+                            text: 'Show what you are watching',
+                            color: colors.onSurfaceVariant,
+                            size: 12,
+                            maxLines: 1,
+                          ),
+                        ],
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => context.showDiscordLogin(
+                          (token) => rpc.onLoginSuccess(token)),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 18, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF5865F2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const AnymexText(
+                          text: 'Login',
+                          variant: TextVariant.bold,
+                          size: 13,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ),
-        ),
       );
     });
   }

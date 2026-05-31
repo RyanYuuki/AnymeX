@@ -24,6 +24,7 @@ enum General {
   filterRepeating,
   communityListViewIsGrid,
   hasJoinedNewDiscord,
+  discordRpcEnabled,
 }
 
 enum ThemeKeys {
@@ -278,4 +279,3 @@ enum DownloadKeys {
   hlsParallelSegments,
   enableJxlCompression,
 }
-

@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/database/isar_models/episode.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/kv_helper.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/extension_utils.dart';
@@ -117,11 +118,13 @@ class DiscordRPCController extends GetxController {
   final _token = ''.obs;
   final Rx<DiscordProfile?> profile = Rx<DiscordProfile?>(null);
   final _isLoading = false.obs;
+  final _enabled = true.obs;
 
   bool get isConnected => _isConnected.value;
   bool get isMobile => _isMobile.value;
   bool get isLoggedIn => _token.value.isNotEmpty;
   bool get isLoading => _isLoading.value;
+  bool get isEnabled => _enabled.value;
   DiscordProfile? get userProfile => profile.value;
 
   static DiscordRPCController get instance => Get.find<DiscordRPCController>();
@@ -129,8 +132,9 @@ class DiscordRPCController extends GetxController {
   @override
   Future<void> onInit() async {
     super.onInit();
+    _enabled.value = General.discordRpcEnabled.get<bool>(true);
     await _loadToken();
-    if (_token.value.isNotEmpty) {
+    if (_token.value.isNotEmpty && _enabled.value) {
       await _loadProfile();
       await connect();
     }
@@ -891,6 +895,20 @@ class DiscordRPCController extends GetxController {
       }
     }
     _isConnected.value = false;
+  }
+
+  Future<void> setEnabled(bool value) async {
+    _enabled.value = value;
+    General.discordRpcEnabled.set(value);
+    if (value) {
+      if (_token.value.isNotEmpty) {
+        await _loadProfile();
+        await connect();
+      }
+    } else {
+      await clearPresence();
+      await _disconnect();
+    }
   }
 
   Future<void> logout() async {
