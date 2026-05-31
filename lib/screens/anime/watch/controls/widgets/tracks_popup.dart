@@ -3,6 +3,8 @@ import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
 import 'package:anymex/screens/anime/watch/player/base_player.dart';
 import 'package:anymex/utils/language.dart';
 
+import 'dart:io' show Platform;
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -75,8 +77,9 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
   }
 
   Widget _buildHeader(ColorScheme cs, ThemeData theme) {
+    final isDesktop = !Platform.isAndroid && !Platform.isIOS;
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+      padding: EdgeInsets.fromLTRB(16, isDesktop ? 16 + 40 : 16, 16, 16),
       decoration: BoxDecoration(
         color: cs.surfaceContainerHighest.withOpacity(0.3),
         border: Border(
