@@ -90,8 +90,10 @@ class UpdateManager {
     final currentSplit = currentVersion.split('-');
     final latestSplit = latestVersion.split('-');
 
-    final currentNums = currentSplit[0].split('.').map(int.parse).toList();
-    final latestNums = latestSplit[0].split('.').map(int.parse).toList();
+    final currentNums =
+        currentSplit[0].split('+')[0].split('.').map(int.parse).toList();
+    final latestNums =
+        latestSplit[0].split('+')[0].split('.').map(int.parse).toList();
 
     for (int i = 0; i < 3; i++) {
       final c = i < currentNums.length ? currentNums[i] : 0;
