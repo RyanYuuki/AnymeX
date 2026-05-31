@@ -5,14 +5,13 @@ import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/screens/extensions/ExtensionList.dart';
 import 'package:anymex/screens/extensions/ExtensionTesting/extension_test_page.dart';
+import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_extensions.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
-import 'package:anymex/widgets/helper/platform_builder.dart';
-import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex_extension_runtime_bridge/Services/Aniyomi/Models/Source.dart';
@@ -94,9 +93,65 @@ class _ExtensionScreenState extends State<ExtensionScreen>
       disabled: widget.disableGlow,
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: _buildAppBar(theme),
         body: Column(
           children: [
+            NestedHeader(
+              title: 'Extensions',
+              action: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: theme.primaryContainer.opaque(0.3),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: IconButton(
+                      icon: Icon(Icons.build_outlined,
+                          color: theme.primary, size: 22),
+                      onPressed: () => Get.to(() => const ExtensionTestPage()),
+                      tooltip: "Test Extensions",
+                      style: IconButton.styleFrom(
+                        padding: const EdgeInsets.all(6),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: theme.primaryContainer.opaque(0.3),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: IconButton(
+                      icon: Icon(HugeIcons.strokeRoundedGithub,
+                          color: theme.primary, size: 22),
+                      onPressed: repoSheet,
+                      tooltip: "Repositories",
+                      style: IconButton.styleFrom(
+                        padding: const EdgeInsets.all(6),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: theme.primaryContainer.opaque(0.3),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: IconButton(
+                      icon: Icon(Iconsax.sort, color: theme.primary, size: 22),
+                      onPressed: () => _showSortDialog(context),
+                      tooltip: "Sort & Filter",
+                      style: IconButton.styleFrom(
+                        padding: const EdgeInsets.all(6),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             _buildTabBar(),
             const SizedBox(height: 8.0),
             CustomSearchBar(
@@ -110,67 +165,6 @@ class _ExtensionScreenState extends State<ExtensionScreen>
           ],
         ),
       ),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar(ColorScheme theme) {
-    return AppBar(
-      elevation: 0,
-      backgroundColor: Colors.transparent,
-      leading: getResponsiveValue(context,
-          mobileValue: Center(
-            child: AnymexOnTap(
-              onTap: () => Get.back(),
-              child: Container(
-                width: 35,
-                height: 35,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50),
-                  color: context.colors.surfaceContainer,
-                ),
-                child: const Icon(Icons.arrow_back_ios_new_rounded),
-              ),
-            ),
-          ),
-          desktopValue: const SizedBox.shrink()),
-      leadingWidth:
-          getResponsiveValue(context, mobileValue: null, desktopValue: 0.0),
-      title: Text(
-        "Extensions",
-        style: TextStyle(
-          fontFamily: 'Poppins',
-          fontWeight: FontWeight.bold,
-          fontSize: 16.0,
-          color: theme.primary,
-        ),
-      ),
-      iconTheme: IconThemeData(color: theme.primary),
-      actions: [
-        AnymexOnTap(
-          onTap: () => Get.to(() => const ExtensionTestPage()),
-          child: IconButton(
-            icon: Icon(Icons.build_outlined, color: theme.primary),
-            onPressed: () => Get.to(() => const ExtensionTestPage()),
-            tooltip: "Test Extensions",
-          ),
-        ),
-        AnymexOnTap(
-          onTap: repoSheet,
-          child: IconButton(
-            icon: Icon(HugeIcons.strokeRoundedGithub, color: theme.primary),
-            onPressed: repoSheet,
-            tooltip: "Repositories",
-          ),
-        ),
-        AnymexOnTap(
-          child: IconButton(
-            icon: Icon(Iconsax.sort, color: theme.primary),
-            onPressed: () => _showSortDialog(context),
-            tooltip: "Sort & Filter",
-          ),
-        ),
-        const SizedBox(width: 8.0),
-      ],
     );
   }
 
