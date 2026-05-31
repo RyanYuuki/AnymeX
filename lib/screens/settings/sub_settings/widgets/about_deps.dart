@@ -251,26 +251,25 @@ class CustomSection extends StatelessWidget {
               children: [
                 Icon(icon),
                 const SizedBox(width: 15),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                          fontSize: 16, fontFamily: 'Poppins-SemiBold'),
-                    ),
-                    if (subtitle != null)
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width - 100,
-                        child: Text(
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                            fontSize: 16, fontFamily: 'Poppins-SemiBold'),
+                      ),
+                      if (subtitle != null)
+                        Text(
                           subtitle!,
                           style: TextStyle(
                             fontSize: 12,
                             color: theme.colorScheme.onSurface.opaque(0.7),
                           ),
                         ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -310,8 +309,8 @@ class CustomListTile extends StatelessWidget {
           child: Row(
             children: [
               IconTheme(
-                data:
-                    IconThemeData(color: theme.colorScheme.onSecondaryContainer),
+                data: IconThemeData(
+                    color: theme.colorScheme.onSecondaryContainer),
                 child: leading,
               ),
               const SizedBox(width: 16),
