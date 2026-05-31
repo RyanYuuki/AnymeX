@@ -177,40 +177,44 @@ class InfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return GestureDetector(
-      onTap: onTap ?? () {},
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          children: [
-            leading,
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: theme.colorScheme.onSurface,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap ?? () {},
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surfaceContainerHigh,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            children: [
+              leading,
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: theme.colorScheme.onSurface,
+                      ),
                     ),
-                  ),
-                  Text(
-                    subtitle,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurface.opaque(0.7),
+                    Text(
+                      subtitle,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurface.opaque(0.7),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            if (trailing != null) trailing!,
-          ],
+              if (trailing != null) trailing!,
+            ],
+          ),
         ),
       ),
     );
@@ -304,6 +308,7 @@ class CustomListTile extends StatelessWidget {
       title: title,
       child: InkWell(
         onTap: onTap ?? () {},
+        borderRadius: BorderRadius.circular(12),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
           child: Row(
