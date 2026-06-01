@@ -114,8 +114,8 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
   int? _heartbeatInterval;
   int? _sequenceNumber;
 
-  Completer<bool>? _connectionCompleter;
   bool _heartbeatAckReceived = true;
+  Completer<void>? _connectCompleter;
 
   final _isConnected = false.obs;
   final _isMobile = (Platform.isAndroid || Platform.isIOS).obs;
@@ -136,7 +136,7 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
   @override
   Future<void> onInit() async {
     super.onInit();
-    WidgetsBinding.instance.addObserver(this); // Track app foreground/background
+    WidgetsBinding.instance.addObserver(this);
     _enabled.value = General.discordRpcEnabled.get<bool>(true);
     await _loadToken();
     if (_token.value.isNotEmpty && _enabled.value) {
@@ -150,12 +150,22 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
     if (!_enabled.value || _token.value.isEmpty || !isMobile) return;
 
     if (state == AppLifecycleState.resumed) {
-      print('App resumed: Restoring Discord RPC link');
-      connect();
+      print('App resumed: Reconnecting to Discord RPC');
+      _reconnect();
     } else if (state == AppLifecycleState.paused) {
-      print('App paused/screen off: Cleaning up active connection');
-      _disconnect();
+      print('App backgrounded/screen off: Clearing RPC connection');
+      _cleanBackgroundDisconnect();
     }
+  }
+
+  Future<void> _reconnect() async {
+    await _disconnect();
+    await connect();
+  }
+
+  Future<void> _cleanBackgroundDisconnect() async {
+    await clearPresence();
+    await _disconnect();
   }
 
   Future<void> _loadToken() async {
@@ -229,38 +239,34 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
         'Successfully logged in as ${profile.value?.displayName ?? "User"}');
   }
 
-  Future<bool> connect() async {
+  Future<void> connect() async {
     if (_isConnected.value) {
       print('Already connected to Discord RPC');
-      return true;
+      return;
     }
 
-    if (_connectionCompleter != null && !_connectionCompleter!.isCompleted) {
-      return _connectionCompleter!.future;
+    if (_connectCompleter != null && !_connectCompleter!.isCompleted) {
+      return _connectCompleter!.future;
     }
-
-    _connectionCompleter = Completer<bool>();
+    _connectCompleter = Completer<void>();
 
     try {
       if (isMobile) {
         if (_token.value.isEmpty) {
           print('No token found. Please login first.');
-          _connectionCompleter!.complete(false);
-          return false;
+          return;
         }
         await _connectMobileGateway();
       } else {
         await _initializeDesktopRPC();
-        _connectionCompleter!.complete(_isConnected.value);
       }
     } catch (e) {
-      print('Failed to connect: $e');
-      if (!_connectionCompleter!.isCompleted) {
-        _connectionCompleter!.complete(false);
+      print('Error connecting: $e');
+    } finally {
+      if (_connectCompleter != null && !_connectCompleter!.isCompleted) {
+        _connectCompleter!.complete();
       }
     }
-
-    return _connectionCompleter!.future;
   }
 
   Future<void> _initializeDesktopRPC() async {
@@ -314,17 +320,11 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
         onError: (error) {
           print('Gateway error: $error');
           _isConnected.value = false;
-          if (_connectionCompleter != null && !_connectionCompleter!.isCompleted) {
-            _connectionCompleter!.complete(false);
-          }
         },
         onDone: () {
           print('Gateway connection closed');
           _isConnected.value = false;
           _heartbeatTimer?.cancel();
-          if (_connectionCompleter != null && !_connectionCompleter!.isCompleted) {
-            _connectionCompleter!.complete(false);
-          }
         },
       );
 
@@ -332,9 +332,6 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
     } catch (e) {
       print('Failed to connect to Discord Gateway: $e');
       _isConnected.value = false;
-      if (_connectionCompleter != null && !_connectionCompleter!.isCompleted) {
-        _connectionCompleter!.complete(false);
-      }
       snackBar('Failed to connect to Discord');
     }
   }
@@ -357,9 +354,6 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
         if (event == 'READY') {
           _isConnected.value = true;
           print('Discord Gateway Ready (Mobile)');
-          if (_connectionCompleter != null && !_connectionCompleter!.isCompleted) {
-            _connectionCompleter!.complete(true);
-          }
           updateBrowsingPresence(
             activity: kDebugMode ? 'Working on the App' : 'Browsing Stuff',
             details: kDebugMode ? "Coding" : 'Idle',
@@ -405,8 +399,8 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
 
   void _sendHeartbeat() {
     if (!_heartbeatAckReceived) {
-      print('Heartbeat ACK missed. Reconnecting zombie link...');
-      _disconnect().then((_) => connect());
+      print('Heartbeat ACK missed. Reconnecting...');
+      _reconnect();
       return;
     }
 
@@ -898,7 +892,6 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> clearPresence() async {
-    if (!_isConnected.value) await connect();
     if (!_isConnected.value || !_canUseDesktopRpc('clearPresence')) {
       print('Discord not connected');
       return;
@@ -936,9 +929,6 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> _disconnect() async {
-    if (_connectionCompleter != null && !_connectionCompleter!.isCompleted) {
-      _connectionCompleter!.complete(false);
-    }
     if (isMobile) {
       _heartbeatTimer?.cancel();
       await _gatewaySocket?.close();
