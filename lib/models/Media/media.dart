@@ -378,7 +378,10 @@ class Media {
       id: json['id'].toString(),
       idMal: json['idMal']?.toString() ?? '0',
       romajiTitle: json['title']['romaji'] ?? '?',
-      title: json['title']['userPreferred'] ?? json['title']['english'] ?? json['title']['romaji'] ?? '?',
+      title: json['title']['userPreferred'] ??
+          json['title']['english'] ??
+          json['title']['romaji'] ??
+          '?',
       description: json['description'] ?? '?',
       poster: json['coverImage']['large'] ?? '?',
       isAdult: json['isAdult'] ?? false,
@@ -464,7 +467,10 @@ class Media {
     return Media(
       id: (isMal ? json['idMal']?.toString() : json['id'].toString()) ?? '',
       romajiTitle: json['title']['romaji'] ?? '?',
-      title: json['title']['userPreferred'] ?? json['title']['english'] ?? json['title']['romaji'] ?? '?',
+      title: json['title']['userPreferred'] ??
+          json['title']['english'] ??
+          json['title']['romaji'] ??
+          '?',
       description: json['description'] ?? '',
       isAdult: (json['isAdult'] as bool?) ?? false,
       totalEpisodes: (json['episodes'] as int?)?.toString() ?? '?',
@@ -496,12 +502,20 @@ class Media {
   factory Media.fromRecs(Map<String, dynamic> json) {
     final rec = json['mediaRecommendation'];
     if (rec == null) {
-      return Media(id: '', title: '', poster: '', rating: '0', serviceType: ServicesType.anilist);
+      return Media(
+          id: '',
+          title: '',
+          poster: '',
+          rating: '0',
+          serviceType: ServicesType.anilist);
     }
     final title = rec['title'];
     return Media(
         id: rec['id'].toString(),
-        title: title?['userPreferred'] ?? title?['english'] ?? title?['romaji'] ?? '',
+        title: title?['userPreferred'] ??
+            title?['english'] ??
+            title?['romaji'] ??
+            '',
         poster: rec['coverImage']?['large'] ?? '',
         rating: ((rec['averageScore'] ?? 0) / 10).toString(),
         serviceType: ServicesType.anilist);
@@ -510,6 +524,7 @@ class Media {
   factory Media.fromOfflineMedia(OfflineMedia offline, ItemType type) {
     return Media(
       id: offline.mediaId.toString(),
+      idMal: offline.idMal ?? '0',
       title: offline.name ?? offline.english ?? offline.jname ?? '?',
       romajiTitle: offline.jname ?? '?',
       description: offline.description ?? '?',
@@ -546,12 +561,14 @@ class Media {
       id: json['id']?.toString() ?? '0',
       title: json['title'] ?? 'Unknown Title',
       romajiTitle: json['title'] ?? 'Unknown Title',
-      description: json['reason'] ?? json['description'] ?? 'No description available.',
+      description:
+          json['reason'] ?? json['description'] ?? 'No description available.',
       poster: json['cover'] ?? json['poster'] ?? '',
       cover: json['cover'] ?? json['banner'] ?? '',
       totalEpisodes: json['episodes']?.toString() ?? '?',
       totalChapters: json['chapters']?.toString() ?? '?',
-      rating: json['score']?.toString() ?? json['averageScore']?.toString() ?? '?',
+      rating:
+          json['score']?.toString() ?? json['averageScore']?.toString() ?? '?',
       type: isManga ? 'MANGA' : 'ANIME',
       mediaType: isManga ? ItemType.manga : ItemType.anime,
       serviceType: ServicesType.anilist,
@@ -570,7 +587,10 @@ class Media {
       id: json['id']?.toString() ?? '0',
       idMal: json['idMal']?.toString() ?? '0',
       romajiTitle: json['title']?['romaji'] ?? '?',
-      title: json['title']?['userPreferred'] ?? json['title']?['english'] ?? json['title']?['romaji'] ?? '?',
+      title: json['title']?['userPreferred'] ??
+          json['title']?['english'] ??
+          json['title']?['romaji'] ??
+          '?',
       description: json['description'] ?? '',
       poster: json['coverImage']?['large'] ?? '',
       largePoster: json['coverImage']?['extraLarge'] ?? '',
