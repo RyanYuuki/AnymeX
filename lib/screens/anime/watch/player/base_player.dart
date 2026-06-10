@@ -41,6 +41,8 @@ abstract class BasePlayer {
 
   Future<void> pause();
 
+  Future<void> stop();
+
   Future<void> playOrPause();
 
   Future<void> setRate(double rate);

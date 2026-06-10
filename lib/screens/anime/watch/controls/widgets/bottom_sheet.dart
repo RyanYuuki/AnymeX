@@ -457,13 +457,15 @@ class PlayerBottomSheets {
       onItemSelected: onItemSelected,
       customContent: customContent,
     );
-    return showModalBottomSheet<T>(
-      context: context,
-      isScrollControlled: true,
-      isDismissible: isDismissible,
-      backgroundColor: Colors.transparent,
-      builder: (context) =>
-          !isExpanded ? sheet : SizedBox(height: double.infinity, child: sheet),
+    return Get.find<PlayerController>().showSheetWithPause(
+      () => showModalBottomSheet<T>(
+        context: context,
+        isScrollControlled: true,
+        isDismissible: isDismissible,
+        backgroundColor: Colors.transparent,
+        builder: (context) =>
+            !isExpanded ? sheet : SizedBox(height: double.infinity, child: sheet),
+      ),
     );
   }
 
@@ -518,15 +520,17 @@ class PlayerBottomSheets {
       title: title,
       customContent: content,
     );
-    return showModalBottomSheet<T>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => isExpanded
-          ? SizedBox(
-              height: MediaQuery.of(context).size.height * expandedHeightFactor,
-              child: sheet)
-          : sheet,
+    return Get.find<PlayerController>().showSheetWithPause(
+      () => showModalBottomSheet<T>(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => isExpanded
+            ? SizedBox(
+                height: MediaQuery.of(context).size.height * expandedHeightFactor,
+                child: sheet)
+            : sheet,
+      ),
     );
   }
 

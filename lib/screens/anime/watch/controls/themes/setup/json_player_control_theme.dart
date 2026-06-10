@@ -10,6 +10,8 @@ import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:anymex/widgets/common/marquee_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:get/get.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
@@ -580,6 +582,9 @@ class ThemeRenderer {
         if (label.isEmpty) return null;
         return _makeBadgeThing(label, item);
 
+      case 'decoder_button':
+        return _makeDecoderThing(item);
+
       case 'label_stack':
         return _makeLabelStackThing(item);
 
@@ -868,6 +873,41 @@ class ThemeRenderer {
 
   Widget _makeChipThing(String text, ThemeItem item) =>
       _makeBadgeThing(text, item);
+
+  Widget _makeDecoderThing(ThemeItem item) {
+    final settings = Get.find<Settings>();
+    final current = settings.hardwareDecoder;
+    final next = _nextDecoder(current);
+
+    return Tooltip(
+      message: '${_decoderLabel(current)} → ${_decoderLabel(next)}',
+      child: GestureDetector(
+        onTap: () {
+          HapticFeedback.lightImpact();
+          settings.hardwareDecoder = next;
+        },
+        child: _makeBadgeThing(_decoderLabel(current), item),
+      ),
+    );
+  }
+
+  String _nextDecoder(String current) {
+    if (Platform.isAndroid) {
+      return switch (current) {
+        'hw' => 'hw+',
+        'hw+' => 'sw',
+        _ => 'hw',
+      };
+    }
+    return current == 'hw' ? 'sw' : 'hw';
+  }
+
+  String _decoderLabel(String value) => switch (value) {
+        'hw+' => 'HW+',
+        'hw' => 'HW',
+        'sw' => 'SW',
+        _ => value.toUpperCase(),
+      };
 
   Widget _makeTextThing(
       {required String value,
@@ -1196,18 +1236,20 @@ class ThemeRenderer {
   }
 
   void _popSettingsSheet() {
-    showModalBottomSheet(
-      context: Get.context ?? context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (sheetCtx) => Container(
-        height: MediaQuery.of(sheetCtx).size.height,
-        clipBehavior: Clip.antiAlias,
-        decoration: const BoxDecoration(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+    controller.showSheetWithPause(
+      () => showModalBottomSheet(
+        context: Get.context ?? context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (sheetCtx) => Container(
+          height: MediaQuery.of(sheetCtx).size.height,
+          clipBehavior: Clip.antiAlias,
+          decoration: const BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+          ),
+          child: const SettingsPlayer(isModal: true),
         ),
-        child: const SettingsPlayer(isModal: true),
       ),
     );
   }
@@ -2272,7 +2314,8 @@ BottomSlotDef _defaultBottomLocked() {
 const Set<String> _badgeIds = {
   'episode_badge',
   'series_badge',
-  'quality_badge'
+  'quality_badge',
+  'decoder_button',
 };
 
 const Map<String, IconData> _iconMap = {
@@ -2322,6 +2365,7 @@ final Set<String> _supportedThemeItemIds = {
   'episode_badge',
   'series_badge',
   'quality_badge',
+  'decoder_button',
   'label_stack',
   'watching_label',
   'text',
