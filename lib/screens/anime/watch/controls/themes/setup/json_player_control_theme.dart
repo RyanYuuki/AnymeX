@@ -1216,8 +1216,8 @@ class ThemeRenderer {
         }
         break;
       case 'speed':
-        PlayerBottomSheets.showPlaybackSpeed(context, controller);
-        break;
+        controller.isSpeedPaneOpened.value =
+            !controller.isSpeedPaneOpened.value;
         break;
       case 'orientation':
         if (_isMobile) controller.toggleOrientation();

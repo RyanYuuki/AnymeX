@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
-import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
@@ -292,8 +291,10 @@ class BottomControls extends StatelessWidget {
       ),
       'speed': ControlButton(
         icon: Symbols.speed_rounded,
-        onPressed: () =>
-            PlayerBottomSheets.showPlaybackSpeed(context, controller),
+        onPressed: () {
+          controller.isSpeedPaneOpened.value =
+              !controller.isSpeedPaneOpened.value;
+        },
         tooltip: 'Speed',
         compact: true,
       ),
@@ -367,7 +368,8 @@ class BottomControls extends StatelessWidget {
     final leftButtons = buildButtonList(leftButtonIds);
     final rightButtons = buildButtonList(rightButtonIds);
 
-    final isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
+    final isPortrait =
+        MediaQuery.of(context).orientation == Orientation.portrait;
 
     if (isPortrait) {
       return Column(

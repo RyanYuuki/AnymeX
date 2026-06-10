@@ -13,7 +13,7 @@ import 'package:get/get.dart';
 class Deeplink {
   static Future<void> handleDeepLink(Uri uri) async {
     print("HANDLING DEEEPLIINK => ${uri.toString()}");
-    
+
     final extensionManager = Get.find<ExtensionManager>();
     int attempts = 0;
     while (extensionManager.managers.isEmpty && attempts < 25) {
@@ -21,20 +21,21 @@ class Deeplink {
       attempts++;
     }
 
-    final illegalSchemes = extensionManager
-        .managers
-        .expand((e) => e.schemes.toList())
-        .toList();
+    final illegalSchemes =
+        extensionManager.managers.expand((e) => e.schemes.toList()).toList();
 
     if (_isThemeDeepLink(uri)) {
       _handleThemeDeepLink(uri);
       return;
     }
 
-    if (!illegalSchemes.contains(uri.scheme.toLowerCase())) {
-      final mediaTarget = _parseMediaTarget(uri);
-      if (mediaTarget == null) return;
+    final mediaTarget = _parseMediaTarget(uri);
+    if (mediaTarget != null) {
       _openMediaTarget(mediaTarget);
+      return;
+    }
+
+    if (!illegalSchemes.contains(uri.scheme.toLowerCase())) {
       return;
     }
 

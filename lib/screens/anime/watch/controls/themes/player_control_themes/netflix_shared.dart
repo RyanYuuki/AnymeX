@@ -306,7 +306,7 @@ class NFMoreSheet extends StatelessWidget {
               label: 'Playback speed',
               onTap: () {
                 Get.back();
-                PlayerBottomSheets.showPlaybackSpeed(ctx, controller);
+                controller.isSpeedPaneOpened.value = true;
               },
             ),
             NFSheetTile(

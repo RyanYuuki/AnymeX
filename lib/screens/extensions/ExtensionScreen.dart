@@ -5,15 +5,13 @@ import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/screens/extensions/ExtensionList.dart';
 import 'package:anymex/screens/extensions/ExtensionTesting/extension_test_page.dart';
+import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_extensions.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
-import 'package:anymex/widgets/helper/platform_builder.dart';
-import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex_extension_runtime_bridge/Services/Aniyomi/Models/Source.dart';
@@ -95,9 +93,65 @@ class _ExtensionScreenState extends State<ExtensionScreen>
       disabled: widget.disableGlow,
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: _buildAppBar(theme),
         body: Column(
           children: [
+            NestedHeader(
+              title: 'Extensions',
+              action: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: theme.primaryContainer.opaque(0.3),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: IconButton(
+                      icon: Icon(Icons.build_outlined,
+                          color: theme.primary, size: 22),
+                      onPressed: () => Get.to(() => const ExtensionTestPage()),
+                      tooltip: "Test Extensions",
+                      style: IconButton.styleFrom(
+                        padding: const EdgeInsets.all(6),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: theme.primaryContainer.opaque(0.3),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: IconButton(
+                      icon: Icon(HugeIcons.strokeRoundedGithub,
+                          color: theme.primary, size: 22),
+                      onPressed: repoSheet,
+                      tooltip: "Repositories",
+                      style: IconButton.styleFrom(
+                        padding: const EdgeInsets.all(6),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: theme.primaryContainer.opaque(0.3),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: IconButton(
+                      icon: Icon(Iconsax.sort, color: theme.primary, size: 22),
+                      onPressed: () => _showSortDialog(context),
+                      tooltip: "Sort & Filter",
+                      style: IconButton.styleFrom(
+                        padding: const EdgeInsets.all(6),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             _buildTabBar(),
             const SizedBox(height: 8.0),
             CustomSearchBar(
@@ -114,75 +168,14 @@ class _ExtensionScreenState extends State<ExtensionScreen>
     );
   }
 
-  PreferredSizeWidget _buildAppBar(ColorScheme theme) {
-    return AppBar(
-      elevation: 0,
-      backgroundColor: Colors.transparent,
-      leading: getResponsiveValue(context,
-          mobileValue: Center(
-            child: AnymexOnTap(
-              onTap: () => Get.back(),
-              child: Container(
-                width: 35,
-                height: 35,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50),
-                  color: context.colors.surfaceContainer,
-                ),
-                child: const Icon(Icons.arrow_back_ios_new_rounded),
-              ),
-            ),
-          ),
-          desktopValue: const SizedBox.shrink()),
-      leadingWidth:
-          getResponsiveValue(context, mobileValue: null, desktopValue: 0.0),
-      title: Text(
-        "Extensions",
-        style: TextStyle(
-          fontFamily: 'Poppins',
-          fontWeight: FontWeight.bold,
-          fontSize: 16.0,
-          color: theme.primary,
-        ),
-      ),
-      iconTheme: IconThemeData(color: theme.primary),
-      actions: [
-        AnymexOnTap(
-          onTap: () => Get.to(() => const ExtensionTestPage()),
-          child: IconButton(
-            icon: Icon(Icons.build_outlined, color: theme.primary),
-            onPressed: () => Get.to(() => const ExtensionTestPage()),
-            tooltip: "Test Extensions",
-          ),
-        ),
-        AnymexOnTap(
-          onTap: repoSheet,
-          child: IconButton(
-            icon: Icon(HugeIcons.strokeRoundedGithub, color: theme.primary),
-            onPressed: repoSheet,
-            tooltip: "Repositories",
-          ),
-        ),
-        AnymexOnTap(
-          child: IconButton(
-            icon: Icon(Iconsax.sort, color: theme.primary),
-            onPressed: () => _showSortDialog(context),
-            tooltip: "Sort & Filter",
-          ),
-        ),
-        const SizedBox(width: 8.0),
-      ],
-    );
-  }
-
-  bool get _isPluginInstalled =>
-      AnymeXRuntimeBridge.isPluginInstalled;
+  bool get _isPluginInstalled => AnymeXRuntimeBridge.isPluginInstalled;
 
   bool _typeRequiresPlugin(String type) {
     if (type == 'all') return false;
-    final activeManager = Get.find<ExtensionManager>().managers.firstWhereOrNull(
-      (m) => m.name.toLowerCase().contains(type.toLowerCase()),
-    );
+    final activeManager =
+        Get.find<ExtensionManager>().managers.firstWhereOrNull(
+              (m) => m.name.toLowerCase().contains(type.toLowerCase()),
+            );
     if (activeManager != null) {
       return activeManager.requiresPlugin;
     }
@@ -199,58 +192,96 @@ class _ExtensionScreenState extends State<ExtensionScreen>
         final selectedSourceType = _selectedSourceType.value;
         final selectedLanguage = _selectedLanguage.value;
 
-        return AnymexDialog(
-          title: 'Sort & Filter',
-          onConfirm: () {},
-          contentWidget: SingleChildScrollView(
+        return Dialog(
+          backgroundColor: context.colors.surface,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(25),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AnymexExpansionTile(
-                  title: "Source Type",
-                  initialExpanded: true,
-                  content: Column(
-                    children: sourceTypes
-                        .map((type) {
-                          final needsPlugin = _typeRequiresPlugin(type) && !_isPluginInstalled;
-                          return Padding(
-                              padding: const EdgeInsets.only(bottom: 8),
-                              child: _SortOptionTile(
-                                title: type == 'all' ? 'All Sources' : type,
-                                subtitle: needsPlugin ? 'Requires plugin — disabled' : _getSourceSubtitle(type),
-                                isSelected: !needsPlugin && selectedSourceType == type,
-                                isDisabled: needsPlugin,
-                                onTap: needsPlugin ? null : () => _selectedSourceType.value = type,
-                              ),
-                            );
-                        })
-                        .toList(),
+                const Text(
+                  'Sort & Filter',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                Flexible(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        AnymexExpansionTile(
+                          title: "Source Type",
+                          initialExpanded: true,
+                          content: Column(
+                            children: sourceTypes.map((type) {
+                              final needsPlugin = _typeRequiresPlugin(type) &&
+                                  !_isPluginInstalled;
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: _SortOptionTile(
+                                  title: type == 'all' ? 'All Sources' : type,
+                                  subtitle: needsPlugin
+                                      ? 'Requires plugin — disabled'
+                                      : _getSourceSubtitle(type),
+                                  isSelected: !needsPlugin &&
+                                      selectedSourceType == type,
+                                  isDisabled: needsPlugin,
+                                  onTap: needsPlugin
+                                      ? null
+                                      : () => _selectedSourceType.value = type,
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        AnymexExpansionTile(
+                          title: "Language",
+                          content: Column(
+                            children: languages.map((lang) {
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: _SortOptionTile(
+                                  title: lang,
+                                  subtitle:
+                                      "Filter by ${lang == 'all' ? 'all languages' : lang}",
+                                  isSelected: selectedLanguage == lang,
+                                  onTap: () => _selectedLanguage.value = lang,
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
-                AnymexExpansionTile(
-                  title: "Language",
-                  content: SizedBox(
-                    height: 250,
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: languages.length,
-                      itemBuilder: (context, index) {
-                        final lang = languages[index];
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: _SortOptionTile(
-                            title: lang,
-                            subtitle:
-                                "Filter by ${lang == 'all' ? 'all languages' : lang}",
-                            isSelected: selectedLanguage == lang,
-                            onTap: () => _selectedLanguage.value = lang,
-                          ),
-                        );
-                      },
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        style: ElevatedButton.styleFrom(
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30)),
+                          backgroundColor: context.colors.surfaceContainer,
+                        ),
+                        child: Text(
+                          'Cancel',
+                          style: TextStyle(
+                              color: context.colors.primary,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ],
             ),
@@ -515,9 +546,7 @@ class _SortOptionTile extends StatelessWidget {
                     AnymexText(
                       text: title,
                       variant: TextVariant.semiBold,
-                      color: isDisabled
-                          ? colors.onSurface.opaque(0.35)
-                          : null,
+                      color: isDisabled ? colors.onSurface.opaque(0.35) : null,
                     ),
                     const SizedBox(height: 4),
                     AnymexText(

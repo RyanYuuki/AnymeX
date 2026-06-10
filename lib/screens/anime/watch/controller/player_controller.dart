@@ -193,6 +193,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final Rx<bool> isSyncSubsPaneOpened = false.obs;
   final RxList<SubtitleCue> parsedSubtitleCues = <SubtitleCue>[].obs;
   final Rx<bool> isEpisodePaneOpened = false.obs;
+  final Rx<bool> isSpeedPaneOpened = false.obs;
   final RxBool canGoForward = false.obs;
   final RxBool canGoBackward = false.obs;
   final RxDouble volume = 0.0.obs;
@@ -287,7 +288,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     final cleanShaderName = shaderName == "Default" ? "" : shaderName;
     settingsController.selectedShader = cleanShaderName;
     PlayerUiKeys.selectedShader.set(cleanShaderName);
-    
+
     if (_basePlayer is MediaKitPlayer) {
       final nativePlayer = (_basePlayer as MediaKitPlayer).nativePlayer;
       try {
@@ -296,7 +297,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         Logger.e('Failed to apply shader: $e');
       }
     }
-    
+
     activeShaderName.value = shaderName;
     showShaderOsd.value = true;
     _shaderOsdTimer?.cancel();
@@ -322,7 +323,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   Timer? _controlsTimer;
   bool _wasControlsVisible = false;
   bool isLeftLandscaped = true;
-  final Rx<DeviceOrientation> currentOrientation = DeviceOrientation.landscapeLeft.obs;
+  final Rx<DeviceOrientation> currentOrientation =
+      DeviceOrientation.landscapeLeft.obs;
 
   final Rx<BoxFit> videoFit = Rx<BoxFit>(BoxFit.contain);
   final RxBool isLocked = false.obs;
@@ -527,6 +529,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void _applyOrientation(DeviceOrientation orientation) {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     SystemChrome.setPreferredOrientations([orientation]);
     currentOrientation.value = orientation;
     isLeftLandscaped = orientation != DeviceOrientation.landscapeRight;
@@ -950,12 +953,13 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       final subs = e.subtitle
           .where((track) => !_isExternalSubtitleTrack(track))
           .toList();
-          
+
       if (isOffline.value) {
         if (embeddedSubs.value.isEmpty) {
-          final offlineTracks = externalSubs.value.map((s) => 
-              SubtitleTrack.uri(s.file ?? '', title: s.label, language: s.label)
-          ).toList();
+          final offlineTracks = externalSubs.value
+              .map((s) => SubtitleTrack.uri(s.file ?? '',
+                  title: s.label, language: s.label))
+              .toList();
           subs.addAll(offlineTracks);
           embeddedSubs.value = subs;
         }
@@ -1062,7 +1066,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     if (selectedVideo.value?.subtitles != null &&
         selectedVideo.value!.subtitles!.isNotEmpty) {
-      
       final validSubs = selectedVideo.value!.subtitles!
           .where((s) => s.file != null && !s.file!.startsWith('http'))
           .toList();
@@ -1092,7 +1095,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       final parentDir = videoFile.parent;
       final dirs = await parentDir.list().whereType<Directory>().toList();
       final expectedSubsDirName = 'Episode_${currentEpisode.value.number}_subs';
-      final subsDir = dirs.firstWhereOrNull((d) => p.basename(d.path) == expectedSubsDirName);
+      final subsDir = dirs
+          .firstWhereOrNull((d) => p.basename(d.path) == expectedSubsDirName);
 
       if (subsDir != null && await subsDir.exists()) {
         final files = await subsDir.list().toList();
@@ -1285,7 +1289,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
             savedEpisodeData.durationInMilliseconds ?? 0;
 
         final bool wasCompleted = episodeTotalDuration > 0 &&
-            (savedTimestamp / episodeTotalDuration) * 100 >= settingsController.markAsCompleted;
+            (savedTimestamp / episodeTotalDuration) * 100 >=
+                settingsController.markAsCompleted;
 
         if (!wasCompleted && savedTimestamp > 0) {
           startPosition = Duration(milliseconds: savedTimestamp);
@@ -1417,10 +1422,12 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   bool _matchesPreferredLanguage(String? label, String preferredLangCode) {
-    if (label == null || label.isEmpty || preferredLangCode == 'none') return false;
+    if (label == null || label.isEmpty || preferredLangCode == 'none')
+      return false;
     final normLabel = label.toLowerCase();
     final normCode = preferredLangCode.toLowerCase();
-    final fullName = SubtitleTranslator.languages[preferredLangCode]?.toLowerCase();
+    final fullName =
+        SubtitleTranslator.languages[preferredLangCode]?.toLowerCase();
     final extName = extensionLanguageNameByCode[normCode]?.toLowerCase();
     return normLabel.contains(normCode) ||
         (fullName != null && normLabel.contains(fullName)) ||
@@ -1442,7 +1449,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     if (preferredLang == 'none' || embeddedSubs.value.isEmpty) return;
 
     final match = embeddedSubs.value.firstWhereOrNull((track) =>
-        _matchesPreferredLanguage('${track.language ?? ''} ${track.title ?? ''}', preferredLang));
+        _matchesPreferredLanguage(
+            '${track.language ?? ''} ${track.title ?? ''}', preferredLang));
 
     if (match != null) {
       _hasAutoSelectedPreferredSub = true;
@@ -1475,8 +1483,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
       final preferredLang = playerSettings.preferredSubtitleLanguage;
       final match = preferredLang != 'none'
-          ? currentStreamSubs.firstWhereOrNull((e) => _matchesPreferredLanguage(e.label, preferredLang))
-          : currentStreamSubs.firstWhereOrNull((e) => e.label?.toLowerCase().contains('eng') ?? false);
+          ? currentStreamSubs.firstWhereOrNull(
+              (e) => _matchesPreferredLanguage(e.label, preferredLang))
+          : currentStreamSubs.firstWhereOrNull(
+              (e) => e.label?.toLowerCase().contains('eng') ?? false);
       setExternalSub(match ?? currentStreamSubs.first);
     });
   }
@@ -1616,7 +1626,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   void setSubtitleTrack(SubtitleTrack track) {
     selectedSubsTrack.value = track.id == 'no' ? null : track;
 
-    if (track.id != 'no' && track.id != 'auto' && _isExternalSubtitleTrack(track)) {
+    if (track.id != 'no' &&
+        track.id != 'auto' &&
+        _isExternalSubtitleTrack(track)) {
       final match = externalSubs.value.firstWhere(
         (sub) {
           final isUrlMatch = sub.file == track.url;
@@ -1874,8 +1886,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     setAudioTrack(AudioTrack.uri(track.file!));
   }
 
-
-
   Future<void> loadSubtitleCuesFromUrl(String url) async {
     try {
       parsedSubtitleCues.clear();
@@ -1893,7 +1903,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         client.close();
       } else {
         print('[SUBS] Attempting to load local subtitle from path: $url');
-        final file = File(url.replaceFirst('file://', '').replaceAll('%20', ' '));
+        final file =
+            File(url.replaceFirst('file://', '').replaceAll('%20', ' '));
         print('[SUBS] file exists? ${await file.exists()}');
         if (await file.exists()) {
           final bytes = await file.readAsBytes();
@@ -1902,7 +1913,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           return;
         }
       }
-      
+
       final cues = await SubParser.parseSubtitles(content);
       parsedSubtitleCues.assignAll(cues);
     } catch (e) {

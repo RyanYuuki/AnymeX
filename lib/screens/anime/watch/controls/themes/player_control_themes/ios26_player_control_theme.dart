@@ -457,8 +457,10 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
       ),
       'speed': ControlButton(
         icon: Symbols.speed_rounded,
-        onPressed: () =>
-            PlayerBottomSheets.showPlaybackSpeed(context, controller),
+        onPressed: () {
+          controller.isSpeedPaneOpened.value =
+              !controller.isSpeedPaneOpened.value;
+        },
         tooltip: 'Speed',
         compact: true,
       ),

@@ -685,9 +685,11 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
 
     final methods = sourceController.activeSource.value!.methods;
     final videoStream = methods.getVideoListStream(sourceEpisode,
-                  parameters: SourceParams(cancelToken: scrapeToken));
-    final videoFuture = videoStream == null ? methods.getVideoList(sourceEpisode,
-                  parameters: SourceParams(cancelToken: scrapeToken)) : null;
+        parameters: SourceParams(cancelToken: scrapeToken));
+    final videoFuture = videoStream == null
+        ? methods.getVideoList(sourceEpisode,
+            parameters: SourceParams(cancelToken: scrapeToken))
+        : null;
 
     showModalBottomSheet(
       context: context,
@@ -771,10 +773,12 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       sourceController.activeSource.value?.cancelRequest(scrapeToken);
     });
 
-    final dbId = '${widget.anilistData!.id}_${widget.anilistData!.serviceType.name}_${widget.anilistData!.type}';
+    final dbId =
+        '${widget.anilistData!.id}_${widget.anilistData!.serviceType.name}_${widget.anilistData!.type}';
     final savedTracking = DynamicKeys.trackingPermission.get<bool?>(dbId);
     if (savedTracking != null && !bypassDialog) {
-       snackBar("Long press an episode if you wanna reset the tracker.", title: "Tracking Preference Applied");
+      snackBar("Long press an episode if you wanna reset the tracker.",
+          title: "Tracking Preference Applied");
     }
   }
 
@@ -882,86 +886,86 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
             ),
             const SizedBox(height: 10),
             ...streamList.map((e) {
-              return InkWell(
-                onTap: () async {
-                  Get.back();
-                  final dbId = '${widget.anilistData!.id}_${widget.anilistData!.serviceType.name}_${widget.anilistData!.type}';
-                  final savedTracking = DynamicKeys.trackingPermission.get<bool?>(dbId);
+              return Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 3.0, horizontal: 10),
+                child: ListTile(
+                  onTap: () async {
+                    Get.back();
+                    final dbId =
+                        '${widget.anilistData!.id}_${widget.anilistData!.serviceType.name}_${widget.anilistData!.type}';
+                    final savedTracking =
+                        DynamicKeys.trackingPermission.get<bool?>(dbId);
 
-                  if (savedTracking != null && !bypassDialog) {
-                    await navigate(() => WatchScreen(
-                          episodeSrc: e,
-                          episodeList: widget.episodeList,
-                          anilistData: widget.anilistData!,
-                          currentEpisode: selectedEpisode.value,
-                          episodeTracks: streamList,
-                          shouldTrack: savedTracking,
-                        ));
-                    Future.delayed(const Duration(seconds: 1), () {
-                      if (mounted) setState(() {});
-                    });
-                    return;
-                  }
+                    if (savedTracking != null && !bypassDialog) {
+                      await navigate(() => WatchScreen(
+                            episodeSrc: e,
+                            episodeList: widget.episodeList,
+                            anilistData: widget.anilistData!,
+                            currentEpisode: selectedEpisode.value,
+                            episodeTracks: streamList,
+                            shouldTrack: savedTracking,
+                          ));
+                      Future.delayed(const Duration(seconds: 1), () {
+                        if (mounted) setState(() {});
+                      });
+                      return;
+                    }
 
-                  if (General.shouldAskForTrack.get(true) == false) {
-                    await navigate(() => WatchScreen(
-                          episodeSrc: e,
-                          episodeList: widget.episodeList,
-                          anilistData: widget.anilistData!,
-                          currentEpisode: selectedEpisode.value,
-                          episodeTracks: streamList,
-                        ));
-                    Future.delayed(const Duration(seconds: 1), () {
-                      if (mounted) setState(() {});
-                    });
-                    return;
-                  }
-                  final shouldTrack =
-                      widget.anilistData?.serviceType == ServicesType.extensions
-                          ? false
-                          : await showTrackingDialog(context, dbId: dbId);
+                    if (General.shouldAskForTrack.get(true) == false) {
+                      await navigate(() => WatchScreen(
+                            episodeSrc: e,
+                            episodeList: widget.episodeList,
+                            anilistData: widget.anilistData!,
+                            currentEpisode: selectedEpisode.value,
+                            episodeTracks: streamList,
+                          ));
+                      Future.delayed(const Duration(seconds: 1), () {
+                        if (mounted) setState(() {});
+                      });
+                      return;
+                    }
+                    final shouldTrack = widget.anilistData?.serviceType ==
+                            ServicesType.extensions
+                        ? false
+                        : await showTrackingDialog(context, dbId: dbId);
 
-                  if (shouldTrack != null) {
-                    await navigate(() => WatchScreen(
-                          episodeSrc: e,
-                          episodeList: widget.episodeList,
-                          anilistData: widget.anilistData!,
-                          currentEpisode: selectedEpisode.value,
-                          episodeTracks: streamList,
-                          shouldTrack: shouldTrack,
-                        ));
-                    Future.delayed(const Duration(seconds: 1), () {
-                      if (mounted) setState(() {});
-                    });
-                  }
-                },
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 3.0, horizontal: 10),
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(
-                      vertical: 2.5,
-                      horizontal: 10,
-                    ),
-                    title: AnymexText(
-                      text: e.quality?.toUpperCase() ?? "Unknown",
-                      variant: TextVariant.bold,
-                      size: 16,
-                      color: context.colors.primary,
-                    ),
-                    tileColor: Theme.of(context)
-                        .colorScheme
-                        .secondaryContainer
-                        .opaque(0.4),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    trailing: const Icon(Iconsax.play5),
-                    subtitle: AnymexText(
-                      text: sourceController.activeSource.value!.name!
-                          .toUpperCase(),
-                      variant: TextVariant.semiBold,
-                    ),
+                    if (shouldTrack != null) {
+                      await navigate(() => WatchScreen(
+                            episodeSrc: e,
+                            episodeList: widget.episodeList,
+                            anilistData: widget.anilistData!,
+                            currentEpisode: selectedEpisode.value,
+                            episodeTracks: streamList,
+                            shouldTrack: shouldTrack,
+                          ));
+                      Future.delayed(const Duration(seconds: 1), () {
+                        if (mounted) setState(() {});
+                      });
+                    }
+                  },
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: 2.5,
+                    horizontal: 10,
+                  ),
+                  title: AnymexText(
+                    text: e.quality?.toUpperCase() ?? "Unknown",
+                    variant: TextVariant.bold,
+                    size: 16,
+                    color: context.colors.primary,
+                  ),
+                  tileColor: Theme.of(context)
+                      .colorScheme
+                      .secondaryContainer
+                      .opaque(0.4),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  trailing: const Icon(Iconsax.play5),
+                  subtitle: AnymexText(
+                    text: sourceController.activeSource.value!.name!
+                        .toUpperCase(),
+                    variant: TextVariant.semiBold,
                   ),
                 ),
               );

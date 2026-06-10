@@ -197,11 +197,11 @@ Episode DEpisodeToEpisode(DEpisode chapter) {
 
 String calcTime(String timestamp, {String format = "dd-MM-yyyy"}) {
   if (timestamp.trim().isEmpty) return "";
-  
+
   DateTime? dateTime;
   final cleanTimestamp = timestamp.trim();
   final parsedInt = int.tryParse(cleanTimestamp);
-  
+
   if (parsedInt != null) {
     if (cleanTimestamp.length == 10) {
       dateTime = DateTime.fromMillisecondsSinceEpoch(parsedInt * 1000);
@@ -219,11 +219,11 @@ String calcTime(String timestamp, {String format = "dd-MM-yyyy"}) {
   } else {
     dateTime = DateTime.tryParse(cleanTimestamp);
   }
-  
+
   if (dateTime == null) {
     return timestamp;
   }
-  
+
   final now = DateTime.now();
   final difference = now.difference(dateTime);
 
@@ -442,6 +442,7 @@ String formatTimeAgo(int millisecondsSinceEpoch) {
 Media convertOfflineToMedia(OfflineMedia offlineMedia) {
   return Media(
       id: offlineMedia.mediaId ?? '0',
+      idMal: offlineMedia.idMal ?? '0',
       romajiTitle: offlineMedia.jname ?? '',
       title: offlineMedia.english ?? offlineMedia.name ?? '',
       description: offlineMedia.description ?? '',

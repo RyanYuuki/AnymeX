@@ -14,6 +14,8 @@ class OfflineMedia {
   @Index()
   String? mediaId;
 
+  String? idMal;
+
   String? jname;
   String? name;
   String? english;
@@ -50,6 +52,7 @@ class OfflineMedia {
 
   OfflineMedia({
     this.mediaId,
+    this.idMal,
     this.jname,
     this.name,
     this.english,
@@ -83,6 +86,7 @@ class OfflineMedia {
   Map<String, dynamic> toJson() {
     return {
       'id': mediaId,
+      'idMal': idMal,
       'jname': jname,
       'name': name,
       'english': english,
@@ -117,6 +121,7 @@ class OfflineMedia {
   factory OfflineMedia.fromJson(Map<String, dynamic> json) {
     return OfflineMedia(
       mediaId: json['id'] as String?,
+      idMal: json['idMal'] as String?,
       jname: json['jname'] as String?,
       name: json['name'] as String?,
       english: json['english'] as String?,

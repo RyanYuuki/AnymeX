@@ -407,6 +407,9 @@ class OfflineStorageController extends GetxController {
           currentEpisode.source = sourceController.activeSource.value?.name;
         }
         existingAnime.currentEpisode = currentEpisode;
+        if (existingAnime.idMal == null && original.idMal != '0') {
+          existingAnime.idMal = original.idMal;
+        }
         await isar.offlineMedias.put(existingAnime);
         Logger.i('Updated anime: ${existingAnime.name}');
       } else {
@@ -741,6 +744,7 @@ class OfflineStorageController extends GetxController {
     final handler = Get.find<ServiceHandler>();
     return OfflineMedia(
       mediaId: original.id,
+      idMal: original.idMal,
       jname: original.romajiTitle,
       name: original.title,
       english: original.title,
