@@ -529,6 +529,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void _applyOrientation(DeviceOrientation orientation) {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     SystemChrome.setPreferredOrientations([orientation]);
     currentOrientation.value = orientation;
     isLeftLandscaped = orientation != DeviceOrientation.landscapeRight;
