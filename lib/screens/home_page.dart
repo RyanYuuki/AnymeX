@@ -27,8 +27,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:thanos_snap_effect/thanos_snap_effect.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:get/get.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({
@@ -43,6 +43,8 @@ class _HomePageState extends State<HomePage> {
   late ScrollController _scrollController;
   final ValueNotifier<bool> _isAppBarVisibleExternally =
       ValueNotifier<bool>(true);
+  bool _snapAll = false;
+  late final Stream<List<OfflineMedia>> _animeLibraryStream;
 
   Widget _buildRecentlyOpenedSection(CacheController cacheController) {
     final data = cacheController.getStoredAnime();
@@ -69,7 +71,7 @@ class _HomePageState extends State<HomePage> {
   Widget _buildContinueWatchingSection(
       OfflineStorageController offlineStorageController) {
     return StreamBuilder<List<OfflineMedia>>(
-      stream: offlineStorageController.watchAnimeLibrary(),
+      stream: _animeLibraryStream,
       builder: (context, snapshot) {
         final historyData = (snapshot.data ?? const <OfflineMedia>[])
             .where((e) => e.currentEpisode?.currentTrack != null)
@@ -86,14 +88,31 @@ class _HomePageState extends State<HomePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(left: 20.0),
-              child: Text(
-                "Local History",
-                style: TextStyle(
-                  fontFamily: "Poppins-SemiBold",
-                  fontSize: 17,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
+              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Local History",
+                    style: TextStyle(
+                      fontFamily: "Poppins-SemiBold",
+                      fontSize: 17,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => _showClearAllHistoryDialog(
+                        context, offlineStorageController, visibleHistory),
+                    child: Text(
+                      "Clear All",
+                      style: TextStyle(
+                        fontFamily: "Poppins-SemiBold",
+                        fontSize: 13,
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 10),
@@ -110,9 +129,17 @@ class _HomePageState extends State<HomePage> {
                     mainAxisSpacing: 0,
                     mainAxisExtent: 300,
                   ),
-                  itemBuilder: (context, i) => ContinueWatchingCard(
+                  itemBuilder: (context, i) => _RemovableHistoryCard(
+                    key: ValueKey(visibleHistory[i].mediaId),
                     media: HistoryModel.fromOfflineMedia(
                         visibleHistory[i], ItemType.anime),
+                    snapAll: _snapAll,
+                    onRemoved: () {
+                      offlineStorageController.clearMediaHistory(
+                        visibleHistory[i].mediaId ?? '',
+                        mediaType: ItemType.anime,
+                      );
+                    },
                   ),
                 ),
               ),
@@ -120,6 +147,32 @@ class _HomePageState extends State<HomePage> {
           ],
         );
       },
+    );
+  }
+
+  void _showClearAllHistoryDialog(BuildContext context,
+      OfflineStorageController controller, List<OfflineMedia> items) {
+    showDialog(
+      context: context,
+      builder: (context) => AnymexDialog(
+        title: 'Clear All History',
+        contentWidget: const Text(
+          'Are you sure you want to clear all local watch history? This action cannot be undone.',
+          style: TextStyle(fontFamily: 'Poppins', fontSize: 14),
+        ),
+        confirmText: 'Clear All',
+        onConfirm: () {
+          HapticFeedback.mediumImpact();
+          setState(() => _snapAll = true);
+          Future.delayed(const Duration(milliseconds: 1500), () {
+            controller.clearMediaHistoryBulk(
+              items.map((e) => e.mediaId ?? ''),
+              mediaType: ItemType.anime,
+            );
+            if (mounted) setState(() => _snapAll = false);
+          });
+        },
+      ),
     );
   }
 
@@ -166,6 +219,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    _animeLibraryStream = Get.find<OfflineStorageController>().watchAnimeLibrary();
     _scrollController = ScrollController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _showDiscordDialog();
@@ -463,6 +517,67 @@ class ImageButton extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _RemovableHistoryCard extends StatefulWidget {
+  final HistoryModel media;
+  final VoidCallback onRemoved;
+  final bool snapAll;
+
+  const _RemovableHistoryCard({
+    super.key,
+    required this.media,
+    required this.onRemoved,
+    this.snapAll = false,
+  });
+
+  @override
+  State<_RemovableHistoryCard> createState() => _RemovableHistoryCardState();
+}
+
+class _RemovableHistoryCardState extends State<_RemovableHistoryCard>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1500),
+  );
+
+  @override
+  void didUpdateWidget(covariant _RemovableHistoryCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.snapAll && !oldWidget.snapAll) {
+      _controller.forward(from: 0);
+    }
+  }
+
+  void _triggerRemoval() {
+    HapticFeedback.lightImpact();
+    _controller.forward(from: 0).then((_) => widget.onRemoved());
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Snappable(
+      animation: _controller,
+      outerPadding: const EdgeInsets.all(20),
+      style: const SnappableStyle(
+        particleLifetime: 0.6,
+        fadeOutDuration: 0.3,
+        particleSpeed: 1.0,
+        particleSize: SnappableParticleSize.squareFromRelativeWidth(0.008),
+      ),
+      child: ContinueWatchingCard(
+        media: widget.media,
+        onRemove: _triggerRemoval,
       ),
     );
   }

@@ -23,16 +23,18 @@ String buildNFTitle(PlayerController c) {
 }
 
 void showNFMoreSheet(BuildContext context, PlayerController controller) {
-  showModalBottomSheet(
-    context: context,
-    isDismissible: true,
-    enableDrag: true,
-    isScrollControlled: true,
-    backgroundColor: const Color(0xFF141414),
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+  controller.showSheetWithPause(
+    () => showModalBottomSheet(
+      context: context,
+      isDismissible: true,
+      enableDrag: true,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF141414),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (_) => NFMoreSheet(controller: controller, ctx: context),
     ),
-    builder: (_) => NFMoreSheet(controller: controller, ctx: context),
   );
 }
 
@@ -337,13 +339,15 @@ class NFMoreSheet extends StatelessWidget {
               label: 'Player settings',
               onTap: () {
                 Get.back();
-                showModalBottomSheet(
-                  context: Get.context!,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.transparent,
-                  builder: (c) => SizedBox(
-                    height: MediaQuery.of(c).size.height,
-                    child: const SettingsPlayer(isModal: true),
+                controller.showSheetWithPause(
+                  () => showModalBottomSheet(
+                    context: Get.context!,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (c) => SizedBox(
+                      height: MediaQuery.of(c).size.height,
+                      child: const SettingsPlayer(isModal: true),
+                    ),
                   ),
                 );
               },

@@ -65,8 +65,10 @@ class _WatchScreenState extends State<WatchScreen> {
         body: Stack(
       children: [
         Obx(() {
-          controller.playerReloadVersion.value;
-          return controller.videoWidget;
+          return KeyedSubtree(
+            key: ValueKey(controller.playerReloadVersion.value),
+            child: controller.videoWidget,
+          );
         }),
         PlayerOverlay(controller: controller),
         BufferingOverlay(controller: controller),

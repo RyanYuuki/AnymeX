@@ -216,6 +216,11 @@ class MediaKitPlayer extends base.BasePlayer {
   }
 
   @override
+  Future<void> stop() async {
+    await _player.stop();
+  }
+
+  @override
   Future<void> playOrPause() async {
     await _player.playOrPause();
   }

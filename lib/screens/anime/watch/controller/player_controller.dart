@@ -1258,7 +1258,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       }
 
       resetListeners();
-      _basePlayer.open('');
+      await _basePlayer.stop();
       setExternalSub(null);
       currentEpisode.value = episode;
       _hasTrackedInitialLocal = false;
@@ -1298,6 +1298,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       snackBar('Failed to load episode. Check your connection.');
     } finally {
       PlayerBottomSheets.hideLoader();
+      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
       updateNavigatorState();
     }
   }
@@ -1584,6 +1585,16 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     onUserInteraction();
   }
 
+  Future<T?> showSheetWithPause<T>(Future<T?> Function() openSheet) async {
+    final wasPlaying = isPlaying.value;
+    if (wasPlaying) _basePlayer.pause();
+    try {
+      return await openSheet();
+    } finally {
+      if (wasPlaying) _basePlayer.play();
+    }
+  }
+
   void setRate(double rate) {
     playbackSpeed.value = rate;
     _basePlayer.setRate(rate);
@@ -1715,9 +1726,13 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     brightness.value = value;
     brightnessIndicator.value = true;
 
-    try {
-      await ScreenBrightness.instance.setApplicationScreenBrightness(value);
-    } catch (_) {}
+    unawaited(
+      ScreenBrightness.instance
+          .setApplicationScreenBrightness(value)
+          .catchError((e) {
+        Logger.e("Error setting brightness: $e");
+      }),
+    );
 
     _brightnessTimer?.cancel();
 
@@ -2019,11 +2034,12 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void changeEpisode(Episode episode) {
-    _basePlayer.pause();
     _trackLocally();
     if (!isOffline.value) {
       _trackOnline(_shouldMarkAsCompleted);
     }
+    _basePlayer.pause();
+    unawaited(_basePlayer.stop());
     isEpisodePaneOpened.value = false;
     resetListeners();
     fetchEpisode(episode);
@@ -2038,8 +2054,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void openColorProfileBottomSheet(BuildContext context) {
     if (_basePlayer is MediaKitPlayer) {
-      ColorProfileBottomSheet.showColorProfileSheet(
-          context, this, (_basePlayer as MediaKitPlayer).nativePlayer);
+      showSheetWithPause(() async {
+        await ColorProfileBottomSheet.showColorProfileSheet(
+            context, this, (_basePlayer as MediaKitPlayer).nativePlayer);
+      });
     } else {
       snackBar('Color profiles only available with MediaKit player');
     }
