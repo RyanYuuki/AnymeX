@@ -15,8 +15,8 @@ class IosMediaIndicatorTheme extends MediaIndicatorTheme {
   Widget buildIndicator(BuildContext context, MediaIndicatorThemeData data) {
     final colors = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final accentColor =
-        (data.isVolumeIndicator ? colors.primary : colors.tertiary).opaque(0.9);
+    final primaryColor = colors.primary.opaque(0.9);
+    final tertiaryColor = colors.tertiary.opaque(0.9);
     const transitionDuration = Duration(milliseconds: 200);
     const valueAnimationDuration = Duration(milliseconds: 150);
     const hiddenScale = 0.9;
@@ -56,13 +56,13 @@ class IosMediaIndicatorTheme extends MediaIndicatorTheme {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       width: 80,
                       height: 80,
                       child: CircularProgressIndicator(
                         value: 1.0,
                         strokeWidth: 8,
-                        color: const Color.fromRGBO(0, 0, 0, 0.2),
+                        color: Color.fromRGBO(0, 0, 0, 0.2),
                         strokeCap: StrokeCap.round,
                       ),
                     ),
@@ -74,12 +74,28 @@ class IosMediaIndicatorTheme extends MediaIndicatorTheme {
                         duration: valueAnimationDuration,
                         curve: Curves.easeOut,
                         builder: (context, animValue, _) {
-                          return CircularProgressIndicator(
-                            value: animValue,
-                            year2023: false,
-                            strokeWidth: 8,
-                            color: accentColor,
-                            strokeCap: StrokeCap.round,
+                          final firstValue = animValue.clamp(0.0, 1.0);
+                          final secondValue = (animValue - 1.0).clamp(0.0, 1.0);
+
+                          return Stack(
+                            children: [
+                              CircularProgressIndicator(
+                                value: firstValue,
+                                year2023: false,
+                                strokeWidth: 8,
+                                color: data.isVolumeIndicator ? primaryColor : tertiaryColor,
+                                strokeCap: StrokeCap.round,
+                              ),
+                              if (data.isVolumeIndicator && secondValue > 0)
+                                CircularProgressIndicator(
+                                  value: secondValue,
+                                  year2023: false,
+                                  strokeWidth: 8,
+                                  color: tertiaryColor,
+                                  strokeCap: StrokeCap.round,
+                                  backgroundColor: Colors.transparent,
+                                ),
+                            ],
                           );
                         },
                       ),

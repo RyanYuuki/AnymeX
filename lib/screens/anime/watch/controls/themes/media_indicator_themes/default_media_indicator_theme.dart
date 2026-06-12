@@ -12,8 +12,8 @@ class DefaultMediaIndicatorTheme extends MediaIndicatorTheme {
   @override
   Widget buildIndicator(BuildContext context, MediaIndicatorThemeData data) {
     final colors = Theme.of(context).colorScheme;
-    final accentColor =
-        data.isVolumeIndicator ? colors.primary : colors.tertiary;
+    final primaryColor = colors.primary;
+    final tertiaryColor = colors.tertiary;
     const transitionDuration = Duration(milliseconds: 200);
     const valueAnimationDuration = Duration(milliseconds: 130);
     const hiddenScale = 0.95;
@@ -56,12 +56,27 @@ class DefaultMediaIndicatorTheme extends MediaIndicatorTheme {
                               duration: valueAnimationDuration,
                               curve: Curves.easeOut,
                               builder: (context, animValue, _) {
-                                return LinearProgressIndicator(
-                                  value: animValue,
-                                  borderRadius: BorderRadius.circular(100),
-                                  minHeight: 6,
-                                  backgroundColor: Colors.white.opaque(0.18),
-                                  color: accentColor,
+                                final firstValue = animValue.clamp(0.0, 1.0);
+                                final secondValue = (animValue - 1.0).clamp(0.0, 1.0);
+
+                                return Stack(
+                                  children: [
+                                    LinearProgressIndicator(
+                                      value: firstValue,
+                                      borderRadius: BorderRadius.circular(100),
+                                      minHeight: 6,
+                                      backgroundColor: Colors.white.opaque(0.18),
+                                      color: data.isVolumeIndicator ? primaryColor : tertiaryColor,
+                                    ),
+                                    if (data.isVolumeIndicator && secondValue > 0)
+                                      LinearProgressIndicator(
+                                        value: secondValue,
+                                        borderRadius: BorderRadius.circular(100),
+                                        minHeight: 6,
+                                        backgroundColor: Colors.transparent,
+                                        color: tertiaryColor,
+                                      ),
+                                  ],
                                 );
                               },
                             ),
@@ -73,6 +88,15 @@ class DefaultMediaIndicatorTheme extends MediaIndicatorTheme {
                         data.icon,
                         color: Colors.white,
                         size: 24,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${data.percent.round()}%',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
