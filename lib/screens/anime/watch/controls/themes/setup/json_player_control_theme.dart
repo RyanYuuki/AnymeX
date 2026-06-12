@@ -892,14 +892,11 @@ class ThemeRenderer {
   }
 
   String _nextDecoder(String current) {
-    if (Platform.isAndroid) {
-      return switch (current) {
-        'hw' => 'hw+',
-        'hw+' => 'sw',
-        _ => 'hw',
-      };
-    }
-    return current == 'hw' ? 'sw' : 'hw';
+    return switch (current) {
+      'hw' => 'hw+',
+      'hw+' => 'sw',
+      _ => 'hw',
+    };
   }
 
   String _decoderLabel(String value) => switch (value) {

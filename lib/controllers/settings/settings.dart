@@ -518,13 +518,29 @@ class Settings extends GetxController {
   String get hardwareDecoder => _getPlayerSetting((s) => s.hardwareDecoder);
   set hardwareDecoder(String value) {
     final normalized = switch (value) {
-      'hw+' => Platform.isAndroid ? 'hw+' : 'hw',
+      'hw+' => 'hw+',
       'hw' => 'hw',
       'sw' => 'sw',
-      _ => Platform.isAndroid ? 'hw+' : 'hw',
+      _ => 'hw',
     };
     playerSettings.update((s) => s?.hardwareDecoder = normalized);
     PlayerSettingsKeys.hardwareDecoder.set(normalized);
+    if (Get.isRegistered<PlayerController>()) {
+      unawaited(Get.find<PlayerController>().reloadActivePlayer());
+    }
+  }
+
+  String get videoOutput => _getPlayerSetting((s) => s.videoOutput);
+  set videoOutput(String value) {
+    final normalized = switch (value) {
+      'gpu' => 'gpu',
+      'gpu-next' => 'gpu-next',
+      'mediacodec_embed' => 'mediacodec_embed',
+      'auto' => 'auto',
+      _ => 'auto',
+    };
+    playerSettings.update((s) => s?.videoOutput = normalized);
+    PlayerSettingsKeys.videoOutput.set(normalized);
     if (Get.isRegistered<PlayerController>()) {
       unawaited(Get.find<PlayerController>().reloadActivePlayer());
     }
