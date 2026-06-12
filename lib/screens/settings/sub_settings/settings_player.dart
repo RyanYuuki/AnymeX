@@ -74,6 +74,18 @@ class _DecoderOption {
   });
 }
 
+class _RendererOption {
+  final String value;
+  final String title;
+  final String description;
+
+  const _RendererOption({
+    required this.value,
+    required this.title,
+    required this.description,
+  });
+}
+
 final List<_BottomControl> _bottomControls = [
   const _BottomControl(
       id: 'playlist',
@@ -766,6 +778,11 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
     if (Platform.isIOS || Platform.isMacOS) {
       return const [
         _DecoderOption(
+          value: 'hw+',
+          title: 'HW+',
+          description: 'videotoolbox',
+        ),
+        _DecoderOption(
           value: 'hw',
           title: 'HW',
           description: 'videotoolbox',
@@ -780,6 +797,11 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
 
     if (Platform.isWindows) {
       return const [
+        _DecoderOption(
+          value: 'hw+',
+          title: 'HW+',
+          description: 'd3d11va-copy',
+        ),
         _DecoderOption(
           value: 'hw',
           title: 'HW',
@@ -796,6 +818,11 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
     if (Platform.isLinux) {
       return const [
         _DecoderOption(
+          value: 'hw+',
+          title: 'HW+',
+          description: 'vaapi-copy',
+        ),
+        _DecoderOption(
           value: 'hw',
           title: 'HW',
           description: 'vaapi',
@@ -810,6 +837,11 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
 
     return const [
       _DecoderOption(
+        value: 'hw+',
+        title: 'HW+',
+        description: 'auto-copy',
+      ),
+      _DecoderOption(
         value: 'hw',
         title: 'HW',
         description: 'auto',
@@ -820,6 +852,70 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
         description: 'no',
       ),
     ];
+  }
+
+  List<_RendererOption> get _rendererOptions {
+    final list = [
+      const _RendererOption(
+        value: 'auto',
+        title: 'Auto (GPU)',
+        description: 'Auto-select (default)',
+      ),
+      const _RendererOption(
+        value: 'gpu',
+        title: 'GPU',
+        description: 'Standard GPU rendering',
+      ),
+      const _RendererOption(
+        value: 'gpu-next',
+        title: 'GPU Next (Vulkan)',
+        description: 'Experimental high-performance renderer',
+      ),
+    ];
+
+    if (Platform.isAndroid) {
+      list.add(
+        const _RendererOption(
+          value: 'mediacodec_embed',
+          title: 'MediaCodec Embed',
+          description: 'Direct surface rendering (Android only)',
+        ),
+      );
+    }
+    return list;
+  }
+
+  String _rendererTitle(String value) {
+    final match = _rendererOptions.firstWhere(
+      (option) => option.value == value,
+      orElse: () => _rendererOptions.first,
+    );
+    return match.title;
+  }
+
+  String _rendererDescription(String value) {
+    final match = _rendererOptions.firstWhere(
+      (option) => option.value == value,
+      orElse: () => _rendererOptions.first,
+    );
+    return match.description;
+  }
+
+  void _showRendererSelectionDialog() {
+    final options = _rendererOptions;
+    if (options.isEmpty) return;
+
+    showSelectionDialog<String>(
+      title: 'Video Renderer',
+      items: options.map((option) => option.value).toList(),
+      selectedItem: settings.videoOutput.obs,
+      getTitle: _rendererTitle,
+      onItemSelected: (value) {
+        settings.videoOutput = value;
+        setState(() {});
+      },
+      leadingIcon: Icons.settings_system_daydream_rounded,
+    );
   }
 
   String _decoderTitle(String value) {
@@ -917,6 +1013,18 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                   description:
                                       _decoderDescription(settings.hardwareDecoder),
                                   onTap: _showDecoderModeDialog,
+                                ),
+                                CustomTile(
+                                  padding: 10,
+                                  icon: Icons.settings_system_daydream_rounded,
+                                  title: 'Video Renderer',
+                                  isDescBold: true,
+                                  descColor: Theme.of(context)
+                                      .colorScheme
+                                      .primary,
+                                  description:
+                                      _rendererDescription(settings.videoOutput),
+                                  onTap: _showRendererSelectionDialog,
                                 ),
                               ],
                             )),

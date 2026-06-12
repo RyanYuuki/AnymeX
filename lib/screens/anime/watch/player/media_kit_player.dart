@@ -73,9 +73,19 @@ class MediaKitPlayer extends base.BasePlayer {
 
   @override
   Future<void> initialize() async {
+    final resolvedVo = switch (config.videoOutput) {
+      'gpu-next' => 'gpu-next',
+      'mediacodec_embed' => 'mediacodec_embed',
+      'gpu' => 'gpu',
+      'auto' => 'gpu',
+      _ => 'gpu',
+    };
+
     _player = Player(
       configuration: PlayerConfiguration(
-          bufferSize: config.bufferSize, libass: config.useLibass, vo: 'gpu'),
+          bufferSize: config.bufferSize,
+          libass: config.useLibass,
+          vo: resolvedVo),
     );
 
     _videoController = VideoController(
