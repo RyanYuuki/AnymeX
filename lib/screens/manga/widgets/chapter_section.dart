@@ -409,7 +409,7 @@ class ChapterSection extends StatelessWidget {
 
     final newSubSource =
         activeSource.langs!.firstWhere((s) => s.id.toString() == value);
-    sourceController.setActiveSource(newSubSource);
+    sourceController.setActiveSource(newSubSource, mediaId: anilistData.id.toString());
 
     chapterList.value = [];
     try {

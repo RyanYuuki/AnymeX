@@ -1,3 +1,4 @@
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -57,18 +58,7 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
     await _syncCookiesAndUserAgent();
     if (mounted) {
       setState(() => _synced = true);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text(
-            'Cookies & User-Agent synced! You can now close this view.',
-          ),
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          duration: const Duration(seconds: 3),
-        ),
-      );
+      snackBar('Cookies & User-Agent synced! You can now close this view.');
     }
   }
 

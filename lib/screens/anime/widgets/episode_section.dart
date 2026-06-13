@@ -288,7 +288,7 @@ class _EpisodeSectionState extends State<EpisodeSection> {
 
     final newSubSource =
         activeSource.langs!.firstWhere((s) => s.id.toString() == value);
-    sourceController.setActiveSource(newSubSource);
+    sourceController.setActiveSource(newSubSource, mediaId: widget.anilistData?.id?.toString());
 
     widget.episodeError.value = false;
     widget.episodeList?.value = [];
