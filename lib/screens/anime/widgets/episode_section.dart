@@ -15,6 +15,7 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/common/cloudflare_webview.dart';
 import 'package:anymex/widgets/common/no_source.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_dropdown.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_dialog.dart';
@@ -228,8 +229,54 @@ class _EpisodeSectionState extends State<EpisodeSection> {
       label: "SELECT SOURCE",
       icon: Icons.extension_rounded,
       onChanged: (DropdownItem item) => handleSourceChange(item.value),
-      actionIcon: Icons.settings_outlined,
-      onActionPressed: () => openSourcePreferences(context),
+      actions: selectedItem == null || sourceController.installedExtensions.isEmpty ? null : [
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: Material(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(20),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(20),
+              onTap: () {
+                final activeSource = sourceController.activeSource.value;
+                if (activeSource != null && activeSource.baseUrl != null) {
+                  final uri = Uri.parse(activeSource.baseUrl!);
+                  final origin = '${uri.scheme}://${uri.host}';
+                  print("Opening Cloudflare bypass for $origin");
+                  context.openCloudflareBypass(origin);
+                }
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(6.0),
+                child: Icon(
+                  Icons.security_rounded,
+                  size: 20,
+                  color: Theme.of(context).colorScheme.primary.opaque(0.8),
+                ),
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: Material(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(20),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(20),
+              onTap: () => openSourcePreferences(context),
+              child: Padding(
+                padding: const EdgeInsets.all(6.0),
+                child: Icon(
+                  Icons.settings_outlined,
+                  size: 20,
+                  color: Theme.of(context).colorScheme.primary.opaque(0.8),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 

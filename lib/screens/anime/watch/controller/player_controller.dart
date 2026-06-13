@@ -143,7 +143,17 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   late BasePlayer _basePlayer;
 
-  Widget get videoWidget => _basePlayer.getVideoWidget(fit: videoFit.value);
+  Widget get videoWidget {
+    if (_isReloadingPlayer.value) {
+      return Container(
+        color: Colors.black,
+        child: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+    return _basePlayer.getVideoWidget(fit: videoFit.value);
+  }
 
   Episode? get savedEpisode => offlineStorage.getWatchedEpisode(
       anilistData.id, currentEpisode.value.number.toString());
@@ -333,7 +343,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final _playerSubscriptions = <StreamSubscription>[];
   final RxInt playerReloadVersion = 0.obs;
   bool _persistentListenersInitialized = false;
-  bool _isReloadingPlayer = false;
+  final RxBool _isReloadingPlayer = false.obs;
   bool _activeUseLibass = false;
 
   @override
@@ -690,6 +700,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       bufferSize: bufferSizeMb * 1024 * 1024,
       useLibass: PlayerKeys.useLibass.get<bool>(false),
       hwdec: decoderHwdec,
+      videoOutput: settings.videoOutput,
       playerType: useMediaKit ? PlayerType.mediaKit : PlayerType.betterPlayer,
       autoPlay: (betterCore['autoPlay'] as bool?) ?? true,
       useBuffering: (betterCore['useBuffering'] as bool?) ?? true,
@@ -742,7 +753,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         return 'no';
       case 'hw+':
         if (Platform.isAndroid) return 'mediacodec-copy';
-        return 'videotoolbox';
+        if (Platform.isWindows) return 'd3d11va-copy';
+        if (Platform.isLinux) return 'vaapi-copy';
+        if (Platform.isIOS || Platform.isMacOS) return 'videotoolbox';
+        return 'auto-copy';
       case 'hw':
       default:
         if (Platform.isAndroid) return 'mediacodec';
@@ -897,6 +911,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _playerSubscriptions.add(_basePlayer.positionStream
         .throttleTime(const Duration(seconds: 1))
         .listen((pos) {
+      if (_isReloadingPlayer.value) return;
       if (isSeeking.value) return;
       currentPosition.value = pos;
       currentEpisode.value.timeStampInMilliseconds = pos.inMilliseconds;
@@ -914,6 +929,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }));
 
     _playerSubscriptions.add(_basePlayer.durationStream.listen((dur) {
+      if (_isReloadingPlayer.value) return;
       episodeDuration.value = dur;
       currentEpisode.value.durationInMilliseconds = dur.inMilliseconds;
       _updateRpc();
@@ -922,10 +938,12 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _playerSubscriptions.add(_basePlayer.bufferStream
         .throttleTime(const Duration(seconds: 1))
         .listen((buf) {
+      if (_isReloadingPlayer.value) return;
       bufferred.value = buf;
     }));
 
     _playerSubscriptions.add(_basePlayer.playingStream.listen((e) {
+      if (_isReloadingPlayer.value) return;
       isPlaying.value = e;
       if (e) {
         _resetAutoHideTimer();
@@ -942,10 +960,12 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }));
 
     _playerSubscriptions.add(_basePlayer.bufferingStream.listen((e) {
+      if (_isReloadingPlayer.value) return;
       isBuffering.value = e;
     }));
 
     _playerSubscriptions.add(_basePlayer.tracksStream.listen((e) {
+      if (_isReloadingPlayer.value) return;
       embeddedAudioTracks.value = [];
       for (var i in e.audio) {
         embeddedAudioTracks.value.add(i);
@@ -971,10 +991,12 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }));
 
     _playerSubscriptions.add(_basePlayer.rateStream.listen((e) {
+      if (_isReloadingPlayer.value) return;
       playbackSpeed.value = e;
     }));
 
     _playerSubscriptions.add(_basePlayer.errorStream.listen((e) {
+      if (_isReloadingPlayer.value) return;
       Logger.i('${e} => ${selectedVideo.value?.headers}');
       final errorStr = e.toString();
       if (errorStr.contains('Failed to open') &&
@@ -987,6 +1009,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     int subtitleTranslateRequestId = 0;
 
     _playerSubscriptions.add(_basePlayer.subtitleStream.listen((e) async {
+      if (_isReloadingPlayer.value) return;
       subtitleText.value = e;
       if (!playerSettings.autoTranslate) {
         if (translatedSubtitle.value.isNotEmpty) {
@@ -1051,10 +1074,12 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }));
 
     _playerSubscriptions.add(_basePlayer.heightStream.listen((height) {
+      if (_isReloadingPlayer.value) return;
       videoHeight.value = height;
     }));
 
     _playerSubscriptions.add(_basePlayer.completedStream.listen((e) {
+      if (_isReloadingPlayer.value) return;
       if (e && !isOffline.value) {
         hasNextEpisode ? navigator(true) : Get.back();
       }
@@ -1697,10 +1722,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     } else {
       final vol = (volume.value - delta / sensitivity).toPrecision(2);
       if (volume.value != vol) {
-        volume.value = vol.clamp(0.0, 1.0);
-        volumeIndicator.value = true;
-        Future.microtask(
-            () => VolumeController.instance.setVolume(volume.value));
+        final newVol = vol.clamp(0.0, 2.0);
+        setVolume(newVol, isDragging: true);
       }
     }
   }
@@ -1722,8 +1745,17 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   Future<void> setVolume(double value, {bool isDragging = false}) async {
     try {
-      VolumeController.instance.setVolume(value);
-      _basePlayer.setVolume(value);
+      if (Platform.isAndroid || Platform.isIOS) {
+        if (value <= 1.0) {
+          VolumeController.instance.setVolume(value);
+          _basePlayer.setVolume(1.0);
+        } else {
+          VolumeController.instance.setVolume(1.0);
+          _basePlayer.setVolume(value);
+        }
+      } else {
+        _basePlayer.setVolume(value);
+      }
     } catch (_) {}
     volume.value = value;
     volumeIndicator.value = true;
@@ -1927,8 +1959,12 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> reloadActivePlayer({SubtitleTrack? subtitleOverride}) async {
-    if (_isReloadingPlayer) return;
-    _isReloadingPlayer = true;
+    if (_isReloadingPlayer.value) return;
+    _isReloadingPlayer.value = true;
+    playerReloadVersion.value++;
+    refresh();
+
+    await Future.delayed(const Duration(milliseconds: 50));
 
     final preservedPosition = currentPosition.value;
     final preservedSubtitle = subtitleOverride ?? selectedSubsTrack.value;
@@ -1940,16 +1976,88 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       }
       _playerSubscriptions.clear();
       await _basePlayer.dispose();
-      resetListeners();
       await _initializePlayer(
         startPositionOverride: preservedPosition,
         resumePlaybackOverride: resumePlayback,
         subtitleToRestore: preservedSubtitle,
       );
+      await _waitForPlayerToBeReady(_basePlayer, preservedPosition);
+    } catch (e) {
+      Logger.e('Error reloading active player: $e');
     } finally {
-      _isReloadingPlayer = false;
+      _isReloadingPlayer.value = false;
+      currentPosition.value = _basePlayer.state.position;
+      episodeDuration.value = _basePlayer.state.duration;
+      bufferred.value = _basePlayer.state.buffer;
+      isPlaying.value = _basePlayer.state.isPlaying || resumePlayback;
+      isBuffering.value = _basePlayer.state.isBuffering;
+
+      playerReloadVersion.value++;
+      refresh();
     }
   }
+
+  Future<void> _waitForPlayerToBeReady(BasePlayer player, Duration targetPosition) async {
+    final completer = Completer<void>();
+    StreamSubscription? durationSub;
+    StreamSubscription? positionSub;
+    Timer? timeoutTimer;
+
+    void cleanup() {
+      durationSub?.cancel();
+      positionSub?.cancel();
+      timeoutTimer?.cancel();
+    }
+
+    bool durationReady = false;
+    bool positionReady = false;
+
+    void checkReady() {
+      if (durationReady && positionReady) {
+        if (!completer.isCompleted) {
+          cleanup();
+          completer.complete();
+        }
+      }
+    }
+
+    timeoutTimer = Timer(const Duration(seconds: 8), () {
+      if (!completer.isCompleted) {
+        cleanup();
+        completer.complete();
+      }
+    });
+
+    durationSub = player.durationStream.listen((dur) {
+      if (dur > Duration.zero) {
+        durationReady = true;
+        checkReady();
+      }
+    });
+
+    if (targetPosition == Duration.zero) {
+      positionReady = true;
+    } else {
+      positionSub = player.positionStream.listen((pos) {
+        if (pos.inMilliseconds >= targetPosition.inMilliseconds - 2000) {
+          positionReady = true;
+          checkReady();
+        }
+      });
+    }
+
+    if (player.state.duration > Duration.zero) {
+      durationReady = true;
+    }
+    if (targetPosition == Duration.zero ||
+        player.state.position.inMilliseconds >= targetPosition.inMilliseconds - 2000) {
+      positionReady = true;
+    }
+    checkReady();
+
+    await completer.future;
+  }
+
 
   Future<void> _applySubtitleTrack(
     SubtitleTrack track, {

@@ -127,6 +127,14 @@ void initDeepLinkListener(List<String> args) async {
 void main(List<String> args) async {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
+    if (!Platform.isLinux) {
+      if (Platform.isWindows || Platform.isMacOS) {
+        webViewEnvironment = await WebViewEnvironment.create();
+      }
+      await InAppWebViewController.setWebContentsDebuggingEnabled(
+        !const bool.fromEnvironment('dart.vm.product'), 
+      );
+    }
     if (Platform.isAndroid) {
       FlutterDisplayMode.setHighRefreshRate().catchError((e) {
         debugPrint("Error setting high refresh rate: $e");
@@ -142,8 +150,16 @@ void main(List<String> args) async {
     }
 
     if (Platform.isWindows) {
-      ['dar', 'anymex', 'sugoireads', 'mangayomi', 'cloudstreamrepo', 'sora', 'tachiyomi', 'aniyomi']
-          .forEach(registerProtocolHandler);
+      [
+        'dar',
+        'anymex',
+        'sugoireads',
+        'mangayomi',
+        'cloudstreamrepo',
+        'sora',
+        'tachiyomi',
+        'aniyomi'
+      ].forEach(registerProtocolHandler);
     }
     await Database().init();
     HttpOverrides.global = MyHttpoverrides();

@@ -241,6 +241,7 @@ enum PlayerSettingsKeys {
   playerMenuAnimation,
   hardwareDecoder,
   preferredSubtitleLanguage,
+  videoOutput,
 }
 
 enum UISettingsKeys {

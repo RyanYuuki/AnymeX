@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -23,14 +21,11 @@ class DecoderQuickButton extends StatelessWidget {
         _netflix = true;
 
   String _next(String current) {
-    if (Platform.isAndroid) {
-      return switch (current) {
-        'hw' => 'hw+',
-        'hw+' => 'sw',
-        _ => 'hw',
-      };
-    }
-    return current == 'hw' ? 'sw' : 'hw';
+    return switch (current) {
+      'hw' => 'hw+',
+      'hw+' => 'sw',
+      _ => 'hw',
+    };
   }
 
   String _label(String v) => switch (v) {

@@ -219,7 +219,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _animeLibraryStream = Get.find<OfflineStorageController>().watchAnimeLibrary();
+    _animeLibraryStream = Get.find<OfflineStorageController>().watchAnimeLibrary().asBroadcastStream();
     _scrollController = ScrollController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _showDiscordDialog();

@@ -160,11 +160,17 @@ class OtherFeaturesPage extends StatelessWidget {
 class NestedHeader extends StatelessWidget {
   final String title;
   final Widget? action;
-  const NestedHeader({super.key, required this.title, this.action});
+  final bool disablePrefix;
+  const NestedHeader(
+      {super.key,
+      required this.title,
+      this.action,
+      this.disablePrefix = false});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final canPop = Navigator.canPop(context);
     return Container(
       padding: const EdgeInsets.only(top: 50, left: 20, right: 20, bottom: 20),
       decoration: BoxDecoration(
@@ -178,19 +184,21 @@ class NestedHeader extends StatelessWidget {
       ),
       child: Row(
         children: [
-          IconButton(
-            onPressed: () => Navigator.of(context).pop(),
-            icon: Icon(
-              Icons.arrow_back_ios_rounded,
-              color: theme.colorScheme.onSurface,
+          if (!disablePrefix && canPop) ...[
+            IconButton(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: Icon(
+                Icons.arrow_back_ios_rounded,
+                color: theme.colorScheme.onSurface,
+              ),
+              style: IconButton.styleFrom(
+                backgroundColor: theme.colorScheme.surfaceVariant
+                    .opaque(0.3, iReallyMeanIt: true),
+                padding: const EdgeInsets.all(12),
+              ),
             ),
-            style: IconButton.styleFrom(
-              backgroundColor: theme.colorScheme.surfaceVariant
-                  .opaque(0.3, iReallyMeanIt: true),
-              padding: const EdgeInsets.all(12),
-            ),
-          ),
-          const SizedBox(width: 12),
+            const SizedBox(width: 12),
+          ],
           Expanded(
             child: AnymexText(
               text: title,

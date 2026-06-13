@@ -256,7 +256,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
           return const SizedBox.shrink();
         }
         return buildUnderratedSection('Community Recommendations', filteredList,
-            onSeeAll: () => navigate(() => CommunityRecommendationsPage(
+            onSeeAll: () => navigate(() => const CommunityRecommendationsPage(
                   category: 'anime',
                   type: ItemType.anime,
                 )));
@@ -277,7 +277,6 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
       // buildMangaSection('Top Rated Mangas', topRatedMangas),
       // buildMangaSection('Top Ongoing Mangas', topOngoingMangas),
       ...sourceController.novelSections,
-      // Underrated Manga section at the bottom (filtered for logged-in users)
       Obx(() {
         final filteredList = communityService.getFilteredCommunityMangas();
         if (filteredList.isEmpty) {
@@ -285,7 +284,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
         }
         return buildUnderratedMangaSection(
             'Community Recommendations', filteredList,
-            onSeeAll: () => navigate(() => CommunityRecommendationsPage(
+            onSeeAll: () => navigate(() => const CommunityRecommendationsPage(
                   category: 'manga',
                   type: ItemType.manga,
                 )));

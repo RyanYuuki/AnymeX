@@ -15,8 +15,9 @@ class MinimalMediaIndicatorTheme extends MediaIndicatorTheme {
     MediaIndicatorThemeData data,
   ) {
     final colors = Theme.of(context).colorScheme;
-    final accentColor =
-        data.isVolumeIndicator ? colors.primary : colors.tertiary;
+    final accentColor = data.isVolumeIndicator
+        ? (data.value > 1.0 ? colors.tertiary : colors.primary)
+        : colors.tertiary;
 
     const transitionDuration = Duration(milliseconds: 220);
     const valueAnimationDuration = Duration(milliseconds: 150);
@@ -101,6 +102,7 @@ class _TopLineBar extends StatelessWidget {
                 return _GlowProgressBar(
                   value: animValue,
                   accentColor: accentColor,
+                  isVolumeIndicator: isVolumeIndicator,
                 );
               },
             ),
@@ -140,17 +142,29 @@ class _GlowProgressBar extends StatelessWidget {
   const _GlowProgressBar({
     required this.value,
     required this.accentColor,
+    required this.isVolumeIndicator,
   });
 
   final double value;
   final Color accentColor;
+  final bool isVolumeIndicator;
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final primaryColor = colors.primary;
+    final tertiaryColor = colors.tertiary;
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final totalWidth = constraints.maxWidth;
-        final filledWidth = (totalWidth * value).clamp(0.0, totalWidth);
+        final firstValue = value.clamp(0.0, 1.0);
+        final secondValue = (value - 1.0).clamp(0.0, 1.0);
+
+        final firstFilledWidth = totalWidth * firstValue;
+        final secondFilledWidth = totalWidth * secondValue;
+
+        final primaryAccent = isVolumeIndicator ? primaryColor : tertiaryColor;
 
         return SizedBox(
           height: 4,
@@ -168,14 +182,14 @@ class _GlowProgressBar extends StatelessWidget {
 
               
               Container(
-                width: filledWidth,
+                width: firstFilledWidth,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: accentColor,
+                  color: primaryAccent,
                   borderRadius: BorderRadius.circular(100),
                   boxShadow: [
                     BoxShadow(
-                      color: accentColor.opaque(0.55),
+                      color: primaryAccent.opaque(0.55),
                       blurRadius: 6,
                       spreadRadius: 0,
                     ),
@@ -184,9 +198,29 @@ class _GlowProgressBar extends StatelessWidget {
               ),
 
               
-              if (filledWidth > 4)
+              if (isVolumeIndicator && secondValue > 0)
+                Container(
+                  width: secondFilledWidth,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: tertiaryColor,
+                    borderRadius: BorderRadius.circular(100),
+                    boxShadow: [
+                      BoxShadow(
+                        color: tertiaryColor.opaque(0.55),
+                        blurRadius: 6,
+                        spreadRadius: 0,
+                      ),
+                    ],
+                  ),
+                ),
+
+              
+              if (firstFilledWidth > 4)
                 Positioned(
-                  left: filledWidth - 4,
+                  left: (isVolumeIndicator && secondValue > 0
+                          ? secondFilledWidth
+                          : firstFilledWidth) - 4,
                   top: -2,
                   child: Container(
                     width: 8,
@@ -196,7 +230,10 @@ class _GlowProgressBar extends StatelessWidget {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: accentColor.opaque(0.8),
+                          color: (isVolumeIndicator && secondValue > 0
+                                  ? tertiaryColor
+                                  : primaryAccent)
+                              .opaque(0.8),
                           blurRadius: 5,
                           spreadRadius: 1,
                         ),

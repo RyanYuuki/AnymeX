@@ -14,7 +14,7 @@ class MediaIndicatorThemeData {
     required this.value,
   });
 
-  double get percent => (value * 100).clamp(0, 100);
+  double get percent => (value * 100).clamp(0.0, 200.0);
 
   IconData get icon {
     if (isVolumeIndicator) {
