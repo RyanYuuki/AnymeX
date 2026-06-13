@@ -2,7 +2,6 @@ import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:anymex/screens/settings/settings.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -23,6 +22,12 @@ class _SettingsCommentsState extends State<SettingsComments> {
   final commentumService = Get.find<CommentumService>();
 
   @override
+  void initState() {
+    super.initState();
+    commentumService.getUserRole();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: Column(
@@ -35,15 +40,6 @@ class _SettingsCommentsState extends State<SettingsComments> {
                 desktopValue:
                     const EdgeInsets.fromLTRB(20.0, 20.0, 25.0, 20.0)),
             children: [
-              const Row(
-                children: [
-                  CustomBackButton(),
-                  SizedBox(width: 10),
-                  Text("Comment System",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-                ],
-              ),
               Container(
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
@@ -61,50 +57,34 @@ class _SettingsCommentsState extends State<SettingsComments> {
                         onTap: () {
                           _showAboutDialog();
                         }),
-                    CustomTile(
-                        icon: Icons.person_outline,
-                        title: "User Role",
-                        description: _getCurrentRoleDescription(),
-                        postFix: Obx(() => Text(
-                              commentumService.currentUserRole.value
-                                  .toUpperCase(),
-                              style: TextStyle(
-                                color: _getRoleColor(),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            )),
-                        onTap: () {
-                          _showRoleInfo();
-                        }),
                     const Divider(height: 1),
+                    Obx(() => commentumService.currentUserRole.value != 'user'
+                        ? Column(
+                            children: [
+                              CustomTile(
+                                  icon: Icons.admin_panel_settings,
+                                  title: "Moderation Panel",
+                                  description: "Access moderation tools and reports",
+                                  onTap: () {
+                                    navigate(() => const SettingsModeration());
+                                  }),
+                              CustomTile(
+                                  icon: Icons.report_outlined,
+                                  title: "Reported Comments",
+                                  description: "View and manage reported content",
+                                  onTap: () {
+                                    _navigateToReportsPanel();
+                                  }),
+                              const Divider(height: 1),
+                            ],
+                          )
+                        : const SizedBox.shrink()),
                     CustomTile(
-                        icon: Icons.admin_panel_settings,
-                        title: "Moderation Panel",
-                        description: "Access moderation tools and reports",
+                        icon: Icons.code_outlined,
+                        title: "Markdown Guide",
+                        description: "Learn how to format your comments",
                         onTap: () {
-                          navigate(() => const SettingsModeration());
-                        }),
-                    CustomTile(
-                        icon: Icons.report_outlined,
-                        title: "Reported Comments",
-                        description: "View and manage reported content",
-                        onTap: () {
-                          _navigateToReportsPanel();
-                        }),
-                    const Divider(height: 1),
-                    CustomTile(
-                        icon: Icons.settings_outlined,
-                        title: "Comment Preferences",
-                        description: "Customize comment display and behavior",
-                        onTap: () {
-                          _showCommentPreferences();
-                        }),
-                    CustomTile(
-                        icon: Icons.notifications_outlined,
-                        title: "Notification Settings",
-                        description: "Configure comment notifications",
-                        onTap: () {
-                          _showNotificationSettings();
+                          _showMarkdownGuide();
                         }),
                     const Divider(height: 1),
                     CustomTile(
@@ -132,34 +112,6 @@ class _SettingsCommentsState extends State<SettingsComments> {
     ));
   }
 
-  String _getCurrentRoleDescription() {
-    final role = commentumService.currentUserRole.value;
-    switch (role) {
-      case 'super_admin':
-        return 'Full system access and control';
-      case 'admin':
-        return 'Can moderate and manage users';
-      case 'moderator':
-        return 'Can moderate content';
-      default:
-        return 'Basic commenting privileges';
-    }
-  }
-
-  Color _getRoleColor() {
-    final role = commentumService.currentUserRole.value;
-    switch (role) {
-      case 'super_admin':
-        return Colors.red;
-      case 'admin':
-        return Colors.orange;
-      case 'moderator':
-        return Colors.blue;
-      default:
-        return Colors.grey;
-    }
-  }
-
   void _showAboutDialog() {
     showDialog(
       context: context,
@@ -180,8 +132,7 @@ class _SettingsCommentsState extends State<SettingsComments> {
             BulletPoint(text: 'Voting system with upvotes/downvotes'),
             BulletPoint(
                 text: 'Cross-platform support (AniList, MyAnimeList, SIMKL)'),
-            SizedBox(height: 8),
-            Text('Base URL: https://whzwmfxngelicmjyxwmr.supabase.co'),
+
           ],
         ),
         actions: [
@@ -192,150 +143,91 @@ class _SettingsCommentsState extends State<SettingsComments> {
         ],
       ),
     );
-  }
-
-  void _showRoleInfo() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('User Roles & Permissions'),
-        content: const Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Your current role and permissions:',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            SizedBox(height: 12),
-            RoleDescription(
-              role: 'User',
-              permissions: [
-                'Create comments',
-                'Edit own comments',
-                'Delete own comments',
-                'Vote on comments',
-                'Report inappropriate content',
-              ],
-            ),
-            SizedBox(height: 8),
-            RoleDescription(
-              role: 'Moderator',
-              permissions: [
-                'All User permissions',
-                'Edit/delete any comment',
-                'Pin/unpin comments',
-                'Lock/unlock threads',
-                'Warn users',
-                'Mute users temporarily',
-                'Resolve reports',
-              ],
-            ),
-            SizedBox(height: 8),
-            RoleDescription(
-              role: 'Admin',
-              permissions: [
-                'All Moderator permissions',
-                'Ban/unban users permanently',
-                'Shadow ban users',
-                'Full user management',
-              ],
-            ),
-            SizedBox(height: 8),
-            RoleDescription(
-              role: 'Super Admin',
-              permissions: [
-                'All Admin permissions',
-                'System configuration',
-                'Role management',
-                'Discord bot management',
-              ],
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _navigateToModerationPanel() {
-    // Check if user has moderation permissions
-    if (commentumService.currentUserRole.value == 'user') {
-      snackBar('You need moderator or admin permissions to access this panel');
-      return;
-    }
-
-    // Navigate to moderation panel (to be implemented)
-    snackBar('Moderation panel coming soon!');
   }
 
   void _navigateToReportsPanel() {
-    // Check if user has moderation permissions
     if (commentumService.currentUserRole.value == 'user') {
       snackBar('You need moderator or admin permissions to access this panel');
       return;
     }
 
-    // Navigate to reports panel (to be implemented)
-    snackBar('Reports panel coming soon!');
+    navigate(() => const ReportsQueuePage());
   }
 
-  void _showCommentPreferences() {
+  void _showMarkdownGuide() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Comment Preferences'),
-        content: const Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-                'Comment display preferences will be available in future updates.'),
-            SizedBox(height: 8),
-            Text('Planned features:',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            BulletPoint(text: 'Default sorting order'),
-            BulletPoint(text: 'Comment density settings'),
-            BulletPoint(text: 'Show/hide avatars'),
-            BulletPoint(text: 'Font size adjustment'),
-            BulletPoint(text: 'Auto-play videos in comments'),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+        title: const Text('Markdown Guide'),
+        content: const SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('You can use Discord-style markdown to format your comments:',
+                  style: TextStyle(fontSize: 12, color: Colors.grey)),
+              SizedBox(height: 12),
+              _MarkdownExample(
+                syntax: '**bold text**',
+                label: 'Bold',
+                example: 'bold text',
+              ),
+              _MarkdownExample(
+                syntax: '*italic text*',
+                label: 'Italic',
+                example: 'italic text',
+              ),
+              _MarkdownExample(
+                syntax: '***bold italic***',
+                label: 'Bold + Italic',
+                example: 'bold italic',
+              ),
+              _MarkdownExample(
+                syntax: '~~strikethrough~~',
+                label: 'Strikethrough',
+                example: 'strikethrough',
+              ),
+              _MarkdownExample(
+                syntax: '`inline code`',
+                label: 'Inline Code',
+                example: 'inline code',
+              ),
+              _MarkdownExample(
+                syntax: '||spoiler text||',
+                label: 'Spoiler (tap to reveal)',
+                example: '|||||||||',
+                isSpoiler: true,
+              ),
+              _MarkdownExample(
+                syntax: '> blockquote',
+                label: 'Blockquote',
+                example: 'blockquote',
+              ),
+              _MarkdownExample(
+                syntax: '@username',
+                label: 'Mention',
+                example: '@username',
+              ),
+              _MarkdownExample(
+                syntax: 'https://example.com',
+                label: 'Link (auto-detected)',
+                example: 'https://example.com',
+              ),
+              _MarkdownExample(
+                syntax: 'https://example.com/image.png',
+                label: 'Image (shows thumbnail)',
+                example: '🖼 image',
+              ),
+              SizedBox(height: 12),
+              Text('Tip: You can combine these! e.g. **bold and *italic* together**',
+                  style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic, color: Colors.grey)),
+            ],
           ),
-        ],
-      ),
-    );
-  }
-
-  void _showNotificationSettings() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Notification Settings'),
-        content: const Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-                'Comment notification preferences will be available in future updates.'),
-            SizedBox(height: 8),
-            Text('Planned features:',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            BulletPoint(text: 'Replies to your comments'),
-            BulletPoint(text: 'Mentions in comments'),
-            BulletPoint(text: 'Moderation notifications'),
-            BulletPoint(text: 'Report resolution updates'),
-          ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: const Text('Got it'),
           ),
         ],
       ),
@@ -437,38 +329,64 @@ class BulletPoint extends StatelessWidget {
   }
 }
 
-class RoleDescription extends StatelessWidget {
-  final String role;
-  final List<String> permissions;
+class _MarkdownExample extends StatelessWidget {
+  final String syntax;
+  final String label;
+  final String example;
+  final bool isSpoiler;
 
-  const RoleDescription(
-      {super.key, required this.role, required this.permissions});
+  const _MarkdownExample({
+    required this.syntax,
+    required this.label,
+    required this.example,
+    this.isSpoiler = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        color: context.colors.surfaceContainer,
-        borderRadius: BorderRadius.circular(8.0),
-      ),
+    final colorScheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(role, style: const TextStyle(fontWeight: FontWeight.bold)),
-          const SizedBox(height: 4),
-          ...permissions.map((permission) => Padding(
-                padding: const EdgeInsets.only(left: 8.0, top: 2.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('• '),
-                    Expanded(
-                        child: Text(permission,
-                            style: const TextStyle(fontSize: 12))),
-                  ],
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(6),
                 ),
-              )),
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: colorScheme.onPrimaryContainer,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: SelectableText(
+              syntax,
+              style: TextStyle(
+                fontSize: 13,
+                fontFamily: 'monospace',
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
         ],
       ),
     );

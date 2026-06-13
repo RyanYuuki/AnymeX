@@ -4,6 +4,7 @@ import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/controllers/ui/greeting.dart';
 import 'package:anymex/screens/manga/widgets/search_selector.dart';
 import 'package:anymex/screens/search/search_view.dart';
+import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
@@ -202,31 +203,76 @@ class Header extends StatelessWidget {
       onTap: () {
         return SettingsSheet.show(context);
       },
-      child: GestureDetector(
-        onLongPress: () {
-          if (profileData.isLoggedIn.value) {
-            navigate(() => const ProfilePage());
-          }
-        },
-        child: CircleAvatar(
-          radius: 24,
-          backgroundColor: context.colors.secondaryContainer.opaque(0.50),
-          child: profileData.isLoggedIn.value
-              ? ClipRRect(
-                  borderRadius: BorderRadius.circular(50),
-                  child: AnymeXImage(
-                    width: 45,
-                    height: 45,
-                    fit: BoxFit.cover,
-                    radius: 0,
-                    errorImage: '',
-                    imageUrl: profileData.profileData.value.avatar ?? '',
+      child: Obx(() {
+        final commentumService = Get.find<CommentumService>();
+        final unread = commentumService.unreadNotificationCount.value;
+        return GestureDetector(
+          onLongPress: () {
+            if (profileData.isLoggedIn.value) {
+              navigate(() => const ProfilePage());
+            }
+          },
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              CircleAvatar(
+                radius: 24,
+                backgroundColor:
+                    context.colors.secondaryContainer.opaque(0.50),
+                child: profileData.isLoggedIn.value
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(50),
+                        child: AnymeXImage(
+                          width: 45,
+                          height: 45,
+                          fit: BoxFit.cover,
+                          radius: 0,
+                          errorImage: '',
+                          imageUrl: profileData.profileData.value.avatar ?? '',
+                        ),
+                      )
+                    : Icon(IconlyBold.profile,
+                        color: context.colors.onSecondaryContainer),
+              ),
+              if (unread > 0)
+                Positioned(
+                  right: -2,
+                  top: -2,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 5, vertical: 1),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.error,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .error
+                              .withOpacity(0.4),
+                          blurRadius: 4,
+                          spreadRadius: 1,
+                        ),
+                      ],
+                    ),
+                    constraints:
+                        const BoxConstraints(minWidth: 16, minHeight: 16),
+                    child: Text(
+                      unread > 99 ? '99+' : '$unread',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 9,
+                        fontWeight: FontWeight.bold,
+                        height: 1.2,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                )
-              : Icon(IconlyBold.profile,
-                  color: context.colors.onSecondaryContainer),
-        ),
-      ),
+                ),
+            ],
+          ),
+        );
+      }),
     );
   }
 }

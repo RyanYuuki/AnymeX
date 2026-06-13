@@ -192,6 +192,10 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_stat_anymex" />
+
         <meta-data android:name="flutterEmbedding" android:value="2"/>
         <meta-data android:name="flutter_deeplinking_enabled" android:value="false" />
         <meta-data android:name="io.flutter.embedding.android.EnableImpeller" android:value="false"/>

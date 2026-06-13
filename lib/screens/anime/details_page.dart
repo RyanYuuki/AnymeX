@@ -53,11 +53,13 @@ class AnimeDetailsPage extends StatefulWidget {
   final Media media;
   final String tag;
   final int initialTabIndex;
+  final String? scrollToCommentId;
   const AnimeDetailsPage(
       {super.key,
       required this.media,
       required this.tag,
-      this.initialTabIndex = 0});
+      this.initialTabIndex = 0,
+      this.scrollToCommentId});
 
   @override
   State<AnimeDetailsPage> createState() => _AnimeDetailsPageState();
@@ -928,6 +930,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   Widget _buildCommentsSection(BuildContext context) {
     return CommentSection(
       media: anilistData ?? widget.media,
+      scrollToCommentId: widget.scrollToCommentId,
     );
   }
 

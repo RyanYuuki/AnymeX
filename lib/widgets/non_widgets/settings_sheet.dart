@@ -5,7 +5,10 @@ import 'package:anymex/screens/downloads/download_screen.dart';
 import 'package:anymex/screens/extensions/ExtensionScreen.dart';
 import 'package:anymex/screens/local_source/local_source_view.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
+import 'package:anymex/screens/notifications/notification_screen.dart';
+import 'package:anymex/screens/notifications/notification_controller.dart';
 import 'package:anymex/screens/settings/settings.dart';
+import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
@@ -355,16 +358,63 @@ class SettingsSheet extends StatelessWidget {
             ),
           ),
           AnymexOnTap(
-            onTap: () => snackBar('This feature is not available yet.'),
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: theme.surfaceContainerHighest.opaque(0.5),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(Iconsax.notification,
-                  size: 18, color: theme.onSurface.opaque(0.7)),
-            ),
+            onTap: () {
+              Navigator.pop(context);
+              if (!Get.isRegistered<NotificationController>()) {
+                Get.put(NotificationController());
+              }
+              Get.to(() => const NotificationScreen());
+            },
+            child: Obx(() {
+              final commentumService = Get.find<CommentumService>();
+              final unread = commentumService.unreadNotificationCount.value;
+              return Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: theme.surfaceContainerHighest.opaque(0.5),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(Iconsax.notification,
+                        size: 18, color: theme.onSurface.opaque(0.7)),
+                  ),
+                  if (unread > 0)
+                    Positioned(
+                      right: -4,
+                      top: -4,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 5, vertical: 1),
+                        decoration: BoxDecoration(
+                          color: theme.error,
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: [
+                            BoxShadow(
+                              color: theme.error.withOpacity(0.4),
+                              blurRadius: 4,
+                              spreadRadius: 1,
+                            ),
+                          ],
+                        ),
+                        constraints:
+                            const BoxConstraints(minWidth: 16, minHeight: 16),
+                        child: Text(
+                          unread > 99 ? '99+' : '$unread',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 9,
+                            fontWeight: FontWeight.bold,
+                            height: 1.2,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            }),
           ),
         ],
       ),

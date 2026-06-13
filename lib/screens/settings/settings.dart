@@ -3,6 +3,7 @@ import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/screens/settings/search/settings_registry.dart';
 import 'package:anymex/screens/settings/search/settings_search_icons.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_about.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_comments.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_accounts.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_backup.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_common.dart';
@@ -301,6 +302,11 @@ class _SettingsPageState extends State<SettingsPage> {
           description: "Configure parallel downloads and directory",
           destination: () => const SettingsDownloads()),
 
+      _CategoryItem(
+          icon: Icons.chat_bubble_outline_rounded,
+          title: "Comment System",
+          description: "Commentum v2 settings, moderation & preferences",
+          destination: () => const SettingsComments()),
       _CategoryItem(
           icon: Icons.extension_rounded,
           title: "Extensions",
