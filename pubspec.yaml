@@ -13,6 +13,7 @@ dependencies:
     cached_network_image: ^3.4.1
     carousel_slider: ^5.0.0
     checkmark: ^0.0.2+1
+    crypto: ^3.0.3
     device_info_plus: ^11.2.2
     dio: ^5.8.0+1
     dynamic_color: ^1.7.0
