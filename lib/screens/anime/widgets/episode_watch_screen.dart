@@ -2,6 +2,7 @@
 import 'dart:ui';
 
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -79,13 +80,20 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
         auth.serviceType.value != ServicesType.extensions) {
       final trackedMedia = auth.onlineService.animeList
           .firstWhereOrNull((e) => e.id == widget.anilistData!.id);
-      return trackedMedia?.episodeCount?.toInt() ??
-          widget.currentEpisode.number.toInt();
+      return trackedMedia?.episodeCount?.toInt() ?? 0;
     } else {
       final offlineStorage = Get.find<OfflineStorageController>();
       final savedAnime = offlineStorage.getAnimeById(widget.anilistData!.id);
-      return savedAnime?.currentEpisode?.number.toInt() ??
-          widget.currentEpisode.number.toInt();
+      final currentEp = savedAnime?.currentEpisode;
+      if (currentEp == null) return 0;
+      final progress = currentEp.number.toInt();
+      final ts = currentEp.timeStampInMilliseconds ?? 0;
+      final dur = currentEp.durationInMilliseconds ?? 0;
+      bool isCompleted = false;
+      if (dur > 0) {
+        isCompleted = (ts / dur) * 100 >= settingsController.markAsCompleted;
+      }
+      return isCompleted ? progress : (progress > 0 ? progress - 1 : 0);
     }
   }
 
@@ -345,35 +353,33 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
           ),
           const SizedBox(height: 10),
           ...streamList.map((e) {
-            return InkWell(
-              onTap: () {
-                widget.onEpisodeSelected(e, streamList, chosenEpisode.value);
-              },
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 3.0, horizontal: 10),
-                child: ListTile(
-                  contentPadding:
-                      const EdgeInsets.symmetric(vertical: 2.5, horizontal: 10),
-                  title: AnymexText(
-                    text: e.quality?.toUpperCase() ?? "Unknown",
-                    variant: TextVariant.bold,
-                    size: 16,
-                    color: context.colors.primary,
-                  ),
-                  tileColor: Theme.of(context)
-                      .colorScheme
-                      .secondaryContainer
-                      .opaque(0.5),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  trailing: const Icon(Iconsax.play5),
-                  subtitle: AnymexText(
-                    text: sourceController.activeSource.value!.name!
-                        .toUpperCase(),
-                    variant: TextVariant.semiBold,
-                  ),
+            return Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 3.0, horizontal: 10),
+              child: ListTile(
+                onTap: () {
+                  widget.onEpisodeSelected(e, streamList, chosenEpisode.value);
+                },
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 2.5, horizontal: 10),
+                title: AnymexText(
+                  text: e.quality?.toUpperCase() ?? "Unknown",
+                  variant: TextVariant.bold,
+                  size: 16,
+                  color: context.colors.primary,
+                ),
+                tileColor: Theme.of(context)
+                    .colorScheme
+                    .secondaryContainer
+                    .opaque(0.5),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                trailing: const Icon(Iconsax.play5),
+                subtitle: AnymexText(
+                  text:
+                      sourceController.activeSource.value!.name!.toUpperCase(),
+                  variant: TextVariant.semiBold,
                 ),
               ),
             );

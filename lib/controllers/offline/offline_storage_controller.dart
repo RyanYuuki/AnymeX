@@ -407,6 +407,9 @@ class OfflineStorageController extends GetxController {
           currentEpisode.source = sourceController.activeSource.value?.name;
         }
         existingAnime.currentEpisode = currentEpisode;
+        if (existingAnime.idMal == null && original.idMal != '0') {
+          existingAnime.idMal = original.idMal;
+        }
         await isar.offlineMedias.put(existingAnime);
         Logger.i('Updated anime: ${existingAnime.name}');
       } else {
@@ -741,6 +744,7 @@ class OfflineStorageController extends GetxController {
     final handler = Get.find<ServiceHandler>();
     return OfflineMedia(
       mediaId: original.id,
+      idMal: original.idMal,
       jname: original.romajiTitle,
       name: original.title,
       english: original.title,
@@ -819,40 +823,20 @@ class OfflineStorageController extends GetxController {
   }) async {
     final existingLists = await getCustomListsByType(mediaType);
 
-    final existingListsMap = {
-      for (var list in existingLists) list.listName: list
-    };
-
     await isar.writeTxn(() async {
       for (var existingList in existingLists) {
-        final stillExists = updatedLists.any(
-          (updated) => updated.listName == existingList.listName,
-        );
-        if (!stillExists) {
-          await isar.customLists.delete(existingList.id);
-        }
+        await isar.customLists.delete(existingList.id);
       }
 
       for (var updatedListData in updatedLists) {
-        final existingList = existingListsMap[updatedListData.listName];
-
-        if (existingList != null) {
-          existingList.listName = updatedListData.listName;
-          existingList.mediaIds = updatedListData.listData
+        await isar.customLists.put(CustomList(
+          listName: updatedListData.listName,
+          mediaIds: updatedListData.listData
               .map((media) => media.mediaId ?? '')
               .where((id) => id.isNotEmpty)
-              .toList();
-          await isar.customLists.put(existingList);
-        } else {
-          await isar.customLists.put(CustomList(
-            listName: updatedListData.listName,
-            mediaIds: updatedListData.listData
-                .map((media) => media.mediaId ?? '')
-                .where((id) => id.isNotEmpty)
-                .toList(),
-            mediaTypeIndex: mediaType.index,
-          ));
-        }
+              .toList(),
+          mediaTypeIndex: mediaType.index,
+        ));
       }
     });
 

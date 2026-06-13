@@ -3,10 +3,13 @@ import 'dart:ui' as ui;
 
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/decoder_quick_button.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/common/marquee_text.dart';
 import 'package:get/get.dart';
 
 class TopControls extends StatelessWidget {
@@ -89,6 +92,11 @@ class TopControls extends StatelessWidget {
   Widget _buildMobileLayout(ThemeData theme) {
     final controller = Get.find<PlayerController>();
     final isDark = theme.brightness == Brightness.dark;
+
+    if (controller.currentOrientation.value == DeviceOrientation.portraitUp ||
+        controller.currentOrientation.value == DeviceOrientation.portraitDown) {
+      return _buildMobilePortrait(theme, controller, isDark);
+    }
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -183,6 +191,8 @@ class TopControls extends StatelessWidget {
                 videoHeight: controller.videoHeight.value, isMobile: true),
           ),
           const SizedBox(width: 8),
+          const DecoderQuickButton(isMobile: true),
+          const SizedBox(width: 8),
           ControlButton(
             icon: Icons.lock_rounded,
             onPressed: () => controller.isLocked.value = true,
@@ -193,22 +203,24 @@ class TopControls extends StatelessWidget {
           ControlButton(
             icon: Icons.settings_rounded,
             onPressed: () {
-              showModalBottomSheet(
-                  context: Get.context!,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.transparent,
-                  builder: (context) => Container(
-                        height: MediaQuery.of(context).size.height,
-                        clipBehavior: Clip.antiAlias,
-                        decoration: const BoxDecoration(
-                          color: Colors.transparent,
-                          borderRadius:
-                              BorderRadius.vertical(top: Radius.circular(28)),
-                        ),
-                        child: const SettingsPlayer(
-                          isModal: true,
-                        ),
-                      ));
+              Get.find<PlayerController>().showSheetWithPause(
+                () => showModalBottomSheet(
+                    context: Get.context!,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => Container(
+                          height: MediaQuery.of(context).size.height,
+                          clipBehavior: Clip.antiAlias,
+                          decoration: const BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius:
+                                BorderRadius.vertical(top: Radius.circular(28)),
+                          ),
+                          child: const SettingsPlayer(
+                            isModal: true,
+                          ),
+                        )),
+              );
             },
             tooltip: 'Settings',
             compact: true,
@@ -243,45 +255,45 @@ class TopControls extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          Text(
-                            controller.currentEpisode.value.title ??
-                                controller.itemName ??
-                                'Unknown Title',
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              color: Get.isDarkMode
-                                  ? theme.colorScheme.onSurface
-                                  : Colors.white,
-                              fontFamily: 'Poppins-SemiBold',
-                              letterSpacing: 0.2,
+                          Flexible(
+                            child: Text(
+                              controller.currentEpisode.value.title ??
+                                  controller.itemName ??
+                                  'Unknown Title',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                color: Get.isDarkMode
+                                    ? theme.colorScheme.onSurface
+                                    : Colors.white,
+                                fontFamily: 'Poppins-SemiBold',
+                                letterSpacing: 0.2,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
                           ),
                           10.width(),
-                          Flexible(
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 4),
-                              decoration: BoxDecoration(
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: isDark
+                                  ? theme.colorScheme.primary.opaque(0.15)
+                                  : theme.colorScheme.primaryContainer,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              controller.currentEpisode.value.number ==
+                                      "Offline"
+                                  ? "Offline"
+                                  : "Episode ${controller.currentEpisode.value.number}",
+                              style: theme.textTheme.bodyMedium?.copyWith(
                                 color: isDark
-                                    ? theme.colorScheme.primary.opaque(0.15)
-                                    : theme.colorScheme.primaryContainer,
-                                borderRadius: BorderRadius.circular(8),
+                                    ? theme.colorScheme.primary
+                                    : theme.colorScheme.onPrimaryContainer,
+                                fontWeight: FontWeight.w600,
                               ),
-                              child: Text(
-                                controller.currentEpisode.value.number ==
-                                        "Offline"
-                                    ? "Offline"
-                                    : "Episode ${controller.currentEpisode.value.number}",
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: isDark
-                                      ? theme.colorScheme.primary
-                                      : theme.colorScheme.onPrimaryContainer,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
@@ -308,6 +320,7 @@ class TopControls extends StatelessWidget {
                             fontWeight: FontWeight.w600,
                           ),
                           maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       )
                     ],
@@ -321,6 +334,8 @@ class TopControls extends StatelessWidget {
           () => _QualityChip(
               videoHeight: controller.videoHeight.value, isMobile: false),
         ),
+        const SizedBox(width: 8),
+        const DecoderQuickButton(isMobile: false),
         const SizedBox(width: 8),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -349,22 +364,24 @@ class TopControls extends StatelessWidget {
               ControlButton(
                 icon: Icons.settings_rounded,
                 onPressed: () {
-                  showModalBottomSheet(
-                      context: Get.context!,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (context) => Container(
-                            height: MediaQuery.of(context).size.height,
-                            clipBehavior: Clip.antiAlias,
-                            decoration: const BoxDecoration(
-                              color: Colors.transparent,
-                              borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(28)),
-                            ),
-                            child: const SettingsPlayer(
-                              isModal: true,
-                            ),
-                          ));
+                  Get.find<PlayerController>().showSheetWithPause(
+                    () => showModalBottomSheet(
+                        context: Get.context!,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => Container(
+                              height: MediaQuery.of(context).size.height,
+                              clipBehavior: Clip.antiAlias,
+                              decoration: const BoxDecoration(
+                                color: Colors.transparent,
+                                borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(28)),
+                              ),
+                              child: const SettingsPlayer(
+                                isModal: true,
+                              ),
+                            )),
+                  );
                 },
                 tooltip: 'Settings',
                 compact: true,
@@ -374,6 +391,129 @@ class TopControls extends StatelessWidget {
         ),
         const SizedBox(width: 20),
       ],
+    );
+  }
+
+  Widget _buildMobilePortrait(
+      ThemeData theme, PlayerController controller, bool isDark) {
+    final titleStyle = theme.textTheme.titleSmall?.copyWith(
+      color: Get.isDarkMode ? theme.colorScheme.onSurface : Colors.white,
+      fontWeight: FontWeight.w600,
+      letterSpacing: 0.2,
+    );
+    final titleText = controller.currentEpisode.value.title ??
+        controller.itemName ??
+        'Unknown Title';
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              ControlButton(
+                icon: Icons.arrow_back_ios_rounded,
+                onPressed: () => Get.back(),
+                tooltip: 'Back',
+                isPrimary: true,
+              ),
+              const Spacer(),
+              Obx(() => _QualityChip(
+                  videoHeight: controller.videoHeight.value, isMobile: true)),
+              const SizedBox(width: 8),
+              const DecoderQuickButton(isMobile: true),
+              const SizedBox(width: 8),
+              ControlButton(
+                icon: Icons.lock_rounded,
+                onPressed: () => controller.isLocked.value = true,
+                tooltip: 'Lock Controls',
+                compact: true,
+              ),
+              const SizedBox(width: 8),
+              ControlButton(
+                icon: Icons.settings_rounded,
+                onPressed: () {
+                  Get.find<PlayerController>().showSheetWithPause(
+                    () => showModalBottomSheet(
+                      context: Get.context!,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (context) => Container(
+                        height: MediaQuery.of(context).size.height,
+                        clipBehavior: Clip.antiAlias,
+                        decoration: const BoxDecoration(
+                          color: Colors.transparent,
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(28)),
+                        ),
+                        child: const SettingsPlayer(isModal: true),
+                      ),
+                    ),
+                  );
+                },
+                tooltip: 'Settings',
+                compact: true,
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(child: MarqueeText(titleText, style: titleStyle)),
+              const SizedBox(width: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: isDark
+                      ? theme.colorScheme.primary.opaque(0.15)
+                      : theme.colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  controller.currentEpisode.value.number == "Offline"
+                      ? "Offline"
+                      : "Episode ${controller.currentEpisode.value.number}",
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: isDark
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.onPrimaryContainer,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                  ),
+                  maxLines: 1,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: isDark
+                  ? theme.colorScheme.primary.opaque(0.15)
+                  : theme.colorScheme.primaryContainer,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              (controller.anilistData.title == "?"
+                      ? controller.folderName
+                      : controller.anilistData.title) ??
+                  '',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: isDark
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onPrimaryContainer,
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

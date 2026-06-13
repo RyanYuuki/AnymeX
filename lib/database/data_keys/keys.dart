@@ -24,6 +24,7 @@ enum General {
   filterRepeating,
   communityListViewIsGrid,
   hasJoinedNewDiscord,
+  discordRpcEnabled,
 }
 
 enum ThemeKeys {
@@ -239,6 +240,7 @@ enum PlayerSettingsKeys {
   subtitleOutlineType,
   playerMenuAnimation,
   hardwareDecoder,
+  preferredSubtitleLanguage,
 }
 
 enum UISettingsKeys {
@@ -277,4 +279,3 @@ enum DownloadKeys {
   hlsParallelSegments,
   enableJxlCompression,
 }
-

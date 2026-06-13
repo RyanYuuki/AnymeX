@@ -232,6 +232,7 @@ class CustomTile extends StatelessWidget {
           onTap: onTap,
           child: InkWell(
             onTap: onTap,
+            borderRadius: BorderRadius.circular(12),
             child: Padding(
               padding: EdgeInsets.symmetric(
                   horizontal: padding ?? 20.0, vertical: 10.0),

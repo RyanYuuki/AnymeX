@@ -34,7 +34,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
   static const Duration _seekModeTimeout = Duration(milliseconds: 1500);
   static const Duration _indicatorTimeout = Duration(milliseconds: 1000);
   static const Duration _seekDebounceTimeout = Duration(milliseconds: 500);
-  static const Duration _setRateDebounceTimeout = Duration(seconds: 1);
+  static const Duration _setRateDebounceTimeout = Duration(milliseconds: 200);
 
   bool _isHolding = false;
   double _currentSpeed = 1.0;
@@ -195,7 +195,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
 
         widget.controller.toggleControls(val: false);
 
-        _setPlaybackRate(_currentSpeed);
+        _setPlaybackRate(_currentSpeed, instant: true);
 
         _speedAnimationController.forward();
         _glowAnimationController.repeat(reverse: true);
@@ -216,7 +216,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
         _currentSpeed = _previousSpeed;
       });
 
-      _setPlaybackRate(_previousSpeed);
+      _setPlaybackRate(_previousSpeed, instant: true);
 
       if (_hadControlsBeforeHold) {
         widget.controller.toggleControls(val: true);
@@ -226,33 +226,48 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
       _glowAnimationController.reset();
 
       HapticFeedback.lightImpact();
-      Future.delayed(const Duration(milliseconds: 1000), () {
-        _setPlaybackRate(_previousSpeed);
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (mounted && !_isHolding) {
+          _setPlaybackRate(_previousSpeed, instant: true);
+        }
       });
     }
   }
 
-  void _setPlaybackRate(double rate) {
+  void _setPlaybackRate(double rate, {bool instant = false}) {
     if (widget.controller.isLocked.value) return;
     try {
       _pendingSpeed = rate;
 
       _setRateDebounceTimer?.cancel();
 
-      _setRateDebounceTimer = Timer(_setRateDebounceTimeout, () {
-        if (mounted) {
-          widget.controller.setRate(_pendingSpeed);
+      if (instant) {
+        widget.controller.setRate(rate);
 
-          Future.delayed(const Duration(milliseconds: 200), () {
-            if (mounted) {
-              double currentRate = widget.controller.playbackSpeed.value;
-              if ((currentRate - _pendingSpeed).abs() > 0.1) {
-                widget.controller.setRate(_pendingSpeed);
-              }
+        Future.delayed(const Duration(milliseconds: 200), () {
+          if (mounted) {
+            double currentRate = widget.controller.playbackSpeed.value;
+            if ((currentRate - rate).abs() > 0.1) {
+              widget.controller.setRate(rate);
             }
-          });
-        }
-      });
+          }
+        });
+      } else {
+        _setRateDebounceTimer = Timer(_setRateDebounceTimeout, () {
+          if (mounted) {
+            widget.controller.setRate(_pendingSpeed);
+
+            Future.delayed(const Duration(milliseconds: 200), () {
+              if (mounted) {
+                double currentRate = widget.controller.playbackSpeed.value;
+                if ((currentRate - _pendingSpeed).abs() > 0.1) {
+                  widget.controller.setRate(_pendingSpeed);
+                }
+              }
+            });
+          }
+        });
+      }
     } catch (e) {
       debugPrint('Error setting playback rate: $e');
     }
@@ -565,6 +580,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
                 _startHold();
               },
               onLongPressEnd: (details) => _endHold(),
+              onLongPressCancel: () => _endHold(),
               onLongPressMoveUpdate: (details) {
                 if (_isHolding) {
                   double deltaY = details.globalPosition.dy - _initialSwipeY;

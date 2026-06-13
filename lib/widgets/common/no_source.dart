@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:anymex/screens/extensions/ExtensionScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 
@@ -39,12 +40,12 @@ class NoSourceSelectedWidget extends StatelessWidget {
             ElevatedButton.icon(
               onPressed: () {
                 if (isMobile) {
-                  // Navigator.pushReplacement(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //     builder: (context) => const ExtensionScreen(),
-                  //   ),
-                  // );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ExtensionScreen(),
+                    ),
+                  );
                 } else {
                   Navigator.pop(
                     context,

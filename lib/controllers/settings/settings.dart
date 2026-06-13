@@ -543,6 +543,13 @@ class Settings extends GetxController {
     PlayerSettingsKeys.markAsCompleted.set(value);
   }
 
+  String get preferredSubtitleLanguage =>
+      _getPlayerSetting((s) => s.preferredSubtitleLanguage);
+  set preferredSubtitleLanguage(String value) {
+    playerSettings.update((s) => s?.preferredSubtitleLanguage = value);
+    PlayerSettingsKeys.preferredSubtitleLanguage.set(value);
+  }
+
   void updateHomePageCard(String key, bool value) {
     final currentCards = Map<String, bool>.from(uiSettings.value.homePageCards);
     currentCards[key] = value;

@@ -1,6 +1,7 @@
-
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
+
+import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -66,8 +67,9 @@ class _SourcePopupContentState extends State<_SourcePopupContent> {
   }
 
   Widget _buildHeader(ColorScheme cs, ThemeData theme) {
+    final isDesktop = !Platform.isAndroid && !Platform.isIOS;
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 16 + 40, 16, 16),
+      padding: EdgeInsets.fromLTRB(16, isDesktop ? 16 + 40 : 16, 16, 16),
       decoration: BoxDecoration(
         color: cs.surfaceContainerHighest.withOpacity(0.3),
         border: Border(
@@ -101,7 +103,8 @@ class _SourcePopupContentState extends State<_SourcePopupContent> {
                 color: cs.surfaceContainerHighest.withOpacity(0.5),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(Icons.close, size: 20, color: cs.onSurface.withOpacity(0.7)),
+              child: Icon(Icons.close,
+                  size: 20, color: cs.onSurface.withOpacity(0.7)),
             ),
           ),
         ],
@@ -176,14 +179,16 @@ class _SourcePopupContentState extends State<_SourcePopupContent> {
               Icon(
                 icon,
                 size: 18,
-                color: isSelected ? cs.onPrimary : cs.onSurface.withOpacity(0.6),
+                color:
+                    isSelected ? cs.onPrimary : cs.onSurface.withOpacity(0.6),
               ),
               const SizedBox(width: 6),
               Text(
                 label,
                 style: theme.textTheme.labelLarge?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: isSelected ? cs.onPrimary : cs.onSurface.withOpacity(0.6),
+                  color:
+                      isSelected ? cs.onPrimary : cs.onSurface.withOpacity(0.6),
                 ),
               ),
             ],
@@ -199,7 +204,8 @@ class _SourcePopupContentState extends State<_SourcePopupContent> {
       final selectedServer = widget.controller.selectedVideo.value;
 
       if (servers.isEmpty) {
-        return _buildEmpty(cs, theme, Symbols.dns_rounded, 'No servers available');
+        return _buildEmpty(
+            cs, theme, Symbols.dns_rounded, 'No servers available');
       }
 
       return ListView.builder(
@@ -207,7 +213,8 @@ class _SourcePopupContentState extends State<_SourcePopupContent> {
         itemCount: servers.length,
         itemBuilder: (context, index) {
           final server = servers[index];
-          final isSelected = selectedServer != null && servers.indexOf(selectedServer) == index;
+          final isSelected = selectedServer != null &&
+              servers.indexOf(selectedServer) == index;
 
           return _buildListItem(
             cs: cs,
@@ -235,15 +242,18 @@ class _SourcePopupContentState extends State<_SourcePopupContent> {
             final tracks = allMode
                 ? widget.controller.getAllStreamSubtitleOptions()
                 : widget.controller.getCurrentStreamSubtitleOptions();
-            final selectedFile = widget.controller.selectedExternalSub.value.file;
-            final selectedTrackIndex = tracks.indexWhere((t) => t.file == selectedFile);
+            final selectedFile =
+                widget.controller.selectedExternalSub.value.file;
+            final selectedTrackIndex =
+                tracks.indexWhere((t) => t.file == selectedFile);
 
             return ListView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               itemCount: tracks.length + 1,
               itemBuilder: (context, index) {
                 if (index == 0) {
-                  final isNoneSelected = selectedFile == null || selectedFile.isEmpty;
+                  final isNoneSelected =
+                      selectedFile == null || selectedFile.isEmpty;
                   return _buildListItem(
                     cs: cs,
                     theme: theme,
@@ -317,7 +327,9 @@ class _SourcePopupContentState extends State<_SourcePopupContent> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
               border: Border.all(
-                color: isSelected ? cs.primary.withOpacity(0.3) : Colors.transparent,
+                color: isSelected
+                    ? cs.primary.withOpacity(0.3)
+                    : Colors.transparent,
                 width: 1.0,
               ),
               borderRadius: BorderRadius.circular(16),
@@ -335,7 +347,8 @@ class _SourcePopupContentState extends State<_SourcePopupContent> {
                   child: Icon(
                     icon,
                     size: 20,
-                    color: isSelected ? cs.primary : cs.onSurface.withOpacity(0.7),
+                    color:
+                        isSelected ? cs.primary : cs.onSurface.withOpacity(0.7),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -347,7 +360,8 @@ class _SourcePopupContentState extends State<_SourcePopupContent> {
                       Text(
                         title,
                         style: theme.textTheme.bodyLarge?.copyWith(
-                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                          fontWeight:
+                              isSelected ? FontWeight.w600 : FontWeight.w500,
                           color: isSelected ? cs.primary : cs.onSurface,
                         ),
                       ),
@@ -377,7 +391,8 @@ class _SourcePopupContentState extends State<_SourcePopupContent> {
     );
   }
 
-  Widget _buildEmpty(ColorScheme cs, ThemeData theme, IconData icon, String message) {
+  Widget _buildEmpty(
+      ColorScheme cs, ThemeData theme, IconData icon, String message) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

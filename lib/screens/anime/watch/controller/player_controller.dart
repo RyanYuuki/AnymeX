@@ -24,6 +24,7 @@ import 'package:anymex/screens/anime/watch/player/base_player.dart';
 import 'package:anymex/screens/anime/watch/player/media_kit_player.dart';
 
 import 'package:anymex/utils/aniskip.dart' as aniskip;
+import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/color_profiler.dart';
 import 'package:anymex/utils/sub_parser.dart';
 import 'package:anymex/utils/logger.dart';
@@ -192,6 +193,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final Rx<bool> isSyncSubsPaneOpened = false.obs;
   final RxList<SubtitleCue> parsedSubtitleCues = <SubtitleCue>[].obs;
   final Rx<bool> isEpisodePaneOpened = false.obs;
+  final Rx<bool> isSpeedPaneOpened = false.obs;
   final RxBool canGoForward = false.obs;
   final RxBool canGoBackward = false.obs;
   final RxDouble volume = 0.0.obs;
@@ -206,6 +208,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   RxMap<String, int> customSettings = <String, int>{}.obs;
   bool _hasTrackedInitialOnline = false;
   bool _hasTrackedInitialLocal = false;
+  bool _hasAutoSelectedPreferredSub = false;
   aniskip.EpisodeSkipTimes? skipTimes;
   final isOPSkippedOnce = false.obs;
   final isEDSkippedOnce = false.obs;
@@ -285,7 +288,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     final cleanShaderName = shaderName == "Default" ? "" : shaderName;
     settingsController.selectedShader = cleanShaderName;
     PlayerUiKeys.selectedShader.set(cleanShaderName);
-    
+
     if (_basePlayer is MediaKitPlayer) {
       final nativePlayer = (_basePlayer as MediaKitPlayer).nativePlayer;
       try {
@@ -294,7 +297,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         Logger.e('Failed to apply shader: $e');
       }
     }
-    
+
     activeShaderName.value = shaderName;
     showShaderOsd.value = true;
     _shaderOsdTimer?.cancel();
@@ -320,7 +323,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   Timer? _controlsTimer;
   bool _wasControlsVisible = false;
   bool isLeftLandscaped = true;
-  final Rx<DeviceOrientation> currentOrientation = DeviceOrientation.landscapeLeft.obs;
+  final Rx<DeviceOrientation> currentOrientation =
+      DeviceOrientation.landscapeLeft.obs;
 
   final Rx<BoxFit> videoFit = Rx<BoxFit>(BoxFit.contain);
   final RxBool isLocked = false.obs;
@@ -362,9 +366,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           .toList();
     });
     if (PlayerKeys.useLibass.get(false)) {
-      snackBar(
-          "if subtitle is not showing up then disable libass in settings and restart",
-          duration: 3000);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        snackBar(
+            "if subtitle is not showing up then disable libass in settings and restart",
+            duration: 3000);
+      });
     }
   }
 
@@ -523,6 +529,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void _applyOrientation(DeviceOrientation orientation) {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     SystemChrome.setPreferredOrientations([orientation]);
     currentOrientation.value = orientation;
     isLeftLandscaped = orientation != DeviceOrientation.landscapeRight;
@@ -946,12 +953,13 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       final subs = e.subtitle
           .where((track) => !_isExternalSubtitleTrack(track))
           .toList();
-          
+
       if (isOffline.value) {
         if (embeddedSubs.value.isEmpty) {
-          final offlineTracks = externalSubs.value.map((s) => 
-              SubtitleTrack.uri(s.file ?? '', title: s.label, language: s.label)
-          ).toList();
+          final offlineTracks = externalSubs.value
+              .map((s) => SubtitleTrack.uri(s.file ?? '',
+                  title: s.label, language: s.label))
+              .toList();
           subs.addAll(offlineTracks);
           embeddedSubs.value = subs;
         }
@@ -959,6 +967,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         embeddedSubs.value = subs;
       }
       embeddedQuality.value = e.video;
+      _tryAutoSelectPreferredSubtitle();
     }));
 
     _playerSubscriptions.add(_basePlayer.rateStream.listen((e) {
@@ -1057,7 +1066,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     if (selectedVideo.value?.subtitles != null &&
         selectedVideo.value!.subtitles!.isNotEmpty) {
-      
       final validSubs = selectedVideo.value!.subtitles!
           .where((s) => s.file != null && !s.file!.startsWith('http'))
           .toList();
@@ -1087,7 +1095,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       final parentDir = videoFile.parent;
       final dirs = await parentDir.list().whereType<Directory>().toList();
       final expectedSubsDirName = 'Episode_${currentEpisode.value.number}_subs';
-      final subsDir = dirs.firstWhereOrNull((d) => p.basename(d.path) == expectedSubsDirName);
+      final subsDir = dirs
+          .firstWhereOrNull((d) => p.basename(d.path) == expectedSubsDirName);
 
       if (subsDir != null && await subsDir.exists()) {
         final files = await subsDir.list().toList();
@@ -1253,11 +1262,13 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       }
 
       resetListeners();
-      _basePlayer.open('');
+      await _basePlayer.stop();
       setExternalSub(null);
       currentEpisode.value = episode;
       _hasTrackedInitialLocal = false;
       _hasTrackedInitialOnline = false;
+      _hasAutoSelectedPreferredSub = false;
+      selectedSubsTrack.value = null;
 
       episodeTracks.value = data.map((e) => model.Video.fromVideo(e)).toList();
 
@@ -1278,7 +1289,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
             savedEpisodeData.durationInMilliseconds ?? 0;
 
         final bool wasCompleted = episodeTotalDuration > 0 &&
-            (savedTimestamp / episodeTotalDuration) >= 0.99;
+            (savedTimestamp / episodeTotalDuration) * 100 >=
+                settingsController.markAsCompleted;
 
         if (!wasCompleted && savedTimestamp > 0) {
           startPosition = Duration(milliseconds: savedTimestamp);
@@ -1291,6 +1303,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       snackBar('Failed to load episode. Check your connection.');
     } finally {
       PlayerBottomSheets.hideLoader();
+      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
       updateNavigatorState();
     }
   }
@@ -1408,8 +1421,47 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     return a.label!.compareTo(b.label!);
   }
 
+  bool _matchesPreferredLanguage(String? label, String preferredLangCode) {
+    if (label == null || label.isEmpty || preferredLangCode == 'none')
+      return false;
+    final normLabel = label.toLowerCase();
+    final normCode = preferredLangCode.toLowerCase();
+    final fullName =
+        SubtitleTranslator.languages[preferredLangCode]?.toLowerCase();
+    final extName = extensionLanguageNameByCode[normCode]?.toLowerCase();
+    return normLabel.contains(normCode) ||
+        (fullName != null && normLabel.contains(fullName)) ||
+        (extName != null && normLabel.contains(extName));
+  }
+
+  void _tryAutoSelectPreferredSubtitle() {
+    if (_hasAutoSelectedPreferredSub) return;
+
+    if (selectedSubsTrack.value != null) {
+      _hasAutoSelectedPreferredSub = true;
+      Future.delayed(const Duration(milliseconds: 500), () {
+        _applySubtitleTrack(selectedSubsTrack.value!, allowReload: false);
+      });
+      return;
+    }
+
+    final preferredLang = playerSettings.preferredSubtitleLanguage;
+    if (preferredLang == 'none' || embeddedSubs.value.isEmpty) return;
+
+    final match = embeddedSubs.value.firstWhereOrNull((track) =>
+        _matchesPreferredLanguage(
+            '${track.language ?? ''} ${track.title ?? ''}', preferredLang));
+
+    if (match != null) {
+      _hasAutoSelectedPreferredSub = true;
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (selectedSubsTrack.value == null) setSubtitleTrack(match);
+      });
+    }
+  }
+
   void _extractSubtitles() {
-    Future.microtask(() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       externalSubs.value = getAllStreamSubtitleOptions();
 
       final currentStreamSubs = getCurrentStreamSubtitleOptions();
@@ -1429,10 +1481,13 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         return;
       }
 
-      final currentServerEng = currentStreamSubs.firstWhereOrNull(
-        (e) => e.label?.toLowerCase().contains('eng') ?? false,
-      );
-      setExternalSub(currentServerEng ?? currentStreamSubs.first);
+      final preferredLang = playerSettings.preferredSubtitleLanguage;
+      final match = preferredLang != 'none'
+          ? currentStreamSubs.firstWhereOrNull(
+              (e) => _matchesPreferredLanguage(e.label, preferredLang))
+          : currentStreamSubs.firstWhereOrNull(
+              (e) => e.label?.toLowerCase().contains('eng') ?? false);
+      setExternalSub(match ?? currentStreamSubs.first);
     });
   }
 
@@ -1459,6 +1514,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> delete() async {
+    await _basePlayer.pause();
     _subSyncWorker?.dispose();
     _seekDebounce?.cancel();
     _brightnessTimer?.cancel();
@@ -1539,6 +1595,16 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     onUserInteraction();
   }
 
+  Future<T?> showSheetWithPause<T>(Future<T?> Function() openSheet) async {
+    final wasPlaying = isPlaying.value;
+    if (wasPlaying) _basePlayer.pause();
+    try {
+      return await openSheet();
+    } finally {
+      if (wasPlaying) _basePlayer.play();
+    }
+  }
+
   void setRate(double rate) {
     playbackSpeed.value = rate;
     _basePlayer.setRate(rate);
@@ -1560,7 +1626,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   void setSubtitleTrack(SubtitleTrack track) {
     selectedSubsTrack.value = track.id == 'no' ? null : track;
 
-    if (track.id != 'no' && track.id != 'auto' && _isExternalSubtitleTrack(track)) {
+    if (track.id != 'no' &&
+        track.id != 'auto' &&
+        _isExternalSubtitleTrack(track)) {
       final match = externalSubs.value.firstWhere(
         (sub) {
           final isUrlMatch = sub.file == track.url;
@@ -1597,6 +1665,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void onVerticalDragStart(BuildContext context, DragStartDetails details) {
+    if (isLocked.value) return;
     if (settings.enableSwipeControls) {
       _controlsTimer?.cancel();
       _cancelAutoHideTimer();
@@ -1610,6 +1679,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void onVerticalDragUpdate(BuildContext context, DragUpdateDetails e) {
+    if (isLocked.value) return;
     if (!settings.enableSwipeControls) return;
 
     final size = MediaQuery.of(context).size;
@@ -1636,6 +1706,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void onVerticalDragEnd(BuildContext context, DragEndDetails details) {
+    if (isLocked.value) return;
     if (settings.enableSwipeControls) {
       _controlsTimer?.cancel();
       _hideVolumeIndicatorAfterDelay();
@@ -1667,9 +1738,13 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     brightness.value = value;
     brightnessIndicator.value = true;
 
-    try {
-      await ScreenBrightness.instance.setApplicationScreenBrightness(value);
-    } catch (_) {}
+    unawaited(
+      ScreenBrightness.instance
+          .setApplicationScreenBrightness(value)
+          .catchError((e) {
+        Logger.e("Error setting brightness: $e");
+      }),
+    );
 
     _brightnessTimer?.cancel();
 
@@ -1811,8 +1886,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     setAudioTrack(AudioTrack.uri(track.file!));
   }
 
-
-
   Future<void> loadSubtitleCuesFromUrl(String url) async {
     try {
       parsedSubtitleCues.clear();
@@ -1830,7 +1903,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         client.close();
       } else {
         print('[SUBS] Attempting to load local subtitle from path: $url');
-        final file = File(url.replaceFirst('file://', '').replaceAll('%20', ' '));
+        final file =
+            File(url.replaceFirst('file://', '').replaceAll('%20', ' '));
         print('[SUBS] file exists? ${await file.exists()}');
         if (await file.exists()) {
           final bytes = await file.readAsBytes();
@@ -1839,7 +1913,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           return;
         }
       }
-      
+
       final cues = await SubParser.parseSubtitles(content);
       parsedSubtitleCues.assignAll(cues);
     } catch (e) {
@@ -1971,11 +2045,12 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void changeEpisode(Episode episode) {
-    _basePlayer.pause();
     _trackLocally();
     if (!isOffline.value) {
       _trackOnline(_shouldMarkAsCompleted);
     }
+    _basePlayer.pause();
+    unawaited(_basePlayer.stop());
     isEpisodePaneOpened.value = false;
     resetListeners();
     fetchEpisode(episode);
@@ -1990,8 +2065,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void openColorProfileBottomSheet(BuildContext context) {
     if (_basePlayer is MediaKitPlayer) {
-      ColorProfileBottomSheet.showColorProfileSheet(
-          context, this, (_basePlayer as MediaKitPlayer).nativePlayer);
+      showSheetWithPause(() async {
+        await ColorProfileBottomSheet.showColorProfileSheet(
+            context, this, (_basePlayer as MediaKitPlayer).nativePlayer);
+      });
     } else {
       snackBar('Color profiles only available with MediaKit player');
     }
@@ -2063,10 +2140,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         number: episode.number,
         title: episode.title,
         link: episode.link,
-        timeStampInMilliseconds:
-            (currentTimestamp > 0 && currentTimestamp < totalDuration)
-                ? currentTimestamp
-                : 0,
+        timeStampInMilliseconds: currentTimestamp.clamp(0, totalDuration),
         thumbnail: thumbnailBase64 ?? episode.thumbnail,
         currentTrack: selectedVideo.value,
         videoTracks: episodeTracks,

@@ -3,6 +3,8 @@ import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
 import 'package:anymex/screens/anime/watch/player/base_player.dart';
 import 'package:anymex/utils/language.dart';
 
+import 'dart:io' show Platform;
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -75,9 +77,9 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
   }
 
   Widget _buildHeader(ColorScheme cs, ThemeData theme) {
+    final isDesktop = !Platform.isAndroid && !Platform.isIOS;
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 16 + 40, 16, 16),
-
+      padding: EdgeInsets.fromLTRB(16, isDesktop ? 16 + 40 : 16, 16, 16),
       decoration: BoxDecoration(
         color: cs.surfaceContainerHighest.withOpacity(0.3),
         border: Border(
@@ -111,7 +113,8 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
                 color: cs.surfaceContainerHighest.withOpacity(0.5),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(Icons.close, size: 20, color: cs.onSurface.withOpacity(0.7)),
+              child: Icon(Icons.close,
+                  size: 20, color: cs.onSurface.withOpacity(0.7)),
             ),
           ),
         ],
@@ -125,10 +128,7 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
               .where((e) => e.height != null && e.width != null)
               .length >
           1;
-      final hasAudio = widget.controller.embeddedAudioTracks.value
-              .where((e) => e.title != null && e.language != null)
-              .length >
-          1;
+      final hasAudio = widget.controller.embeddedAudioTracks.value.length > 1;
 
       final tabs = <_TracksTab>[];
       tabs.add(_TracksTab.subtitles);
@@ -189,14 +189,18 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
                       Icon(
                         icon,
                         size: 16,
-                        color: isSelected ? cs.onPrimary : cs.onSurface.withOpacity(0.6),
+                        color: isSelected
+                            ? cs.onPrimary
+                            : cs.onSurface.withOpacity(0.6),
                       ),
                       const SizedBox(width: 4),
                       Text(
                         label,
                         style: theme.textTheme.labelMedium?.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: isSelected ? cs.onPrimary : cs.onSurface.withOpacity(0.6),
+                          color: isSelected
+                              ? cs.onPrimary
+                              : cs.onSurface.withOpacity(0.6),
                         ),
                       ),
                     ],
@@ -218,7 +222,8 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
       final selected = widget.controller.selectedQualityTrack.value;
 
       if (qualities.isEmpty) {
-        return _buildEmpty(cs, theme, Symbols.high_quality_rounded, 'No quality tracks');
+        return _buildEmpty(
+            cs, theme, Symbols.high_quality_rounded, 'No quality tracks');
       }
 
       return ListView.builder(
@@ -226,7 +231,8 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
         itemCount: qualities.length,
         itemBuilder: (context, index) {
           final q = qualities[index];
-          final isSelected = selected != null && qualities.indexOf(selected) == index;
+          final isSelected =
+              selected != null && qualities.indexOf(selected) == index;
           return _buildListItem(
             cs: cs,
             theme: theme,
@@ -243,13 +249,12 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
 
   Widget _buildAudioTracks(ColorScheme cs, ThemeData theme) {
     return Obx(() {
-      final tracks = widget.controller.embeddedAudioTracks.value
-          .where((e) => e.title != null && e.language != null)
-          .toList();
+      final tracks = widget.controller.embeddedAudioTracks.value.toList();
       final selected = widget.controller.selectedAudioTrack.value;
 
       if (tracks.isEmpty) {
-        return _buildEmpty(cs, theme, Symbols.music_note_rounded, 'No audio tracks');
+        return _buildEmpty(
+            cs, theme, Symbols.music_note_rounded, 'No audio tracks');
       }
 
       return ListView.builder(
@@ -275,12 +280,23 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
           }
 
           final track = tracks[index - 1];
-          final isSelected = selected != null && tracks.indexOf(selected) == index - 1;
+          final isSelected =
+              selected != null && tracks.indexOf(selected) == index - 1;
+
+          String displayTitle = 'Audio Track $index';
+          if (track.language != null && track.title != null) {
+            displayTitle =
+                '${completeSubtitleLanguageName(track.language!)} - ${track.title}';
+          } else if (track.language != null) {
+            displayTitle = completeSubtitleLanguageName(track.language!);
+          } else if (track.title != null) {
+            displayTitle = track.title!;
+          }
+
           return _buildListItem(
             cs: cs,
             theme: theme,
-            title: completeSubtitleLanguageName(track.language ?? '') +
-                (track.title != null ? ' - ${track.title}' : ''),
+            title: displayTitle,
             subtitle: 'Audio Track',
             icon: Symbols.music_note_rounded,
             isSelected: isSelected,
@@ -313,7 +329,8 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
               subtitle: 'No subtitles',
               icon: Icons.subtitles_off,
               isSelected: currentIndex == 0,
-              onTap: () => widget.controller.setSubtitleTrack(SubtitleTrack.no()),
+              onTap: () =>
+                  widget.controller.setSubtitleTrack(SubtitleTrack.no()),
             );
           }
 
@@ -322,7 +339,7 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
           return _buildListItem(
             cs: cs,
             theme: theme,
-            title: ( completeSubtitleLanguageName(track.language ?? ''))
+            title: (completeSubtitleLanguageName(track.language ?? ''))
                 .toUpperCase(),
             subtitle: 'Embedded Subtitle',
             icon: Icons.closed_caption_rounded,
@@ -355,7 +372,9 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
               border: Border.all(
-                color: isSelected ? cs.primary.withOpacity(0.3) : Colors.transparent,
+                color: isSelected
+                    ? cs.primary.withOpacity(0.3)
+                    : Colors.transparent,
                 width: 1.0,
               ),
               borderRadius: BorderRadius.circular(16),
@@ -373,7 +392,8 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
                   child: Icon(
                     icon,
                     size: 20,
-                    color: isSelected ? cs.primary : cs.onSurface.withOpacity(0.7),
+                    color:
+                        isSelected ? cs.primary : cs.onSurface.withOpacity(0.7),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -385,7 +405,8 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
                       Text(
                         title,
                         style: theme.textTheme.bodyLarge?.copyWith(
-                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                          fontWeight:
+                              isSelected ? FontWeight.w600 : FontWeight.w500,
                           color: isSelected ? cs.primary : cs.onSurface,
                         ),
                       ),
@@ -415,7 +436,8 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
     );
   }
 
-  Widget _buildEmpty(ColorScheme cs, ThemeData theme, IconData icon, String message) {
+  Widget _buildEmpty(
+      ColorScheme cs, ThemeData theme, IconData icon, String message) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

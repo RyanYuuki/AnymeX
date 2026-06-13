@@ -88,7 +88,28 @@ class MyCustomScrollBehavior extends MaterialScrollBehavior {
       };
 }
 
-void initDeepLinkListener() async {
+void initDeepLinkListener(List<String> args) async {
+  if (args.isNotEmpty) {
+    for (final arg in args) {
+      try {
+        final uri = Uri.parse(arg);
+        final schemes = {
+          'dar',
+          'anymex',
+          'sugoireads',
+          'mangayomi',
+          'cloudstreamrepo',
+          'sora',
+          'tachiyomi',
+          'aniyomi'
+        };
+        if (uri.hasScheme && schemes.contains(uri.scheme.toLowerCase())) {
+          Deeplink.handleDeepLink(uri);
+          break;
+        }
+      } catch (_) {}
+    }
+  }
 
   try {
     final initialUri = await appLinks.getInitialLink();
@@ -121,14 +142,14 @@ void main(List<String> args) async {
     }
 
     if (Platform.isWindows) {
-      ['dar', 'anymex', 'sugoireads', 'mangayomi']
+      ['dar', 'anymex', 'sugoireads', 'mangayomi', 'cloudstreamrepo', 'sora', 'tachiyomi', 'aniyomi']
           .forEach(registerProtocolHandler);
     }
     await Database().init();
     HttpOverrides.global = MyHttpoverrides();
 
     _initializeGetxController();
-    initDeepLinkListener();
+    initDeepLinkListener(args);
     initializeDateFormatting();
     MediaKit.ensureInitialized();
     if (!Platform.isAndroid && !Platform.isIOS) {

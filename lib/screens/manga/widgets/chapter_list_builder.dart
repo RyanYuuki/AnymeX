@@ -1,4 +1,5 @@
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
+import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
@@ -32,6 +33,7 @@ class ChapterState {
   final Chapter? continueChapter;
   final List<String> scanlators;
   final List<List<Chapter>> chunkedChapters;
+  final List<Chapter> readChapters;
 
   const ChapterState({
     this.userProgress,
@@ -39,6 +41,7 @@ class ChapterState {
     this.continueChapter,
     required this.scanlators,
     required this.chunkedChapters,
+    this.readChapters = const [],
   });
 }
 
@@ -76,9 +79,15 @@ class ChapterService {
             chaptersForChunking, calculateChapterChunkSize(chaptersForChunking))
         : <List<Chapter>>[];
 
-    final userProgress = _getUserProgress(anilistData);
-    final readChapter =
-        _offlineStorage.getReadChapter(anilistData.id, userProgress.toDouble());
+    final savedManga = _offlineStorage.getMangaById(anilistData.id) ??
+        _offlineStorage.getNovelById(anilistData.id);
+
+    final userProgress = _getUserProgress(anilistData, savedManga);
+    final readChaptersList = savedManga?.readChapters ?? <Chapter>[];
+
+    final readChapter = readChaptersList.firstWhereOrNull(
+      (c) => c.number == userProgress.toDouble(),
+    );
     final continueChapter =
         _findContinueChapter(chapters, userProgress, readChapter);
 
@@ -88,22 +97,34 @@ class ChapterService {
       continueChapter: continueChapter,
       scanlators: extractedScanlators,
       chunkedChapters: chunkedChapters,
+      readChapters: readChaptersList,
     );
   }
 
-  int _getUserProgress(Media anilistData) {
+  int _getUserProgress(Media anilistData, OfflineMedia? savedManga) {
     if (_auth.isLoggedIn.value &&
         _auth.serviceType.value != ServicesType.extensions) {
       final temp = _auth.onlineService.mangaList
           .firstWhereOrNull((e) => e.id == anilistData.id);
       return double.tryParse(temp?.episodeCount ?? '')?.toInt() ?? 1;
     } else {
-      return _offlineStorage
-              .getMangaById(anilistData.id)
-              ?.currentChapter
-              ?.number
-              ?.toInt() ??
-          1;
+      final currentChapter = savedManga?.currentChapter;
+      final progress = currentChapter?.number?.toInt();
+
+      bool isCompleted = false;
+      if (currentChapter != null) {
+        final pageNum = currentChapter.pageNumber;
+        final totalPgs = currentChapter.totalPages;
+        if (pageNum != null && totalPgs != null && totalPgs > 0) {
+          isCompleted = pageNum >= totalPgs ||
+              pageNum >= totalPgs - 1 ||
+              (pageNum / totalPgs) >= 0.95;
+        }
+      }
+
+      return progress != null
+          ? (isCompleted ? progress : progress - 1)
+          : 0;
     }
   }
 
@@ -133,14 +154,13 @@ class ChapterService {
     if (_auth.isLoggedIn.value &&
         _auth.serviceType.value != ServicesType.extensions) {
       final candidate =
-          chapters.firstWhereOrNull((e) => e.number?.toInt() == userProgress);
+          chapters.firstWhereOrNull((e) => e.number?.toInt() == userProgress + 1);
 
-      return candidate;
+      return candidate ?? chapters.firstWhereOrNull((e) => e.number?.toInt() == userProgress);
     } else {
-      return chapters.firstWhere(
-        (e) => e.number?.toInt() == userProgress,
-        orElse: () => readChapter ?? chapters.first,
-      );
+      return chapters.firstWhereOrNull((e) => e.number?.toInt() == userProgress + 1) ??
+          readChapter ??
+          (chapters.isNotEmpty ? chapters.first : null);
     }
   }
 
@@ -542,11 +562,15 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
 
   Widget _buildChapterItem(Chapter chapter, List<Chapter> filteredFullChapters,
       ChapterState chapterState) {
+    final savedChaps = chapterState.readChapters.firstWhereOrNull(
+      (c) => c.number == chapter.number,
+    );
     return ChapterListItem(
       chapter: chapter,
       anilistData: widget.anilistData,
       readChapter: chapterState.readChapter,
       continueChapter: chapterState.continueChapter,
+      savedChapter: savedChaps,
       onTap: () => _chapterService.navigateToReading(
           widget.anilistData, filteredFullChapters, chapter, context, () {
         if (mounted) {
@@ -568,6 +592,7 @@ class ChapterListItem extends StatelessWidget {
   final Media anilistData;
   final Chapter? readChapter;
   final Chapter? continueChapter;
+  final Chapter? savedChapter;
   final VoidCallback onTap;
   final VoidCallback? onLongPress;
 
@@ -577,19 +602,26 @@ class ChapterListItem extends StatelessWidget {
     required this.anilistData,
     this.readChapter,
     this.continueChapter,
+    this.savedChapter,
     required this.onTap,
     this.onLongPress,
   });
 
   @override
   Widget build(BuildContext context) {
-    final offlineStorage = Get.find<OfflineStorageController>();
-    final savedChaps =
-        offlineStorage.getReadChapter(anilistData.id, chapter.number!);
-    final currentChapterLink = readChapter?.link ?? continueChapter?.link ?? '';
+    final savedChaps = savedChapter;
+    final currentChapterLink = continueChapter?.link ?? '';
     final isSelected = chapter.link == currentChapterLink;
-    final alreadyRead = chapter.number! < (readChapter?.number ?? 1) ||
-        ((savedChaps?.pageNumber ?? 1) == (savedChaps?.totalPages ?? 100));
+    final _savedPage = savedChaps?.pageNumber;
+    final _savedTotal = savedChaps?.totalPages;
+    final _isPageComplete = _savedPage != null &&
+        _savedTotal != null &&
+        _savedTotal > 0 &&
+        (_savedPage >= _savedTotal ||
+            _savedPage >= _savedTotal - 1 ||
+            (_savedPage / _savedTotal) >= 0.95);
+    final alreadyRead =
+        chapter.number! < (readChapter?.number ?? 0.0) || _isPageComplete;
     return StaggeredAnimatedItemWrapper(
       child: AnymexOnTap(
           onTap: onTap,

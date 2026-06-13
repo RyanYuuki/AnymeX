@@ -9,12 +9,14 @@ class AnymexExpansionTile extends StatelessWidget {
   final String title;
   final Widget content;
   final bool initialExpanded;
+  final Widget? leading;
 
   const AnymexExpansionTile({
     super.key,
     required this.title,
     required this.content,
     this.initialExpanded = false,
+    this.leading,
   });
 
   @override
@@ -24,12 +26,17 @@ class AnymexExpansionTile extends StatelessWidget {
         initialExpanded || (highlightProvider?.expansionTitle == title);
 
     return AnymexCard(
+      clipBehavior: Clip.antiAlias,
       child: ExpansionTile(
-        shape: ShapeBorder.lerp(
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
-          1,
+        collapsedShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
         ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: const Radius.circular(16),
+          ),
+        ),
+        leading: leading,
         title: AnymexText(
           text: title,
           size: 16,

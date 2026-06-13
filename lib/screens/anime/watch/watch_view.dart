@@ -11,6 +11,7 @@ import 'package:anymex/screens/anime/watch/controls/widgets/buffering_overlay.da
 import 'package:anymex/screens/anime/watch/controls/widgets/subtitle_text.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/tracks_popup.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/source_popup.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/speed_popup.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/sync_subs_popup.dart';
 import 'package:anymex/screens/anime/widgets/media_indicator.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/shader_osd.dart';
@@ -65,8 +66,10 @@ class _WatchScreenState extends State<WatchScreen> {
         body: Stack(
       children: [
         Obx(() {
-          controller.playerReloadVersion.value;
-          return controller.videoWidget;
+          return KeyedSubtree(
+            key: ValueKey(controller.playerReloadVersion.value),
+            child: controller.videoWidget,
+          );
         }),
         PlayerOverlay(controller: controller),
         BufferingOverlay(controller: controller),
@@ -128,6 +131,13 @@ class _WatchScreenState extends State<WatchScreen> {
           bottom: 0,
           left: 0,
           child: EpisodesPane(controller: controller),
+        ),
+        Positioned(
+          right: 0,
+          top: 0,
+          bottom: 0,
+          left: 0,
+          child: SpeedPopup(controller: controller),
         ),
       ],
     ));

@@ -1,7 +1,7 @@
 name: anymex
 description: "An Multiservice Tracking Client"
 publish_to: "https://github.com/RyanYuuki/AnymeX"
-version: 3.0.7+29
+version: 3.0.9+31
 
 environment:
     sdk: ">=3.4.4 <4.0.0"
@@ -124,6 +124,7 @@ dependencies:
     #     path: ../AnymeXExtensionRuntimeBridge
     jxl_coder: ^0.1.0
     libtorrent_flutter: ^1.0.3
+    thanos_snap_effect: ^0.0.9
 
 dev_dependencies:
     build_runner: ^2.4.11
@@ -162,6 +163,9 @@ flutter_native_splash:
 flutter:
     uses-material-design: true
 
+    shaders:
+        - packages/thanos_snap_effect/shader/thanos_snap_effect.glsl
+
     assets:
         - assets/images/
         - .env
@@ -183,6 +187,6 @@ inno_bundle:
     id: 8fbd47cb-d6e1-5343-a9f6-61661647c94c
     publisher: Ryan Yuuki
     name: AnymeX
-    version: 3.0.7
+    version: 3.0.9
     admin: auto
     installer_icon: ./anymex.ico

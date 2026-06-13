@@ -1888,6 +1888,19 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                           title: 'Subtitles',
                           content: Column(
                             children: [
+                              CustomTile(
+                                padding: 10.0,
+                                icon: Icons.closed_caption_rounded,
+                                title: 'Preferred Subtitle Language',
+                                description: SubtitleTranslator.languages[settings.preferredSubtitleLanguage] ?? 'None (Disabled)',
+                                onTap: () => showSelectionDialog<String>(
+                                  title: "Preferred Subtitle Language",
+                                  items: ['none', ...SubtitleTranslator.languages.keys],
+                                  selectedItem: settings.playerSettings.value.preferredSubtitleLanguage.obs,
+                                  getTitle: (code) => code == 'none' ? 'None (Disabled)' : SubtitleTranslator.languages[code]!,
+                                  onItemSelected: (code) { settings.preferredSubtitleLanguage = code; setState(() {}); },
+                                ),
+                              ),
                               CustomSwitchTile(
                                   padding: const EdgeInsets.all(10),
                                   icon: Icons.lightbulb,

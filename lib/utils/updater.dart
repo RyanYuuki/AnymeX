@@ -61,7 +61,8 @@ class UpdateManager {
           'linux': getDownloadUrlByArch(assets, '.AppImage'),
         };
 
-        if (_shouldUpdate(currentVersion, latestRelease['tag_name'])) {
+        if (_shouldUpdate(currentVersion, latestRelease['tag_name'],
+            isBeta: isBeta)) {
           _showUpdateBottomSheet(
             context,
             currentVersion,
@@ -83,15 +84,18 @@ class UpdateManager {
 
   final bool _currentVersionIncludesHotfix = true;
 
-  bool _shouldUpdate(String currentVersion, String latestVersion) {
+  bool _shouldUpdate(String currentVersion, String latestVersion,
+      {bool isBeta = false}) {
     currentVersion = currentVersion.replaceFirst(RegExp(r'^v'), '');
     latestVersion = latestVersion.replaceFirst(RegExp(r'^v'), '');
 
     final currentSplit = currentVersion.split('-');
     final latestSplit = latestVersion.split('-');
 
-    final currentNums = currentSplit[0].split('.').map(int.parse).toList();
-    final latestNums = latestSplit[0].split('.').map(int.parse).toList();
+    final currentNums =
+        currentSplit[0].split('+')[0].split('.').map(int.parse).toList();
+    final latestNums =
+        latestSplit[0].split('+')[0].split('.').map(int.parse).toList();
 
     for (int i = 0; i < 3; i++) {
       final c = i < currentNums.length ? currentNums[i] : 0;
@@ -111,7 +115,12 @@ class UpdateManager {
       return true;
     }
 
-    if (!currentHasTag && latestHasTag) return false;
+    if (!currentHasTag && latestHasTag) {
+      if (isBeta) {
+        return true;
+      }
+      return false;
+    }
 
     if (currentHasTag && !latestHasTag) return true;
 
