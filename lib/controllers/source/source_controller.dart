@@ -17,6 +17,7 @@ import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart'
     hide isar;
+import 'package:anymex_extension_runtime_bridge/Services/Aniyomi/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:isar_community/isar.dart';
@@ -294,12 +295,28 @@ class SourceController extends GetxController implements BaseService {
         _restore(installedNovelExtensions, SourceKeys.activeNovelSourceId);
   }
 
+  Source? findSourceById(String id, ItemType type) {
+    final list = _installedFor(type);
+    for (final s in list) {
+      if (s.id?.toString() == id) return s;
+      if (s is ASource && s.langs != null) {
+        final sub = s.langs!.firstWhereOrNull((subSource) => subSource.id?.toString() == id);
+        if (sub != null) return sub;
+      }
+    }
+    return null;
+  }
+
   Source? _restore(RxList<Source> list, SourceKeys key) {
     final id = KvHelper.get<String>(key.name, defaultVal: '');
-    return (id.isNotEmpty
-            ? list.firstWhereOrNull((s) => s.id.toString() == id)
-            : null) ??
-        list.firstOrNull;
+    if (id.isEmpty) return list.firstOrNull;
+
+    final itemType = list.firstOrNull?.itemType;
+    if (itemType != null) {
+      final restored = findSourceById(id, itemType);
+      if (restored != null) return restored;
+    }
+    return list.firstWhereOrNull((s) => s.id?.toString() == id) ?? list.firstOrNull;
   }
 
   void setActiveSource(Source source, {String? mediaId}) {
@@ -335,8 +352,7 @@ class SourceController extends GetxController implements BaseService {
     final savedId = DynamicKeys.stickySource.get<String?>(mediaId);
     if (savedId == null) return null;
 
-    final list = _installedFor(type);
-    return list.firstWhereOrNull((s) => s.id.toString() == savedId);
+    return findSourceById(savedId, type);
   }
 
   void savePreferredSource(String titleId, String sourceId) {
@@ -371,12 +387,27 @@ class SourceController extends GetxController implements BaseService {
     String? mediaId,
   }) {
     print('Activating extension by name: $name');
-    final match = sources.firstWhereOrNull(
+    Source? match = sources.firstWhereOrNull(
       (s) =>
-          s.id.toString() == name ||
+          s.id?.toString() == name ||
           '${s.name}-${s.lang?.toUpperCase()}-${s.runtimeType}' == name ||
           s.name == name,
     );
+
+    if (match == null) {
+      for (final s in sources) {
+        if (s is ASource && s.langs != null) {
+          final sub = s.langs!.firstWhereOrNull((subSource) =>
+              subSource.id?.toString() == name ||
+              '${subSource.name}-${subSource.lang?.toUpperCase()}-${subSource.runtimeType}' == name ||
+              subSource.name == name);
+          if (sub != null) {
+            match = sub;
+            break;
+          }
+        }
+      }
+    }
 
     if (match != null) {
       if (rx.value?.id != match.id) {
