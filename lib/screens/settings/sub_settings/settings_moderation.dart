@@ -344,76 +344,90 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
           Row(
             children: [
               Expanded(
-                child: FilterChip(
-                  label: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Text(
-                      'By User ID',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: _searchMode == 0
-                            ? FontWeight.bold
-                            : FontWeight.w600,
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () {
+                      widget.searchController.clear();
+                      setState(() {
+                        _searchMode = 0;
+                        _searchResults = [];
+                      });
+                    },
+                    borderRadius: BorderRadius.circular(12),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 150),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
                         color: _searchMode == 0
-                            ? colorScheme.onPrimary
-                            : colorScheme.onSurfaceVariant,
+                            ? colorScheme.primary
+                            : colorScheme.surface,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: _searchMode == 0
+                              ? colorScheme.primary
+                              : colorScheme.outlineVariant,
+                          width: 1,
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'By User ID',
+                          style: TextStyle(
+                            fontFamily: 'Poppins-Bold',
+                            fontSize: 14,
+                            color: _searchMode == 0
+                                ? colorScheme.onPrimary
+                                : colorScheme.onSurfaceVariant,
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                  selected: _searchMode == 0,
-                  onSelected: (_) {
-                    widget.searchController.clear();
-                    setState(() {
-                      _searchMode = 0;
-                      _searchResults = [];
-                    });
-                  },
-                  backgroundColor: colorScheme.secondaryContainer,
-                  selectedColor: colorScheme.primary,
-                  side: BorderSide.none,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  showCheckmark: false,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                 ),
               ),
-              const SizedBox(width: 6),
+              const SizedBox(width: 8),
               Expanded(
-                child: FilterChip(
-                  label: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Text(
-                      'By Username',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: _searchMode == 1
-                            ? FontWeight.bold
-                            : FontWeight.w600,
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () {
+                      widget.searchController.clear();
+                      setState(() {
+                        _searchMode = 1;
+                        _searchResults = [];
+                      });
+                    },
+                    borderRadius: BorderRadius.circular(12),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 150),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
                         color: _searchMode == 1
-                            ? colorScheme.onPrimary
-                            : colorScheme.onSurfaceVariant,
+                            ? colorScheme.primary
+                            : colorScheme.surface,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: _searchMode == 1
+                              ? colorScheme.primary
+                              : colorScheme.outlineVariant,
+                          width: 1,
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'By Username',
+                          style: TextStyle(
+                            fontFamily: 'Poppins-Bold',
+                            fontSize: 14,
+                            color: _searchMode == 1
+                                ? colorScheme.onPrimary
+                                : colorScheme.onSurfaceVariant,
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                  selected: _searchMode == 1,
-                  onSelected: (_) {
-                    widget.searchController.clear();
-                    setState(() {
-                      _searchMode = 1;
-                      _searchResults = [];
-                    });
-                  },
-                  backgroundColor: colorScheme.secondaryContainer,
-                  selectedColor: colorScheme.primary,
-                  side: BorderSide.none,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  showCheckmark: false,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                 ),
               ),
             ],
