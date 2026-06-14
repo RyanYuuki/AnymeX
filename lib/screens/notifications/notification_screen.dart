@@ -6,6 +6,7 @@ import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/anime/widgets/comments/discord_markdown.dart';
 import 'package:anymex/screens/notifications/notification_controller.dart';
+import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
@@ -24,123 +25,101 @@ class NotificationScreen extends GetView<NotificationController> {
     return Glow(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        body: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              floating: true,
-              pinned: false,
-              snap: true,
-              title: AnymexText(
-                text: 'Notifications',
-                variant: TextVariant.bold,
-                size: 20,
-              ),
-              centerTitle: true,
-              leading: IconButton(
-                onPressed: () => Get.back(),
-                icon: const Icon(Icons.arrow_back_ios_new_rounded),
-              ),
-              backgroundColor:
-                  Theme.of(context).scaffoldBackgroundColor.opaque(0.5),
-              surfaceTintColor: Colors.transparent,
-              actions: [
-                Obx(() {
-                  final hasUnread = controller.unreadCount.value > 0;
-                  if (!hasUnread) return const SizedBox.shrink();
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: TextButton.icon(
-                      onPressed: () => controller.markAllAsRead(),
-                      icon: Icon(
-                        Icons.done_all_rounded,
-                        size: 18,
-                        color: colorScheme.primary,
-                      ),
-                      label: AnymexText(
-                        text: 'Mark all read',
-                        variant: TextVariant.semiBold,
-                        size: 12,
-                        color: colorScheme.primary,
-                      ),
-                      style: TextButton.styleFrom(
-                        foregroundColor: colorScheme.primary,
-                      ),
-                    ),
-                  );
-                }),
-              ],
-            ),
+        body: Column(children: [
+          NestedHeader(
+            title: 'Notifications',
+            action: Obx(() {
+              final hasUnread = controller.unreadCount.value > 0;
+              if (!hasUnread) return const SizedBox.shrink();
+              return TextButton.icon(
+                onPressed: () => controller.markAllAsRead(),
+                icon: Icon(
+                  Icons.done_all_rounded,
+                  size: 18,
+                  color: colorScheme.primary,
+                ),
+                label: AnymexText(
+                  text: 'Mark all read',
+                  variant: TextVariant.semiBold,
+                  size: 12,
+                  color: colorScheme.primary,
+                ),
+                style: TextButton.styleFrom(
+                  foregroundColor: colorScheme.primary,
+                ),
+              );
+            }),
+          ),
+          _buildFilterChips(context, colorScheme),
+          _buildUnreadToggle(context, colorScheme),
+          Expanded(
+            child: Obx(() {
+              if (controller.isLoading.value &&
+                  controller.notifications.isEmpty) {
+                return _buildLoadingSkeleton(colorScheme);
+              }
 
-            SliverToBoxAdapter(
-              child: _buildFilterChips(context, colorScheme),
-            ),
-
-            SliverToBoxAdapter(
-              child: _buildUnreadToggle(context, colorScheme),
-            ),
-
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              sliver: Obx(() {
-                if (controller.isLoading.value &&
-                    controller.notifications.isEmpty) {
-                  return _buildLoadingSkeleton(colorScheme);
-                }
-
-                if (controller.error.value.isNotEmpty) {
-                  return SliverToBoxAdapter(
-                    child: _buildErrorState(colorScheme),
-                  );
-                }
-
-                if (controller.notifications.isEmpty) {
-                  return SliverToBoxAdapter(
-                    child: _buildEmptyState(colorScheme),
-                  );
-                }
-
-                return SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: _NotificationCard(
-                          notification: controller.notifications[index],
-                          onTap: () =>
-                              _handleNotificationTap(controller.notifications[index]),
-                        ),
-                      );
-                    },
-                    childCount: controller.notifications.length,
-                  ),
+              if (controller.error.value.isNotEmpty) {
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: _buildErrorState(colorScheme),
                 );
-              }),
-            ),
+              }
 
-            SliverToBoxAdapter(
-              child: Obx(() {
-                if (controller.isLoadingMore.value) {
-                  return Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Center(
-                      child: SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.5,
-                          color: colorScheme.primary,
-                        ),
+              if (controller.notifications.isEmpty) {
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: _buildEmptyState(colorScheme),
+                );
+              }
+
+              return NotificationListener<ScrollNotification>(
+                onNotification: (notification) {
+                  if (notification is ScrollEndNotification &&
+                      notification.metrics.pixels >=
+                          notification.metrics.maxScrollExtent - 100 &&
+                      !controller.isLoadingMore.value) {
+                    controller.loadMoreNotifications();
+                  }
+                  return false;
+                },
+                child: ListView.builder(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  itemCount: controller.notifications.length + 1,
+                  itemBuilder: (context, index) {
+                    if (index == controller.notifications.length) {
+                      if (controller.isLoadingMore.value) {
+                        return Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Center(
+                            child: SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                                color: colorScheme.primary,
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    }
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: _NotificationCard(
+                        notification: controller.notifications[index],
+                        onTap: () => _handleNotificationTap(
+                            controller.notifications[index]),
                       ),
-                    ),
-                  );
-                }
-                return const SizedBox.shrink();
-              }),
-            ),
-
-            const SliverToBoxAdapter(child: SizedBox(height: 40)),
-          ],
-        ),
+                    );
+                  },
+                ),
+              );
+            }),
+          ),
+        ]),
       ),
     );
   }
@@ -167,8 +146,7 @@ class NotificationScreen extends GetView<NotificationController> {
           itemBuilder: (context, index) {
             final (value, label) = filters[index];
             return Obx(() {
-              final isSelected =
-                  controller.selectedFilter.value == value;
+              final isSelected = controller.selectedFilter.value == value;
               return Material(
                 color: Colors.transparent,
                 child: InkWell(
@@ -182,13 +160,11 @@ class NotificationScreen extends GetView<NotificationController> {
                     decoration: BoxDecoration(
                       color: isSelected
                           ? colorScheme.primary
-                          : colorScheme.surfaceContainerHighest.opaque(0.4),
+                          : colorScheme.secondaryContainer,
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: isSelected
-                            ? colorScheme.primary
-                            : colorScheme.outline.opaque(0.15),
-                      ),
+                      border: isSelected
+                          ? Border.all(color: colorScheme.primary)
+                          : null,
                     ),
                     child: AnymexText(
                       text: label,
@@ -196,7 +172,7 @@ class NotificationScreen extends GetView<NotificationController> {
                       size: 12,
                       color: isSelected
                           ? colorScheme.onPrimary
-                          : colorScheme.onSurface.opaque(0.8),
+                          : colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ),
@@ -248,14 +224,14 @@ class NotificationScreen extends GetView<NotificationController> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 2),
                       decoration: BoxDecoration(
-                        color: colorScheme.primary.opaque(0.15),
-                        borderRadius: BorderRadius.circular(10),
+                        color: colorScheme.secondaryContainer,
+                        borderRadius: BorderRadius.circular(12),
                       ),
                       child: AnymexText(
                         text: '${controller.notifications.length}',
                         variant: TextVariant.semiBold,
                         size: 11,
-                        color: colorScheme.primary,
+                        color: colorScheme.onSecondaryContainer,
                       ),
                     ),
                   );
@@ -269,70 +245,72 @@ class NotificationScreen extends GetView<NotificationController> {
   }
 
   Widget _buildLoadingSkeleton(ColorScheme colorScheme) {
-    return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (context, index) => Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHighest.opaque(0.4),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: colorScheme.outline.opaque(0.1),
-              ),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 44,
-                  height: 44,
+    return ListView(
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      children: List.generate(
+          6,
+          (index) => Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Container(
+                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: colorScheme.surfaceContainer.opaque(0.5),
+                    color: colorScheme.surfaceContainer.opaque(0.3),
                     borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: colorScheme.outline.opaque(0.1),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
+                  child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        height: 14,
-                        width: double.infinity,
+                        width: 44,
+                        height: 44,
                         decoration: BoxDecoration(
-                          color: colorScheme.surfaceContainer.opaque(0.5),
-                          borderRadius: BorderRadius.circular(4),
+                          color: colorScheme.surfaceContainerHigh.opaque(0.4),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      Container(
-                        height: 12,
-                        width: 200,
-                        decoration: BoxDecoration(
-                          color: colorScheme.surfaceContainer.opaque(0.3),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Container(
-                        height: 12,
-                        width: 140,
-                        decoration: BoxDecoration(
-                          color: colorScheme.surfaceContainer.opaque(0.3),
-                          borderRadius: BorderRadius.circular(4),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              height: 14,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: colorScheme.surfaceContainerHigh
+                                    .opaque(0.4),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Container(
+                              height: 12,
+                              width: 200,
+                              decoration: BoxDecoration(
+                                color: colorScheme.surfaceContainer.opaque(0.3),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Container(
+                              height: 12,
+                              width: 140,
+                              decoration: BoxDecoration(
+                                color: colorScheme.surfaceContainer.opaque(0.3),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
                 ),
-              ],
-            ),
-          ),
-        ),
-        childCount: 6,
-      ),
+              )),
     );
   }
 
@@ -345,13 +323,13 @@ class NotificationScreen extends GetView<NotificationController> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: colorScheme.surfaceContainerHighest.opaque(0.3),
+                color: colorScheme.surfaceContainer.opaque(0.3),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.notifications_none_rounded,
                 size: 48,
-                color: colorScheme.onSurface.opaque(0.4),
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 16),
@@ -359,14 +337,15 @@ class NotificationScreen extends GetView<NotificationController> {
               text: 'No notifications yet',
               variant: TextVariant.semiBold,
               size: 16,
-              color: colorScheme.onSurface.opaque(0.7),
+              color: colorScheme.onSurface,
             ),
             const SizedBox(height: 6),
             AnymexText(
-              text: 'When someone interacts with your comments,\nyou\'ll see it here',
+              text:
+                  'When someone interacts with your comments,\nyou\'ll see it here',
               variant: TextVariant.regular,
               size: 13,
-              color: colorScheme.onSurface.opaque(0.4),
+              color: colorScheme.onSurfaceVariant,
               textAlign: TextAlign.center,
             ),
           ],
@@ -381,30 +360,37 @@ class NotificationScreen extends GetView<NotificationController> {
       child: Center(
         child: Column(
           children: [
-            Icon(
-              Icons.error_outline_rounded,
-              size: 48,
-              color: colorScheme.error.opaque(0.7),
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: colorScheme.errorContainer.opaque(0.3),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.error_outline_rounded,
+                size: 48,
+                color: colorScheme.error,
+              ),
             ),
             const SizedBox(height: 16),
             AnymexText(
               text: 'Something went wrong',
               variant: TextVariant.semiBold,
               size: 16,
-              color: colorScheme.onSurface.opaque(0.7),
+              color: colorScheme.onSurface,
             ),
             const SizedBox(height: 12),
             Material(
               color: Colors.transparent,
               child: InkWell(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(12),
                 onTap: () => controller.refresh(),
                 child: Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   decoration: BoxDecoration(
                     color: colorScheme.primary,
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: AnymexText(
                     text: 'Retry',
@@ -449,7 +435,8 @@ class NotificationScreen extends GetView<NotificationController> {
     final handler = Get.find<ServiceHandler>();
 
     // Fix: Use notification's clientType to determine the correct service
-    final serviceType = _serviceTypeFromClientType(notification.clientType) ?? handler.serviceType.value;
+    final serviceType = _serviceTypeFromClientType(notification.clientType) ??
+        handler.serviceType.value;
 
     // Switch to the correct service if needed
     if (handler.serviceType.value != serviceType) {
@@ -462,22 +449,23 @@ class NotificationScreen extends GetView<NotificationController> {
       mediaType: isManga ? ItemType.manga : ItemType.anime,
     );
 
-    final tag = 'notif-${notification.id}-${DateTime.now().millisecondsSinceEpoch}';
+    final tag =
+        'notif-${notification.id}-${DateTime.now().millisecondsSinceEpoch}';
 
     if (isManga) {
       navigate(() => MangaDetailsPage(
-        media: media,
-        tag: tag,
-        initialTabIndex: 2,
-        scrollToCommentId: notification.commentId,
-      ));
+            media: media,
+            tag: tag,
+            initialTabIndex: 2,
+            scrollToCommentId: notification.commentId,
+          ));
     } else {
       navigate(() => AnimeDetailsPage(
-        media: media,
-        tag: tag,
-        initialTabIndex: 2,
-        scrollToCommentId: notification.commentId,
-      ));
+            media: media,
+            tag: tag,
+            initialTabIndex: 2,
+            scrollToCommentId: notification.commentId,
+          ));
     }
   }
 }
@@ -500,19 +488,19 @@ class _NotificationCard extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 150),
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: notification.isRead
-                ? colorScheme.surfaceContainerHighest.opaque(0.25)
-                : colorScheme.surfaceContainerHighest.opaque(0.5),
-            borderRadius: BorderRadius.circular(16),
+                ? colorScheme.surfaceContainer.opaque(0.3)
+                : colorScheme.surfaceContainerHigh.opaque(0.4),
+            borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: notification.isRead
-                  ? colorScheme.outline.opaque(0.06)
-                  : categoryColor.opaque(0.25),
+                  ? colorScheme.outline.opaque(0.1)
+                  : categoryColor.opaque(0.2),
             ),
           ),
           child: Row(
@@ -547,7 +535,7 @@ class _NotificationCard extends StatelessWidget {
                           text: _formatTimeAgo(notification.createdAt),
                           variant: TextVariant.regular,
                           size: 11,
-                          color: colorScheme.onSurface.opaque(0.4),
+                          color: colorScheme.onSurfaceVariant,
                         ),
                       ],
                     ),
@@ -557,7 +545,7 @@ class _NotificationCard extends StatelessWidget {
                         text: notification.body,
                         colorScheme: colorScheme,
                         baseStyle: TextStyle(
-                          color: colorScheme.onSurface.opaque(0.55),
+                          color: colorScheme.onSurfaceVariant,
                           fontSize: 12,
                           fontWeight: FontWeight.w400,
                         ),
@@ -570,9 +558,9 @@ class _NotificationCard extends StatelessWidget {
                       Row(
                         children: [
                           Icon(
-                            Icons.movie_rounded,
+                            Icons.movie_outlined,
                             size: 12,
-                            color: colorScheme.onSurface.opaque(0.35),
+                            color: colorScheme.onSurfaceVariant,
                           ),
                           const SizedBox(width: 4),
                           Expanded(
@@ -596,7 +584,7 @@ class _NotificationCard extends StatelessWidget {
                         text: '@${notification.actorUsername}',
                         variant: TextVariant.regular,
                         size: 11,
-                        color: colorScheme.onSurface.opaque(0.45),
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ],
                   ],
@@ -634,7 +622,8 @@ class _NotificationCard extends StatelessWidget {
 
     if (hasActor) {
       // Fallback: circle with first letter of username
-      final initial = notification.actorUsername!.toUpperCase().characters.first;
+      final initial =
+          notification.actorUsername!.toUpperCase().characters.first;
       return _AvatarWithBadge(
         size: 42,
         child: Container(
