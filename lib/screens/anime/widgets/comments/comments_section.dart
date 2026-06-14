@@ -39,7 +39,7 @@ class _CommentSectionState extends State<CommentSection> {
 
   final Map<String, TextEditingController> _replyControllers = {};
   final Map<String, FocusNode> _replyFocusNodes = {};
-  final Set<String> _expandedThreads = {};
+  final Map<String, int> _visibleReplyCount = {};
   final GlobalKey _targetCommentKey = GlobalKey();
   bool _hasScrolledToTarget = false;
 
@@ -91,7 +91,7 @@ class _CommentSectionState extends State<CommentSection> {
           if (depth >= 3 ||
               _wouldBeCollapsed(comment.replies!, targetId, depth + 1)) {
             setState(() {
-              _expandedThreads.add(comment.id);
+              _visibleReplyCount[comment.id] = 3;
             });
           }
           _expandThreadForComment(targetId, comment.replies!, depth: depth + 1);
@@ -1008,14 +1008,13 @@ class _CommentSectionState extends State<CommentSection> {
     final colorScheme = theme.colorScheme;
     final allReplies = _flattenReplies(comment);
     final totalReplies = allReplies.length;
-    final isExpanded = _expandedThreads.contains(comment.id);
-    const maxVisible = 3;
+    final visibleCount = _visibleReplyCount[comment.id] ?? 0;
 
-    if (!isExpanded) {
+    if (visibleCount == 0) {
       return Padding(
         padding: const EdgeInsets.only(top: 8),
         child: InkWell(
-          onTap: () => setState(() => _expandedThreads.add(comment.id)),
+          onTap: () => setState(() => _visibleReplyCount[comment.id] = 3),
           borderRadius: BorderRadius.circular(8),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -1046,8 +1045,8 @@ class _CommentSectionState extends State<CommentSection> {
       );
     }
 
-    final visibleReplies = allReplies.take(maxVisible).toList();
-    final remainingCount = totalReplies - maxVisible;
+    final visibleReplies = allReplies.take(visibleCount).toList();
+    final remainingCount = totalReplies - visibleCount;
 
     return Padding(
       padding: const EdgeInsets.only(left: 16, top: 8),
@@ -1086,7 +1085,8 @@ class _CommentSectionState extends State<CommentSection> {
                     const SizedBox(height: 8),
                     InkWell(
                       onTap: () => setState(() {
-                        _expandedThreads.add('${comment.id}_more');
+                        _visibleReplyCount[comment.id] =
+                            (_visibleReplyCount[comment.id] ?? 3) + 3;
                       }),
                       borderRadius: BorderRadius.circular(8),
                       child: Container(
@@ -1206,38 +1206,19 @@ class _CommentSectionState extends State<CommentSection> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 4),
-                  Text(
-                    '→ ',
-                    style: TextStyle(
-                      color: colorScheme.onSurfaceVariant,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+                  Icon(Icons.arrow_right, size: 20, color: colorScheme.primary),
+                  const SizedBox(width: 2),
                   Text(
                     parentUsername,
                     style: TextStyle(
                       color: parentRole != null && parentRole != 'user'
                           ? _getRoleColor(parentRole)
-                          : colorScheme.onSurface,
+                          : colorScheme.primary,
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                   const SizedBox(width: 4),
-                  Text(
-                    '•',
-                    style: TextStyle(
-                      color: colorScheme.onSurfaceVariant,
-                      fontSize: 10,
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  if (reply.tag.isNotEmpty && reply.tag != 'General') ...[
-                    const SizedBox(width: 4),
-                    _buildTag(context, reply.tag),
-                  ],
                   if (reply.edited == true)
                     Text(
                       ' (edited)',
@@ -1251,63 +1232,75 @@ class _CommentSectionState extends State<CommentSection> {
                     Icon(Icons.lock_rounded,
                         size: 11, color: colorScheme.error),
                   const Spacer(),
-                  _buildCommentMenu(
-                      context, reply, controller, isOwnComment, canModerate),
                 ],
               ),
+              if (reply.tag.isNotEmpty && reply.tag != 'General')
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: _buildTag(context, reply.tag),
+                ),
               const SizedBox(height: 4),
-              _SpoilerText(
-                text: reply.commentText,
-                isSpoiler: isSpoiler,
-                theme: theme,
-                colorScheme: colorScheme,
-                fontSize: 13,
-              ),
-              const SizedBox(height: 6),
-              Row(
-                children: [
-                  Text(
-                    _formatTimestampShort(reply.createdAt),
-                    style: TextStyle(
-                      color: colorScheme.onSurfaceVariant,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w500,
+              GestureDetector(
+                onLongPress: () => _showCommentContextMenu(
+                    context, reply, controller, isOwnComment, canModerate),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _SpoilerText(
+                      text: reply.commentText,
+                      isSpoiler: isSpoiler,
+                      theme: theme,
+                      colorScheme: colorScheme,
+                      fontSize: 13,
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  if (!isLocked) ...[
-                    GestureDetector(
-                      onTap: () => controller.toggleReply(reply.id),
-                      child: Text(
-                        'Reply',
-                        style: TextStyle(
-                          color: colorScheme.onSurfaceVariant,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Text(
+                          _formatTimestampShort(reply.createdAt),
+                          style: TextStyle(
+                            color: colorScheme.onSurfaceVariant,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
-                      ),
+                        const SizedBox(width: 10),
+                        if (!isLocked) ...[
+                          GestureDetector(
+                            onTap: () => controller.toggleReply(reply.id),
+                            child: Text(
+                              'Reply',
+                              style: TextStyle(
+                                color: colorScheme.onSurfaceVariant,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                        ],
+                        const Spacer(),
+                        _buildCompactVoteButton(
+                          context: context,
+                          icon: Icons.arrow_upward_rounded,
+                          count: reply.likes,
+                          isActive: reply.userVote == 1,
+                          onTap: () => controller.handleVote(reply, 1),
+                          colorScheme: colorScheme,
+                        ),
+                        const SizedBox(width: 8),
+                        _buildCompactVoteButton(
+                          context: context,
+                          icon: Icons.arrow_downward_rounded,
+                          count: reply.dislikes,
+                          isActive: reply.userVote == -1,
+                          onTap: () => controller.handleVote(reply, -1),
+                          colorScheme: colorScheme,
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 10),
                   ],
-                  const Spacer(),
-                  _buildCompactVoteButton(
-                    context: context,
-                    icon: Icons.arrow_upward_rounded,
-                    count: reply.likes,
-                    isActive: reply.userVote == 1,
-                    onTap: () => controller.handleVote(reply, 1),
-                    colorScheme: colorScheme,
-                  ),
-                  const SizedBox(width: 8),
-                  _buildCompactVoteButton(
-                    context: context,
-                    icon: Icons.arrow_downward_rounded,
-                    count: reply.dislikes,
-                    isActive: reply.userVote == -1,
-                    onTap: () => controller.handleVote(reply, -1),
-                    colorScheme: colorScheme,
-                  ),
-                ],
+                ),
               ),
               if (controller.isReplyingTo(reply.id) && !isLocked) ...[
                 const SizedBox(height: 8),
@@ -1530,18 +1523,6 @@ class _CommentSectionState extends State<CommentSection> {
                     ),
                   ),
                   const SizedBox(width: 6),
-                  Text(
-                    '•',
-                    style: TextStyle(
-                      color: colorScheme.onSurfaceVariant,
-                      fontSize: 10,
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  if (comment.tag.isNotEmpty && comment.tag != 'General') ...[
-                    const SizedBox(width: 6),
-                    _buildTag(context, comment.tag),
-                  ],
                   if (comment.edited == true)
                     Text(
                       ' (edited)',
@@ -1555,82 +1536,94 @@ class _CommentSectionState extends State<CommentSection> {
                     Icon(Icons.lock_rounded,
                         size: 12, color: colorScheme.error),
                   const Spacer(),
-                  _buildCommentMenu(
-                      context, comment, controller, isOwnComment, canModerate),
                 ],
               ),
-              const SizedBox(height: 6),
-              _SpoilerText(
-                text: comment.commentText,
-                isSpoiler: isSpoiler,
-                theme: theme,
-                colorScheme: colorScheme,
-                fontSize: 14,
-              ),
-              if (effectiveLocked)
+              if (comment.tag.isNotEmpty && comment.tag != 'General')
                 Padding(
-                  padding: const EdgeInsets.only(top: 6),
-                  child: Row(
-                    children: [
-                      Icon(Icons.lock_rounded,
-                          size: 12, color: colorScheme.error),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Thread is locked',
-                        style: TextStyle(
-                          color: colorScheme.error,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 11,
-                        ),
-                      ),
-                    ],
-                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: _buildTag(context, comment.tag),
                 ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  Text(
-                    _formatTimestampShort(comment.createdAt),
-                    style: TextStyle(
-                      color: colorScheme.onSurfaceVariant,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w500,
+              const SizedBox(height: 4),
+              GestureDetector(
+                onLongPress: () => _showCommentContextMenu(
+                    context, comment, controller, isOwnComment, canModerate),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _SpoilerText(
+                      text: comment.commentText,
+                      isSpoiler: isSpoiler,
+                      theme: theme,
+                      colorScheme: colorScheme,
+                      fontSize: 14,
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  if (!effectiveLocked) ...[
-                    GestureDetector(
-                      onTap: () => controller.toggleReply(comment.id),
-                      child: Text(
-                        'Reply',
-                        style: TextStyle(
-                          color: colorScheme.onSurfaceVariant,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
+                    if (effectiveLocked)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 6),
+                        child: Row(
+                          children: [
+                            Icon(Icons.lock_rounded,
+                                size: 12, color: colorScheme.error),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Thread is locked',
+                              style: TextStyle(
+                                color: colorScheme.error,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 11,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Text(
+                          _formatTimestampShort(comment.createdAt),
+                          style: TextStyle(
+                            color: colorScheme.onSurfaceVariant,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        if (!effectiveLocked) ...[
+                          GestureDetector(
+                            onTap: () => controller.toggleReply(comment.id),
+                            child: Text(
+                              'Reply',
+                              style: TextStyle(
+                                color: colorScheme.onSurfaceVariant,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 14),
+                        ],
+                        const Spacer(),
+                        _buildCompactVoteButton(
+                          context: context,
+                          icon: Icons.arrow_upward_rounded,
+                          count: comment.likes,
+                          isActive: comment.userVote == 1,
+                          onTap: () => controller.handleVote(comment, 1),
+                          colorScheme: colorScheme,
+                        ),
+                        const SizedBox(width: 10),
+                        _buildCompactVoteButton(
+                          context: context,
+                          icon: Icons.arrow_downward_rounded,
+                          count: comment.dislikes,
+                          isActive: comment.userVote == -1,
+                          onTap: () => controller.handleVote(comment, -1),
+                          colorScheme: colorScheme,
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 14),
                   ],
-                  const Spacer(),
-                  _buildCompactVoteButton(
-                    context: context,
-                    icon: Icons.arrow_upward_rounded,
-                    count: comment.likes,
-                    isActive: comment.userVote == 1,
-                    onTap: () => controller.handleVote(comment, 1),
-                    colorScheme: colorScheme,
-                  ),
-                  const SizedBox(width: 10),
-                  _buildCompactVoteButton(
-                    context: context,
-                    icon: Icons.arrow_downward_rounded,
-                    count: comment.dislikes,
-                    isActive: comment.userVote == -1,
-                    onTap: () => controller.handleVote(comment, -1),
-                    colorScheme: colorScheme,
-                  ),
-                ],
+                ),
               ),
             ],
           ),
@@ -1782,164 +1775,138 @@ class _CommentSectionState extends State<CommentSection> {
     }
   }
 
-  Widget _buildCommentMenu(
+  void _showCommentContextMenu(
       BuildContext context,
       Comment comment,
       CommentSectionController controller,
       bool isOwnComment,
       bool canModerate) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return PopupMenuButton<String>(
-      onSelected: (value) {
-        switch (value) {
-          case 'edit':
-            _showEditDialog(context, comment, controller);
-            break;
-          case 'delete':
-            _showDeleteDialog(context, comment, controller);
-            break;
-          case 'report':
-            _showReportDialog(context, comment, controller);
-            break;
-          case 'moderate':
-            _showModerationSheet(context, comment, controller,
-                isOwnComment: isOwnComment);
-            break;
-          case 'user_actions':
-            _showUserManagementSheet(context, comment, controller);
-            break;
-          case 'user_comments':
-            _showUserCommentsSheet(context, comment, controller);
-            break;
-          case 'copy':
-            Clipboard.setData(ClipboardData(text: comment.commentText));
-            snackBar('Comment copied to clipboard');
-            break;
-        }
-      },
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      position: PopupMenuPosition.under,
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: colorScheme.surfaceContainer.opaque(0.3, iReallyMeanIt: true),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Icon(
-          Icons.more_horiz_rounded,
-          size: 18,
-          color: colorScheme.onSurfaceVariant,
-        ),
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      itemBuilder: (context) => [
-        PopupMenuItem(
-          value: 'copy',
-          height: 40,
-          child: Row(
+      builder: (ctx) {
+        final colorScheme = Theme.of(context).colorScheme;
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.copy_rounded,
-                  size: 18, color: colorScheme.onSurfaceVariant),
-              const SizedBox(width: 12),
-              Text('Copy',
-                  style: TextStyle(color: colorScheme.onSurface, fontSize: 14)),
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 12),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: colorScheme.onSurfaceVariant.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 4),
+              _buildMenuOption(
+                icon: Icons.copy_rounded,
+                label: 'Copy',
+                onTap: () {
+                  Navigator.pop(ctx);
+                  Clipboard.setData(ClipboardData(text: comment.commentText));
+                  snackBar('Comment copied to clipboard');
+                },
+              ),
+              if (isOwnComment) ...[
+                const Divider(height: 1, indent: 24, endIndent: 24),
+                _buildMenuOption(
+                  icon: Icons.edit_outlined,
+                  label: 'Edit',
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _showEditDialog(context, comment, controller);
+                  },
+                ),
+                const Divider(height: 1, indent: 24, endIndent: 24),
+                _buildMenuOption(
+                  icon: Icons.delete_outline,
+                  label: 'Delete',
+                  isDestructive: true,
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _showDeleteDialog(context, comment, controller);
+                  },
+                ),
+              ],
+              if (!isOwnComment) ...[
+                const Divider(height: 1, indent: 24, endIndent: 24),
+                _buildMenuOption(
+                  icon: Icons.flag_outlined,
+                  label: 'Report',
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _showReportDialog(context, comment, controller);
+                  },
+                ),
+                const Divider(height: 1, indent: 24, endIndent: 24),
+                _buildMenuOption(
+                  icon: Icons.comment_outlined,
+                  label: 'User Comments',
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _showUserCommentsSheet(context, comment, controller);
+                  },
+                ),
+              ],
+              if (canModerate) ...[
+                const Divider(height: 1, indent: 24, endIndent: 24),
+                _buildMenuOption(
+                  icon: Icons.shield_outlined,
+                  label: 'Moderate',
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _showModerationSheet(context, comment, controller,
+                        isOwnComment: isOwnComment);
+                  },
+                ),
+                if (!isOwnComment) ...[
+                  const Divider(height: 1, indent: 24, endIndent: 24),
+                  _buildMenuOption(
+                    icon: Icons.admin_panel_settings_outlined,
+                    label: 'User Actions',
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      _showUserManagementSheet(context, comment, controller);
+                    },
+                  ),
+                ],
+              ],
+              const SizedBox(height: 16),
             ],
           ),
+        );
+      },
+    );
+  }
+
+  Widget _buildMenuOption({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+    bool isDestructive = false,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return ListTile(
+      leading: Icon(
+        icon,
+        color: isDestructive ? colorScheme.error : colorScheme.onSurfaceVariant,
+        size: 22,
+      ),
+      title: Text(
+        label,
+        style: TextStyle(
+          color: isDestructive ? colorScheme.error : colorScheme.onSurface,
+          fontSize: 15,
+          fontWeight: FontWeight.w500,
         ),
-        if (isOwnComment) ...[
-          const PopupMenuDivider(height: 1),
-          PopupMenuItem(
-            value: 'edit',
-            height: 40,
-            child: Row(
-              children: [
-                Icon(Icons.edit_outlined,
-                    size: 18, color: colorScheme.onSurfaceVariant),
-                const SizedBox(width: 12),
-                Text('Edit',
-                    style:
-                        TextStyle(color: colorScheme.onSurface, fontSize: 14)),
-              ],
-            ),
-          ),
-          PopupMenuItem(
-            value: 'delete',
-            height: 40,
-            child: Row(
-              children: [
-                Icon(Icons.delete_outline, size: 18, color: colorScheme.error),
-                const SizedBox(width: 12),
-                Text('Delete',
-                    style: TextStyle(color: colorScheme.error, fontSize: 14)),
-              ],
-            ),
-          ),
-        ],
-        if (!isOwnComment) ...[
-          const PopupMenuDivider(height: 1),
-          PopupMenuItem(
-            value: 'report',
-            height: 40,
-            child: Row(
-              children: [
-                Icon(Icons.flag_outlined,
-                    size: 18, color: colorScheme.onSurfaceVariant),
-                const SizedBox(width: 12),
-                Text('Report',
-                    style:
-                        TextStyle(color: colorScheme.onSurface, fontSize: 14)),
-              ],
-            ),
-          ),
-          PopupMenuItem(
-            value: 'user_comments',
-            height: 40,
-            child: Row(
-              children: [
-                Icon(Icons.comment_outlined,
-                    size: 18, color: colorScheme.onSurfaceVariant),
-                const SizedBox(width: 12),
-                Text('User Comments',
-                    style:
-                        TextStyle(color: colorScheme.onSurface, fontSize: 14)),
-              ],
-            ),
-          ),
-        ],
-        if (canModerate) ...[
-          const PopupMenuDivider(height: 1),
-          PopupMenuItem(
-            value: 'moderate',
-            height: 40,
-            child: Row(
-              children: [
-                Icon(Icons.shield_outlined,
-                    size: 18, color: colorScheme.tertiary),
-                const SizedBox(width: 12),
-                Text('Moderate',
-                    style:
-                        TextStyle(color: colorScheme.tertiary, fontSize: 14)),
-              ],
-            ),
-          ),
-          if (!isOwnComment) ...[
-            PopupMenuItem(
-              value: 'user_actions',
-              height: 40,
-              child: Row(
-                children: [
-                  Icon(Icons.admin_panel_settings_outlined,
-                      size: 18, color: colorScheme.tertiary),
-                  const SizedBox(width: 12),
-                  Text('User Actions',
-                      style:
-                          TextStyle(color: colorScheme.tertiary, fontSize: 14)),
-                ],
-              ),
-            ),
-          ],
-        ],
-      ],
+      ),
+      onTap: onTap,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+      dense: true,
     );
   }
 
