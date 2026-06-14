@@ -1838,35 +1838,96 @@ class _UserManagementPageState extends State<UserManagementPage> {
                                       ),
                                     ),
                                     const SizedBox(height: 4),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 14, vertical: 5),
-                                      decoration: BoxDecoration(
-                                        color: _getRoleColor(
-                                                userInfo?['role']?.toString() ??
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 14, vertical: 5),
+                                          decoration: BoxDecoration(
+                                            color: _getRoleColor(
+                                                    userInfo?['role']
+                                                            ?.toString() ??
+                                                        'user')
+                                                .withOpacity(0.15),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                            border: Border.all(
+                                              color: _getRoleColor(
+                                                      userInfo?['role']
+                                                              ?.toString() ??
+                                                          'user')
+                                                  .withOpacity(0.3),
+                                            ),
+                                          ),
+                                          child: Text(
+                                            (userInfo?['role']?.toString() ??
                                                     'user')
-                                            .withOpacity(0.15),
-                                        borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(
-                                          color: _getRoleColor(userInfo?['role']
-                                                      ?.toString() ??
-                                                  'user')
-                                              .withOpacity(0.3),
+                                                .toUpperCase()
+                                                .replaceAll('_', ' '),
+                                            style: TextStyle(
+                                              color: _getRoleColor(
+                                                  userInfo?['role']
+                                                          ?.toString() ??
+                                                      'user'),
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 12,
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                      child: Text(
-                                        (userInfo?['role']?.toString() ??
-                                                'user')
-                                            .toUpperCase()
-                                            .replaceAll('_', ' '),
-                                        style: TextStyle(
-                                          color: _getRoleColor(
-                                              userInfo?['role']?.toString() ??
-                                                  'user'),
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 12,
-                                        ),
-                                      ),
+                                        if (userInfo?['client_type'] != null &&
+                                            userInfo!['client_type']
+                                                .toString()
+                                                .isNotEmpty) ...[
+                                          const SizedBox(width: 8),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 12, vertical: 5),
+                                            decoration: BoxDecoration(
+                                              color: colorScheme.primary
+                                                  .withValues(alpha: 0.15),
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              border: Border.all(
+                                                color: colorScheme.primary
+                                                    .withValues(alpha: 0.3),
+                                              ),
+                                            ),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Icon(
+                                                  userInfo!['client_type']
+                                                              .toString() ==
+                                                          'anilist'
+                                                      ? Icons
+                                                          .auto_stories_rounded
+                                                      : userInfo!['client_type']
+                                                                  .toString() ==
+                                                              'mal'
+                                                          ? Icons
+                                                              .menu_book_rounded
+                                                          : Icons.movie_rounded,
+                                                  size: 14,
+                                                  color: colorScheme.primary,
+                                                ),
+                                                const SizedBox(width: 4),
+                                                Text(
+                                                  userInfo!['client_type']
+                                                      .toString()
+                                                      .toUpperCase(),
+                                                  style: TextStyle(
+                                                    color: colorScheme.primary,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ],
                                     ),
                                     const SizedBox(height: 16),
                                     const Divider(height: 1),
@@ -1879,17 +1940,6 @@ class _UserManagementPageState extends State<UserManagementPage> {
                                         children: [
                                           _buildInfoRow(context, 'User ID',
                                               widget.targetUserId),
-                                          if (userInfo?['client_type'] !=
-                                                  null &&
-                                              userInfo!['client_type']
-                                                  .toString()
-                                                  .isNotEmpty)
-                                            _buildInfoRow(
-                                                context,
-                                                'Client',
-                                                userInfo!['client_type']
-                                                    .toString()
-                                                    .toUpperCase()),
                                           _buildInfoRow(
                                               context,
                                               'Banned',
@@ -1942,9 +1992,12 @@ class _UserManagementPageState extends State<UserManagementPage> {
                                             _buildInfoRow(
                                                 context,
                                                 'Joined',
-                                                userInfo?['created_at']
-                                                        .toString() ??
-                                                    'N/A'),
+                                                userInfo?['created_at'] != null
+                                                    ? timeago.format(DateTime
+                                                        .parse(userInfo![
+                                                                'created_at']
+                                                            .toString()))
+                                                    : 'N/A'),
                                           if (userInfo?['notes'] != null &&
                                               userInfo!['notes']
                                                   .toString()
@@ -2088,8 +2141,9 @@ class _UserManagementPageState extends State<UserManagementPage> {
 
   Widget _buildInfoRow(BuildContext context, String label, String value) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: 5),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -2097,23 +2151,30 @@ class _UserManagementPageState extends State<UserManagementPage> {
             width: 110,
             child: Text(
               label,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w600,
               ),
             ),
           ),
           Expanded(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainer.withOpacity(0.5),
-                borderRadius: BorderRadius.circular(6),
+                color: colorScheme.surfaceContainer.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
                 value,
-                style: theme.textTheme.bodyMedium?.copyWith(
+                style: theme.textTheme.bodySmall?.copyWith(
                   fontWeight: FontWeight.w500,
+                  color: label == 'Banned' ||
+                          label == 'Muted' ||
+                          label == 'Shadow Banned'
+                      ? (value == 'Yes'
+                          ? colorScheme.error
+                          : colorScheme.primary)
+                      : null,
                 ),
               ),
             ),
