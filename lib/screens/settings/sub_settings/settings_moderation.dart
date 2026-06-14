@@ -2,14 +2,14 @@ import 'dart:async';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
+import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:anymex/screens/settings/settings.dart';
+import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
-import 'package:super_sliver_list/super_sliver_list.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class SettingsModeration extends StatefulWidget {
@@ -49,95 +49,106 @@ class _SettingsModerationState extends State<SettingsModeration> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SuperListView(
-        padding: getResponsiveValue(context,
-            mobileValue: const EdgeInsets.fromLTRB(10.0, 50.0, 10.0, 20.0),
-            desktopValue: const EdgeInsets.fromLTRB(20.0, 50.0, 25.0, 20.0)),
-        children: [
-          const Row(
-            children: [
-              CustomBackButton(),
-              SizedBox(width: 10),
-              Text("Moderation Panel",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-            ],
-          ),
-          const SizedBox(height: 30),
-
-          Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                color:
-                    Theme.of(context).colorScheme.surfaceContainer.opaque(0.3)),
-            child: Column(
-              children: [
-                Obx(() => CustomTile(
-                      icon: Icons.admin_panel_settings,
-                      title: "Your Role",
-                      description:
-                          commentumService.currentUserRole.value.toUpperCase(),
-                      postFix: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: _getRoleColor(),
+    return Glow(
+      child: Scaffold(
+        body: Column(
+          children: [
+            const NestedHeader(title: 'Moderation Panel'),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: getResponsiveValue(context,
+                    mobileValue:
+                        const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 50.0),
+                    desktopValue:
+                        const EdgeInsets.fromLTRB(25.0, 20.0, 25.0, 20.0)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          commentumService.currentUserRole.value.toUpperCase(),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                          ),
-                        ),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .surfaceContainer
+                              .withValues(alpha: 0.3)),
+                      child: Column(
+                        children: [
+                          Obx(() => CustomTile(
+                                icon: Icons.admin_panel_settings,
+                                title: "Your Role",
+                                description: commentumService
+                                    .currentUserRole.value
+                                    .toUpperCase(),
+                                postFix: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: _getRoleColor(),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(
+                                    commentumService.currentUserRole.value
+                                        .toUpperCase(),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                              )),
+                        ],
                       ),
-                    )),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 20),
-
-          Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                color:
-                    Theme.of(context).colorScheme.surfaceContainer.opaque(0.3)),
-            child: Column(
-              children: [
-                Obx(() => CustomTile(
-                      icon: Icons.report_outlined,
-                      title: "Reports Queue",
-                      description:
-                          "${reportsQueue.length} pending reports",
-                      postFix: isLoadingQueue.value
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : null,
-                      onTap: () => _navigateToReportsQueue(context),
-                    )),
-                CustomTile(
-                    icon: Icons.search_outlined,
-                    title: "Search User",
-                    description: "Find and manage specific users",
-                    onTap: () => _showUserSearch(context)),
-                CustomTile(
-                  icon: Icons.people_outlined,
-                  title: "User List",
-                  description: "View and filter all users",
-                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const UserListPage())),
+                    ),
+                    const SizedBox(height: 20),
+                    Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .surfaceContainer
+                              .withValues(alpha: 0.3)),
+                      child: Column(
+                        children: [
+                          Obx(() => CustomTile(
+                                icon: Icons.report_outlined,
+                                title: "Reports Queue",
+                                description:
+                                    "${reportsQueue.length} pending reports",
+                                postFix: isLoadingQueue.value
+                                    ? const SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                            strokeWidth: 2),
+                                      )
+                                    : null,
+                                onTap: () => _navigateToReportsQueue(context),
+                              )),
+                          CustomTile(
+                              icon: Icons.search_outlined,
+                              title: "Search User",
+                              description: "Find and manage specific users",
+                              onTap: () => _showUserSearch(context)),
+                          CustomTile(
+                            icon: Icons.people_outlined,
+                            title: "User List",
+                            description: "View and filter all users",
+                            onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => const UserListPage())),
+                          ),
+                        ],
+                      ),
+                    ),
+                    30.height(),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
-
-          30.height(),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -335,7 +346,10 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
                   selected: _searchMode == 0,
                   onSelected: (_) {
                     widget.searchController.clear();
-                    setState(() { _searchMode = 0; _searchResults = []; });
+                    setState(() {
+                      _searchMode = 0;
+                      _searchResults = [];
+                    });
                   },
                 ),
               ),
@@ -346,7 +360,10 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
                   selected: _searchMode == 1,
                   onSelected: (_) {
                     widget.searchController.clear();
-                    setState(() { _searchMode = 1; _searchResults = []; });
+                    setState(() {
+                      _searchMode = 1;
+                      _searchResults = [];
+                    });
                   },
                 ),
               ),
@@ -372,7 +389,8 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
                   child: ChoiceChip(
                     label: Text(ct.$2),
                     selected: isSelected,
-                    onSelected: (_) => setState(() => _selectedClientType = ct.$1),
+                    onSelected: (_) =>
+                        setState(() => _selectedClientType = ct.$1),
                     visualDensity: VisualDensity.compact,
                   ),
                 );
@@ -398,15 +416,16 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
                   : Icon(_searchMode == 0
                       ? Icons.badge_outlined
                       : Icons.person_search_rounded),
-              suffixIcon: _searchMode == 1 && widget.searchController.text.isNotEmpty
-                  ? IconButton(
-                      icon: const Icon(Icons.clear_rounded, size: 20),
-                      onPressed: () {
-                        widget.searchController.clear();
-                        setState(() => _searchResults = []);
-                      },
-                    )
-                  : null,
+              suffixIcon:
+                  _searchMode == 1 && widget.searchController.text.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear_rounded, size: 20),
+                          onPressed: () {
+                            widget.searchController.clear();
+                            setState(() => _searchResults = []);
+                          },
+                        )
+                      : null,
               border: const OutlineInputBorder(),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -444,7 +463,10 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
           ],
 
           // For username search, show hint text
-          if (_searchMode == 1 && _searchResults.isEmpty && !_isSearching && widget.searchController.text.trim().length < 2)
+          if (_searchMode == 1 &&
+              _searchResults.isEmpty &&
+              !_isSearching &&
+              widget.searchController.text.trim().length < 2)
             Padding(
               padding: const EdgeInsets.only(top: 12),
               child: Text(
@@ -457,13 +479,17 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
             ),
 
           // No results found
-          if (_searchMode == 1 && _searchResults.isEmpty && !_isSearching && widget.searchController.text.trim().length >= 2)
+          if (_searchMode == 1 &&
+              _searchResults.isEmpty &&
+              !_isSearching &&
+              widget.searchController.text.trim().length >= 2)
             Padding(
               padding: const EdgeInsets.only(top: 12),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.search_off_rounded, size: 16, color: colorScheme.onSurfaceVariant),
+                  Icon(Icons.search_off_rounded,
+                      size: 16, color: colorScheme.onSurfaceVariant),
                   const SizedBox(width: 6),
                   Text(
                     'No users found',
@@ -637,57 +663,65 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Reports Queue'),
-        actions: [
-          IconButton(
-            onPressed: _loadReports,
-            icon: const Icon(Icons.refresh),
-          ),
-        ],
-      ),
-      body: Obx(() {
-        if (isLoading.value) {
-          return const Center(child: ExpressiveLoadingIndicator());
-        }
-
-        if (reports.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.check_circle_outline_rounded,
-                    size: 64, color: colorScheme.primary),
-                const SizedBox(height: 16),
-                Text(
-                  'No pending reports',
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'All clear! No reports to review.',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
+    return Glow(
+      child: Scaffold(
+        body: Column(
+          children: [
+            NestedHeader(
+              title: 'Reports Queue',
+              action: IconButton(
+                onPressed: _loadReports,
+                icon: const Icon(Icons.refresh),
+              ),
             ),
-          );
-        }
+            Expanded(
+              child: Obx(() {
+                if (isLoading.value) {
+                  return const Center(child: ExpressiveLoadingIndicator());
+                }
 
-        return ListView.separated(
-          padding: const EdgeInsets.all(16),
-          itemCount: reports.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 12),
-          itemBuilder: (context, index) {
-            final report = reports[index];
-            return _buildReportCard(context, report);
-          },
-        );
-      }),
+                if (reports.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.check_circle_outline_rounded,
+                            size: 64, color: colorScheme.primary),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No pending reports',
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'All clear! No reports to review.',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(16, 20, 16, 50),
+                  child: Column(
+                    children: reports
+                        .map((report) => Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: _buildReportCard(context, report),
+                            ))
+                        .toList(),
+                  ),
+                );
+              }),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -703,224 +737,238 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
     final mediaTitle = mediaInfo['title']?.toString() ?? 'Unknown';
     final mediaType = mediaInfo['type']?.toString() ?? '';
     final totalReports = report['totalReports'] as int? ?? 0;
-    final pendingReports =
-        report['reports'] as List<dynamic>? ?? [];
+    final pendingReports = report['reports'] as List<dynamic>? ?? [];
     final createdAt = report['createdAt']?.toString() ?? '';
     final isResolving = resolvingReports.contains(commentId);
 
     return Container(
-      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerLowest.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: colorScheme.error.withOpacity(0.2),
-        ),
+        borderRadius: BorderRadius.circular(12),
+        color: colorScheme.surfaceContainer.withValues(alpha: 0.3),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              CircleAvatar(
-                radius: 18,
-                backgroundColor: colorScheme.surfaceContainer,
-                child: authorAvatar != null && authorAvatar.isNotEmpty
-                    ? ClipOval(
-                        child: Image.network(authorAvatar,
-                            width: 36, height: 36, fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) =>
-                                const Icon(Icons.person, size: 18)),
-                      )
-                    : const Icon(Icons.person_rounded, size: 18),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      authorName,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    if (mediaTitle.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 18,
+                  backgroundColor: colorScheme.surfaceContainer,
+                  child: authorAvatar != null && authorAvatar.isNotEmpty
+                      ? ClipOval(
+                          child: Image.network(authorAvatar,
+                              width: 36,
+                              height: 36,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) =>
+                                  const Icon(Icons.person, size: 18)),
+                        )
+                      : const Icon(Icons.person_rounded, size: 18),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Text(
-                        '$mediaTitle ${mediaType.isNotEmpty ? "($mediaType)" : ""}',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                          fontSize: 12,
+                        authorName,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
-                  ],
+                      if (mediaTitle.isNotEmpty)
+                        Text(
+                          '$mediaTitle ${mediaType.isNotEmpty ? "($mediaType)" : ""}',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                            fontSize: 12,
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: colorScheme.error.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.flag_rounded,
-                        size: 14, color: colorScheme.error),
-                    const SizedBox(width: 4),
-                    Text(
-                      '$totalReports',
-                      style: TextStyle(
-                        color: colorScheme.error,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: colorScheme.error.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.flag_rounded,
+                          size: 14, color: colorScheme.error),
+                      const SizedBox(width: 4),
+                      Text(
+                        '$totalReports',
+                        style: TextStyle(
+                          color: colorScheme.error,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Divider(height: 24),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: colorScheme.surfaceContainer.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                content,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.w500,
+                  height: 1.4,
+                ),
+                maxLines: 4,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+          if (pendingReports.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+              child: Column(
+                children: pendingReports.map((r) {
+                  final reason = r['reason']?.toString() ?? '';
+                  final notes = r['notes']?.toString() ?? '';
+                  final reporterId = r['reporter_id']?.toString() ?? '';
+                  final reporterUsername =
+                      r['reporter_username']?.toString() ?? '';
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color:
+                          colorScheme.surfaceContainer.withValues(alpha: 0.3),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainer.withOpacity(0.5),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Text(
-              content,
-              style: theme.textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.w500,
-                height: 1.4,
-              ),
-              maxLines: 4,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          if (pendingReports.isNotEmpty) ...[
-            const SizedBox(height: 10),
-            ...pendingReports.map((r) {
-              final reason = r['reason']?.toString() ?? '';
-              final notes = r['notes']?.toString() ?? '';
-              final reporterId = r['reporter_id']?.toString() ?? '';
-              final reporterUsername = r['reporter_username']?.toString() ?? '';
-              return Container(
-                margin: const EdgeInsets.only(bottom: 6),
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerLow.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.report_rounded,
-                        size: 14, color: colorScheme.onSurfaceVariant),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+                    child: Row(
+                      children: [
+                        Icon(Icons.report_rounded,
+                            size: 14, color: colorScheme.onSurfaceVariant),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                reason,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: colorScheme.onSurface,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              if (reporterUsername.isNotEmpty ||
+                                  reporterId.isNotEmpty)
+                                Text(
+                                  'by ${reporterUsername.isNotEmpty ? reporterUsername : reporterId}',
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                    fontSize: 10,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                        if (notes.isNotEmpty)
                           Text(
-                            reason,
+                            '($notes)',
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSurface,
-                              fontWeight: FontWeight.w600,
+                              color: colorScheme.onSurfaceVariant,
+                              fontSize: 11,
+                              fontStyle: FontStyle.italic,
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
-                          if (reporterUsername.isNotEmpty || reporterId.isNotEmpty)
-                            Text(
-                              'by ${reporterUsername.isNotEmpty ? reporterUsername : reporterId}',
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: colorScheme.onSurfaceVariant,
-                                fontSize: 10,
-                              ),
-                            ),
-                        ],
-                      ),
+                      ],
                     ),
-                    if (notes.isNotEmpty)
-                      Text(
-                        '($notes)',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                          fontSize: 11,
-                          fontStyle: FontStyle.italic,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                  ],
-                ),
-              );
-            }),
-          ],
-          if (createdAt.isNotEmpty) ...[
-            const SizedBox(height: 8),
-            Text(
-              timeago.format(DateTime.parse(createdAt)),
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-                fontSize: 11,
+                  );
+                }).toList(),
               ),
             ),
-          ],
-          const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              if (isResolving)
-                const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              else ...[
-                OutlinedButton(
-                  onPressed: () => _resolveReport(
-                    commentId: commentId,
-                    reporterId: pendingReports.isNotEmpty
-                        ? (pendingReports.first['reporter_id']?.toString() ??
-                            '')
-                        : '',
-                    resolution: 'dismissed',
-                  ),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: colorScheme.onSurfaceVariant,
-                    side: BorderSide(color: colorScheme.outlineVariant),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 8),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: const Text('Dismiss'),
+          if (createdAt.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+              child: Text(
+                timeago.format(DateTime.parse(createdAt)),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                  fontSize: 11,
                 ),
-                const SizedBox(width: 10),
-                FilledButton(
-                  onPressed: () => _resolveReport(
-                    commentId: commentId,
-                    reporterId: pendingReports.isNotEmpty
-                        ? (pendingReports.first['reporter_id']?.toString() ??
-                            '')
-                        : '',
-                    resolution: 'resolved',
-                  ),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: colorScheme.error,
-                    foregroundColor: colorScheme.onError,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 8),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          const Divider(height: 24),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                if (isResolving)
+                  const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                else ...[
+                  OutlinedButton(
+                    onPressed: () => _resolveReport(
+                      commentId: commentId,
+                      reporterId: pendingReports.isNotEmpty
+                          ? (pendingReports.first['reporter_id']?.toString() ??
+                              '')
+                          : '',
+                      resolution: 'dismissed',
                     ),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: colorScheme.onSurfaceVariant,
+                      side: BorderSide(color: colorScheme.outlineVariant),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text('Dismiss'),
                   ),
-                  child: const Text('Resolve'),
-                ),
+                  const SizedBox(width: 10),
+                  FilledButton(
+                    onPressed: () => _resolveReport(
+                      commentId: commentId,
+                      reporterId: pendingReports.isNotEmpty
+                          ? (pendingReports.first['reporter_id']?.toString() ??
+                              '')
+                          : '',
+                      resolution: 'resolved',
+                    ),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: colorScheme.error,
+                      foregroundColor: colorScheme.onError,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text('Resolve'),
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ],
       ),
@@ -974,7 +1022,8 @@ class _UserListPageState extends State<UserListPage> {
   final RxInt totalUsers = 0.obs;
 
   // Filters
-  final RxInt selectedStatusFilter = 0.obs; // 0=All, 1=Banned, 2=Muted, 3=Shadow Banned, 4=Warned
+  final RxInt selectedStatusFilter =
+      0.obs; // 0=All, 1=Banned, 2=Muted, 3=Shadow Banned, 4=Warned
   final RxString selectedRoleFilter = ''.obs; // ''=All
   final RxString selectedClientTypeFilter = ''.obs; // ''=All
 
@@ -1009,8 +1058,11 @@ class _UserListPageState extends State<UserListPage> {
     users.clear();
     try {
       final result = await commentumService.listUsers(
-        targetClientType: selectedClientTypeFilter.value.isEmpty ? null : selectedClientTypeFilter.value,
-        role: selectedRoleFilter.value.isEmpty ? null : selectedRoleFilter.value,
+        targetClientType: selectedClientTypeFilter.value.isEmpty
+            ? null
+            : selectedClientTypeFilter.value,
+        role:
+            selectedRoleFilter.value.isEmpty ? null : selectedRoleFilter.value,
         banned: selectedStatusFilter.value == 1 ? true : null,
         muted: selectedStatusFilter.value == 2 ? true : null,
         shadowBanned: selectedStatusFilter.value == 3 ? true : null,
@@ -1026,10 +1078,13 @@ class _UserListPageState extends State<UserListPage> {
         totalPages.value = (totalUsers.value / limit).ceil();
 
         if (selectedStatusFilter.value == 4) {
-          users.assignAll(users.where((u) =>
-              (u['warnings'] is int && u['warnings'] > 0) ||
-              (u['warnings'] is String && int.tryParse(u['warnings'].toString()) != null && int.parse(u['warnings'].toString()) > 0)
-          ).toList());
+          users.assignAll(users
+              .where((u) =>
+                  (u['warnings'] is int && u['warnings'] > 0) ||
+                  (u['warnings'] is String &&
+                      int.tryParse(u['warnings'].toString()) != null &&
+                      int.parse(u['warnings'].toString()) > 0))
+              .toList());
         }
       }
     } catch (e) {
@@ -1045,8 +1100,11 @@ class _UserListPageState extends State<UserListPage> {
     final nextPage = currentPage.value + 1;
     try {
       final result = await commentumService.listUsers(
-        targetClientType: selectedClientTypeFilter.value.isEmpty ? null : selectedClientTypeFilter.value,
-        role: selectedRoleFilter.value.isEmpty ? null : selectedRoleFilter.value,
+        targetClientType: selectedClientTypeFilter.value.isEmpty
+            ? null
+            : selectedClientTypeFilter.value,
+        role:
+            selectedRoleFilter.value.isEmpty ? null : selectedRoleFilter.value,
         banned: selectedStatusFilter.value == 1 ? true : null,
         muted: selectedStatusFilter.value == 2 ? true : null,
         shadowBanned: selectedStatusFilter.value == 3 ? true : null,
@@ -1060,8 +1118,9 @@ class _UserListPageState extends State<UserListPage> {
         if (selectedStatusFilter.value == 4) {
           newUsers.removeWhere((u) =>
               !((u['warnings'] is int && u['warnings'] > 0) ||
-                  (u['warnings'] is String && int.tryParse(u['warnings'].toString()) != null && int.parse(u['warnings'].toString()) > 0))
-          );
+                  (u['warnings'] is String &&
+                      int.tryParse(u['warnings'].toString()) != null &&
+                      int.parse(u['warnings'].toString()) > 0)));
         }
 
         users.addAll(newUsers);
@@ -1119,18 +1178,19 @@ class _UserListPageState extends State<UserListPage> {
           _buildDropdownFilters(colorScheme, theme),
           // User count
           Obx(() => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                '${users.length} of $totalUsers users',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w600,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    '${users.length} of $totalUsers users',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          )),
+              )),
           // User list
           Expanded(
             child: Obx(() {
@@ -1166,7 +1226,8 @@ class _UserListPageState extends State<UserListPage> {
 
               return ListView.builder(
                 controller: _scrollController,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 itemCount: users.length + (isLoadingMore.value ? 1 : 0),
                 itemBuilder: (context, index) {
                   if (index == users.length) {
@@ -1197,25 +1258,25 @@ class _UserListPageState extends State<UserListPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Obx(() => SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: List.generate(statusFilters.length, (index) {
-            return Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: ChoiceChip(
-                label: Text(statusFilters[index]),
-                selected: selectedStatusFilter.value == index,
-                onSelected: (selected) {
-                  if (selected) {
-                    selectedStatusFilter.value = index;
-                    _onFilterChanged();
-                  }
-                },
-              ),
-            );
-          }),
-        ),
-      )),
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: List.generate(statusFilters.length, (index) {
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: ChoiceChip(
+                    label: Text(statusFilters[index]),
+                    selected: selectedStatusFilter.value == index,
+                    onSelected: (selected) {
+                      if (selected) {
+                        selectedStatusFilter.value = index;
+                        _onFilterChanged();
+                      }
+                    },
+                  ),
+                );
+              }),
+            ),
+          )),
     );
   }
 
@@ -1226,37 +1287,48 @@ class _UserListPageState extends State<UserListPage> {
         children: [
           Expanded(
             child: Obx(() => _buildFilterDropdown(
-              value: selectedRoleFilter.value.isEmpty ? null : selectedRoleFilter.value,
-              hint: 'Role: All',
-              items: [
-                const DropdownMenuItem<String?>(value: null, child: Text('All')),
-                const DropdownMenuItem(value: 'user', child: Text('User')),
-                const DropdownMenuItem(value: 'moderator', child: Text('Moderator')),
-                const DropdownMenuItem(value: 'admin', child: Text('Admin')),
-                const DropdownMenuItem(value: 'super_admin', child: Text('Super Admin')),
-              ],
-              onChanged: (value) {
-                selectedRoleFilter.value = value ?? '';
-                _onFilterChanged();
-              },
-            )),
+                  value: selectedRoleFilter.value.isEmpty
+                      ? null
+                      : selectedRoleFilter.value,
+                  hint: 'Role: All',
+                  items: [
+                    const DropdownMenuItem<String?>(
+                        value: null, child: Text('All')),
+                    const DropdownMenuItem(value: 'user', child: Text('User')),
+                    const DropdownMenuItem(
+                        value: 'moderator', child: Text('Moderator')),
+                    const DropdownMenuItem(
+                        value: 'admin', child: Text('Admin')),
+                    const DropdownMenuItem(
+                        value: 'super_admin', child: Text('Super Admin')),
+                  ],
+                  onChanged: (value) {
+                    selectedRoleFilter.value = value ?? '';
+                    _onFilterChanged();
+                  },
+                )),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Obx(() => _buildFilterDropdown(
-              value: selectedClientTypeFilter.value.isEmpty ? null : selectedClientTypeFilter.value,
-              hint: 'Client: All',
-              items: [
-                const DropdownMenuItem<String?>(value: null, child: Text('All')),
-                const DropdownMenuItem(value: 'anilist', child: Text('AniList')),
-                const DropdownMenuItem(value: 'mal', child: Text('MAL')),
-                const DropdownMenuItem(value: 'simkl', child: Text('Simkl')),
-              ],
-              onChanged: (value) {
-                selectedClientTypeFilter.value = value ?? '';
-                _onFilterChanged();
-              },
-            )),
+                  value: selectedClientTypeFilter.value.isEmpty
+                      ? null
+                      : selectedClientTypeFilter.value,
+                  hint: 'Client: All',
+                  items: [
+                    const DropdownMenuItem<String?>(
+                        value: null, child: Text('All')),
+                    const DropdownMenuItem(
+                        value: 'anilist', child: Text('AniList')),
+                    const DropdownMenuItem(value: 'mal', child: Text('MAL')),
+                    const DropdownMenuItem(
+                        value: 'simkl', child: Text('Simkl')),
+                  ],
+                  onChanged: (value) {
+                    selectedClientTypeFilter.value = value ?? '';
+                    _onFilterChanged();
+                  },
+                )),
           ),
         ],
       ),
@@ -1274,7 +1346,8 @@ class _UserListPageState extends State<UserListPage> {
       decoration: InputDecoration(
         hintText: hint,
         isDense: true,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
         ),
@@ -1300,7 +1373,9 @@ class _UserListPageState extends State<UserListPage> {
     final isMuted = user['muted'] == true;
     final isShadowBanned = user['shadow_banned'] == true;
     final warnings = user['warnings'];
-    final warningCount = warnings is int ? warnings : (int.tryParse(warnings?.toString() ?? '0') ?? 0);
+    final warningCount = warnings is int
+        ? warnings
+        : (int.tryParse(warnings?.toString() ?? '0') ?? 0);
     final clientType = user['client_type']?.toString() ?? '';
     final userId = user['id']?.toString() ?? '';
 
@@ -1311,7 +1386,9 @@ class _UserListPageState extends State<UserListPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => UserManagementPage(targetUserId: userId, targetClientType: clientType.isNotEmpty ? clientType : null),
+              builder: (_) => UserManagementPage(
+                  targetUserId: userId,
+                  targetClientType: clientType.isNotEmpty ? clientType : null),
             ),
           );
         },
@@ -1332,7 +1409,8 @@ class _UserListPageState extends State<UserListPage> {
                     ? NetworkImage(avatar)
                     : null,
                 child: avatar == null || avatar.isEmpty
-                    ? Icon(Icons.person_rounded, size: 22, color: colorScheme.onSurfaceVariant)
+                    ? Icon(Icons.person_rounded,
+                        size: 22, color: colorScheme.onSurfaceVariant)
                     : null,
               ),
               const SizedBox(width: 12),
@@ -1359,7 +1437,8 @@ class _UserListPageState extends State<UserListPage> {
                       children: [
                         // Role badge
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
                             color: _getRoleColor(role).withOpacity(0.15),
                             borderRadius: BorderRadius.circular(8),
@@ -1433,7 +1512,8 @@ class UserManagementPage extends StatefulWidget {
   final String targetUserId;
   final String? targetClientType;
 
-  const UserManagementPage({super.key, required this.targetUserId, this.targetClientType});
+  const UserManagementPage(
+      {super.key, required this.targetUserId, this.targetClientType});
 
   @override
   State<UserManagementPage> createState() => _UserManagementPageState();
@@ -1461,25 +1541,32 @@ class _UserManagementPageState extends State<UserManagementPage> {
         if (users.isNotEmpty) {
           final user = users.first as Map<String, dynamic>;
           final username = user['username']?.toString() ??
-              user['commentum_username']?.toString() ?? 'Unknown';
+              user['commentum_username']?.toString() ??
+              'Unknown';
           final avatar = user['avatar']?.toString() ??
               user['commentum_user_avatar']?.toString();
           final role = user['role']?.toString() ??
-              user['commentum_user_role']?.toString() ?? 'user';
+              user['commentum_user_role']?.toString() ??
+              'user';
           final banned = user['banned']?.toString() ??
-              user['commentum_user_banned']?.toString() ?? 'false';
+              user['commentum_user_banned']?.toString() ??
+              'false';
           final muted = user['muted']?.toString() ??
-              user['commentum_user_muted']?.toString() ?? 'false';
+              user['commentum_user_muted']?.toString() ??
+              'false';
           final shadowBanned = user['shadow_banned']?.toString() ??
-              user['commentum_user_shadow_banned']?.toString() ?? 'false';
+              user['commentum_user_shadow_banned']?.toString() ??
+              'false';
           final warnings = user['warnings']?.toString() ??
-              user['commentum_user_warnings']?.toString() ?? '0';
+              user['commentum_user_warnings']?.toString() ??
+              '0';
           final mutedUntil = user['muted_until']?.toString() ??
               user['commentum_user_muted_until']?.toString();
           final notes = user['notes']?.toString() ??
               user['commentum_user_notes']?.toString();
           final clientType = user['client_type']?.toString() ??
-              user['commentum_client_type']?.toString() ?? '';
+              user['commentum_client_type']?.toString() ??
+              '';
           final createdAt = user['created_at']?.toString() ?? '';
           setState(() {
             userInfo = {
@@ -1576,12 +1663,13 @@ class _UserManagementPageState extends State<UserManagementPage> {
                                   horizontal: 14, vertical: 5),
                               decoration: BoxDecoration(
                                 color: _getRoleColor(
-                                    userInfo?['role']?.toString() ?? 'user')
+                                        userInfo?['role']?.toString() ?? 'user')
                                     .withOpacity(0.15),
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
                                   color: _getRoleColor(
-                                      userInfo?['role']?.toString() ?? 'user')
+                                          userInfo?['role']?.toString() ??
+                                              'user')
                                       .withOpacity(0.3),
                                 ),
                               ),
@@ -1604,35 +1692,65 @@ class _UserManagementPageState extends State<UserManagementPage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  _buildInfoRow(context, 'User ID',
-                                      widget.targetUserId),
+                                  _buildInfoRow(
+                                      context, 'User ID', widget.targetUserId),
                                   if (userInfo?['client_type'] != null &&
-                                      userInfo!['client_type'].toString().isNotEmpty)
-                                    _buildInfoRow(context, 'Client',
-                                        userInfo!['client_type'].toString().toUpperCase()),
-                                  _buildInfoRow(context, 'Banned',
+                                      userInfo!['client_type']
+                                          .toString()
+                                          .isNotEmpty)
+                                    _buildInfoRow(
+                                        context,
+                                        'Client',
+                                        userInfo!['client_type']
+                                            .toString()
+                                            .toUpperCase()),
+                                  _buildInfoRow(
+                                      context,
+                                      'Banned',
                                       userInfo?['banned']?.toString() == 'true'
-                                          ? 'Yes' : 'No'),
-                                  _buildInfoRow(context, 'Shadow Banned',
-                                      userInfo?['shadow_banned']?.toString() == 'true'
-                                          ? 'Yes' : 'No'),
-                                  _buildInfoRow(context, 'Muted',
+                                          ? 'Yes'
+                                          : 'No'),
+                                  _buildInfoRow(
+                                      context,
+                                      'Shadow Banned',
+                                      userInfo?['shadow_banned']?.toString() ==
+                                              'true'
+                                          ? 'Yes'
+                                          : 'No'),
+                                  _buildInfoRow(
+                                      context,
+                                      'Muted',
                                       userInfo?['muted']?.toString() == 'true'
-                                          ? 'Yes' : 'No'),
+                                          ? 'Yes'
+                                          : 'No'),
                                   _buildInfoRow(context, 'Warnings',
                                       userInfo?['warnings']?.toString() ?? '0'),
                                   if (userInfo?['muted_until'] != null &&
-                                      userInfo!['muted_until'].toString().isNotEmpty &&
-                                      userInfo!['muted_until'].toString() != 'null')
-                                    _buildInfoRow(context, 'Muted Until',
-                                        userInfo?['muted_until'].toString() ?? 'N/A'),
+                                      userInfo!['muted_until']
+                                          .toString()
+                                          .isNotEmpty &&
+                                      userInfo!['muted_until'].toString() !=
+                                          'null')
+                                    _buildInfoRow(
+                                        context,
+                                        'Muted Until',
+                                        userInfo?['muted_until'].toString() ??
+                                            'N/A'),
                                   if (userInfo?['created_at'] != null &&
-                                      userInfo!['created_at'].toString().isNotEmpty &&
-                                      userInfo!['created_at'].toString() != 'null')
-                                    _buildInfoRow(context, 'Joined',
-                                        userInfo?['created_at'].toString() ?? 'N/A'),
+                                      userInfo!['created_at']
+                                          .toString()
+                                          .isNotEmpty &&
+                                      userInfo!['created_at'].toString() !=
+                                          'null')
+                                    _buildInfoRow(
+                                        context,
+                                        'Joined',
+                                        userInfo?['created_at'].toString() ??
+                                            'N/A'),
                                   if (userInfo?['notes'] != null &&
-                                      userInfo!['notes'].toString().isNotEmpty &&
+                                      userInfo!['notes']
+                                          .toString()
+                                          .isNotEmpty &&
                                       userInfo!['notes'].toString() != 'null')
                                     _buildInfoRow(
                                       context,
@@ -1646,7 +1764,6 @@ class _UserManagementPageState extends State<UserManagementPage> {
                         ),
                       ),
                       const SizedBox(height: 20),
-
                       TextField(
                         controller: reasonController,
                         maxLines: 2,
@@ -1669,7 +1786,6 @@ class _UserManagementPageState extends State<UserManagementPage> {
                         ),
                       ),
                       const SizedBox(height: 20),
-
                       Text(
                         'Actions',
                         style: theme.textTheme.titleSmall?.copyWith(
@@ -1766,8 +1882,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
           ),
           Expanded(
             child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
                 color: theme.colorScheme.surfaceContainer.withOpacity(0.5),
                 borderRadius: BorderRadius.circular(6),
@@ -1862,9 +1977,8 @@ class _UserManagementPageState extends State<UserManagementPage> {
           FilledButton(
             onPressed: () => Navigator.pop(dialogContext, true),
             style: FilledButton.styleFrom(
-              backgroundColor: label.contains('Ban')
-                  ? context.colors.error
-                  : null,
+              backgroundColor:
+                  label.contains('Ban') ? context.colors.error : null,
             ),
             child: Text(label),
           ),

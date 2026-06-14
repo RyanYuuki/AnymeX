@@ -1,12 +1,11 @@
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
-import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
-import 'package:super_sliver_list/super_sliver_list.dart';
 import 'package:anymex/screens/other_features.dart';
 
 import 'settings_moderation.dart';
@@ -29,87 +28,97 @@ class _SettingsCommentsState extends State<SettingsComments> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Glow(
+      child: Scaffold(
         body: Column(
-      children: [
-        const NestedHeader(title: 'Comment System'),
-        Expanded(
-          child: SuperListView(
-            padding: getResponsiveValue(context,
-                mobileValue: const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0),
-                desktopValue:
-                    const EdgeInsets.fromLTRB(20.0, 20.0, 25.0, 20.0)),
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: Theme.of(context)
-                        .colorScheme
-                        .surfaceContainer
-                        .opaque(0.3)),
+          children: [
+            const NestedHeader(title: 'Comment System'),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: getResponsiveValue(context,
+                    mobileValue:
+                        const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 50.0),
+                    desktopValue:
+                        const EdgeInsets.fromLTRB(25.0, 20.0, 25.0, 20.0)),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CustomTile(
-                        icon: Icons.info_outline,
-                        title: "About Commentum v2",
-                        description:
-                            "Powered by Commentum v2 - Advanced comment system with moderation",
-                        onTap: () {
-                          _showAboutDialog();
-                        }),
-                    const Divider(height: 1),
-                    Obx(() => commentumService.currentUserRole.value != 'user'
-                        ? Column(
-                            children: [
-                              CustomTile(
-                                  icon: Icons.admin_panel_settings,
-                                  title: "Moderation Panel",
-                                  description: "Access moderation tools and reports",
-                                  onTap: () {
-                                    navigate(() => const SettingsModeration());
-                                  }),
-                              CustomTile(
-                                  icon: Icons.report_outlined,
-                                  title: "Reported Comments",
-                                  description: "View and manage reported content",
-                                  onTap: () {
-                                    _navigateToReportsPanel();
-                                  }),
-                              const Divider(height: 1),
-                            ],
-                          )
-                        : const SizedBox.shrink()),
-                    CustomTile(
-                        icon: Icons.code_outlined,
-                        title: "Markdown Guide",
-                        description: "Learn how to format your comments",
-                        onTap: () {
-                          _showMarkdownGuide();
-                        }),
-                    const Divider(height: 1),
-                    CustomTile(
-                        icon: Icons.help_outline,
-                        title: "Help & Support",
-                        description: "Get help with the comment system",
-                        onTap: () {
-                          _showHelpDialog();
-                        }),
-                    CustomTile(
-                        icon: Icons.privacy_tip_outlined,
-                        title: "Privacy & Safety",
-                        description: "Privacy settings and safety features",
-                        onTap: () {
-                          _showPrivacyDialog();
-                        }),
+                    Obx(() => Column(
+                          children: [
+                            AnymexExpansionTile(
+                              title: 'General',
+                              initialExpanded: true,
+                              content: Column(
+                                children: [
+                                  CustomTile(
+                                      icon: Icons.info_outline,
+                                      title: "About Commentum v2",
+                                      description:
+                                          "Powered by Commentum v2 - Advanced comment system with moderation",
+                                      onTap: () {
+                                        _showAboutDialog();
+                                      }),
+                                  CustomTile(
+                                      icon: Icons.code_outlined,
+                                      title: "Markdown Guide",
+                                      description:
+                                          "Learn how to format your comments",
+                                      onTap: () {
+                                        _showMarkdownGuide();
+                                      }),
+                                  CustomTile(
+                                      icon: Icons.help_outline,
+                                      title: "Help & Support",
+                                      description:
+                                          "Get help with the comment system",
+                                      onTap: () {
+                                        _showHelpDialog();
+                                      }),
+                                  CustomTile(
+                                      icon: Icons.privacy_tip_outlined,
+                                      title: "Privacy & Safety",
+                                      description:
+                                          "Privacy settings and safety features",
+                                      onTap: () {
+                                        _showPrivacyDialog();
+                                      }),
+                                ],
+                              ),
+                            ),
+                            if (commentumService.currentUserRole.value !=
+                                'user')
+                              Column(
+                                children: [
+                                  const SizedBox(height: 10),
+                                  AnymexExpansionTile(
+                                    title: 'Moderation',
+                                    content: Column(
+                                      children: [
+                                        CustomTile(
+                                            icon: Icons.admin_panel_settings,
+                                            title: "Moderation Panel",
+                                            description:
+                                                "Access moderation tools and reports",
+                                            onTap: () {
+                                              navigate(() =>
+                                                  const SettingsModeration());
+                                            }),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                          ],
+                        )),
+                    30.height(),
                   ],
                 ),
               ),
-              30.height(),
-            ],
-          ),
-        )
-      ],
-    ));
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   void _showAboutDialog() {
@@ -132,7 +141,6 @@ class _SettingsCommentsState extends State<SettingsComments> {
             BulletPoint(text: 'Voting system with upvotes/downvotes'),
             BulletPoint(
                 text: 'Cross-platform support (AniList, MyAnimeList, SIMKL)'),
-
           ],
         ),
         actions: [
@@ -145,15 +153,6 @@ class _SettingsCommentsState extends State<SettingsComments> {
     );
   }
 
-  void _navigateToReportsPanel() {
-    if (commentumService.currentUserRole.value == 'user') {
-      snackBar('You need moderator or admin permissions to access this panel');
-      return;
-    }
-
-    navigate(() => const ReportsQueuePage());
-  }
-
   void _showMarkdownGuide() {
     showDialog(
       context: context,
@@ -164,7 +163,8 @@ class _SettingsCommentsState extends State<SettingsComments> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('You can use Discord-style markdown to format your comments:',
+              Text(
+                  'You can use Discord-style markdown to format your comments:',
                   style: TextStyle(fontSize: 12, color: Colors.grey)),
               SizedBox(height: 12),
               _MarkdownExample(
@@ -219,8 +219,12 @@ class _SettingsCommentsState extends State<SettingsComments> {
                 example: '🖼 image',
               ),
               SizedBox(height: 12),
-              Text('Tip: You can combine these! e.g. **bold and *italic* together**',
-                  style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic, color: Colors.grey)),
+              Text(
+                  'Tip: You can combine these! e.g. **bold and *italic* together**',
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontStyle: FontStyle.italic,
+                      color: Colors.grey)),
             ],
           ),
         ),
