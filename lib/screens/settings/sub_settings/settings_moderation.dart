@@ -1897,22 +1897,13 @@ class _UserManagementPageState extends State<UserManagementPage> {
                                             child: Row(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
-                                                Icon(
-                                                  userInfo!['client_type']
-                                                              .toString() ==
-                                                          'anilist'
-                                                      ? Icons
-                                                          .auto_stories_rounded
-                                                      : userInfo!['client_type']
-                                                                  .toString() ==
-                                                              'mal'
-                                                          ? Icons
-                                                              .menu_book_rounded
-                                                          : Icons.movie_rounded,
-                                                  size: 14,
+                                                Image.asset(
+                                                  'assets/images/${userInfo!['client_type'].toString()}-icon.png',
+                                                  width: 16,
+                                                  height: 16,
                                                   color: colorScheme.primary,
                                                 ),
-                                                const SizedBox(width: 4),
+                                                const SizedBox(width: 6),
                                                 Text(
                                                   userInfo!['client_type']
                                                       .toString()
