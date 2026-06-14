@@ -1,7 +1,4 @@
 import 'package:anymex/database/comments/model/comment.dart';
-import 'package:anymex/database/comments/model/leaderboard_entry.dart';
-import 'package:anymex/database/comments/model/user_points.dart';
-import 'package:anymex/database/comments/comments_db.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
@@ -18,9 +15,7 @@ import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:timeago/timeago.dart' as timeago;
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/screens/profile/user_profile_page.dart';
 
@@ -54,7 +49,7 @@ class _CommentSectionState extends State<CommentSection> {
     lastMediaId = widget.media.uniqueId;
 
     final preloadedController =
-    CommentPreloader.to.getPreloadedController(widget.media.uniqueId);
+        CommentPreloader.to.getPreloadedController(widget.media.uniqueId);
     if (preloadedController != null) {
       controller = preloadedController;
     } else {
@@ -67,10 +62,14 @@ class _CommentSectionState extends State<CommentSection> {
 
   /// After comments load, scroll to the target comment if specified
   void _setupScrollToComment() {
-    if (widget.scrollToCommentId == null || widget.scrollToCommentId!.isEmpty) return;
+    if (widget.scrollToCommentId == null || widget.scrollToCommentId!.isEmpty) {
+      return;
+    }
 
     ever(controller.isLoading, (isLoading) {
-      if (!isLoading && !_hasScrolledToTarget && controller.comments.isNotEmpty) {
+      if (!isLoading &&
+          !_hasScrolledToTarget &&
+          controller.comments.isNotEmpty) {
         // Auto-expand any collapsed threads that contain the target comment
         _expandThreadForComment(widget.scrollToCommentId!, controller.comments);
 
@@ -83,14 +82,14 @@ class _CommentSectionState extends State<CommentSection> {
   }
 
   /// Recursively find and expand collapsed threads containing the target comment
-  void _expandThreadForComment(String targetId, List<Comment> comments, {int depth = 0}) {
+  void _expandThreadForComment(String targetId, List<Comment> comments,
+      {int depth = 0}) {
     for (final comment in comments) {
       if (comment.id == targetId) return;
       if (comment.replies != null && comment.replies!.isNotEmpty) {
-        // Check if target is in this comment's replies
         if (_commentExistsInTree(comment.replies!, targetId)) {
-          // If this thread would be collapsed (depth >= 3), expand it
-          if (depth >= 3 || _wouldBeCollapsed(comment.replies!, targetId, depth + 1)) {
+          if (depth >= 3 ||
+              _wouldBeCollapsed(comment.replies!, targetId, depth + 1)) {
             setState(() {
               _expandedThreads.add(comment.id);
             });
@@ -103,8 +102,13 @@ class _CommentSectionState extends State<CommentSection> {
 
   bool _commentExistsInTree(List<Comment> comments, String targetId) {
     for (final comment in comments) {
-      if (comment.id == targetId) return true;
-      if (comment.replies != null && _commentExistsInTree(comment.replies!, targetId)) return true;
+      if (comment.id == targetId) {
+        return true;
+      }
+      if (comment.replies != null &&
+          _commentExistsInTree(comment.replies!, targetId)) {
+        return true;
+      }
     }
     return false;
   }
@@ -145,13 +149,13 @@ class _CommentSectionState extends State<CommentSection> {
 
     if (widget.media.uniqueId != oldWidget.media.uniqueId) {
       final wasPreloaded =
-      CommentPreloader.to.isPreloaded(oldWidget.media.uniqueId);
+          CommentPreloader.to.isPreloaded(oldWidget.media.uniqueId);
       if (!wasPreloaded) {
         Get.delete<CommentSectionController>(tag: oldWidget.media.uniqueId);
       }
 
       final preloadedController =
-      CommentPreloader.to.getPreloadedController(widget.media.uniqueId);
+          CommentPreloader.to.getPreloadedController(widget.media.uniqueId);
       if (preloadedController != null) {
         controller = preloadedController;
       } else {
@@ -162,8 +166,7 @@ class _CommentSectionState extends State<CommentSection> {
   }
 
   FocusNode _getReplyFocusNode(String commentId) {
-    return _replyFocusNodes.putIfAbsent(
-        commentId, () => FocusNode());
+    return _replyFocusNodes.putIfAbsent(commentId, () => FocusNode());
   }
 
   @override
@@ -228,15 +231,6 @@ class _CommentSectionState extends State<CommentSection> {
     );
   }
 
-  void _showLeaderboardSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => const _LeaderboardSheet(),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -270,24 +264,24 @@ class _CommentSectionState extends State<CommentSection> {
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color:
-                colorScheme.surfaceContainerLowest.withValues(alpha: 0.5),
+                    colorScheme.surfaceContainerLowest.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
                   color: controller.commentFocusNode.hasFocus
                       ? colorScheme.primary.opaque(0.4, iReallyMeanIt: true)
                       : colorScheme.outlineVariant
-                      .opaque(0.3, iReallyMeanIt: true),
+                          .opaque(0.3, iReallyMeanIt: true),
                   width: 1.5,
                 ),
                 boxShadow: controller.commentFocusNode.hasFocus
                     ? [
-                  BoxShadow(
-                    color: colorScheme.primary
-                        .opaque(0.1, iReallyMeanIt: true),
-                    blurRadius: 16,
-                    offset: const Offset(0, 4),
-                  ),
-                ]
+                        BoxShadow(
+                          color: colorScheme.primary
+                              .opaque(0.1, iReallyMeanIt: true),
+                          blurRadius: 16,
+                          offset: const Offset(0, 4),
+                        ),
+                      ]
                     : null,
               ),
               child: Text(
@@ -311,114 +305,83 @@ class _CommentSectionState extends State<CommentSection> {
     final colorScheme = theme.colorScheme;
 
     return Obx(() => Container(
-      padding: const EdgeInsets.fromLTRB(24, 28, 16, 20),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainer.opaque(0.3),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+          padding: const EdgeInsets.fromLTRB(24, 28, 16, 20),
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainer.opaque(0.3),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: AnymexText(
-                  text: 'Comments',
-                  variant: TextVariant.semiBold,
-                  color: colorScheme.onSurface,
-                  size: 24,
-                  autoResize: true,
-                  maxLines: 1,
-                ),
-              ),
-              _buildSortChip(context, controller),
-              const SizedBox(width: 4),
-              SizedBox(
-                width: 36,
-                height: 36,
-                child: IconButton(
-                  padding: EdgeInsets.zero,
-                  onPressed: () => _showLeaderboardSheet(context),
-                  icon: Icon(
-                    Icons.emoji_events_rounded,
-                    color: Colors.amber.shade700,
-                    size: 20,
-                  ),
-                  tooltip: 'Leaderboard',
-                ),
-              ),
-              SizedBox(
-                width: 36,
-                height: 36,
-                child: IconButton(
-                  padding: EdgeInsets.zero,
-                  onPressed: () =>
-                      showPolicySheet(context, PolicyType.commentRules),
-                  icon: Icon(
-                    Icons.assignment_outlined,
-                    color: colorScheme.primary,
-                    size: 18,
-                  ),
-                  tooltip: 'Comment Rules',
-                ),
-              ),
-              Obx(() => controller.canModerate()
-                  ? SizedBox(
-                width: 36,
-                height: 36,
-                child: IconButton(
-                  padding: EdgeInsets.zero,
-                  onPressed: () => _showReportsQueueDialog(
-                      context, controller),
-                  icon: Icon(
-                    Icons.report_outlined,
-                    color: colorScheme.error,
-                    size: 18,
-                  ),
-                  tooltip: 'Reports Queue',
-                ),
-              )
-                  : const SizedBox.shrink()),
-              Obx(() => SizedBox(
-                width: 36,
-                height: 36,
-                child: IconButton(
-                  padding: EdgeInsets.zero,
-                  onPressed: controller.isRefreshing.value
-                      ? null
-                      : () => controller.forceRefresh(),
-                  icon: controller.isRefreshing.value
-                      ? SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        colorScheme.onSurfaceVariant,
-                      ),
+              Row(
+                children: [
+                  Expanded(
+                    child: AnymexText(
+                      text: 'Comments',
+                      variant: TextVariant.semiBold,
+                      color: colorScheme.onSurface,
+                      size: 24,
+                      autoResize: true,
+                      maxLines: 1,
                     ),
-                  )
-                      : Icon(
-                    Icons.refresh,
-                    size: 18,
-                    color: colorScheme.onSurfaceVariant,
                   ),
-                  tooltip: 'Refresh comments',
-                ),
-              )),
+                  _buildSortChip(context, controller),
+                  const SizedBox(width: 4),
+                  SizedBox(
+                    width: 36,
+                    height: 36,
+                    child: IconButton(
+                      padding: EdgeInsets.zero,
+                      onPressed: () =>
+                          showPolicySheet(context, PolicyType.commentRules),
+                      icon: Icon(
+                        Icons.assignment_outlined,
+                        color: colorScheme.primary,
+                        size: 18,
+                      ),
+                      tooltip: 'Comment Rules',
+                    ),
+                  ),
+                  Obx(() => SizedBox(
+                        width: 36,
+                        height: 36,
+                        child: IconButton(
+                          padding: EdgeInsets.zero,
+                          onPressed: controller.isRefreshing.value
+                              ? null
+                              : () => controller.forceRefresh(),
+                          icon: controller.isRefreshing.value
+                              ? SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                )
+                              : Icon(
+                                  Icons.refresh,
+                                  size: 18,
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                          tooltip: 'Refresh comments',
+                        ),
+                      )),
+                ],
+              ),
+              const SizedBox(height: 4),
+              AnymexText(
+                text: _getTotalCommentCount(controller.comments),
+                color: colorScheme.onSurfaceVariant,
+                size: 13,
+                autoResize: true,
+                maxLines: 1,
+              ),
             ],
           ),
-          const SizedBox(height: 4),
-          AnymexText(
-            text: _getTotalCommentCount(controller.comments),
-            color: colorScheme.onSurfaceVariant,
-            size: 13,
-            autoResize: true,
-            maxLines: 1,
-          ),
-        ],
-      ),
-    ));
+        ));
   }
 
   Widget _buildSortChip(
@@ -444,41 +407,41 @@ class _CommentSectionState extends State<CommentSection> {
           ),
         ),
         child: Obx(() => Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.sort_rounded,
-                size: 16, color: colorScheme.onSurfaceVariant),
-            const SizedBox(width: 4),
-            Text(
-              sortOptions
-                  .firstWhere((s) => s.$1 == controller.currentSort.value)
-                  .$2,
-              style: TextStyle(
-                color: colorScheme.onSurfaceVariant,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            Icon(Icons.arrow_drop_down_rounded,
-                size: 16, color: colorScheme.onSurfaceVariant),
-          ],
-        )),
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.sort_rounded,
+                    size: 16, color: colorScheme.onSurfaceVariant),
+                const SizedBox(width: 4),
+                Text(
+                  sortOptions
+                      .firstWhere((s) => s.$1 == controller.currentSort.value)
+                      .$2,
+                  style: TextStyle(
+                    color: colorScheme.onSurfaceVariant,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Icon(Icons.arrow_drop_down_rounded,
+                    size: 16, color: colorScheme.onSurfaceVariant),
+              ],
+            )),
       ),
       itemBuilder: (context) => sortOptions
           .map((s) => PopupMenuItem(
-        value: s.$1,
-        child: Row(
-          children: [
-            if (controller.currentSort.value == s.$1)
-              Icon(Icons.check_rounded,
-                  size: 18, color: colorScheme.primary)
-            else
-              const SizedBox(width: 18),
-            const SizedBox(width: 8),
-            Text(s.$2),
-          ],
-        ),
-      ))
+                value: s.$1,
+                child: Row(
+                  children: [
+                    if (controller.currentSort.value == s.$1)
+                      Icon(Icons.check_rounded,
+                          size: 18, color: colorScheme.primary)
+                    else
+                      const SizedBox(width: 18),
+                    const SizedBox(width: 8),
+                    Text(s.$2),
+                  ],
+                ),
+              ))
           .toList(),
     );
   }
@@ -494,168 +457,173 @@ class _CommentSectionState extends State<CommentSection> {
     final colorScheme = theme.colorScheme;
 
     return Obx(() => Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        CompositedTransformTarget(
-          link: _getMentionLayerLink('main'),
-          child: AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeOutCubic,
-      margin: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerLowest.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: controller.commentFocusNode.hasFocus
-              ? colorScheme.primary.opaque(0.4, iReallyMeanIt: true)
-              : colorScheme.outlineVariant.opaque(0.3, iReallyMeanIt: true),
-          width: 1.5,
-        ),
-        boxShadow: controller.commentFocusNode.hasFocus
-            ? [
-          BoxShadow(
-            color:
-            colorScheme.primary.opaque(0.1, iReallyMeanIt: true),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ]
-            : null,
-      ),
-      child: Column(
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              _buildUserAvatar(colorScheme, controller),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Container(
-                  height: 50,
-                  clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(
-                    color: colorScheme.surface
-                        .opaque(0.3, iReallyMeanIt: true),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: colorScheme.outlineVariant
-                          .opaque(0.2, iReallyMeanIt: true),
-                      width: 1,
-                    ),
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CompositedTransformTarget(
+              link: _getMentionLayerLink('main'),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOutCubic,
+                margin: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                decoration: BoxDecoration(
+                  color:
+                      colorScheme.surfaceContainerLowest.withValues(alpha: 0.5),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: controller.commentFocusNode.hasFocus
+                        ? colorScheme.primary.opaque(0.4, iReallyMeanIt: true)
+                        : colorScheme.outlineVariant
+                            .opaque(0.3, iReallyMeanIt: true),
+                    width: 1.5,
                   ),
-                  child: TextField(
-                    controller: controller.commentController,
-                    focusNode: controller.commentFocusNode,
-                    maxLines: controller.isInputExpanded.value ? 5 : 1,
-                    minLines: 1,
-                    style: TextStyle(
-                      color: colorScheme.onSurface,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      height: 1.4,
-                    ),
-                    decoration: InputDecoration(
-                        hintText: 'What\'s on your mind?',
-                        hintStyle: TextStyle(
-                          color: colorScheme.onSurfaceVariant.opaque(0.6),
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
+                  boxShadow: controller.commentFocusNode.hasFocus
+                      ? [
+                          BoxShadow(
+                            color: colorScheme.primary
+                                .opaque(0.1, iReallyMeanIt: true),
+                            blurRadius: 16,
+                            offset: const Offset(0, 4),
+                          ),
+                        ]
+                      : null,
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        _buildUserAvatar(colorScheme, controller),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Container(
+                            height: 50,
+                            clipBehavior: Clip.antiAlias,
+                            decoration: BoxDecoration(
+                              color: colorScheme.surface
+                                  .opaque(0.3, iReallyMeanIt: true),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: colorScheme.outlineVariant
+                                    .opaque(0.2, iReallyMeanIt: true),
+                                width: 1,
+                              ),
+                            ),
+                            child: TextField(
+                              controller: controller.commentController,
+                              focusNode: controller.commentFocusNode,
+                              maxLines:
+                                  controller.isInputExpanded.value ? 5 : 1,
+                              minLines: 1,
+                              style: TextStyle(
+                                color: colorScheme.onSurface,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                height: 1.4,
+                              ),
+                              decoration: InputDecoration(
+                                  hintText: 'What\'s on your mind?',
+                                  hintStyle: TextStyle(
+                                    color: colorScheme.onSurfaceVariant
+                                        .opaque(0.6),
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                  border: InputBorder.none,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 16),
+                                  filled: true,
+                                  fillColor: Colors.transparent),
+                            ),
+                          ),
                         ),
-                        border: InputBorder.none,
-                        contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 16),
-                        filled: true,
-                        fillColor: Colors.transparent),
-                  ),
+                      ],
+                    ),
+                    if (controller.isInputExpanded.value) ...[
+                      const SizedBox(height: 16),
+                      Divider(
+                        color: colorScheme.outlineVariant.opaque(0.3),
+                        height: 1,
+                      ),
+                      const SizedBox(height: 12),
+                      MarkdownFormattingToolbar(
+                        controller: controller.commentController,
+                        colorScheme: colorScheme,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildTagSelector(context, controller),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: controller.clearInputs,
+                            style: TextButton.styleFrom(
+                              foregroundColor: colorScheme.onSurfaceVariant,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: const Text(
+                              'Cancel',
+                              style: TextStyle(fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Obx(() {
+                            return FilledButton(
+                              onPressed: controller.isSubmitting.value ||
+                                      controller.tag.value.isEmpty ||
+                                      controller.commentContent.value.isEmpty
+                                  ? null
+                                  : () => _handlePostComment(),
+                              style: FilledButton.styleFrom(
+                                backgroundColor: colorScheme.primary,
+                                foregroundColor: colorScheme.onPrimary,
+                                disabledBackgroundColor:
+                                    colorScheme.surfaceContainerHigh,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 12,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              child: controller.isSubmitting.value
+                                  ? const SizedBox(
+                                      width: 18,
+                                      height: 18,
+                                      child: ExpressiveLoadingIndicator(),
+                                    )
+                                  : const Text(
+                                      'Post',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                            );
+                          }),
+                        ],
+                      ),
+                    ],
+                  ],
                 ),
               ),
-            ],
-          ),
-          if (controller.isInputExpanded.value) ...[
-            const SizedBox(height: 16),
-            Divider(
-              color: colorScheme.outlineVariant.opaque(0.3),
-              height: 1,
             ),
-            const SizedBox(height: 12),
-            MarkdownFormattingToolbar(
+            MentionAutocomplete(
               controller: controller.commentController,
-              colorScheme: colorScheme,
-            ),
-            const SizedBox(height: 16),
-            _buildTagSelector(context, controller),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(
-                  onPressed: controller.clearInputs,
-                  style: TextButton.styleFrom(
-                    foregroundColor: colorScheme.onSurfaceVariant,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text(
-                    'Cancel',
-                    style: TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Obx(() {
-                  return FilledButton(
-                    onPressed: controller.isSubmitting.value ||
-                        controller.tag.value.isEmpty ||
-                        controller.commentContent.value.isEmpty
-                        ? null
-                        : () => _handlePostComment(),
-                    style: FilledButton.styleFrom(
-                      backgroundColor: colorScheme.primary,
-                      foregroundColor: colorScheme.onPrimary,
-                      disabledBackgroundColor:
-                      colorScheme.surfaceContainerHigh,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 12,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: controller.isSubmitting.value
-                        ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: ExpressiveLoadingIndicator(),
-                    )
-                        : const Text(
-                      'Post',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 15,
-                      ),
-                    ),
-                  );
-                }),
-              ],
+              layerLink: _getMentionLayerLink('main'),
+              focusNode: controller.commentFocusNode,
             ),
           ],
-        ],
-      ),
-        ),
-      ),
-      MentionAutocomplete(
-          controller: controller.commentController,
-          layerLink: _getMentionLayerLink('main'),
-          focusNode: controller.commentFocusNode,
-        ),
-      ],
-    ));
+        ));
   }
 
   Widget _buildTagSelector(
@@ -690,7 +658,7 @@ class _CommentSectionState extends State<CommentSection> {
                 borderRadius: BorderRadius.circular(10),
                 child: Container(
                   padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
                     color: isSelected
                         ? colorScheme.primary.opaque(0.15, iReallyMeanIt: true)
@@ -711,7 +679,7 @@ class _CommentSectionState extends State<CommentSection> {
                           : colorScheme.onSurface,
                       fontSize: 13,
                       fontWeight:
-                      isSelected ? FontWeight.w700 : FontWeight.w500,
+                          isSelected ? FontWeight.w700 : FontWeight.w500,
                     ),
                   ),
                 ),
@@ -754,7 +722,7 @@ class _CommentSectionState extends State<CommentSection> {
                 ),
               ),
               contentPadding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             ),
           ),
         ],
@@ -785,15 +753,15 @@ class _CommentSectionState extends State<CommentSection> {
       child: ClipOval(
         child: controller.profile.avatar?.isNotEmpty == true
             ? AnymeXImage(
-          imageUrl: controller.profile.avatar!,
-          fit: BoxFit.cover,
-          radius: 0,
-        )
+                imageUrl: controller.profile.avatar!,
+                fit: BoxFit.cover,
+                radius: 0,
+              )
             : Icon(
-          Icons.person_rounded,
-          color: colorScheme.onSurfaceVariant,
-          size: 20,
-        ),
+                Icons.person_rounded,
+                color: colorScheme.onSurfaceVariant,
+                size: 20,
+              ),
       ),
     );
   }
@@ -883,7 +851,8 @@ class _CommentSectionState extends State<CommentSection> {
         ),
         itemBuilder: (context, index) {
           return _buildCommentWithReplies(
-              context, controller.comments[index], controller, 0, isParentLocked: false);
+              context, controller.comments[index], controller, 0,
+              isParentLocked: false);
         },
       );
     });
@@ -921,221 +890,440 @@ class _CommentSectionState extends State<CommentSection> {
     return replyCount;
   }
 
-  double _getIndentForDepth(int depth, double screenWidth) {
-    if (depth == 0) return 0;
-    // Reduced base indent and capped max indent to prevent right-side overflow
-    final baseIndent = screenWidth * 0.03;
-    final maxIndent = screenWidth * 0.12;
-    return (baseIndent * depth).clamp(0.0, maxIndent);
-  }
-
-  Color _getThreadColor(int depth, ColorScheme colorScheme) {
-    final colors = [
-      colorScheme.primary.opaque(0.4, iReallyMeanIt: true),
-      colorScheme.tertiary.opaque(0.4, iReallyMeanIt: true),
-      colorScheme.error.opaque(0.3, iReallyMeanIt: true),
-      Colors.teal.withOpacity(0.4),
-      Colors.purple.withOpacity(0.4),
-      Colors.amber.withOpacity(0.4),
-    ];
-    return colors[depth % colors.length];
-  }
-
   bool _isTargetComment(String commentId) {
     return widget.scrollToCommentId != null &&
         widget.scrollToCommentId!.isNotEmpty &&
         commentId == widget.scrollToCommentId;
   }
 
+  List<Comment> _flattenReplies(Comment comment) {
+    final List<Comment> flat = [];
+    if (comment.replies == null) return flat;
+    for (final reply in comment.replies!) {
+      flat.add(reply);
+      flat.addAll(_flattenReplies(reply));
+    }
+    return flat;
+  }
+
+  String _formatTimestampShort(String isoString) {
+    try {
+      final dt = DateTime.parse(isoString);
+      final now = DateTime.now();
+      final diff = now.difference(dt);
+      if (diff.inMinutes < 1) return 'just now';
+      if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+      if (diff.inHours < 24) return '${diff.inHours}h ago';
+      return '${dt.day}/${dt.month}/${dt.year}';
+    } catch (_) {
+      return '';
+    }
+  }
+
   Widget _buildCommentWithReplies(BuildContext context, Comment comment,
-      CommentSectionController controller, int depth, {bool isParentLocked = false}) {
+      CommentSectionController controller, int depth,
+      {bool isParentLocked = false}) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final screenWidth = MediaQuery.of(context).size.width;
     final effectiveLocked = comment.locked == true || isParentLocked;
-    final indent = _getIndentForDepth(depth, screenWidth);
-    final threadColor = _getThreadColor(depth, colorScheme);
     final isTarget = _isTargetComment(comment.id);
 
     return Obx(() => Column(
-      key: isTarget ? _targetCommentKey : null,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (isTarget)
-          Container(
-            margin: EdgeInsets.only(left: indent, bottom: 8),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: colorScheme.primary.opaque(0.08),
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: colorScheme.primary.opaque(0.3),
-              ),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.notifications_active_rounded,
-                    size: 14, color: colorScheme.primary),
-                const SizedBox(width: 6),
-                Text(
-                  'Notification Target',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: colorScheme.primary,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 12,
+          key: isTarget ? _targetCommentKey : null,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (isTarget)
+              Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: colorScheme.primary.opaque(0.08),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: colorScheme.primary.opaque(0.3),
                   ),
                 ),
-              ],
-            ),
-          ),
-        if (comment.pinned == true && depth == 0) ...[
-          Container(
-            margin: EdgeInsets.only(left: indent),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: colorScheme.primary.opaque(0.08),
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: colorScheme.primary.opaque(0.2),
-              ),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.push_pin_rounded,
-                    size: 14, color: colorScheme.primary),
-                const SizedBox(width: 6),
-                Text(
-                  'Pinned',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: colorScheme.primary,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-        Container(
-          margin: EdgeInsets.only(left: indent),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (depth > 0) ...[
-                for (int i = 0; i < depth; i++)
-                  Container(
-                    width: 2,
-                    height: 40, // Fixed height for thread lines to prevent squeezing
-                    margin: const EdgeInsets.only(right: 8),
-                    decoration: BoxDecoration(
-                      color: _getThreadColor(i, colorScheme),
-                      borderRadius: BorderRadius.circular(1),
+                child: Row(
+                  children: [
+                    Icon(Icons.notifications_active_rounded,
+                        size: 14, color: colorScheme.primary),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Notification Target',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colorScheme.primary,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 12,
+                      ),
                     ),
-                  ),
-              ],
-              Expanded(
-                child: _buildCommentItem(context, comment, controller,
-                    effectiveLocked: effectiveLocked, depth: depth),
+                  ],
+                ),
               ),
+            if (comment.pinned == true && depth == 0)
+              Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: colorScheme.primary.opaque(0.08),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: colorScheme.primary.opaque(0.2),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.push_pin_rounded,
+                        size: 14, color: colorScheme.primary),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Pinned',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colorScheme.primary,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            _buildCommentItem(context, comment, controller,
+                effectiveLocked: effectiveLocked, depth: depth),
+            if (controller.isReplyingTo(comment.id) && !effectiveLocked) ...[
+              const SizedBox(height: 8),
+              _buildReplyInput(context, comment, controller, depth,
+                  isParentLocked: isParentLocked),
             ],
+            if (comment.replies != null && comment.replies!.isNotEmpty)
+              _buildRepliesSection(
+                  context, comment, controller, effectiveLocked),
+          ],
+        ));
+  }
+
+  Widget _buildRepliesSection(BuildContext context, Comment comment,
+      CommentSectionController controller, bool effectiveLocked) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final allReplies = _flattenReplies(comment);
+    final totalReplies = allReplies.length;
+    final isExpanded = _expandedThreads.contains(comment.id);
+    const maxVisible = 3;
+
+    if (!isExpanded) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: InkWell(
+          onTap: () => setState(() => _expandedThreads.add(comment.id)),
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainerLow.opaque(0.3),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: colorScheme.outlineVariant.opaque(0.2),
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.chat_bubble_outline_rounded,
+                    size: 14, color: colorScheme.primary),
+                const SizedBox(width: 6),
+                Text(
+                  'View Replies ($totalReplies)',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colorScheme.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-        if (controller.isReplyingTo(comment.id) && !effectiveLocked) ...[
-          const SizedBox(height: 8),
-          _buildReplyInput(context, comment, controller, depth, isParentLocked: isParentLocked),
-        ],
-        if (comment.replies != null && comment.replies!.isNotEmpty) ...[
-          if (depth >= 3 && !_expandedThreads.contains(comment.id)) ...[
-            const SizedBox(height: 6),
-            Container(
-              margin: EdgeInsets.only(left: indent),
-              child: InkWell(
-                onTap: () {
-                  setState(() {
-                    _expandedThreads.add(comment.id);
-                  });
-                },
-                borderRadius: BorderRadius.circular(8),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: threadColor.opaque(0.08),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: threadColor.opaque(0.2),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.subdirectory_arrow_right_rounded,
-                          size: 16, color: threadColor),
-                      const SizedBox(width: 6),
-                      Text(
-                        'Continue this thread (${comment.replies!.length}) →',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: threadColor,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
+      );
+    }
+
+    final visibleReplies = allReplies.take(maxVisible).toList();
+    final remainingCount = totalReplies - maxVisible;
+
+    return Padding(
+      padding: const EdgeInsets.only(left: 16, top: 8),
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(
+              width: 2,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: colorScheme.outlineVariant.opaque(0.4),
+                  borderRadius: BorderRadius.circular(1),
                 ),
               ),
             ),
-          ] else ...[
-            const SizedBox(height: 10),
-            Container(
-              margin: EdgeInsets.only(left: indent),
-              padding: EdgeInsets.only(left: indent > 0 ? 10 : 16),
-              decoration: BoxDecoration(
-                border: Border(
-                  left: BorderSide(
-                    color: threadColor,
-                    width: 2.5,
-                  ),
-                ),
-              ),
+            const SizedBox(width: 12),
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ...comment.replies!.asMap().entries.map((entry) {
-                    final replyIndex = entry.key;
+                  ...visibleReplies.asMap().entries.map((entry) {
                     final reply = entry.value;
-                    final isLastReply =
-                        replyIndex == comment.replies!.length - 1;
-
-                    return Column(
-                      children: [
-                        _buildCommentWithReplies(
-                            context, reply, controller, depth + 1, isParentLocked: effectiveLocked),
-                        if (!isLastReply)
-                          Container(
-                            margin: EdgeInsets.only(
-                              left: _getIndentForDepth(depth + 1, screenWidth) + 10,
-                              top: 10,
-                              bottom: 10,
-                            ),
-                            height: 1,
-                            decoration: BoxDecoration(
-                              color: colorScheme.outlineVariant
-                                  .opaque(0.12, iReallyMeanIt: true),
-                            ),
-                          ),
-                      ],
+                    final parentUsername = _findParentUsername(reply, comment);
+                    final parentRole = _findParentRole(reply, comment);
+                    return Padding(
+                      padding: EdgeInsets.only(
+                        bottom: entry.key < visibleReplies.length - 1 ? 10 : 0,
+                      ),
+                      child: _buildReplyItem(context, reply, controller,
+                          parentUsername, effectiveLocked,
+                          depth: 2, parentRole: parentRole),
                     );
                   }),
+                  if (remainingCount > 0) ...[
+                    const SizedBox(height: 8),
+                    InkWell(
+                      onTap: () => setState(() {
+                        _expandedThreads.add('${comment.id}_more');
+                      }),
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: colorScheme.surfaceContainerLow.opaque(0.3),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: colorScheme.outlineVariant.opaque(0.2),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'View More Replies ($remainingCount)',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colorScheme.primary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
           ],
-        ],
+        ),
+      ),
+    );
+  }
+
+  String _findParentUsername(Comment reply, Comment topLevelComment) {
+    if (reply.parentId != null && topLevelComment.replies != null) {
+      for (final r in topLevelComment.replies!) {
+        if (r.id == reply.parentId.toString()) return r.username;
+        if (r.replies != null) {
+          for (final rr in r.replies!) {
+            if (rr.id == reply.parentId.toString()) return rr.username;
+          }
+        }
+      }
+    }
+    return topLevelComment.username;
+  }
+
+  String? _findParentRole(Comment reply, Comment topLevelComment) {
+    if (reply.parentId != null && topLevelComment.replies != null) {
+      for (final r in topLevelComment.replies!) {
+        if (r.id == reply.parentId.toString()) return r.userRole;
+        if (r.replies != null) {
+          for (final rr in r.replies!) {
+            if (rr.id == reply.parentId.toString()) return rr.userRole;
+          }
+        }
+      }
+    }
+    return topLevelComment.userRole;
+  }
+
+  Widget _buildReplyItem(
+      BuildContext context,
+      Comment reply,
+      CommentSectionController controller,
+      String parentUsername,
+      bool effectiveLocked,
+      {int depth = 0,
+      String? parentRole}) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isSpoiler = reply.tag.toLowerCase().contains('spoiler');
+    final isLocked = reply.locked == true || effectiveLocked;
+    final isOwnComment = reply.userId == controller.profile.id?.toString();
+    final canModerate = controller.canModerate();
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        GestureDetector(
+          onTap: () {
+            final currentUserId =
+                Get.find<ServiceHandler>().profileData.value.id;
+            if (reply.userId == currentUserId) {
+              navigate(() => const ProfilePage());
+            } else {
+              navigate(() =>
+                  UserProfilePage(userId: int.tryParse(reply.userId) ?? 0));
+            }
+          },
+          child: _buildCommentAvatar(context, reply, size: 28),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  if (reply.userRole != null && reply.userRole != 'user') ...[
+                    _buildRoleBadge(context, reply.userRole!),
+                  ],
+                  GestureDetector(
+                    onTap: () => _showUserProfileSheet(context, reply),
+                    child: Text(
+                      reply.username,
+                      style: TextStyle(
+                        color:
+                            reply.userRole != null && reply.userRole != 'user'
+                                ? _getRoleColor(reply.userRole!)
+                                : colorScheme.onSurface,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    '→ ',
+                    style: TextStyle(
+                      color: colorScheme.onSurfaceVariant,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  Text(
+                    parentUsername,
+                    style: TextStyle(
+                      color: parentRole != null && parentRole != 'user'
+                          ? _getRoleColor(parentRole)
+                          : colorScheme.onSurface,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    '•',
+                    style: TextStyle(
+                      color: colorScheme.onSurfaceVariant,
+                      fontSize: 10,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  if (reply.tag.isNotEmpty && reply.tag != 'General') ...[
+                    const SizedBox(width: 4),
+                    _buildTag(context, reply.tag),
+                  ],
+                  if (reply.edited == true)
+                    Text(
+                      ' (edited)',
+                      style: TextStyle(
+                        color: colorScheme.onSurfaceVariant.opaque(0.6),
+                        fontSize: 10,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  if (isLocked)
+                    Icon(Icons.lock_rounded,
+                        size: 11, color: colorScheme.error),
+                  const Spacer(),
+                  _buildCommentMenu(
+                      context, reply, controller, isOwnComment, canModerate),
+                ],
+              ),
+              const SizedBox(height: 4),
+              _SpoilerText(
+                text: reply.commentText,
+                isSpoiler: isSpoiler,
+                theme: theme,
+                colorScheme: colorScheme,
+                fontSize: 13,
+              ),
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  Text(
+                    _formatTimestampShort(reply.createdAt),
+                    style: TextStyle(
+                      color: colorScheme.onSurfaceVariant,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  if (!isLocked) ...[
+                    GestureDetector(
+                      onTap: () => controller.toggleReply(reply.id),
+                      child: Text(
+                        'Reply',
+                        style: TextStyle(
+                          color: colorScheme.onSurfaceVariant,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                  ],
+                  const Spacer(),
+                  _buildCompactVoteButton(
+                    context: context,
+                    icon: Icons.arrow_upward_rounded,
+                    count: reply.likes,
+                    isActive: reply.userVote == 1,
+                    onTap: () => controller.handleVote(reply, 1),
+                    colorScheme: colorScheme,
+                  ),
+                  const SizedBox(width: 8),
+                  _buildCompactVoteButton(
+                    context: context,
+                    icon: Icons.arrow_downward_rounded,
+                    count: reply.dislikes,
+                    isActive: reply.userVote == -1,
+                    onTap: () => controller.handleVote(reply, -1),
+                    colorScheme: colorScheme,
+                  ),
+                ],
+              ),
+              if (controller.isReplyingTo(reply.id) && !isLocked) ...[
+                const SizedBox(height: 8),
+                _buildReplyInput(context, reply, controller, depth,
+                    isParentLocked: effectiveLocked),
+              ],
+            ],
+          ),
+        ),
       ],
-    ));
+    );
   }
 
   Widget _buildReplyInput(BuildContext context, Comment comment,
-      CommentSectionController controller, int depth, {bool isParentLocked = false}) {
+      CommentSectionController controller, int depth,
+      {bool isParentLocked = false}) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final replyController = _getReplyController(comment.id);
@@ -1156,10 +1344,7 @@ class _CommentSectionState extends State<CommentSection> {
             CompositedTransformTarget(
               link: replyLayerLink,
               child: Container(
-                margin: EdgeInsets.only(
-                  left: depth > 0 ? (16.0 + (depth * 12.0)).clamp(0.0, 80.0) : 52,
-                  right: 16,
-                ),
+                margin: const EdgeInsets.only(left: 16, right: 16),
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: colorScheme.surfaceContainerLowest.opaque(0.5),
@@ -1201,79 +1386,80 @@ class _CommentSectionState extends State<CommentSection> {
                       focusNode: replyFocusNode,
                       maxLines: 3,
                       minLines: 1,
-                style: TextStyle(
-                  color: colorScheme.onSurface,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
-                onChanged: (_) => setReplyState(() {}),
-                decoration: InputDecoration(
-                  hintText: 'Write a reply...',
-                  hintStyle: TextStyle(
-                    color: colorScheme.onSurfaceVariant.opaque(0.5),
-                    fontSize: 14,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: colorScheme.outlineVariant.opaque(0.3),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: colorScheme.outlineVariant.opaque(0.3),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: colorScheme.primary.opaque(0.5),
-                      width: 1.5,
-                    ),
-                  ),
-                  contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Obx(() => FilledButton.tonal(
-                    onPressed: controller.isSubmitting.value || !hasText
-                        ? null
-                        : () {
-                      controller.addReply(
-                          comment, replyController.text.trim());
-                      replyController.clear();
-                      setReplyState(() {});
-                    },
-                    style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: controller.isSubmitting.value
-                        ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: ExpressiveLoadingIndicator(),
-                    )
-                        : const Text(
-                      'Reply',
                       style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 13,
+                        color: colorScheme.onSurface,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      onChanged: (_) => setReplyState(() {}),
+                      decoration: InputDecoration(
+                        hintText: 'Write a reply...',
+                        hintStyle: TextStyle(
+                          color: colorScheme.onSurfaceVariant.opaque(0.5),
+                          fontSize: 14,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: colorScheme.outlineVariant.opaque(0.3),
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: colorScheme.outlineVariant.opaque(0.3),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: colorScheme.primary.opaque(0.5),
+                            width: 1.5,
+                          ),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 10),
                       ),
                     ),
-                  )),
-                ],
-              ),
-            ],
-          ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Obx(() => FilledButton.tonal(
+                              onPressed: controller.isSubmitting.value ||
+                                      !hasText
+                                  ? null
+                                  : () {
+                                      controller.addReply(
+                                          comment, replyController.text.trim());
+                                      replyController.clear();
+                                      setReplyState(() {});
+                                    },
+                              style: FilledButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 8),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              child: controller.isSubmitting.value
+                                  ? const SizedBox(
+                                      width: 16,
+                                      height: 16,
+                                      child: ExpressiveLoadingIndicator(),
+                                    )
+                                  : const Text(
+                                      'Reply',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                            )),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
             MentionAutocomplete(
@@ -1288,26 +1474,19 @@ class _CommentSectionState extends State<CommentSection> {
   }
 
   Widget _buildCommentItem(BuildContext context, Comment comment,
-      CommentSectionController controller, {bool effectiveLocked = false, int depth = 0}) {
+      CommentSectionController controller,
+      {bool effectiveLocked = false, int depth = 0}) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    // Reddit-style: show deleted comment as [deleted] but keep replies visible
     if (comment.deleted) {
       return _buildDeletedComment(context, comment, depth);
     }
 
     final isSpoiler = comment.tag.toLowerCase().contains('spoiler');
-    final isOwnComment =
-        comment.userId == controller.profile.id?.toString();
+    final isOwnComment = comment.userId == controller.profile.id?.toString();
     final canModerate = controller.canModerate();
     final isLocked = comment.locked == true || effectiveLocked;
-    final isCompact = depth >= 2;
-    final avatarSize = isCompact ? 28.0 : 40.0;
-    final iconSize = isCompact ? 14.0 : 18.0;
-    final nameFontSize = isCompact ? 13.0 : 15.0;
-    final contentFontSize = isCompact ? 13.0 : 15.0;
-    final threadColor = _getThreadColor(depth, colorScheme);
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1323,132 +1502,134 @@ class _CommentSectionState extends State<CommentSection> {
                   UserProfilePage(userId: int.tryParse(comment.userId) ?? 0));
             }
           },
-          child: _buildCommentAvatar(context, comment, size: avatarSize),
+          child: _buildCommentAvatar(context, comment, size: 36),
         ),
-        SizedBox(width: isCompact ? 8 : 12),
+        const SizedBox(width: 10),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Wrap(
-                spacing: 6,
-                runSpacing: 4,
-                crossAxisAlignment: WrapCrossAlignment.center,
+              Row(
                 children: [
+                  if (comment.userRole != null &&
+                      comment.userRole != 'user') ...[
+                    _buildRoleBadge(context, comment.userRole!),
+                  ],
                   GestureDetector(
                     onTap: () => _showUserProfileSheet(context, comment),
                     child: Text(
                       comment.username,
                       style: TextStyle(
-                        color: colorScheme.onSurface,
-                        fontSize: nameFontSize,
+                        color: comment.userRole != null &&
+                                comment.userRole != 'user'
+                            ? _getRoleColor(comment.userRole!)
+                            : colorScheme.onSurface,
+                        fontSize: 14,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
-                  if (comment.userRole != null &&
-                      comment.userRole != 'user')
-                    _buildRoleBadge(context, comment.userRole!),
-                  _buildTierBadge(context, comment.userTier, comment.userPoints),
-                  if (comment.tag.isNotEmpty && comment.tag != 'General')
-                    _buildTag(context, comment.tag),
+                  const SizedBox(width: 6),
                   Text(
-                    timeago.format(DateTime.parse(comment.createdAt)),
-                    style: theme.textTheme.bodySmall?.copyWith(
+                    '•',
+                    style: TextStyle(
                       color: colorScheme.onSurfaceVariant,
-                      fontSize: isCompact ? 11 : 13,
-                      fontWeight: FontWeight.w500,
+                      fontSize: 10,
                     ),
                   ),
+                  const SizedBox(width: 6),
+                  if (comment.tag.isNotEmpty && comment.tag != 'General') ...[
+                    const SizedBox(width: 6),
+                    _buildTag(context, comment.tag),
+                  ],
                   if (comment.edited == true)
                     Text(
-                      '(edited)',
-                      style: theme.textTheme.bodySmall?.copyWith(
+                      ' (edited)',
+                      style: TextStyle(
                         color: colorScheme.onSurfaceVariant.opaque(0.6),
                         fontSize: 10,
                         fontStyle: FontStyle.italic,
                       ),
                     ),
-                  if (comment.pinned == true)
-                    Icon(Icons.push_pin_rounded,
-                        size: isCompact ? 11 : 13, color: colorScheme.primary),
                   if (isLocked)
                     Icon(Icons.lock_rounded,
-                        size: isCompact ? 11 : 13, color: colorScheme.error),
+                        size: 12, color: colorScheme.error),
+                  const Spacer(),
+                  _buildCommentMenu(
+                      context, comment, controller, isOwnComment, canModerate),
                 ],
               ),
-              SizedBox(height: isCompact ? 6 : 12),
+              const SizedBox(height: 6),
               _SpoilerText(
                 text: comment.commentText,
                 isSpoiler: isSpoiler,
                 theme: theme,
                 colorScheme: colorScheme,
-                fontSize: contentFontSize,
+                fontSize: 14,
               ),
               if (effectiveLocked)
-                Container(
-                  margin: EdgeInsets.only(top: isCompact ? 4 : 8),
-                  padding:
-                  EdgeInsets.symmetric(horizontal: isCompact ? 8 : 10, vertical: isCompact ? 4 : 6),
-                  decoration: BoxDecoration(
-                    color: colorScheme.error.opaque(0.08),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: colorScheme.error.opaque(0.2),
-                    ),
-                  ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 6),
                   child: Row(
-                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(Icons.lock_rounded,
-                          size: 14, color: colorScheme.error),
-                      const SizedBox(width: 6),
+                          size: 12, color: colorScheme.error),
+                      const SizedBox(width: 4),
                       Text(
                         'Thread is locked',
-                        style: theme.textTheme.bodySmall?.copyWith(
+                        style: TextStyle(
                           color: colorScheme.error,
                           fontWeight: FontWeight.w600,
-                          fontSize: 12,
+                          fontSize: 11,
                         ),
                       ),
                     ],
                   ),
                 ),
-              SizedBox(height: isCompact ? 8 : 16),
+              const SizedBox(height: 10),
               Row(
                 children: [
-                  _buildVoteButton(
+                  Text(
+                    _formatTimestampShort(comment.createdAt),
+                    style: TextStyle(
+                      color: colorScheme.onSurfaceVariant,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  if (!effectiveLocked) ...[
+                    GestureDetector(
+                      onTap: () => controller.toggleReply(comment.id),
+                      child: Text(
+                        'Reply',
+                        style: TextStyle(
+                          color: colorScheme.onSurfaceVariant,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                  ],
+                  const Spacer(),
+                  _buildCompactVoteButton(
                     context: context,
-                    icon: Icons.keyboard_arrow_up_rounded,
+                    icon: Icons.arrow_upward_rounded,
                     count: comment.likes,
                     isActive: comment.userVote == 1,
                     onTap: () => controller.handleVote(comment, 1),
-                    isUpvote: true,
-                    compact: isCompact,
+                    colorScheme: colorScheme,
                   ),
-                  SizedBox(width: isCompact ? 8 : 12),
-                  _buildVoteButton(
+                  const SizedBox(width: 10),
+                  _buildCompactVoteButton(
                     context: context,
-                    icon: Icons.keyboard_arrow_down_rounded,
+                    icon: Icons.arrow_downward_rounded,
                     count: comment.dislikes,
                     isActive: comment.userVote == -1,
                     onTap: () => controller.handleVote(comment, -1),
-                    isUpvote: false,
-                    compact: isCompact,
+                    colorScheme: colorScheme,
                   ),
-                  if (!effectiveLocked) ...[
-                    SizedBox(width: isCompact ? 8 : 12),
-                    _buildActionButton(
-                      context: context,
-                      icon: Icons.reply_rounded,
-                      tooltip: 'Reply',
-                      onTap: () => controller.toggleReply(comment.id),
-                      compact: isCompact,
-                    ),
-                  ],
-                  const Spacer(),
-                  _buildCommentMenu(
-                      context, comment, controller, isOwnComment, canModerate),
                 ],
               ),
             ],
@@ -1458,7 +1639,43 @@ class _CommentSectionState extends State<CommentSection> {
     );
   }
 
-  Widget _buildDeletedComment(BuildContext context, Comment comment, int depth) {
+  Widget _buildCompactVoteButton({
+    required BuildContext context,
+    required IconData icon,
+    required int count,
+    required bool isActive,
+    required VoidCallback onTap,
+    required ColorScheme colorScheme,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(6),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 14,
+            color:
+                isActive ? colorScheme.primary : colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(width: 3),
+          Text(
+            count > 999 ? '${(count / 1000).toStringAsFixed(1)}k' : '$count',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color:
+                  isActive ? colorScheme.primary : colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDeletedComment(
+      BuildContext context, Comment comment, int depth) {
     final colorScheme = context.colors;
     final isCompact = depth >= 2;
     final avatarSize = isCompact ? 28.0 : 40.0;
@@ -1484,7 +1701,8 @@ class _CommentSectionState extends State<CommentSection> {
     );
   }
 
-  Widget _buildCommentAvatar(BuildContext context, Comment comment, {double size = 40}) {
+  Widget _buildCommentAvatar(BuildContext context, Comment comment,
+      {double size = 40}) {
     final colorScheme = context.colors;
     final iconSize = size <= 28 ? 14.0 : 18.0;
 
@@ -1498,150 +1716,78 @@ class _CommentSectionState extends State<CommentSection> {
           color: colorScheme.outline.opaque(0.1, iReallyMeanIt: true),
           width: 1,
         ),
-        boxShadow: size > 28 ? [
-          BoxShadow(
-            color: colorScheme.shadow.opaque(0.08, iReallyMeanIt: true),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ] : null,
+        boxShadow: size > 28
+            ? [
+                BoxShadow(
+                  color: colorScheme.shadow.opaque(0.08, iReallyMeanIt: true),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ]
+            : null,
       ),
       child: ClipOval(
         child: comment.avatarUrl?.isNotEmpty == true
             ? AnymeXImage(
-          imageUrl: comment.avatarUrl!,
-          fit: BoxFit.cover,
-          radius: 0,
-        )
+                imageUrl: comment.avatarUrl!,
+                fit: BoxFit.cover,
+                radius: 0,
+              )
             : Icon(
-          Icons.person_rounded,
-          color: colorScheme.onSurfaceVariant,
-          size: iconSize,
-        ),
+                Icons.person_rounded,
+                color: colorScheme.onSurfaceVariant,
+                size: iconSize,
+              ),
       ),
     );
   }
 
   Widget _buildRoleBadge(BuildContext context, String role) {
-    final roleConfig = _getRoleBadgeConfig(role);
-    if (roleConfig == null) return const SizedBox.shrink();
+    final config = _getRoleBadgeConfig(role);
+    if (config == null) return const SizedBox.shrink();
 
-    return Container(
-      margin: const EdgeInsets.only(left: 2),
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-      decoration: BoxDecoration(
-        color: roleConfig.$2.withOpacity(0.15),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: roleConfig.$2.withOpacity(0.3),
-          width: 0.5,
-        ),
-      ),
-      child: Text(
-        '${roleConfig.$1} ${roleConfig.$3}',
-        style: TextStyle(
-          fontSize: 10,
-          fontWeight: FontWeight.w700,
-          color: roleConfig.$2,
-          height: 1.2,
-        ),
-      ),
+    return Padding(
+      padding: const EdgeInsets.only(right: 4),
+      child: Icon(config.$1, size: 16, color: config.$2),
     );
   }
 
-  (String, Color, String)? _getRoleBadgeConfig(String role) {
+  Color _getRoleColor(String role) {
     switch (role) {
       case 'owner':
-        return ('👑', Colors.amber.shade800, 'Owner');
+        return Colors.amber.shade800;
       case 'super_admin':
-        return ('🛡️', Colors.red, 'S.Admin');
+        return Colors.red;
       case 'admin':
-        return ('⚔️', Colors.orange, 'Admin');
+        return Colors.orange;
       case 'moderator':
-        return ('🔨', Colors.teal, 'Mod');
+        return Colors.teal;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  (IconData, Color)? _getRoleBadgeConfig(String role) {
+    switch (role) {
+      case 'owner':
+        return (Icons.auto_awesome, Colors.amber.shade800);
+      case 'super_admin':
+        return (Icons.shield, Colors.red);
+      case 'admin':
+        return (Icons.verified_user, Colors.orange);
+      case 'moderator':
+        return (Icons.manage_accounts, Colors.teal);
       default:
         return null;
     }
   }
 
-  Widget _buildTierBadge(BuildContext context, String? tier, int? points) {
-    if (tier == null) return const SizedBox.shrink();
-
-    final emoji = UserPoints.getTierEmoji(tier);
-    final displayName = tier[0].toUpperCase() + tier.substring(1).toLowerCase();
-
-    return Container(
-      margin: const EdgeInsets.only(left: 2),
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-      decoration: BoxDecoration(
-        color: _getTierColor(tier).withOpacity(0.12),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: _getTierColor(tier).withOpacity(0.2),
-          width: 0.5,
-        ),
-      ),
-      child: Text(
-        '$displayName $emoji',
-        style: TextStyle(
-          fontSize: 10,
-          fontWeight: FontWeight.w600,
-          color: _getTierColor(tier),
-          height: 1.2,
-        ),
-      ),
-    );
-  }
-
-  Color _getTierColor(String tier) {
-    switch (tier.toLowerCase()) {
-      case 'elite':
-        return Colors.purple.shade400;
-      case 'veteran':
-        return Colors.amber.shade600;
-      case 'active':
-        return Colors.pink.shade400;
-      case 'regular':
-        return Colors.green.shade400;
-      default:
-        return Colors.grey.shade500;
-    }
-  }
-
-  Widget _buildActionButton({
-    required BuildContext context,
-    required IconData icon,
-    required VoidCallback onTap,
-    String? tooltip,
-    Color? color,
-    bool compact = false,
-  }) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: Tooltip(
-        message: tooltip ?? '',
-        child: Container(
-          padding: EdgeInsets.all(compact ? 6 : 8),
-          decoration: BoxDecoration(
-            color: colorScheme.surfaceContainer.opaque(0.3, iReallyMeanIt: true),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(
-            icon,
-            size: compact ? 15 : 18,
-            color: color ?? colorScheme.onSurfaceVariant,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCommentMenu(BuildContext context, Comment comment,
-      CommentSectionController controller, bool isOwnComment, bool canModerate) {
+  Widget _buildCommentMenu(
+      BuildContext context,
+      Comment comment,
+      CommentSectionController controller,
+      bool isOwnComment,
+      bool canModerate) {
     final colorScheme = Theme.of(context).colorScheme;
 
     return PopupMenuButton<String>(
@@ -1657,7 +1803,8 @@ class _CommentSectionState extends State<CommentSection> {
             _showReportDialog(context, comment, controller);
             break;
           case 'moderate':
-            _showModerationSheet(context, comment, controller, isOwnComment: isOwnComment);
+            _showModerationSheet(context, comment, controller,
+                isOwnComment: isOwnComment);
             break;
           case 'user_actions':
             _showUserManagementSheet(context, comment, controller);
@@ -1691,9 +1838,11 @@ class _CommentSectionState extends State<CommentSection> {
           height: 40,
           child: Row(
             children: [
-              Icon(Icons.copy_rounded, size: 18, color: colorScheme.onSurfaceVariant),
+              Icon(Icons.copy_rounded,
+                  size: 18, color: colorScheme.onSurfaceVariant),
               const SizedBox(width: 12),
-              Text('Copy', style: TextStyle(color: colorScheme.onSurface, fontSize: 14)),
+              Text('Copy',
+                  style: TextStyle(color: colorScheme.onSurface, fontSize: 14)),
             ],
           ),
         ),
@@ -1704,9 +1853,12 @@ class _CommentSectionState extends State<CommentSection> {
             height: 40,
             child: Row(
               children: [
-                Icon(Icons.edit_outlined, size: 18, color: colorScheme.onSurfaceVariant),
+                Icon(Icons.edit_outlined,
+                    size: 18, color: colorScheme.onSurfaceVariant),
                 const SizedBox(width: 12),
-                Text('Edit', style: TextStyle(color: colorScheme.onSurface, fontSize: 14)),
+                Text('Edit',
+                    style:
+                        TextStyle(color: colorScheme.onSurface, fontSize: 14)),
               ],
             ),
           ),
@@ -1717,7 +1869,8 @@ class _CommentSectionState extends State<CommentSection> {
               children: [
                 Icon(Icons.delete_outline, size: 18, color: colorScheme.error),
                 const SizedBox(width: 12),
-                Text('Delete', style: TextStyle(color: colorScheme.error, fontSize: 14)),
+                Text('Delete',
+                    style: TextStyle(color: colorScheme.error, fontSize: 14)),
               ],
             ),
           ),
@@ -1729,9 +1882,12 @@ class _CommentSectionState extends State<CommentSection> {
             height: 40,
             child: Row(
               children: [
-                Icon(Icons.flag_outlined, size: 18, color: colorScheme.onSurfaceVariant),
+                Icon(Icons.flag_outlined,
+                    size: 18, color: colorScheme.onSurfaceVariant),
                 const SizedBox(width: 12),
-                Text('Report', style: TextStyle(color: colorScheme.onSurface, fontSize: 14)),
+                Text('Report',
+                    style:
+                        TextStyle(color: colorScheme.onSurface, fontSize: 14)),
               ],
             ),
           ),
@@ -1740,9 +1896,12 @@ class _CommentSectionState extends State<CommentSection> {
             height: 40,
             child: Row(
               children: [
-                Icon(Icons.comment_outlined, size: 18, color: colorScheme.onSurfaceVariant),
+                Icon(Icons.comment_outlined,
+                    size: 18, color: colorScheme.onSurfaceVariant),
                 const SizedBox(width: 12),
-                Text('User Comments', style: TextStyle(color: colorScheme.onSurface, fontSize: 14)),
+                Text('User Comments',
+                    style:
+                        TextStyle(color: colorScheme.onSurface, fontSize: 14)),
               ],
             ),
           ),
@@ -1754,9 +1913,12 @@ class _CommentSectionState extends State<CommentSection> {
             height: 40,
             child: Row(
               children: [
-                Icon(Icons.shield_outlined, size: 18, color: colorScheme.tertiary),
+                Icon(Icons.shield_outlined,
+                    size: 18, color: colorScheme.tertiary),
                 const SizedBox(width: 12),
-                Text('Moderate', style: TextStyle(color: colorScheme.tertiary, fontSize: 14)),
+                Text('Moderate',
+                    style:
+                        TextStyle(color: colorScheme.tertiary, fontSize: 14)),
               ],
             ),
           ),
@@ -1766,9 +1928,12 @@ class _CommentSectionState extends State<CommentSection> {
               height: 40,
               child: Row(
                 children: [
-                  Icon(Icons.admin_panel_settings_outlined, size: 18, color: colorScheme.tertiary),
+                  Icon(Icons.admin_panel_settings_outlined,
+                      size: 18, color: colorScheme.tertiary),
                   const SizedBox(width: 12),
-                  Text('User Actions', style: TextStyle(color: colorScheme.tertiary, fontSize: 14)),
+                  Text('User Actions',
+                      style:
+                          TextStyle(color: colorScheme.tertiary, fontSize: 14)),
                 ],
               ),
             ),
@@ -1781,7 +1946,7 @@ class _CommentSectionState extends State<CommentSection> {
   void _showEditDialog(BuildContext context, Comment comment,
       CommentSectionController controller) {
     final TextEditingController editController =
-    TextEditingController(text: comment.commentText);
+        TextEditingController(text: comment.commentText);
 
     showDialog(
       context: context,
@@ -1860,23 +2025,19 @@ class _CommentSectionState extends State<CommentSection> {
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
               value:
-              reasonController.text.isEmpty ? null : reasonController.text,
+                  reasonController.text.isEmpty ? null : reasonController.text,
               decoration: const InputDecoration(
                 labelText: 'Reason',
                 border: OutlineInputBorder(),
               ),
               items: const [
                 DropdownMenuItem(value: 'spam', child: Text('Spam')),
-                DropdownMenuItem(
-                    value: 'offensive', child: Text('Offensive')),
+                DropdownMenuItem(value: 'offensive', child: Text('Offensive')),
                 DropdownMenuItem(
                     value: 'harassment', child: Text('Harassment')),
-                DropdownMenuItem(
-                    value: 'spoiler', child: Text('Spoiler')),
-                DropdownMenuItem(
-                    value: 'nsfw', child: Text('NSFW')),
-                DropdownMenuItem(
-                    value: 'off_topic', child: Text('Off-Topic')),
+                DropdownMenuItem(value: 'spoiler', child: Text('Spoiler')),
+                DropdownMenuItem(value: 'nsfw', child: Text('NSFW')),
+                DropdownMenuItem(value: 'off_topic', child: Text('Off-Topic')),
                 DropdownMenuItem(value: 'other', child: Text('Other')),
               ],
               onChanged: (value) {
@@ -1915,7 +2076,8 @@ class _CommentSectionState extends State<CommentSection> {
   }
 
   void _showModerationSheet(BuildContext context, Comment comment,
-      CommentSectionController controller, {bool isOwnComment = false}) {
+      CommentSectionController controller,
+      {bool isOwnComment = false}) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -1941,8 +2103,8 @@ class _CommentSectionState extends State<CommentSection> {
               Text(
                 'Moderate Comment',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+                      fontWeight: FontWeight.w700,
+                    ),
               ),
               const SizedBox(height: 8),
               Container(
@@ -1956,8 +2118,8 @@ class _CommentSectionState extends State<CommentSection> {
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
+                        color: colorScheme.onSurfaceVariant,
+                      ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -1992,8 +2154,7 @@ class _CommentSectionState extends State<CommentSection> {
                 icon: comment.locked == true
                     ? Icons.lock_rounded
                     : Icons.lock_open_rounded,
-                label:
-                comment.locked == true ? 'Unlock Thread' : 'Lock Thread',
+                label: comment.locked == true ? 'Unlock Thread' : 'Lock Thread',
                 color: comment.locked == true
                     ? colorScheme.primary
                     : colorScheme.error,
@@ -2079,8 +2240,8 @@ class _CommentSectionState extends State<CommentSection> {
             Text(
               label,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+                    fontWeight: FontWeight.w600,
+                  ),
             ),
           ],
         ),
@@ -2124,9 +2285,9 @@ class _CommentSectionState extends State<CommentSection> {
             },
             style: isDestructive
                 ? FilledButton.styleFrom(
-              backgroundColor: context.colors.error,
-              foregroundColor: context.colors.onError,
-            )
+                    backgroundColor: context.colors.error,
+                    foregroundColor: context.colors.onError,
+                  )
                 : null,
             child: Text(isDestructive ? 'Delete' : 'Confirm'),
           ),
@@ -2163,16 +2324,15 @@ class _CommentSectionState extends State<CommentSection> {
                 children: [
                   comment.avatarUrl?.isNotEmpty == true
                       ? CircleAvatar(
-                    radius: 20,
-                    backgroundImage:
-                    NetworkImage(comment.avatarUrl!),
-                  )
+                          radius: 20,
+                          backgroundImage: NetworkImage(comment.avatarUrl!),
+                        )
                       : CircleAvatar(
-                    radius: 20,
-                    backgroundColor: colorScheme.surfaceContainer,
-                    child: Icon(Icons.person_rounded,
-                        size: 18, color: colorScheme.onSurfaceVariant),
-                  ),
+                          radius: 20,
+                          backgroundColor: colorScheme.surfaceContainer,
+                          child: Icon(Icons.person_rounded,
+                              size: 18, color: colorScheme.onSurfaceVariant),
+                        ),
                   const SizedBox(width: 12),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -2199,9 +2359,9 @@ class _CommentSectionState extends State<CommentSection> {
               Text(
                 'User Actions',
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: colorScheme.onSurfaceVariant,
-                ),
+                      fontWeight: FontWeight.w700,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
               ),
               const SizedBox(height: 8),
               _buildModAction(
@@ -2295,9 +2455,9 @@ class _CommentSectionState extends State<CommentSection> {
                 child: Text(
                   'Restore Actions',
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: Colors.teal,
-                  ),
+                        fontWeight: FontWeight.w700,
+                        color: Colors.teal,
+                      ),
                 ),
               ),
               _buildModAction(
@@ -2347,9 +2507,9 @@ class _CommentSectionState extends State<CommentSection> {
                 child: Text(
                   'Info',
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: colorScheme.onSurfaceVariant,
-                  ),
+                        fontWeight: FontWeight.w700,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
                 ),
               ),
               _buildModAction(
@@ -2359,8 +2519,7 @@ class _CommentSectionState extends State<CommentSection> {
                 color: colorScheme.primary,
                 onTap: () {
                   Navigator.pop(context);
-                  _showUserInfoDialog(
-                      context, comment.userId, controller);
+                  _showUserInfoDialog(context, comment.userId, controller);
                 },
               ),
               _buildModAction(
@@ -2370,8 +2529,7 @@ class _CommentSectionState extends State<CommentSection> {
                 color: colorScheme.primary,
                 onTap: () {
                   Navigator.pop(context);
-                  _showUserHistoryDialog(
-                      context, comment.userId, controller);
+                  _showUserHistoryDialog(context, comment.userId, controller);
                 },
               ),
             ],
@@ -2411,29 +2569,31 @@ class _CommentSectionState extends State<CommentSection> {
             }
 
             final user = users.first as Map<String, dynamic>;
-            final isBanned =
-                user['banned']?.toString() == 'true' ||
-                    user['commentum_user_banned']?.toString() == 'true';
-            final isMuted =
-                user['muted']?.toString() == 'true' ||
-                    user['commentum_user_muted']?.toString() == 'true';
+            final isBanned = user['banned']?.toString() == 'true' ||
+                user['commentum_user_banned']?.toString() == 'true';
+            final isMuted = user['muted']?.toString() == 'true' ||
+                user['commentum_user_muted']?.toString() == 'true';
             final isShadowBanned =
                 user['shadow_banned']?.toString() == 'true' ||
                     user['commentum_user_shadow_banned']?.toString() == 'true';
             final username = user['username']?.toString() ??
-                user['commentum_username']?.toString() ?? 'Unknown';
+                user['commentum_username']?.toString() ??
+                'Unknown';
             final avatar = user['avatar']?.toString() ??
                 user['commentum_user_avatar']?.toString();
             final role = user['role']?.toString() ??
-                user['commentum_user_role']?.toString() ?? 'user';
+                user['commentum_user_role']?.toString() ??
+                'user';
             final warnings = user['warnings']?.toString() ??
-                user['commentum_user_warnings']?.toString() ?? '0';
+                user['commentum_user_warnings']?.toString() ??
+                '0';
             final mutedUntil = user['muted_until']?.toString() ??
                 user['commentum_user_muted_until']?.toString();
             final notes = user['notes']?.toString() ??
                 user['commentum_user_notes']?.toString();
             final clientType = user['client_type']?.toString() ??
-                user['commentum_client_type']?.toString() ?? '';
+                user['commentum_client_type']?.toString() ??
+                '';
             final createdAt = user['created_at']?.toString() ?? '';
             final colorScheme = Theme.of(context).colorScheme;
 
@@ -2453,7 +2613,7 @@ class _CommentSectionState extends State<CommentSection> {
                               : null,
                           child: avatar == null || avatar.isEmpty
                               ? Icon(Icons.person_rounded,
-                              size: 28, color: colorScheme.onSurfaceVariant)
+                                  size: 28, color: colorScheme.onSurfaceVariant)
                               : null,
                         ),
                         const SizedBox(height: 10),
@@ -2497,9 +2657,11 @@ class _CommentSectionState extends State<CommentSection> {
                   _buildInfoRow('Shadow Banned', isShadowBanned ? 'Yes' : 'No'),
                   _buildInfoRow('Muted', isMuted ? 'Yes' : 'No'),
                   _buildInfoRow('Warnings', warnings),
-                  if (mutedUntil != null && mutedUntil.isNotEmpty && mutedUntil != 'null')
+                  if (mutedUntil != null &&
+                      mutedUntil.isNotEmpty &&
+                      mutedUntil != 'null')
                     _buildInfoRow('Muted Until', _formatTimestamp(mutedUntil)),
-                  if (createdAt != null && createdAt.isNotEmpty && createdAt != 'null')
+                  if (createdAt.isNotEmpty && createdAt != 'null')
                     _buildInfoRow('Joined', _formatTimestamp(createdAt)),
                   if (notes != null && notes.isNotEmpty && notes != 'null')
                     _buildInfoRow('Notes', notes),
@@ -2514,8 +2676,7 @@ class _CommentSectionState extends State<CommentSection> {
                       icon: const Icon(Icons.history, size: 18),
                       label: const Text('View History'),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor:
-                        Theme.of(context).colorScheme.primary,
+                        foregroundColor: Theme.of(context).colorScheme.primary,
                         padding: const EdgeInsets.symmetric(vertical: 10),
                       ),
                     ),
@@ -2552,7 +2713,8 @@ class _CommentSectionState extends State<CommentSection> {
               padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
               decoration: BoxDecoration(
                 color: colorScheme.surfaceContainerLow,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(20)),
               ),
               child: Column(
                 children: [
@@ -2578,7 +2740,8 @@ class _CommentSectionState extends State<CommentSection> {
                               radius: 18,
                               backgroundColor: colorScheme.surfaceContainer,
                               child: Icon(Icons.person_rounded,
-                                  size: 16, color: colorScheme.onSurfaceVariant),
+                                  size: 16,
+                                  color: colorScheme.onSurfaceVariant),
                             ),
                       const SizedBox(width: 10),
                       Expanded(
@@ -2597,7 +2760,8 @@ class _CommentSectionState extends State<CommentSection> {
                     child: FutureBuilder(
                       future: controller.getUserHistoryFromDb(comment.userId),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
                           return const Center(
                             child: Padding(
                               padding: EdgeInsets.all(24),
@@ -2611,7 +2775,8 @@ class _CommentSectionState extends State<CommentSection> {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.error_outline, size: 40, color: Colors.grey),
+                                Icon(Icons.error_outline,
+                                    size: 40, color: Colors.grey),
                                 SizedBox(height: 8),
                                 Text('Failed to load comments.'),
                               ],
@@ -2623,7 +2788,9 @@ class _CommentSectionState extends State<CommentSection> {
                         final history = data['history'] as List<dynamic>? ?? [];
 
                         final comments = history.where((e) {
-                          final action = (e as Map<String, dynamic>)['action']?.toString() ?? '';
+                          final action = (e as Map<String, dynamic>)['action']
+                                  ?.toString() ??
+                              '';
                           return action == 'comment';
                         }).toList();
 
@@ -2632,10 +2799,12 @@ class _CommentSectionState extends State<CommentSection> {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.comment_outlined, size: 40, color: Colors.grey),
+                                Icon(Icons.comment_outlined,
+                                    size: 40, color: Colors.grey),
                                 SizedBox(height: 8),
                                 Text('No comments found.',
-                                    style: TextStyle(fontWeight: FontWeight.w500)),
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.w500)),
                               ],
                             ),
                           );
@@ -2649,10 +2818,13 @@ class _CommentSectionState extends State<CommentSection> {
                           itemCount: comments.length,
                           separatorBuilder: (_, __) => const Divider(height: 1),
                           itemBuilder: (context, index) {
-                            final entry = comments[index] as Map<String, dynamic>;
+                            final entry =
+                                comments[index] as Map<String, dynamic>;
                             final content = entry['content']?.toString() ?? '';
-                            final mediaTitle = entry['media_title']?.toString() ?? '';
-                            final timestamp = entry['created_at']?.toString() ?? '';
+                            final mediaTitle =
+                                entry['media_title']?.toString() ?? '';
+                            final timestamp =
+                                entry['created_at']?.toString() ?? '';
                             final deleted = entry['deleted'] == true;
 
                             return Padding(
@@ -2664,10 +2836,13 @@ class _CommentSectionState extends State<CommentSection> {
                                     children: [
                                       if (deleted)
                                         Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 6, vertical: 2),
                                           decoration: BoxDecoration(
-                                            color: colorScheme.error.withOpacity(0.1),
-                                            borderRadius: BorderRadius.circular(4),
+                                            color: colorScheme.error
+                                                .withOpacity(0.1),
+                                            borderRadius:
+                                                BorderRadius.circular(4),
                                           ),
                                           child: Text('DELETED',
                                               style: TextStyle(
@@ -2677,10 +2852,13 @@ class _CommentSectionState extends State<CommentSection> {
                                         )
                                       else
                                         Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 6, vertical: 2),
                                           decoration: BoxDecoration(
-                                            color: colorScheme.primary.withOpacity(0.1),
-                                            borderRadius: BorderRadius.circular(4),
+                                            color: colorScheme.primary
+                                                .withOpacity(0.1),
+                                            borderRadius:
+                                                BorderRadius.circular(4),
                                           ),
                                           child: Text('COMMENT',
                                               style: TextStyle(
@@ -2706,7 +2884,8 @@ class _CommentSectionState extends State<CommentSection> {
                                       style: TextStyle(
                                         fontSize: 13,
                                         color: deleted
-                                            ? colorScheme.onSurfaceVariant.withOpacity(0.5)
+                                            ? colorScheme.onSurfaceVariant
+                                                .withOpacity(0.5)
                                             : colorScheme.onSurface,
                                       ),
                                       maxLines: 4,
@@ -2717,7 +2896,9 @@ class _CommentSectionState extends State<CommentSection> {
                                     const SizedBox(height: 4),
                                     Row(
                                       children: [
-                                        Icon(Icons.movie_outlined, size: 12, color: colorScheme.primary),
+                                        Icon(Icons.movie_outlined,
+                                            size: 12,
+                                            color: colorScheme.primary),
                                         const SizedBox(width: 4),
                                         Expanded(
                                           child: Text(
@@ -2751,30 +2932,7 @@ class _CommentSectionState extends State<CommentSection> {
     );
   }
 
-  Color _getRoleColor(String role) {
-    switch (role) {
-      case 'owner':
-        return Colors.purple;
-      case 'super_admin':
-        return Colors.red;
-      case 'admin':
-        return Colors.orange;
-      case 'moderator':
-        return Colors.teal;
-      default:
-        return Colors.grey;
-    }
-  }
-
   void _showUserProfileSheet(BuildContext context, Comment comment) async {
-    final controller = CommentPreloader.to.getPreloadedController(widget.media.uniqueId);
-    UserPoints? points;
-
-    if (controller != null) {
-      points = controller.getUserPoints(comment.userId);
-      points ??= await controller.fetchUserPoints(comment.userId);
-    }
-
     if (!context.mounted) return;
 
     showModalBottomSheet(
@@ -2785,10 +2943,6 @@ class _CommentSectionState extends State<CommentSection> {
         username: comment.username,
         avatarUrl: comment.avatarUrl,
         userRole: comment.userRole,
-        points: points,
-        fallbackTier: comment.userTier,
-        fallbackPoints: comment.userPoints,
-        userId: comment.userId,
       ),
     );
   }
@@ -2817,291 +2971,6 @@ class _CommentSectionState extends State<CommentSection> {
           ),
         ],
       ),
-    );
-  }
-
-  void _showReportsQueueDialog(BuildContext context,
-      CommentSectionController controller) async {
-    showDialog(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          title: const Text('Reports Queue'),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: FutureBuilder(
-              future: controller.getReportsQueue(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(32),
-                      child: ExpressiveLoadingIndicator(),
-                    ),
-                  );
-                }
-
-                if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(height: 16),
-                      Icon(Icons.check_circle_outline, size: 48,
-                          color: Colors.teal),
-                      SizedBox(height: 12),
-                      Text('No pending reports',
-                          style: TextStyle(fontWeight: FontWeight.w600)),
-                      SizedBox(height: 4),
-                      Text('All clear!',
-                          style: TextStyle(color: Colors.grey)),
-                    ],
-                  );
-                }
-
-                final reports = snapshot.data!;
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text('${reports.length} pending report(s)',
-                        style: TextStyle(
-                            color: Theme.of(context).colorScheme.error,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 13)),
-                    const SizedBox(height: 12),
-                    ConstrainedBox(
-                      constraints: const BoxConstraints(maxHeight: 400),
-                      child: ListView.separated(
-                        shrinkWrap: true,
-                        itemCount: reports.length,
-                        separatorBuilder: (_, __) => const Divider(height: 1),
-                        itemBuilder: (context, index) {
-                          final report = reports[index];
-                          final author = report['author'] ?? {};
-                          final media = report['media'] ?? {};
-                          final pendingReports =
-                              report['reports'] as List? ?? [];
-                          final firstReport = pendingReports.isNotEmpty
-                              ? pendingReports.first
-                              : null;
-
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    CircleAvatar(
-                                      radius: 14,
-                                      backgroundColor: Theme.of(context)
-                                          .colorScheme
-                                          .surfaceContainer,
-                                      child: author['avatar'] != null
-                                          ? ClipOval(
-                                        child: Image.network(
-                                          author['avatar'],
-                                          width: 28,
-                                          height: 28,
-                                          fit: BoxFit.cover,
-                                          errorBuilder: (_, __, ___) =>
-                                          const Icon(Icons.person,
-                                              size: 14),
-                                        ),
-                                      )
-                                          : const Icon(Icons.person, size: 14),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: Text(
-                                        author['username'] ?? 'Unknown',
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 13),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                    Text(
-                                      '${report['totalReports'] ?? 0} report(s)',
-                                      style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .error,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 6),
-                                Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .surfaceContainerLow,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    report['content'] ?? '',
-                                    maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurfaceVariant),
-                                  ),
-                                ),
-                                if (firstReport != null) ...[
-                                  const SizedBox(height: 4),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Reason: ${firstReport['reason'] ?? 'N/A'}',
-                                        style: TextStyle(
-                                            fontSize: 11,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onSurfaceVariant
-                                                .withOpacity(0.7)),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Row(
-                                    children: [
-                                      Icon(Icons.person_outline,
-                                          size: 12,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onSurfaceVariant
-                                              .withOpacity(0.7)),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        'Reported by: ${firstReport['reporter_username'] ?? firstReport['reporter_id'] ?? 'Unknown'}',
-                                        style: TextStyle(
-                                            fontSize: 11,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onSurfaceVariant
-                                                .withOpacity(0.7)),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                                if (media['title'] != null) ...[
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    'Media: ${media['title']}',
-                                    style: TextStyle(
-                                        fontSize: 11,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                ],
-                                const SizedBox(height: 8),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: OutlinedButton(
-                                        onPressed: () async {
-                                          final reporterId =
-                                              firstReport?['reporter_id']
-                                                  ?.toString() ??
-                                                  '';
-                                          if (reporterId.isEmpty) {
-                                            snackBar('No reporter ID found');
-                                            return;
-                                          }
-                                          final success =
-                                          await controller.resolveReport(
-                                            commentId: report['commentId']
-                                            as int? ??
-                                                0,
-                                            reporterId: reporterId,
-                                            resolution: 'dismissed',
-                                          );
-                                          if (success && dialogContext.mounted) {
-                                            Navigator.pop(dialogContext);
-                                            _showReportsQueueDialog(
-                                                context, controller);
-                                          }
-                                        },
-                                        style: OutlinedButton.styleFrom(
-                                          padding:
-                                          const EdgeInsets.symmetric(
-                                              vertical: 6),
-                                          textStyle: const TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w600),
-                                        ),
-                                        child: const Text('Dismiss'),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: FilledButton(
-                                        onPressed: () async {
-                                          final reporterId =
-                                              firstReport?['reporter_id']
-                                                  ?.toString() ??
-                                                  '';
-                                          if (reporterId.isEmpty) {
-                                            snackBar('No reporter ID found');
-                                            return;
-                                          }
-                                          final success =
-                                          await controller.resolveReport(
-                                            commentId: report['commentId']
-                                            as int? ??
-                                                0,
-                                            reporterId: reporterId,
-                                            resolution: 'resolved',
-                                          );
-                                          if (success && dialogContext.mounted) {
-                                            Navigator.pop(dialogContext);
-                                            _showReportsQueueDialog(
-                                                context, controller);
-                                          }
-                                        },
-                                        style: FilledButton.styleFrom(
-                                          backgroundColor:
-                                          Theme.of(context)
-                                              .colorScheme
-                                              .error,
-                                          padding:
-                                          const EdgeInsets.symmetric(
-                                              vertical: 6),
-                                          textStyle: const TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w600),
-                                        ),
-                                        child: const Text('Resolve'),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Close'),
-            ),
-          ],
-        );
-      },
     );
   }
 
@@ -3155,10 +3024,8 @@ class _CommentSectionState extends State<CommentSection> {
                     final entry = history[index] as Map<String, dynamic>;
                     final action = entry['action']?.toString() ?? 'Unknown';
                     final content = entry['content']?.toString() ?? '';
-                    final reason =
-                        entry['reason']?.toString() ?? 'No reason';
-                    final timestamp =
-                        entry['created_at']?.toString() ?? '';
+                    final reason = entry['reason']?.toString() ?? 'No reason';
+                    final timestamp = entry['created_at']?.toString() ?? '';
                     final moderator =
                         entry['moderator_username']?.toString() ?? 'System';
                     final mediaTitle = entry['media_title']?.toString() ?? '';
@@ -3179,8 +3046,9 @@ class _CommentSectionState extends State<CommentSection> {
                     final actionColor = switch (action) {
                       'warn' => Colors.orange,
                       'mute' => Colors.amber,
-                      'ban' || 'shadow_ban' =>
-                      Theme.of(context).colorScheme.error,
+                      'ban' ||
+                      'shadow_ban' =>
+                        Theme.of(context).colorScheme.error,
                       'unban' || 'unmute' => Colors.teal,
                       'moderated' => Colors.deepPurple,
                       'comment' => Theme.of(context).colorScheme.primary,
@@ -3205,8 +3073,8 @@ class _CommentSectionState extends State<CommentSection> {
                               color: actionColor.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Icon(actionIcon,
-                                size: 16, color: actionColor),
+                            child:
+                                Icon(actionIcon, size: 16, color: actionColor),
                           ),
                           const SizedBox(width: 10),
                           Expanded(
@@ -3268,9 +3136,8 @@ class _CommentSectionState extends State<CommentSection> {
                                     'On: $mediaTitle',
                                     style: TextStyle(
                                       fontSize: 10,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .primary,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                       fontWeight: FontWeight.w600,
                                     ),
                                     maxLines: 1,
@@ -3362,64 +3229,6 @@ class _CommentSectionState extends State<CommentSection> {
       ),
     );
   }
-
-  Widget _buildVoteButton({
-    required BuildContext context,
-    required IconData icon,
-    required int count,
-    required bool isActive,
-    required VoidCallback onTap,
-    required bool isUpvote,
-    bool compact = false,
-  }) {
-    final colorScheme = context.colors;
-    final activeColor = isUpvote ? colorScheme.primary : colorScheme.error;
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(10),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: EdgeInsets.symmetric(horizontal: compact ? 8 : 12, vertical: compact ? 5 : 8),
-          decoration: BoxDecoration(
-            color: isActive
-                ? activeColor.opaque(0.1, iReallyMeanIt: true)
-                : colorScheme.surfaceContainer.withValues(alpha: 0.3),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: isActive
-                  ? activeColor.opaque(0.3, iReallyMeanIt: true)
-                  : colorScheme.outlineVariant.opaque(0.2, iReallyMeanIt: true),
-              width: 1.5,
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                icon,
-                size: compact ? 15 : 18,
-                color: isActive ? activeColor : colorScheme.onSurfaceVariant,
-              ),
-              if (count > 0) ...[
-                SizedBox(width: compact ? 3 : 4),
-                Text(
-                  count > 999 ? '${(count / 1000).toStringAsFixed(1)}k' : '$count',
-                  style: TextStyle(
-                    color: isActive ? activeColor : colorScheme.onSurfaceVariant,
-                    fontSize: compact ? 11 : 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 class _SpoilerText extends StatefulWidget {
@@ -3504,440 +3313,16 @@ class _SpoilerTextState extends State<_SpoilerText> {
   }
 }
 
-class _UserProfileSheet extends StatefulWidget {
+class _UserProfileSheet extends StatelessWidget {
   final String username;
   final String? avatarUrl;
   final String? userRole;
-  final UserPoints? points;
-  final String? fallbackTier;
-  final int? fallbackPoints;
-  final String? userId;
 
   const _UserProfileSheet({
     required this.username,
     this.avatarUrl,
     this.userRole,
-    this.points,
-    this.fallbackTier,
-    this.fallbackPoints,
-    this.userId,
   });
-
-  @override
-  State<_UserProfileSheet> createState() => _UserProfileSheetState();
-}
-
-class _UserProfileSheetState extends State<_UserProfileSheet> {
-  UserPoints? _points;
-  bool _isLoading = false;
-  String? _error;
-
-  @override
-  void initState() {
-    super.initState();
-    _points = widget.points;
-    if (_points == null && widget.userId != null) {
-      _retryFetch();
-    }
-  }
-
-  Future<void> _retryFetch() async {
-    if (_isLoading) return;
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-    try {
-      final service = Get.find<CommentumService>();
-      final result = await service.getUserPoints(
-        targetUserId: widget.userId!,
-      );
-      if (mounted) {
-        setState(() {
-          _points = result;
-          _isLoading = false;
-          if (result == null) {
-            _error = 'Failed to load points';
-          }
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _error = 'Failed to load points';
-        });
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final isMod = widget.userRole != null && widget.userRole != 'user';
-
-    final tierName = _points?.tier ?? widget.fallbackTier;
-    final tierEmoji = tierName != null ? UserPoints.getTierEmoji(tierName) : null;
-
-    return Container(
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.7,
-      ),
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 12),
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: colorScheme.onSurfaceVariant.withOpacity(0.3),
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          Flexible(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                children: [
-                  if (widget.avatarUrl != null)
-                    CircleAvatar(
-                      radius: 36,
-                      backgroundImage: NetworkImage(widget.avatarUrl!),
-                    )
-                  else
-                    CircleAvatar(
-                      radius: 36,
-                      backgroundColor: colorScheme.primaryContainer,
-                      child: Text(
-                        widget.username.isNotEmpty ? widget.username[0].toUpperCase() : '?',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.onPrimaryContainer,
-                        ),
-                      ),
-                    ),
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Flexible(
-                        child: Text(
-                          widget.username,
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      if (isMod)
-                        Container(
-                          margin: const EdgeInsets.only(left: 8),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 3),
-                          decoration: BoxDecoration(
-                            color: _getRoleColor(widget.userRole!).withOpacity(0.15),
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color:
-                                  _getRoleColor(widget.userRole!).withOpacity(0.3),
-                            ),
-                          ),
-                          child: Text(
-                            _getRoleLabel(widget.userRole!),
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: _getRoleColor(widget.userRole!),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                  if (tierName != null) ...[
-                    const SizedBox(height: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: _getTierColor(tierName)
-                            .withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: _getTierColor(tierName)
-                              .withOpacity(0.2),
-                        ),
-                      ),
-                      child: Text(
-                        _points != null
-                            ? '${_points!.tierEmoji} ${_points!.tier} • ${_formatPoints(_points!.totalPoints)} pts'
-                            : '$tierEmoji $tierName',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: _getTierColor(tierName),
-                        ),
-                      ),
-                    ),
-                  ],
-                  const SizedBox(height: 20),
-                  if (_points != null) ...[
-                    _buildSectionTitle(context, 'Points Breakdown'),
-                    const SizedBox(height: 8),
-                    _buildBreakdownCard(context, _points!),
-                    const SizedBox(height: 16),
-                    _buildSectionTitle(context, 'Streak'),
-                    const SizedBox(height: 8),
-                    _buildStreakCard(context, _points!),
-                    const SizedBox(height: 16),
-                    _buildSectionTitle(context, 'Stats'),
-                    const SizedBox(height: 8),
-                    _buildStatsCard(context, _points!),
-                  ] else if (_isLoading) ...[
-                    const SizedBox(height: 20),
-                    CircularProgressIndicator(
-                        color: colorScheme.primary),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Loading points...',
-                      style: TextStyle(
-                          color: colorScheme.onSurfaceVariant),
-                    ),
-                  ] else if (_error != null) ...[
-                    const SizedBox(height: 20),
-                    Icon(Icons.error_outline, color: colorScheme.error, size: 32),
-                    const SizedBox(height: 8),
-                    Text(
-                      _error!,
-                      style: TextStyle(color: colorScheme.error),
-                    ),
-                    const SizedBox(height: 8),
-                    TextButton.icon(
-                      onPressed: _retryFetch,
-                      icon: const Icon(Icons.refresh, size: 16),
-                      label: const Text('Retry'),
-                    ),
-                  ],
-                  const SizedBox(height: 24),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSectionTitle(BuildContext context, String title) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-      ),
-    );
-  }
-
-  Widget _buildBreakdownCard(BuildContext context, UserPoints p) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        children: [
-          _buildPointRow(context, '💬', 'Comments', p.breakdown.commentsPoints),
-          _buildPointRow(context, '💭', 'Replies', p.breakdown.repliesPoints),
-          _buildPointRow(context, '👍', 'Upvotes received', p.breakdown.upvotesReceivedPoints),
-          _buildPointRow(context, '🗳️', 'Votes cast', p.breakdown.votesCastPoints),
-          _buildPointRow(context, '📌', 'Pinned', p.breakdown.pinnedPoints),
-          if (p.breakdown.streakBonus > 0)
-            _buildPointRow(context, '🔥', 'Streak bonus', p.breakdown.streakBonus),
-          if (p.breakdown.roleBonus > 0)
-            _buildPointRow(context, '🛡️', 'Role bonus', p.breakdown.roleBonus),
-          if (p.breakdown.downvotesReceivedPoints < 0)
-            _buildPointRow(context, '👎', 'Downvotes received', p.breakdown.downvotesReceivedPoints),
-          if (p.breakdown.warningsPoints < 0)
-            _buildPointRow(context, '⚠️', 'Warnings', p.breakdown.warningsPoints),
-          if (p.breakdown.deletedPoints < 0)
-            _buildPointRow(context, '🗑️', 'Deleted', p.breakdown.deletedPoints),
-          if (p.breakdown.bannedPoints < 0)
-            _buildPointRow(context, '🚫', 'Banned', p.breakdown.bannedPoints),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPointRow(BuildContext context, String emoji, String label, int value) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final isNeg = value < 0;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 3),
-      child: Row(
-        children: [
-          Text(emoji, style: const TextStyle(fontSize: 14)),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              label,
-              style: TextStyle(
-                fontSize: 13,
-                color: colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ),
-          Text(
-            isNeg ? '$value' : '+$value',
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: isNeg ? Colors.red.shade400 : Colors.green.shade400,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStreakCard(BuildContext context, UserPoints p) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              children: [
-                Text('🔥', style: const TextStyle(fontSize: 24)),
-                const SizedBox(height: 4),
-                Text(
-                  '${p.currentStreak}',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  'Current',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            width: 1,
-            height: 40,
-            color: colorScheme.onSurfaceVariant.withOpacity(0.15),
-          ),
-          Expanded(
-            child: Column(
-              children: [
-                Text('🏆', style: const TextStyle(fontSize: 24)),
-                const SizedBox(height: 4),
-                Text(
-                  '${p.longestStreak}',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  'Longest',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatsCard(BuildContext context, UserPoints p) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Wrap(
-        spacing: 12,
-        runSpacing: 10,
-        children: [
-          _buildStatItem(context, '${p.stats.totalComments}', 'Comments'),
-          _buildStatItem(context, '${p.stats.totalReplies}', 'Replies'),
-          _buildStatItem(context, '${p.stats.totalUpvotesReceived}', 'Upvotes'),
-          _buildStatItem(context, '${p.stats.totalVotesCast}', 'Votes cast'),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatItem(BuildContext context, String value, String label) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return SizedBox(
-      width: (MediaQuery.of(context).size.width - 64) / 4,
-      child: Column(
-        children: [
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: colorScheme.onSurface,
-            ),
-          ),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 10,
-              color: colorScheme.onSurfaceVariant,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _formatPoints(int points) {
-    if (points >= 1000000) {
-      return '${(points / 1000000).toStringAsFixed(1)}M';
-    } else if (points >= 1000) {
-      return '${(points / 1000).toStringAsFixed(1)}K';
-    }
-    return points.toString();
-  }
 
   Color _getRoleColor(String role) {
     switch (role) {
@@ -3969,532 +3354,91 @@ class _UserProfileSheetState extends State<_UserProfileSheet> {
     }
   }
 
-  Color _getTierColor(String tier) {
-    switch (tier.toLowerCase()) {
-      case 'elite':
-        return Colors.purple.shade400;
-      case 'veteran':
-        return Colors.amber.shade600;
-      case 'active':
-        return Colors.pink.shade400;
-      case 'regular':
-        return Colors.green.shade400;
-      default:
-        return Colors.grey.shade500;
-    }
-  }
-}
-
-
-class _LeaderboardSheet extends StatefulWidget {
-  const _LeaderboardSheet();
-
-  @override
-  State<_LeaderboardSheet> createState() => _LeaderboardSheetState();
-}
-
-class _LeaderboardSheetState extends State<_LeaderboardSheet> {
-  List<LeaderboardEntry> _entries = [];
-  bool _isLoading = true;
-  bool _isLoadingMore = false;
-  String? _error;
-  int _currentPage = 1;
-  int _totalUsers = 0;
-  bool _hasMore = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchLeaderboard();
-  }
-
-  Future<void> _fetchLeaderboard({bool loadMore = false}) async {
-    if (_isLoadingMore) return;
-
-    if (loadMore) {
-      setState(() => _isLoadingMore = true);
-    } else {
-      setState(() {
-        _isLoading = true;
-        _error = null;
-      });
-    }
-
-    try {
-      final db = CommentsDatabase();
-      final result = await db.getLeaderboard(
-        page: loadMore ? _currentPage + 1 : 1,
-        limit: 50,
-      );
-
-      final entries = (result['entries'] as List<LeaderboardEntry>?) ?? [];
-      final pagination = result['pagination'] as Map<String, dynamic>?;
-
-      if (mounted) {
-        setState(() {
-          if (loadMore) {
-            _entries.addAll(entries);
-            _currentPage++;
-          } else {
-            _entries = entries;
-            _currentPage = 1;
-          }
-          _totalUsers = (pagination?['total'] as int?) ?? 0;
-          _hasMore = _entries.length < _totalUsers;
-          _isLoading = false;
-          _isLoadingMore = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _error = 'Failed to load leaderboard';
-          _isLoading = false;
-          _isLoadingMore = false;
-        });
-      }
-    }
-  }
-
-  Color _getRankColor(int rank) {
-    switch (rank) {
-      case 1:
-        return const Color(0xFFFFD700); // Gold
-      case 2:
-        return const Color(0xFFC0C0C0); // Silver
-      case 3:
-        return const Color(0xFFCD7F32); // Bronze
-      default:
-        return Colors.transparent;
-    }
-  }
-
-  Widget _buildRankBadge(int rank, ColorScheme colorScheme) {
-    if (rank <= 3) {
-      final colors = {
-        1: const Color(0xFFFFD700),
-        2: const Color(0xFFC0C0C0),
-        3: const Color(0xFFCD7F32),
-      };
-      return Container(
-        width: 32,
-        height: 32,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              colors[rank]!,
-              colors[rank]!.withOpacity(0.7),
-            ],
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: colors[rank]!.withOpacity(0.4),
-              blurRadius: 6,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Center(
-          child: Text(
-            '$rank',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w800,
-              fontSize: 14,
-            ),
-          ),
-        ),
-      );
-    }
-    return Container(
-      width: 32,
-      height: 32,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
-      ),
-      child: Center(
-        child: Text(
-          '$rank',
-          style: TextStyle(
-            color: colorScheme.onSurfaceVariant,
-            fontWeight: FontWeight.w600,
-            fontSize: 13,
-          ),
-        ),
-      ),
-    );
-  }
-
-  String _getDisplayRole(String? role) {
-    if (role == null || role == 'user') return '';
-    switch (role) {
-      case 'owner':
-        return '👑';
-      case 'super_admin':
-        return '🛡️';
-      case 'admin':
-        return '⚡';
-      case 'moderator':
-        return '🔧';
-      default:
-        return '';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final isMod = userRole != null && userRole != 'user';
 
     return Container(
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.8,
-      ),
       decoration: BoxDecoration(
         color: colorScheme.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Center(
-            child: Container(
-              margin: const EdgeInsets.only(top: 12),
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: colorScheme.onSurfaceVariant.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(2),
-              ),
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 12),
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: colorScheme.onSurfaceVariant.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(2),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(24, 20, 24, 16),
-            child: Row(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+            child: Column(
               children: [
-                Icon(
-                  Icons.emoji_events_rounded,
-                  color: Colors.amber.shade700,
-                  size: 28,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Leaderboard',
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w800,
-                          color: colorScheme.onSurface,
-                        ),
-                      ),
-                      if (_totalUsers > 0)
-                        Text(
-                          '$_totalUsers users ranked',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: Icon(
-                    Icons.close_rounded,
-                    color: colorScheme.onSurfaceVariant,
-                    size: 22,
-                  ),
-                  style: IconButton.styleFrom(
-                    backgroundColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  _buildTierChip('🌱 Newcomer', '0-99', colorScheme),
-                  const SizedBox(width: 8),
-                  _buildTierChip('🍃 Regular', '100-499', colorScheme),
-                  const SizedBox(width: 8),
-                  _buildTierChip('🌸 Active', '500-1499', colorScheme),
-                  const SizedBox(width: 8),
-                  _buildTierChip('⭐ Veteran', '1500-4999', colorScheme),
-                  const SizedBox(width: 8),
-                  _buildTierChip('💎 Elite', '5000+', colorScheme),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          Divider(height: 1, color: colorScheme.outlineVariant.withOpacity(0.3)),
-          Expanded(child: _buildContent(context, colorScheme, theme)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTierChip(String label, String range, ColorScheme colorScheme) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withOpacity(0.3),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: colorScheme.outlineVariant.withOpacity(0.2),
-        ),
-      ),
-      child: Text(
-        '$label ($range)',
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          color: colorScheme.onSurfaceVariant,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildContent(BuildContext context, ColorScheme colorScheme, ThemeData theme) {
-    if (_isLoading) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ExpressiveLoadingIndicator(color: colorScheme.primary),
-            const SizedBox(height: 16),
-            Text(
-              'Loading leaderboard...',
-              style: TextStyle(
-                color: colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    if (_error != null) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.error_outline_rounded, size: 40, color: colorScheme.error),
-            const SizedBox(height: 12),
-            Text(
-              _error!,
-              style: TextStyle(
-                color: colorScheme.error,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 16),
-            FilledButton.icon(
-              onPressed: _fetchLeaderboard,
-              icon: const Icon(Icons.refresh_rounded, size: 18),
-              label: const Text('Retry'),
-            ),
-          ],
-        ),
-      );
-    }
-
-    if (_entries.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.emoji_events_outlined, size: 48, color: colorScheme.onSurfaceVariant),
-            const SizedBox(height: 12),
-            Text(
-              'No users ranked yet',
-              style: TextStyle(
-                color: colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Be the first to comment and earn points!',
-              style: TextStyle(
-                color: colorScheme.onSurfaceVariant.withOpacity(0.7),
-                fontWeight: FontWeight.w500,
-                fontSize: 13,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return NotificationListener<ScrollNotification>(
-      onNotification: (scrollInfo) {
-        if (!_isLoadingMore &&
-            _hasMore &&
-            scrollInfo is ScrollUpdateNotification &&
-            scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 200) {
-          _fetchLeaderboard(loadMore: true);
-        }
-        return false;
-      },
-      child: RefreshIndicator(
-        onRefresh: () => _fetchLeaderboard(),
-        child: ListView.builder(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          itemCount: _entries.length + (_hasMore ? 1 : 0),
-          itemBuilder: (context, index) {
-            if (index >= _entries.length) {
-              return Padding(
-                padding: const EdgeInsets.all(20),
-                child: Center(
-                  child: ExpressiveLoadingIndicator(color: colorScheme.primary),
-                ),
-              );
-            }
-
-            final entry = _entries[index];
-            return _buildLeaderboardEntry(entry, index, colorScheme, theme);
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLeaderboardEntry(
-    LeaderboardEntry entry,
-    int index,
-    ColorScheme colorScheme,
-    ThemeData theme,
-  ) {
-    final isTop3 = entry.rank <= 3;
-    final roleEmoji = _getDisplayRole(entry.role);
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Material(
-        color: isTop3
-            ? _getRankColor(entry.rank).withOpacity(0.06)
-            : Colors.transparent,
-        borderRadius: BorderRadius.circular(14),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(14),
-          onTap: () {
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            decoration: isTop3
-                ? BoxDecoration(
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(
-                      color: _getRankColor(entry.rank).withOpacity(0.2),
-                    ),
+                if (avatarUrl != null)
+                  CircleAvatar(
+                    radius: 36,
+                    backgroundImage: NetworkImage(avatarUrl!),
                   )
-                : null,
-            child: Row(
-              children: [
-                _buildRankBadge(entry.rank, colorScheme),
-                const SizedBox(width: 12),
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: colorScheme.surfaceContainer,
-                    border: Border.all(
-                      color: isTop3
-                          ? _getRankColor(entry.rank).withOpacity(0.4)
-                          : colorScheme.outlineVariant.withOpacity(0.3),
-                      width: isTop3 ? 2 : 1,
+                else
+                  CircleAvatar(
+                    radius: 36,
+                    backgroundColor: colorScheme.primaryContainer,
+                    child: Text(
+                      username.isNotEmpty ? username[0].toUpperCase() : '?',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onPrimaryContainer,
+                      ),
                     ),
                   ),
-                  child: ClipOval(
-                    child: entry.avatarUrl != null && entry.avatarUrl!.isNotEmpty
-                        ? AnymeXImage(
-                            imageUrl: entry.avatarUrl!,
-                            fit: BoxFit.cover,
-                            radius: 0,
-                          )
-                        : Icon(
-                            Icons.person_rounded,
-                            color: colorScheme.onSurfaceVariant,
-                            size: 20,
-                          ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Flexible(
-                            child: Text(
-                              entry.username,
-                              style: TextStyle(
-                                fontWeight: isTop3 ? FontWeight.w700 : FontWeight.w600,
-                                fontSize: 14,
-                                color: colorScheme.onSurface,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          if (roleEmoji.isNotEmpty) ...[
-                            const SizedBox(width: 4),
-                            Text(roleEmoji, style: const TextStyle(fontSize: 14)),
-                          ],
-                        ],
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        username,
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 2),
-                      Row(
-                        children: [
-                          Text(
-                            '${entry.tierEmoji} ${entry.tierLabel}',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: colorScheme.surfaceContainerHighest.withOpacity(0.4),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    '${entry.totalPoints}',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 14,
-                      color: isTop3
-                          ? _getRankColor(entry.rank)
-                          : colorScheme.onSurface,
                     ),
-                  ),
+                    if (isMod)
+                      Container(
+                        margin: const EdgeInsets.only(left: 8),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: _getRoleColor(userRole!).withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: _getRoleColor(userRole!).withOpacity(0.3),
+                          ),
+                        ),
+                        child: Text(
+                          _getRoleLabel(userRole!),
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: _getRoleColor(userRole!),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ],
             ),
           ),
-        ),
+        ],
       ),
     );
   }
