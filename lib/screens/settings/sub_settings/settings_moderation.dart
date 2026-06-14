@@ -3,6 +3,7 @@ import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
@@ -189,6 +190,10 @@ class _SettingsModerationState extends State<SettingsModeration> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      backgroundColor: context.colors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (sheetContext) {
         return _UserSearchSheet(
           searchController: searchController,
@@ -310,39 +315,49 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
 
     return Padding(
       padding: EdgeInsets.only(
-        left: 16,
-        right: 16,
-        top: 16,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+        left: 20,
+        right: 20,
+        top: 12,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 20,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Center(
-            child: Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: colorScheme.outlineVariant,
-                borderRadius: BorderRadius.circular(2),
-              ),
+          Container(
+            width: 40,
+            height: 4,
+            margin: const EdgeInsets.only(bottom: 16),
+            decoration: BoxDecoration(
+              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(2),
             ),
           ),
-          const SizedBox(height: 16),
           Text(
             'Search User',
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w700,
             ),
           ),
-          const SizedBox(height: 16),
-
-          // Search mode toggle
+          const SizedBox(height: 20),
           Row(
             children: [
               Expanded(
-                child: ChoiceChip(
-                  label: const Text('By ID'),
+                child: FilterChip(
+                  label: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Text(
+                      'By User ID',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: _searchMode == 0
+                            ? FontWeight.bold
+                            : FontWeight.w600,
+                        color: _searchMode == 0
+                            ? colorScheme.onPrimary
+                            : colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
                   selected: _searchMode == 0,
                   onSelected: (_) {
                     widget.searchController.clear();
@@ -351,12 +366,35 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
                       _searchResults = [];
                     });
                   },
+                  backgroundColor: colorScheme.secondaryContainer,
+                  selectedColor: colorScheme.primary,
+                  side: BorderSide.none,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  showCheckmark: false,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 6),
               Expanded(
-                child: ChoiceChip(
-                  label: const Text('By Username'),
+                child: FilterChip(
+                  label: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Text(
+                      'By Username',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: _searchMode == 1
+                            ? FontWeight.bold
+                            : FontWeight.w600,
+                        color: _searchMode == 1
+                            ? colorScheme.onPrimary
+                            : colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
                   selected: _searchMode == 1,
                   onSelected: (_) {
                     widget.searchController.clear();
@@ -365,41 +403,111 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
                       _searchResults = [];
                     });
                   },
+                  backgroundColor: colorScheme.secondaryContainer,
+                  selectedColor: colorScheme.primary,
+                  side: BorderSide.none,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  showCheckmark: false,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
-
-          // Client type selector
-          Row(
-            children: [
-              Text(
-                'Platform:',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(width: 8),
-              ..._clientTypes.map((ct) {
+          const SizedBox(height: 16),
+          AnymexExpansionTile(
+            title: 'Platform',
+            initialExpanded: false,
+            leading: Icon(Icons.language_rounded,
+                size: 18, color: colorScheme.onSurfaceVariant),
+            content: Column(
+              children: _clientTypes.map((ct) {
                 final isSelected = _selectedClientType == ct.$1;
+                final iconAsset = 'assets/images/${ct.$1}-icon.png';
                 return Padding(
-                  padding: const EdgeInsets.only(right: 6),
-                  child: ChoiceChip(
-                    label: Text(ct.$2),
-                    selected: isSelected,
-                    onSelected: (_) =>
-                        setState(() => _selectedClientType = ct.$1),
-                    visualDensity: VisualDensity.compact,
+                  padding: const EdgeInsets.only(bottom: 6),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(12),
+                      onTap: () {
+                        setState(() => _selectedClientType = ct.$1);
+                        if (_searchMode == 1 &&
+                            widget.searchController.text.trim().length >= 2) {
+                          _performSearch();
+                        }
+                      },
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? colorScheme.primary.withValues(alpha: 0.1)
+                              : colorScheme.surfaceContainer
+                                  .withValues(alpha: 0.5),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: isSelected
+                                ? colorScheme.primary
+                                : Colors.transparent,
+                            width: 1.5,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? colorScheme.primary.withValues(alpha: 0.2)
+                                    : colorScheme.surface,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Image.asset(
+                                iconAsset,
+                                width: 20,
+                                height: 20,
+                                color: isSelected
+                                    ? colorScheme.primary
+                                    : colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                ct.$2,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  fontSize: 14,
+                                  fontWeight: isSelected
+                                      ? FontWeight.w600
+                                      : FontWeight.normal,
+                                  color: isSelected
+                                      ? colorScheme.primary
+                                      : colorScheme.onSurface,
+                                ),
+                              ),
+                            ),
+                            if (isSelected)
+                              Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration:
+                                    const BoxDecoration(shape: BoxShape.circle),
+                                child: Icon(Icons.check_rounded,
+                                    size: 18, color: colorScheme.primary),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                 );
-              }),
-            ],
+              }).toList(),
+            ),
           ),
-          const SizedBox(height: 12),
-
-          // Search field
+          const SizedBox(height: 16),
           TextField(
             controller: widget.searchController,
             decoration: InputDecoration(
@@ -407,15 +515,23 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
               hintText: _searchMode == 0
                   ? 'Enter the user ID'
                   : 'Type a username to search',
+              hintStyle:
+                  TextStyle(color: colorScheme.onSurfaceVariant, fontSize: 13),
               prefixIcon: _isSearching && _searchMode == 1
                   ? const SizedBox(
                       width: 18,
                       height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
+                      child: Padding(
+                        padding: EdgeInsets.all(14),
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
                     )
-                  : Icon(_searchMode == 0
-                      ? Icons.badge_outlined
-                      : Icons.person_search_rounded),
+                  : Icon(
+                      _searchMode == 0
+                          ? Icons.badge_outlined
+                          : Icons.person_search_rounded,
+                      size: 20,
+                    ),
               suffixIcon:
                   _searchMode == 1 && widget.searchController.text.isNotEmpty
                       ? IconButton(
@@ -426,28 +542,38 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
                           },
                         )
                       : null,
-              border: const OutlineInputBorder(),
+              filled: true,
+              fillColor: colorScheme.surfaceContainerLow,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: colorScheme.outlineVariant),
+              ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: colorScheme.outlineVariant),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(
-                  color: colorScheme.primary,
-                  width: 1.5,
-                ),
+                borderSide: BorderSide(color: colorScheme.primary, width: 1.5),
               ),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             ),
+            style: TextStyle(fontSize: 13, color: colorScheme.onSurface),
             onSubmitted: (_) => _performSearch(),
           ),
-
-          // For ID search mode, show the View User button
           if (_searchMode == 0) ...[
             const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,
               child: FilledButton(
                 onPressed: _isSearching ? null : _performSearch,
+                style: FilledButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
                 child: _isSearching
                     ? const SizedBox(
                         width: 18,
@@ -461,8 +587,6 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
               ),
             ),
           ],
-
-          // For username search, show hint text
           if (_searchMode == 1 &&
               _searchResults.isEmpty &&
               !_isSearching &&
@@ -477,8 +601,6 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
                 ),
               ),
             ),
-
-          // No results found
           if (_searchMode == 1 &&
               _searchResults.isEmpty &&
               !_isSearching &&
@@ -501,8 +623,6 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
                 ],
               ),
             ),
-
-          // Username search results
           if (_searchMode == 1 && _searchResults.isNotEmpty) ...[
             const SizedBox(height: 12),
             const Divider(height: 1),
@@ -515,94 +635,133 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
               ),
             ),
             const SizedBox(height: 8),
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxHeight: 250),
-              child: ListView.separated(
-                shrinkWrap: true,
-                itemCount: _searchResults.length,
-                separatorBuilder: (_, __) => const Divider(height: 1),
-                itemBuilder: (context, index) {
-                  final user = _searchResults[index];
-                  final userId = user['id']?.toString() ?? '';
-                  final username = user['username']?.toString() ?? 'Unknown';
-                  final avatar = user['avatar']?.toString();
-                  final role = user['role']?.toString() ?? 'user';
-                  final isBanned = user['banned'] == true;
-                  final clientType = user['client_type']?.toString() ?? '';
+            Flexible(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 250),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: _searchResults.length,
+                  itemBuilder: (context, index) {
+                    final user = _searchResults[index];
+                    final userId = user['id']?.toString() ?? '';
+                    final username = user['username']?.toString() ?? 'Unknown';
+                    final avatar = user['avatar']?.toString();
+                    final role = user['role']?.toString() ?? 'user';
+                    final isBanned = user['banned'] == true;
+                    final clientType = user['client_type']?.toString() ?? '';
 
-                  return ListTile(
-                    dense: true,
-                    leading: CircleAvatar(
-                      radius: 18,
-                      backgroundColor: colorScheme.surfaceContainer,
-                      backgroundImage: avatar != null && avatar.isNotEmpty
-                          ? NetworkImage(avatar)
-                          : null,
-                      child: avatar == null || avatar.isEmpty
-                          ? Icon(Icons.person_rounded,
-                              size: 18, color: colorScheme.onSurfaceVariant)
-                          : null,
-                    ),
-                    title: Row(
-                      children: [
-                        Flexible(
-                          child: Text(
-                            username,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        if (role != 'user') ...[
-                          const SizedBox(width: 6),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: _getRoleColor(role).withOpacity(0.15),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Text(
-                              role.toUpperCase(),
-                              style: TextStyle(
-                                color: _getRoleColor(role),
-                                fontSize: 9,
-                                fontWeight: FontWeight.bold,
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => UserManagementPage(
+                                  targetUserId: userId,
+                                  targetClientType: clientType,
+                                ),
                               ),
+                            );
+                          },
+                          borderRadius: BorderRadius.circular(12),
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: colorScheme.surfaceContainer
+                                  .withValues(alpha: 0.3),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 18,
+                                  backgroundColor: colorScheme.surfaceContainer,
+                                  backgroundImage:
+                                      avatar != null && avatar.isNotEmpty
+                                          ? NetworkImage(avatar)
+                                          : null,
+                                  child: avatar == null || avatar.isEmpty
+                                      ? Icon(Icons.person_rounded,
+                                          size: 18,
+                                          color: colorScheme.onSurfaceVariant)
+                                      : null,
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Flexible(
+                                            child: Text(
+                                              username,
+                                              style: theme.textTheme.bodyMedium
+                                                  ?.copyWith(
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                          if (role != 'user') ...[
+                                            const SizedBox(width: 6),
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 6,
+                                                      vertical: 2),
+                                              decoration: BoxDecoration(
+                                                color: _getRoleColor(role)
+                                                    .withOpacity(0.15),
+                                                borderRadius:
+                                                    BorderRadius.circular(6),
+                                              ),
+                                              child: Text(
+                                                role.toUpperCase(),
+                                                style: TextStyle(
+                                                  color: _getRoleColor(role),
+                                                  fontSize: 9,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                          if (isBanned) ...[
+                                            const SizedBox(width: 4),
+                                            Icon(Icons.block_rounded,
+                                                size: 14,
+                                                color: colorScheme.error),
+                                          ],
+                                        ],
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        'ID: $userId${clientType.isNotEmpty ? ' · $clientType' : ''}',
+                                        style:
+                                            theme.textTheme.bodySmall?.copyWith(
+                                          color: colorScheme.onSurfaceVariant,
+                                          fontSize: 11,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Icon(Icons.chevron_right_rounded,
+                                    size: 20,
+                                    color: colorScheme.onSurfaceVariant),
+                              ],
                             ),
                           ),
-                        ],
-                        if (isBanned) ...[
-                          const SizedBox(width: 4),
-                          Icon(Icons.block_rounded,
-                              size: 14, color: colorScheme.error),
-                        ],
-                      ],
-                    ),
-                    subtitle: Text(
-                      'ID: $userId${clientType.isNotEmpty ? ' · $clientType' : ''}',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                        fontSize: 11,
-                      ),
-                    ),
-                    trailing: Icon(Icons.chevron_right_rounded,
-                        size: 20, color: colorScheme.onSurfaceVariant),
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => UserManagementPage(
-                            targetUserId: userId,
-                            targetClientType: clientType,
-                          ),
                         ),
-                      );
-                    },
-                  );
-                },
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
           ],
@@ -1160,94 +1319,89 @@ class _UserListPageState extends State<UserListPage> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('User List'),
-        actions: [
-          IconButton(
-            onPressed: _loadUsers,
-            icon: const Icon(Icons.refresh),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          // Status filter chips
-          _buildStatusFilters(colorScheme, theme),
-          // Role & Client type dropdowns
-          _buildDropdownFilters(colorScheme, theme),
-          // User count
-          Obx(() => Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    '${users.length} of $totalUsers users',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                      fontWeight: FontWeight.w600,
+    return Glow(
+      child: Scaffold(
+        body: Column(
+          children: [
+            NestedHeader(
+              title: 'User List',
+              action: IconButton(
+                onPressed: _loadUsers,
+                icon: const Icon(Icons.refresh),
+              ),
+            ),
+            _buildStatusFilters(colorScheme, theme),
+            _buildDropdownFilters(colorScheme, theme),
+            Obx(() => Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      '${users.length} of $totalUsers users',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
-                ),
-              )),
-          // User list
-          Expanded(
-            child: Obx(() {
-              if (isLoading.value) {
-                return const Center(child: ExpressiveLoadingIndicator());
-              }
+                )),
+            Expanded(
+              child: Obx(() {
+                if (isLoading.value) {
+                  return const Center(child: ExpressiveLoadingIndicator());
+                }
 
-              if (users.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.people_outline_rounded,
-                          size: 64, color: colorScheme.onSurfaceVariant),
-                      const SizedBox(height: 16),
-                      Text(
-                        'No users found',
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w700,
+                if (users.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.people_outline_rounded,
+                            size: 64, color: colorScheme.onSurfaceVariant),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No users found',
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Try adjusting your filters',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
+                        const SizedBox(height: 8),
+                        Text(
+                          'Try adjusting your filters',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  );
+                }
+
+                return ListView.builder(
+                  controller: _scrollController,
+                  padding: const EdgeInsets.fromLTRB(10, 8, 10, 50),
+                  itemCount: users.length + (isLoadingMore.value ? 1 : 0),
+                  itemBuilder: (context, index) {
+                    if (index == users.length) {
+                      return const Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Center(
+                          child: SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        ),
+                      );
+                    }
+                    return _buildUserCard(context, users[index]);
+                  },
                 );
-              }
-
-              return ListView.builder(
-                controller: _scrollController,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                itemCount: users.length + (isLoadingMore.value ? 1 : 0),
-                itemBuilder: (context, index) {
-                  if (index == users.length) {
-                    return const Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Center(
-                        child: SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                      ),
-                    );
-                  }
-                  return _buildUserCard(context, users[index]);
-                },
-              );
-            }),
-          ),
-        ],
+              }),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1392,16 +1546,15 @@ class _UserListPageState extends State<UserListPage> {
             ),
           );
         },
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(12),
         child: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: colorScheme.surfaceContainerLowest.withOpacity(0.5),
-            borderRadius: BorderRadius.circular(14),
+            color: colorScheme.surfaceContainer.withValues(alpha: 0.3),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
             children: [
-              // Avatar
               CircleAvatar(
                 radius: 22,
                 backgroundColor: colorScheme.surfaceContainer,
@@ -1414,7 +1567,6 @@ class _UserListPageState extends State<UserListPage> {
                     : null,
               ),
               const SizedBox(width: 12),
-              // Info
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1435,7 +1587,6 @@ class _UserListPageState extends State<UserListPage> {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        // Role badge
                         Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 2),
@@ -1456,7 +1607,6 @@ class _UserListPageState extends State<UserListPage> {
                           ),
                         ),
                         const SizedBox(width: 6),
-                        // Status indicators
                         if (isBanned)
                           Padding(
                             padding: const EdgeInsets.only(right: 4),
@@ -1605,261 +1755,315 @@ class _UserManagementPageState extends State<UserManagementPage> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('User Management'),
-      ),
-      body: isLoading
-          ? const Center(child: ExpressiveLoadingIndicator())
-          : userInfo == null
-              ? Center(
-                  child: Text(
-                    'User not found (ID: ${widget.targetUserId})',
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                )
-              : SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: colorScheme.surfaceContainerLowest
-                              .withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            CircleAvatar(
-                              radius: 36,
-                              backgroundColor: colorScheme.surfaceContainer,
-                              backgroundImage: userInfo?['avatar'] != null &&
-                                      userInfo!['avatar'].toString().isNotEmpty
-                                  ? NetworkImage(userInfo!['avatar'].toString())
-                                  : null,
-                              child: userInfo?['avatar'] == null ||
-                                      userInfo!['avatar'].toString().isEmpty
-                                  ? Icon(Icons.person_rounded,
-                                      size: 32,
-                                      color: colorScheme.onSurfaceVariant)
-                                  : null,
+    return Glow(
+      child: Scaffold(
+        body: Column(
+          children: [
+            const NestedHeader(title: 'User Management'),
+            Expanded(
+              child: isLoading
+                  ? const Center(child: ExpressiveLoadingIndicator())
+                  : userInfo == null
+                      ? Center(
+                          child: Text(
+                            'User not found (ID: ${widget.targetUserId})',
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
                             ),
-                            const SizedBox(height: 12),
-                            Text(
-                              userInfo?['username']?.toString() ?? 'Unknown',
-                              style: theme.textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 14, vertical: 5),
-                              decoration: BoxDecoration(
-                                color: _getRoleColor(
-                                        userInfo?['role']?.toString() ?? 'user')
-                                    .withOpacity(0.15),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: _getRoleColor(
-                                          userInfo?['role']?.toString() ??
-                                              'user')
-                                      .withOpacity(0.3),
+                          ),
+                        )
+                      : SingleChildScrollView(
+                          padding: const EdgeInsets.fromLTRB(10, 20, 10, 50),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                  color: colorScheme.surfaceContainer
+                                      .withValues(alpha: 0.3),
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
-                              ),
-                              child: Text(
-                                (userInfo?['role']?.toString() ?? 'user')
-                                    .toUpperCase(),
-                                style: TextStyle(
-                                  color: _getRoleColor(
-                                      userInfo?['role']?.toString() ?? 'user'),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            const Divider(height: 1),
-                            const SizedBox(height: 12),
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  _buildInfoRow(
-                                      context, 'User ID', widget.targetUserId),
-                                  if (userInfo?['client_type'] != null &&
-                                      userInfo!['client_type']
-                                          .toString()
-                                          .isNotEmpty)
-                                    _buildInfoRow(
-                                        context,
-                                        'Client',
-                                        userInfo!['client_type']
-                                            .toString()
-                                            .toUpperCase()),
-                                  _buildInfoRow(
-                                      context,
-                                      'Banned',
-                                      userInfo?['banned']?.toString() == 'true'
-                                          ? 'Yes'
-                                          : 'No'),
-                                  _buildInfoRow(
-                                      context,
-                                      'Shadow Banned',
-                                      userInfo?['shadow_banned']?.toString() ==
-                                              'true'
-                                          ? 'Yes'
-                                          : 'No'),
-                                  _buildInfoRow(
-                                      context,
-                                      'Muted',
-                                      userInfo?['muted']?.toString() == 'true'
-                                          ? 'Yes'
-                                          : 'No'),
-                                  _buildInfoRow(context, 'Warnings',
-                                      userInfo?['warnings']?.toString() ?? '0'),
-                                  if (userInfo?['muted_until'] != null &&
-                                      userInfo!['muted_until']
-                                          .toString()
-                                          .isNotEmpty &&
-                                      userInfo!['muted_until'].toString() !=
-                                          'null')
-                                    _buildInfoRow(
-                                        context,
-                                        'Muted Until',
-                                        userInfo?['muted_until'].toString() ??
-                                            'N/A'),
-                                  if (userInfo?['created_at'] != null &&
-                                      userInfo!['created_at']
-                                          .toString()
-                                          .isNotEmpty &&
-                                      userInfo!['created_at'].toString() !=
-                                          'null')
-                                    _buildInfoRow(
-                                        context,
-                                        'Joined',
-                                        userInfo?['created_at'].toString() ??
-                                            'N/A'),
-                                  if (userInfo?['notes'] != null &&
-                                      userInfo!['notes']
-                                          .toString()
-                                          .isNotEmpty &&
-                                      userInfo!['notes'].toString() != 'null')
-                                    _buildInfoRow(
-                                      context,
-                                      'Notes',
-                                      userInfo?['notes']?.toString() ?? '',
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 36,
+                                      backgroundColor:
+                                          colorScheme.surfaceContainer,
+                                      backgroundImage: userInfo?['avatar'] !=
+                                                  null &&
+                                              userInfo!['avatar']
+                                                  .toString()
+                                                  .isNotEmpty
+                                          ? NetworkImage(
+                                              userInfo!['avatar'].toString())
+                                          : null,
+                                      child: userInfo?['avatar'] == null ||
+                                              userInfo!['avatar']
+                                                  .toString()
+                                                  .isEmpty
+                                          ? Icon(Icons.person_rounded,
+                                              size: 32,
+                                              color:
+                                                  colorScheme.onSurfaceVariant)
+                                          : null,
                                     ),
-                                ],
+                                    const SizedBox(height: 12),
+                                    Text(
+                                      userInfo?['username']?.toString() ??
+                                          'Unknown',
+                                      style:
+                                          theme.textTheme.titleLarge?.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 14, vertical: 5),
+                                      decoration: BoxDecoration(
+                                        color: _getRoleColor(
+                                                userInfo?['role']?.toString() ??
+                                                    'user')
+                                            .withOpacity(0.15),
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                          color: _getRoleColor(userInfo?['role']
+                                                      ?.toString() ??
+                                                  'user')
+                                              .withOpacity(0.3),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        (userInfo?['role']?.toString() ??
+                                                'user')
+                                            .toUpperCase(),
+                                        style: TextStyle(
+                                          color: _getRoleColor(
+                                              userInfo?['role']?.toString() ??
+                                                  'user'),
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    const Divider(height: 1),
+                                    const SizedBox(height: 12),
+                                    Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          _buildInfoRow(context, 'User ID',
+                                              widget.targetUserId),
+                                          if (userInfo?['client_type'] !=
+                                                  null &&
+                                              userInfo!['client_type']
+                                                  .toString()
+                                                  .isNotEmpty)
+                                            _buildInfoRow(
+                                                context,
+                                                'Client',
+                                                userInfo!['client_type']
+                                                    .toString()
+                                                    .toUpperCase()),
+                                          _buildInfoRow(
+                                              context,
+                                              'Banned',
+                                              userInfo?['banned']?.toString() ==
+                                                      'true'
+                                                  ? 'Yes'
+                                                  : 'No'),
+                                          _buildInfoRow(
+                                              context,
+                                              'Shadow Banned',
+                                              userInfo?['shadow_banned']
+                                                          ?.toString() ==
+                                                      'true'
+                                                  ? 'Yes'
+                                                  : 'No'),
+                                          _buildInfoRow(
+                                              context,
+                                              'Muted',
+                                              userInfo?['muted']?.toString() ==
+                                                      'true'
+                                                  ? 'Yes'
+                                                  : 'No'),
+                                          _buildInfoRow(
+                                              context,
+                                              'Warnings',
+                                              userInfo?['warnings']
+                                                      ?.toString() ??
+                                                  '0'),
+                                          if (userInfo?['muted_until'] !=
+                                                  null &&
+                                              userInfo!['muted_until']
+                                                  .toString()
+                                                  .isNotEmpty &&
+                                              userInfo!['muted_until']
+                                                      .toString() !=
+                                                  'null')
+                                            _buildInfoRow(
+                                                context,
+                                                'Muted Until',
+                                                userInfo?['muted_until']
+                                                        .toString() ??
+                                                    'N/A'),
+                                          if (userInfo?['created_at'] != null &&
+                                              userInfo!['created_at']
+                                                  .toString()
+                                                  .isNotEmpty &&
+                                              userInfo!['created_at']
+                                                      .toString() !=
+                                                  'null')
+                                            _buildInfoRow(
+                                                context,
+                                                'Joined',
+                                                userInfo?['created_at']
+                                                        .toString() ??
+                                                    'N/A'),
+                                          if (userInfo?['notes'] != null &&
+                                              userInfo!['notes']
+                                                  .toString()
+                                                  .isNotEmpty &&
+                                              userInfo!['notes'].toString() !=
+                                                  'null')
+                                            _buildInfoRow(
+                                                context,
+                                                'Notes',
+                                                userInfo?['notes']
+                                                        ?.toString() ??
+                                                    ''),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      TextField(
-                        controller: reasonController,
-                        maxLines: 2,
-                        decoration: InputDecoration(
-                          labelText: 'Reason',
-                          hintText: 'Provide reason for action...',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                              const SizedBox(height: 20),
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: colorScheme.surfaceContainer
+                                      .withValues(alpha: 0.3),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    TextField(
+                                      controller: reasonController,
+                                      maxLines: 2,
+                                      decoration: InputDecoration(
+                                        labelText: 'Reason',
+                                        hintText:
+                                            'Provide reason for action...',
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          borderSide: BorderSide(
+                                            color: colorScheme.primary,
+                                            width: 1.5,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      'Actions',
+                                      style:
+                                          theme.textTheme.titleSmall?.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                        color: colorScheme.onSurfaceVariant,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    _buildActionButton(
+                                      context: context,
+                                      icon: Icons.warning_rounded,
+                                      label: 'Warn User',
+                                      color: Colors.orange,
+                                      onTap: () => _performAction(
+                                        action: 'warn_user',
+                                        label: 'Warn',
+                                      ),
+                                    ),
+                                    _buildActionButton(
+                                      context: context,
+                                      icon: Icons.volume_off_rounded,
+                                      label: 'Mute User (24h)',
+                                      color: Colors.amber,
+                                      onTap: () => _performAction(
+                                        action: 'mute_user',
+                                        label: 'Mute',
+                                        duration: 24,
+                                      ),
+                                    ),
+                                    _buildActionButton(
+                                      context: context,
+                                      icon: Icons.block_rounded,
+                                      label: 'Ban User',
+                                      color: colorScheme.error,
+                                      onTap: () => _performAction(
+                                        action: 'ban_user',
+                                        label: 'Ban',
+                                      ),
+                                    ),
+                                    _buildActionButton(
+                                      context: context,
+                                      icon: Icons.visibility_off_rounded,
+                                      label: 'Shadow Ban User',
+                                      color: Colors.purple,
+                                      onTap: () => _performAction(
+                                        action: 'ban_user',
+                                        label: 'Shadow Ban',
+                                        shadowBan: true,
+                                      ),
+                                    ),
+                                    _buildActionButton(
+                                      context: context,
+                                      icon: Icons.check_circle_rounded,
+                                      label: 'Unban User',
+                                      color: Colors.green,
+                                      onTap: () => _performAction(
+                                        action: 'unban_user',
+                                        label: 'Unban',
+                                      ),
+                                    ),
+                                    _buildActionButton(
+                                      context: context,
+                                      icon: Icons.volume_up_rounded,
+                                      label: 'Unmute User',
+                                      color: Colors.teal,
+                                      onTap: () => _performAction(
+                                        action: 'unmute_user',
+                                        label: 'Unmute',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 30),
+                            ],
                           ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: colorScheme.primary,
-                              width: 1.5,
-                            ),
-                          ),
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        'Actions',
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      _buildActionButton(
-                        context: context,
-                        icon: Icons.warning_rounded,
-                        label: 'Warn User',
-                        color: Colors.orange,
-                        onTap: () => _performAction(
-                          action: 'warn_user',
-                          label: 'Warn',
-                        ),
-                      ),
-                      _buildActionButton(
-                        context: context,
-                        icon: Icons.volume_off_rounded,
-                        label: 'Mute User (24h)',
-                        color: Colors.amber,
-                        onTap: () => _performAction(
-                          action: 'mute_user',
-                          label: 'Mute',
-                          duration: 24,
-                        ),
-                      ),
-                      _buildActionButton(
-                        context: context,
-                        icon: Icons.block_rounded,
-                        label: 'Ban User',
-                        color: colorScheme.error,
-                        onTap: () => _performAction(
-                          action: 'ban_user',
-                          label: 'Ban',
-                        ),
-                      ),
-                      _buildActionButton(
-                        context: context,
-                        icon: Icons.visibility_off_rounded,
-                        label: 'Shadow Ban User',
-                        color: Colors.purple,
-                        onTap: () => _performAction(
-                          action: 'ban_user',
-                          label: 'Shadow Ban',
-                          shadowBan: true,
-                        ),
-                      ),
-                      _buildActionButton(
-                        context: context,
-                        icon: Icons.check_circle_rounded,
-                        label: 'Unban User',
-                        color: Colors.green,
-                        onTap: () => _performAction(
-                          action: 'unban_user',
-                          label: 'Unban',
-                        ),
-                      ),
-                      _buildActionButton(
-                        context: context,
-                        icon: Icons.volume_up_rounded,
-                        label: 'Unmute User',
-                        color: Colors.teal,
-                        onTap: () => _performAction(
-                          action: 'unmute_user',
-                          label: 'Unmute',
-                        ),
-                      ),
-                      const SizedBox(height: 30),
-                    ],
-                  ),
-                ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
