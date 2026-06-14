@@ -79,7 +79,8 @@ class _SettingsModerationState extends State<SettingsModeration> {
                                 title: "Your Role",
                                 description: commentumService
                                     .currentUserRole.value
-                                    .toUpperCase(),
+                                    .toUpperCase()
+                                    .replaceAll('_', ' '),
                                 postFix: Container(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 12, vertical: 6),
@@ -89,7 +90,8 @@ class _SettingsModerationState extends State<SettingsModeration> {
                                   ),
                                   child: Text(
                                     commentumService.currentUserRole.value
-                                        .toUpperCase(),
+                                        .toUpperCase()
+                                        .replaceAll('_', ' '),
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
@@ -722,7 +724,9 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
                                                     BorderRadius.circular(6),
                                               ),
                                               child: Text(
-                                                role.toUpperCase(),
+                                                role
+                                                    .toUpperCase()
+                                                    .replaceAll('_', ' '),
                                                 style: TextStyle(
                                                   color: _getRoleColor(role),
                                                   fontSize: 9,
@@ -1598,7 +1602,7 @@ class _UserListPageState extends State<UserListPage> {
                             ),
                           ),
                           child: Text(
-                            role.toUpperCase(),
+                            role.toUpperCase().replaceAll('_', ' '),
                             style: TextStyle(
                               color: _getRoleColor(role),
                               fontWeight: FontWeight.bold,
@@ -1839,7 +1843,8 @@ class _UserManagementPageState extends State<UserManagementPage> {
                                       child: Text(
                                         (userInfo?['role']?.toString() ??
                                                 'user')
-                                            .toUpperCase(),
+                                            .toUpperCase()
+                                            .replaceAll('_', ' '),
                                         style: TextStyle(
                                           color: _getRoleColor(
                                               userInfo?['role']?.toString() ??
