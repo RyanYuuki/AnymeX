@@ -254,77 +254,60 @@ class MangaBakaLibraryEntry {
   final int? id;
   final int? seriesId;
   final MangaBakaLibraryState? state;
-  final int? rating;
+  final String? note;
   final int? progressChapter;
   final int? progressVolume;
+  final int? numberOfRereads;
+  final int? rating;
+  final int? priority;
+  final bool? isPrivate;
   final String? startDate;
   final String? finishDate;
+  final String? updatedAt;
+  final String? createdAt;
+  final MangaBakaSeries? series;
 
   const MangaBakaLibraryEntry({
     this.id,
     this.seriesId,
     this.state,
-    this.rating,
+    this.note,
     this.progressChapter,
     this.progressVolume,
+    this.numberOfRereads,
+    this.rating,
+    this.priority,
+    this.isPrivate,
     this.startDate,
     this.finishDate,
+    this.updatedAt,
+    this.createdAt,
+    this.series,
   });
 
   factory MangaBakaLibraryEntry.fromJson(Map<String, dynamic> json) {
+    final rawSeries = json['Series'] ?? json['series'];
     return MangaBakaLibraryEntry(
       id: json['id'] as int?,
       seriesId: json['series_id'] as int?,
       state: MangaBakaLibraryState.fromString(json['state'] as String?),
-      rating: json['rating'] as int?,
-      progressChapter: json['progress_chapter'] as int?,
-      progressVolume: json['progress_volume'] as int?,
+      note: json['note'] as String?,
+      progressChapter: (json['progress_chapter'] as num?)?.toInt(),
+      progressVolume: (json['progress_volume'] as num?)?.toInt(),
+      numberOfRereads: (json['number_of_rereads'] as num?)?.toInt(),
+      rating: (json['rating'] as num?)?.toInt(),
+      priority: json['priority'] as int?,
+      isPrivate: json['is_private'] as bool?,
       startDate: json['start_date'] as String?,
       finishDate: json['finish_date'] as String?,
+      updatedAt: json['updated_at']?.toString(),
+      createdAt: json['created_at']?.toString(),
+      series: rawSeries is Map<String, dynamic>
+          ? MangaBakaSeries.fromJson(rawSeries)
+          : null,
     );
   }
 
-  Map<String, dynamic> toJson() {
-    bool isEpochDate(String? d) =>
-        d != null && (d.startsWith('1969-12-31') || d.startsWith('1970-01-01'));
-
-    final map = <String, dynamic>{};
-    if (id != null) map['id'] = id;
-    if (seriesId != null) map['series_id'] = seriesId;
-    if (state != null) map['state'] = state!.value;
-    if (rating != null) map['rating'] = rating;
-    if (progressChapter != null) map['progress_chapter'] = progressChapter;
-    if (progressVolume != null) map['progress_volume'] = progressVolume;
-    if (startDate != null) {
-      map['start_date'] = isEpochDate(startDate) ? null : startDate;
-    }
-    if (finishDate != null) {
-      map['finish_date'] = isEpochDate(finishDate) ? null : finishDate;
-    }
-    return map;
-  }
-
-  MangaBakaLibraryEntry copyWith({
-    int? id,
-    int? seriesId,
-    MangaBakaLibraryState? state,
-    int? rating,
-    int? progressChapter,
-    int? progressVolume,
-    String? startDate,
-    String? finishDate,
-  }) {
-    return MangaBakaLibraryEntry(
-      id: id ?? this.id,
-      seriesId: seriesId ?? this.seriesId,
-      state: state ?? this.state,
-      rating: rating ?? this.rating,
-      progressChapter: progressChapter ?? this.progressChapter,
-      progressVolume: progressVolume ?? this.progressVolume,
-      startDate: startDate ?? this.startDate,
-      finishDate: finishDate ?? this.finishDate,
-    );
-  }
 }
 
 class MangaBakaOAuthToken {
