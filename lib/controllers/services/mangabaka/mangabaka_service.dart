@@ -51,6 +51,7 @@ class MangaBakaService extends GetxController
   RxList<Media> popularNovels = <Media>[].obs;
 
   String? _codeVerifier;
+  String? _authState;
 
   String _generateCodeVerifier() {
     final rng = Random.secure();
@@ -68,6 +69,14 @@ class MangaBakaService extends GetxController
         .replaceAll('=', '')
         .replaceAll('+', '-')
         .replaceAll('/', '_');
+  }
+
+  String _generateRandomString(int length) {
+    const charset =
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
+    final rng = Random.secure();
+    return List.generate(length, (_) => charset[rng.nextInt(charset.length)])
+        .join();
   }
 
   MangaBakaOAuthToken? get _storedToken {
@@ -172,6 +181,7 @@ class MangaBakaService extends GetxController
     _codeVerifier = _generateCodeVerifier();
     final challenge = _generateCodeChallenge(_codeVerifier!);
 
+    _authState = _generateRandomString(16);
     final authUri = Uri.parse('$_kBaseAuth/authorize').replace(
       queryParameters: {
         'client_id': _kClientId,
@@ -179,7 +189,9 @@ class MangaBakaService extends GetxController
         'response_type': 'code',
         'code_challenge': challenge,
         'code_challenge_method': 'S256',
-        'scope': 'library.read library.write profile offline_access',
+        'scope': 'openid profile library.read library.write offline_access',
+        'state': _authState!,
+        'prompt': 'consent',
       },
     );
 
@@ -188,7 +200,14 @@ class MangaBakaService extends GetxController
         url: authUri.toString(),
         callbackUrlScheme: _kCallbackScheme,
       );
-      final code = Uri.parse(result).queryParameters['code'];
+      final resultUri = Uri.parse(result);
+      final code = resultUri.queryParameters['code'];
+      final returnedState = resultUri.queryParameters['state'];
+      if (returnedState != _authState) {
+        Logger.i('[MangaBaka] OAuth state mismatch — possible CSRF');
+        errorSnackBar('Login failed: security check failed');
+        return;
+      }
       if (code != null && _codeVerifier != null) {
         await _exchangeCode(code);
       }
@@ -246,15 +265,35 @@ class MangaBakaService extends GetxController
 
   Future<void> _fetchUserProfile() async {
     try {
-      final resp = await _get('/v1/my/profile');
-      if (resp.statusCode != 200) return;
-      final data = (jsonDecode(resp.body) as Map<String, dynamic>)['data']
+      final resp = await http.get(
+        Uri.parse('$_kBaseAuth/userinfo'),
+        headers: {
+          'Authorization': 'Bearer ${_accessToken ?? ''}',
+          'Accept': 'application/json',
+        },
+      );
+      if (resp.statusCode == 200) {
+        final body = jsonDecode(resp.body) as Map<String, dynamic>;
+        profileData.value = Profile(
+          id: body['sub']?.toString(),
+          name: body['preferred_username'] as String? ??
+              body['nickname'] as String? ??
+              'MangaBaka User',
+          avatar: null,
+        );
+        return;
+      }
+      final meResp = await _get('/v1/my/profile');
+      if (meResp.statusCode != 200) return;
+      final data = (jsonDecode(meResp.body) as Map<String, dynamic>)['data']
           as Map<String, dynamic>?;
       if (data != null) {
         profileData.value = Profile(
           id: data['id']?.toString(),
-          name: data['username'] as String? ?? 'MangaBaka User',
-          avatar: data['avatar'] as String?,
+          name: data['preferred_username'] as String? ??
+              data['nickname'] as String? ??
+              'MangaBaka User',
+          avatar: null,
         );
       }
     } catch (e) {
@@ -264,7 +303,7 @@ class MangaBakaService extends GetxController
 
   Future<void> fetchUserMangaList() async {
     try {
-      final resp = await _get('/v1/my/library');
+      final resp = await _get('/v1/my/library', rawQuery: 'page=1&limit=100&sort_by=updated_at_desc');
       if (resp.statusCode != 200) return;
       final envelope =
           MangaBakaResponse<List<MangaBakaLibraryEntry>>.fromJson(
@@ -276,13 +315,20 @@ class MangaBakaService extends GetxController
       );
       if (envelope.data == null) return;
       mangaList.value = envelope.data!
-          .map((e) => TrackedMedia(
-                id: e.seriesId?.toString() ?? '',
-                episodeCount: e.progressChapter?.toString(),
-                chapterCount: e.progressChapter?.toString(),
-                watchingStatus: e.state?.toAnilistStatus(),
-                score: e.rating?.toDouble().toString(),
-              ))
+          .map((e) {
+            final series = e.series;
+            return TrackedMedia(
+              id: series?.id.toString() ?? e.seriesId?.toString() ?? '',
+              title: series?.title ?? '',
+              poster: series?.coverUrl,
+              episodeCount: e.progressChapter?.toString(),
+              chapterCount: e.progressChapter?.toString(),
+              watchingStatus: e.state?.toAnilistStatus(),
+              score: e.rating?.toDouble().toString(),
+              servicesType: ServicesType.mangabaka,
+              mediaListId: e.id?.toString(),
+            );
+          })
           .toList();
     } catch (e) {
       Logger.i('[MangaBaka] fetchUserMangaList error: $e');
@@ -314,13 +360,19 @@ class MangaBakaService extends GetxController
 
   Future<MangaBakaLibraryEntry?> fetchLibraryEntry(int seriesId) async {
     try {
-      final resp = await _get('/v1/my/library/$seriesId');
-      if (resp.statusCode == 404 || resp.statusCode != 200) return null;
-      final envelope = MangaBakaResponse<MangaBakaLibraryEntry>.fromJson(
+      final resp =
+          await _get('/v1/my/library/batch', rawQuery: 'series_id=$seriesId');
+      if (resp.statusCode != 200) return null;
+      final envelope =
+          MangaBakaResponse<List<MangaBakaLibraryEntry>>.fromJson(
         jsonDecode(resp.body) as Map<String, dynamic>,
-        (d) => MangaBakaLibraryEntry.fromJson(d as Map<String, dynamic>),
+        (d) => (d as List<dynamic>)
+            .map((e) =>
+                MangaBakaLibraryEntry.fromJson(e as Map<String, dynamic>))
+            .toList(),
       );
-      return envelope.data;
+      final entries = envelope.data;
+      return (entries != null && entries.isNotEmpty) ? entries.first : null;
     } catch (e) {
       Logger.i('[MangaBaka] fetchLibraryEntry error: $e');
       return null;
@@ -396,15 +448,18 @@ class MangaBakaService extends GetxController
 
   Future<bool> _writeLibraryEntry({
     required int seriesId,
-    required MangaBakaLibraryEntry entry,
+    required Map<String, dynamic> body,
     required bool create,
   }) async {
     try {
-      final resp = await _send(
-        create ? 'POST' : 'PATCH',
+      var resp = await _send(
+        create ? 'POST' : 'PUT',
         '/v1/my/library/$seriesId',
-        entry.toJson(),
+        body,
       );
+      if (create && resp.statusCode == 409) {
+        resp = await _send('PUT', '/v1/my/library/$seriesId', body);
+      }
       return resp.statusCode >= 200 && resp.statusCode < 300;
     } catch (e) {
       Logger.i('[MangaBaka] _writeLibraryEntry error: $e');
@@ -431,17 +486,16 @@ class MangaBakaService extends GetxController
 
     String? isoDate(DateTime? d) => d?.toUtc().toIso8601String();
 
-    final entry = MangaBakaLibraryEntry(
-      state: state,
-      rating: params.score?.toInt(),
-      progressChapter: params.progress,
-      progressVolume: null,
-      startDate: isoDate(params.startedAt),
-      finishDate: isoDate(params.completedAt),
-    );
+    final body = <String, dynamic>{};
+    if (state != null) body['state'] = state.value;
+    if (params.score != null) body['rating'] = params.score!.toInt();
+    if (params.progress != null) body['progress_chapter'] = params.progress;
+    if (params.startedAt != null) body['start_date'] = isoDate(params.startedAt);
+    if (params.completedAt != null) body['finish_date'] = isoDate(params.completedAt);
+    if (create && state == null) body['state'] = 'reading';
 
     final ok = await _writeLibraryEntry(
-        seriesId: seriesId, entry: entry, create: create);
+        seriesId: seriesId, body: body, create: create);
 
     if (ok) {
       final updatedMedia = currentMedia.value
@@ -598,14 +652,6 @@ class MangaBakaService extends GetxController
         if (!isLoggedIn.value) return const SizedBox.shrink();
         final continueReading = mangaList
             .where((e) => e.watchingStatus == 'CURRENT')
-            .map((e) => Media(
-                  id: e.id ?? '',
-                  title: e.title ?? '',
-                  cover: e.poster,
-                  poster: e.poster ?? '?',
-                  serviceType: ServicesType.mangabaka,
-                  mediaType: ItemType.manga,
-                ))
             .toList();
         if (continueReading.isEmpty) return const SizedBox.shrink();
         return ReusableCarousel(
