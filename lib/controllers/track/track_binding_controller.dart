@@ -194,14 +194,19 @@ class TrackBindingController extends GetxController {
 
     final service = _online(binding.tracker);
     if (service.isLoggedIn.value) {
-      await service.updateListEntry(UpdateListEntryParams(
-        listId: binding.remoteId,
-        progress: newProgress,
-        status: newStatus,
-        score: newScore,
-        isAnime: binding.isAnime,
-        isPrivate: newPrivate,
-      ));
+      try {
+        await service.updateListEntry(UpdateListEntryParams(
+          listId: binding.remoteId,
+          progress: newProgress,
+          status: newStatus,
+          score: newScore,
+          isAnime: binding.isAnime,
+          isPrivate: newPrivate,
+        ));
+      } catch (e) {
+        Logger.e(
+            'Track remote update failed for ${binding.tracker.label} ($mediaId): $e — keeping local update only');
+      }
     }
 
     binding.progress = newProgress;

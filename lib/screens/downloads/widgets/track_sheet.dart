@@ -19,6 +19,22 @@ Future<void> showTrackSheet(
   BuildContext context, {
   required DownloadedMediaSummary summary,
 }) {
+  return showTrackSheetForMedia(
+    context,
+    mediaId: summary.folderName,
+    title: summary.title,
+    poster: summary.poster,
+    isManga: summary.mediaType == 'Manga',
+  );
+}
+
+Future<void> showTrackSheetForMedia(
+  BuildContext context, {
+  required String mediaId,
+  required String title,
+  String? poster,
+  bool isManga = false,
+}) {
   return showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -26,13 +42,26 @@ Future<void> showTrackSheet(
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
     ),
-    builder: (_) => _TrackSheet(summary: summary),
+    builder: (_) => _TrackSheet(
+      mediaId: mediaId,
+      title: title,
+      poster: poster,
+      isManga: isManga,
+    ),
   );
 }
 
 class _TrackSheet extends StatefulWidget {
-  final DownloadedMediaSummary summary;
-  const _TrackSheet({required this.summary});
+  final String mediaId;
+  final String title;
+  final String? poster;
+  final bool isManga;
+  const _TrackSheet({
+    required this.mediaId,
+    required this.title,
+    this.poster,
+    required this.isManga,
+  });
 
   @override
   State<_TrackSheet> createState() => _TrackSheetState();
@@ -50,9 +79,9 @@ class _TrackSheetState extends State<_TrackSheet> {
 
   SimklSearchCategory _simklCategory = SimklSearchCategory.anime;
 
-  bool get _isManga => widget.summary.mediaType == 'Manga';
+  bool get _isManga => widget.isManga;
 
-  String get _mediaId => widget.summary.folderName;
+  String get _mediaId => widget.mediaId;
 
   Future<void> _runSearch(Tracker t, String query) async {
     if (query.trim().isEmpty) {
@@ -161,7 +190,7 @@ class _TrackSheetState extends State<_TrackSheet> {
                           ),
                         ),
                         Text(
-                          widget.summary.title,
+                          widget.title,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
@@ -201,46 +230,49 @@ class _TrackSheetState extends State<_TrackSheet> {
 
   Widget _buildHomeView(BuildContext context, List<Tracker> trackers) {
     final theme = context.colors;
-    final bindings = _ctrl.getBindingsFor(_mediaId);
+    return Obx(() {
+      _ctrl.bindingsVersion.value;
+      final bindings = _ctrl.getBindingsFor(_mediaId);
 
-    return Flexible(
-      child: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
-        shrinkWrap: true,
-        children: [
-          Text(
-            'Logged-in tracking services',
-            style: TextStyle(
-              color: theme.onSurface.withOpacity(0.5),
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.4,
+      return Flexible(
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+          shrinkWrap: true,
+          children: [
+            Text(
+              'Logged-in tracking services',
+              style: TextStyle(
+                color: theme.onSurface.withOpacity(0.5),
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.4,
+              ),
             ),
-          ),
-          const SizedBox(height: 10),
-          for (final t in trackers)
-            _buildTrackerCard(
-              context,
-              theme,
-              tracker: t,
-              binding: bindings.cast<TrackBinding?>().firstWhere(
-                    (b) => b?.trackerId == t.index,
-                    orElse: () => null,
-                  ),
+            const SizedBox(height: 10),
+            for (final t in trackers)
+              _buildTrackerCard(
+                context,
+                theme,
+                tracker: t,
+                binding: bindings.cast<TrackBinding?>().firstWhere(
+                      (b) => b?.trackerId == t.index,
+                      orElse: () => null,
+                    ),
+              ),
+            const SizedBox(height: 12),
+            Text(
+              'A single media can be tracked on all logged-in services at once. '
+              'Progress is pushed to every bound service in parallel.',
+              style: TextStyle(
+                color: theme.onSurface.withOpacity(0.4),
+                fontSize: 11,
+                height: 1.4,
+              ),
             ),
-          const SizedBox(height: 12),
-          Text(
-            'A single media can be tracked on all logged-in services at once. '
-            'Progress is pushed to every bound service in parallel.',
-            style: TextStyle(
-              color: theme.onSurface.withOpacity(0.4),
-              fontSize: 11,
-              height: 1.4,
-            ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    });
   }
 
   Widget _buildTrackerCard(
@@ -368,7 +400,7 @@ class _TrackSheetState extends State<_TrackSheet> {
                   _searchResults = [];
                   _simklCategory = SimklSearchCategory.anime;
                 });
-                _runSearch(tracker, widget.summary.title);
+                _runSearch(tracker, widget.title);
               },
               icon: Icon(Icons.add_link_rounded,
                   size: 16, color: theme.primary),
@@ -435,25 +467,17 @@ class _TrackSheetState extends State<_TrackSheet> {
         media: media,
         onUpdate: (id, score, status, progress, season, startedAt,
             completedAt, isPrivate) async {
-          try {
-            await _ctrl.updateBindingFields(
-              _mediaId,
-              b,
-              progress: progress,
-              status: status,
-              score: score,
-              isPrivate: isPrivate,
-            );
-            animeStatus.value = status;
-            animeScore.value = score;
-            animeProgress.value = progress;
-          } catch (e) {
-            if (ctx.mounted) {
-              ScaffoldMessenger.of(ctx).showSnackBar(
-                SnackBar(content: Text('Update failed: $e')),
-              );
-            }
-          }
+          await _ctrl.updateBindingFields(
+            _mediaId,
+            b,
+            progress: progress,
+            status: status,
+            score: score,
+            isPrivate: isPrivate,
+          );
+          animeStatus.value = status;
+          animeScore.value = score;
+          animeProgress.value = progress;
         },
         onDelete: (s) async {
           await _ctrl.unbind(_mediaId, b.trackerId);
@@ -570,7 +594,7 @@ class _TrackSheetState extends State<_TrackSheet> {
               textInputAction: TextInputAction.search,
               onSubmitted: (q) => _runSearch(tracker, q),
               decoration: InputDecoration(
-                hintText: 'Search ${tracker.label} for "${widget.summary.title}"…',
+                hintText: 'Search ${tracker.label} for "${widget.title}"…',
                 hintStyle: TextStyle(
                     color: theme.onSurface.withOpacity(0.4), fontSize: 13),
                 prefixIcon: Icon(Icons.search_rounded,

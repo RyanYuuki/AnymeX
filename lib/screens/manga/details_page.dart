@@ -15,6 +15,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/widgets/comments/comments_section.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
 import 'package:anymex/screens/anime/widgets/custom_list_dialog.dart';
+import 'package:anymex/screens/downloads/widgets/track_sheet.dart';
 import 'package:anymex/screens/anime/widgets/list_editor.dart';
 import 'package:anymex/screens/anime/widgets/voice_actor.dart';
 import 'package:anymex/screens/anime/widgets/wrongtitle_modal.dart';
@@ -442,6 +443,18 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                                   },
                                 ),
                               ] else ...[
+                                _buildActionIconButton(
+                                  context: context,
+                                  icon: Icons.track_changes_rounded,
+                                  onTap: () => showTrackSheetForMedia(
+                                    context,
+                                    mediaId: widget.media.id,
+                                    title: widget.media.title,
+                                    poster: widget.media.poster,
+                                    isManga: true,
+                                  ),
+                                ),
+                                const SizedBox(width: 7),
                                 _buildActionIconButton(
                                   context: context,
                                   icon: Icons.share_rounded,

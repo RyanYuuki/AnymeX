@@ -226,6 +226,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
           meta: _meta!,
           summary: widget.summary,
         ));
+    await Future.delayed(const Duration(milliseconds: 300));
     await _refresh();
     await _syncBoundTrackersAfterPlay();
   }
@@ -255,6 +256,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
           currentChapter: currentChapter,
           shouldTrack: false,
         ));
+    await Future.delayed(const Duration(milliseconds: 300));
     await _refresh();
     await _syncBoundTrackersAfterPlay();
   }
@@ -269,14 +271,23 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
       if (!_isManga && _meta != null) {
         for (final e in _meta!.episodes) {
           final n = int.tryParse(e.number) ?? 0;
-          final pct = _meta!.watchedProgress[e.number] ?? 0;
-          if (pct >= 80 && n > progress) progress = n;
+          if (n == 0) continue;
+          final ts = e.episode.timeStampInMilliseconds ?? 0;
+          final dur = e.episode.durationInMilliseconds ?? 0;
+          final watched = dur > 0 && ts >= dur * 0.8;
+          if (watched && n > progress) progress = n;
         }
       } else if (_isManga && _mangaMeta != null) {
-        final cur = _mangaMeta!.chapters
-            .where((c) => c.chapter.number != null)
-            .fold<double>(0.0, (a, c) => c.chapter.number! > a ? c.chapter.number! : a);
-        progress = cur.toInt();
+        for (final c in _mangaMeta!.chapters) {
+          final num = c.chapter.number;
+          if (num == null) continue;
+          final isRead = (c.chapter.lastReadTime ?? 0) > 0 ||
+              (c.chapter.totalPages != null &&
+                  c.chapter.pageNumber != null &&
+                  c.chapter.totalPages! > 0 &&
+                  c.chapter.pageNumber! >= c.chapter.totalPages!);
+          if (isRead && num.toInt() > progress) progress = num.toInt();
+        }
       }
 
       if (progress <= 0) return;

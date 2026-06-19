@@ -10,8 +10,10 @@ import 'package:anymex/utils/torrent/torrent_stream_resolver.dart';
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/controllers/track/track_binding_controller.dart';
 import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/episode.dart';
@@ -2283,6 +2285,33 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     if (!shouldTrack) return;
     if (isOffline.value) {
       Logger.i('Offline mode: skipping online tracking');
+      return;
+    }
+
+    final isExtension =
+        anilistData.serviceType == ServicesType.extensions;
+    if (isExtension) {
+      try {
+        if (!Get.isRegistered<TrackBindingController>()) return;
+        final trackCtrl = Get.find<TrackBindingController>();
+        final mediaId = anilistData.id;
+        if (!trackCtrl.hasAnyBinding(mediaId)) return;
+
+        final currEpisodeNum = currentEpisode.value.number.toInt();
+        final newProgress =
+            hasCrossedLimit ? currEpisodeNum : currEpisodeNum - 1;
+        if (newProgress <= 0) return;
+
+        await trackCtrl.pushProgress(mediaId, newProgress,
+            isAnime: true,
+            status: hasCrossedLimit && !hasNextEpisode
+                ? 'COMPLETED'
+                : null);
+        Logger.i(
+            'Extension tracking completed for episode $currEpisodeNum, progress: $newProgress');
+      } catch (e) {
+        Logger.i('Failed to track extension media: $e');
+      }
       return;
     }
 

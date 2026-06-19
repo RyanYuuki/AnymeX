@@ -6,6 +6,7 @@ import 'dart:math';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/controllers/track/track_binding_controller.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/episode.dart';
@@ -925,10 +926,20 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                       });
                       return;
                     }
-                    final shouldTrack = widget.anilistData?.serviceType ==
-                            ServicesType.extensions
-                        ? false
-                        : await showTrackingDialog(context, dbId: dbId);
+                    final isExtension =
+                        widget.anilistData?.serviceType ==
+                            ServicesType.extensions;
+                    final hasTrackBinding = widget.anilistData != null &&
+                        Get.isRegistered<TrackBindingController>() &&
+                        Get.find<TrackBindingController>()
+                            .hasAnyBinding(widget.anilistData!.id);
+                    bool? shouldTrack;
+                    if (isExtension) {
+                      shouldTrack = hasTrackBinding;
+                    } else {
+                      shouldTrack =
+                          await showTrackingDialog(context, dbId: dbId);
+                    }
 
                     if (shouldTrack != null) {
                       await navigate(() => WatchScreen(
@@ -937,7 +948,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                             anilistData: widget.anilistData!,
                             currentEpisode: selectedEpisode.value,
                             episodeTracks: streamList,
-                            shouldTrack: shouldTrack,
+                            shouldTrack: shouldTrack!,
                           ));
                       Future.delayed(const Duration(seconds: 1), () {
                         if (mounted) setState(() {});
