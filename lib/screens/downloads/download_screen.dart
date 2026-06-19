@@ -504,7 +504,6 @@ class _DownloadScreenState extends State<DownloadScreen> {
                             ),
                           ),
                   ),
-                  // Tracking state badge — shows count of bound trackers.
                   Positioned(
                     top: 6,
                     right: 6,
@@ -581,12 +580,9 @@ class _DownloadScreenState extends State<DownloadScreen> {
     );
   }
 
-  /// Small overlay badge on a download card showing how many trackers
-  /// the media is currently bound to. Hidden when nothing is bound.
   Widget _buildTrackBadge(String folderName) {
     final trackCtrl = Get.find<TrackBindingController>();
     return Obx(() {
-      // Watch the reactive version so the badge rebuilds on bind/unbind.
       trackCtrl.bindingsVersion.value;
       final bound = trackCtrl.bindingCount(folderName);
       if (bound == 0) return const SizedBox.shrink();

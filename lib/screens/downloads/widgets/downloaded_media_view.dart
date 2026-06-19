@@ -259,10 +259,6 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
     await _syncBoundTrackersAfterPlay();
   }
 
-  /// Best-effort: push the latest locally-watched episode/chapter number
-  /// to every bound + logged-in tracker (fan-out via the existing
-  /// `updateListEntry`). Mirrors aniyomi's `TrackEpisode`. Never blocks
-  /// playback — all failures are swallowed and logged.
   Future<void> _syncBoundTrackersAfterPlay() async {
     try {
       final trackCtrl = Get.find<TrackBindingController>();
@@ -271,14 +267,12 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
 
       int progress = 0;
       if (!_isManga && _meta != null) {
-        // Highest episode number whose watched progress >= 80%.
         for (final e in _meta!.episodes) {
           final n = int.tryParse(e.number) ?? 0;
           final pct = _meta!.watchedProgress[e.number] ?? 0;
           if (pct >= 80 && n > progress) progress = n;
         }
       } else if (_isManga && _mangaMeta != null) {
-        // For manga, use the current chapter number if available.
         final cur = _mangaMeta!.chapters
             .where((c) => c.chapter.number != null)
             .fold<double>(0.0, (a, c) => c.chapter.number! > a ? c.chapter.number! : a);
@@ -288,7 +282,6 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
       if (progress <= 0) return;
       await trackCtrl.pushProgress(mediaId, progress, isAnime: !_isManga);
     } catch (e) {
-      // Tracking is best-effort; never surface playback-blocking errors.
       debugPrint('post-play track sync skipped: $e');
     }
   }
@@ -551,9 +544,6 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
     );
   }
 
-  /// "Track" button — opens the multi-tracker bottom sheet.
-  /// Shows a live badge with the number of services this media is
-  /// currently bound to (out of logged-in trackers).
   Widget _buildTrackBtn({
     required BuildContext context,
     required ColorScheme theme,
@@ -564,7 +554,6 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
     return AnymexOnTap(
       onTap: () async {
         await showTrackSheet(context, summary: widget.summary);
-        // Refresh local UI so the badge updates after bind/unbind.
         if (mounted) setState(() {});
       },
       child: Container(
@@ -590,7 +579,6 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
             ),
             const SizedBox(width: 6),
             Obx(() {
-              // Rebuild on bind/unbind + on any tracker login change.
               trackCtrl.bindingsVersion.value;
               trackCtrl.loggedInTrackers();
               final bound = trackCtrl.bindingCount(mediaId);

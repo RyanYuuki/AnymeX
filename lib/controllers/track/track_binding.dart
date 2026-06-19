@@ -1,34 +1,17 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 
-/// A single (media, tracker) binding stored locally.
-///
-/// One downloaded media item can have MULTIPLE [TrackBinding]s at once —
-/// e.g. one for AniList, one for MAL, one for Simkl — mirroring aniyomi's
-/// "one track row per (media, tracker) pair" design.
-///
-/// This is a pure local record (persisted via [DynamicKeys.trackBindings]
-/// in the existing KV store). It does NOT make any network calls itself —
-/// all remote sync goes through the existing per-service
-/// `updateListEntry` / `search` methods (see [TrackBindingController]).
 class TrackBinding {
-  /// Index into [Tracker.values] (0 = AniList, 1 = MAL, 2 = Simkl).
   final int trackerId;
-
-  /// The media id on the bound tracker (AniList media id / MAL anime id / Simkl id).
   final String remoteId;
 
   final String title;
   final String? poster;
   final String? totalEpisodes;
 
-  /// Tracker-specific status string ("CURRENT", "COMPLETED", "PLANNING",
-  /// "PAUSED", "DROPPED"). Kept in the tracker's own vocabulary — the
-  /// existing per-service `updateListEntry` already accepts these.
   String status;
 
   double? score;
 
-  /// Last episode/chapter number pushed to this tracker.
   int progress;
 
   final bool isAnime;
@@ -78,11 +61,6 @@ class TrackBinding {
   }
 }
 
-/// The set of trackers AnymeX supports for downloaded-media tracking.
-///
-/// Login state for each is read from the EXISTING service singletons
-/// (`AnilistData.isLoggedIn`, `MalService.isLoggedIn`, `SimklService.isLoggedIn`)
-/// — the same ones wired up under Settings → Accounts.
 enum Tracker {
   anilist,
   mal,
@@ -106,8 +84,6 @@ enum Tracker {
         Tracker.simkl => 'assets/images/simkl-icon.png',
       };
 
-  /// The active [ServicesType] this tracker corresponds to — used so we
-  /// can reuse the existing service singletons without new wiring.
   ServicesType get servicesType => switch (this) {
         Tracker.anilist => ServicesType.anilist,
         Tracker.mal => ServicesType.mal,

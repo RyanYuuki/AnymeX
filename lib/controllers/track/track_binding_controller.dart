@@ -11,28 +11,11 @@ import 'package:anymex/models/Service/online_service.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:get/get.dart';
 
-/// Owns the local (media × tracker) binding table and orchestrates
-/// multi-tracker sync for downloaded media.
-///
-/// IMPORTANT — no new HTTP/GraphQL calls live here. Every remote action
-/// goes through the EXISTING service singletons:
-///   • search      → `<service>.search(SearchParams(...))`   (already implemented per service)
-///   • push status → `<service>.updateListEntry(UpdateListEntryParams(...))` (already implemented per service)
-///   • login state → `<service>.isLoggedIn` (RxBool, already wired under Settings → Accounts)
-///
-/// Bindings are persisted as a JSON string under
-/// `DynamicKeys.trackBindings[mediaId]` in the existing KV store, so no
-/// Isar schema migration / codegen is needed.
 class TrackBindingController extends GetxController {
   final Map<String, List<TrackBinding>> _cache = {};
 
-  /// Bumped on every bind/unbind so Obx listeners (card badges, Track
-  /// button count) rebuild live.
   final RxInt bindingsVersion = 0.obs;
 
-  // ---------- Bindings CRUD (local only) ----------
-
-  /// All bindings for a given downloaded media item (keyed by its `folderName`).
   List<TrackBinding> getBindingsFor(String mediaId) {
     if (_cache.containsKey(mediaId)) {
       return List.unmodifiable(_cache[mediaId]!);
@@ -58,8 +41,6 @@ class TrackBindingController extends GetxController {
 
   int bindingCount(String mediaId) => getBindingsFor(mediaId).length;
 
-  /// Bind (or replace) a tracker for a media item. Local-only — does NOT
-  /// call the tracker API. Use [pushProgress] afterwards to sync remotely.
   Future<void> bind(String mediaId, TrackBinding binding) async {
     final list = getBindingsFor(mediaId)
         .where((b) => b.trackerId != binding.trackerId)
@@ -85,10 +66,6 @@ class TrackBindingController extends GetxController {
     );
   }
 
-  // ---------- Tracker login state (reuses existing singletons) ----------
-
-  /// The [OnlineService] for a tracker — used for `isLoggedIn` and
-  /// `updateListEntry`. Reuses the existing Get singletons.
   OnlineService _online(Tracker t) {
     switch (t) {
       case Tracker.anilist:
@@ -102,24 +79,11 @@ class TrackBindingController extends GetxController {
 
   bool isLoggedIn(Tracker t) => _online(t).isLoggedIn.value;
 
-  /// Trackers the user has logged into (via Settings → Accounts).
-  /// Only these are shown in the Track sheet.
   List<Tracker> loggedInTrackers() =>
       Tracker.values.where(isLoggedIn).toList();
 
-  // ---------- Search (reuses existing per-service search) ----------
-
-  /// Search a specific tracker for a title. Reuses the existing
-  /// `<service>.search(SearchParams(...))` — no new endpoint.
-  ///
-  /// IMPORTANT: `args` (= isAdult) MUST be a non-null bool — AniList
-  /// uses it as `isAdult: params.args` and MAL as `sfw: !params.args`.
-  /// Leaving it null throws "Null is not a subtype of bool" inside the
-  /// service. We pass `false` (= not adult, sfw=true) by default.
   Future<List<Media>> searchOn(Tracker t, SearchParams params) {
-    // Defensive: ensure args is a bool for AniList/MAL which expect one.
     if (params.args is! bool) {
-      // ignore: invalid_update_of_params_copy
       params = SearchParams(
         query: params.query,
         isManga: params.isManga,
@@ -138,13 +102,6 @@ class TrackBindingController extends GetxController {
     }
   }
 
-  // ---------- Remote sync (reuses existing updateListEntry) ----------
-
-  /// Push the latest watched episode / read chapter count to EVERY
-  /// bound + logged-in tracker, in parallel. Mirrors aniyomi's
-  /// `TrackEpisode` fan-out.
-  ///
-  /// Uses each service's existing `updateListEntry` — no new API calls.
   Future<void> pushProgress(
     String mediaId,
     int progress, {
@@ -175,8 +132,6 @@ class TrackBindingController extends GetxController {
     _persist(mediaId, bindings);
   }
 
-  /// Convenience: build a [TrackBinding] from a search result picked by
-  /// the user in the Track sheet.
   TrackBinding bindingFromSearchResult(
     Tracker tracker,
     Media result, {

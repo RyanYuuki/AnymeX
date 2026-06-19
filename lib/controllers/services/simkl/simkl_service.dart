@@ -220,15 +220,11 @@ class SimklService extends GetxController
 
   @override
   Future<List<Media>> search(SearchParams params) async {
-    // Search movies, TV series, AND anime in parallel so the user can
-    // find any title regardless of type (anime tab, manga tab, etc.).
     final results = await Future.wait([
       searchMovies(params.query, page: params.page),
       searchSeries(params.query, page: params.page),
       searchAnime(params.query, page: params.page),
     ]);
-    // De-duplicate by title (Simkl can return the same title across
-    // movie/tv/anime categories, e.g. a movie + its anime adaptation).
     final seen = <String>{};
     return [
       ...results[0],

@@ -10,14 +10,6 @@ import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-/// Bottom sheet that lets the user track a downloaded media item on
-/// AniList / MAL / Simkl — all at once, like aniyomi's track sheet.
-///
-/// • Only trackers the user is logged into (Settings → Accounts) appear.
-/// • Each tracker gets its own card: bound → status/progress + Unbind;
-///   unbound → "Add tracking" → inline search using the EXISTING
-///   `<service>.search()` — no new API.
-/// • A single media can be bound to multiple trackers simultaneously.
 Future<void> showTrackSheet(
   BuildContext context, {
   required DownloadedMediaSummary summary,
@@ -45,14 +37,10 @@ class _TrackSheetState extends State<_TrackSheet> {
   final TrackBindingController _ctrl = Get.find<TrackBindingController>();
   final TextEditingController _searchCtrl = TextEditingController();
 
-  /// The tracker the user is currently searching on (null = home view).
   Tracker? _searchingTracker;
   List<Media> _searchResults = [];
   bool _searching = false;
 
-  /// Adult-content toggle for the search view. When ON, AniList/MAL
-  /// include 18+ titles (`args: true`); when OFF, SFW only.
-  /// Simkl ignores this (its search has no adult filter).
   bool _showAdult = false;
 
   bool get _isManga => widget.summary.mediaType == 'Manga';
@@ -68,8 +56,6 @@ class _TrackSheetState extends State<_TrackSheet> {
     try {
       final results = await _ctrl.searchOn(
         t,
-        // args = isAdult (bool). MUST be non-null for AniList/MAL.
-        // Driven by the 18+ toggle in the search view.
         SearchParams(query: query, isManga: _isManga, args: _showAdult),
       );
       if (mounted) setState(() => _searchResults = results);
@@ -84,8 +70,6 @@ class _TrackSheetState extends State<_TrackSheet> {
     }
   }
 
-  /// Toggle the 18+ filter and re-run the search with the current query
-  /// so the user immediately sees the effect.
   void _toggleAdult(Tracker t) {
     setState(() => _showAdult = !_showAdult);
     if (_searchCtrl.text.trim().isNotEmpty) {
@@ -97,7 +81,6 @@ class _TrackSheetState extends State<_TrackSheet> {
     final binding =
         _ctrl.bindingFromSearchResult(t, result, isAnime: !_isManga);
     await _ctrl.bind(_mediaId, binding);
-    // Best-effort initial sync so the tracker reflects current progress.
     try {
       await _ctrl.pushProgress(_mediaId, binding.progress,
           isAnime: !_isManga);
@@ -138,7 +121,6 @@ class _TrackSheetState extends State<_TrackSheet> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // ---------- Handle + header ----------
             Container(
               margin: const EdgeInsets.only(top: 10, bottom: 4),
               width: 42,
@@ -197,7 +179,6 @@ class _TrackSheetState extends State<_TrackSheet> {
             Divider(
                 height: 1,
                 color: theme.outlineVariant.withOpacity(0.2)),
-            // ---------- Body ----------
             if (loggedTrackers.isEmpty)
               _buildNoTrackersState(theme)
             else if (_searchingTracker != null)
@@ -209,8 +190,6 @@ class _TrackSheetState extends State<_TrackSheet> {
       ),
     );
   }
-
-  // ---------- Home: one card per logged-in tracker ----------
 
   Widget _buildHomeView(BuildContext context, List<Tracker> trackers) {
     final theme = context.colors;
@@ -262,7 +241,6 @@ class _TrackSheetState extends State<_TrackSheet> {
     required Tracker tracker,
     required TrackBinding? binding,
   }) {
-    // Promote to non-null up-front so we can use `b` safely below.
     final b = binding;
     final bound = b != null;
     return Container(
@@ -367,7 +345,6 @@ class _TrackSheetState extends State<_TrackSheet> {
                   _searchingTracker = tracker;
                   _searchResults = [];
                 });
-                // Auto-search by title to save a step (aniyomi does this).
                 _runSearch(tracker, widget.summary.title);
               },
               icon: Icon(Icons.add_link_rounded,
@@ -380,11 +357,8 @@ class _TrackSheetState extends State<_TrackSheet> {
     );
   }
 
-  // ---------- Search view (reuses existing <service>.search) ----------
-
   Widget _buildSearchView(BuildContext context, Tracker tracker) {
     final theme = context.colors;
-    // Simkl's search has no adult filter — hide the toggle for it.
     final supportsAdultFilter = tracker != Tracker.simkl;
     return Flexible(
       child: Column(
@@ -413,7 +387,6 @@ class _TrackSheetState extends State<_TrackSheet> {
               ),
             ),
           ),
-          // 18+ toggle row — only for trackers that support adult filtering.
           if (supportsAdultFilter)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
@@ -569,8 +542,6 @@ class _TrackSheetState extends State<_TrackSheet> {
       ),
     );
   }
-
-  // ---------- Empty state: no tracker logged in ----------
 
   Widget _buildNoTrackersState(ColorScheme theme) {
     return Padding(
