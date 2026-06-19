@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/controllers/track/track_binding_controller.dart';
 import 'package:anymex/screens/downloads/controller/download_controller.dart';
 import 'package:anymex/screens/downloads/controller/download_search_controller.dart';
 import 'package:anymex/screens/downloads/model/download_models.dart';
@@ -503,6 +504,12 @@ class _DownloadScreenState extends State<DownloadScreen> {
                             ),
                           ),
                   ),
+                  // Tracking state badge — shows count of bound trackers.
+                  Positioned(
+                    top: 6,
+                    right: 6,
+                    child: _buildTrackBadge(meta.folderName),
+                  ),
                 ],
               ),
             ),
@@ -572,6 +579,43 @@ class _DownloadScreenState extends State<DownloadScreen> {
         ),
       ),
     );
+  }
+
+  /// Small overlay badge on a download card showing how many trackers
+  /// the media is currently bound to. Hidden when nothing is bound.
+  Widget _buildTrackBadge(String folderName) {
+    final trackCtrl = Get.find<TrackBindingController>();
+    return Obx(() {
+      // Watch the reactive version so the badge rebuilds on bind/unbind.
+      trackCtrl.bindingsVersion.value;
+      final bound = trackCtrl.bindingCount(folderName);
+      if (bound == 0) return const SizedBox.shrink();
+
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.55),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.white.withOpacity(0.15)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.track_changes_rounded,
+                size: 10, color: Colors.white),
+            const SizedBox(width: 3),
+            Text(
+              '$bound',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 10,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   Widget _buildNewDownloadTab(BuildContext context) {

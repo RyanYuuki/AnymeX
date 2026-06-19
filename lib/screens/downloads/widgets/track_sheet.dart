@@ -1,0 +1,542 @@
+import 'package:anymex/controllers/service_handler/params.dart';
+import 'package:anymex/controllers/track/track_binding.dart';
+import 'package:anymex/controllers/track/track_binding_controller.dart';
+import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/screens/downloads/model/download_models.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_accounts.dart';
+import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+/// Bottom sheet that lets the user track a downloaded media item on
+/// AniList / MAL / Simkl — all at once, like aniyomi's track sheet.
+///
+/// • Only trackers the user is logged into (Settings → Accounts) appear.
+/// • Each tracker gets its own card: bound → status/progress + Unbind;
+///   unbound → "Add tracking" → inline search using the EXISTING
+///   `<service>.search()` — no new API.
+/// • A single media can be bound to multiple trackers simultaneously.
+Future<void> showTrackSheet(
+  BuildContext context, {
+  required DownloadedMediaSummary summary,
+}) {
+  return showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: context.colors.surface,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+    ),
+    builder: (_) => _TrackSheet(summary: summary),
+  );
+}
+
+class _TrackSheet extends StatefulWidget {
+  final DownloadedMediaSummary summary;
+  const _TrackSheet({required this.summary});
+
+  @override
+  State<_TrackSheet> createState() => _TrackSheetState();
+}
+
+class _TrackSheetState extends State<_TrackSheet> {
+  final TrackBindingController _ctrl = Get.find<TrackBindingController>();
+  final TextEditingController _searchCtrl = TextEditingController();
+
+  /// The tracker the user is currently searching on (null = home view).
+  Tracker? _searchingTracker;
+  List<Media> _searchResults = [];
+  bool _searching = false;
+
+  bool get _isManga => widget.summary.mediaType == 'Manga';
+
+  String get _mediaId => widget.summary.folderName;
+
+  Future<void> _runSearch(Tracker t, String query) async {
+    setState(() => _searching = true);
+    try {
+      final results = await _ctrl.searchOn(
+        t,
+        SearchParams(query: query, isManga: _isManga),
+      );
+      if (mounted) setState(() => _searchResults = results);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Search failed: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _searching = false);
+    }
+  }
+
+  Future<void> _pickResult(Tracker t, Media result) async {
+    final binding =
+        _ctrl.bindingFromSearchResult(t, result, isAnime: !_isManga);
+    await _ctrl.bind(_mediaId, binding);
+    // Best-effort initial sync so the tracker reflects current progress.
+    try {
+      await _ctrl.pushProgress(_mediaId, binding.progress,
+          isAnime: !_isManga);
+    } catch (_) {}
+    if (mounted) {
+      setState(() {
+        _searchingTracker = null;
+        _searchResults = [];
+        _searchCtrl.clear();
+      });
+    }
+  }
+
+  Future<void> _unbind(TrackBinding b) async {
+    await _ctrl.unbind(_mediaId, b.trackerId);
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = context.colors;
+    final loggedTrackers = _ctrl.loggedInTrackers();
+
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.85,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // ---------- Handle + header ----------
+            Container(
+              margin: const EdgeInsets.only(top: 10, bottom: 4),
+              width: 42,
+              height: 4,
+              decoration: BoxDecoration(
+                color: theme.outline.withOpacity(0.4),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              child: Row(
+                children: [
+                  Icon(Icons.track_changes_rounded,
+                      size: 18, color: theme.primary),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _searchingTracker != null
+                              ? 'Search on ${_searchingTracker!.label}'
+                              : 'Track this media',
+                          style: TextStyle(
+                            color: theme.onSurface,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        Text(
+                          widget.summary.title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: theme.onSurface.withOpacity(0.5),
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (_searchingTracker != null)
+                    TextButton(
+                      onPressed: () => setState(() {
+                        _searchingTracker = null;
+                        _searchResults = [];
+                        _searchCtrl.clear();
+                      }),
+                      child: const Text('Back'),
+                    ),
+                ],
+              ),
+            ),
+            Divider(
+                height: 1,
+                color: theme.outlineVariant.withOpacity(0.2)),
+            // ---------- Body ----------
+            if (loggedTrackers.isEmpty)
+              _buildNoTrackersState(theme)
+            else if (_searchingTracker != null)
+              _buildSearchView(context, _searchingTracker!)
+            else
+              _buildHomeView(context, loggedTrackers),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ---------- Home: one card per logged-in tracker ----------
+
+  Widget _buildHomeView(BuildContext context, List<Tracker> trackers) {
+    final theme = context.colors;
+    final bindings = _ctrl.getBindingsFor(_mediaId);
+
+    return Flexible(
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+        shrinkWrap: true,
+        children: [
+          Text(
+            'Logged-in tracking services',
+            style: TextStyle(
+              color: theme.onSurface.withOpacity(0.5),
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.4,
+            ),
+          ),
+          const SizedBox(height: 10),
+          for (final t in trackers)
+            _buildTrackerCard(
+              context,
+              theme,
+              tracker: t,
+              binding: bindings.cast<TrackBinding?>().firstWhere(
+                    (b) => b?.trackerId == t.index,
+                    orElse: () => null,
+                  ),
+            ),
+          const SizedBox(height: 12),
+          Text(
+            'A single media can be tracked on all logged-in services at once. '
+            'Progress is pushed to every bound service in parallel.',
+            style: TextStyle(
+              color: theme.onSurface.withOpacity(0.4),
+              fontSize: 11,
+              height: 1.4,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTrackerCard(
+    BuildContext context,
+    ColorScheme theme, {
+    required Tracker tracker,
+    required TrackBinding? binding,
+  }) {
+    // Promote to non-null up-front so we can use `b` safely below.
+    final b = binding;
+    final bound = b != null;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: theme.surfaceContainer.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: bound
+              ? Color(tracker.color).withOpacity(0.4)
+              : theme.outlineVariant.withOpacity(0.2),
+        ),
+      ),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.asset(
+              tracker.iconAsset,
+              width: 34,
+              height: 34,
+              errorBuilder: (_, __, ___) => Container(
+                width: 34,
+                height: 34,
+                color: Color(tracker.color),
+                child: Center(
+                  child: Text(
+                    tracker.label.substring(0, 1),
+                    style: const TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.w800),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  tracker.label,
+                  style: TextStyle(
+                    color: theme.onSurface,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                if (b != null)
+                  Text(
+                    'Ep ${b.progress}${b.totalEpisodes != null && b.totalEpisodes!.isNotEmpty ? ' / ${b.totalEpisodes}' : ''} · ${b.status}',
+                    style: TextStyle(
+                      color: theme.onSurface.withOpacity(0.55),
+                      fontSize: 11,
+                    ),
+                  )
+                else
+                  Text(
+                    'Not tracked',
+                    style: TextStyle(
+                      color: theme.onSurface.withOpacity(0.4),
+                      fontSize: 11,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          if (b != null)
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  tooltip: 'Sync progress now',
+                  icon: Icon(Icons.sync_rounded,
+                      size: 18, color: theme.primary.withOpacity(0.8)),
+                  onPressed: () async {
+                    await _ctrl.pushProgress(_mediaId, b.progress,
+                        isAnime: !_isManga);
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text('Progress synced to all bound services.'),
+                            duration: Duration(seconds: 2)),
+                      );
+                    }
+                  },
+                ),
+                IconButton(
+                  tooltip: 'Unbind',
+                  icon: Icon(Icons.link_off_rounded,
+                      size: 18, color: theme.error.withOpacity(0.7)),
+                  onPressed: () => _unbind(b),
+                ),
+              ],
+            )
+          else
+            TextButton.icon(
+              onPressed: () {
+                setState(() {
+                  _searchingTracker = tracker;
+                  _searchResults = [];
+                });
+                // Auto-search by title to save a step (aniyomi does this).
+                _runSearch(tracker, widget.summary.title);
+              },
+              icon: Icon(Icons.add_link_rounded,
+                  size: 16, color: theme.primary),
+              label: Text('Track',
+                  style: TextStyle(color: theme.primary)),
+            ),
+        ],
+      ),
+    );
+  }
+
+  // ---------- Search view (reuses existing <service>.search) ----------
+
+  Widget _buildSearchView(BuildContext context, Tracker tracker) {
+    final theme = context.colors;
+    return Flexible(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+            child: TextField(
+              controller: _searchCtrl,
+              autofocus: true,
+              textInputAction: TextInputAction.search,
+              onSubmitted: (q) => _runSearch(tracker, q),
+              decoration: InputDecoration(
+                hintText: 'Search ${tracker.label} for "${widget.summary.title}"…',
+                hintStyle: TextStyle(
+                    color: theme.onSurface.withOpacity(0.4), fontSize: 13),
+                prefixIcon: Icon(Icons.search_rounded,
+                    size: 20, color: theme.onSurface.withOpacity(0.5)),
+                filled: true,
+                fillColor: theme.surfaceContainer.withOpacity(0.4),
+                isDense: true,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: _searching
+                ? Center(
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2, color: theme.primary),
+                  )
+                : _searchResults.isEmpty
+                    ? Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Text(
+                            'No results. Try searching by title.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: theme.onSurface.withOpacity(0.4),
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      )
+                    : ListView.separated(
+                        padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+                        shrinkWrap: true,
+                        itemCount: _searchResults.length,
+                        separatorBuilder: (_, __) => const SizedBox(height: 8),
+                        itemBuilder: (_, i) {
+                          final r = _searchResults[i];
+                          return _buildSearchResultTile(context, theme, tracker, r);
+                        },
+                      ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSearchResultTile(
+    BuildContext context,
+    ColorScheme theme,
+    Tracker tracker,
+    Media r,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.surfaceContainer.withOpacity(0.25),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: theme.outlineVariant.withOpacity(0.15)),
+      ),
+      child: ListTile(
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        leading: ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: (r.poster.isNotEmpty && r.poster != '?')
+              ? AnymeXImage(
+                  imageUrl: r.poster,
+                  width: 44,
+                  height: 62,
+                  fit: BoxFit.cover,
+                  radius: 8,
+                )
+              : Container(
+                  width: 44,
+                  height: 62,
+                  color: theme.surfaceContainer.withOpacity(0.5),
+                  child: Icon(Icons.movie_outlined,
+                      size: 20, color: theme.onSurface.withOpacity(0.3)),
+                ),
+        ),
+        title: Text(
+          r.title,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: theme.onSurface,
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        subtitle: Text(
+          [
+            if (r.totalEpisodes.isNotEmpty && r.totalEpisodes != '?')
+              '${r.totalEpisodes} eps',
+            if (r.status.isNotEmpty && r.status != '?') r.status,
+            tracker.label,
+          ].join(' · '),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+              color: theme.onSurface.withOpacity(0.5), fontSize: 11),
+        ),
+        trailing: FilledButton.tonal(
+          onPressed: () => _pickResult(tracker, r),
+          style: FilledButton.styleFrom(
+            backgroundColor: Color(tracker.color).withOpacity(0.15),
+            foregroundColor: Color(tracker.color),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            minimumSize: const Size(0, 34),
+          ),
+          child: const Text('Track', style: TextStyle(fontSize: 12)),
+        ),
+      ),
+    );
+  }
+
+  // ---------- Empty state: no tracker logged in ----------
+
+  Widget _buildNoTrackersState(ColorScheme theme) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 28, 24, 32),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.login_rounded,
+              size: 36, color: theme.onSurface.withOpacity(0.3)),
+          const SizedBox(height: 14),
+          Text(
+            'No tracking service connected',
+            style: TextStyle(
+              color: theme.onSurface,
+              fontSize: 15,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Log in to AniList, MyAnimeList or Simkl from Settings → Accounts '
+            'to track this media.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: theme.onSurface.withOpacity(0.5),
+              fontSize: 12,
+              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: 18),
+          FilledButton.icon(
+            onPressed: () {
+              Navigator.of(context).pop();
+              navigate(() => const SettingsAccounts());
+            },
+            icon: const Icon(Icons.settings_rounded, size: 16),
+            label: const Text('Open Settings'),
+          ),
+        ],
+      ),
+    );
+  }
+}

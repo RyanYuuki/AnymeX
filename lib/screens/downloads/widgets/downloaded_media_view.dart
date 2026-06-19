@@ -1,9 +1,10 @@
-import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/track/track_binding_controller.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/downloads/controller/download_controller.dart';
 import 'package:anymex/screens/downloads/model/download_models.dart';
 import 'package:anymex/screens/downloads/widgets/downloaded_watch_page.dart';
+import 'package:anymex/screens/downloads/widgets/track_sheet.dart';
 import 'package:anymex/screens/downloads/widgets/video_thumbnail_widget.dart';
 import 'package:anymex/screens/manga/reading_page.dart';
 import 'package:anymex/utils/function.dart';
@@ -226,6 +227,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
           summary: widget.summary,
         ));
     await _refresh();
+    await _syncBoundTrackersAfterPlay();
   }
 
   Future<void> _playChapter(DownloadedChapterMeta ch) async {
@@ -254,6 +256,41 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
           shouldTrack: false,
         ));
     await _refresh();
+    await _syncBoundTrackersAfterPlay();
+  }
+
+  /// Best-effort: push the latest locally-watched episode/chapter number
+  /// to every bound + logged-in tracker (fan-out via the existing
+  /// `updateListEntry`). Mirrors aniyomi's `TrackEpisode`. Never blocks
+  /// playback — all failures are swallowed and logged.
+  Future<void> _syncBoundTrackersAfterPlay() async {
+    try {
+      final trackCtrl = Get.find<TrackBindingController>();
+      final mediaId = widget.summary.folderName;
+      if (!trackCtrl.hasAnyBinding(mediaId)) return;
+
+      int progress = 0;
+      if (!_isManga && _meta != null) {
+        // Highest episode number whose watched progress >= 80%.
+        for (final e in _meta!.episodes) {
+          final n = int.tryParse(e.number) ?? 0;
+          final pct = _meta!.watchedProgress[e.number] ?? 0;
+          if (pct >= 80 && n > progress) progress = n;
+        }
+      } else if (_isManga && _mangaMeta != null) {
+        // For manga, use the current chapter number if available.
+        final cur = _mangaMeta!.chapters
+            .where((c) => c.chapter.number != null)
+            .fold<double>(0.0, (a, c) => c.chapter.number! > a ? c.chapter.number! : a);
+        progress = cur.toInt();
+      }
+
+      if (progress <= 0) return;
+      await trackCtrl.pushProgress(mediaId, progress, isAnime: !_isManga);
+    } catch (e) {
+      // Tracking is best-effort; never surface playback-blocking errors.
+      debugPrint('post-play track sync skipped: $e');
+    }
   }
 
   List<Widget> _buildEpisodeList(ColorScheme theme) {
@@ -329,6 +366,8 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                 onTap: () => Navigator.pop(context),
               ),
               const Spacer(),
+              _buildTrackBtn(context: context, theme: theme),
+              const SizedBox(width: 8),
               _buildNavBtn(
                 context: context,
                 theme: theme,
@@ -507,6 +546,77 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
           icon,
           size: 17,
           color: danger ? theme.error : theme.onSurface.withOpacity(0.7),
+        ),
+      ),
+    );
+  }
+
+  /// "Track" button — opens the multi-tracker bottom sheet.
+  /// Shows a live badge with the number of services this media is
+  /// currently bound to (out of logged-in trackers).
+  Widget _buildTrackBtn({
+    required BuildContext context,
+    required ColorScheme theme,
+  }) {
+    final trackCtrl = Get.find<TrackBindingController>();
+    final mediaId = widget.summary.folderName;
+
+    return AnymexOnTap(
+      onTap: () async {
+        await showTrackSheet(context, summary: widget.summary);
+        // Refresh local UI so the badge updates after bind/unbind.
+        if (mounted) setState(() {});
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+        decoration: BoxDecoration(
+          color: theme.primary.withOpacity(0.12),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: theme.primary.withOpacity(0.3)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.track_changes_rounded,
+                size: 15, color: theme.primary),
+            const SizedBox(width: 6),
+            Text(
+              'Track',
+              style: TextStyle(
+                color: theme.primary,
+                fontSize: 12,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(width: 6),
+            Obx(() {
+              // Rebuild on bind/unbind + on any tracker login change.
+              trackCtrl.bindingsVersion.value;
+              trackCtrl.loggedInTrackers();
+              final bound = trackCtrl.bindingCount(mediaId);
+              final total = trackCtrl.loggedInTrackers().length;
+              return Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                decoration: BoxDecoration(
+                  color: bound > 0
+                      ? theme.primary.withOpacity(0.25)
+                      : theme.surfaceContainer.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  total == 0 ? '0' : '$bound/$total',
+                  style: TextStyle(
+                    color: bound > 0
+                        ? theme.primary
+                        : theme.onSurface.withOpacity(0.5),
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              );
+            }),
+          ],
         ),
       ),
     );
