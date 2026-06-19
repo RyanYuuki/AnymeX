@@ -81,10 +81,6 @@ class _TrackSheetState extends State<_TrackSheet> {
     final binding =
         _ctrl.bindingFromSearchResult(t, result, isAnime: !_isManga);
     await _ctrl.bind(_mediaId, binding);
-    try {
-      await _ctrl.pushProgress(_mediaId, binding.progress,
-          isAnime: !_isManga);
-    } catch (_) {}
     if (mounted) {
       setState(() {
         _searchingTracker = null;
@@ -279,56 +275,70 @@ class _TrackSheetState extends State<_TrackSheet> {
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  tracker.label,
-                  style: TextStyle(
-                    color: theme.onSurface,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                if (b != null)
-                  Text(
-                    'Ep ${b.progress}${b.totalEpisodes != null && b.totalEpisodes!.isNotEmpty ? ' / ${b.totalEpisodes}' : ''} · ${b.status}',
-                    style: TextStyle(
-                      color: theme.onSurface.withOpacity(0.55),
-                      fontSize: 11,
+            child: bound
+                ? GestureDetector(
+                    onTap: () => _showEditDialog(context, theme, tracker, b),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              tracker.label,
+                              style: TextStyle(
+                                color: theme.onSurface,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Icon(Icons.edit_rounded,
+                                size: 11,
+                                color: theme.onSurface.withOpacity(0.3)),
+                          ],
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Ep ${b.progress}${b.totalEpisodes != null && b.totalEpisodes!.isNotEmpty ? ' / ${b.totalEpisodes}' : ''} · ${b.status}${b.score != null && b.score! > 0 ? ' · ★ ${b.score}' : ''}',
+                          style: TextStyle(
+                            color: theme.onSurface.withOpacity(0.55),
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
                     ),
                   )
-                else
-                  Text(
-                    'Not tracked',
-                    style: TextStyle(
-                      color: theme.onSurface.withOpacity(0.4),
-                      fontSize: 11,
-                    ),
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        tracker.label,
+                        style: TextStyle(
+                          color: theme.onSurface,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Not tracked',
+                        style: TextStyle(
+                          color: theme.onSurface.withOpacity(0.4),
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
                   ),
-              ],
-            ),
           ),
-          if (b != null)
+          if (bound)
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  tooltip: 'Sync progress now',
-                  icon: Icon(Icons.sync_rounded,
+                  tooltip: 'Edit',
+                  icon: Icon(Icons.edit_rounded,
                       size: 18, color: theme.primary.withOpacity(0.8)),
-                  onPressed: () async {
-                    await _ctrl.pushProgress(_mediaId, b.progress,
-                        isAnime: !_isManga);
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text('Progress synced to all bound services.'),
-                            duration: Duration(seconds: 2)),
-                      );
-                    }
-                  },
+                  onPressed: () => _showEditDialog(context, theme, tracker, b),
                 ),
                 IconButton(
                   tooltip: 'Unbind',
@@ -354,6 +364,289 @@ class _TrackSheetState extends State<_TrackSheet> {
             ),
         ],
       ),
+    );
+  }
+
+  void _showEditDialog(
+    BuildContext context,
+    ColorScheme theme,
+    Tracker tracker,
+    TrackBinding b,
+  ) {
+    final statusOptions = [
+      'CURRENT',
+      'COMPLETED',
+      'PLANNING',
+      'PAUSED',
+      'DROPPED',
+      'REPEATING',
+    ];
+    final statusLabels = {
+      'CURRENT': _isManga ? 'Reading' : 'Watching',
+      'COMPLETED': 'Completed',
+      'PLANNING': 'Plan to ${_isManga ? 'read' : 'watch'}',
+      'PAUSED': 'On Hold',
+      'DROPPED': 'Dropped',
+      'REPEATING': 'Re-watching',
+    };
+
+    String selectedStatus = statusOptions.contains(b.status) ? b.status : 'CURRENT';
+    final progressCtrl =
+        TextEditingController(text: b.progress.toString());
+    final scoreCtrl =
+        TextEditingController(text: b.score?.toStringAsFixed(1) ?? '');
+    bool isPrivate = b.private;
+    bool saving = false;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: theme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+      ),
+      builder: (sheetCtx) {
+        return StatefulBuilder(
+          builder: (ctx, setSheetState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(ctx).viewInsets.bottom,
+              ),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(ctx).size.height * 0.7,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(top: 10, bottom: 4),
+                      width: 42,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: theme.outline.withOpacity(0.4),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(6),
+                            child: Image.asset(tracker.iconAsset,
+                                width: 24,
+                                height: 24,
+                                errorBuilder: (_, __, ___) => Container(
+                                      width: 24,
+                                      height: 24,
+                                      color: Color(tracker.color),
+                                    )),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              'Edit ${tracker.label} tracking',
+                              style: TextStyle(
+                                color: theme.onSurface,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Divider(
+                        height: 1,
+                        color: theme.outlineVariant.withOpacity(0.2)),
+                    Flexible(
+                      child: ListView(
+                        padding: const EdgeInsets.all(16),
+                        shrinkWrap: true,
+                        children: [
+                          Text('Status',
+                              style: TextStyle(
+                                  color: theme.onSurface.withOpacity(0.5),
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700)),
+                          const SizedBox(height: 8),
+                          Wrap(
+                            spacing: 6,
+                            runSpacing: 6,
+                            children: statusOptions.map((s) {
+                              final selected = s == selectedStatus;
+                              return ChoiceChip(
+                                label: Text(statusLabels[s] ?? s,
+                                    style: TextStyle(
+                                        fontSize: 11,
+                                        color: selected
+                                            ? Color(tracker.color)
+                                            : theme.onSurface
+                                                .withOpacity(0.6))),
+                                selected: selected,
+                                selectedColor:
+                                    Color(tracker.color).withOpacity(0.2),
+                                side: BorderSide(
+                                  color: selected
+                                      ? Color(tracker.color).withOpacity(0.5)
+                                      : theme.outlineVariant
+                                          .withOpacity(0.2),
+                                ),
+                                onSelected: (_) => setSheetState(() {
+                                  selectedStatus = s;
+                                }),
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap,
+                                visualDensity: VisualDensity.compact,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 2),
+                              );
+                            }).toList(),
+                          ),
+                          const SizedBox(height: 20),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  controller: progressCtrl,
+                                  keyboardType: TextInputType.number,
+                                  decoration: InputDecoration(
+                                    labelText: _isManga
+                                        ? 'Chapters read'
+                                        : 'Episodes watched',
+                                    labelStyle: TextStyle(
+                                        fontSize: 12,
+                                        color: theme.onSurface
+                                            .withOpacity(0.5)),
+                                    isDense: true,
+                                    filled: true,
+                                    fillColor: theme.surfaceContainer
+                                        .withOpacity(0.3),
+                                    border: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10),
+                                        borderSide: BorderSide.none),
+                                  ),
+                                  style: TextStyle(
+                                      fontSize: 13,
+                                      color: theme.onSurface),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: TextField(
+                                  controller: scoreCtrl,
+                                  keyboardType: const TextInputType.numberWithOptions(
+                                      decimal: true),
+                                  decoration: InputDecoration(
+                                    labelText: 'Score (0-10)',
+                                    labelStyle: TextStyle(
+                                        fontSize: 12,
+                                        color: theme.onSurface
+                                            .withOpacity(0.5)),
+                                    isDense: true,
+                                    filled: true,
+                                    fillColor: theme.surfaceContainer
+                                        .withOpacity(0.3),
+                                    border: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10),
+                                        borderSide: BorderSide.none),
+                                  ),
+                                  style: TextStyle(
+                                      fontSize: 13,
+                                      color: theme.onSurface),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          SwitchListTile(
+                            title: Text('Private',
+                                style: TextStyle(
+                                    fontSize: 13, color: theme.onSurface)),
+                            subtitle: Text(
+                                'Hide from public profile',
+                                style: TextStyle(
+                                    fontSize: 11,
+                                    color: theme.onSurface
+                                        .withOpacity(0.4))),
+                            value: isPrivate,
+                            activeColor: Color(tracker.color),
+                            onChanged: (v) =>
+                                setSheetState(() => isPrivate = v),
+                            dense: true,
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                          const SizedBox(height: 20),
+                          SizedBox(
+                            width: double.infinity,
+                            child: FilledButton.icon(
+                              onPressed: saving
+                                  ? null
+                                  : () async {
+                                      setSheetState(() => saving = true);
+                                      final newProgress = int.tryParse(
+                                              progressCtrl.text.trim()) ??
+                                          b.progress;
+                                      final newScore = double.tryParse(
+                                              scoreCtrl.text.trim());
+                                      try {
+                                        await _ctrl.updateBindingFields(
+                                          _mediaId,
+                                          b,
+                                          progress: newProgress,
+                                          status: selectedStatus,
+                                          score: newScore,
+                                          isPrivate: isPrivate,
+                                        );
+                                        if (ctx.mounted) {
+                                          Navigator.pop(ctx);
+                                          setState(() {});
+                                        }
+                                      } catch (e) {
+                                        if (ctx.mounted) {
+                                          ScaffoldMessenger.of(ctx)
+                                              .showSnackBar(
+                                            SnackBar(
+                                                content: Text(
+                                                    'Update failed: $e')),
+                                          );
+                                          setSheetState(
+                                              () => saving = false);
+                                        }
+                                      }
+                                    },
+                              icon: saving
+                                  ? SizedBox(
+                                      width: 16,
+                                      height: 16,
+                                      child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: theme
+                                              .onPrimary),
+                                    )
+                                  : const Icon(Icons.check_rounded, size: 18),
+                              label: Text(saving ? 'Saving…' : 'Save'),
+                              style: FilledButton.styleFrom(
+                                backgroundColor: Color(tracker.color),
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 12),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 

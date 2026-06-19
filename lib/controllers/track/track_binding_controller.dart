@@ -6,6 +6,7 @@ import 'package:anymex/controllers/services/mal/mal_service.dart';
 import 'package:anymex/controllers/services/simkl/simkl_service.dart';
 import 'package:anymex/controllers/track/track_binding.dart';
 import 'package:anymex/database/data_keys/keys.dart';
+import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Service/online_service.dart';
 import 'package:anymex/utils/logger.dart';
@@ -137,6 +138,23 @@ class TrackBindingController extends GetxController {
     Media result, {
     required bool isAnime,
   }) {
+    final service = _online(tracker);
+    final list = isAnime ? service.animeList : service.mangaList;
+
+    TrackedMedia? existing;
+    try {
+      existing = list.firstWhere(
+        (t) =>
+            t.id == result.id ||
+            t.mediaListId == result.id ||
+            (result.idMal.isNotEmpty &&
+                result.idMal != '0' &&
+                t.idMal == result.idMal),
+      );
+    } catch (_) {
+      existing = null;
+    }
+
     return TrackBinding(
       trackerId: tracker.index,
       remoteId: result.id,
@@ -144,8 +162,51 @@ class TrackBindingController extends GetxController {
       poster: result.poster,
       totalEpisodes: result.totalEpisodes,
       isAnime: isAnime,
-      progress: 0,
-      status: 'CURRENT',
+      progress: int.tryParse(existing?.episodeCount ?? '') ?? 0,
+      status: (existing?.watchingStatus?.isNotEmpty ?? false)
+          ? existing!.watchingStatus!
+          : 'CURRENT',
+      score: double.tryParse(existing?.score ?? ''),
+      private: existing?.isPrivate ?? false,
     );
+  }
+
+  Future<void> updateBindingFields(
+    String mediaId,
+    TrackBinding binding, {
+    int? progress,
+    String? status,
+    double? score,
+    bool? isPrivate,
+  }) async {
+    final newProgress = progress ?? binding.progress;
+    final newStatus = status ?? binding.status;
+    final newScore = score ?? binding.score;
+    final newPrivate = isPrivate ?? binding.private;
+
+    final service = _online(binding.tracker);
+    if (service.isLoggedIn.value) {
+      await service.updateListEntry(UpdateListEntryParams(
+        listId: binding.remoteId,
+        progress: newProgress,
+        status: newStatus,
+        score: newScore,
+        isAnime: binding.isAnime,
+        isPrivate: newPrivate,
+      ));
+    }
+
+    binding.progress = newProgress;
+    binding.status = newStatus;
+    binding.score = newScore;
+    binding.private = newPrivate;
+
+    final list = getBindingsFor(mediaId)
+        .where((b) => b.trackerId != binding.trackerId)
+        .toList();
+    list.add(binding);
+    _cache[mediaId] = list;
+    _persist(mediaId, list);
+    bindingsVersion.value++;
   }
 }
