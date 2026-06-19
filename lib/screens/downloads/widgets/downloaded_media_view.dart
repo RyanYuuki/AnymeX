@@ -1,3 +1,4 @@
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/track/track_binding_controller.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -268,13 +269,14 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
       if (!trackCtrl.hasAnyBinding(mediaId)) return;
 
       int progress = 0;
+      final threshold = settingsController.markAsCompleted; // user-configured % (default 90)
       if (!_isManga && _meta != null) {
         for (final e in _meta!.episodes) {
           final n = int.tryParse(e.number) ?? 0;
           if (n == 0) continue;
           final ts = e.episode.timeStampInMilliseconds ?? 0;
           final dur = e.episode.durationInMilliseconds ?? 0;
-          final watched = dur > 0 && ts >= dur * 0.8;
+          final watched = dur > 0 && ts >= dur * (threshold / 100);
           if (watched && n > progress) progress = n;
         }
       } else if (_isManga && _mangaMeta != null) {
