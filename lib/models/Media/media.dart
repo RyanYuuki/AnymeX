@@ -266,6 +266,53 @@ class Media {
     );
   }
 
+  factory Media.fromSimklSearch(Map<String?, dynamic> json) {
+    final endpointType = json['endpoint_type']?.toString() ?? 'anime';
+    final isMovie = endpointType == 'movies';
+    final simklId = json['ids']?['simkl_id']?.toString() ??
+        json['ids']?['simkl']?.toString() ??
+        DateTime.now().millisecondsSinceEpoch.toString();
+    final posterPath = json['poster']?.toString();
+    final posterUrl = (posterPath != null && posterPath.isNotEmpty)
+        ? 'https://wsrv.nl/?url=https://simkl.in/posters/${posterPath}_m.jpg'
+        : '';
+    final epCount = json['ep_count']?.toString();
+    final year = json['year']?.toString();
+    final status = json['status']?.toString();
+    final rating = json['ratings']?['simkl']?['rating']?.toString();
+    final rank = json['rank']?.toString();
+    final title = json['title']?.toString() ?? 'Unknown Title';
+    final romaji = json['title_romaji']?.toString() ?? title;
+
+    return Media(
+      id: '$simklId*${isMovie ? "MOVIE" : "SERIES"}',
+      title: title,
+      romajiTitle: romaji,
+      description: json['overview']?.toString() ?? '',
+      poster: posterUrl,
+      largePoster: posterUrl,
+      cover: posterUrl,
+      totalEpisodes: (epCount != null && epCount.isNotEmpty) ? epCount : '?',
+      type: endpointType.toUpperCase(),
+      season: '?',
+      premiered: year ?? '?',
+      duration: '?',
+      status: (status != null && status.isNotEmpty)
+          ? status[0].toUpperCase() + status.substring(1)
+          : '?',
+      rating: rating ?? '?',
+      popularity: rank ?? '0',
+      format: json['type']?.toString() ?? '?',
+      aired: year ?? '?',
+      totalChapters: '0',
+      genres: const [],
+      recommendations: const [],
+      mediaType: ItemType.anime,
+      serviceType: ServicesType.simkl,
+      seasonYear: year != null ? int.tryParse(year) : null,
+    );
+  }
+
   factory Media.fromSmallSimkl(Map<String?, dynamic> json, bool isMovie) {
     ItemType type = ItemType.anime;
     String posterUrl = '';

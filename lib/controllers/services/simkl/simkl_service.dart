@@ -32,6 +32,8 @@ import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart';
 
+enum SimklSearchCategory { anime, movie, show }
+
 class SimklService extends GetxController
     implements BaseService, OnlineService {
   RxList<Media> trendingMovies = <Media>[].obs;
@@ -178,8 +180,7 @@ class SimklService extends GetxController
     final resp = await get(movieUrl);
     if (resp.statusCode == 200) {
       final data = jsonDecode(resp.body) as List<dynamic>;
-      List<Media> list = data.map((e) => Media.fromSimkl(e, true)).toList();
-      return list;
+      return data.map((e) => Media.fromSimklSearch(e)).toList();
     }
     return [];
   }
@@ -195,8 +196,7 @@ class SimklService extends GetxController
     final resp = await get(seriesUrl);
     if (resp.statusCode == 200) {
       final data = jsonDecode(resp.body) as List<dynamic>;
-      List<Media> list = data.map((e) => Media.fromSimkl(e, true)).toList();
-      return list;
+      return data.map((e) => Media.fromSimklSearch(e)).toList();
     }
     return [];
   }
@@ -212,8 +212,7 @@ class SimklService extends GetxController
     final resp = await get(animeUrl);
     if (resp.statusCode == 200) {
       final data = jsonDecode(resp.body) as List<dynamic>;
-      List<Media> list = data.map((e) => Media.fromSimkl(e, true)).toList();
-      return list;
+      return data.map((e) => Media.fromSimklSearch(e)).toList();
     }
     return [];
   }
@@ -225,17 +224,44 @@ class SimklService extends GetxController
       searchSeries(params.query, page: params.page),
       searchAnime(params.query, page: params.page),
     ]);
+    final movies = results[0];
+    final series = results[1];
+    final anime = results[2];
+
+    final merged = <Media>[];
     final seen = <String>{};
-    return [
-      ...results[0],
-      ...results[1],
-      ...results[2],
-    ].where((m) {
-      final key = m.title.toLowerCase().trim();
-      if (seen.contains(key)) return false;
-      seen.add(key);
-      return true;
-    }).toList();
+    final maxLen = [
+      movies.length,
+      series.length,
+      anime.length,
+    ].reduce((a, b) => a > b ? a : b);
+    for (var i = 0; i < maxLen; i++) {
+      for (final list in [anime, series, movies]) {
+        if (i < list.length) {
+          final m = list[i];
+          final key = m.title.toLowerCase().trim();
+          if (seen.contains(key)) continue;
+          seen.add(key);
+          merged.add(m);
+        }
+      }
+    }
+    return merged;
+  }
+
+  Future<List<Media>> searchByCategory(
+    String query,
+    SimklSearchCategory category, {
+    int page = 1,
+  }) {
+    switch (category) {
+      case SimklSearchCategory.anime:
+        return searchAnime(query, page: page);
+      case SimklSearchCategory.movie:
+        return searchMovies(query, page: page);
+      case SimklSearchCategory.show:
+        return searchSeries(query, page: page);
+    }
   }
 
   @override

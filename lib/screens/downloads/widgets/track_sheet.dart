@@ -1,7 +1,11 @@
 import 'package:anymex/controllers/service_handler/params.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/track/track_binding.dart';
 import 'package:anymex/controllers/track/track_binding_controller.dart';
+import 'package:anymex/controllers/services/simkl/simkl_service.dart';
+import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/screens/anime/widgets/list_editor.dart';
 import 'package:anymex/screens/downloads/model/download_models.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_accounts.dart';
 import 'package:anymex/utils/function.dart';
@@ -9,6 +13,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 
 Future<void> showTrackSheet(
   BuildContext context, {
@@ -43,6 +48,8 @@ class _TrackSheetState extends State<_TrackSheet> {
 
   bool _showAdult = false;
 
+  SimklSearchCategory _simklCategory = SimklSearchCategory.anime;
+
   bool get _isManga => widget.summary.mediaType == 'Manga';
 
   String get _mediaId => widget.summary.folderName;
@@ -54,10 +61,15 @@ class _TrackSheetState extends State<_TrackSheet> {
     }
     setState(() => _searching = true);
     try {
-      final results = await _ctrl.searchOn(
-        t,
-        SearchParams(query: query, isManga: _isManga, args: _showAdult),
-      );
+      List<Media> results;
+      if (t == Tracker.simkl) {
+        results = await _ctrl.searchOnSimkl(query, category: _simklCategory);
+      } else {
+        results = await _ctrl.searchOn(
+          t,
+          SearchParams(query: query, isManga: _isManga, args: _showAdult),
+        );
+      }
       if (mounted) setState(() => _searchResults = results);
     } catch (e) {
       if (mounted) {
@@ -299,7 +311,7 @@ class _TrackSheetState extends State<_TrackSheet> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'Ep ${b.progress}${b.totalEpisodes != null && b.totalEpisodes!.isNotEmpty ? ' / ${b.totalEpisodes}' : ''} · ${b.status}${b.score != null && b.score! > 0 ? ' · ★ ${b.score}' : ''}',
+                          _formatBindingSummary(b),
                           style: TextStyle(
                             color: theme.onSurface.withOpacity(0.55),
                             fontSize: 11,
@@ -354,6 +366,7 @@ class _TrackSheetState extends State<_TrackSheet> {
                 setState(() {
                   _searchingTracker = tracker;
                   _searchResults = [];
+                  _simklCategory = SimklSearchCategory.anime;
                 });
                 _runSearch(tracker, widget.summary.title);
               },
@@ -373,286 +386,178 @@ class _TrackSheetState extends State<_TrackSheet> {
     Tracker tracker,
     TrackBinding b,
   ) {
-    final statusOptions = [
-      'CURRENT',
-      'COMPLETED',
-      'PLANNING',
-      'PAUSED',
-      'DROPPED',
-      'REPEATING',
-    ];
-    final statusLabels = {
-      'CURRENT': _isManga ? 'Reading' : 'Watching',
-      'COMPLETED': 'Completed',
-      'PLANNING': 'Plan to ${_isManga ? 'read' : 'watch'}',
-      'PAUSED': 'On Hold',
-      'DROPPED': 'Dropped',
-      'REPEATING': 'Re-watching',
-    };
+    final handler = Get.find<ServiceHandler>();
+    final previousServiceType = handler.serviceType.value;
+    final targetServiceType = tracker.servicesType;
+    handler.changeService(targetServiceType);
 
-    String selectedStatus = statusOptions.contains(b.status) ? b.status : 'CURRENT';
-    final progressCtrl =
-        TextEditingController(text: b.progress.toString());
-    final scoreCtrl =
-        TextEditingController(text: b.score?.toStringAsFixed(1) ?? '');
-    bool isPrivate = b.private;
-    bool saving = false;
+    final media = Media(
+      id: b.remoteId,
+      title: b.title,
+      poster: b.poster ?? '',
+      totalEpisodes: b.totalEpisodes ?? '?',
+      mediaType: b.isAnime ? ItemType.anime : ItemType.manga,
+      serviceType: targetServiceType,
+    );
+
+    final tracked = TrackedMedia(
+      id: b.remoteId,
+      mediaListId: b.remoteId,
+      title: b.title,
+      poster: b.poster,
+      totalEpisodes: b.totalEpisodes,
+      episodeCount: b.progress.toString(),
+      watchingStatus: b.status,
+      score: b.score?.toString(),
+      isPrivate: b.private,
+      servicesType: targetServiceType,
+    );
+
+    final onlineService = targetServiceType.onlineService;
+    onlineService.currentMedia.value = tracked;
+
+    final animeStatus = b.status.obs;
+    final animeScore = (b.score ?? 0.0).obs;
+    final animeProgress = b.progress.obs;
+    final currentAnime = tracked.obs;
 
     showModalBottomSheet(
+      backgroundColor: Colors.transparent,
       context: context,
       isScrollControlled: true,
-      backgroundColor: theme.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
-      ),
-      builder: (sheetCtx) {
-        return StatefulBuilder(
-          builder: (ctx, setSheetState) {
-            return Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(ctx).viewInsets.bottom,
-              ),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(ctx).size.height * 0.7,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(top: 10, bottom: 4),
-                      width: 42,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: theme.outline.withOpacity(0.4),
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Row(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(6),
-                            child: Image.asset(tracker.iconAsset,
-                                width: 24,
-                                height: 24,
-                                errorBuilder: (_, __, ___) => Container(
-                                      width: 24,
-                                      height: 24,
-                                      color: Color(tracker.color),
-                                    )),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              'Edit ${tracker.label} tracking',
-                              style: TextStyle(
-                                color: theme.onSurface,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Divider(
-                        height: 1,
-                        color: theme.outlineVariant.withOpacity(0.2)),
-                    Flexible(
-                      child: ListView(
-                        padding: const EdgeInsets.all(16),
-                        shrinkWrap: true,
-                        children: [
-                          Text('Status',
-                              style: TextStyle(
-                                  color: theme.onSurface.withOpacity(0.5),
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w700)),
-                          const SizedBox(height: 8),
-                          Wrap(
-                            spacing: 6,
-                            runSpacing: 6,
-                            children: statusOptions.map((s) {
-                              final selected = s == selectedStatus;
-                              return ChoiceChip(
-                                label: Text(statusLabels[s] ?? s,
-                                    style: TextStyle(
-                                        fontSize: 11,
-                                        color: selected
-                                            ? Color(tracker.color)
-                                            : theme.onSurface
-                                                .withOpacity(0.6))),
-                                selected: selected,
-                                selectedColor:
-                                    Color(tracker.color).withOpacity(0.2),
-                                side: BorderSide(
-                                  color: selected
-                                      ? Color(tracker.color).withOpacity(0.5)
-                                      : theme.outlineVariant
-                                          .withOpacity(0.2),
-                                ),
-                                onSelected: (_) => setSheetState(() {
-                                  selectedStatus = s;
-                                }),
-                                materialTapTargetSize:
-                                    MaterialTapTargetSize.shrinkWrap,
-                                visualDensity: VisualDensity.compact,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 6, vertical: 2),
-                              );
-                            }).toList(),
-                          ),
-                          const SizedBox(height: 20),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: TextField(
-                                  controller: progressCtrl,
-                                  keyboardType: TextInputType.number,
-                                  decoration: InputDecoration(
-                                    labelText: _isManga
-                                        ? 'Chapters read'
-                                        : 'Episodes watched',
-                                    labelStyle: TextStyle(
-                                        fontSize: 12,
-                                        color: theme.onSurface
-                                            .withOpacity(0.5)),
-                                    isDense: true,
-                                    filled: true,
-                                    fillColor: theme.surfaceContainer
-                                        .withOpacity(0.3),
-                                    border: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10),
-                                        borderSide: BorderSide.none),
-                                  ),
-                                  style: TextStyle(
-                                      fontSize: 13,
-                                      color: theme.onSurface),
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: TextField(
-                                  controller: scoreCtrl,
-                                  keyboardType: const TextInputType.numberWithOptions(
-                                      decimal: true),
-                                  decoration: InputDecoration(
-                                    labelText: 'Score (0-10)',
-                                    labelStyle: TextStyle(
-                                        fontSize: 12,
-                                        color: theme.onSurface
-                                            .withOpacity(0.5)),
-                                    isDense: true,
-                                    filled: true,
-                                    fillColor: theme.surfaceContainer
-                                        .withOpacity(0.3),
-                                    border: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10),
-                                        borderSide: BorderSide.none),
-                                  ),
-                                  style: TextStyle(
-                                      fontSize: 13,
-                                      color: theme.onSurface),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          SwitchListTile(
-                            title: Text('Private',
-                                style: TextStyle(
-                                    fontSize: 13, color: theme.onSurface)),
-                            subtitle: Text(
-                                'Hide from public profile',
-                                style: TextStyle(
-                                    fontSize: 11,
-                                    color: theme.onSurface
-                                        .withOpacity(0.4))),
-                            value: isPrivate,
-                            activeColor: Color(tracker.color),
-                            onChanged: (v) =>
-                                setSheetState(() => isPrivate = v),
-                            dense: true,
-                            contentPadding: EdgeInsets.zero,
-                          ),
-                          const SizedBox(height: 20),
-                          SizedBox(
-                            width: double.infinity,
-                            child: FilledButton.icon(
-                              onPressed: saving
-                                  ? null
-                                  : () async {
-                                      setSheetState(() => saving = true);
-                                      final newProgress = int.tryParse(
-                                              progressCtrl.text.trim()) ??
-                                          b.progress;
-                                      final newScore = double.tryParse(
-                                              scoreCtrl.text.trim());
-                                      try {
-                                        await _ctrl.updateBindingFields(
-                                          _mediaId,
-                                          b,
-                                          progress: newProgress,
-                                          status: selectedStatus,
-                                          score: newScore,
-                                          isPrivate: isPrivate,
-                                        );
-                                        if (ctx.mounted) {
-                                          Navigator.pop(ctx);
-                                          setState(() {});
-                                        }
-                                      } catch (e) {
-                                        if (ctx.mounted) {
-                                          ScaffoldMessenger.of(ctx)
-                                              .showSnackBar(
-                                            SnackBar(
-                                                content: Text(
-                                                    'Update failed: $e')),
-                                          );
-                                          setSheetState(
-                                              () => saving = false);
-                                        }
-                                      }
-                                    },
-                              icon: saving
-                                  ? SizedBox(
-                                      width: 16,
-                                      height: 16,
-                                      child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          color: theme
-                                              .onPrimary),
-                                    )
-                                  : const Icon(Icons.check_rounded, size: 18),
-                              label: Text(saving ? 'Saving…' : 'Save'),
-                              style: FilledButton.styleFrom(
-                                backgroundColor: Color(tracker.color),
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 12),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+      showDragHandle: false,
+      builder: (ctx) => ListEditorModal(
+        animeStatus: animeStatus,
+        isManga: !b.isAnime,
+        animeScore: animeScore,
+        animeProgress: animeProgress,
+        currentAnime: currentAnime,
+        media: media,
+        onUpdate: (id, score, status, progress, season, startedAt,
+            completedAt, isPrivate) async {
+          try {
+            await _ctrl.updateBindingFields(
+              _mediaId,
+              b,
+              progress: progress,
+              status: status,
+              score: score,
+              isPrivate: isPrivate,
             );
-          },
-        );
-      },
+            animeStatus.value = status;
+            animeScore.value = score;
+            animeProgress.value = progress;
+          } catch (e) {
+            if (ctx.mounted) {
+              ScaffoldMessenger.of(ctx).showSnackBar(
+                SnackBar(content: Text('Update failed: $e')),
+              );
+            }
+          }
+        },
+        onDelete: (s) async {
+          await _ctrl.unbind(_mediaId, b.trackerId);
+        },
+      ),
+    ).then((_) {
+      handler.changeService(previousServiceType);
+      if (mounted) setState(() {});
+    });
+  }
+
+
+  Widget _buildSimklCategoryTabs(
+    BuildContext context,
+    ColorScheme theme,
+    Tracker tracker,
+  ) {
+    final categories = [
+      (SimklSearchCategory.anime, 'Anime', Icons.play_circle_rounded),
+      (SimklSearchCategory.movie, 'Movies', Icons.movie_rounded),
+      (SimklSearchCategory.show, 'Shows', Icons.tv_rounded),
+    ];
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      child: Row(
+        children: [
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+              decoration: BoxDecoration(
+                color: theme.surfaceContainer.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                    color: theme.outlineVariant.withOpacity(0.15)),
+              ),
+              child: Row(
+                children: categories.map((c) {
+                  final cat = c.$1;
+                  final label = c.$2;
+                  final icon = c.$3;
+                  final selected = cat == _simklCategory;
+                  return Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() => _simklCategory = cat);
+                        if (_searchCtrl.text.trim().isNotEmpty) {
+                          _runSearch(tracker, _searchCtrl.text);
+                        }
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 7),
+                        decoration: BoxDecoration(
+                          color: selected
+                              ? Color(tracker.color).withOpacity(0.18)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(7),
+                          border: Border.all(
+                            color: selected
+                                ? Color(tracker.color).withOpacity(0.4)
+                                : Colors.transparent,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(icon,
+                                size: 12,
+                                color: selected
+                                    ? Color(tracker.color)
+                                    : theme.onSurface.withOpacity(0.5)),
+                            const SizedBox(width: 5),
+                            Flexible(
+                              child: Text(
+                                label,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  color: selected
+                                      ? Color(tracker.color)
+                                      : theme.onSurface.withOpacity(0.6),
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildSearchView(BuildContext context, Tracker tracker) {
     final theme = context.colors;
-    final supportsAdultFilter = tracker != Tracker.simkl;
+    final isSimkl = tracker == Tracker.simkl;
+    final supportsAdultFilter = !isSimkl;
     return Flexible(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -680,6 +585,7 @@ class _TrackSheetState extends State<_TrackSheet> {
               ),
             ),
           ),
+          if (isSimkl) _buildSimklCategoryTabs(context, theme, tracker),
           if (supportsAdultFilter)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
@@ -767,6 +673,44 @@ class _TrackSheetState extends State<_TrackSheet> {
     );
   }
 
+  String _formatBindingSummary(TrackBinding b) {
+    final parts = <String>[];
+    final total = b.totalEpisodes;
+    final hasTotal = total != null &&
+        total.isNotEmpty &&
+        total != '?' &&
+        total != '0' &&
+        total != '1';
+    parts.add(hasTotal
+        ? 'Ep ${b.progress} / $total'
+        : 'Ep ${b.progress}');
+    parts.add(b.status);
+    if (b.score != null && b.score! > 0) {
+      parts.add('★ ${b.score}');
+    }
+    return parts.join(' · ');
+  }
+
+  String _formatSearchResultSubtitle(Media r, Tracker tracker) {
+    final parts = <String>[];
+    final total = r.totalEpisodes;
+    final hasTotal = total.isNotEmpty &&
+        total != '?' &&
+        total != '0' &&
+        total != '1';
+    if (hasTotal) parts.add('$total eps');
+    final status = r.status;
+    if (status.isNotEmpty &&
+        status != '?' &&
+        status != 'UNKNOWN' &&
+        status != 'N/A') {
+      parts.add(status);
+    }
+    if (r.seasonYear != null) parts.add('${r.seasonYear}');
+    parts.add(tracker.label);
+    return parts.join(' · ');
+  }
+
   Widget _buildSearchResultTile(
     BuildContext context,
     ColorScheme theme,
@@ -811,12 +755,7 @@ class _TrackSheetState extends State<_TrackSheet> {
           ),
         ),
         subtitle: Text(
-          [
-            if (r.totalEpisodes.isNotEmpty && r.totalEpisodes != '?')
-              '${r.totalEpisodes} eps',
-            if (r.status.isNotEmpty && r.status != '?') r.status,
-            tracker.label,
-          ].join(' · '),
+          _formatSearchResultSubtitle(r, tracker),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(

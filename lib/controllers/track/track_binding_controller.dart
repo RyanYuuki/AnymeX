@@ -103,6 +103,14 @@ class TrackBindingController extends GetxController {
     }
   }
 
+  Future<List<Media>> searchOnSimkl(
+    String query, {
+    SimklSearchCategory category = SimklSearchCategory.anime,
+    int page = 1,
+  }) {
+    return Get.find<SimklService>().searchByCategory(query, category, page: page);
+  }
+
   Future<void> pushProgress(
     String mediaId,
     int progress, {
