@@ -201,11 +201,45 @@ class SimklService extends GetxController
     return [];
   }
 
+  Future<List<Media>> searchAnime(String query, {int page = 1}) async {
+    final animeUrl = Uri.https('api.simkl.com', '/search/anime', {
+      'q': query,
+      'extended': 'full',
+      'page': '$page',
+      'limit': '25',
+      'client_id': '${dotenv.env['SIMKL_CLIENT_ID']}',
+    });
+    final resp = await get(animeUrl);
+    if (resp.statusCode == 200) {
+      final data = jsonDecode(resp.body) as List<dynamic>;
+      List<Media> list = data.map((e) => Media.fromSimkl(e, true)).toList();
+      return list;
+    }
+    return [];
+  }
+
   @override
   Future<List<Media>> search(SearchParams params) async {
-    final movieData = await searchMovies(params.query, page: params.page);
-    final seriesData = await searchSeries(params.query, page: params.page);
-    return [...movieData, ...seriesData];
+    // Search movies, TV series, AND anime in parallel so the user can
+    // find any title regardless of type (anime tab, manga tab, etc.).
+    final results = await Future.wait([
+      searchMovies(params.query, page: params.page),
+      searchSeries(params.query, page: params.page),
+      searchAnime(params.query, page: params.page),
+    ]);
+    // De-duplicate by title (Simkl can return the same title across
+    // movie/tv/anime categories, e.g. a movie + its anime adaptation).
+    final seen = <String>{};
+    return [
+      ...results[0],
+      ...results[1],
+      ...results[2],
+    ].where((m) {
+      final key = m.title.toLowerCase().trim();
+      if (seen.contains(key)) return false;
+      seen.add(key);
+      return true;
+    }).toList();
   }
 
   @override

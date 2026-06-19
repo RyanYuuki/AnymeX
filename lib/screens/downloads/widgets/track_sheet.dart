@@ -50,16 +50,27 @@ class _TrackSheetState extends State<_TrackSheet> {
   List<Media> _searchResults = [];
   bool _searching = false;
 
+  /// Adult-content toggle for the search view. When ON, AniList/MAL
+  /// include 18+ titles (`args: true`); when OFF, SFW only.
+  /// Simkl ignores this (its search has no adult filter).
+  bool _showAdult = false;
+
   bool get _isManga => widget.summary.mediaType == 'Manga';
 
   String get _mediaId => widget.summary.folderName;
 
   Future<void> _runSearch(Tracker t, String query) async {
+    if (query.trim().isEmpty) {
+      setState(() => _searchResults = []);
+      return;
+    }
     setState(() => _searching = true);
     try {
       final results = await _ctrl.searchOn(
         t,
-        SearchParams(query: query, isManga: _isManga),
+        // args = isAdult (bool). MUST be non-null for AniList/MAL.
+        // Driven by the 18+ toggle in the search view.
+        SearchParams(query: query, isManga: _isManga, args: _showAdult),
       );
       if (mounted) setState(() => _searchResults = results);
     } catch (e) {
@@ -70,6 +81,15 @@ class _TrackSheetState extends State<_TrackSheet> {
       }
     } finally {
       if (mounted) setState(() => _searching = false);
+    }
+  }
+
+  /// Toggle the 18+ filter and re-run the search with the current query
+  /// so the user immediately sees the effect.
+  void _toggleAdult(Tracker t) {
+    setState(() => _showAdult = !_showAdult);
+    if (_searchCtrl.text.trim().isNotEmpty) {
+      _runSearch(t, _searchCtrl.text);
     }
   }
 
@@ -364,6 +384,8 @@ class _TrackSheetState extends State<_TrackSheet> {
 
   Widget _buildSearchView(BuildContext context, Tracker tracker) {
     final theme = context.colors;
+    // Simkl's search has no adult filter — hide the toggle for it.
+    final supportsAdultFilter = tracker != Tracker.simkl;
     return Flexible(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -391,6 +413,58 @@ class _TrackSheetState extends State<_TrackSheet> {
               ),
             ),
           ),
+          // 18+ toggle row — only for trackers that support adult filtering.
+          if (supportsAdultFilter)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: Row(
+                children: [
+                  FilterChip(
+                    label: const Text('18+',
+                        style: TextStyle(
+                            fontSize: 11, fontWeight: FontWeight.w700)),
+                    selected: _showAdult,
+                    selectedColor: theme.error.withOpacity(0.25),
+                    checkmarkColor: theme.error,
+                    labelStyle: TextStyle(
+                      color: _showAdult
+                          ? theme.error
+                          : theme.onSurface.withOpacity(0.6),
+                    ),
+                    backgroundColor: theme.surfaceContainer.withOpacity(0.3),
+                    side: BorderSide(
+                      color: _showAdult
+                          ? theme.error.withOpacity(0.4)
+                          : theme.outlineVariant.withOpacity(0.2),
+                    ),
+                    showCheckmark: false,
+                    avatar: Icon(
+                      _showAdult
+                          ? Icons.visibility_rounded
+                          : Icons.visibility_off_rounded,
+                      size: 13,
+                      color: _showAdult
+                          ? theme.error
+                          : theme.onSurface.withOpacity(0.4),
+                    ),
+                    onSelected: (_) => _toggleAdult(tracker),
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    visualDensity: VisualDensity.compact,
+                    padding: EdgeInsets.zero,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    _showAdult
+                        ? 'Showing all titles (incl. 18+)'
+                        : 'Hiding 18+ content',
+                    style: TextStyle(
+                      color: theme.onSurface.withOpacity(0.4),
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           Expanded(
             child: _searching
                 ? Center(

@@ -111,7 +111,23 @@ class TrackBindingController extends GetxController {
 
   /// Search a specific tracker for a title. Reuses the existing
   /// `<service>.search(SearchParams(...))` — no new endpoint.
+  ///
+  /// IMPORTANT: `args` (= isAdult) MUST be a non-null bool — AniList
+  /// uses it as `isAdult: params.args` and MAL as `sfw: !params.args`.
+  /// Leaving it null throws "Null is not a subtype of bool" inside the
+  /// service. We pass `false` (= not adult, sfw=true) by default.
   Future<List<Media>> searchOn(Tracker t, SearchParams params) {
+    // Defensive: ensure args is a bool for AniList/MAL which expect one.
+    if (params.args is! bool) {
+      // ignore: invalid_update_of_params_copy
+      params = SearchParams(
+        query: params.query,
+        isManga: params.isManga,
+        filters: params.filters,
+        args: false,
+        page: params.page,
+      );
+    }
     switch (t) {
       case Tracker.anilist:
         return Get.find<AnilistData>().search(params);
