@@ -32,6 +32,7 @@ class Settings extends GetxController {
 
   RxBool enableBetaUpdates = false.obs;
   RxBool writeLogToFile = false.obs;
+  RxBool useHighRefreshRate = true.obs;
   RxString customLogDirectory = ''.obs;
 
   RxString downloadPath = ''.obs;
@@ -84,13 +85,15 @@ class Settings extends GetxController {
 
     enableBetaUpdates.value = General.enableBetaUpdates.get<bool>(false);
     writeLogToFile.value = General.writeLogToFile.get<bool>(false);
+    useHighRefreshRate.value = General.useHighRefreshRate.get<bool>(true);
     customLogDirectory.value = General.customLogDirectory.get<String>("");
-    
+
     downloadPath.value = DownloadKeys.downloadPath.get<String>("");
     concurrentDownloads.value = DownloadKeys.concurrentDownloads.get<int>(3);
     downloadChunks.value = DownloadKeys.downloadChunks.get<int>(1);
     hlsParallelSegments.value = DownloadKeys.hlsParallelSegments.get<int>(3);
-    enableJxlCompression.value = DownloadKeys.enableJxlCompression.get<bool>(false);
+    enableJxlCompression.value =
+        DownloadKeys.enableJxlCompression.get<bool>(false);
 
     bridgeMode.value = PluginKeys.bridgeMode.get<String>(_defaultBridgeMode);
     if (Platform.isMacOS && bridgeMode.value != 'sidecar') {
@@ -108,16 +111,26 @@ class Settings extends GetxController {
     PlayerShaders.getMpvPath().then((e) {
       mpvPath.value = e;
     });
-    setHighRefreshRate();
+    applyDisplayRefreshMode();
   }
 
-  Future<void> setHighRefreshRate() async {
+  Future<void> applyDisplayRefreshMode() async {
     if (!Platform.isAndroid) return;
     try {
-      await FlutterDisplayMode.setHighRefreshRate();
+      if (useHighRefreshRate.value) {
+        await FlutterDisplayMode.setHighRefreshRate();
+      } else {
+        await FlutterDisplayMode.setPreferredMode(DisplayMode.auto);
+      }
     } catch (e) {
-      Logger.e("Error setting high refresh rate: $e");
+      Logger.e("Error setting display refresh mode: $e");
     }
+  }
+
+  Future<void> saveHighRefreshRateToggle(bool value) async {
+    useHighRefreshRate.value = value;
+    General.useHighRefreshRate.set(value);
+    await applyDisplayRefreshMode();
   }
 
   Future<void> _fetchInviteLinks() async {

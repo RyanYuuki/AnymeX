@@ -25,6 +25,7 @@ enum General {
   communityListViewIsGrid,
   hasJoinedNewDiscord,
   discordRpcEnabled,
+  useHighRefreshRate,
 }
 
 enum ThemeKeys {
