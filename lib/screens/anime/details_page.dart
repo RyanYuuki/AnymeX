@@ -402,7 +402,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
       episodeList.clear();
       rawEpisodes.clear();
       final episodeFuture = await sourceController.activeSource.value!.methods
-          .getDetail(DMedia.withUrl(media.id));    
+          .getDetail(DMedia.withUrl(media.id));
       if (_isStaleSourceRequest(activeRequestId) || !mounted) {
         return;
       }

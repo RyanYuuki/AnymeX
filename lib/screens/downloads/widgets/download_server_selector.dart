@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:anymex/screens/downloads/controller/download_controller.dart';
 import 'package:anymex/screens/downloads/model/download_models.dart';
 import 'package:anymex/database/isar_models/episode.dart';
@@ -55,6 +56,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
   final _selectedQuality = RxnString();
   bool _isDisposed = false;
   String? _cancelToken;
+  StreamSubscription? _streamSubscription;
 
   @override
   void initState() {
@@ -65,6 +67,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
   @override
   void dispose() {
     _isDisposed = true;
+    _streamSubscription?.cancel();
     if (_cancelToken != null) {
       widget.source.cancelRequest(_cancelToken!);
     }
@@ -95,19 +98,28 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
           parameters: SourceParams(cancelToken: token));
 
       if (videoStream != null) {
-        await for (final v in videoStream) {
-          if (_isDisposed) break;
-          final nextVideo = hive.Video.fromVideo(v);
-          final exists = _servers.any((existing) =>
-              existing.quality == nextVideo.quality &&
-              existing.originalUrl == nextVideo.originalUrl);
-          if (!exists) {
-            _servers.add(nextVideo);
-            if (_selectedQuality.value == null) {
-              _selectedQuality.value = nextVideo.quality;
+        _streamSubscription = videoStream.listen(
+          (v) {
+            if (_isDisposed) return;
+            final nextVideo = hive.Video.fromVideo(v);
+            final exists = _servers.any((existing) =>
+                existing.quality == nextVideo.quality &&
+                existing.originalUrl == nextVideo.originalUrl);
+            if (!exists) {
+              _servers.add(nextVideo);
+              if (_selectedQuality.value == null) {
+                _selectedQuality.value = nextVideo.quality;
+              }
             }
-          }
-        }
+          },
+          onError: (e) {
+            _errorMsg.value = e.toString();
+            _isLoading.value = false;
+          },
+          onDone: () {
+            _isLoading.value = false;
+          },
+        );
       } else {
         final rawVideos = await widget.source.methods.getVideoList(deEpisode,
             parameters: SourceParams(cancelToken: token));
@@ -116,11 +128,11 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
         if (vids.isNotEmpty) {
           _selectedQuality.value = vids.first.quality;
         }
+        _isLoading.value = false;
       }
     } catch (e, s) {
       _errorMsg.value = e.toString();
       print('Error fetching servers: $e - $s');
-    } finally {
       _isLoading.value = false;
     }
   }

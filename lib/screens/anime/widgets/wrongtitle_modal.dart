@@ -125,6 +125,15 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                       );
                     }
 
+                    final url = Uri.tryParse(
+                      sourceController.activeMangaSource.value?.baseUrl ?? '',
+                    );
+
+                    final origin =
+                        (url != null && url.hasScheme && url.host.isNotEmpty)
+                            ? url.origin
+                            : 'https://google.com';
+
                     return GridView.builder(
                       padding: const EdgeInsets.all(20),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -162,6 +171,10 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                                     height: 140,
                                     radius: 12,
                                     width: double.infinity,
+                                    headers: {
+                                      'Referer': '$origin/',
+                                      'Origin': origin,
+                                    },
                                   ),
                                 ),
                                 const SizedBox(height: 10),
