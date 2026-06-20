@@ -164,6 +164,28 @@ Pretty Name: ${info.prettyName}
       _messageQueue.add(logEntry);
     }
 
+    if (kDebugMode) {
+      String colorCode;
+      switch (loggerName) {
+        case 'ERROR':
+          colorCode = '\x1B[31m'; // Red
+          break;
+        case 'WARNING':
+          colorCode = '\x1B[33m'; // Yellow
+          break;
+        case 'INFO':
+          colorCode = '\x1B[32m'; // Green
+          break;
+        case 'DEBUG':
+          colorCode = '\x1B[36m'; // Cyan
+          break;
+        default:
+          colorCode = '\x1B[35m'; // Magenta
+      }
+      const resetCode = '\x1B[0m';
+      Zone.root.print('$colorCode$logEntry$resetCode');
+    }
+
     developer.log(message, level: logLevel, name: loggerName);
   }
 
