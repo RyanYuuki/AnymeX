@@ -47,7 +47,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconly/iconly.dart';
@@ -120,67 +119,96 @@ void initDeepLinkListener(List<String> args) async {
   );
 }
 
+Future<void> safeCall(FutureOr<void> Function() function, {String? errorMessage}) async {
+  try {
+    await function();
+  } catch (e) {
+    if (errorMessage != null) {
+      Logger.e("$errorMessage: $e");
+    } else {
+      debugPrint("Error: $e");
+    }
+  }
+}
+
 void main(List<String> args) async {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
-    if (!Platform.isLinux) {
-      if (Platform.isWindows || Platform.isMacOS) {
-        webViewEnvironment = await WebViewEnvironment.create();
+    
+    await safeCall(() async {
+      if (!Platform.isLinux) {
+        if (Platform.isWindows || Platform.isMacOS) {
+          webViewEnvironment = await WebViewEnvironment.create();
+        }
+        await InAppWebViewController.setWebContentsDebuggingEnabled(
+          !const bool.fromEnvironment('dart.vm.product'),
+        );
       }
-      await InAppWebViewController.setWebContentsDebuggingEnabled(
-        !const bool.fromEnvironment('dart.vm.product'), 
-      );
-    }
-    if (Platform.isAndroid) {
-      FlutterDisplayMode.setHighRefreshRate().catchError((e) {
-        debugPrint("Error setting high refresh rate: $e");
-      });
-    }
-    ExternalFontLoader.loadAllFonts();
+    }, errorMessage: 'Failed to initialize WebViewEnvironment');
+
+    await safeCall(() => ExternalFontLoader.loadAllFonts(),
+        errorMessage: 'Failed to load external fonts');
 
     await Logger.init();
-    await dotenv.load(fileName: ".env");
+
+    await safeCall(() => dotenv.load(fileName: ".env"),
+        errorMessage: 'Failed to load .env file');
 
     if (!Platform.isLinux) {
-      await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      );
+      await safeCall(() => Firebase.initializeApp(
+            options: DefaultFirebaseOptions.currentPlatform,
+          ),
+          errorMessage: 'Failed to initialize Firebase');
     }
 
     if (Platform.isWindows) {
-      [
-        'dar',
-        'anymex',
-        'sugoireads',
-        'mangayomi',
-        'cloudstreamrepo',
-        'sora',
-        'tachiyomi',
-        'aniyomi'
-      ].forEach(registerProtocolHandler);
+      await safeCall(() {
+        [
+          'dar',
+          'anymex',
+          'sugoireads',
+          'mangayomi',
+          'cloudstreamrepo',
+          'sora',
+          'tachiyomi',
+          'aniyomi'
+        ].forEach(registerProtocolHandler);
+      }, errorMessage: 'Failed to register protocol handlers');
     }
-    await Database().init();
+
+    await safeCall(() => Database().init(),
+        errorMessage: 'CRITICAL: Database initialization failed');
+
     HttpOverrides.global = MyHttpoverrides();
 
     _initializeGetxController();
-    initDeepLinkListener(args);
-    initializeDateFormatting();
-    MediaKit.ensureInitialized();
-    if (!Platform.isAndroid && !Platform.isIOS) {
-      await windowManager.ensureInitialized();
-      if (Platform.isWindows) {
-        await AnymexTitleBar.initialize();
+
+    await safeCall(() => initDeepLinkListener(args),
+        errorMessage: 'Failed to initialize deep link listener');
+
+    await safeCall(() => initializeDateFormatting(),
+        errorMessage: 'Failed to initialize date formatting');
+
+    await safeCall(() => MediaKit.ensureInitialized(),
+        errorMessage: 'Failed to initialize MediaKit');
+
+    await safeCall(() async {
+      if (!Platform.isAndroid && !Platform.isIOS) {
+        await windowManager.ensureInitialized();
+        if (Platform.isWindows) {
+          await AnymexTitleBar.initialize();
+        }
+      } else {
+        SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+        SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+            systemNavigationBarDividerColor: Colors.transparent,
+            systemNavigationBarContrastEnforced: false,
+            systemNavigationBarColor: Colors.transparent,
+            systemNavigationBarIconBrightness: Brightness.dark,
+            statusBarColor: Colors.transparent,
+            statusBarBrightness: Brightness.dark));
       }
-    } else {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-      SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-          systemNavigationBarDividerColor: Colors.transparent,
-          systemNavigationBarContrastEnforced: false,
-          systemNavigationBarColor: Colors.transparent,
-          systemNavigationBarIconBrightness: Brightness.dark,
-          statusBarColor: Colors.transparent,
-          statusBarBrightness: Brightness.dark));
-    }
+    }, errorMessage: 'Failed to initialize window manager or system UI');
 
     FlutterError.onError = (FlutterErrorDetails details) async {
       FlutterError.presentError(details);
@@ -199,37 +227,47 @@ void main(List<String> args) async {
     Logger.e("STACK: $stackTrace");
   }, zoneSpecification: ZoneSpecification(
     print: (Zone self, ZoneDelegate parent, Zone zone, String line) {
-      Logger.i(line);
+      if (Logger.isInitialized) {
+        Logger.i(line);
+      } else {
+        parent.print(zone, line);
+      }
     },
   ));
 }
 
 void _initializeGetxController() async {
-  Get.put(Settings());
-  Get.put(OfflineStorageController());
-  Get.put(AnilistAuth());
-  Get.put(CommunityService());
-  Get.put(AnilistData());
-  Get.put(SimklService());
-  Get.put(MalService());
-  Get.put(DiscordRPCController());
-  if (!Get.isRegistered<SourceController>()) {
-    Get.put(SourceController());
-  }
-  Get.put(ServiceHandler());
-  Get.put(GreetingController());
-  Get.put(CommentumService());
-  Get.put(CommentPreloader());
-  Get.put(GistSyncController(), permanent: true);
-  Get.put(DownloadController(), permanent: true);
-  Get.lazyPut(() => CacheController());
-  await StorageManagerService().enforceImageCacheLimit();
+  await safeCall(() {
+    Get.put(Settings());
+    Get.put(OfflineStorageController());
+    Get.put(AnilistAuth());
+    Get.put(CommunityService());
+    Get.put(AnilistData());
+    Get.put(SimklService());
+    Get.put(MalService());
+    Get.put(DiscordRPCController());
+    if (!Get.isRegistered<SourceController>()) {
+      Get.put(SourceController());
+    }
+    Get.put(ServiceHandler());
+    Get.put(GreetingController());
+    Get.put(CommentumService());
+    Get.put(CommentPreloader());
+    Get.put(GistSyncController(), permanent: true);
+    Get.put(DownloadController(), permanent: true);
+    Get.lazyPut(() => CacheController());
+  }, errorMessage: 'Failed to register GetX controllers');
 
-  TorrentStreamResolver.initialize().then((_) {
-    debugPrint('Torrent engine initialized');
-  }).catchError((e) {
-    debugPrint('Torrent engine init failed (non-critical): $e');
-  });
+  await safeCall(() => StorageManagerService().enforceImageCacheLimit(),
+      errorMessage: 'Failed to enforce image cache limit');
+
+  await safeCall(() {
+    TorrentStreamResolver.initialize().then((_) {
+      debugPrint('Torrent engine initialized');
+    }).catchError((e) {
+      debugPrint('Torrent engine init failed (non-critical): $e');
+    });
+  }, errorMessage: 'Failed to initialize Torrent engine');
 }
 
 class MainApp extends StatefulWidget {
