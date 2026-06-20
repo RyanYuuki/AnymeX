@@ -31,6 +31,7 @@ class AnymeXImage extends StatefulWidget {
   final Color? color;
   final String? errorImage;
   final ValueChanged<Color>? onColorExtracted;
+  final Map<String, String>? headers;
 
   const AnymeXImage({
     super.key,
@@ -42,7 +43,8 @@ class AnymeXImage extends StatefulWidget {
     this.alignment = Alignment.center,
     this.color,
     this.errorImage,
-    this.onColorExtracted,
+    this.onColorExtracted, 
+    this.headers,
   });
 
   @override
@@ -104,6 +106,7 @@ class _AnymeXImageState extends State<AnymeXImage> {
             : CachedNetworkImage(
                 cacheManager: AnymeXCacheManager.instance,
                 imageUrl: widget.imageUrl,
+                httpHeaders: widget.headers,
                 width: widget.width,
                 height: widget.height,
                 fit: widget.fit,
