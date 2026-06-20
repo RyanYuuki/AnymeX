@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:async';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
@@ -14,7 +13,7 @@ class Logger {
   static IOSink? _fileSink;
   static bool _isInitialized = false;
   static bool _writeToFileEnabled = false;
-  static final _messageQueue = StreamController<String>();
+  static StreamController<String>? _messageQueue;
   static StreamSubscription? _queueSubscription;
   static const int _maxLogFileSizeBytes = 100 * 1024;
 
@@ -22,18 +21,26 @@ class Logger {
     if (_isInitialized) return;
 
     try {
-      _queueSubscription = _messageQueue.stream.listen((logEntry) {
-        _fileSink?.writeln(logEntry);
+      _messageQueue = StreamController<String>();
+      _queueSubscription = _messageQueue!.stream.listen((logEntry) {
+        try {
+          _fileSink?.writeln(logEntry);
+        } catch (exception) {
+          _writeToFileEnabled = false;
+          _fileSink = null;
+          developer.log('Logger: Error writing to log file, disabled file logging: $exception', level: 900, name: 'LOGGER');
+        }
       });
 
       _isInitialized = true;
       _initMethodChannelHandler();
     } catch (exception) {
-      debugPrintSynchronously('Logger init failed: $exception');
+      developer.log('Logger init failed: $exception', level: 900, name: 'LOGGER');
     }
   }
 
   static bool get isFileLoggingEnabled => _writeToFileEnabled;
+  static bool get isInitialized => _isInitialized;
 
   static Future<void> setFileLoggingEnabled(bool enabled,
       {String? customPath}) async {
@@ -51,8 +58,10 @@ class Logger {
     }
 
     _writeToFileEnabled = false;
-    await _fileSink?.flush();
-    await _fileSink?.close();
+    try {
+      await _fileSink?.flush();
+      await _fileSink?.close();
+    } catch (_) {}
     _fileSink = null;
   }
 
@@ -76,78 +85,88 @@ class Logger {
       if (!await _logFile!.exists()) {
         await _logFile!.create(recursive: true);
       }
+
+      try {
+        await _fileSink?.flush();
+        await _fileSink?.close();
+      } catch (_) {}
+      _fileSink = _logFile!.openWrite(mode: FileMode.append);
     } catch (e) {
-      debugPrint('Logger: Failed to initialize log file at $customPath: $e');
+      developer.log('Logger: Failed to initialize log file at $customPath: $e', level: 900, name: 'LOGGER');
+      _logFile = null;
+      _fileSink = null;
+      _writeToFileEnabled = false;
       if (customPath != null) {
         await _ensureLogFileReady(customPath: null);
       }
     }
-    await _fileSink?.flush();
-    await _fileSink?.close();
-    _fileSink = _logFile!.openWrite(mode: FileMode.append);
   }
 
   static Future<void> _logInitializationDetails() async {
-    final pkg = await PackageInfo.fromPlatform();
+    try {
+      final pkg = await PackageInfo.fromPlatform();
 
-    final deviceInfo = DeviceInfoPlugin();
-    String deviceDetails = '';
+      final deviceInfo = DeviceInfoPlugin();
+      String deviceDetails = '';
 
-    if (Platform.isAndroid) {
-      final info = await deviceInfo.androidInfo;
-      deviceDetails = '''
+      if (Platform.isAndroid) {
+        final info = await deviceInfo.androidInfo;
+        deviceDetails = '''
 Device: ${info.manufacturer} ${info.model}
 Brand: ${info.brand}
 Device ID: ${info.id}
 Android Version: ${info.version.release} (SDK ${info.version.sdkInt})
 Fingerprint: ${info.fingerprint}
 ''';
-    } else if (Platform.isIOS) {
-      final info = await deviceInfo.iosInfo;
-      deviceDetails = '''
+      } else if (Platform.isIOS) {
+        final info = await deviceInfo.iosInfo;
+        deviceDetails = '''
 Device: ${info.name}
 Model: ${info.model}
 System: ${info.systemName} ${info.systemVersion}
 Identifier: ${info.identifierForVendor}
 ''';
-    } else if (Platform.isWindows) {
-      final info = await deviceInfo.windowsInfo;
-      deviceDetails = '''
+      } else if (Platform.isWindows) {
+        final info = await deviceInfo.windowsInfo;
+        deviceDetails = '''
 Computer Name: ${info.computerName}
 Number of Cores: ${info.numberOfCores}
 System Memory: ${info.systemMemoryInMegabytes} MB
 OS: Windows ${info.displayVersion} (Build ${info.buildNumber})
 ''';
-    } else if (Platform.isMacOS) {
-      final info = await deviceInfo.macOsInfo;
-      deviceDetails = '''
+      } else if (Platform.isMacOS) {
+        final info = await deviceInfo.macOsInfo;
+        deviceDetails = '''
 Model: ${info.model}
 CPU: ${info.arch}
 OS: macOS ${info.osRelease}
 Kernel: ${info.kernelVersion}
 ''';
-    } else if (Platform.isLinux) {
-      final info = await deviceInfo.linuxInfo;
-      deviceDetails = '''
+      } else if (Platform.isLinux) {
+        final info = await deviceInfo.linuxInfo;
+        deviceDetails = '''
 Name: ${info.name}
 Version: ${info.version}
 ID: ${info.id}
 Architecture: ${info.machineId}
 Pretty Name: ${info.prettyName}
 ''';
-    }
+      }
 
-    _writeLogEntry(
-      '=== Logger initialized ===\n'
-          'App Info:\n'
-          'Name: ${pkg.appName}\n'
-          'Package: ${pkg.packageName}\n'
-          'Version: ${pkg.version} (Build ${pkg.buildNumber})\n'
-          '\nDevice Info:\n$deviceDetails'
-          '==========================',
-      'SYSTEM',
-      500,
-    );
+      _writeLogEntry(
+        '=== Logger initialized ===\n'
+            'App Info:\n'
+            'Name: ${pkg.appName}\n'
+            'Package: ${pkg.packageName}\n'
+            'Version: ${pkg.version} (Build ${pkg.buildNumber})\n'
+            '\nDevice Info:\n$deviceDetails'
+            '==========================',
+        'SYSTEM',
+        500,
+      );
+    } catch (e) {
+      developer.log('Logger: Failed to log initialization details: $e', level: 900, name: 'LOGGER');
+    }
   }
 
   static void _writeLogEntry(String message, String loggerName, int logLevel) {
@@ -161,7 +180,11 @@ Pretty Name: ${info.prettyName}
     final logEntry = '[$formattedTimestamp][$loggerName] $message';
 
     if (_writeToFileEnabled && _fileSink != null) {
-      _messageQueue.add(logEntry);
+      try {
+        _messageQueue?.add(logEntry);
+      } catch (e) {
+        developer.log('Logger: Failed to add log to queue: $e', level: 900, name: 'LOGGER');
+      }
     }
 
     developer.log(message, level: logLevel, name: loggerName);
@@ -197,7 +220,7 @@ Pretty Name: ${info.prettyName}
 
     // Notify native that we are ready to receive logs
     channel.invokeMethod('ready').catchError((e) {
-      debugPrint('Logger: Failed to send ready signal: $e');
+      developer.log('Logger: Failed to send ready signal: $e', level: 500, name: 'LOGGER');
     });
   }
 
@@ -256,10 +279,16 @@ Pretty Name: ${info.prettyName}
   static Future<void> dispose() async {
     if (!_isInitialized) return;
 
-    await _queueSubscription?.cancel();
-    await _messageQueue.close();
-    await _fileSink?.flush();
-    await _fileSink?.close();
+    try {
+      await _queueSubscription?.cancel();
+      _queueSubscription = null;
+      await _messageQueue?.close();
+      _messageQueue = null;
+      await _fileSink?.flush();
+      await _fileSink?.close();
+    } catch (_) {}
+    _fileSink = null;
+    _writeToFileEnabled = false;
     _isInitialized = false;
   }
 
