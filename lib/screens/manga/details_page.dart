@@ -750,7 +750,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
     return Obx(() => ResponsiveNavBar(
             isDesktop: false,
             currentIndex: selectedPage.value,
-            margin: const EdgeInsets.symmetric(horizontal: 80, vertical: 40),
+            margin: const EdgeInsets.symmetric(horizontal: 60, vertical: 30),
             items: [
               NavItem(
                   onTap: _onPageSelected,

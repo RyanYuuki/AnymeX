@@ -3,9 +3,28 @@ import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+class NavItem {
+  final IconData selectedIcon;
+  final IconData unselectedIcon;
+  final String label;
+  final double? iconSize;
+  final Function(int n) onTap;
+  final Widget? altIcon;
+
+  const NavItem({
+    required this.selectedIcon,
+    required this.unselectedIcon,
+    required this.label,
+    this.iconSize,
+    this.altIcon,
+    required this.onTap,
+  });
+}
 
 class ResponsiveNavBar extends StatefulWidget {
   final bool isDesktop;
@@ -27,98 +46,349 @@ class ResponsiveNavBar extends StatefulWidget {
   State<ResponsiveNavBar> createState() => _ResponsiveNavBarState();
 }
 
-class _ResponsiveNavBarState extends State<ResponsiveNavBar> {
+class _ResponsiveNavBarState extends State<ResponsiveNavBar>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _indicatorController;
+  late Animation<double> _indicatorPosition;
+  int _previousIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _previousIndex = widget.currentIndex;
+    _indicatorController = AnimationController(
+      duration: const Duration(milliseconds: 400),
+      vsync: this,
+    );
+    _indicatorPosition = Tween<double>(
+      begin: widget.currentIndex.toDouble(),
+      end: widget.currentIndex.toDouble(),
+    ).animate(CurvedAnimation(
+      parent: _indicatorController,
+      curve: Curves.easeOutCubic,
+    ));
+  }
+
+  @override
+  void didUpdateWidget(ResponsiveNavBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.currentIndex != widget.currentIndex) {
+      _previousIndex = oldWidget.currentIndex;
+      _indicatorPosition = Tween<double>(
+        begin: _previousIndex.toDouble(),
+        end: widget.currentIndex.toDouble(),
+      ).animate(CurvedAnimation(
+        parent: _indicatorController,
+        curve: Curves.easeOutCubic,
+      ));
+      _indicatorController.forward(from: 0);
+    }
+  }
+
+  @override
+  void dispose() {
+    _indicatorController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final settings = Get.find<Settings>();
     final RxBool translucent = settings.transculentBar.obs;
 
-    final int itemsCount = widget.items.length;
-    final double calculatedHeight = widget.isDesktop
-        ? (itemsCount * 71.0)
-            .clamp(100, MediaQuery.of(context).size.height - 100)
-        : 80.0;
+    final borderRadius = widget.borderRadius ??
+        BorderRadius.circular(
+          widget.isDesktop ? 24.multiplyRadius() : 28.multiplyRadius(),
+        );
 
     return AnimatedContainer(
-      width: MediaQuery.of(context).size.width,
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        border: Border.all(
-          color: theme.colorScheme.onSurface.opaque(0.2, iReallyMeanIt: true),
-          width: 1,
-        ),
-        borderRadius: widget.borderRadius ??
-            BorderRadius.circular(
-                widget.isDesktop ? 40.multiplyRadius() : 28.multiplyRadius()),
-      ),
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
       margin: widget.margin ??
           EdgeInsets.symmetric(
             horizontal: widget.isDesktop ? 5 : 40,
             vertical: widget.isDesktop ? 0 : 20,
           ),
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-      height: calculatedHeight,
+      decoration: BoxDecoration(
+        borderRadius: borderRadius,
+        border: Border.all(
+          color: theme.colorScheme.onSurface.opaque(0.08, iReallyMeanIt: true),
+          width: 0.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.opaque(0.08, iReallyMeanIt: true),
+            blurRadius: 24,
+            spreadRadius: 0,
+            offset: const Offset(0, 4),
+          ),
+          BoxShadow(
+            color: theme.colorScheme.primary.opaque(0.04, iReallyMeanIt: true),
+            blurRadius: 40,
+            spreadRadius: -8,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
       child: ClipRRect(
-        borderRadius: widget.borderRadius ??
-            BorderRadius.circular(
-                widget.isDesktop ? 40.multiplyRadius() : 28.multiplyRadius()),
+        borderRadius: borderRadius,
+        child: Obx(() {
+          final isTranslucent = translucent.value;
+          return BackdropFilter(
+            filter: isTranslucent
+                ? ImageFilter.blur(sigmaX: 10, sigmaY: 10)
+                : ImageFilter.blur(sigmaX: 0, sigmaY: 0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: isTranslucent
+                    ? theme.colorScheme.surfaceContainer.withValues(alpha: 0.45)
+                    : theme.colorScheme.surfaceContainer
+                        .withValues(alpha: 0.92),
+                borderRadius: borderRadius,
+              ),
+              child: widget.isDesktop
+                  ? _buildDesktopLayout(theme)
+                  : _buildMobileLayout(theme),
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget _buildMobileLayout(ThemeData theme) {
+    final itemCount = widget.items.length;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+      child: SizedBox(
+        height: 58,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final totalWidth = constraints.maxWidth;
+            final itemWidth = totalWidth / itemCount;
+
+            return Stack(
+              children: [
+                AnimatedBuilder(
+                  animation: _indicatorPosition,
+                  builder: (context, _) {
+                    final pos = _indicatorPosition.value;
+                    return Positioned(
+                      left: pos * itemWidth + 4,
+                      top: 3,
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        width: itemWidth - 8,
+                        height: 52,
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(22.multiplyRadius()),
+                          color: theme.colorScheme.primary
+                              .opaque(0.12, iReallyMeanIt: true),
+                          border: Border.all(
+                            color: theme.colorScheme.primary
+                                .opaque(0.15, iReallyMeanIt: true),
+                            width: 0.5,
+                          ),
+                          boxShadow: [
+                            glowingShadow(context),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                Row(
+                  children: List.generate(itemCount, (index) {
+                    final item = widget.items[index];
+                    final isSelected = widget.currentIndex == index;
+                    return Expanded(
+                      child: GestureDetector(
+                        onTap: () => item.onTap(index),
+                        behavior: HitTestBehavior.opaque,
+                        child: _MobileNavItem(
+                          item: item,
+                          isSelected: isSelected,
+                          theme: theme,
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDesktopLayout(ThemeData theme) {
+    final itemCount = widget.items.length;
+    const itemHeight = 56.0;
+    const gap = 4.0;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
+      child: SizedBox(
+        height: itemCount * (itemHeight + gap) - gap,
         child: Stack(
-          fit: StackFit.expand,
           children: [
-            Obx(() {
-              if (translucent.value) {
-                return Positioned.fill(
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.surfaceContainer
-                            .withValues(alpha: 0.2),
+            AnimatedBuilder(
+              animation: _indicatorPosition,
+              builder: (context, _) {
+                final pos = _indicatorPosition.value;
+                return Positioned(
+                  top: pos * (itemHeight + gap) + 2,
+                  left: 2,
+                  right: 2,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    height: itemHeight - 4,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(18.multiplyRadius()),
+                      color: theme.colorScheme.primary
+                          .opaque(0.12, iReallyMeanIt: true),
+                      border: Border.all(
+                        color: theme.colorScheme.primary
+                            .opaque(0.15, iReallyMeanIt: true),
+                        width: 0.5,
+                      ),
+                      boxShadow: [
+                        lightGlowingShadow(context),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: List.generate(itemCount, (index) {
+                final item = widget.items[index];
+                final isSelected = widget.currentIndex == index;
+                return Padding(
+                  padding:
+                      EdgeInsets.only(bottom: index < itemCount - 1 ? gap : 0),
+                  child: AnymexOnTap(
+                    margin: 0,
+                    scale: 1,
+                    onTap: () => item.onTap(index),
+                    child: SizedBox(
+                      height: itemHeight,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeOutCubic,
+                            width: 3,
+                            height: isSelected ? 24 : 0,
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? theme.colorScheme.primary
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(1.5),
+                              boxShadow: isSelected
+                                  ? [
+                                      BoxShadow(
+                                        color: theme.colorScheme.primary
+                                            .opaque(0.5, iReallyMeanIt: true),
+                                        blurRadius: 8,
+                                        spreadRadius: 0,
+                                      ),
+                                    ]
+                                  : [],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          item.altIcon ??
+                              AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 250),
+                                child: Icon(
+                                  isSelected
+                                      ? item.selectedIcon
+                                      : item.unselectedIcon,
+                                  key: ValueKey(isSelected),
+                                  color: isSelected
+                                      ? theme.colorScheme.primary
+                                      : theme.colorScheme.onSurface
+                                          .opaque(0.5, iReallyMeanIt: true),
+                                  size: item.iconSize ?? 22,
+                                ),
+                              ),
+                          const SizedBox(width: 8),
+                        ],
                       ),
                     ),
                   ),
                 );
-              } else {
-                return Positioned.fill(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.secondaryContainer,
-                    ),
-                  ),
-                );
-              }
-            }),
-            Align(
-              alignment: Alignment.center,
-              child: _buildFlex(widget.items, widget.isDesktop, theme),
+              }),
             ),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildFlex(List<NavItem> items, bool isDesktop, ThemeData theme) {
-    return Flex(
-      direction: isDesktop ? Axis.vertical : Axis.horizontal,
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisSize: MainAxisSize.max,
-      children: items.asMap().entries.map((entry) {
-        final index = entry.key;
-        final item = entry.value;
-        return NavBarItem(
-          altIcon: item.altIcon,
-          iconSize: item.iconSize ?? 24,
-          isSelected: widget.currentIndex == index,
-          onTap: () => item.onTap(index),
-          isVertical: isDesktop,
-          selectedIcon: item.selectedIcon,
-          unselectedIcon: item.unselectedIcon,
-        );
-      }).toList(),
+class _MobileNavItem extends StatelessWidget {
+  final NavItem item;
+  final bool isSelected;
+  final ThemeData theme;
+
+  const _MobileNavItem({
+    required this.item,
+    required this.isSelected,
+    required this.theme,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 58,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          item.altIcon ??
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 250),
+                switchInCurve: Curves.easeOutCubic,
+                switchOutCurve: Curves.easeInCubic,
+                child: Icon(
+                  isSelected ? item.selectedIcon : item.unselectedIcon,
+                  key: ValueKey(isSelected),
+                  color: isSelected
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.onSurface
+                          .opaque(0.45, iReallyMeanIt: true),
+                  size: item.iconSize ?? 22,
+                ),
+              ),
+          const SizedBox(height: 4),
+          AnimatedDefaultTextStyle(
+            duration: const Duration(milliseconds: 250),
+            style: TextStyle(
+              fontSize: isSelected ? 10.5 : 10,
+              fontFamily: isSelected ? 'Poppins-SemiBold' : 'Poppins',
+              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+              color: isSelected
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.onSurface
+                      .opaque(0.45, iReallyMeanIt: true),
+              height: 1.2,
+            ),
+            child: AnymexText(
+              text: item.label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              size: 12,
+              variant: isSelected ? TextVariant.semiBold : TextVariant.regular,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -150,7 +420,7 @@ class NavBarItem extends StatefulWidget {
 class _NavBarItemState extends State<NavBarItem>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _indicatorAnimation;
+  late Animation<double> _scaleAnimation;
 
   @override
   void initState() {
@@ -159,14 +429,9 @@ class _NavBarItemState extends State<NavBarItem>
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
-
-    _indicatorAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeOutCubic,
-      ),
+    _scaleAnimation = Tween<double>(begin: 0.85, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
     );
-
     if (widget.isSelected) {
       _controller.value = 1.0;
     }
@@ -195,41 +460,33 @@ class _NavBarItemState extends State<NavBarItem>
     final theme = Theme.of(context);
 
     if (widget.isVertical) {
-      
       return Container(
-        padding: const EdgeInsets.symmetric(vertical: 5),
+        padding: const EdgeInsets.symmetric(vertical: 4),
         constraints: const BoxConstraints(minWidth: 30),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            AnimatedBuilder(
-              animation: _indicatorAnimation,
-              builder: (context, child) {
-                return Align(
-                  alignment: Alignment.centerLeft,
-                  child: Transform.scale(
-                    scaleY: _indicatorAnimation.value,
-                    alignment: Alignment.topCenter,
-                    child: Container(
-                      height: 32,
-                      width: 3,
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.primary,
-                        borderRadius: BorderRadius.circular(1.5),
-                        boxShadow: [
-                          BoxShadow(
-                            color: theme.colorScheme.primary
-                                .opaque(0.6, iReallyMeanIt: true),
-                            blurRadius: 12,
-                            spreadRadius: 1,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOutCubic,
+              width: 3,
+              height: widget.isSelected ? 28 : 0,
+              decoration: BoxDecoration(
+                color: widget.isSelected
+                    ? theme.colorScheme.primary
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(1.5),
+                boxShadow: widget.isSelected
+                    ? [
+                        BoxShadow(
+                          color: theme.colorScheme.primary
+                              .opaque(0.5, iReallyMeanIt: true),
+                          blurRadius: 8,
+                          spreadRadius: 0,
+                        ),
+                      ]
+                    : [],
+              ),
             ),
             AnymexOnTap(
               margin: 0,
@@ -239,21 +496,27 @@ class _NavBarItemState extends State<NavBarItem>
                 duration: const Duration(milliseconds: 300),
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                    color: widget.isSelected
-                        ? theme.colorScheme.primary
-                            .opaque(0.1, iReallyMeanIt: true)
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: widget.isSelected ? [lightGlowingShadow(context)] : []),
+                  color: widget.isSelected
+                      ? theme.colorScheme.primary
+                          .opaque(0.1, iReallyMeanIt: true)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow:
+                      widget.isSelected ? [lightGlowingShadow(context)] : [],
+                ),
                 child: widget.altIcon ??
-                    Icon(
-                      widget.isSelected
-                          ? widget.selectedIcon
-                          : widget.unselectedIcon,
-                      color: widget.isSelected
-                          ? theme.colorScheme.primary
-                          : theme.colorScheme.inverseSurface,
-                      size: widget.iconSize,
+                    ScaleTransition(
+                      scale: _scaleAnimation,
+                      child: Icon(
+                        widget.isSelected
+                            ? widget.selectedIcon
+                            : widget.unselectedIcon,
+                        color: widget.isSelected
+                            ? theme.colorScheme.primary
+                            : theme.colorScheme.onSurface
+                                .opaque(0.5, iReallyMeanIt: true),
+                        size: widget.iconSize,
+                      ),
                     ),
               ),
             ),
@@ -261,7 +524,6 @@ class _NavBarItemState extends State<NavBarItem>
         ),
       );
     } else {
-      
       return Container(
         constraints: const BoxConstraints(minWidth: 30),
         child: GestureDetector(
@@ -269,34 +531,30 @@ class _NavBarItemState extends State<NavBarItem>
           behavior: HitTestBehavior.opaque,
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOutQuint,
-            width: widget.isSelected ? 80.0 : 50.0,
-            height: 50.0,
+            curve: Curves.easeOutCubic,
+            width: widget.isSelected ? 72.0 : 50.0,
+            height: 46.0,
             decoration: BoxDecoration(
               color: widget.isSelected
                   ? theme.colorScheme.primary.opaque(0.1, iReallyMeanIt: true)
                   : Colors.transparent,
-              borderRadius: BorderRadius.circular(25),
+              borderRadius: BorderRadius.circular(22),
               boxShadow: widget.isSelected ? [glowingShadow(context)] : [],
             ),
             child: Center(
               child: widget.altIcon ??
-                  Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      ScaleTransition(
-                        scale: Tween(begin: 0.8, end: 1.0).animate(_controller),
-                        child: Icon(
-                          widget.isSelected
-                              ? widget.selectedIcon
-                              : widget.unselectedIcon,
-                          color: widget.isSelected
-                              ? theme.colorScheme.primary
-                              : theme.colorScheme.inverseSurface.opaque(0.7),
-                          size: widget.iconSize,
-                        ),
-                      ),
-                    ],
+                  ScaleTransition(
+                    scale: _scaleAnimation,
+                    child: Icon(
+                      widget.isSelected
+                          ? widget.selectedIcon
+                          : widget.unselectedIcon,
+                      color: widget.isSelected
+                          ? theme.colorScheme.primary
+                          : theme.colorScheme.onSurface
+                              .opaque(0.5, iReallyMeanIt: true),
+                      size: widget.iconSize,
+                    ),
                   ),
             ),
           ),
@@ -304,24 +562,6 @@ class _NavBarItemState extends State<NavBarItem>
       );
     }
   }
-}
-
-class NavItem {
-  final IconData selectedIcon;
-  final IconData unselectedIcon;
-  final String label;
-  final double? iconSize;
-  final Function(int n) onTap;
-  final Widget? altIcon;
-
-  const NavItem({
-    required this.selectedIcon,
-    required this.unselectedIcon,
-    required this.label,
-    this.iconSize,
-    this.altIcon,
-    required this.onTap,
-  });
 }
 
 class BlurredContainer extends StatelessWidget {
