@@ -24,26 +24,90 @@ import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class MyLibrary extends StatelessWidget {
+import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
+import 'package:anymex/widgets/header.dart';
+import 'package:flutter/services.dart';
+
+class MyLibrary extends StatefulWidget {
   const MyLibrary({super.key});
+
+  @override
+  State<MyLibrary> createState() => _MyLibraryState();
+}
+
+class _MyLibraryState extends State<MyLibrary> {
+  late final ScrollController _scrollController;
+  final ValueNotifier<bool> _isAppBarVisibleExternally =
+      ValueNotifier<bool>(true);
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _isAppBarVisibleExternally.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(LibraryController());
+    final isDesktop = MediaQuery.of(context).size.width > 600;
+    final statusBarHeight = MediaQuery.of(context).padding.top;
+    const appBarHeight = kToolbarHeight + 20;
 
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 28.0),
-              child: LibraryHeader(controller: controller),
+      extendBodyBehindAppBar: true,
+      body: Stack(
+        children: [
+          CustomScrollView(
+            controller: _scrollController,
+            slivers: [
+              SliverToBoxAdapter(
+                child: SizedBox(
+                  height: statusBarHeight + appBarHeight,
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
+                  child: LibrarySegmentedControl(controller: controller),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: ChipTabs(controller: controller),
+              ),
+              _LibraryContent(controller: controller),
+            ],
+          ),
+          CustomAnimatedAppBar(
+            isVisible: _isAppBarVisibleExternally,
+            scrollController: _scrollController,
+            headerContent: const Header(type: PageType.library),
+            visibleStatusBarStyle: SystemUiOverlayStyle(
+              statusBarIconBrightness:
+                  Theme.of(context).brightness == Brightness.light
+                      ? Brightness.dark
+                      : Brightness.light,
+              statusBarBrightness: Theme.of(context).brightness,
+              statusBarColor: Colors.transparent,
+            ),
+            hiddenStatusBarStyle: SystemUiOverlayStyle(
+              statusBarIconBrightness:
+                  Theme.of(context).brightness == Brightness.light
+                      ? Brightness.light
+                      : Brightness.dark,
+              statusBarBrightness:
+                  Theme.of(context).brightness == Brightness.light
+                      ? Brightness.dark
+                      : Brightness.light,
+              statusBarColor: Colors.transparent,
             ),
           ),
-          SliverToBoxAdapter(
-            child: ChipTabs(controller: controller),
-          ),
-          _LibraryContent(controller: controller),
         ],
       ),
     );

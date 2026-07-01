@@ -119,7 +119,8 @@ void initDeepLinkListener(List<String> args) async {
   );
 }
 
-Future<void> safeCall(FutureOr<void> Function() function, {String? errorMessage}) async {
+Future<void> safeCall(FutureOr<void> Function() function,
+    {String? errorMessage}) async {
   try {
     await function();
   } catch (e) {
@@ -134,7 +135,7 @@ Future<void> safeCall(FutureOr<void> Function() function, {String? errorMessage}
 void main(List<String> args) async {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
-    
+
     await safeCall(() async {
       if (!Platform.isLinux) {
         if (Platform.isWindows || Platform.isMacOS) {
@@ -155,9 +156,10 @@ void main(List<String> args) async {
         errorMessage: 'Failed to load .env file');
 
     if (!Platform.isLinux) {
-      await safeCall(() => Firebase.initializeApp(
-            options: DefaultFirebaseOptions.currentPlatform,
-          ),
+      await safeCall(
+          () => Firebase.initializeApp(
+                options: DefaultFirebaseOptions.currentPlatform,
+              ),
           errorMessage: 'Failed to initialize Firebase');
     }
 
@@ -477,7 +479,8 @@ class _FilterScreenState extends State<FilterScreen> {
                   ResponsiveNavBar(
                     isDesktop: true,
                     currentIndex: _selectedIndex,
-                    margin: const EdgeInsets.fromLTRB(20, 30, 15, 10),
+                    margin: const EdgeInsets.fromLTRB(20, 18, 15, 10),
+                    borderRadius: BorderRadius.circular(50),
                     items: [
                       NavItem(
                           unselectedIcon: IconlyBold.profile,
@@ -560,7 +563,7 @@ class _FilterScreenState extends State<FilterScreen> {
         bottomNavigationBar: ResponsiveNavBar(
           isDesktop: false,
           currentIndex: _mobileSelectedIndex,
-          margin: const EdgeInsets.symmetric(vertical: 40, horizontal: 40),
+          margin: const EdgeInsets.symmetric(vertical: 30, horizontal: 32),
           items: [
             NavItem(
               unselectedIcon: IconlyBold.home,

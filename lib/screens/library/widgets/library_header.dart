@@ -37,7 +37,7 @@ class LibraryHeader extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 16),
-              _SegmentedControl(controller: controller),
+              LibrarySegmentedControl(controller: controller),
             ],
           ),
         ));
@@ -125,7 +125,8 @@ class LibraryHeader extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: CustomSearchBar(
                       controller: controller.searchController,
-                      backgroundColor: context.colors.surfaceContainer.opaque(0.5, iReallyMeanIt: true),
+                      backgroundColor: context.colors.surfaceContainer
+                          .opaque(0.5, iReallyMeanIt: true),
                       onChanged: controller.search,
                       hintText: _getSearchHint(),
                     ),
@@ -635,10 +636,10 @@ class ChipTabs extends StatelessWidget {
   }
 }
 
-class _SegmentedControl extends StatelessWidget {
+class LibrarySegmentedControl extends StatelessWidget {
   final LibraryController controller;
 
-  const _SegmentedControl({required this.controller});
+  const LibrarySegmentedControl({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {
