@@ -197,9 +197,7 @@ void main(List<String> args) async {
     await safeCall(() async {
       if (!Platform.isAndroid && !Platform.isIOS) {
         await windowManager.ensureInitialized();
-        if (Platform.isWindows) {
-          await AnymexTitleBar.initialize();
-        }
+        await AnymexTitleBar.initialize();
       } else {
         SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
         SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
