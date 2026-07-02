@@ -1,0 +1,23 @@
+name: flutter_iconly
+description: 300+ Free icons for your next project in 5 styles (Light, Bold, Broken) for flutter. Icons designed by piqo.
+version: 1.0.2
+
+environment:
+  sdk: ">=2.12.0 <4.0.0"
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+flutter:
+  fonts:
+    - family: IconlyBold
+      fonts:
+        - asset: fonts/iconly_bold.ttf
+    - family: IconlyLight
+      fonts:
+        - asset: fonts/IconlyLight.ttf
+    - family: IconlyBroken
+      fonts:
+        - asset: fonts/IconlyBroken.ttf

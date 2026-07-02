@@ -681,6 +681,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
+  flutter_iconly:
+    dependency: "direct main"
+    description:
+      path: "packages/flutter_iconly"
+      relative: true
+    source: path
+    version: "1.0.2"
   flutter_inappwebview:
     dependency: "direct main"
     description:
@@ -1052,14 +1059,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.0.11"
-  iconly:
-    dependency: "direct main"
-    description:
-      name: iconly
-      sha256: "22f16dd28984d232891299ead9d9b75ae5a32b4d9cdf63e8e574f1ceb11dcbd9"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.1"
   iconsax:
     dependency: "direct main"
     description:
@@ -1312,10 +1311,10 @@ packages:
     dependency: "direct main"
     description:
       name: material_symbols_icons
-      sha256: c62b15f2b3de98d72cbff0148812f5ef5159f05e61fc9f9a089ec2bb234df082
+      sha256: "49c532dd0b74544e9d8d93ec0f821d52ec532e7c9263c889ebe71b1be4f34ba7"
       url: "https://pub.dev"
     source: hosted
-    version: "4.2906.0"
+    version: "4.2951.0"
   media_kit:
     dependency: "direct main"
     description:
@@ -1325,37 +1324,50 @@ packages:
     source: hosted
     version: "1.2.6"
   media_kit_libs_android_video:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: media_kit_libs_android_video
-      sha256: "3f6274e5ab2de512c286a25c327288601ee445ed8ac319e0ef0b66148bd8f76c"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.3.8"
+      path: "libs/android/media_kit_libs_android_video"
+      ref: "11d02cb804b8faf944137834a1b0ac80880a4079"
+      resolved-ref: "11d02cb804b8faf944137834a1b0ac80880a4079"
+      url: "https://github.com/Predidit/media-kit.git"
+    source: git
+    version: "1.3.6"
   media_kit_libs_ios_video:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: media_kit_libs_ios_video
-      sha256: b5382994eb37a4564c368386c154ad70ba0cc78dacdd3fb0cd9f30db6d837991
-      url: "https://pub.dev"
-    source: hosted
+      path: "libs/ios/media_kit_libs_ios_video"
+      ref: "11d02cb804b8faf944137834a1b0ac80880a4079"
+      resolved-ref: "11d02cb804b8faf944137834a1b0ac80880a4079"
+      url: "https://github.com/Predidit/media-kit.git"
+    source: git
     version: "1.1.4"
   media_kit_libs_linux:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: media_kit_libs_linux
-      sha256: "2b473399a49ec94452c4d4ae51cfc0f6585074398d74216092bf3d54aac37ecf"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.2.1"
+      path: "libs/linux/media_kit_libs_linux"
+      ref: "11d02cb804b8faf944137834a1b0ac80880a4079"
+      resolved-ref: "11d02cb804b8faf944137834a1b0ac80880a4079"
+      url: "https://github.com/Predidit/media-kit.git"
+    source: git
+    version: "1.1.3"
   media_kit_libs_macos_video:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: media_kit_libs_macos_video
-      sha256: f26aa1452b665df288e360393758f84b911f70ffb3878032e1aabba23aa1032d
-      url: "https://pub.dev"
-    source: hosted
+      path: "libs/macos/media_kit_libs_macos_video"
+      ref: "11d02cb804b8faf944137834a1b0ac80880a4079"
+      resolved-ref: "11d02cb804b8faf944137834a1b0ac80880a4079"
+      url: "https://github.com/Predidit/media-kit.git"
+    source: git
     version: "1.1.4"
+  media_kit_libs_ohos:
+    dependency: "direct overridden"
+    description:
+      path: "libs/ohos/media_kit_libs_ohos"
+      ref: "11d02cb804b8faf944137834a1b0ac80880a4079"
+      resolved-ref: "11d02cb804b8faf944137834a1b0ac80880a4079"
+      url: "https://github.com/Predidit/media-kit.git"
+    source: git
+    version: "1.0.0"
   media_kit_libs_video:
     dependency: "direct main"
     description:
@@ -1365,13 +1377,14 @@ packages:
     source: hosted
     version: "1.0.7"
   media_kit_libs_windows_video:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: media_kit_libs_windows_video
-      sha256: dff76da2778729ab650229e6b4ec6ec111eb5151431002cbd7ea304ff1f112ab
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.11"
+      path: "libs/windows/media_kit_libs_windows_video"
+      ref: "11d02cb804b8faf944137834a1b0ac80880a4079"
+      resolved-ref: "11d02cb804b8faf944137834a1b0ac80880a4079"
+      url: "https://github.com/Predidit/media-kit.git"
+    source: git
+    version: "1.0.10"
   media_kit_video:
     dependency: "direct main"
     description:
@@ -1384,10 +1397,10 @@ packages:
     dependency: transitive
     description:
       name: meta
-      sha256: "23f08335362185a5ea2ad3a4e597f1375e78bce8a040df5c600c8d3552ef2394"
+      sha256: "1741988757a65eb6b36abe716829688cf01910bbf91c34354ff7ec1c3de2b349"
       url: "https://pub.dev"
     source: hosted
-    version: "1.17.0"
+    version: "1.18.0"
   mime:
     dependency: transitive
     description:
@@ -2053,10 +2066,10 @@ packages:
     dependency: transitive
     description:
       name: test_api
-      sha256: "8161c84903fd860b26bfdefb7963b3f0b68fee7adea0f59ef805ecca346f0c7a"
+      sha256: "949a932224383300f01be9221c39180316445ecb8e7547f70a41a35bf421fb9e"
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.10"
+    version: "0.7.11"
   thanos_snap_effect:
     dependency: "direct main"
     description:
@@ -2458,5 +2471,5 @@ packages:
     source: hosted
     version: "3.1.3"
 sdks:
-  dart: ">=3.9.0 <4.0.0"
+  dart: ">=3.10.0-0 <4.0.0"
   flutter: ">=3.35.6"
