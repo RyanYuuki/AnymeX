@@ -180,12 +180,12 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
     try {
       Media tempData;
       try {
-        tempData = await mediaService.service
-            .fetchDetails(FetchDetailsParams(id: widget.media.id.toString()));
+        tempData = await mediaService.service.fetchDetails(FetchDetailsParams(
+            id: widget.media.id.toString(), type: ItemType.manga));
       } catch (e) {
         if (!e.toString().contains("dynamic")) rethrow;
-        tempData = await mediaService.service
-            .fetchDetails(FetchDetailsParams(id: widget.media.id.toString()));
+        tempData = await mediaService.service.fetchDetails(FetchDetailsParams(
+            id: widget.media.id.toString(), type: ItemType.manga));
       }
       final isExtensions = mediaService == ServicesType.extensions;
 

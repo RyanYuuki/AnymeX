@@ -59,6 +59,7 @@ class CardData {
           id: data.id!,
           title: data.title ?? '??',
           poster: data.poster ?? '',
+          mediaType: data.type == 'MANGA' ? ItemType.manga : ItemType.anime,
           serviceType: data.servicesType),
     );
   }
@@ -135,8 +136,7 @@ class GridAnimeCard extends StatelessWidget {
                     final heroTag = '${media.id}-${itemType.name}-grid-card';
                     navigate(() => isManga
                         ? MangaDetailsPage(media: media.data, tag: heroTag)
-                        : AnimeDetailsPage(
-                            media: media.data, tag: heroTag));
+                        : AnimeDetailsPage(media: media.data, tag: heroTag));
                   },
                   child: Hero(
                     tag: '${media.id}-${itemType.name}-grid-card',

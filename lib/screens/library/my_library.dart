@@ -247,7 +247,8 @@ class _LibraryContent extends StatelessWidget {
         delegate: SliverChildBuilderDelegate(
           (context, i) {
             OfflineMedia item = items[i];
-            final tag = '${item.mediaId ?? item.id}-library-grid-${controller.type.value.name}';
+            final tag =
+                '${item.mediaId ?? item.id}-library-grid-${controller.type.value.name}';
             return AnymexOnTap(
               margin: 0,
               scale: 1,
@@ -270,21 +271,24 @@ class _LibraryContent extends StatelessWidget {
   SliverGridDelegateWithFixedCrossAxisCount _getSliverDelegate(
       BuildContext context) {
     if (controller.gridCount.value == 0) {
-      final width = MediaQuery.of(context).size.width;
-      final itemWidth = getPlatform(context) ? 170.0 : 140.0;
+      const horizontalPadding = 32.0;
+      const crossAxisSpacing = 10.0;
+      final availableWidth =
+          MediaQuery.of(context).size.width - horizontalPadding;
+      final isDesktop = getPlatform(context);
+      final itemWidth = isDesktop ? 170.0 : 140.0;
+
       final crossAxisCount = math.max(
         1,
-        getResponsiveCrossAxisVal(width - 120, itemWidth: itemWidth.toInt()),
+        ((availableWidth + crossAxisSpacing) / (itemWidth + crossAxisSpacing))
+            .floor(),
       );
 
       return SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: crossAxisCount,
-        crossAxisSpacing: 10,
+        crossAxisSpacing: crossAxisSpacing,
         mainAxisSpacing: 20,
-        mainAxisExtent: _getCardHeight(
-          context,
-          CardStyle.values[settingsController.cardStyle],
-        ),
+        childAspectRatio: 2 / 3,
       );
     }
 
@@ -294,22 +298,6 @@ class _LibraryContent extends StatelessWidget {
       mainAxisSpacing: 10,
       childAspectRatio: 2 / 3,
     );
-  }
-
-  double _getCardHeight(BuildContext context, CardStyle style) {
-    final isDesktop = getPlatform(context);
-    switch (style) {
-      case CardStyle.modern:
-        return isDesktop ? 220 : 170;
-      case CardStyle.exotic:
-        return isDesktop ? 270 : 210;
-      case CardStyle.saikou:
-        return isDesktop ? 270 : 230;
-      case CardStyle.minimalExotic:
-        return isDesktop ? 250 : 280;
-      default:
-        return isDesktop ? 230 : 170;
-    }
   }
 
   void _handleItemTap(BuildContext context, OfflineMedia item,

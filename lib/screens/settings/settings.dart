@@ -300,14 +300,12 @@ class _SettingsPageState extends State<SettingsPage> {
           title: "Download Settings",
           description: "Configure parallel downloads and directory",
           destination: () => const SettingsDownloads()),
-
       _CategoryItem(
           icon: Icons.extension_rounded,
           title: "Extensions",
           description: "Extensions tailored to your needs",
           destination: () => const SettingsExtensions(),
           addDividerAbove: true),
-
       _CategoryItem(
           icon: HugeIcons.strokeRoundedFile01,
           title: "Logs",
@@ -327,16 +325,7 @@ class _SettingsPageState extends State<SettingsPage> {
         isDebugOnly: true,
         addDividerAbove: true,
         customTap: () async {
-          final list = Get.find<ExtensionManager>()
-              .installedAnimeExtensions
-              .whereType<CloudStreamSource>()
-              .toList();
-          for (CloudStreamSource i in list) {
-            debugPrint("${i.id} - ${i.internalName} - ${i.jarUrl}");
-            final search =
-                await i.methods.search("Attack on titan", 1, []);
-            print(search.toJson());
-          }
+          print('HELOOO');
         },
       ),
     ];

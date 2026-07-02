@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/extensions/widgets/plugin_manager.dart';
 import 'package:anymex/screens/other_features.dart';
@@ -106,6 +107,21 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
 
   @override
   Widget build(BuildContext context) {
+    if (Platform.isIOS) {
+      return const Scaffold(
+        body: Column(
+          children: [
+            NestedHeader(title: 'Extension Manager'),
+            Expanded(
+              child: Center(
+                child: Text('Extension Manager is not supported on iOS.'),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     return Glow(
       child: Scaffold(
         body: Column(

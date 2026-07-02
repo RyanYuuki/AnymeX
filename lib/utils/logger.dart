@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:flutter/foundation.dart';
 
 class Logger {
   static File? _logFile;
@@ -28,14 +29,18 @@ class Logger {
         } catch (exception) {
           _writeToFileEnabled = false;
           _fileSink = null;
-          developer.log('Logger: Error writing to log file, disabled file logging: $exception', level: 900, name: 'LOGGER');
+          developer.log(
+              'Logger: Error writing to log file, disabled file logging: $exception',
+              level: 900,
+              name: 'LOGGER');
         }
       });
 
       _isInitialized = true;
       _initMethodChannelHandler();
     } catch (exception) {
-      developer.log('Logger init failed: $exception', level: 900, name: 'LOGGER');
+      developer.log('Logger init failed: $exception',
+          level: 900, name: 'LOGGER');
     }
   }
 
@@ -92,7 +97,8 @@ class Logger {
       } catch (_) {}
       _fileSink = _logFile!.openWrite(mode: FileMode.append);
     } catch (e) {
-      developer.log('Logger: Failed to initialize log file at $customPath: $e', level: 900, name: 'LOGGER');
+      developer.log('Logger: Failed to initialize log file at $customPath: $e',
+          level: 900, name: 'LOGGER');
       _logFile = null;
       _fileSink = null;
       _writeToFileEnabled = false;
@@ -165,13 +171,12 @@ Pretty Name: ${info.prettyName}
         500,
       );
     } catch (e) {
-      developer.log('Logger: Failed to log initialization details: $e', level: 900, name: 'LOGGER');
+      developer.log('Logger: Failed to log initialization details: $e',
+          level: 900, name: 'LOGGER');
     }
   }
 
   static void _writeLogEntry(String message, String loggerName, int logLevel) {
-    if (!_isInitialized) return;
-
     final currentTime = DateTime.now();
     final formattedTimestamp = '${currentTime.hour.toString().padLeft(2, '0')}:'
         '${currentTime.minute.toString().padLeft(2, '0')}:'
@@ -179,11 +184,12 @@ Pretty Name: ${info.prettyName}
 
     final logEntry = '[$formattedTimestamp][$loggerName] $message';
 
-    if (_writeToFileEnabled && _fileSink != null) {
+    if (_isInitialized && _writeToFileEnabled && _fileSink != null) {
       try {
         _messageQueue?.add(logEntry);
       } catch (e) {
-        developer.log('Logger: Failed to add log to queue: $e', level: 900, name: 'LOGGER');
+        developer.log('Logger: Failed to add log to queue: $e',
+            level: 900, name: 'LOGGER');
       }
     }
 
@@ -220,7 +226,8 @@ Pretty Name: ${info.prettyName}
 
     // Notify native that we are ready to receive logs
     channel.invokeMethod('ready').catchError((e) {
-      developer.log('Logger: Failed to send ready signal: $e', level: 500, name: 'LOGGER');
+      developer.log('Logger: Failed to send ready signal: $e',
+          level: 500, name: 'LOGGER');
     });
   }
 

@@ -40,7 +40,7 @@ class AnimeList extends StatefulWidget {
   final String? initialTab;
   final String? userName;
   final Set<String>? initialGenres;
-  
+
   const AnimeList({
     super.key,
     this.data,
@@ -54,8 +54,7 @@ class AnimeList extends StatefulWidget {
   State<AnimeList> createState() => _AnimeListState();
 }
 
-class _AnimeListState extends State<AnimeList>
-    with TickerProviderStateMixin {
+class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
   final anilistAuth = Get.find<ServiceHandler>();
   late final List<String> _allTabs;
 
@@ -89,7 +88,7 @@ class _AnimeListState extends State<AnimeList>
     if (widget.initialGenres != null) {
       _selectedGenres = Set.from(widget.initialGenres!);
     }
-    
+
     // user tabs (list)
     final List<String> defaultTabs;
     if (anilistAuth.serviceType.value != ServicesType.anilist) {
@@ -124,9 +123,7 @@ class _AnimeListState extends State<AnimeList>
       ];
     }
 
-    
-    final sectionOrder =
-        anilistAuth.profileData.value.animeSectionOrder;
+    final sectionOrder = anilistAuth.profileData.value.animeSectionOrder;
     if (sectionOrder.isNotEmpty &&
         anilistAuth.serviceType.value == ServicesType.anilist) {
       // Mapping
@@ -151,7 +148,7 @@ class _AnimeListState extends State<AnimeList>
           ordered.add(tab);
         }
       }
-  
+
       for (final tab in defaultTabs) {
         if (!ordered.contains(tab)) {
           ordered.add(tab);
@@ -183,7 +180,9 @@ class _AnimeListState extends State<AnimeList>
     final requestedInitialTab = widget.initialTab;
     final initialIndex = requestedInitialTab == null
         ? 0
-        : orderedTabs.indexOf(requestedInitialTab).clamp(0, orderedTabs.length - 1);
+        : orderedTabs
+            .indexOf(requestedInitialTab)
+            .clamp(0, orderedTabs.length - 1);
     _tabController = TabController(
       length: orderedTabs.length,
       vsync: this,
@@ -225,16 +224,14 @@ class _AnimeListState extends State<AnimeList>
     // Search filter
     if (_searchQuery.isNotEmpty) {
       result = result
-          .where((e) =>
-              (e.title ?? '').toLowerCase().contains(_searchQuery))
+          .where((e) => (e.title ?? '').toLowerCase().contains(_searchQuery))
           .toList();
     }
 
     // Genre filter
     if (_selectedGenres.isNotEmpty) {
       result = result
-          .where(
-              (e) => _selectedGenres.every((g) => e.genres.contains(g)))
+          .where((e) => _selectedGenres.every((g) => e.genres.contains(g)))
           .toList();
     }
 
@@ -345,16 +342,13 @@ class _AnimeListState extends State<AnimeList>
                 }[mode]!;
                 return ListTile(
                   leading: Icon(icon,
-                      color: selected
-                          ? colors.primary
-                          : colors.onSurfaceVariant),
+                      color:
+                          selected ? colors.primary : colors.onSurfaceVariant),
                   title: Text(label,
                       style: TextStyle(
                         fontWeight:
                             selected ? FontWeight.w700 : FontWeight.w500,
-                        color: selected
-                            ? colors.primary
-                            : colors.onSurface,
+                        color: selected ? colors.primary : colors.onSurface,
                       )),
                   trailing: selected
                       ? Icon(Icons.check_rounded,
@@ -512,7 +506,8 @@ class _AnimeListState extends State<AnimeList>
     final userName = widget.userName ?? anilistAuth.profileData.value.name;
     final orderedTabs = _isReversed ? tabs.reversed.toList() : tabs;
 
-    if (_tabController == null || _tabController!.length != orderedTabs.length) {
+    if (_tabController == null ||
+        _tabController!.length != orderedTabs.length) {
       _tabController?.dispose();
       _tabController = TabController(length: orderedTabs.length, vsync: this);
     }
@@ -528,7 +523,7 @@ class _AnimeListState extends State<AnimeList>
                 color: colors.primary,
               )),
           title: Text("$userName's ${widget.title ?? 'Anime'} List",
-                  style: TextStyle(fontSize: 16, color: colors.primary)),
+              style: TextStyle(fontSize: 16, color: colors.primary)),
           actions: [
             // Search toggle
             IconButton(
@@ -616,7 +611,8 @@ class _AnimeListState extends State<AnimeList>
                 if (_searchOpen)
                   Container(
                     height: 40,
-                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                     decoration: BoxDecoration(
                       color: colors.surfaceContainerHighest.withOpacity(0.5),
                       borderRadius: BorderRadius.circular(20),
@@ -637,8 +633,8 @@ class _AnimeListState extends State<AnimeList>
                             decoration: InputDecoration(
                               hintText: 'Search anime...',
                               hintStyle: TextStyle(
-                                  color: colors.onSurfaceVariant
-                                      .withOpacity(0.4),
+                                  color:
+                                      colors.onSurfaceVariant.withOpacity(0.4),
                                   fontSize: 14),
                               border: InputBorder.none,
                               isDense: true,
@@ -657,8 +653,7 @@ class _AnimeListState extends State<AnimeList>
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 10),
                               child: Icon(Icons.close_rounded,
-                                  size: 18,
-                                  color: colors.onSurfaceVariant),
+                                  size: 18, color: colors.onSurfaceVariant),
                             ),
                           )
                         else
@@ -674,18 +669,15 @@ class _AnimeListState extends State<AnimeList>
                   isScrollable: true,
                   dividerColor: Colors.transparent,
                   unselectedLabelColor: Colors.grey,
-                  labelPadding:
-                      const EdgeInsets.symmetric(horizontal: 14),
+                  labelPadding: const EdgeInsets.symmetric(horizontal: 14),
                   indicatorSize: TabBarIndicatorSize.label,
                   tabs: orderedTabs.map((tab) {
                     final filtered =
                         _applyFilters(_getFilteredList(animeList, tab));
-                    final label =
-                        '${tab.toUpperCase()} (${filtered.length})';
+                    final label = '${tab.toUpperCase()} (${filtered.length})';
                     return Tab(
                       child: ConstrainedBox(
-                        constraints:
-                            const BoxConstraints(maxWidth: 300),
+                        constraints: const BoxConstraints(maxWidth: 300),
                         child: Text(
                           label,
                           textAlign: TextAlign.center,
@@ -705,8 +697,7 @@ class _AnimeListState extends State<AnimeList>
         body: TabBarView(
           controller: _tabController,
           children: orderedTabs.map((tab) {
-            final items =
-                _applyFilters(_getFilteredList(animeList, tab));
+            final items = _applyFilters(_getFilteredList(animeList, tab));
 
             if (items.isEmpty) {
               return Center(
@@ -722,8 +713,7 @@ class _AnimeListState extends State<AnimeList>
                           ? 'No matches found'
                           : 'No entries in $tab',
                       style: TextStyle(
-                          color:
-                              colors.onSurfaceVariant.withOpacity(0.6)),
+                          color: colors.onSurfaceVariant.withOpacity(0.6)),
                     ),
                   ],
                 ),
