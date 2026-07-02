@@ -161,12 +161,13 @@ class TrackedMedia {
   }
 
   factory TrackedMedia.fromMAL(Map<String, dynamic> json) {
+    final isMangaResolved = json['node']?['num_chapters'] != null || json['list_status']?['num_chapters_read'] != null;
     return TrackedMedia(
       id: json['node']['id']?.toString(),
       idMal: json['node']['id']?.toString(),
       title: json['node']['title'],
       servicesType: ServicesType.mal,
-      poster: json['node']['main_picture']['large'],
+      poster: json['node']['main_picture']?['large'] ?? json['node']['main_picture']?['medium'] ?? '',
       chapterCount:
           json['node']?['list_status']?['num_chapters_read']?.toString() ?? '?',
       episodeCount: json['list_status']?['num_chapters_read']?.toString() ??
@@ -178,7 +179,7 @@ class TrackedMedia {
       rating: json['node']?['mean']?.toString() ?? '?',
       watchingStatus: returnConvertedStatus(json['list_status']['status']),
       score: json['list_status']['score']?.toString(),
-      type: null,
+      type: isMangaResolved ? 'MANGA' : 'ANIME',
       mediaListId: json['node']['id']?.toString(),
       startedAt: _parseMalDate(json['list_status']?['start_date']),
       completedAt: _parseMalDate(json['list_status']?['finish_date']),

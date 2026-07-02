@@ -100,8 +100,23 @@ class Media {
       DateTime? createdAt})
       : createdAt = DateTime.now();
 
-  factory Media.fromMAL(Map<String, dynamic> json) {
+  factory Media.fromMAL(Map<String, dynamic> json, {bool isManga = false}) {
     final node = json['node'] ?? {};
+    final mediaTypeStr = node['media_type'] as String?;
+    
+    ItemType determinedType;
+    if (mediaTypeStr != null) {
+      final t = mediaTypeStr.toLowerCase();
+      if (t == 'tv' || t == 'ova' || t == 'movie' || t == 'special' || t == 'ona' || t == 'music') {
+        determinedType = ItemType.anime;
+      } else if (t == 'manga' || t == 'novel' || t == 'one_shot' || t == 'doujinshi' || t == 'manhwa' || t == 'manhua' || t == 'oel') {
+        determinedType = ItemType.manga;
+      } else {
+        determinedType = isManga ? ItemType.manga : ItemType.anime;
+      }
+    } else {
+      determinedType = isManga ? ItemType.manga : ItemType.anime;
+    }
 
     return Media(
       id: node['id']?.toString() ?? '0',
@@ -134,7 +149,7 @@ class Media {
       nextAiringEpisode: null,
       rankings: [],
       mediaContent: [],
-      mediaType: node['media_type'] == 'tv' ? ItemType.anime : ItemType.manga,
+      mediaType: determinedType,
       serviceType: ServicesType.mal,
     );
   }
@@ -178,8 +193,23 @@ class Media {
     );
   }
 
-  factory Media.fromFullMAL(Map<String, dynamic> json) {
+  factory Media.fromFullMAL(Map<String, dynamic> json, {bool isManga = false}) {
     final node = json;
+    final mediaTypeStr = node['media_type'] as String?;
+    
+    ItemType determinedType;
+    if (mediaTypeStr != null) {
+      final t = mediaTypeStr.toLowerCase();
+      if (t == 'tv' || t == 'ova' || t == 'movie' || t == 'special' || t == 'ona' || t == 'music') {
+        determinedType = ItemType.anime;
+      } else if (t == 'manga' || t == 'novel' || t == 'one_shot' || t == 'doujinshi' || t == 'manhwa' || t == 'manhua' || t == 'oel') {
+        determinedType = ItemType.manga;
+      } else {
+        determinedType = isManga ? ItemType.manga : ItemType.anime;
+      }
+    } else {
+      determinedType = isManga ? ItemType.manga : ItemType.anime;
+    }
 
     return Media(
       id: node['id']?.toString() ?? '0',
@@ -208,13 +238,13 @@ class Media {
           .toList(),
       characters: [],
       recommendations: (node['recommendations'] as List<dynamic>?)
-              ?.map((e) => Media.fromMAL(e))
+              ?.map((e) => Media.fromMAL(e, isManga: isManga))
               .toList() ??
           [],
       nextAiringEpisode: null,
       rankings: [],
       mediaContent: [],
-      mediaType: node['media_type'] == 'tv' ? ItemType.anime : ItemType.manga,
+      mediaType: determinedType,
       serviceType: ServicesType.mal,
     );
   }

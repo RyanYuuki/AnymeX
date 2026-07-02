@@ -94,8 +94,9 @@ class MalService extends GetxController implements BaseService, OnlineService {
       {String? customFields}) async {
     final newField = customFields ?? field;
     final data = await fetchMAL('$url&$newField') as Map<String, dynamic>;
+    final isManga = url.contains('/manga/');
     return (data['data'] as List<dynamic>)
-        .map((e) => Media.fromMAL(e))
+        .map((e) => Media.fromMAL(e, isManga: isManga))
         .toList()
         .removeDupes();
   }
@@ -213,6 +214,19 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
   @override
   Future<Media> fetchDetails(FetchDetailsParams params) async {
+    if (params.type != null) {
+      if (params.type == ItemType.anime) {
+        final animeData = await fetchWithToken(
+          'https://api.myanimelist.net/v2/anime/${params.id}',
+        );
+        return animeData;
+      } else if (params.type == ItemType.manga) {
+        final mangaData = await fetchWithToken(
+          'https://api.myanimelist.net/v2/manga/${params.id}',
+        );
+        return mangaData;
+      }
+    }
     try {
       final animeData = await fetchWithToken(
         'https://api.myanimelist.net/v2/anime/${params.id}',
@@ -237,7 +251,8 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
     final data = await fetchMAL('$url?$newField') as Map<String, dynamic>;
     cacheController.addCache(data);
-    return Media.fromFullMAL(data);
+    final isManga = url.contains('/manga/');
+    return Media.fromFullMAL(data, isManga: isManga);
   }
 
   @override

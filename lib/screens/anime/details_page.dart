@@ -259,12 +259,13 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
   Future<void> _fetchAnilistData() async {
     try {
-      Logger.i("Fetch Initiated for Media => ${widget.media.id}");
+      print(
+          "Fetch Initiated for Media => ${widget.media.id} with type -> ${widget.media.mediaType}");
 
       final service = widget.media.serviceType.service;
 
-      final tempData = await service
-          .fetchDetails(FetchDetailsParams(id: widget.media.id.toString()));
+      final tempData = await service.fetchDetails(FetchDetailsParams(
+          id: widget.media.id.toString(), type: ItemType.anime));
 
       final isExtensions = widget.media.serviceType == ServicesType.extensions;
 

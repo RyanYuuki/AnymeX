@@ -170,7 +170,7 @@ class _CustomListDialogState extends State<CustomListDialog> {
     }
   }
 
-  void _handleOkPress() {
+  Future<void> _handleOkPress() async {
     for (var list in modifiedLists) {
       final listName = list.listName ?? '';
       final wasChecked = initialState[listName] ?? false;
@@ -178,14 +178,16 @@ class _CustomListDialogState extends State<CustomListDialog> {
 
       if (wasChecked != isCheckedNow) {
         if (isCheckedNow) {
-          storage.addMedia(listName, widget.original);
+          await storage.addMedia(listName, widget.original);
         } else {
-          storage.removeMedia(listName, widget.original);
+          await storage.removeMedia(listName, widget.original);
         }
       }
     }
 
-    Navigator.of(context).pop();
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
   }
 
   List<CustomList> get filteredLists {

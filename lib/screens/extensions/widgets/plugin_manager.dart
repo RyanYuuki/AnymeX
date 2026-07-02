@@ -23,6 +23,7 @@ class PluginManager {
       AnymeXRuntimeBridge.installedReleaseTitle;
 
   Future<void> ensurePluginLoaded(BuildContext context) async {
+    if (Platform.isIOS) return;
     final isLoaded = await AnymeXRuntimeBridge.isLoaded();
     if (isLoaded) return;
 
@@ -40,6 +41,7 @@ class PluginManager {
     BuildContext context, {
     bool showIfUpToDate = false,
   }) async {
+    if (Platform.isIOS) return;
     final release = await fetchLatestRelease();
     if (release == null) {
       errorSnackBar('Failed to check plugin updates.');
@@ -264,6 +266,15 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
         curve: Curves.easeInOut,
       ),
     );
+
+    final bridge = AnymeXRuntimeBridge.controller;
+    if (bridge.isReady.value && !AnymeXRuntimeBridge.isPluginInstalled) {
+      widget.manager.persistInstalledRelease(widget.release);
+      _installFinished = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Get.find<ExtensionManager>().onRuntimeBridgeInitialization(force: true);
+      });
+    }
   }
 
   @override
@@ -323,7 +334,9 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
               (bridge.status.value.contains("Extracting") ||
                   bridge.status.value.contains("Finalizing")));
       final bool isComplete = _installFinished ||
-          (widget.mode == _PluginSheetMode.install && bridge.isReady.value);
+          (widget.mode == _PluginSheetMode.install &&
+              bridge.isReady.value &&
+              AnymeXRuntimeBridge.isPluginInstalled);
 
       return SafeArea(
         top: false,

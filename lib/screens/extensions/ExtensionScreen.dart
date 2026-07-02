@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/database.dart';
 import 'package:anymex/database/data_keys/keys.dart';
@@ -185,7 +186,9 @@ class _ExtensionScreenState extends State<ExtensionScreen>
 
   void _showSortDialog(BuildContext context) {
     final languages = sortedLanguagesMap.keys.toList();
-    final sourceTypes = ['all', 'Mangayomi', 'Aniyomi', 'Cloudstream', 'Sora'];
+    final sourceTypes = Platform.isIOS
+        ? ['all', 'Mangayomi', 'Sora']
+        : ['all', 'Mangayomi', 'Aniyomi', 'Cloudstream', 'Sora', 'Kotatsu'];
 
     showDialog(
       context: context,
@@ -295,11 +298,7 @@ class _ExtensionScreenState extends State<ExtensionScreen>
   String _getSourceSubtitle(String type) {
     return switch (type) {
       'all' => 'Show extensions from all sources',
-      'Mangayomi' => 'Filter by Mangayomi source',
-      'Aniyomi' => 'Filter by Aniyomi source',
-      'Cloudstream' => 'Filter by Cloudstream source',
-      'Sora' => 'Filter by Sora source',
-      _ => '',
+      _ => 'Filter by $type source',
     };
   }
 
@@ -463,6 +462,7 @@ class _ExtensionScreenState extends State<ExtensionScreen>
       'Aniyomi' => source is ASource,
       'Cloudstream' => source is CloudStreamSource,
       'Sora' => source is SSource,
+      'Kotatsu' => source is KotatsuSource,
       _ => true,
     };
   }

@@ -261,7 +261,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
       padding: EdgeInsets.all(20),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: [
+        children: const [
           ExpressiveLoadingIndicator(),
           SizedBox(height: 16),
           Text(
@@ -273,14 +273,6 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
             'This may take up to 30 seconds',
             style: TextStyle(fontSize: 12, color: Colors.grey),
           ),
-          10.height(),
-          if (!fromSrc)
-            AnymexChip(
-              showCheck: false,
-              isSelected: true,
-              label: 'Using Universal Scrapper',
-              onSelected: (v) {},
-            ),
         ],
       ),
     );

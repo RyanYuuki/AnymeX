@@ -749,7 +749,8 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                     return _buildScrapingLoadingState(videoStream != null);
                   } else if (streamError.value != null) {
                     return _buildErrorState(streamError.value!);
-                  } else if (streamList.isEmpty && !isServerStreamLoading.value) {
+                  } else if (streamList.isEmpty &&
+                      !isServerStreamLoading.value) {
                     return _buildEmptyState();
                   } else {
                     return _buildServerList(
@@ -834,7 +835,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       padding: EdgeInsets.all(20),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: [
+        children: const [
           ExpressiveLoadingIndicator(),
           SizedBox(height: 16),
           Text(
@@ -846,14 +847,6 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
             'This may take up to 30 seconds',
             style: TextStyle(fontSize: 12, color: Colors.grey),
           ),
-          10.height(),
-          if (!fromSrc)
-            AnymexChip(
-              showCheck: false,
-              isSelected: true,
-              label: 'Using Universal Scrapper',
-              onSelected: (v) {},
-            ),
         ],
       ),
     );
@@ -940,8 +933,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
 
           final video = streamList[index];
           final quality = video.quality?.toUpperCase() ?? "UNKNOWN";
-          final linkType =
-              detectLinkType(video.url ?? video.originalUrl ?? '');
+          final linkType = detectLinkType(video.url ?? video.originalUrl ?? '');
           final isHls = linkType == VideoLinkType.hls;
 
           return Padding(
@@ -982,10 +974,10 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                   });
                   return;
                 }
-                final shouldTrack = widget.anilistData?.serviceType ==
-                        ServicesType.extensions
-                    ? false
-                    : await showTrackingDialog(context, dbId: dbId);
+                final shouldTrack =
+                    widget.anilistData?.serviceType == ServicesType.extensions
+                        ? false
+                        : await showTrackingDialog(context, dbId: dbId);
 
                 if (shouldTrack != null) {
                   await navigate(() => WatchScreen(
@@ -1051,8 +1043,8 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                         decoration: BoxDecoration(
                           color: Colors.orange.withOpacity(0.12),
                           borderRadius: BorderRadius.circular(6),
-                          border: Border.all(
-                              color: Colors.orange.withOpacity(0.3)),
+                          border:
+                              Border.all(color: Colors.orange.withOpacity(0.3)),
                         ),
                         child: const Text('HLS',
                             style: TextStyle(
@@ -1067,8 +1059,8 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                         decoration: BoxDecoration(
                           color: Colors.green.withOpacity(0.12),
                           borderRadius: BorderRadius.circular(6),
-                          border: Border.all(
-                              color: Colors.green.withOpacity(0.3)),
+                          border:
+                              Border.all(color: Colors.green.withOpacity(0.3)),
                         ),
                         child: const Text('Direct',
                             style: TextStyle(
