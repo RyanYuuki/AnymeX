@@ -2,6 +2,7 @@ import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controller/player_utils.dart';
 import 'package:anymex/utils/aniskip.dart' as aniskip;
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/common/anymex_slider_m3.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -58,8 +59,9 @@ class _ProgressSliderState extends State<ProgressSlider> {
           children: [
             SliderTheme(
               data: _getSliderTheme(colorScheme, widget.style),
-              child: Slider(
-                year2023: false,
+              child: AnymeXSliderM3(
+                // year2023: false,
+                theme: AnymeXSliderM3Theme(trackHeight: 15, thumbHeight: 20),
                 label: PlayerUtils.formatDuration(
                     Duration(milliseconds: position)),
                 divisions: null,
