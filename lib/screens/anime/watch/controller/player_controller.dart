@@ -1761,6 +1761,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     volumeIndicator.value = true;
     _volumeTimer?.cancel();
 
+    brightnessIndicator.value = false;
+    _brightnessTimer?.cancel();
+
     if (!isDragging) {
       _hideVolumeIndicatorAfterDelay();
     }
@@ -1769,6 +1772,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   Future<void> setBrightness(double value, {bool isDragging = false}) async {
     brightness.value = value;
     brightnessIndicator.value = true;
+    _brightnessTimer?.cancel();
+
+    volumeIndicator.value = false;
+    _volumeTimer?.cancel();
 
     unawaited(
       ScreenBrightness.instance
@@ -1778,8 +1785,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       }),
     );
 
-    _brightnessTimer?.cancel();
-
     if (!isDragging) {
       _hideBrightnessIndicatorAfterDelay();
     }
@@ -1788,14 +1793,14 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void _hideVolumeIndicatorAfterDelay() {
     _volumeTimer?.cancel();
-    _volumeTimer = Timer(const Duration(milliseconds: 500), () {
+    _volumeTimer = Timer(const Duration(milliseconds: 1500), () {
       volumeIndicator.value = false;
     });
   }
 
   void _hideBrightnessIndicatorAfterDelay() {
     _brightnessTimer?.cancel();
-    _brightnessTimer = Timer(const Duration(milliseconds: 500), () {
+    _brightnessTimer = Timer(const Duration(milliseconds: 1500), () {
       brightnessIndicator.value = false;
     });
   }
@@ -1929,9 +1934,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         final client = HttpClient();
         final request = await client.getUrl(uri);
         final response = await request.close();
-        content = await response
-            .transform(const Utf8Decoder(allowMalformed: true))
-            .join();
+        content = await response.transform(utf8.decoder).join();
         client.close();
       } else {
         print('[SUBS] Attempting to load local subtitle from path: $url');
@@ -1997,7 +2000,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  Future<void> _waitForPlayerToBeReady(BasePlayer player, Duration targetPosition) async {
+  Future<void> _waitForPlayerToBeReady(
+      BasePlayer player, Duration targetPosition) async {
     final completer = Completer<void>();
     StreamSubscription? durationSub;
     StreamSubscription? positionSub;
@@ -2050,14 +2054,14 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       durationReady = true;
     }
     if (targetPosition == Duration.zero ||
-        player.state.position.inMilliseconds >= targetPosition.inMilliseconds - 2000) {
+        player.state.position.inMilliseconds >=
+            targetPosition.inMilliseconds - 2000) {
       positionReady = true;
     }
     checkReady();
 
     await completer.future;
   }
-
 
   Future<void> _applySubtitleTrack(
     SubtitleTrack track, {

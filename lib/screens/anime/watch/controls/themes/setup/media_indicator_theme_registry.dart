@@ -9,7 +9,7 @@ class MediaIndicatorThemeRegistry {
   static final List<MediaIndicatorTheme> themes = [
     DefaultMediaIndicatorTheme(),
     IosMediaIndicatorTheme(),
-    MinimalMediaIndicatorTheme()
+    MinimalMediaIndicatorTheme(),
   ];
 
   static MediaIndicatorTheme resolve(String id) {
