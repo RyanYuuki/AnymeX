@@ -251,26 +251,26 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
       _setRateDebounceTimer?.cancel();
 
       if (instant) {
-        widget.controller.setRate(rate);
+        widget.controller.setRate(rate, updateSession: false);
 
         Future.delayed(const Duration(milliseconds: 200), () {
           if (mounted) {
             double currentRate = widget.controller.playbackSpeed.value;
             if ((currentRate - rate).abs() > 0.1) {
-              widget.controller.setRate(rate);
+              widget.controller.setRate(rate, updateSession: false);
             }
           }
         });
       } else {
         _setRateDebounceTimer = Timer(_setRateDebounceTimeout, () {
           if (mounted) {
-            widget.controller.setRate(_pendingSpeed);
+            widget.controller.setRate(_pendingSpeed, updateSession: false);
 
             Future.delayed(const Duration(milliseconds: 200), () {
               if (mounted) {
                 double currentRate = widget.controller.playbackSpeed.value;
                 if ((currentRate - _pendingSpeed).abs() > 0.1) {
-                  widget.controller.setRate(_pendingSpeed);
+                  widget.controller.setRate(_pendingSpeed, updateSession: false);
                 }
               }
             });
