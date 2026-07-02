@@ -102,11 +102,15 @@ class GradientPoster extends StatelessWidget {
                 child: Stack(children: [
                   Hero(
                     tag: tag,
+                    transitionOnUserGestures: true,
+                    flightShuttleBuilder: AnymeXImage.heroFlightShuttleBuilder,
                     child: AnymeXImage(
                         imageUrl: posterUrl,
                         radius: 16.multiplyRoundness(),
                         width: isDesktop ? 150 : 120,
-                        height: isDesktop ? 200 : 180),
+                        height: isDesktop ? 200 : 180,
+                        fadeInDuration: Duration.zero,
+                        fadeOutDuration: Duration.zero),
                   ),
                   if (data?.isAdult ?? false)
                     Positioned(

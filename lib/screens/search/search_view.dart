@@ -22,6 +22,7 @@ import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -959,11 +960,12 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
 
   Widget _buildListItem(Media media) {
     final itemType = widget.isManga ? ItemType.manga : ItemType.anime;
+    final heroTag = '${media.id}-search-list';
     return GestureDetector(
-      onTap: () => _navigateToDetails(media),
+      onTap: () => _navigateToDetails(media, heroTag),
       onLongPress: () {
         if (media.userStatus == null || media.userStatus!.isEmpty) {
-          MediaPeekPopup.show(context, media, itemType, media.title);
+          MediaPeekPopup.show(context, media, itemType, heroTag);
         }
       },
       child: Container(
@@ -981,28 +983,18 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
           child: Row(
             children: [
               Hero(
-                tag: media.title,
+                tag: heroTag,
+                transitionOnUserGestures: true,
+                flightShuttleBuilder: AnymeXImage.heroFlightShuttleBuilder,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
-                  child: CachedNetworkImage(
+                  child: AnymeXImage(
                     width: 60,
                     height: 88,
                     imageUrl: media.poster,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => Container(
-                      color: context.colors.surfaceVariant,
-                      child: Icon(
-                        Iconsax.image,
-                        color: context.colors.onSurfaceVariant,
-                      ),
-                    ),
-                    errorWidget: (context, url, error) => Container(
-                      color: context.colors.surfaceVariant,
-                      child: Icon(
-                        Iconsax.warning_2,
-                        color: context.colors.error,
-                      ),
-                    ),
+                    radius: 0,
+                    fadeInDuration: Duration.zero,
+                    fadeOutDuration: Duration.zero,
                   ),
                 ),
               ),
@@ -1133,18 +1125,19 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     }
   }
 
-  void _navigateToDetails(Media media) {
+  void _navigateToDetails(Media media, [String? tag]) {
     final shouldOpenAnime = media.serviceType == ServicesType.simkl;
+    final heroTag = tag ?? '${media.id}-search-list';
 
     if (widget.isManga && !shouldOpenAnime) {
-      navigate(() => MangaDetailsPage(
+      navigateWithAnimation(() => MangaDetailsPage(
             media: media,
-            tag: media.title,
+            tag: heroTag,
           ));
     } else {
-      navigate(() => AnimeDetailsPage(
+      navigateWithAnimation(() => AnimeDetailsPage(
             media: media,
-            tag: media.title,
+            tag: heroTag,
           ));
     }
   }

@@ -44,7 +44,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:iconly/iconly.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:anymex/controllers/services/community_service.dart';
 import 'package:anymex/widgets/non_widgets/recommend_button.dart';
@@ -1006,7 +1006,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                     Get.back();
                   },
                   selectedIcon: Iconsax.back_square,
-                  unselectedIcon: IconlyBold.arrow_left,
+                  unselectedIcon: IconlyBold.arrowLeft,
                 ),
               ),
               const SizedBox(height: 10),

@@ -200,11 +200,18 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
         child: Row(
           children: [
             if (item.image.isNotEmpty)
-              AnymeXImage(
-                imageUrl: item.image,
-                width: 100,
-                height: double.infinity,
-                fit: BoxFit.cover,
+              Hero(
+                tag: "wo-${item.id}",
+                transitionOnUserGestures: true,
+                flightShuttleBuilder: AnymeXImage.heroFlightShuttleBuilder,
+                child: AnymeXImage(
+                  imageUrl: item.image,
+                  width: 100,
+                  height: double.infinity,
+                  fit: BoxFit.cover,
+                  fadeInDuration: Duration.zero,
+                  fadeOutDuration: Duration.zero,
+                ),
               ),
             Expanded(
               child: Padding(

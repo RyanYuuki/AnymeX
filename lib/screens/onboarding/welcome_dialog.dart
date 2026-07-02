@@ -15,7 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:iconly/iconly.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 const MethodChannel _utilsChannel = MethodChannel('com.ryan.anymex/utils');
@@ -303,7 +303,7 @@ void showWelcomeDialogg(BuildContext context) {
                                             .colorScheme
                                             .inverseSurface),
                                   ),
-                                  icon: Icon(IconlyBold.arrow_right,
+                                  icon: Icon(IconlyBold.arrowRight,
                                       color: Theme.of(context)
                                           .colorScheme
                                           .inverseSurface),

@@ -294,7 +294,6 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
     } catch (e) {
       print('Failed to connect to Discord RPC: $e');
       _isConnected.value = false;
-      snackBar('Failed to connect to Discord RPC');
     }
   }
 
@@ -332,7 +331,6 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
     } catch (e) {
       print('Failed to connect to Discord Gateway: $e');
       _isConnected.value = false;
-      snackBar('Failed to connect to Discord');
     }
   }
 

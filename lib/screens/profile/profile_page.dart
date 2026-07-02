@@ -15,7 +15,7 @@ import 'package:anymex/screens/profile/activity_details_page.dart';
 import 'package:anymex/widgets/non_widgets/activity_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconly/iconly.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:anymex/screens/profile/widgets/widgets.dart';
 import 'dart:developer';
@@ -196,8 +196,8 @@ class _ProfilePageState extends State<ProfilePage>
           onTap: (i) => setState(() => _selectedTab = 2),
         ),
         NavItem(
-          selectedIcon: IconlyBold.user_3,
-          unselectedIcon: IconlyLight.user_1,
+          selectedIcon: IconlyBold.user3,
+          unselectedIcon: IconlyLight.user1,
           label: 'Social',
           onTap: (i) => setState(() => _selectedTab = 3),
         ),
@@ -947,7 +947,7 @@ class _ProfilePageState extends State<ProfilePage>
                   label: "Minutes Watched",
                   value:
                       user.stats?.animeStats?.minutesWatched?.toString() ?? '0',
-                  icon: IconlyLight.time_circle,
+                  icon: IconlyLight.timeCircle,
                   compact: true,
                 ),
                 const Divider(height: 16, thickness: 0.4),
@@ -999,9 +999,6 @@ class _ProfilePageState extends State<ProfilePage>
       ],
     );
   }
-
-
-
 
   Widget _buildDesktopTabs(BuildContext context) {
     return ProfileDesktopTabs(

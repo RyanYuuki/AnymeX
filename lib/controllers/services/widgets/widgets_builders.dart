@@ -258,7 +258,7 @@ class _UnderratedCard extends StatelessWidget {
     final isDesktop = MediaQuery.of(context).size.width > 600;
     final cardWidth = isDesktop ? 160.0 : 118.0;
     final carouselData = item.toCarouselData(isManga: type == ItemType.manga);
-    final tag = 'underrated-${carouselData.id}-${item.media.hashCode}';
+    final tag = 'underrated-${carouselData.id}';
 
     return GestureDetector(
       onTap: () => _navigateToDetails(context),
@@ -405,19 +405,9 @@ class _UnderratedCard extends StatelessWidget {
     final media = item.media;
     final tag = 'underrated-${media.id}';
     if (type == ItemType.manga) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MangaDetailsPage(media: media, tag: tag),
-        ),
-      );
+      navigateWithAnimation(() => MangaDetailsPage(media: media, tag: tag));
     } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => AnimeDetailsPage(media: media, tag: tag),
-        ),
-      );
+      navigateWithAnimation(() => AnimeDetailsPage(media: media, tag: tag));
     }
   }
 }

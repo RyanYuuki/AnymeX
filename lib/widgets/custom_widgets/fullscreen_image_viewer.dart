@@ -203,11 +203,15 @@ class _FullscreenImageViewerState extends State<FullscreenImageViewer> {
                     maxScale: 4.0,
                     child: Hero(
                       tag: widget.tag,
+                      transitionOnUserGestures: true,
+                      flightShuttleBuilder: AnymeXImage.heroFlightShuttleBuilder,
                       child: AnymeXImage(
                         imageUrl: widget.imageUrl,
                         key: ValueKey(widget.imageUrl),
                         fit: BoxFit.contain,
                         radius: 0,
+                        fadeInDuration: Duration.zero,
+                        fadeOutDuration: Duration.zero,
                       ),
                     ),
                   ),

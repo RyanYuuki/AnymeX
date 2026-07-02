@@ -246,15 +246,15 @@ class _LibraryContent extends StatelessWidget {
         gridDelegate: _getSliverDelegate(context),
         delegate: SliverChildBuilderDelegate(
           (context, i) {
-            final tag = getRandomTag(addition: i.toString());
             OfflineMedia item = items[i];
+            final tag = '${item.mediaId ?? item.id}-library-grid-${controller.type.value.name}';
             return AnymexOnTap(
               margin: 0,
               scale: 1,
               onTap: () => _handleItemTap(context, item, items, i, tag),
               child: MediaCardGate(
                 itemData: items[i],
-                tag: '${getRandomTag()}-$i',
+                tag: tag,
                 variant: DataVariant.library,
                 type: controller.type.value,
                 cardStyle: CardStyle.values[settingsController.cardStyle],
@@ -315,10 +315,10 @@ class _LibraryContent extends StatelessWidget {
   void _handleItemTap(BuildContext context, OfflineMedia item,
       List<OfflineMedia> items, int index, String tag) {
     if (controller.type.value.isAnime) {
-      navigate(() => AnimeDetailsPage(
+      navigateWithAnimation(() => AnimeDetailsPage(
           media: Media.fromOfflineMedia(item, ItemType.anime), tag: tag));
     } else if (controller.type.value.isManga) {
-      navigate(() => MangaDetailsPage(
+      navigateWithAnimation(() => MangaDetailsPage(
           media: Media.fromOfflineMedia(item, ItemType.manga), tag: tag));
     } else {
       final source =
@@ -328,7 +328,7 @@ class _LibraryContent extends StatelessWidget {
         return;
       }
 
-      navigate(() => NovelDetailsPage(
+      navigateWithAnimation(() => NovelDetailsPage(
           source: source,
           media: Media.fromOfflineMedia(items[index], ItemType.novel),
           tag: tag));

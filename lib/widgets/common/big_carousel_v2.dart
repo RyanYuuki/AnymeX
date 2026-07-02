@@ -62,11 +62,13 @@ class _BigCarouselV2State extends State<BigCarouselV2> {
               itemBuilder: (context, index, realIndex) {
                 final item = newData[index];
                 final isActive = index == activeIndex;
+                final tag = '${item.id}-big-carousel';
                 return _CarouselCard(
                   media: item,
+                  tag: tag,
                   isActive: isActive,
                   carouselType: widget.carouselType,
-                  onTap: () => navigateToDetailsPage(item),
+                  onTap: () => navigateToDetailsPage(item, tag),
                   onShowDescription: () => _showDescriptionSheet(context, item),
                 );
               },
@@ -370,8 +372,7 @@ class _BigCarouselV2State extends State<BigCarouselV2> {
     );
   }
 
-  void navigateToDetailsPage(Media item) {
-    final tag = '${item.id}-carousel-${Random().nextInt(100)}';
+  void navigateToDetailsPage(Media item, String tag) {
     if (widget.carouselType == CarouselType.manga) {
       navigate(() => MangaDetailsPage(media: item, tag: tag));
     } else {
@@ -382,6 +383,7 @@ class _BigCarouselV2State extends State<BigCarouselV2> {
 
 class _CarouselCard extends StatelessWidget {
   final Media media;
+  final String tag;
   final bool isActive;
   final CarouselType carouselType;
   final VoidCallback onTap;
@@ -389,6 +391,7 @@ class _CarouselCard extends StatelessWidget {
 
   const _CarouselCard({
     required this.media,
+    required this.tag,
     required this.isActive,
     required this.carouselType,
     required this.onTap,
@@ -397,7 +400,6 @@ class _CarouselCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tag = '${media.id}-carousel-${Random().nextInt(100)}';
     final colorScheme = Get.theme.colorScheme;
 
     return GestureDetector(
@@ -420,6 +422,8 @@ class _CarouselCard extends StatelessWidget {
             children: [
               Hero(
                 tag: tag,
+                transitionOnUserGestures: true,
+                flightShuttleBuilder: AnymeXImage.heroFlightShuttleBuilder,
                 child: AnymeXImage(
                   imageUrl: getResponsiveValue(context,
                       mobileValue: media.largePoster != "?"
@@ -427,6 +431,8 @@ class _CarouselCard extends StatelessWidget {
                           : media.cover,
                       desktopValue: media.cover),
                   fit: BoxFit.cover,
+                  fadeInDuration: Duration.zero,
+                  fadeOutDuration: Duration.zero,
                 ),
               ),
               Positioned(

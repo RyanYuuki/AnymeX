@@ -17,7 +17,7 @@ import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:iconly/iconly.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 import 'package:anymex/screens/other_features.dart';
 
@@ -702,7 +702,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                               width: 30,
                               height: 30,
                               child: Icon(
-                                IconlyBold.tick_square,
+                                IconlyBold.tickSquare,
                                 size: 18,
                                 color: Theme.of(context)
                                     .colorScheme
@@ -918,7 +918,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                             width: 30,
                             height: 30,
                             child: Icon(
-                              IconlyBold.tick_square,
+                              IconlyBold.tickSquare,
                               size: 18,
                               color: Theme.of(context)
                                   .colorScheme

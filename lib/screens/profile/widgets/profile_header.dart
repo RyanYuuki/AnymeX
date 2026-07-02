@@ -8,7 +8,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:iconly/iconly.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -587,7 +587,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
           shape: BoxShape.circle,
         ),
         child: IconButton(
-          icon: const Icon(IconlyLight.arrow_left),
+          icon: const Icon(IconlyLight.arrowLeft),
           onPressed: () => Navigator.pop(context),
         ),
       ),

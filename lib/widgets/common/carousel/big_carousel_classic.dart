@@ -100,7 +100,7 @@ class _BigCarouselClassicState extends State<BigCarouselClassic> {
                       event.logicalKey == LogicalKeyboardKey.space ||
                       event.logicalKey == LogicalKeyboardKey.select) {
                     navigateToDetailsPage(newData[activeIndex],
-                        '${newData[activeIndex].title}-$activeIndex');
+                        '${newData[activeIndex].id}-classic-carousel');
                   }
                 }
                 return KeyEventResult.handled;
@@ -121,8 +121,7 @@ class _BigCarouselClassicState extends State<BigCarouselClassic> {
                     final anime = newData[index];
                     final String posterUrl = anime.cover!;
                     final title = anime.title;
-                    final randNum = Random().nextInt(100000);
-                    final tag = '$randNum$index${anime.title}';
+                    final tag = '${anime.id}-classic-carousel';
                     String extraData = anime.rating.toString();
 
                     return Stack(
@@ -576,6 +575,8 @@ class _BigCarouselClassicState extends State<BigCarouselClassic> {
       margin: const EdgeInsets.symmetric(horizontal: 10),
       child: Hero(
         tag: tag,
+        transitionOnUserGestures: true,
+        flightShuttleBuilder: AnymeXImage.heroFlightShuttleBuilder,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(12),
           child: AnymeXImage(
@@ -583,7 +584,9 @@ class _BigCarouselClassicState extends State<BigCarouselClassic> {
               fit: BoxFit.cover,
               width: double.infinity,
               alignment: Alignment.topCenter,
-              radius: 0),
+              radius: 0,
+              fadeInDuration: Duration.zero,
+              fadeOutDuration: Duration.zero),
         ),
       ),
     );

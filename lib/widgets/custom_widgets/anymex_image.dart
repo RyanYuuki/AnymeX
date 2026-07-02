@@ -32,6 +32,8 @@ class AnymeXImage extends StatefulWidget {
   final String? errorImage;
   final ValueChanged<Color>? onColorExtracted;
   final Map<String, String>? headers;
+  final Duration? fadeInDuration;
+  final Duration? fadeOutDuration;
 
   const AnymeXImage({
     super.key,
@@ -45,7 +47,33 @@ class AnymeXImage extends StatefulWidget {
     this.errorImage,
     this.onColorExtracted, 
     this.headers,
+    this.fadeInDuration,
+    this.fadeOutDuration,
   });
+
+  static Widget heroFlightShuttleBuilder(
+    BuildContext flightContext,
+    Animation<double> animation,
+    HeroFlightDirection flightDirection,
+    BuildContext fromHeroContext,
+    BuildContext toHeroContext,
+  ) {
+    final fromHero = fromHeroContext.widget as Hero;
+    final toHero = toHeroContext.widget as Hero;
+    final heroContext = flightDirection == HeroFlightDirection.push
+        ? fromHeroContext
+        : toHeroContext;
+    final hero =
+        flightDirection == HeroFlightDirection.push ? fromHero : toHero;
+
+    return InheritedTheme.captureAll(
+      heroContext,
+      Material(
+        type: MaterialType.transparency,
+        child: hero.child,
+      ),
+    );
+  }
 
   @override
   State<AnymeXImage> createState() => _AnymeXImageState();
@@ -53,7 +81,6 @@ class AnymeXImage extends StatefulWidget {
 
 class _AnymeXImageState extends State<AnymeXImage> {
   Uint8List? _cachedBytes;
-  String? _lastImageUrl;
   Color? _extractedColor;
 
   @override
@@ -77,7 +104,6 @@ class _AnymeXImageState extends State<AnymeXImage> {
     } else {
       _cachedBytes = null;
     }
-    _lastImageUrl = widget.imageUrl;
     _extractedColor = null;
 
     if (widget.onColorExtracted != null) {
@@ -114,6 +140,8 @@ class _AnymeXImageState extends State<AnymeXImage> {
                 color: widget.color,
                 colorBlendMode: widget.color != null ? BlendMode.color : null,
                 placeholder: (_, __) => _placeholder(context),
+                fadeInDuration: widget.fadeInDuration ?? const Duration(milliseconds: 500),
+                fadeOutDuration: widget.fadeOutDuration ?? const Duration(milliseconds: 300),
                 errorWidget: (_, __, ___) {
                   if (widget.errorImage != null && widget.errorImage!.isNotEmpty) {
                     return CachedNetworkImage(
@@ -123,6 +151,8 @@ class _AnymeXImageState extends State<AnymeXImage> {
                       height: widget.height,
                       fit: widget.fit,
                       placeholder: (_, __) => _placeholder(context),
+                      fadeInDuration: widget.fadeInDuration ?? const Duration(milliseconds: 500),
+                      fadeOutDuration: widget.fadeOutDuration ?? const Duration(milliseconds: 300),
                       errorWidget: (_, __, ___) => _fallback(context),
                     );
                   }

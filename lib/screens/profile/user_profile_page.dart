@@ -16,7 +16,7 @@ import 'package:anymex/widgets/non_widgets/activity_card.dart';
 import 'package:anymex/widgets/non_widgets/activity_composer_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconly/iconly.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:anymex/screens/profile/widgets/widgets.dart';
 import 'dart:developer';
@@ -106,13 +106,13 @@ class _UserProfilePageState extends State<UserProfilePage>
 
     if (profile != null) {
       if (mounted) {
-    
         setState(() {
           _userProfile = profile;
           final handler = Get.find<ServiceHandler>();
           final currentUserId = handler.profileData.value.id;
-          final isOwner = currentUserId != null && widget.userId == int.tryParse(currentUserId);
-          
+          final isOwner = currentUserId != null &&
+              widget.userId == int.tryParse(currentUserId);
+
           if (!isOwner) {
             _isFollowingUser = profile.isFollowing;
             _isFollowerOfUser = profile.isFollower;
@@ -120,12 +120,12 @@ class _UserProfilePageState extends State<UserProfilePage>
             _isFollowingUser = null;
             _isFollowerOfUser = null;
           }
-          
+
           _animeStatuses = profile.stats?.animeStats?.statuses ?? [];
           _mangaStatuses = profile.stats?.mangaStats?.statuses ?? [];
           _profileLoading = false;
         });
-    
+
         if (profile.avatar != null) {
           Future.microtask(() => _extractDominantColor(profile.avatar!));
         }
@@ -141,7 +141,6 @@ class _UserProfilePageState extends State<UserProfilePage>
 
   Future<void> _toggleFollow() async {
     if (_followToggling) return;
-
 
     final previousState = _isFollowingUser;
 
@@ -260,8 +259,8 @@ class _UserProfilePageState extends State<UserProfilePage>
           onTap: (i) => setState(() => _selectedTab = 2),
         ),
         NavItem(
-          selectedIcon: IconlyBold.user_3,
-          unselectedIcon: IconlyLight.user_1,
+          selectedIcon: IconlyBold.user3,
+          unselectedIcon: IconlyLight.user1,
           label: 'Social',
           onTap: (i) => setState(() => _selectedTab = 3),
         ),
@@ -472,8 +471,10 @@ class _UserProfilePageState extends State<UserProfilePage>
       ];
     }
 
-    final String? currentUserId = Get.find<ServiceHandler>().profileData.value.id;
-    final bool isOwner = currentUserId != null && widget.userId == int.tryParse(currentUserId);
+    final String? currentUserId =
+        Get.find<ServiceHandler>().profileData.value.id;
+    final bool isOwner =
+        currentUserId != null && widget.userId == int.tryParse(currentUserId);
 
     // Header + filter buttonn
     final header = Padding(
@@ -845,7 +846,7 @@ class _UserProfilePageState extends State<UserProfilePage>
                     label: "Minutes Watched",
                     value: user.stats?.animeStats?.minutesWatched?.toString() ??
                         '0',
-                    icon: IconlyLight.time_circle,
+                    icon: IconlyLight.timeCircle,
                     compact: true),
                 const Divider(height: 16, thickness: 0.4),
                 StatRow(
@@ -893,8 +894,6 @@ class _UserProfilePageState extends State<UserProfilePage>
       ],
     );
   }
-
-
 
   Widget _buildDesktopHeader(
       BuildContext context, Profile user, Animation<Alignment> bannerAnim) {
@@ -1064,5 +1063,4 @@ class _UserProfilePageState extends State<UserProfilePage>
       },
     );
   }
-
 }

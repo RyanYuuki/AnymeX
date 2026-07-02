@@ -6,7 +6,7 @@ import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:iconly/iconly.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 
 class SettingsHighlightProvider extends InheritedWidget {
   final String highlightTitle;
@@ -274,7 +274,7 @@ class CustomTile extends StatelessWidget {
                     ),
                   ),
                   if (postFix == null)
-                    Icon(IconlyLight.arrow_right_2,
+                    Icon(IconlyLight.arrowRight2,
                         color: context.colors.primary)
                   else
                     postFix!
