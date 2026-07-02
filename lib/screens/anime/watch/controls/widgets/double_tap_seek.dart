@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
+import 'package:anymex/screens/anime/watch/controller/player_utils.dart';
 import 'dart:async';
 
 import 'package:get/get.dart';
@@ -46,6 +47,14 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
   double _initialSwipeY = 0.0;
   bool _isDragging = false;
   bool _longPressStarted = false;
+
+  bool _isHorizontalDragging = false;
+  bool _showSeekTime = false;
+  Duration _dragCurrentPosition = Duration.zero;
+  Duration _dragStartPlayerPosition = Duration.zero;
+  int _dragSeekDirection = 0;
+  bool _wasPlayingBeforeSeek = false;
+
   late AnimationController _speedAnimationController;
   late Animation<double> _speedScaleAnimation;
   late AnimationController _glowAnimationController;
@@ -273,6 +282,63 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
     }
   }
 
+  void _onHorizontalDragStart(DragStartDetails details) {
+    if (widget.controller.isLocked.value) return;
+    if (_isHolding || _longPressStarted) return;
+
+    _isHorizontalDragging = true;
+    _dragStartPlayerPosition = widget.controller.currentPosition.value;
+    _dragCurrentPosition = _dragStartPlayerPosition;
+    _dragSeekDirection = 0;
+    _wasPlayingBeforeSeek = widget.controller.isPlaying.value;
+
+    if (_wasPlayingBeforeSeek) {
+      widget.controller.pause();
+    }
+    if (widget.controller.showControls.value) {
+      widget.controller.toggleControls(val: false);
+    }
+
+    setState(() => _showSeekTime = true);
+  }
+
+  void _onHorizontalDragUpdate(DragUpdateDetails details) {
+    if (!_isHorizontalDragging) return;
+    if (widget.controller.isLocked.value) return;
+
+    final screenWidth = MediaQuery.of(context).size.width;
+    const sensitivity = 0.80;
+    final totalMs = widget.controller.episodeDuration.value.inMilliseconds;
+    if (totalMs <= 0) return;
+
+    final msPerPixel = (totalMs * sensitivity) / screenWidth;
+    final deltaMs = (details.delta.dx * msPerPixel).round();
+
+    final newMs =
+        (_dragCurrentPosition.inMilliseconds + deltaMs).clamp(0, totalMs);
+    final newPosition = Duration(milliseconds: newMs);
+    final direction = deltaMs > 0 ? 1 : (deltaMs < 0 ? -1 : _dragSeekDirection);
+
+    setState(() {
+      _dragSeekDirection = direction;
+      _dragCurrentPosition = newPosition;
+    });
+
+    widget.controller.seekTo(newPosition);
+  }
+
+  void _onHorizontalDragEnd(DragEndDetails details) {
+    if (!_isHorizontalDragging) return;
+
+    _isHorizontalDragging = false;
+
+    setState(() => _showSeekTime = false);
+
+    if (_wasPlayingBeforeSeek) {
+      widget.controller.play();
+    }
+  }
+
   void _updateSpeedFromSwipe(double deltaY) {
     if (widget.controller.isLocked.value) return;
     if (!_isHolding) return;
@@ -391,6 +457,149 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
     );
   }
 
+  Widget _buildDragSeekHud() {
+    if (!_showSeekTime) return const SizedBox.shrink();
+
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final totalMs = widget.controller.episodeDuration.value.inMilliseconds;
+    final progress = totalMs > 0
+        ? (_dragCurrentPosition.inMilliseconds / totalMs).clamp(0.0, 1.0)
+        : 0.0;
+    final isForward = _dragSeekDirection >= 0;
+    final icon =
+        isForward ? Icons.fast_forward_rounded : Icons.fast_rewind_rounded;
+    final accent = colorScheme.secondaryContainer;
+    final container = colorScheme.secondary;
+    final onContainer = colorScheme.onSecondary;
+    final surface = colorScheme.surfaceContainerHighest;
+    final border = colorScheme.outlineVariant.withValues(alpha: 0.34);
+
+    return Align(
+      alignment: Alignment.topCenter,
+      child: AnimatedOpacity(
+        opacity: _showSeekTime ? 1.0 : 0.0,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOutCubic,
+        child: AnimatedSlide(
+          offset: _showSeekTime ? Offset.zero : const Offset(0, -0.18),
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOutCubic,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 24),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+              child: Container(
+                width: 248,
+                decoration: BoxDecoration(
+                  color: surface,
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(color: border),
+                  boxShadow: [
+                    BoxShadow(
+                      color: accent.withValues(alpha: 0.24),
+                      blurRadius: 32,
+                      spreadRadius: 1,
+                    ),
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.28),
+                      blurRadius: 24,
+                      offset: const Offset(0, 12),
+                    ),
+                  ],
+                ),
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: FractionallySizedBox(
+                          widthFactor: progress,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(30),
+                              color: colorScheme.secondaryContainer,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 8,
+                        horizontal: 10,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 36,
+                            height: 36,
+                            decoration: BoxDecoration(
+                              color: container,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 200),
+                              switchInCurve: Curves.easeOutBack,
+                              switchOutCurve: Curves.easeInCubic,
+                              transitionBuilder: (child, animation) =>
+                                  ScaleTransition(
+                                scale: animation,
+                                child: FadeTransition(
+                                  opacity: animation,
+                                  child: child,
+                                ),
+                              ),
+                              child: Icon(
+                                icon,
+                                key: ValueKey(icon),
+                                color: onContainer,
+                                size: 22,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  PlayerUtils.formatDuration(
+                                      _dragCurrentPosition),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.textTheme.labelLarge?.copyWith(
+                                    color: colorScheme.onSurface,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 1),
+                                Text(
+                                  '/ ${PlayerUtils.formatDuration(widget.controller.episodeDuration.value)}',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildSeekIndicator({
     required bool isLeft,
     required int tapCount,
@@ -400,7 +609,8 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
 
     if (tapCount == 0) return const SizedBox.shrink();
 
-    final totalSeekSeconds = widget.controller.playerSettings.seekDuration * tapCount;
+    final totalSeekSeconds =
+        widget.controller.playerSettings.seekDuration * tapCount;
 
     return AnimatedItemWrapper(
         slideDistance: 5,
@@ -465,8 +675,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color:
-                          colorScheme.surfaceContainerHighest.opaque(0.9),
+                      color: colorScheme.surfaceContainerHighest.opaque(0.9),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
@@ -575,6 +784,9 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
                   widget.controller.onVerticalDragUpdate(context, details);
                 }
               },
+              onHorizontalDragStart: _onHorizontalDragStart,
+              onHorizontalDragUpdate: _onHorizontalDragUpdate,
+              onHorizontalDragEnd: _onHorizontalDragEnd,
               onLongPressStart: (details) {
                 _initialSwipeY = details.globalPosition.dy;
                 _startHold();
@@ -648,6 +860,12 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
                       right: 0,
                       top: MediaQuery.of(context).size.height * 0.05,
                       child: IgnorePointer(child: _buildSpeedIndicator()),
+                    ),
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      top: 0,
+                      child: IgnorePointer(child: _buildDragSeekHud()),
                     ),
                   ],
                 ),
