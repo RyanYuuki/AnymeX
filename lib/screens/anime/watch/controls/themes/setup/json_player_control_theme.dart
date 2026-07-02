@@ -2198,7 +2198,7 @@ class BottomZone {
           : parsedLocked,
       showProgress: _readBool(json['showProgress'], true),
       progressStyle: _toSliderStyle(_readString(json['progressStyle']),
-          fallback: SliderStyle.ios),
+          fallback: SliderStyle.defaultM3),
       progressPadding: _readEdgeInsets(
           json['progressPadding'], const EdgeInsets.symmetric(horizontal: 4)),
       progressActiveTrackColor: _readString(json['progressActiveTrackColor']),
@@ -2650,6 +2650,8 @@ Curve _parseCurve(String? raw, Curve fallback) {
 
 SliderStyle _toSliderStyle(String? raw, {required SliderStyle fallback}) {
   switch (raw) {
+    case 'default':
+      return SliderStyle.defaultM3;
     case 'ios':
       return SliderStyle.ios;
     case 'capsule':

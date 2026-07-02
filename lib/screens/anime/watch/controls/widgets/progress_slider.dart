@@ -6,7 +6,7 @@ import 'package:anymex/widgets/common/anymex_slider_m3.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-enum SliderStyle { capsule, ios }
+enum SliderStyle { defaultM3, capsule, ios }
 
 class ProgressSlider extends StatefulWidget {
   final SliderStyle style;
@@ -20,7 +20,7 @@ class ProgressSlider extends StatefulWidget {
 
   const ProgressSlider({
     super.key,
-    this.style = SliderStyle.capsule,
+    this.style = SliderStyle.defaultM3,
     this.activeTrackColor,
     this.inactiveTrackColor,
     this.secondaryActiveTrackColor,
@@ -52,16 +52,24 @@ class _ProgressSliderState extends State<ProgressSlider> {
       final skipTimes = controller.skipTimes;
       final totalDuration = controller.episodeDuration.value;
 
+      final isDefaultStyle = widget.style == SliderStyle.defaultM3;
+      final containerHeight = isDefaultStyle ? 27.0 : 27.0;
+      final markerSize = isDefaultStyle ? 5.0 : 4.0;
+
       return SizedBox(
-        height: 27,
+        height: containerHeight,
         child: Stack(
           alignment: Alignment.center,
           children: [
-            SliderTheme(
-              data: _getSliderTheme(colorScheme, widget.style),
-              child: AnymeXSliderM3(
-                // year2023: false,
-                theme: AnymeXSliderM3Theme(trackHeight: 15, thumbHeight: 20),
+            if (isDefaultStyle)
+              AnymeXSliderM3(
+                theme: AnymeXSliderM3Theme(
+                  trackHeight: 15,
+                  thumbHeight: 20,
+                  activeColor: widget.activeTrackColor,
+                  inactiveColor: widget.inactiveTrackColor,
+                  secondaryActiveColor: widget.secondaryActiveTrackColor,
+                ),
                 label: PlayerUtils.formatDuration(
                     Duration(milliseconds: position)),
                 divisions: null,
@@ -77,8 +85,25 @@ class _ProgressSliderState extends State<ProgressSlider> {
                 onChangeEnd: (v) {
                   controller.isSeeking.value = false;
                 },
+              )
+            else
+              SliderTheme(
+                data: _getSliderTheme(colorScheme, widget.style),
+                child: Slider(
+                  focusNode:
+                      FocusNode(canRequestFocus: false, skipTraversal: true),
+                  min: 0,
+                  value: clampedPosition,
+                  max: maxValue,
+                  secondaryTrackValue: clampedBuffer,
+                  onChangeStart: (v) => controller.isSeeking.value = true,
+                  onChanged: (v) =>
+                      controller.seekTo(Duration(milliseconds: v.toInt())),
+                  onChangeEnd: (v) {
+                    controller.isSeeking.value = false;
+                  },
+                ),
               ),
-            ),
             if (skipTimes != null && totalDuration.inMilliseconds > 0)
               Positioned.fill(
                 child: IgnorePointer(
@@ -89,6 +114,7 @@ class _ProgressSliderState extends State<ProgressSlider> {
                       currentPosition: Duration(
                         milliseconds: clampedPosition.toInt(),
                       ),
+                      markerHeight: markerSize,
                       hideUnderThumb: widget.style != SliderStyle.ios,
                       segmentColor: widget.segmentColor,
                       recapSegmentColor: widget.recapSegmentColor,
@@ -137,6 +163,8 @@ class _ProgressSliderState extends State<ProgressSlider> {
               colorScheme.primary.opaque(0.1, iReallyMeanIt: true),
           overlayShape: const RoundSliderOverlayShape(overlayRadius: 18),
         );
+      case SliderStyle.defaultM3:
+        return const SliderThemeData();
     }
   }
 }
@@ -148,6 +176,7 @@ class SkipTimelinePainter extends CustomPainter {
   final bool hideUnderThumb;
   final Color? segmentColor;
   final Color? recapSegmentColor;
+  final double markerHeight;
   static const Color _defaultSegmentColor = Color(0xFFEBC125);
   static const Color _defaultRecapColor = Color(0xFF4CAF50);
 
@@ -156,6 +185,7 @@ class SkipTimelinePainter extends CustomPainter {
     required this.totalDuration,
     required this.currentPosition,
     required this.hideUnderThumb,
+    this.markerHeight = 4.0,
     this.segmentColor,
     this.recapSegmentColor,
   });
@@ -166,7 +196,6 @@ class SkipTimelinePainter extends CustomPainter {
 
     final double totalSeconds = totalDuration.inMilliseconds / 1000.0;
     final Paint paint = Paint()..style = PaintingStyle.fill;
-    const double markerHeight = 4.0;
     const double thumbCutoutHalfWidth = 5.0;
     final double yOffset = (size.height - markerHeight) / 2;
     final double progressSeconds =
@@ -224,6 +253,7 @@ class SkipTimelinePainter extends CustomPainter {
         oldDelegate.totalDuration != totalDuration ||
         oldDelegate.currentPosition != currentPosition ||
         oldDelegate.hideUnderThumb != hideUnderThumb ||
+        oldDelegate.markerHeight != markerHeight ||
         oldDelegate.segmentColor != segmentColor ||
         oldDelegate.recapSegmentColor != recapSegmentColor;
   }
