@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:anymex/constants/contants.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/theme.dart';
@@ -338,6 +340,20 @@ class _SettingsThemeState extends State<SettingsTheme> {
                                   "Customize your logo animation style",
                               onTap: _showLogoAnimationDialog,
                             ),
+                            if (Platform.isAndroid) ...[
+                              const SizedBox(height: 10),
+                              Obx(() {
+                                final label = settings.getPreferredRefreshRateLabel();
+                                return CustomTile(
+                                  icon: HugeIcons.strokeRoundedRefresh,
+                                  title: "Refresh Rate",
+                                  description: "Current mode: $label",
+                                  onTap: () {
+                                    showRefreshRateDialog(context);
+                                  },
+                                );
+                              }),
+                            ],
                           ],
                         )),
                     const SizedBox(height: 10),
@@ -457,6 +473,134 @@ class _SettingsThemeState extends State<SettingsTheme> {
                         ),
                       ),
                     ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void showRefreshRateDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: context.colors.surface,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Container(
+            width: getResponsiveValue(context,
+                mobileValue: null, desktopValue: 500.0),
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Select Refresh Rate',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+                const SizedBox(height: 16),
+                Flexible(
+                  child: FutureBuilder<List<DisplayMode>>(
+                    future: FlutterDisplayMode.supported,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(20.0),
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      }
+                      if (snapshot.hasError) {
+                        return Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text('Error loading refresh rates: ${snapshot.error}'),
+                        );
+                      }
+
+                      final modes = (snapshot.data ?? [])
+                          .where((m) =>
+                              m != DisplayMode.auto &&
+                              m.id != 0 &&
+                              m.width != 0 &&
+                              m.height != 0)
+                          .toList();
+                      final List<DisplayMode> options = [
+                        DisplayMode.auto,
+                        ...modes,
+                      ];
+
+                      return Obx(() {
+                        final preferredMode = settings.preferredDisplayMode.value;
+                        final activeMode = settings.activeDisplayMode.value;
+
+                        return SuperListView.builder(
+                          shrinkWrap: true,
+                          itemCount: options.length,
+                          itemBuilder: (context, index) {
+                            final mode = options[index];
+                            final isSelected = (preferredMode ?? DisplayMode.auto).id == mode.id &&
+                                (preferredMode ?? DisplayMode.auto).width == mode.width &&
+                                (preferredMode ?? DisplayMode.auto).height == mode.height &&
+                                (preferredMode ?? DisplayMode.auto).refreshRate == mode.refreshRate;
+                            final isActive = activeMode != null &&
+                                activeMode.id == mode.id &&
+                                activeMode.width == mode.width &&
+                                activeMode.height == mode.height &&
+                                activeMode.refreshRate == mode.refreshRate;
+
+                            final String title;
+                            final String subtitle;
+                            if (mode == DisplayMode.auto) {
+                              title = 'Auto';
+                              subtitle = isActive ? 'System Managed [Active]' : 'System Managed';
+                            } else {
+                              title = '${mode.width}x${mode.height}';
+                              subtitle = isActive ? '${mode.refreshRate.toInt()}Hz [Active]' : '${mode.refreshRate.toInt()}Hz';
+                            }
+
+                            return Container(
+                              margin: const EdgeInsets.only(bottom: 7),
+                              child: ListTileWithCheckMark(
+                                color: context.colors.primary,
+                                active: isSelected,
+                                leading: const Icon(Icons.speed_rounded),
+                                title: title,
+                                subtitle: subtitle,
+                                onTap: () async {
+                                  await settings.savePreferredDisplayMode(mode);
+                                },
+                              ),
+                            );
+                          },
+                        );
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    style: ElevatedButton.styleFrom(
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30)),
+                      backgroundColor: context.colors.primaryFixed,
+                    ),
+                    child: const Text('Close',
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontFamily: "LexendDeca",
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold)),
                   ),
                 ),
               ],

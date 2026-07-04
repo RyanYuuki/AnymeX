@@ -19,6 +19,8 @@ import 'package:anymex/database/isar_models/video.dart' as model;
 import 'package:anymex/models/Media/media.dart' as anymex;
 import 'package:anymex/models/player/player_adaptor.dart';
 import 'package:anymex/screens/anime/watch/controller/player_utils.dart';
+import 'package:anymex/utils/external_player.dart';
+import 'package:anymex/utils/pip_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
 import 'package:anymex/screens/anime/watch/player/base_player.dart';
 import 'package:anymex/screens/anime/watch/player/media_kit_player.dart';
@@ -142,9 +144,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   BasePlayer get basePlayer => _basePlayer;
 
   late BasePlayer _basePlayer;
+  final RxBool _isPlayerInitialized = false.obs;
+  final RxBool isPipMode = false.obs;
 
   Widget get videoWidget {
-    if (_isReloadingPlayer.value) {
+    if (_isReloadingPlayer.value || !_isPlayerInitialized.value) {
       return Container(
         color: Colors.black,
         child: const Center(
@@ -383,6 +387,13 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
             duration: 3000);
       });
     }
+    PipController.setAutoEnter(enabled: true);
+    PipController.onPlay = () => play();
+    PipController.onPause = () => pause();
+    PipController.onForward = () => megaSeek(30);
+    PipController.onBackward = () => megaSeek(-30);
+    PipController.onPipModeChanged = (active) => isPipMode.value = active;
+    PipController.initialize();
   }
 
   static void initializePlayerControlsIfNeeded(Settings settings) {
@@ -400,7 +411,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           'sync_subs',
           'speed',
           'orientation',
-          'aspect_ratio'
+          'aspect_ratio',
+          'external_player'
         ],
         'hiddenButtonIds': [],
         'buttonConfigs': {
@@ -412,6 +424,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           'speed': {'visible': true},
           'orientation': {'visible': true},
           'aspect_ratio': {'visible': true},
+          'external_player': {'visible': true},
         },
       };
       PlayerUiKeys.bottomControlsSettings.set(json.encode(defaultConfig));
@@ -435,6 +448,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   @override
   void onClose() {
+    PipController.setAutoEnter(enabled: false);
     delete();
     super.onClose();
   }
@@ -443,9 +457,15 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
 
+    if (state == AppLifecycleState.resumed) {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+      isPipMode.value = false;
+    }
+
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.detached ||
         state == AppLifecycleState.inactive) {
+      isPipMode.value = true;
       if (!kDebugMode) {
         _trackLocally();
       }
@@ -714,9 +734,15 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     );
 
     await _basePlayer.initialize();
+    _isPlayerInitialized.value = true;
     _bindPlayerStreams();
     playerReloadVersion.value++;
     refresh();
+
+    if (PlayerKeys.useExternalPlayer.get<bool>(false)) {
+      await launchExternalPlayer();
+      return;
+    }
 
     if (isOffline.value && offlineVideoPath != null) {
       final stamp =
@@ -949,6 +975,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _playerSubscriptions.add(_basePlayer.playingStream.listen((e) {
       if (_isReloadingPlayer.value) return;
       isPlaying.value = e;
+      PipController.updatePlaybackState(e);
       if (e) {
         _resetAutoHideTimer();
       }
@@ -1523,6 +1550,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   Future<void> _switchMedia(String url, Map<String, String>? headers,
       {Duration? startPosition}) async {
+    if (PlayerKeys.useExternalPlayer.get<bool>(false)) {
+      await launchExternalPlayer();
+      return;
+    }
+
     if (_basePlayer is MediaKitPlayer) {
       await _basePlayer.open("");
     }
@@ -2222,6 +2254,39 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       _basePlayer.toggleVideoFit(videoFit.value);
     }
     _showVideoFitToast(videoFit.value);
+  }
+
+  Future<void> enterPip() async {
+    isPipMode.value = true;
+    await Future.delayed(const Duration(milliseconds: 100));
+    await PipController.enter();
+  }
+
+  Future<void> launchExternalPlayer() async {
+    final url = selectedVideo.value?.url;
+    if (url == null || url.isEmpty) {
+      AnymexToast.show(
+        message: 'No stream URL available',
+        duration: const Duration(seconds: 2),
+      );
+      return;
+    }
+
+    pause();
+
+    final headers = selectedVideo.value?.headers;
+    AnymexToast.show(
+      message: 'Opening in external player...',
+      duration: const Duration(seconds: 2),
+    );
+
+    final success = await ExternalPlayer.launch(url, headers: headers);
+    if (!success) {
+      AnymexToast.show(
+        message: 'Failed to launch external player',
+        duration: const Duration(seconds: 2),
+      );
+    }
   }
 
   void _showVideoFitToast(BoxFit fit) {

@@ -109,6 +109,8 @@ final List<_BottomControl> _bottomControls = [
       icon: Icons.screen_rotation_rounded),
   const _BottomControl(
       id: 'aspect_ratio', name: 'Aspect Ratio', icon: Symbols.fit_screen),
+  const _BottomControl(
+      id: 'external_player', name: 'External Player', icon: Icons.launch_rounded),
 ];
 
 class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStateMixin {
@@ -136,6 +138,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
   late Map<String, dynamic> _buttonConfigs;
   bool _shouldApplyResizeModeOnClose = false;
   late bool _useLibass;
+  late bool _useExternalPlayer;
 
   @override
   void initState() {
@@ -148,6 +151,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
     _hiddenButtonIds = [];
     _buttonConfigs = {};
     _useLibass = PlayerKeys.useLibass.get<bool>(false);
+    _useExternalPlayer = PlayerKeys.useExternalPlayer.get<bool>(false);
 
     final String jsonString =
         PlayerUiKeys.bottomControlsSettings.get<String>('{}');
@@ -215,7 +219,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
     deduplicate(_rightButtonIds);
     deduplicate(_hiddenButtonIds);
 
-    final essential = ['source', 'tracks', 'sync_subs'];
+    final essential = ['source', 'tracks', 'sync_subs', 'external_player'];
     for (final id in essential) {
       if (!seen.contains(id)) {
         _rightButtonIds.add(id);
@@ -1806,6 +1810,19 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                             .onLibassPreferenceChanged(val);
                                       }
                                     }
+                                  }),
+                              CustomSwitchTile(
+                                  icon: Icons.launch_rounded,
+                                  padding: const EdgeInsets.all(10),
+                                  title: "Use External Player",
+                                  description:
+                                      "Open video stream in external player by default",
+                                  switchValue: _useExternalPlayer,
+                                  onChanged: (val) {
+                                    setState(() {
+                                      _useExternalPlayer = val;
+                                    });
+                                    PlayerKeys.useExternalPlayer.set<bool>(val);
                                   }),
                               CustomTile(
                                 padding: 10,

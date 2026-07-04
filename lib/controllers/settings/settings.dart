@@ -32,7 +32,9 @@ class Settings extends GetxController {
 
   RxBool enableBetaUpdates = false.obs;
   RxBool writeLogToFile = false.obs;
-  RxBool useHighRefreshRate = true.obs;
+  Rxn<DisplayMode> preferredDisplayMode = Rxn<DisplayMode>();
+  Rxn<DisplayMode> activeDisplayMode = Rxn<DisplayMode>();
+  RxList<DisplayMode> supportedModes = <DisplayMode>[].obs;
   RxString customLogDirectory = ''.obs;
 
   RxString downloadPath = ''.obs;
@@ -85,7 +87,6 @@ class Settings extends GetxController {
 
     enableBetaUpdates.value = General.enableBetaUpdates.get<bool>(false);
     writeLogToFile.value = General.writeLogToFile.get<bool>(false);
-    useHighRefreshRate.value = General.useHighRefreshRate.get<bool>(true);
     customLogDirectory.value = General.customLogDirectory.get<String>("");
 
     downloadPath.value = DownloadKeys.downloadPath.get<String>("");
@@ -111,26 +112,58 @@ class Settings extends GetxController {
     PlayerShaders.getMpvPath().then((e) {
       mpvPath.value = e;
     });
-    applyDisplayRefreshMode();
+
+    if (Platform.isAndroid) {
+      _initDisplayModes();
+    }
+  }
+
+  Future<void> _initDisplayModes() async {
+    try {
+      final modes = await FlutterDisplayMode.supported;
+      supportedModes.value = modes;
+      
+      final savedStr = General.preferredDisplayMode.get<String?>();
+      if (savedStr != null) {
+        preferredDisplayMode.value = modes.firstWhere(
+          (m) => m.toString() == savedStr,
+          orElse: () => DisplayMode.auto,
+        );
+      } else {
+        preferredDisplayMode.value = DisplayMode.auto;
+      }
+      
+      await applyDisplayRefreshMode();
+      activeDisplayMode.value = await FlutterDisplayMode.active;
+    } catch (e) {
+      Logger.e("Error initializing display modes: $e");
+    }
   }
 
   Future<void> applyDisplayRefreshMode() async {
     if (!Platform.isAndroid) return;
     try {
-      if (useHighRefreshRate.value) {
-        await FlutterDisplayMode.setHighRefreshRate();
-      } else {
-        await FlutterDisplayMode.setPreferredMode(DisplayMode.auto);
-      }
+      final mode = preferredDisplayMode.value ?? DisplayMode.auto;
+      await FlutterDisplayMode.setPreferredMode(mode);
+      await Future.delayed(const Duration(milliseconds: 100));
+      activeDisplayMode.value = await FlutterDisplayMode.active;
     } catch (e) {
       Logger.e("Error setting display refresh mode: $e");
     }
   }
 
-  Future<void> saveHighRefreshRateToggle(bool value) async {
-    useHighRefreshRate.value = value;
-    General.useHighRefreshRate.set(value);
+  Future<void> savePreferredDisplayMode(DisplayMode mode) async {
+    preferredDisplayMode.value = mode;
+    General.preferredDisplayMode.set(mode.toString());
     await applyDisplayRefreshMode();
+  }
+
+  String getPreferredRefreshRateLabel() {
+    final mode = preferredDisplayMode.value;
+    if (mode == null || mode == DisplayMode.auto) {
+      return "Auto";
+    }
+    return "${mode.width}x${mode.height} @ ${mode.refreshRate.toInt()}Hz";
   }
 
   Future<void> _fetchInviteLinks() async {

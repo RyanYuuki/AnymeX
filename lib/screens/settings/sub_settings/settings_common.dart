@@ -118,18 +118,6 @@ class _SettingsCommonState extends State<SettingsCommon> {
                                     settings.showContinueWatchingCard = e,
                               ),
                             ),
-                            if (Platform.isAndroid)
-                              Obx(
-                                () => CustomSwitchTile(
-                                  icon: Icons.speed_rounded,
-                                  title: 'Use Highest Refresh Rate',
-                                  description:
-                                      'Use the highest available refresh rate. Disable to let Android use the current system refresh rate.',
-                                  switchValue:
-                                      settings.useHighRefreshRate.value,
-                                  onChanged: settings.saveHighRefreshRateToggle,
-                                ),
-                              ),
                           ],
                         ),
                       ),

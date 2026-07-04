@@ -26,6 +26,7 @@ enum General {
   hasJoinedNewDiscord,
   discordRpcEnabled,
   useHighRefreshRate,
+  preferredDisplayMode,
 }
 
 enum ThemeKeys {
@@ -38,7 +39,7 @@ enum ThemeKeys {
   logoAnimationType,
 }
 
-enum PlayerKeys { useLibass, useMediaKit }
+enum PlayerKeys { useLibass, useMediaKit, useExternalPlayer }
 
 enum PlayerUiKeys {
   playerExperimentalEnabled,

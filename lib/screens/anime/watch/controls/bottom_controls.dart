@@ -311,6 +311,12 @@ class BottomControls extends StatelessWidget {
         tooltip: 'Aspect Ratio',
         compact: true,
       ),
+      'external_player': ControlButton(
+        icon: Icons.launch_rounded,
+        onPressed: () => controller.launchExternalPlayer(),
+        tooltip: 'External Player',
+        compact: true,
+      ),
     };
 
     List<Widget> buildButtonList(List<String> ids) {
