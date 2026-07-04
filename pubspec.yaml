@@ -65,6 +65,7 @@ dependencies:
     media_kit: ^1.2.6 
     media_kit_video: ^2.0.1 
     media_kit_libs_video: ^1.0.7 
+    media_kit_libs_windows_video: ^1.0.11 
 
     mobile_scanner: ^6.0.4
     package_info_plus: any
