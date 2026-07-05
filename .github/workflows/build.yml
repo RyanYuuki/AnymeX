@@ -29,11 +29,14 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      - uses: actions/checkout@v4
+
       - name: Enable Git longpaths
         if: matrix.platform == 'windows'
-        run: git config --system core.longpaths true
+        run: |
+          git config --global core.longpaths true
+          git config --system core.longpaths true
 
-      - uses: actions/checkout@v3
       
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -317,6 +320,8 @@ jobs:
             Write-Error "ISCC.exe not found in PATH"
             exit 1
           }
+          git config --global core.longpaths true
+          git config --system core.longpaths true
           flutter pub get
           dart run jni:setup
           pwsh ./scripts/setup_libtorrent_windows.ps1 -Arch x64
@@ -419,7 +424,7 @@ jobs:
         job: [aur, scoop, chocolatey]
     runs-on: ${{ matrix.job == 'chocolatey' && 'windows-latest' || 'ubuntu-latest' }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: ${{ matrix.job == 'chocolatey' && 'main' || github.ref }}
 

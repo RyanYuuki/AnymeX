@@ -50,22 +50,22 @@ dependencies:
     cross_platform_video_thumbnails: ^0.1.0
 
     outlined_text: ^1.0.1
-    # media_kit:
-    #     git:
-    #         url: https://github.com/Schnitzel5/media-kit.git
-    #         path: media_kit
-    # media_kit_video:
-    #     git:
-    #         url: https://github.com/Schnitzel5/media-kit.git
-    #         path: media_kit_video
-    # media_kit_libs_video:
-    #     git:
-    #         url: https://github.com/Schnitzel5/media-kit.git
-    #         path: libs/universal/media_kit_libs_video
-    media_kit: ^1.2.6 
-    media_kit_video: ^2.0.1 
-    media_kit_libs_video: ^1.0.7 
-    media_kit_libs_windows_video: ^1.0.11 
+    media_kit:
+        git:
+            url: https://github.com/Predidit/media-kit.git
+            ref: 11d02cb804b8faf944137834a1b0ac80880a4079
+            path: ./media_kit
+    media_kit_video:
+        git:
+            url: https://github.com/Predidit/media-kit.git
+            ref: 11d02cb804b8faf944137834a1b0ac80880a4079
+            path: ./media_kit_video
+    media_kit_libs_video:
+        git:
+            url: https://github.com/Predidit/media-kit.git
+            ref: 11d02cb804b8faf944137834a1b0ac80880a4079
+            path: ./libs/universal/media_kit_libs_video
+    media_kit_libs_windows_video: ^1.0.11
 
     mobile_scanner: ^6.0.4
     package_info_plus: any
@@ -137,6 +137,21 @@ dev_dependencies:
     inno_bundle: ^0.7.4
 
 dependency_overrides:
+  media_kit:
+    git:
+      url: https://github.com/Predidit/media-kit.git
+      ref: 11d02cb804b8faf944137834a1b0ac80880a4079
+      path: ./media_kit
+  media_kit_video:
+    git:
+      url: https://github.com/Predidit/media-kit.git
+      ref: 11d02cb804b8faf944137834a1b0ac80880a4079
+      path: ./media_kit_video
+  media_kit_libs_video:
+    git:
+      url: https://github.com/Predidit/media-kit.git
+      ref: 11d02cb804b8faf944137834a1b0ac80880a4079
+      path: ./libs/universal/media_kit_libs_video
   media_kit_libs_linux:
     git:
       url: https://github.com/Predidit/media-kit.git
