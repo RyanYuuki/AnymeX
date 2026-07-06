@@ -105,59 +105,56 @@ class _OfflineWatchPageState extends State<OfflineWatchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Obx(() {
-        if (controller.isPipMode.value) {
-          return Stack(
-            children: [
-              controller.videoWidget,
-              if (!PlayerKeys.useLibass.get<bool>(false))
-                SubtitleText(controller: controller),
-            ],
-          );
-        }
+        final isPip = controller.isPipMode.value;
         return Stack(
           children: [
-            controller.videoWidget,
-            PlayerOverlay(controller: controller),
+            Obx(() => KeyedSubtree(
+                  key: ValueKey(controller.playerReloadVersion.value),
+                  child: controller.videoWidget,
+                )),
             if (!PlayerKeys.useLibass.get<bool>(false))
               SubtitleText(controller: controller),
-            DoubleTapSeekWidget(
-              controller: controller,
-            ),
-            const Align(
-              alignment: Alignment.center,
-              child: ThemedCenterControls(),
-            ),
-            const Align(
-              alignment: Alignment.topCenter,
-              child: ThemedTopControls(),
-            ),
-            const Align(
-              alignment: Alignment.bottomCenter,
-              child: ThemedBottomControls(),
-            ),
-            MediaIndicatorBuilder(
-              isVolumeIndicator: false,
-              controller: controller,
-            ),
-            MediaIndicatorBuilder(
-              isVolumeIndicator: true,
-              controller: controller,
-            ),
-            ShaderOsd(controller: controller),
-            Positioned(
-              right: 0,
-              top: 0,
-              bottom: 0,
-              left: 0,
-              child: TracksPopup(controller: controller),
-            ),
-            Positioned(
-              right: 0,
-              top: 0,
-              bottom: 0,
-              left: 0,
-              child: EpisodesPane(controller: controller),
-            ),
+            if (!isPip) ...[
+              PlayerOverlay(controller: controller),
+              DoubleTapSeekWidget(
+                controller: controller,
+              ),
+              const Align(
+                alignment: Alignment.center,
+                child: ThemedCenterControls(),
+              ),
+              const Align(
+                alignment: Alignment.topCenter,
+                child: ThemedTopControls(),
+              ),
+              const Align(
+                alignment: Alignment.bottomCenter,
+                child: ThemedBottomControls(),
+              ),
+              MediaIndicatorBuilder(
+                isVolumeIndicator: false,
+                controller: controller,
+              ),
+              MediaIndicatorBuilder(
+                isVolumeIndicator: true,
+                controller: controller,
+              ),
+              ShaderOsd(controller: controller),
+              Positioned(
+                right: 0,
+                top: 0,
+                bottom: 0,
+                left: 0,
+                child: TracksPopup(controller: controller),
+              ),
+              Positioned(
+                right: 0,
+                top: 0,
+                bottom: 0,
+                left: 0,
+                child: EpisodesPane(controller: controller),
+              ),
+            ],
           ],
         );
       }),

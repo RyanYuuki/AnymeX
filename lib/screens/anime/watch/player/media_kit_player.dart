@@ -94,9 +94,7 @@ class MediaKitPlayer extends base.BasePlayer {
       _ => 'gpu',
     };
 
-    final bufferSize = config.bufferSize == 1024 * 1024 * 32
-        ? 1500 * 1024 * 1024
-        : config.bufferSize;
+    final bufferSize = config.bufferSize;
 
     _player = Player(
       configuration: PlayerConfiguration(
@@ -122,6 +120,11 @@ class MediaKitPlayer extends base.BasePlayer {
       if (Platform.isAndroid) {
         await mpv.setProperty("volume-max", "100");
         await mpv.setProperty("ao", "opensles");
+        await mpv.setProperty("hwdec", config.hwdec);
+        await mpv.setProperty("vd-lavc-fast", "yes");
+        await mpv.setProperty("vd-lavc-skiploopfilter", "nonkey");
+        await mpv.setProperty("vd-lavc-threads", "4");
+        await mpv.setProperty("cache", "yes");
       }
     } catch (e) {
       print('Error setting MPV optimization properties: $e');

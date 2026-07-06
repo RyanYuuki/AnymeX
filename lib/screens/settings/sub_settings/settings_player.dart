@@ -746,11 +746,6 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
     );
   }
 
-  bool _isUsingMpvEngine() {
-    if (!Platform.isAndroid && !Platform.isIOS) return true;
-    return PlayerKeys.useMediaKit.get<bool>(false);
-  }
-
   bool get _supportsDecoderSelection =>
       Platform.isAndroid ||
       Platform.isIOS ||
@@ -1616,7 +1611,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                 if (!experimentalEnabled)
                                   _buildExperimentalGateMessage(
                                       'Core and Visual settings are disabled. Enable Experimental to use them.'),
-                                if (experimentalEnabled && _isUsingMpvEngine())
+                                if (experimentalEnabled)
                                   Column(
                                     children: [
                                       CustomTile(
@@ -1710,7 +1705,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                         sliderValue:
                                             ((mpvCore['demuxerReadaheadSeconds']
                                                         as num?) ??
-                                                    20)
+                                                    30)
                                                 .toDouble(),
                                         min: 0,
                                         max: 120,
@@ -1718,7 +1713,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                         label:
                                             ((mpvCore['demuxerReadaheadSeconds']
                                                         as num?) ??
-                                                    20)
+                                                    30)
                                                 .toInt()
                                                 .toString(),
                                         onChanged: (value) {
@@ -1737,14 +1732,14 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                         sliderValue:
                                             ((mpvCore['demuxerMaxBytesMb']
                                                         as num?) ??
-                                                    64)
+                                                    128)
                                                 .toDouble(),
                                         min: 16,
                                         max: 512,
                                         divisions: 62,
                                         label: ((mpvCore['demuxerMaxBytesMb']
                                                     as num?) ??
-                                                64)
+                                                128)
                                             .toInt()
                                             .toString(),
                                         onChanged: (value) {
@@ -1762,14 +1757,14 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                             '0 means automatic thread count',
                                         sliderValue: ((mpvCore['vdLavcThreads']
                                                     as num?) ??
-                                                0)
+                                                4)
                                             .toDouble(),
                                         min: 0,
                                         max: 16,
                                         divisions: 16,
                                         label: ((mpvCore['vdLavcThreads']
                                                     as num?) ??
-                                                0)
+                                                4)
                                             .toInt()
                                             .toString(),
                                         onChanged: (value) {
