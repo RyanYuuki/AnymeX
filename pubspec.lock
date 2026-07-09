@@ -54,7 +54,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "9c349c10639d4f9cdd6a72c4583a255c13c9ee15"
+      resolved-ref: dd228df637b417eda6f1fcfc829214ef68625808
       url: "https://github.com/RyanYuuki/AnymeXExtensionRuntimeBridge.git"
     source: git
     version: "1.6.1"
@@ -777,6 +777,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.7+1"
+  flutter_media_session:
+    dependency: "direct main"
+    description:
+      name: flutter_media_session
+      sha256: "147c2ac8ddcbaf8caed231b21083bac9d1e36cccb7782a0fde974961e8e8e5c9"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0"
   flutter_native_splash:
     dependency: "direct main"
     description:

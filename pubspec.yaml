@@ -85,6 +85,7 @@ dependencies:
     app_links: ^6.4.0
     preload_page_view: ^0.2.0
     flutter_displaymode: any
+    flutter_media_session: any
 
     archive: any
     image: any
