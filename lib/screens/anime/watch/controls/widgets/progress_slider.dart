@@ -54,7 +54,7 @@ class _ProgressSliderState extends State<ProgressSlider> {
 
       final isDefaultStyle = widget.style == SliderStyle.defaultM3;
       final containerHeight = isDefaultStyle ? 27.0 : 27.0;
-      final markerSize = isDefaultStyle ? 5.0 : 4.0;
+      final markerSize = isDefaultStyle ? 15.0 : 4.0;
 
       return SizedBox(
         height: containerHeight,
