@@ -87,11 +87,13 @@ class MediaKitPlayer extends base.BasePlayer {
     }
 
     final resolvedVo = switch (config.videoOutput) {
-      'gpu-next' => 'gpu-next',
+      'gpu-next' => Platform.isAndroid ? 'gpu-next' : null,
       'mediacodec_embed' => 'mediacodec_embed',
-      'gpu' => 'gpu',
-      'auto' => (Platform.isAndroid && sdkVersion >= 34) ? 'gpu-next' : 'gpu',
-      _ => 'gpu',
+      'gpu' => Platform.isAndroid ? 'gpu' : null,
+      'auto' => Platform.isAndroid
+          ? (sdkVersion >= 34 ? 'gpu-next' : 'gpu')
+          : null,
+      _ => null,
     };
 
     final bufferSize = config.bufferSize;
@@ -119,7 +121,7 @@ class MediaKitPlayer extends base.BasePlayer {
       await mpv.setProperty("af", "scaletempo2=max-speed=8");
       if (Platform.isAndroid) {
         await mpv.setProperty("volume-max", "100");
-        await mpv.setProperty("ao", "opensles");
+        await mpv.setProperty("ao", "audiotrack");
         await mpv.setProperty("hwdec", config.hwdec);
         await mpv.setProperty("vd-lavc-fast", "yes");
         await mpv.setProperty("vd-lavc-skiploopfilter", "nonkey");
