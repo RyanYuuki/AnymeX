@@ -42,6 +42,7 @@ class TorrentStreamResolver {
     void Function(double progress)? onProgress,
     void Function(List<TorrentFileInfo> files)? onFilesDiscovered,
     int? preferredFileIndex,
+    String? episode,
   }) async {
     if (!_isInitialized) {
       final ok = await initialize();
@@ -57,11 +58,92 @@ class TorrentStreamResolver {
     for (final session in _sessions.values) {
       if (session.originalUrl == url) {
         _currentActiveTorrentId = session.torrentId;
+
+        int targetFileIndex = session.fileIndex;
+        if (episode != null) {
+          final allFiles = engine.getFiles(session.torrentId).map((f) => TorrentFileInfo(
+                index: f.index,
+                name: f.name,
+                path: f.path,
+                size: f.size,
+                isVideo: _isVideoExtension(f.path),
+              )).toList();
+          final idx = _findFileIndexForEpisode(allFiles, episode);
+          if (idx != null) {
+            targetFileIndex = idx;
+          }
+        } else if (preferredFileIndex != null) {
+          targetFileIndex = preferredFileIndex;
+        }
+
+        if (targetFileIndex != session.fileIndex) {
+          Logger.i('[TorrentResolver] Switching session stream from file index ${session.fileIndex} to $targetFileIndex for episode $episode');
+          try {
+            engine.stopAllStreamsForTorrent(session.torrentId);
+
+            final allFiles = engine.getFiles(session.torrentId).map((f) => TorrentFileInfo(
+                  index: f.index,
+                  name: f.name,
+                  path: f.path,
+                  size: f.size,
+                  isVideo: _isVideoExtension(f.path),
+                )).toList();
+            final chosenFile = allFiles.firstWhere((f) => f.index == targetFileIndex);
+
+            final matchedSubs = _findMatchingSubtitles(chosenFile.name, allFiles);
+            final matchedAudio = _findMatchingAudio(chosenFile.name, allFiles);
+            if (matchedSubs.isNotEmpty || matchedAudio.isNotEmpty) {
+              final priorities = List<int>.filled(allFiles.length, 0);
+              for (final s in matchedSubs) {
+                priorities[s.fileIndex] = 4;
+              }
+              for (final a in matchedAudio) {
+                priorities[a.fileIndex] = 4;
+              }
+              priorities[targetFileIndex] = 7;
+              engine.setFilePriorities(session.torrentId, priorities);
+            }
+
+            final streamInfo = engine.startStream(session.torrentId, fileIndex: targetFileIndex);
+            engine.preloadStream(streamInfo.id);
+
+            session.fileIndex = targetFileIndex;
+            session.streamUrl = streamInfo.url;
+            session.fileName = chosenFile.name;
+
+            return ResolvedStream(
+              streamUrl: streamInfo.url,
+              infoHash: infoHash,
+              fileName: chosenFile.name,
+              subtitles: matchedSubs,
+              audioTracks: matchedAudio,
+            );
+          } catch (e) {
+            Logger.e('[TorrentResolver] Failed to switch stream within session: $e');
+            await stop(session.torrentId);
+            break;
+          }
+        }
+
         Logger.i('[TorrentResolver] Reusing stream: ${session.streamUrl}');
+        
+        final allFiles = engine.getFiles(session.torrentId).map((f) => TorrentFileInfo(
+              index: f.index,
+              name: f.name,
+              path: f.path,
+              size: f.size,
+              isVideo: _isVideoExtension(f.path),
+            )).toList();
+        final chosenFile = allFiles.firstWhere((f) => f.index == session.fileIndex);
+        final matchedSubs = _findMatchingSubtitles(chosenFile.name, allFiles);
+        final matchedAudio = _findMatchingAudio(chosenFile.name, allFiles);
+
         return ResolvedStream(
           streamUrl: session.streamUrl,
           infoHash: infoHash,
           fileName: session.fileName,
+          subtitles: matchedSubs,
+          audioTracks: matchedAudio,
         );
       }
     }
@@ -101,7 +183,22 @@ class TorrentStreamResolver {
       }
 
       int fileIndex;
-      if (preferredFileIndex != null &&
+      if (episode != null) {
+        final idx = _findFileIndexForEpisode(allFiles, episode);
+        if (idx != null) {
+          Logger.i('[TorrentResolver] Auto-selected file index $idx for episode $episode');
+          fileIndex = idx;
+        } else if (preferredFileIndex != null &&
+            videoFiles.any((f) => f.index == preferredFileIndex)) {
+          fileIndex = preferredFileIndex;
+        } else if (videoFiles.length == 1) {
+          fileIndex = videoFiles.first.index;
+        } else {
+          fileIndex = videoFiles
+              .reduce((a, b) => a.size > b.size ? a : b)
+              .index;
+        }
+      } else if (preferredFileIndex != null &&
           videoFiles.any((f) => f.index == preferredFileIndex)) {
         fileIndex = preferredFileIndex;
       } else if (videoFiles.length == 1) {
@@ -160,6 +257,54 @@ class TorrentStreamResolver {
       Logger.e('[TorrentResolver] Failed to resolve: $e');
       rethrow;
     }
+  }
+
+  static int? _findFileIndexForEpisode(List<TorrentFileInfo> files, String episode) {
+    final intEp = int.tryParse(episode);
+    if (intEp == null) return null;
+
+    final normalizedEpisode = intEp.toString();
+    final paddedEpisode = intEp.toString().padLeft(2, '0');
+
+    final epPattern1 = RegExp(r'\b(?:e|ep|episode|ep\.)\s*0*(' + normalizedEpisode + r')\b', caseSensitive: false);
+
+    for (final file in files) {
+      if (!file.isVideo) continue;
+      final name = p.basename(file.path).toLowerCase();
+      if (epPattern1.hasMatch(name)) {
+        return file.index;
+      }
+    }
+
+    for (final file in files) {
+      if (!file.isVideo) continue;
+      final name = p.basename(file.path).toLowerCase();
+      final matches = RegExp(r'\b\d+\b').allMatches(name);
+      for (final match in matches) {
+        final numStr = match.group(0);
+        if (numStr == null) continue;
+        final numVal = int.tryParse(numStr);
+        if (numVal == intEp) {
+          if (intEp == 720 || intEp == 1080 || intEp == 2160 || intEp == 480 || (intEp >= 1990 && intEp <= 2030)) {
+            continue;
+          }
+          return file.index;
+        }
+      }
+    }
+
+    for (final file in files) {
+      if (!file.isVideo) continue;
+      final name = p.basename(file.path).toLowerCase();
+      if (name.contains('e$paddedEpisode') || name.contains('ep$paddedEpisode') || name.contains('episode $paddedEpisode')) {
+        return file.index;
+      }
+      if (name.contains('e$normalizedEpisode') || name.contains('ep$normalizedEpisode') || name.contains('episode $normalizedEpisode')) {
+        return file.index;
+      }
+    }
+
+    return null;
   }
 
   static Future<void> _waitForMetadata(int torrentId, {required Duration timeout}) async {
@@ -550,10 +695,10 @@ class TorrentFileInfo {
 
 class _TorrentSession {
   final int torrentId;
-  final String streamUrl;
-  final String fileName;
+  String streamUrl;
+  String fileName;
   final String originalUrl;
-  final int fileIndex;
+  int fileIndex;
 
   _TorrentSession({
     required this.torrentId,

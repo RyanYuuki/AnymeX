@@ -210,16 +210,7 @@ class Header extends StatelessWidget {
 
   Widget _buildHeaderSubtitle(BuildContext context,
       GreetingController greetingController, ServiceHandler profileData) {
-    if (type == PageType.home) {
-      final name = profileData.profileData.value.name ?? 'Guest';
-      return Text(
-        "Welcome, $name",
-        style: TextStyle(
-          fontSize: 11,
-          color: context.colors.onSurface.withOpacity(0.55),
-        ),
-      );
-    }
+
 
     if (type == PageType.library) {
       return Text(
