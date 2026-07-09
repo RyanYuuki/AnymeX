@@ -24,6 +24,8 @@ import 'package:anymex/utils/pip_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
 import 'package:anymex/screens/anime/watch/player/base_player.dart';
 import 'package:anymex/screens/anime/watch/player/media_kit_player.dart';
+import 'package:flutter_media_session/flutter_media_session.dart';
+import 'package:flutter_media_session/flutter_media_session_platform_interface.dart';
 
 import 'package:anymex/utils/aniskip.dart' as aniskip;
 import 'package:anymex/utils/language.dart';
@@ -88,6 +90,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   static final _newlineRx = RegExp(r'\\[nN]');
 
   Rx<Episode> currentEpisode = Rx<Episode>(Episode(number: '1'));
+  final _mediaSession = FlutterMediaSession();
   final List<Episode> episodeList;
   final anymex.Media anilistData;
   RxList<model.Video> episodeTracks = RxList();
@@ -365,6 +368,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       _initializeAniSkip();
     }
     _initializePersistentListeners();
+    _initMediaSession();
     if (!isOffline.value) {
       _extractSubtitles();
     }
@@ -446,8 +450,74 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     );
   }
 
+  Future<void> _initMediaSession() async {
+    try {
+      await _mediaSession.activate();
+      _mediaSession.setActionHandler(
+        onPlay: () {
+          play();
+        },
+        onPause: () {
+          pause();
+        },
+        onSkipToNext: () {
+          if (hasNextEpisode) {
+            changeEpisode(nextEpisode!);
+          }
+        },
+        onSkipToPrevious: () {
+          if (hasPreviousEpisode) {
+            changeEpisode(previousEpisode!);
+          }
+        },
+        onSeekTo: (pos) {
+          seekTo(pos);
+        },
+      );
+      await _updateMediaSessionMetadata();
+    } catch (e) {
+      Logger.e('Failed to initialize media session: $e');
+    }
+  }
+
+  Future<void> _updateMediaSessionMetadata() async {
+    try {
+      final epTitle = currentEpisode.value.title ?? '';
+      final epNum = currentEpisode.value.number;
+      final showName = itemName ?? anilistData.title;
+      final title = epTitle.isNotEmpty ? 'Ep $epNum: $epTitle' : 'Episode $epNum';
+      final artworkUrl = isOffline.value ? 'https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/assets/images/logo.png' : (anilistData.cover ?? anilistData.poster);
+
+      await FlutterMediaSessionPlatform.instance.updateMetadata(
+        MediaMetadata(
+          title: title,
+          artist: showName,
+          album: showName,
+          artworkUri: artworkUrl,
+          duration: episodeDuration.value,
+        ),
+      );
+    } catch (e) {
+      Logger.e('Failed to update media session metadata: $e');
+    }
+  }
+
+  Future<void> _updateMediaSessionState(bool playing, {Duration? position}) async {
+    try {
+      await FlutterMediaSessionPlatform.instance.updatePlaybackState(
+        PlaybackState(
+          status: playing ? PlaybackStatus.playing : PlaybackStatus.paused,
+          position: position ?? currentPosition.value,
+        ),
+      );
+    } catch (e) {
+      Logger.e('Failed to update media session state: $e');
+    }
+  }
+
   @override
   void onClose() {
+    _mediaSession.deactivate();
     PipController.setAutoEnter(enabled: false);
     delete();
     super.onClose();
@@ -829,7 +899,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     if (isTorrentUrl(url)) {
       try {
         Logger.i('Torrent URL detected from extension, resolving stream...');
-        final resolved = await TorrentStreamResolver.resolve(url);
+        final resolved = await TorrentStreamResolver.resolve(url, episode: episodeNum);
         url = resolved.streamUrl;
         Logger.i('Torrent stream resolved: $url');
       } catch (e) {
@@ -956,6 +1026,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         _updateSkipUiState();
         _handleAutoSkip();
       }
+      _updateMediaSessionState(isPlaying.value, position: pos);
     }));
 
     _playerSubscriptions.add(_basePlayer.durationStream.listen((dur) {
@@ -976,6 +1047,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       if (_isReloadingPlayer.value) return;
       isPlaying.value = e;
       PipController.updatePlaybackState(e);
+      _updateMediaSessionState(e);
       if (e) {
         _resetAutoHideTimer();
       }
@@ -1562,7 +1634,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     if (isTorrentUrl(url)) {
       try {
         Logger.i('Torrent URL detected (switch), resolving stream...');
-        final resolved = await TorrentStreamResolver.resolve(url);
+        final episodeNum = currentEpisode.value.number;
+        final resolved = await TorrentStreamResolver.resolve(url, episode: episodeNum.toString());
         url = resolved.streamUrl;
         Logger.i('Torrent stream resolved: $url');
       } catch (e) {
@@ -2207,6 +2280,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     isEpisodePaneOpened.value = false;
     resetListeners();
     fetchEpisode(episode);
+    _updateMediaSessionMetadata();
     onUserInteraction();
   }
 
