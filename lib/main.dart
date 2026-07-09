@@ -54,7 +54,6 @@ import 'package:iconsax/iconsax.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:isar_community/isar.dart';
 import 'package:media_kit/media_kit.dart';
-import 'package:anymex/utils/torrent/torrent_stream_resolver.dart';
 import 'package:provider/provider.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 import 'package:window_manager/window_manager.dart';
@@ -260,14 +259,6 @@ void _initializeGetxController() async {
 
   await safeCall(() => StorageManagerService().enforceImageCacheLimit(),
       errorMessage: 'Failed to enforce image cache limit');
-
-  await safeCall(() {
-    TorrentStreamResolver.initialize().then((_) {
-      debugPrint('Torrent engine initialized');
-    }).catchError((e) {
-      debugPrint('Torrent engine init failed (non-critical): $e');
-    });
-  }, errorMessage: 'Failed to initialize Torrent engine');
 }
 
 class MainApp extends StatefulWidget {
@@ -449,19 +440,17 @@ class _FilterScreenState extends State<FilterScreen> {
   @override
   Widget build(BuildContext context) {
     final authService = Get.put(ServiceHandler());
-    final isSimkl =
-        Get.find<ServiceHandler>().serviceType.value == ServicesType.simkl;
     return Glow(
       child: PlatformBuilder(
         strictMode: false,
-        desktopBuilder: _buildDesktopLayout(context, authService, isSimkl),
-        androidBuilder: _buildAndroidLayout(isSimkl),
+        desktopBuilder: _buildDesktopLayout(context, authService),
+        androidBuilder: _buildAndroidLayout(authService),
       ),
     );
   }
 
   Scaffold _buildDesktopLayout(
-      BuildContext context, ServiceHandler authService, bool isSimkl) {
+      BuildContext context, ServiceHandler authService) {
     return Scaffold(
       extendBody: true,
       backgroundColor: Provider.of<ThemeProvider>(context).isOled
@@ -470,7 +459,9 @@ class _FilterScreenState extends State<FilterScreen> {
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Obx(() => SizedBox(
+          Obx(() {
+            final isSimkl = authService.serviceType.value == ServicesType.simkl;
+            return SizedBox(
               width: 120,
               child: SuperListView(
                 children: [
@@ -516,14 +507,14 @@ class _FilterScreenState extends State<FilterScreen> {
                         unselectedIcon: Icons.movie_filter_outlined,
                         selectedIcon: Icons.movie_filter_rounded,
                         onTap: _onItemTapped,
-                        label: 'Anime',
+                        label: isSimkl ? 'Movies' : 'Anime',
                       ),
                       NavItem(
                         unselectedIcon:
                             isSimkl ? Iconsax.monitor : Iconsax.book,
                         selectedIcon: isSimkl ? Iconsax.monitor5 : Iconsax.book,
                         onTap: _onItemTapped,
-                        label: 'Manga',
+                        label: isSimkl ? 'Series' : 'Manga',
                       ),
                       NavItem(
                         unselectedIcon: HugeIcons.strokeRoundedLibrary,
@@ -540,7 +531,8 @@ class _FilterScreenState extends State<FilterScreen> {
                     ],
                   ),
                 ],
-              ))),
+              ));
+          }),
           Expanded(
               child: SmoothPageEntrance(
                   style: PageEntranceStyle.slideUpGentle,
@@ -551,43 +543,46 @@ class _FilterScreenState extends State<FilterScreen> {
     );
   }
 
-  Scaffold _buildAndroidLayout(bool isSimkl) {
+  Scaffold _buildAndroidLayout(ServiceHandler authService) {
     return Scaffold(
         body: SmoothPageEntrance(
             style: PageEntranceStyle.slideUpGentle,
             key: Key(_mobileSelectedIndex.toString()),
             child: mobileRoutes[_mobileSelectedIndex]),
         extendBody: true,
-        bottomNavigationBar: ResponsiveNavBar(
-          isDesktop: false,
-          currentIndex: _mobileSelectedIndex,
-          margin: const EdgeInsets.symmetric(vertical: 30, horizontal: 32),
-          items: [
-            NavItem(
-              unselectedIcon: IconlyBold.home,
-              selectedIcon: IconlyBold.home,
-              onTap: _onMobileItemTapped,
-              label: 'Home',
-            ),
-            NavItem(
-              unselectedIcon: Icons.movie_filter_rounded,
-              selectedIcon: Icons.movie_filter_rounded,
-              onTap: _onMobileItemTapped,
-              label: 'Anime',
-            ),
-            NavItem(
-              unselectedIcon: isSimkl ? Iconsax.monitor : Iconsax.book,
-              selectedIcon: isSimkl ? Iconsax.monitor5 : Iconsax.book,
-              onTap: _onMobileItemTapped,
-              label: 'Manga',
-            ),
-            NavItem(
-              unselectedIcon: HugeIcons.strokeRoundedLibrary,
-              selectedIcon: HugeIcons.strokeRoundedLibrary,
-              onTap: _onMobileItemTapped,
-              label: 'Library',
-            ),
-          ],
-        ));
+        bottomNavigationBar: Obx(() {
+          final isSimkl = authService.serviceType.value == ServicesType.simkl;
+          return ResponsiveNavBar(
+            isDesktop: false,
+            currentIndex: _mobileSelectedIndex,
+            margin: const EdgeInsets.symmetric(vertical: 30, horizontal: 32),
+            items: [
+              NavItem(
+                unselectedIcon: IconlyBold.home,
+                selectedIcon: IconlyBold.home,
+                onTap: _onMobileItemTapped,
+                label: 'Home',
+              ),
+              NavItem(
+                unselectedIcon: Icons.movie_filter_rounded,
+                selectedIcon: Icons.movie_filter_rounded,
+                onTap: _onMobileItemTapped,
+                label: isSimkl ? 'Movies' : 'Anime',
+              ),
+              NavItem(
+                unselectedIcon: isSimkl ? Iconsax.monitor : Iconsax.book,
+                selectedIcon: isSimkl ? Iconsax.monitor5 : Iconsax.book,
+                onTap: _onMobileItemTapped,
+                label: isSimkl ? 'Series' : 'Manga',
+              ),
+              NavItem(
+                unselectedIcon: HugeIcons.strokeRoundedLibrary,
+                selectedIcon: HugeIcons.strokeRoundedLibrary,
+                onTap: _onMobileItemTapped,
+                label: 'Library',
+              ),
+            ],
+          );
+        }));
   }
 }
