@@ -282,7 +282,36 @@ class TopControls extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          10.width(),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: isDark
+                                  ? theme.colorScheme.primary.opaque(0.15)
+                                  : theme.colorScheme.primaryContainer,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              (controller.anilistData.title == "?"
+                                      ? controller.folderName
+                                      : controller.anilistData.title) ??
+                                  '',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: isDark
+                                    ? theme.colorScheme.primary
+                                    : theme.colorScheme.onPrimaryContainer,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          6.width(),
                           Container(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 12, vertical: 4),
@@ -307,32 +336,13 @@ class TopControls extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: isDark
-                              ? theme.colorScheme.primary.opaque(0.15)
-                              : theme.colorScheme.primaryContainer,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          (controller.anilistData.title == "?"
-                                  ? controller.folderName
-                                  : controller.anilistData.title) ??
-                              '',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: isDark
-                                ? theme.colorScheme.primary
-                                : theme.colorScheme.onPrimaryContainer,
-                            fontWeight: FontWeight.w600,
+                          6.width(),
+                          Obx(
+                            () => _QualityChip(
+                                videoHeight: controller.videoHeight.value,
+                                isMobile: false),
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                        ],
                       )
                     ],
                   ),
@@ -340,10 +350,6 @@ class TopControls extends StatelessWidget {
               ],
             ),
           ),
-        ),
-        Obx(
-          () => _QualityChip(
-              videoHeight: controller.videoHeight.value, isMobile: false),
         ),
         const SizedBox(width: 8),
         const DecoderQuickButton(isMobile: false),

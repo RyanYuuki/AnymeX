@@ -290,7 +290,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
     if (items.isEmpty) return [_emptyState('No staff data')];
     return [
       _sectionContainer(
-        icon: IconlyLight.user,
+        icon: IconlyLight.user2,
         title: 'Staff',
         child:
             _rankedList(items, showAvatar: true, onTap: (label, {id, image}) {

@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';

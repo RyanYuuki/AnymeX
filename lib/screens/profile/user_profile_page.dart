@@ -260,7 +260,7 @@ class _UserProfilePageState extends State<UserProfilePage>
         ),
         NavItem(
           selectedIcon: IconlyBold.user3,
-          unselectedIcon: IconlyLight.user1,
+          unselectedIcon: IconlyLight.user2,
           label: 'Social',
           onTap: (i) => setState(() => _selectedTab = 3),
         ),

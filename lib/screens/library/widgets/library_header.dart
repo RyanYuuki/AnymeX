@@ -195,7 +195,7 @@ class LibraryHeader extends StatelessWidget {
     if (serviceHandler.serviceType.value == ServicesType.simkl) {
       switch (itemType) {
         case ItemType.anime:
-          return 'Movies & Series & Animes';
+          return 'Movies';
         case ItemType.manga:
           return 'Series';
         case ItemType.novel:
@@ -645,127 +645,129 @@ class LibrarySegmentedControl extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = context.colors;
 
-    final availableTypes =
-        serviceHandler.serviceType.value == ServicesType.simkl
-            ? [ItemType.anime]
-            : [ItemType.anime, ItemType.manga, ItemType.novel];
+    return Obx(() {
+      final availableTypes =
+          serviceHandler.serviceType.value == ServicesType.simkl
+              ? [ItemType.anime, ItemType.manga]
+              : [ItemType.anime, ItemType.manga, ItemType.novel];
 
-    final totalItems = availableTypes.length;
+      final totalItems = availableTypes.length;
 
-    return Container(
-      height: 52,
-      margin: const EdgeInsets.symmetric(horizontal: 0),
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainer.opaque(0.5),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: colorScheme.outline.withOpacity(0.08),
-          width: 1,
+      return Container(
+        height: 52,
+        margin: const EdgeInsets.symmetric(horizontal: 0),
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: colorScheme.surfaceContainer.opaque(0.5),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: colorScheme.outline.withOpacity(0.08),
+            width: 1,
+          ),
         ),
-      ),
-      child: Stack(
-        children: [
-          Obx(() {
-            final currentIndex = availableTypes.indexOf(controller.type.value);
+        child: Stack(
+          children: [
+            Obx(() {
+              final currentIndex = availableTypes.indexOf(controller.type.value);
 
-            double alignmentX = 0.0;
-            if (totalItems > 1) {
-              alignmentX = -1.0 + (2.0 * currentIndex / (totalItems - 1));
-            }
+              double alignmentX = 0.0;
+              if (totalItems > 1) {
+                alignmentX = -1.0 + (2.0 * currentIndex / (totalItems - 1));
+              }
 
-            return AnimatedAlign(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOutQuint,
-              alignment: Alignment(alignmentX, 0),
-              child: FractionallySizedBox(
-                widthFactor: 1 / totalItems,
-                heightFactor: 1.0,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: colorScheme.surfaceContainerHighest.opaque(0.5),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: colorScheme.outline.withOpacity(0.12),
-                      width: 1,
+              return AnimatedAlign(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOutQuint,
+                alignment: Alignment(alignmentX, 0),
+                child: FractionallySizedBox(
+                  widthFactor: 1 / totalItems,
+                  heightFactor: 1.0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: colorScheme.surfaceContainerHighest.opaque(0.5),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: colorScheme.outline.withOpacity(0.12),
+                        width: 1,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            );
-          }),
-          Row(
-            children: availableTypes.map((itemType) {
-              return Expanded(
-                child: Obx(() {
-                  final isSelected = controller.type.value == itemType;
+              );
+            }),
+            Row(
+              children: availableTypes.map((itemType) {
+                return Expanded(
+                  child: Obx(() {
+                    final isSelected = controller.type.value == itemType;
 
-                  return GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () {
-                      if (!isSelected) {
-                        HapticFeedback.lightImpact();
-                        controller.switchCategory(itemType);
-                      }
-                    },
-                    child: AnimatedScale(
-                      scale: isSelected ? 1.02 : 1.0,
-                      duration: const Duration(milliseconds: 250),
-                      curve: Curves.easeInOut,
-                      child: AnimatedOpacity(
-                        opacity: isSelected ? 1.0 : 0.6,
-                        duration: const Duration(milliseconds: 200),
-                        child: SizedBox.expand(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Icon(
-                                _getTypeIcon(itemType),
-                                size: 18,
-                                color: isSelected
-                                    ? colorScheme.primary
-                                    : colorScheme.onSurfaceVariant,
-                              ),
-                              const SizedBox(width: 8),
-                              Flexible(
-                                child: AnimatedDefaultTextStyle(
-                                  duration: const Duration(milliseconds: 200),
-                                  style: TextStyle(
-                                    fontFamily: "Poppins-Bold",
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w700,
-                                    color: isSelected
-                                        ? colorScheme.primary
-                                        : colorScheme.onSurfaceVariant,
-                                  ),
-                                  child: Text(
-                                    _getTypeLabel(itemType),
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
+                    return GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        if (!isSelected) {
+                          HapticFeedback.lightImpact();
+                          controller.switchCategory(itemType);
+                        }
+                      },
+                      child: AnimatedScale(
+                        scale: isSelected ? 1.02 : 1.0,
+                        duration: const Duration(milliseconds: 250),
+                        curve: Curves.easeInOut,
+                        child: AnimatedOpacity(
+                          opacity: isSelected ? 1.0 : 0.6,
+                          duration: const Duration(milliseconds: 200),
+                          child: SizedBox.expand(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  _getTypeIcon(itemType),
+                                  size: 18,
+                                  color: isSelected
+                                      ? colorScheme.primary
+                                      : colorScheme.onSurfaceVariant,
+                                ),
+                                const SizedBox(width: 8),
+                                Flexible(
+                                  child: AnimatedDefaultTextStyle(
+                                    duration: const Duration(milliseconds: 200),
+                                    style: TextStyle(
+                                      fontFamily: "Poppins-Bold",
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w700,
+                                      color: isSelected
+                                          ? colorScheme.primary
+                                          : colorScheme.onSurfaceVariant,
+                                    ),
+                                    child: Text(
+                                      _getTypeLabel(itemType),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  );
-                }),
-              );
-            }).toList(),
-          ),
-        ],
-      ),
-    );
+                    );
+                  }),
+                );
+              }).toList(),
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   String _getTypeLabel(ItemType itemType) {
     if (serviceHandler.serviceType.value == ServicesType.simkl) {
       switch (itemType) {
         case ItemType.anime:
-          return 'Movies & Series & Animes';
+          return 'Movies';
         case ItemType.manga:
           return 'Series';
         case ItemType.novel:
