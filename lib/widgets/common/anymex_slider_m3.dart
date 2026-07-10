@@ -145,7 +145,7 @@ class AnymeXSliderM3 extends StatelessWidget {
         onChangeEnd: onChangeEnd,
         min: min,
         max: max,
-        divisions: divisions ?? (max * 10).toInt(),
+        divisions: divisions,
         label: label ?? value.toStringAsFixed(1),
       ),
     );
