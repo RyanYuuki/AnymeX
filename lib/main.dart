@@ -34,6 +34,7 @@ import 'package:anymex/utils/register_protocol/register_protocol.dart';
 import 'package:anymex/widgets/animation/more_page_transitions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/navbar.dart';
+import 'package:anymex/widgets/common/fps_meter.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_splash_screen.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_titlebar.dart';
@@ -367,10 +368,16 @@ class _MainAppState extends State<MainApp> {
                     child: AnymexTitleBar.titleBar(),
                   ),
                 ),
+                const FpsMeter(),
               ],
             );
           }
-          return child!;
+          return Stack(
+            children: [
+              child!,
+              const FpsMeter(),
+            ],
+          );
         },
         enableLog: true,
         logWriterCallback: (text, {isError = false}) async {
@@ -534,10 +541,11 @@ class _FilterScreenState extends State<FilterScreen> {
               ));
           }),
           Expanded(
-              child: SmoothPageEntrance(
-                  style: PageEntranceStyle.slideUpGentle,
-                  key: Key(_selectedIndex.toString()),
-                  child: routes[_selectedIndex])),
+            child: IndexedStack(
+              index: _selectedIndex,
+              children: routes,
+            ),
+          ),
         ],
       ),
     );
@@ -545,10 +553,10 @@ class _FilterScreenState extends State<FilterScreen> {
 
   Scaffold _buildAndroidLayout(ServiceHandler authService) {
     return Scaffold(
-        body: SmoothPageEntrance(
-            style: PageEntranceStyle.slideUpGentle,
-            key: Key(_mobileSelectedIndex.toString()),
-            child: mobileRoutes[_mobileSelectedIndex]),
+        body: IndexedStack(
+          index: _mobileSelectedIndex,
+          children: mobileRoutes,
+        ),
         extendBody: true,
         bottomNavigationBar: Obx(() {
           final isSimkl = authService.serviceType.value == ServicesType.simkl;

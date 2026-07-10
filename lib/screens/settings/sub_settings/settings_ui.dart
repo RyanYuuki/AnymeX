@@ -105,13 +105,13 @@ class _SettingsUiState extends State<SettingsUi> {
                                   title: "History Card Style",
                                   description: "Change history card style",
                                 ),
-                                CustomTile(
-                                  onTap: () =>
-                                      showCarouselStyleSelector(context),
-                                  icon: Icons.view_carousel_rounded,
-                                  title: "Carousel Style",
-                                  description: "Change big carousel style",
-                                ),
+                                // CustomTile(
+                                //   onTap: () =>
+                                //       showCarouselStyleSelector(context),
+                                //   icon: Icons.view_carousel_rounded,
+                                //   title: "Carousel Style",
+                                //   description: "Change big carousel style",
+                                // ),
                                 10.height(),
                               ],
                             )),

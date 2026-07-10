@@ -92,6 +92,7 @@ enum ReaderKeys {
   displayRefreshInterval,
   displayRefreshColor,
   imageFilterQuality,
+  fitToScreen,
 }
 
 enum NovelReaderKeys {

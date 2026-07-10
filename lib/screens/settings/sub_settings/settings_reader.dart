@@ -30,6 +30,7 @@ class _SettingsReaderState extends State<SettingsReader> {
   bool _mangaOverscroll = ReaderKeys.overscrollToChapter.get<bool>(true);
   bool _mangaPageIndicator = ReaderKeys.showPageIndicator.get<bool>(false);
   bool _mangaCropBorders = ReaderKeys.cropImages.get<bool>(false);
+  bool _mangaFitToScreen = ReaderKeys.fitToScreen.get<bool>(false);
   bool _mangaAutoScroll = ReaderKeys.autoScrollEnabled.get<bool>(false);
   double _mangaAutoScrollSpeed = ReaderKeys.autoScrollSpeed.get<double>(3.0);
   bool _mangaVolumeKeys = ReaderKeys.volumeKeysEnabled.get<bool>(false);
@@ -416,6 +417,19 @@ class _SettingsReaderState extends State<SettingsReader> {
                                 ReaderKeys.cropImages,
                                 value,
                                 () => _mangaCropBorders = value,
+                              ),
+                            ),
+                            CustomSwitchTile(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10.0, vertical: 10.0),
+                              icon: Icons.fullscreen_rounded,
+                              title: 'Fit to Screen Width',
+                              description: 'Stretch images to fit screen width',
+                              switchValue: _mangaFitToScreen,
+                              onChanged: (value) => _setReaderBool(
+                                ReaderKeys.fitToScreen,
+                                value,
+                                () => _mangaFitToScreen = value,
                               ),
                             ),
                             CustomSwitchTile(
