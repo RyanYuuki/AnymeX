@@ -432,11 +432,13 @@ final subtitleLangMap = {
 };
 
 String completeSubtitleLanguageName(String code) {
+  print('completeSubtitleLanguageName called with code: $code');
   code = code.toLowerCase();
   for (var entry in subtitleLangMap.entries) {
     if (entry.value.toLowerCase() == code) {
       return entry.key;
     }
   }
-  return code.toUpperCase(); // fallback
+  
+  return extensionLanguageNameByCode[code] ?? code.toUpperCase();
 }

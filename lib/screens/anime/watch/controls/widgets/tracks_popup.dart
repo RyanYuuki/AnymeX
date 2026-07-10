@@ -249,27 +249,40 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
 
   Widget _buildAudioTracks(ColorScheme cs, ThemeData theme) {
     return Obx(() {
-      final tracks = widget.controller.embeddedAudioTracks.value.toList();
+      final tracks = widget.controller.embeddedAudioTracks.value
+          .where((t) => t.id != 'auto' && t.id != 'no')
+          .toList();
       final selected = widget.controller.selectedAudioTrack.value;
-
-      if (tracks.isEmpty) {
-        return _buildEmpty(
-            cs, theme, Symbols.music_note_rounded, 'No audio tracks');
-      }
 
       return ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        itemCount: tracks.length + 1,
+        itemCount: tracks.length + 2,
         itemBuilder: (context, index) {
           if (index == 0) {
+            final isSelected = selected != null && selected.id == 'no';
+            return _buildListItem(
+              cs: cs,
+              theme: theme,
+              title: 'None',
+              subtitle: 'Mute Audio',
+              icon: Symbols.music_off_rounded,
+              isSelected: isSelected,
+              onTap: () {
+                widget.controller.setAudioTrack(AudioTrack.no());
+                widget.controller.selectedAudioTrack.value = AudioTrack.no();
+              },
+            );
+          }
+
+          if (index == 1) {
             final isSelected = selected == null ||
                 selected.id == 'auto' ||
-                !tracks.contains(selected);
+                (!tracks.any((t) => t.id == selected.id) && selected.id != 'no');
             return _buildListItem(
               cs: cs,
               theme: theme,
               title: 'Auto',
-              subtitle: 'Audio Track',
+              subtitle: 'Default Audio',
               icon: Symbols.music_note_rounded,
               isSelected: isSelected,
               onTap: () {
@@ -279,14 +292,13 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
             );
           }
 
-          final track = tracks[index - 1];
-          final isSelected =
-              selected != null && tracks.indexOf(selected) == index - 1;
+          final track = tracks[index - 2];
+          final isSelected = selected != null && selected.id == track.id;
 
-          String displayTitle = 'Audio Track $index';
+          String displayTitle = 'Audio Track ${index - 1}';
           if (track.language != null && track.title != null) {
             displayTitle =
-                '${completeSubtitleLanguageName(track.language!)} - ${track.title}';
+                '${completeSubtitleLanguageName(track.language!)} ${(track.title?.isNotEmpty ?? false) ? '- ${track.title}' : ''}';
           } else if (track.language != null) {
             displayTitle = completeSubtitleLanguageName(track.language!);
           } else if (track.title != null) {
