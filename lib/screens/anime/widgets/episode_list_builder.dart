@@ -1024,6 +1024,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                             text: quality,
                             variant: TextVariant.bold,
                             size: 14,
+                            maxLines: 10,
                           ),
                           const SizedBox(height: 2),
                           AnymexText(
