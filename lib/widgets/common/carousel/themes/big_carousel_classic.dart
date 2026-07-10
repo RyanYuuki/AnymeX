@@ -1,6 +1,3 @@
-import 'dart:math';
-
-import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
@@ -32,39 +29,132 @@ class BigCarouselClassic extends StatefulWidget {
   });
 
   @override
-  _BigCarouselClassicState createState() => _BigCarouselClassicState();
+  State<BigCarouselClassic> createState() => BigCarouselClassicState();
 }
 
-class _BigCarouselClassicState extends State<BigCarouselClassic> {
+class BigCarouselClassicState extends State<BigCarouselClassic> {
   int activeIndex = 0;
-  final CarouselSliderController controller = CarouselSliderController();
-  double _scrollDelta = 0;
-  DateTime _lastScrollTime = DateTime.now();
+  final CarouselSliderController sliderController = CarouselSliderController();
+  double horizontalScrollDelta = 0;
+  DateTime lastScrollTime = DateTime.now();
 
-  void _handleScroll(Offset delta, PointerDeviceKind kind) {
+  void onHorizontalScroll(Offset delta, PointerDeviceKind kind) {
     final now = DateTime.now();
-    if (now.difference(_lastScrollTime) < const Duration(milliseconds: 300)) {
+    if (now.difference(lastScrollTime) < const Duration(milliseconds: 300)) {
       return;
     }
 
     if (delta.dx != 0) {
-      _scrollDelta -= delta.dx;
+      horizontalScrollDelta -= delta.dx;
     }
 
-    if (_scrollDelta.abs() > 50) {
-      if (_scrollDelta > 0) {
-        controller.nextPage();
+    if (horizontalScrollDelta.abs() > 50) {
+      if (horizontalScrollDelta > 0) {
+        sliderController.nextPage();
       } else {
-        controller.previousPage();
+        sliderController.previousPage();
       }
-      _scrollDelta = 0;
-      _lastScrollTime = now;
+      horizontalScrollDelta = 0;
+      lastScrollTime = now;
     }
+  }
+
+  void navigateToDetailsPage(Media media, String tag) {
+    if (widget.carouselType == CarouselType.manga) {
+      navigate(() => MangaDetailsPage(media: media, tag: tag));
+    } else {
+      navigate(() => AnimeDetailsPage(media: media, tag: tag));
+    }
+  }
+
+  void openDescriptionSheet(BuildContext context, String description) {
+    final cleanDescription = description
+        .replaceAll(RegExp(r'<[^>]*>'), '')
+        .replaceAll(RegExp(r'\n\s*\n'), '\n')
+        .trim();
+    final colors = Theme.of(context).colorScheme;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      elevation: 0,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        maxChildSize: 0.9,
+        minChildSize: 0.3,
+        builder: (sheetContext, scrollController) => Container(
+          decoration: BoxDecoration(
+            color: colors.surfaceContainerLow,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+          ),
+          child: Column(
+            children: [
+              Container(
+                margin: const EdgeInsets.only(top: 14, bottom: 8),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: colors.onSurfaceVariant.opaque(0.3),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Description',
+                      style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                    IconButton.filledTonal(
+                      onPressed: () => Navigator.pop(sheetContext),
+                      icon: const Icon(Icons.close_rounded, size: 20),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Scrollbar(
+                  controller: scrollController,
+                  thumbVisibility: true,
+                  radius: const Radius.circular(8),
+                  thickness: 5,
+                  child: SingleChildScrollView(
+                    controller: scrollController,
+                    padding: const EdgeInsets.fromLTRB(24, 4, 24, 32),
+                    child: cleanDescription.isEmpty
+                        ? buildEmptyDescriptionState(colors)
+                        : Text(
+                            cleanDescription,
+                            style: TextStyle(
+                              fontSize: 15.5,
+                              height: 1.75,
+                              letterSpacing: 0.1,
+                              color: colors.onSurfaceVariant,
+                            ),
+                          ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final newData = widget.data.where((e) => e.cover != null).toList();
+    final mediaList = widget.data.where((item) => item.cover != null).toList();
+    final colors = Theme.of(context).colorScheme;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20),
       child: Column(
@@ -73,25 +163,26 @@ class _BigCarouselClassicState extends State<BigCarouselClassic> {
             behavior: HitTestBehavior.translucent,
             onPointerSignal: (pointerSignal) {
               if (pointerSignal is PointerScrollEvent) {
-                _handleScroll(pointerSignal.scrollDelta, pointerSignal.kind);
+                onHorizontalScroll(
+                    pointerSignal.scrollDelta, pointerSignal.kind);
               }
             },
             onPointerPanZoomUpdate: (event) {
-              _handleScroll(event.panDelta, event.kind);
+              onHorizontalScroll(event.panDelta, event.kind);
             },
             child: AnymexOnTapAdv(
               onKeyEvent: (node, event) {
                 if (event is KeyDownEvent) {
                   if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
                     setState(() {
-                      controller.animateToPage(
-                          (activeIndex - 1).clamp(0, newData.length - 1));
+                      sliderController.animateToPage(
+                          (activeIndex - 1).clamp(0, mediaList.length - 1));
                     });
                   } else if (event.logicalKey ==
                       LogicalKeyboardKey.arrowRight) {
                     setState(() {
-                      controller
-                          .animateToPage((activeIndex + 1) % newData.length);
+                      sliderController
+                          .animateToPage((activeIndex + 1) % mediaList.length);
                     });
                   } else if (event.logicalKey == LogicalKeyboardKey.arrowUp ||
                       event.logicalKey == LogicalKeyboardKey.arrowDown) {
@@ -99,8 +190,8 @@ class _BigCarouselClassicState extends State<BigCarouselClassic> {
                   } else if (event.logicalKey == LogicalKeyboardKey.enter ||
                       event.logicalKey == LogicalKeyboardKey.space ||
                       event.logicalKey == LogicalKeyboardKey.select) {
-                    navigateToDetailsPage(newData[activeIndex],
-                        '${newData[activeIndex].id}-classic-carousel');
+                    navigateToDetailsPage(mediaList[activeIndex],
+                        '${mediaList[activeIndex].id}-classic-carousel');
                   }
                 }
                 return KeyEventResult.handled;
@@ -115,152 +206,35 @@ class _BigCarouselClassicState extends State<BigCarouselClassic> {
                   },
                 ),
                 child: CarouselSlider.builder(
-                  itemCount: newData.length,
+                  itemCount: mediaList.length,
                   disableGesture: false,
-                  itemBuilder: (context, index, realIndex) {
-                    final anime = newData[index];
-                    final String posterUrl = anime.cover!;
-                    final title = anime.title;
-                    final tag = '${anime.id}-classic-carousel';
-                    String extraData = anime.rating.toString();
+                  itemBuilder: (itemContext, index, realIndex) {
+                    final media = mediaList[index];
+                    final tag = '${media.id}-classic-carousel';
 
-                    return Stack(
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            GestureDetector(
-                              onTap: () => navigateToDetailsPage(anime, tag),
-                              onLongPress: () {
-                                final itemType =
-                                    widget.carouselType == CarouselType.manga
-                                        ? ItemType.manga
-                                        : ItemType.anime;
-                                if (anime.userStatus == null ||
-                                    anime.userStatus!.isEmpty) {
-                                  MediaPeekPopup.show(
-                                      context, anime, itemType, tag);
-                                }
-                              },
-                              child: _buildItem(context, tag, posterUrl),
-                            ),
-                            const SizedBox(height: 10),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Expanded(
-                                    child: MarqueeText(
-                                      title,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 20),
-                                  Container(
-                                    padding: const EdgeInsets.all(5),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(
-                                        (8.multiplyRadius()),
-                                      ),
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondaryContainer,
-                                    ),
-                                    clipBehavior: Clip.antiAlias,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Iconsax.star5,
-                                          size: 16,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
-                                        ),
-                                        const SizedBox(width: 3),
-                                        Text(
-                                          extraData,
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                            fontFamily: "Poppins-Bold",
-                                          ),
-                                        ),
-                                        const SizedBox(width: 3),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 8),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16.0, vertical: 8.0),
-                              height: 50,
-                              decoration: BoxDecoration(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .surface
-                                    .opaque(0.5),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: GestureDetector(
-                                onTap: () => _showDescriptionModal(
-                                    context, anime.description),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: AnymexText(
-                                        text: anime.description
-                                                .replaceAll(
-                                                    RegExp(r'<[^>]*>'), '')
-                                                .replaceAll(RegExp(r'\s+'), ' ')
-                                                .trim()
-                                                .isNotEmpty
-                                            ? anime.description
-                                                .replaceAll(
-                                                    RegExp(r'<[^>]*>'), '')
-                                                .replaceAll(RegExp(r'\s+'), ' ')
-                                                .trim()
-                                            : 'Tap to read description',
-                                        size: 12,
-                                        maxLines: 2,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurface
-                                            .opaque(0.7),
-                                        overflow: TextOverflow.ellipsis,
-                                        stripHtml: true,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Icon(
-                                      Icons.info_outline,
-                                      size: 16,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .primary
-                                          .opaque(0.7),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ],
+                    return buildCarouselCard(
+                      context: itemContext,
+                      media: media,
+                      tag: tag,
+                      onTap: () => navigateToDetailsPage(media, tag),
+                      onLongPress: () {
+                        final itemType =
+                            widget.carouselType == CarouselType.manga
+                                ? ItemType.manga
+                                : ItemType.anime;
+                        if (media.userStatus == null ||
+                            media.userStatus!.isEmpty) {
+                          MediaPeekPopup.show(
+                              itemContext, media, itemType, tag);
+                        }
+                      },
+                      onDescriptionTap: () =>
+                          openDescriptionSheet(context, media.description),
                     );
                   },
                   options: CarouselOptions(
                     height: getResponsiveSize(context,
-                        mobileSize: 270, desktopSize: 450),
+                        mobileSize: 335, desktopSize: 485),
                     viewportFraction: 1,
                     initialPage: 0,
                     enableInfiniteScroll: true,
@@ -269,7 +243,7 @@ class _BigCarouselClassicState extends State<BigCarouselClassic> {
                     autoPlayInterval: const Duration(seconds: 5),
                     autoPlayAnimationDuration:
                         const Duration(milliseconds: 800),
-                    autoPlayCurve: Curves.fastOutSlowIn,
+                    autoPlayCurve: Curves.easeInOutCubicEmphasized,
                     enlargeCenterPage: false,
                     scrollDirection: Axis.horizontal,
                     onPageChanged: (index, reason) {
@@ -278,317 +252,223 @@ class _BigCarouselClassicState extends State<BigCarouselClassic> {
                       });
                     },
                   ),
-                  carouselController: controller,
+                  carouselController: sliderController,
                 ),
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 18),
           AnimatedSmoothIndicator(
             activeIndex: activeIndex,
-            count: newData.length,
-            effect: WormEffect(
+            count: mediaList.length,
+            effect: JumpingDotEffect(
               dotHeight: 8,
               dotWidth: 8,
-              activeDotColor: context.colors.primary,
-              dotColor: context.colors.onSurface.opaque(0.5),
+              jumpScale: 1.6,
+              verticalOffset: 8,
+              activeDotColor: colors.primary,
+              dotColor: colors.surfaceContainerHighest,
             ),
           ),
         ],
       ),
     );
   }
+}
 
-  void _showDescriptionModal(BuildContext context, String description) {
-    final cleanDescription = description
-        .replaceAll(RegExp(r'<[^>]*>'), '')
-        .replaceAll(RegExp(r'\n\s*\n'), '\n')
-        .trim();
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      elevation: 0,
-      backgroundColor: Colors.transparent,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.6,
-        maxChildSize: 0.9,
-        minChildSize: 0.3,
-        builder: (context, scrollController) => Container(
-          decoration: BoxDecoration(
-            color: context.colors.surface,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-            border: Border.all(
-              color: context.colors.outline.opaque(0.12),
-              width: 1,
+Widget buildEmptyDescriptionState(ColorScheme colors) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 48),
+    child: Center(
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: colors.secondaryContainer,
+              shape: BoxShape.circle,
             ),
-            boxShadow: [
-              BoxShadow(
-                color: context.colors.shadow.opaque(0.15),
-                blurRadius: 32,
-                offset: const Offset(0, -8),
-                spreadRadius: 0,
-              ),
-              BoxShadow(
-                color: context.colors.primary.opaque(0.05),
-                blurRadius: 64,
-                offset: const Offset(0, -4),
-                spreadRadius: -8,
-              ),
-            ],
+            child: Icon(
+              Icons.description_outlined,
+              size: 32,
+              color: colors.onSecondaryContainer,
+            ),
           ),
-          child: Column(
-            children: [
-              Container(
-                margin: const EdgeInsets.only(top: 16, bottom: 8),
-                child: Container(
-                  width: 48,
-                  height: 5,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.onSurface.opaque(0.2),
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color:
-                            Theme.of(context).colorScheme.primary.opaque(0.1),
-                        blurRadius: 8,
-                        spreadRadius: 0,
+          const SizedBox(height: 16),
+          Text(
+            'No Description Available',
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 16,
+              color: colors.onSurface,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget buildCarouselCard({
+  required BuildContext context,
+  required Media media,
+  required String tag,
+  required VoidCallback onTap,
+  required VoidCallback onLongPress,
+  required VoidCallback onDescriptionTap,
+}) {
+  final colors = Theme.of(context).colorScheme;
+  final rating = media.rating.toString();
+  final cleanDescription = media.description
+      .replaceAll(RegExp(r'<[^>]*>'), '')
+      .replaceAll(RegExp(r'\s+'), ' ')
+      .trim();
+  final posterHeight =
+      getResponsiveSize(context, mobileSize: 190, desktopSize: 340);
+  final cardRadius = BorderRadius.circular(30).resolve(TextDirection.ltr);
+
+  bool cardPressed = false;
+
+  return StatefulBuilder(
+    builder: (statefulContext, updateCardState) {
+      return AnimatedScale(
+        scale: cardPressed ? 0.97 : 1.0,
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOutCubic,
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 10),
+          decoration: BoxDecoration(
+            color: colors.surfaceContainerLow.withValues(alpha: 0.4),
+            borderRadius: BorderRadius.circular(30),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: cardRadius,
+              onTap: onTap,
+              onLongPress: onLongPress,
+              onTapDown: (_) => updateCardState(() => cardPressed = true),
+              onTapCancel: () => updateCardState(() => cardPressed = false),
+              onTapUp: (_) => updateCardState(() => cardPressed = false),
+              splashColor: colors.primary.opaque(0.12),
+              highlightColor: colors.primary.opaque(0.06),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: cardRadius,
+                    child: Hero(
+                      tag: tag,
+                      transitionOnUserGestures: true,
+                      flightShuttleBuilder:
+                          AnymeXImage.heroFlightShuttleBuilder,
+                      child: AnymeXImage(
+                        imageUrl: media.cover!,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: posterHeight,
+                        alignment: Alignment.topCenter,
+                        radius: 0,
+                        fadeInDuration: Duration.zero,
+                        fadeOutDuration: Duration.zero,
                       ),
-                    ],
-                  ),
-                ),
-              ),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: Theme.of(context).colorScheme.outline.opaque(0.08),
-                      width: 1,
                     ),
                   ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(18, 14, 16, 16),
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Description',
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineSmall
-                              ?.copyWith(
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: -0.5,
-                                color: context.colors.onSurface,
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: MarqueeText(
+                                media.title,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                        ),
-                        const SizedBox(height: 4),
-                        Container(
-                          height: 2,
-                          width: 32,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                context.colors.primary,
-                                Theme.of(context)
-                                    .colorScheme
-                                    .primary
-                                    .opaque(0.3),
-                              ],
                             ),
-                            borderRadius: BorderRadius.circular(1),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: context.colors.surface,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color:
-                              Theme.of(context).colorScheme.outline.opaque(0.1),
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .shadow
-                                .opaque(0.05),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: IconButton(
-                        onPressed: () => Navigator.pop(context),
-                        icon: Icon(
-                          Icons.close_rounded,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .opaque(0.7),
-                          size: 20,
-                        ),
-                        splashRadius: 20,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                  decoration: const BoxDecoration(
-                    borderRadius:
-                        BorderRadius.vertical(bottom: Radius.circular(24)),
-                  ),
-                  child: Scrollbar(
-                    controller: scrollController,
-                    thumbVisibility: true,
-                    radius: const Radius.circular(8),
-                    thickness: 6,
-                    child: SingleChildScrollView(
-                      controller: scrollController,
-                      padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
-                      child: Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color:
-                              Theme.of(context).colorScheme.surface.opaque(0.3),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .outline
-                                .opaque(0.06),
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .primary
-                                  .opaque(0.02),
-                              blurRadius: 16,
-                              offset: const Offset(0, 4),
+                            const SizedBox(width: 10),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: colors.tertiaryContainer
+                                    .withValues(alpha: 0.4),
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Iconsax.star5,
+                                      size: 14,
+                                      color: colors.onTertiaryContainer),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    rating,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w800,
+                                      color: colors.onTertiaryContainer,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (cleanDescription.isEmpty) ...[
-                              Center(
-                                child: Column(
+                        const SizedBox(height: 12),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Material(
+                            color: colors.secondaryContainer
+                                .withValues(alpha: 0.4),
+                            child: InkWell(
+                              onTap: onDescriptionTap,
+                              splashColor:
+                                  colors.onSecondaryContainer.opaque(0.1),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 14, vertical: 10),
+                                child: Row(
                                   children: [
+                                    Expanded(
+                                      child: AnymexText(
+                                        text: cleanDescription.isNotEmpty
+                                            ? cleanDescription
+                                            : 'Tap to read description',
+                                        size: 12.5,
+                                        maxLines: 3,
+                                        color: colors.onSecondaryContainer
+                                            .opaque(cleanDescription.isNotEmpty
+                                                ? 0.9
+                                                : 0.6),
+                                        overflow: TextOverflow.ellipsis,
+                                        stripHtml: true,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
                                     Icon(
-                                      Icons.description_outlined,
-                                      size: 48,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurface
-                                          .opaque(0.3),
-                                    ),
-                                    const SizedBox(height: 16),
-                                    Text(
-                                      'No Description Available',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleMedium
-                                          ?.copyWith(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onSurface
-                                                .opaque(0.6),
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      'Description not provided for this item',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall
-                                          ?.copyWith(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onSurface
-                                                .opaque(0.4),
-                                          ),
-                                      textAlign: TextAlign.center,
+                                      Icons.arrow_outward_rounded,
+                                      size: 16,
+                                      color: colors.onSecondaryContainer,
                                     ),
                                   ],
                                 ),
                               ),
-                            ] else ...[
-                              Text(
-                                cleanDescription,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge
-                                    ?.copyWith(
-                                      height: 1.8,
-                                      letterSpacing: 0.2,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurface
-                                          .opaque(0.85),
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                              ),
-                            ],
-                          ],
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
-      ),
-    );
-  }
-
-  void navigateToDetailsPage(Media anime, String tag) {
-    if (widget.carouselType == CarouselType.manga) {
-      navigate(() => MangaDetailsPage(
-            media: anime,
-            tag: tag,
-          ));
-    } else {
-      navigate(() => AnimeDetailsPage(
-            media: anime,
-            tag: tag,
-          ));
-    }
-  }
-
-  Container _buildItem(BuildContext context, String tag, String posterUrl) {
-    return Container(
-      height: getResponsiveSize(context, mobileSize: 170, desktopSize: 330),
-      margin: const EdgeInsets.symmetric(horizontal: 10),
-      child: Hero(
-        tag: tag,
-        transitionOnUserGestures: true,
-        flightShuttleBuilder: AnymeXImage.heroFlightShuttleBuilder,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: AnymeXImage(
-              imageUrl: posterUrl,
-              fit: BoxFit.cover,
-              width: double.infinity,
-              alignment: Alignment.topCenter,
-              radius: 0,
-              fadeInDuration: Duration.zero,
-              fadeOutDuration: Duration.zero),
-        ),
-      ),
-    );
-  }
+      );
+    },
+  );
 }
