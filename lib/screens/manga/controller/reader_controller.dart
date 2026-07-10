@@ -125,6 +125,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       MangaPageViewDirection.down.obs;
   final Rx<DualPageMode> dualPageMode = DualPageMode.off.obs;
   final RxBool cropImages = false.obs;
+  final RxBool fitToScreen = false.obs;
   final RxBool volumeKeysEnabled = false.obs;
   final RxBool invertVolumeKeys = false.obs;
   final RxBool autoScrollEnabled = false.obs;
@@ -719,6 +720,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     autoScrollEnabled.value = ReaderKeys.autoScrollEnabled.get<bool>(false);
     autoScrollSpeed.value = ReaderKeys.autoScrollSpeed.get<double>(3.0);
     cropImages.value = ReaderKeys.cropImages.get<bool>(false);
+    fitToScreen.value = ReaderKeys.fitToScreen.get<bool>(false);
     volumeKeysEnabled.value = ReaderKeys.volumeKeysEnabled.get<bool>(false);
     invertVolumeKeys.value = ReaderKeys.invertVolumeKeys.get<bool>(false);
 
@@ -777,6 +779,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     ReaderKeys.autoScrollEnabled.set(autoScrollEnabled.value);
     ReaderKeys.autoScrollSpeed.set(autoScrollSpeed.value);
     ReaderKeys.cropImages.set(cropImages.value);
+    ReaderKeys.fitToScreen.set(fitToScreen.value);
     ReaderKeys.volumeKeysEnabled.set(volumeKeysEnabled.value);
     ReaderKeys.invertVolumeKeys.set(invertVolumeKeys.value);
     ReaderKeys.dualPageMode.set(dualPageMode.value.index);
@@ -1271,6 +1274,11 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
   void toggleCropImages() {
     cropImages.value = !cropImages.value;
+    savePreferences();
+  }
+
+  void toggleFitToScreen() {
+    fitToScreen.value = !fitToScreen.value;
     savePreferences();
   }
 

@@ -7,7 +7,6 @@ import 'package:anymex/screens/settings/sub_settings/settings_tap_zones.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
-import 'package:anymex/widgets/non_widgets/reusable_checkmark.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -52,6 +51,7 @@ class _TabbedSettingsSheet extends StatefulWidget {
 class _TabbedSettingsSheetState extends State<_TabbedSettingsSheet>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
+  int _selectedIndex = 0;
 
   static const _tabs = [
     Tab(text: 'Reading Mode'),
@@ -63,6 +63,13 @@ class _TabbedSettingsSheetState extends State<_TabbedSettingsSheet>
   void initState() {
     super.initState();
     _tabController = TabController(length: _tabs.length, vsync: this);
+    _tabController.addListener(() {
+      if (_tabController.index != _selectedIndex) {
+        setState(() {
+          _selectedIndex = _tabController.index;
+        });
+      }
+    });
   }
 
   @override
@@ -104,16 +111,32 @@ class _TabbedSettingsSheetState extends State<_TabbedSettingsSheet>
               unselectedLabelColor: context.colors.onSurface.withOpacity(0.6),
             ),
             const Divider(height: 1),
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  _ReadingModePage(controller: widget.controller),
-                  _GeneralPage(
-                      controller: widget.controller,
-                      settings: widget.settings),
-                  ColorFilterSettingsPage(controller: widget.controller),
-                ],
+            Flexible(
+              child: AnimatedSize(
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeInOut,
+                alignment: Alignment.topCenter,
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  transitionBuilder:
+                      (Widget child, Animation<double> animation) {
+                    return FadeTransition(
+                      opacity: animation,
+                      child: child,
+                    );
+                  },
+                  child: KeyedSubtree(
+                    key: ValueKey<int>(_selectedIndex),
+                    child: switch (_selectedIndex) {
+                      0 => _ReadingModePage(controller: widget.controller),
+                      1 => _GeneralPage(
+                          controller: widget.controller,
+                          settings: widget.settings),
+                      _ =>
+                        ColorFilterSettingsPage(controller: widget.controller),
+                    },
+                  ),
+                ),
               ),
             ),
           ],
@@ -145,26 +168,47 @@ class _ReadingModePage extends StatelessWidget {
                 MangaPageViewMode.paged => 'Paged',
               },
               icon: Iconsax.card,
-              postFix: Row(
-                spacing: 4,
-                children: [
-                  for (final layout in MangaPageViewMode.values)
-                    IconButton.filled(
-                      isSelected: layout == currentLayout,
-                      style: _iconBtnStyle(context, layout == currentLayout),
-                      tooltip: switch (layout) {
-                        MangaPageViewMode.continuous => 'Continuous',
-                        MangaPageViewMode.paged => 'Paged',
-                      },
-                      icon: switch (layout) {
-                        MangaPageViewMode.continuous =>
-                          const Icon(Iconsax.slider_vertical),
-                        MangaPageViewMode.paged => const Icon(Iconsax.grid_9),
-                      },
-                      onPressed: () =>
-                          controller.changeReadingLayout(layout),
-                    )
-                ],
+              postFix: Container(
+                padding: const EdgeInsets.all(3),
+                decoration: BoxDecoration(
+                  color: context.colors.surfaceContainer,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: context.colors.outline.withOpacity(0.1),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: MangaPageViewMode.values.map((layout) {
+                    final isSelected = layout == currentLayout;
+                    return InkWell(
+                      onTap: () => controller.changeReadingLayout(layout),
+                      borderRadius: BorderRadius.circular(9),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? context.colors.primary.withOpacity(0.2)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(9),
+                        ),
+                        child: Icon(
+                          switch (layout) {
+                            MangaPageViewMode.continuous =>
+                              Iconsax.slider_vertical,
+                            MangaPageViewMode.paged => Iconsax.grid_9,
+                          },
+                          size: 18,
+                          color: isSelected
+                              ? context.colors.primary
+                              : context.colors.onSurface.withOpacity(0.6),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
               ),
             ),
             CustomTile(
@@ -176,33 +220,49 @@ class _ReadingModePage extends StatelessWidget {
                 MangaPageViewDirection.left => 'RTL',
               },
               icon: Iconsax.direct_right,
-              postFix: Row(
-                spacing: 4,
-                children: [
-                  for (final dir in MangaPageViewDirection.values)
-                    IconButton.filled(
-                      isSelected: dir == currentDirection,
-                      style: _iconBtnStyle(context, dir == currentDirection),
-                      tooltip: switch (dir) {
-                        MangaPageViewDirection.down => 'Top-Down',
-                        MangaPageViewDirection.right => 'LTR',
-                        MangaPageViewDirection.up => 'Bottom-Up',
-                        MangaPageViewDirection.left => 'RTL',
-                      },
-                      icon: switch (dir) {
-                        MangaPageViewDirection.down =>
-                          const Icon(Iconsax.arrow_down),
-                        MangaPageViewDirection.right =>
-                          const Icon(Iconsax.arrow_right_1),
-                        MangaPageViewDirection.up =>
-                          const Icon(Iconsax.arrow_up_3),
-                        MangaPageViewDirection.left =>
-                          const Icon(Iconsax.arrow_left),
-                      },
-                      onPressed: () =>
-                          controller.changeReadingDirection(dir),
-                    )
-                ],
+              postFix: Container(
+                padding: const EdgeInsets.all(3),
+                decoration: BoxDecoration(
+                  color: context.colors.surfaceContainer,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: context.colors.outline.withOpacity(0.1),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: MangaPageViewDirection.values.map((dir) {
+                    final isSelected = dir == currentDirection;
+                    return InkWell(
+                      onTap: () => controller.changeReadingDirection(dir),
+                      borderRadius: BorderRadius.circular(9),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? context.colors.primary.withOpacity(0.2)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(9),
+                        ),
+                        child: Icon(
+                          switch (dir) {
+                            MangaPageViewDirection.down => Iconsax.arrow_down,
+                            MangaPageViewDirection.right =>
+                              Iconsax.arrow_right_1,
+                            MangaPageViewDirection.up => Iconsax.arrow_up_3,
+                            MangaPageViewDirection.left => Iconsax.arrow_left,
+                          },
+                          size: 18,
+                          color: isSelected
+                              ? context.colors.primary
+                              : context.colors.onSurface.withOpacity(0.6),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
               ),
             ),
             CustomTile(
@@ -213,23 +273,47 @@ class _ReadingModePage extends StatelessWidget {
                 DualPageMode.force => 'Force (Always)',
               },
               icon: Iconsax.book_1,
-              postFix: Row(
-                spacing: 4,
-                children: [
-                  for (final mode in DualPageMode.values)
-                    IconButton.filled(
-                      isSelected: mode == currentDual,
-                      style: _iconBtnStyle(context, mode == currentDual),
-                      tooltip: mode.toString(),
-                      icon: Icon(switch (mode) {
-                        DualPageMode.off => Icons.crop_portrait_sharp,
-                        DualPageMode.auto => Icons.devices,
-                        DualPageMode.force => Icons.menu_book_rounded,
-                      }),
-                      onPressed: () =>
-                          controller.toggleDualPageMode(mode),
-                    )
-                ],
+              postFix: Container(
+                padding: const EdgeInsets.all(3),
+                decoration: BoxDecoration(
+                  color: context.colors.surfaceContainer,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: context.colors.outline.withOpacity(0.1),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: DualPageMode.values.map((mode) {
+                    final isSelected = mode == currentDual;
+                    return InkWell(
+                      onTap: () => controller.toggleDualPageMode(mode),
+                      borderRadius: BorderRadius.circular(9),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? context.colors.primary.withOpacity(0.2)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(9),
+                        ),
+                        child: Icon(
+                          switch (mode) {
+                            DualPageMode.off => Icons.crop_portrait_sharp,
+                            DualPageMode.auto => Icons.devices,
+                            DualPageMode.force => Icons.menu_book_rounded,
+                          },
+                          size: 18,
+                          color: isSelected
+                              ? context.colors.primary
+                              : context.colors.onSurface.withOpacity(0.6),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
               ),
             ),
             if (Platform.isAndroid || Platform.isIOS)
@@ -259,24 +343,24 @@ class _ReadingModePage extends StatelessWidget {
             CustomSwitchTile(
               icon: Icons.smartphone_rounded,
               title: 'Auto Webtoon Mode',
-              description: 'Automatically switch to continuous mode for long-strip manga',
+              description:
+                  'Automatically switch to continuous mode for long-strip manga',
               switchValue: controller.autoWebtoonMode.value,
               onChanged: (_) => controller.toggleAutoWebtoonMode(),
             ),
+            CustomSwitchTile(
+              icon: Icons.fullscreen_rounded,
+              title: 'Fit to Screen Width',
+              description: 'Stretch images to fit screen width',
+              switchValue: controller.fitToScreen.value,
+              onChanged: (_) => controller.toggleFitToScreen(),
+            ),
+            20.height()
           ],
         ),
       );
     });
   }
-
-  ButtonStyle _iconBtnStyle(BuildContext context, bool selected) =>
-      IconButton.styleFrom(
-        backgroundColor: selected
-            ? context.colors.primary.withOpacity(0.2)
-            : context.colors.surfaceContainer,
-        foregroundColor:
-            selected ? context.colors.primary : Theme.of(context).iconTheme.color,
-      );
 }
 
 class _GeneralPage extends StatelessWidget {
@@ -346,7 +430,8 @@ class _GeneralPage extends StatelessWidget {
             CustomSwitchTile(
               icon: Icons.compare_arrows_rounded,
               title: 'Always Show Chapter Transition',
-              description: 'Show transition page even when chapters are adjacent',
+              description:
+                  'Show transition page even when chapters are adjacent',
               switchValue: controller.alwaysShowChapterTransition.value,
               onChanged: (_) => controller.toggleAlwaysShowChapterTransition(),
             ),
@@ -376,8 +461,7 @@ class _GeneralPage extends StatelessWidget {
                   min: 50,
                   max: 500,
                   divisions: 18,
-                  label:
-                      '${controller.displayRefreshDurationMs.value}ms',
+                  label: '${controller.displayRefreshDurationMs.value}ms',
                   onChanged: (v) =>
                       controller.displayRefreshDurationMs.value = v.toInt(),
                   onChangedEnd: (_) => controller.savePreferences(),
@@ -401,7 +485,8 @@ class _GeneralPage extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 child: Row(
                   children: [
                     const Icon(Icons.palette_rounded, size: 20),
@@ -483,8 +568,7 @@ class _GeneralPage extends StatelessWidget {
                 max: 15,
                 label: controller.preloadPages.value.toString(),
                 divisions: 14,
-                onChanged: (v) =>
-                    controller.preloadPages.value = v.toInt(),
+                onChanged: (v) => controller.preloadPages.value = v.toInt(),
                 onChangedEnd: (_) => controller.savePreferences(),
               ),
             ),
@@ -499,8 +583,7 @@ class _GeneralPage extends StatelessWidget {
                   min: 1.0,
                   max: 2.5,
                   divisions: 15,
-                  onChanged: (v) =>
-                      controller.pageWidthMultiplier.value = v,
+                  onChanged: (v) => controller.pageWidthMultiplier.value = v,
                   onChangedEnd: (_) => controller.savePreferences(),
                 ),
               ),
@@ -514,8 +597,7 @@ class _GeneralPage extends StatelessWidget {
                   min: 1.0,
                   max: 5.0,
                   divisions: 9,
-                  onChanged: (v) =>
-                      controller.scrollSpeedMultiplier.value = v,
+                  onChanged: (v) => controller.scrollSpeedMultiplier.value = v,
                   onChangedEnd: (_) => controller.savePreferences(),
                 ),
               ),

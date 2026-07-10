@@ -1,6 +1,7 @@
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/common/anymex_slider_m3.dart';
 import 'package:anymex/widgets/common/slider_semantics.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
@@ -257,7 +258,7 @@ class ReaderBottomControls extends StatelessWidget {
             controller.pageList.isEmpty
         ? const SizedBox(height: 32, child: Center(child: Text('Loading...')))
         : Expanded(
-            child: CustomSlider(
+            child: AnymeXSliderM3(
               value: controller.currentPageIndex.value.toDouble(),
               label: controller.currentPageIndex.value.toString(),
               min: 1,

@@ -298,6 +298,18 @@ class ReaderSettings {
                   }),
                   Obx(() {
                     return CustomSwitchTile(
+                      icon: Icons.fullscreen_rounded,
+                      title: "Fit to Screen Width",
+                      description:
+                          "Stretch images to fit screen width on wide screens",
+                      switchValue: controller.fitToScreen.value,
+                      onChanged: (val) {
+                        controller.toggleFitToScreen();
+                      },
+                    );
+                  }),
+                  Obx(() {
+                    return CustomSwitchTile(
                       icon: Icons.play_arrow_rounded,
                       title: "Auto Scroll",
                       description: "Automatically scroll/advance pages",

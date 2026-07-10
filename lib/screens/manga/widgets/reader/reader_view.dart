@@ -479,7 +479,7 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
         _ => FilterQuality.medium,
       };
 
-      final continuousConstraints = isContinuous
+      final continuousConstraints = isContinuous && !widget.controller.fitToScreen.value
           ? BoxConstraints(
               maxWidth: 500 * widget.controller.pageWidthMultiplier.value)
           : null;
@@ -499,7 +499,9 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                                   ''
                             }
                           : page.headers,
-                      fit: BoxFit.contain,
+                      fit: widget.controller.fitToScreen.value
+                          ? BoxFit.fitWidth
+                          : BoxFit.contain,
                       alignment: Alignment.center,
                       cropThreshold: 30,
                       placeholder:
@@ -507,7 +509,9 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                     )
                   : Image.file(
                       File(page.url),
-                      fit: BoxFit.contain,
+                      fit: widget.controller.fitToScreen.value
+                          ? BoxFit.fitWidth
+                          : BoxFit.contain,
                       alignment: Alignment.center,
                     ))
               : isLanczos
@@ -521,7 +525,9 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                                       ''
                                 }
                               : page.headers,
-                          fit: BoxFit.contain,
+                          fit: widget.controller.fitToScreen.value
+                              ? BoxFit.fitWidth
+                              : BoxFit.contain,
                           alignment: Alignment.center,
                           constraints: continuousConstraints,
                           placeholder:
@@ -529,7 +535,9 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                         )
                       : LanczosFileImage(
                           path: page.url,
-                          fit: BoxFit.contain,
+                          fit: widget.controller.fitToScreen.value
+                              ? BoxFit.fitWidth
+                              : BoxFit.contain,
                           alignment: Alignment.center,
                           constraints: continuousConstraints,
                           placeholder:
@@ -549,7 +557,9 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                                       ''
                                 }
                               : page.headers,
-                          fit: BoxFit.contain,
+                          fit: widget.controller.fitToScreen.value
+                              ? BoxFit.fitWidth
+                              : BoxFit.contain,
                           constraints: continuousConstraints,
                           cache: true,
                           alignment: Alignment.center,
@@ -568,28 +578,19 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                                 final size = MediaQuery.of(context).size;
                                 return SizedBox(
                                   height: size.height,
-                                  child: Container(
-                                    color: Colors.grey.opaque(0.1),
+                                  child: Center(
                                     child: Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        Icon(
-                                          Icons.broken_image_outlined,
-                                          size: 48,
-                                          color: Colors.grey.opaque(0.7),
-                                        ),
-                                        const SizedBox(height: 8),
-                                        Text(
-                                          'Failed to load page ${index + 1}',
-                                          style: const TextStyle(
-                                              color: Colors.grey),
+                                        const Text(
+                                          'Failed to load image',
+                                          style: TextStyle(
+                                              fontFamily: 'Poppins-Bold'),
                                         ),
                                         const SizedBox(height: 8),
                                         ElevatedButton.icon(
-                                          onPressed: () {
-                                            state.reLoadImage();
-                                          },
+                                          onPressed: () => state.reLoadImage(),
                                           icon: const Icon(Icons.refresh,
                                               size: 16),
                                           label: const Text('Retry'),
@@ -612,7 +613,9 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                         )
                       : ExtendedImage.file(
                           File(page.url),
-                          fit: BoxFit.contain,
+                          fit: widget.controller.fitToScreen.value
+                              ? BoxFit.fitWidth
+                              : BoxFit.contain,
                           constraints: continuousConstraints,
                           alignment: Alignment.center,
                           filterQuality: filterQuality,
