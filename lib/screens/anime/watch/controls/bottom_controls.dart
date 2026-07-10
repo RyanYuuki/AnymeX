@@ -7,6 +7,7 @@ import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart'
 import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
@@ -298,12 +299,25 @@ class BottomControls extends StatelessWidget {
         tooltip: 'Speed',
         compact: true,
       ),
-      'orientation': ControlButton(
-        icon: Icons.screen_rotation_rounded,
-        onPressed: () => controller.toggleOrientation(),
-        tooltip: 'Toggle Orientation',
-        compact: true,
-      ),
+      'orientation': Obx(() {
+        final orientation = controller.physicalOrientation.value;
+        double angle = 0.0;
+        IconData icon = Icons.smartphone_rounded;
+        if (orientation == DeviceOrientation.landscapeLeft) {
+          icon = Icons.rotate_left_rounded;
+        } else if (orientation == DeviceOrientation.landscapeRight) {
+          icon = Icons.rotate_right_rounded;
+        } else if (orientation == DeviceOrientation.portraitDown) {
+          angle = 3.14159265359;
+        }
+        return ControlButton(
+          icon: icon,
+          rotationAngle: angle,
+          onPressed: () => controller.toggleOrientation(),
+          tooltip: 'Toggle Orientation',
+          compact: true,
+        );
+      }),
       'aspect_ratio': ControlButton(
         icon: Symbols.fit_screen,
         onPressed: () => controller.toggleVideoFit(),
@@ -339,7 +353,7 @@ class BottomControls extends StatelessWidget {
 
         final widget = buttonWidgets[id];
         if (widget != null) {
-          if (widget is ControlButton && widget.compact) {
+          if (id == 'orientation' || (widget is ControlButton && widget.compact)) {
             compactButtons.add(widget);
           } else {
             regularButtons.add(widget);

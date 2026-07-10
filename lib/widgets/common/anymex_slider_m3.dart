@@ -121,6 +121,7 @@ class AnymeXSliderM3 extends StatelessWidget {
         secondaryActiveTrackColor: resolvedTheme.secondaryActiveColor,
         thumbColor: resolvedTheme.activeColor,
         overlayShape: SliderComponentShape.noOverlay,
+        showValueIndicator: ShowValueIndicator.always,
         trackShape: _AnymeXSliderM3TrackShape(
           outerRadius: resolvedTheme.outerRadius,
           innerRadius: resolvedTheme.innerRadius,

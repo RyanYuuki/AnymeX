@@ -343,6 +343,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   bool isLeftLandscaped = true;
   final Rx<DeviceOrientation> currentOrientation =
       DeviceOrientation.landscapeLeft.obs;
+  final Rx<DeviceOrientation> physicalOrientation =
+      DeviceOrientation.portraitUp.obs;
+  StreamSubscription? _accelerometerSub;
 
   final Rx<BoxFit> videoFit = Rx<BoxFit>(BoxFit.contain);
   final RxBool isLocked = false.obs;
@@ -519,6 +522,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   void onClose() {
     _mediaSession.deactivate();
     PipController.setAutoEnter(enabled: false);
+    _accelerometerSub?.cancel();
     delete();
     super.onClose();
   }
@@ -591,6 +595,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   Future<void> _initOrientations() async {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    _initPhysicalOrientationListener();
 
     if (Platform.isAndroid || Platform.isIOS) {
       if (playerSettings.defaultPortraitMode) {
@@ -600,6 +605,29 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         _applyOrientation(orientation);
       }
     }
+  }
+
+  void _initPhysicalOrientationListener() {
+    if (!Platform.isAndroid && !Platform.isIOS) return;
+    try {
+      _accelerometerSub = accelerometerEvents.listen((event) {
+        final x = event.x;
+        final y = event.y;
+        if (x.abs() > y.abs()) {
+          if (x > 5.0) {
+            physicalOrientation.value = DeviceOrientation.landscapeLeft;
+          } else if (x < -5.0) {
+            physicalOrientation.value = DeviceOrientation.landscapeRight;
+          }
+        } else {
+          if (y > 5.0) {
+            physicalOrientation.value = DeviceOrientation.portraitUp;
+          } else if (y < -5.0) {
+            physicalOrientation.value = DeviceOrientation.portraitDown;
+          }
+        }
+      });
+    } catch (_) {}
   }
 
   Future<DeviceOrientation> _getClosestLandscapeOrientation() async {
@@ -644,6 +672,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void toggleOrientation() {
+    if (currentOrientation.value != physicalOrientation.value) {
+      _applyOrientation(physicalOrientation.value);
+      return;
+    }
     DeviceOrientation next;
     if (currentOrientation.value == DeviceOrientation.landscapeLeft) {
       next = DeviceOrientation.portraitUp;
