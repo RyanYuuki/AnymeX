@@ -761,7 +761,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                   onTap: _onPageSelected,
                   selectedIcon: Iconsax.book,
                   unselectedIcon: Iconsax.book,
-                  label: "Watch"),
+                  label: "Read"),
               NavItem(
                   onTap: _onPageSelected,
                   selectedIcon: HugeIcons.strokeRoundedComment01,
