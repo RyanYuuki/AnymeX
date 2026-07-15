@@ -1,6 +1,5 @@
 // ignore_for_file: deprecated_member_use
 import 'dart:io';
-import 'dart:math';
 
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
@@ -105,28 +104,35 @@ class LiquidMode extends StatelessWidget {
         ? 'assets/images/bg_glass.webp'
         : "file://${settingsController.liquidBackgroundPath}";
 
-    return Stack(
-      children: [
-        Positioned.fill(
-          child: Obx(() {
-            return _CachedColorFilteredImage(
-              color: settingsController.retainOriginalColor
-                  ? null
-                  : theme.primary.opaque(0.6),
-              imagePath: imagePath,
-            );
-          }),
-        ),
-        Positioned.fill(
-          child: isOled
-              ? Container(color: Colors.black)
-              : _OptimizedGradientOverlay(
-                  gradientVariant: gradientVariant,
-                  theme: theme,
-                ),
-        ),
-        child,
-      ],
+    final fallbackColor = isOled
+        ? (theme.brightness == Brightness.dark ? Colors.black : Colors.white)
+        : theme.surface;
+
+    return Container(
+      color: fallbackColor,
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: Obx(() {
+              return _CachedColorFilteredImage(
+                color: settingsController.retainOriginalColor
+                    ? null
+                    : theme.primary.opaque(0.6),
+                imagePath: imagePath,
+              );
+            }),
+          ),
+          Positioned.fill(
+            child: isOled
+                ? Container(color: Colors.black)
+                : _OptimizedGradientOverlay(
+                    gradientVariant: gradientVariant,
+                    theme: theme,
+                  ),
+          ),
+          child,
+        ],
+      ),
     );
   }
 }
