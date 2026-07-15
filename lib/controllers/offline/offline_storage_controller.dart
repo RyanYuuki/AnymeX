@@ -149,7 +149,7 @@ class OfflineStorageController extends GetxController {
   }
 
   Future<List<OfflineMedia>> getAnimeLibrary(
-      {int offset = 0, int limit = 50}) async {
+      {int offset = 0, int limit = 999999}) async {
     return await isar.offlineMedias
         .filter()
         .mediaTypeIndexEqualTo(1)
@@ -159,7 +159,7 @@ class OfflineStorageController extends GetxController {
   }
 
   Future<List<OfflineMedia>> getMangaLibrary(
-      {int offset = 0, int limit = 50}) async {
+      {int offset = 0, int limit = 999999}) async {
     return await isar.offlineMedias
         .filter()
         .mediaTypeIndexEqualTo(0)
@@ -169,7 +169,7 @@ class OfflineStorageController extends GetxController {
   }
 
   Future<List<OfflineMedia>> getNovelLibrary(
-      {int offset = 0, int limit = 50}) async {
+      {int offset = 0, int limit = 999999}) async {
     return await isar.offlineMedias
         .filter()
         .mediaTypeIndexEqualTo(2)
@@ -181,7 +181,7 @@ class OfflineStorageController extends GetxController {
   Future<List<OfflineMedia>> getLibraryFromType(
     ItemType mediaType, {
     int offset = 0,
-    int limit = 50,
+    int limit = 999999,
   }) async {
     return await isar.offlineMedias
         .filter()
