@@ -4,17 +4,13 @@ import 'dart:io';
 
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/screens/extensions/ExtensionSettings/ExtensionSettings.dart';
-import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/AlertDialogBuilder.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
-import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
-import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:anymex_extension_runtime_bridge/Services/Aniyomi/Models/Source.dart';
-import 'package:anymex_extension_runtime_bridge/Services/Sora/Models/Source.dart';
+import 'package:anymex_extension_runtime_bridge/Services/CloudStream/CloudStreamSourceMethods.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -42,7 +38,6 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
 
   Future<void> _handleInstall() async {
     if (_isLoading) return;
-
     _setLoading(true);
     try {
       await widget.source.install();
@@ -57,7 +52,6 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
 
   Future<void> _handleUpdate() async {
     if (_isLoading) return;
-
     _setLoading(true);
     try {
       final manager = getSourceManager(widget.source);
@@ -86,8 +80,15 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
   }
 
   void _setLoading(bool value) {
-    if (mounted) {
-      setState(() => _isLoading = value);
+    if (mounted) setState(() => _isLoading = value);
+  }
+
+  Future<void> _handleOpenSettings() async {
+    final source = widget.source;
+    if (source is CloudStreamSource && source.hasSettings) {
+      await CloudStreamSourceMethods(source).openNativeSettings();
+    } else {
+      Get.to(() => SourcePreferenceScreen(source: source));
     }
   }
 
@@ -105,38 +106,223 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
     final theme = context.colors;
     final updateAvailable = widget.source.hasUpdate ?? false;
 
-    // Use Obx only for the installed check that depends on reactive lists
+    Widget buildMainIcon() {
+      final iconUrl = widget.source.iconUrl ?? '';
+      if (iconUrl.isEmpty) {
+        return Container(
+          height: 50,
+          width: 50,
+          alignment: Alignment.center,
+          child: Icon(Icons.extension_rounded, color: theme.primary, size: 24),
+        );
+      }
+      if (iconUrl.startsWith('http')) {
+        return AnymeXImage(
+          imageUrl: iconUrl,
+          fit: BoxFit.cover,
+          width: 50,
+          height: 50,
+          radius: 0,
+        );
+      }
+      return Image.file(
+        File(iconUrl),
+        fit: BoxFit.cover,
+        height: 50,
+        width: 50,
+      );
+    }
+
+    Widget buildManagerBadge() {
+      final badgeUrl = widget.source.managerIcon;
+
+      return Container(
+        height: 19,
+        width: 19,
+        decoration: BoxDecoration(
+          color: theme.surface,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.12),
+              blurRadius: 4,
+              offset: const Offset(0, 1),
+            ),
+          ],
+        ),
+        padding: const EdgeInsets.all(3),
+        child: ClipOval(
+          child: AnymeXImage(
+            imageUrl: badgeUrl,
+            height: 13,
+            width: 13,
+            radius: 0,
+          ),
+        ),
+      );
+    }
+
+    final version =
+        (widget.source.version ?? 'Unknown').toLowerCase().startsWith('v')
+            ? (widget.source.version ?? 'Unknown')
+            : 'v${widget.source.version ?? 'Unknown'}';
+
     return Obx(() {
       final isInstalled = _isInstalled;
 
-      return AnymexCard(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: ListTile(
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          leading: _ExtensionIcon(source: widget.source, theme: theme),
-          title: Text(
-            widget.source.name!,
-            style: TextStyle(
-              color: theme.onSurface,
-              fontFamily: 'Poppins',
-              fontWeight: FontWeight.bold,
-              fontSize: 16.0,
-            ),
-          ),
-          subtitle: _ExtensionSubtitle(source: widget.source, theme: theme),
-          trailing: _isLoading
-              ? const SizedBox(
-                  height: 50,
-                  width: 50,
-                  child: Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(2),
-                      child: AnymexProgressIndicator(strokeWidth: 2.0),
+      return Container(
+        margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
+        decoration: BoxDecoration(
+          color: theme.surfaceContainerHighest.withOpacity(0.35),
+          borderRadius: BorderRadius.circular(18),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              height: 50,
+              width: 50,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.10),
+                          blurRadius: 10,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Container(
+                        color: theme.surfaceContainerHighest.withOpacity(0.55),
+                        child: buildMainIcon(),
+                      ),
                     ),
                   ),
-                )
-              : _buildTrailing(isInstalled, updateAvailable, theme),
+                  Positioned(
+                    bottom: -3,
+                    right: -3,
+                    child: buildManagerBadge(),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    widget.source.name!,
+                    style: TextStyle(
+                      color: theme.onSurface,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14.5,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 5),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 4,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Wrap(
+                        spacing: 2,
+                        runSpacing: 2,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: theme.secondary,
+                              borderRadius: const BorderRadius.horizontal(
+                                left: Radius.circular(8),
+                                right: Radius.circular(5),
+                              ),
+                            ),
+                            child: Text(
+                              completeLanguageName(
+                                      widget.source.lang?.toLowerCase() ?? '')
+                                  .toUpperCase(),
+                              style: TextStyle(
+                                fontFamily: 'Poppins-SemiBold',
+                                fontSize: 10.0,
+                                color: theme.secondary.computeLuminance() > 0.5
+                                    ? Colors.black
+                                    : Colors.white,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: theme.tertiary,
+                              borderRadius: const BorderRadius.horizontal(
+                                left: Radius.circular(5),
+                                right: Radius.circular(8),
+                              ),
+                            ),
+                            child: Text(
+                              version.toUpperCase(),
+                              style: TextStyle(
+                                fontFamily: 'Poppins-SemiBold',
+                                fontSize: 10.0,
+                                color: theme.tertiary.computeLuminance() > 0.5
+                                    ? Colors.black
+                                    : Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (widget.source.isNsfw == true)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: theme.error,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            '18+',
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w600,
+                              fontSize: 10.0,
+                              color: theme.error.computeLuminance() > 0.5
+                                  ? Colors.black
+                                  : Colors.white,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 16),
+            _isLoading
+                ? const SizedBox(
+                    height: 40,
+                    width: 40,
+                    child: Center(
+                      child: AnymexProgressIndicator(strokeWidth: 2.0),
+                    ),
+                  )
+                : _buildTrailing(isInstalled, updateAvailable, theme),
+          ],
         ),
       );
     });
@@ -145,91 +331,86 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
   Widget _buildTrailing(
       bool isInstalled, bool updateAvailable, ColorScheme theme) {
     if (!isInstalled) {
-      return Container(
-        decoration: BoxDecoration(
-          color: theme.primaryContainer,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: AnymexOnTap(
-          child: IconButton(
-            onPressed: _handleInstall,
-            icon: Icon(
-              Icons.download,
-              color: theme.onPrimaryContainer,
-              size: 20,
-            ),
-            tooltip: "Download",
-          ),
-        ),
+      return _actionButton(
+        icon: Icons.download_rounded,
+        color: theme.primary,
+        tooltip: "Download",
+        onTap: _handleInstall,
+        borderRadius: BorderRadius.circular(30),
       );
     }
 
-    return SizedBox(
-      width: updateAvailable ? 150 : 104,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
+    if (updateAvailable) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          if (updateAvailable) ...[
-            Container(
-              decoration: BoxDecoration(
-                color: theme.tertiaryContainer,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: AnymexOnTap(
-                onTap: _handleUpdate,
-                child: IconButton(
-                  onPressed: _handleUpdate,
-                  icon: Icon(
-                    Icons.update,
-                    size: 18,
-                    color: theme.onTertiaryContainer,
-                  ),
-                  tooltip: "Update",
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-          ],
-          Container(
-            decoration: BoxDecoration(
-              color: theme.errorContainer.withAlpha(122),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: AnymexOnTap(
-              onTap: () => _onActionTap(false),
-              child: IconButton(
-                onPressed: () => _onActionTap(false),
-                icon: Icon(
-                  Iconsax.trash,
-                  size: 18,
-                  color: theme.onErrorContainer,
-                ),
-                tooltip: "Delete",
-              ),
+          _actionButton(
+            icon: Icons.refresh_rounded,
+            color: theme.tertiary,
+            tooltip: "Update",
+            onTap: _handleUpdate,
+            borderRadius: const BorderRadius.horizontal(
+              left: Radius.circular(20),
+              right: Radius.circular(8),
             ),
           ),
-          const SizedBox(width: 8),
-          Container(
-            decoration: BoxDecoration(
-              color: theme.secondaryContainer,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: AnymexOnTap(
-              child: IconButton(
-                onPressed: () {
-                  Get.to(() => SourcePreferenceScreen(source: widget.source));
-                },
-                icon: Icon(
-                  Iconsax.setting,
-                  size: 18,
-                  color: theme.onSecondaryContainer,
-                ),
-                tooltip: "Settings",
-              ),
+          const SizedBox(width: 2),
+          _actionButton(
+            icon: Iconsax.trash,
+            color: theme.error,
+            tooltip: "Delete",
+            iconSize: 17,
+            onTap: () => _onActionTap(false),
+            borderRadius: BorderRadius.circular(5),
+          ),
+          const SizedBox(width: 2),
+          _actionButton(
+            icon: Iconsax.setting,
+            color: theme.secondary,
+            tooltip: "Settings",
+            iconSize: 17,
+            onTap: _handleOpenSettings,
+            borderRadius: const BorderRadius.horizontal(
+              left: Radius.circular(8),
+              right: Radius.circular(20),
             ),
           ),
         ],
-      ),
+      );
+    }
+
+    final hasSettings =
+        (widget.source is CloudStreamSource && Platform.isAndroid) || widget.source is CloudStreamSource == false;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _actionButton(
+          icon: Iconsax.trash,
+          color: theme.error,
+          tooltip: "Delete",
+          iconSize: 17,
+          onTap: () => _onActionTap(false),
+          borderRadius: BorderRadius.horizontal(
+            left: const Radius.circular(16),
+            right: Radius.circular(hasSettings ? 5 : 16),
+          ),
+        ),
+        if (hasSettings) ...[
+          const SizedBox(width: 2),
+          _actionButton(
+            icon: Iconsax.setting,
+            color: theme.secondary,
+            tooltip: "Settings",
+            iconSize: 17,
+            onTap: _handleOpenSettings,
+            borderRadius: const BorderRadius.horizontal(
+              left: Radius.circular(5),
+              right: Radius.circular(16),
+            ),
+          ),
+        ],
+      ],
     );
   }
 
@@ -249,165 +430,29 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
   }
 }
 
-class _ExtensionIcon extends StatelessWidget {
-  final Source source;
-  final ColorScheme theme;
-
-  const _ExtensionIcon({required this.source, required this.theme});
-
-  static const Color _cloudStreamAccent = Color(0xFF42A5F5);
-  static const Color _soraAccent = Color(0xFF8D6E63);
-
-  @override
-  Widget build(BuildContext context) {
-    final accentColor = _managerAccentColor();
-
-    return Container(
-      height: 42,
-      width: 42,
-      decoration: BoxDecoration(
-        color: accentColor.withValues(alpha: 0.4),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Container(
-        margin: const EdgeInsets.all(2),
-        decoration: BoxDecoration(
-          color: theme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Stack(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: _buildMainIcon(context),
-            ),
-            Positioned(
-              top: 1,
-              right: 1,
-              child: _buildManagerBadge(accentColor),
-            ),
-          ],
+Widget _actionButton({
+  required IconData icon,
+  required Color color,
+  required String tooltip,
+  required VoidCallback onTap,
+  double iconSize = 19,
+  required BorderRadius borderRadius,
+}) {
+  return Tooltip(
+    message: tooltip,
+    child: Material(
+      color: color.withValues(alpha: 0.7),
+      borderRadius: borderRadius,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: borderRadius,
+        child: SizedBox(
+          height: 38,
+          width: 38,
+          child: Icon(icon, size: iconSize, color: Colors.black),
         ),
       ),
-    );
-  }
-
-  Color _managerAccentColor() {
-    switch (source) {
-      case MSource _:
-        return Colors.redAccent;
-      case ASource _:
-        return Colors.indigoAccent;
-      case CloudStreamSource _:
-        return _cloudStreamAccent;
-      case SSource _:
-        return _soraAccent;
-      default:
-        return Colors.indigoAccent;
-    }
-  }
-
-  Widget _buildManagerBadge(Color accentColor) {
-    final badgeUrl = source.managerIcon;
-
-    return Container(
-      height: 13,
-      width: 13,
-      padding: const EdgeInsets.all(1),
-      decoration: BoxDecoration(
-        color: accentColor.withValues(alpha: 0.18),
-        shape: BoxShape.circle,
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(50),
-        child: AnymeXImage(
-          imageUrl: badgeUrl,
-          height: 11,
-          width: 11,
-          radius: 0,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMainIcon(BuildContext context) {
-    final iconUrl = source.iconUrl ?? '';
-    if (iconUrl.isEmpty) {
-      return Container(
-        height: 42,
-        width: 42,
-        alignment: Alignment.center,
-        child: Icon(Icons.extension_rounded, color: context.colors.primary),
-      );
-    }
-    if (iconUrl.startsWith('http')) {
-      return AnymeXImage(
-        imageUrl: iconUrl,
-        fit: BoxFit.cover,
-        width: 42,
-        height: 42,
-        radius: 0,
-      );
-    }
-    return Image.file(
-      File(iconUrl),
-      fit: BoxFit.cover,
-      height: 42,
-      width: 42,
-    );
-  }
-}
-
-/// Extracted stateless subtitle widget
-class _ExtensionSubtitle extends StatelessWidget {
-  final Source source;
-  final ColorScheme theme;
-
-  const _ExtensionSubtitle({required this.source, required this.theme});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 4),
-        Wrap(
-          spacing: 6,
-          children: [
-            _buildChip(
-              completeLanguageName(source.lang?.toLowerCase() ?? ''),
-              theme.primary,
-            ),
-            _buildChip(
-              (source.version ?? 'Unknown').toLowerCase().startsWith('v')
-                  ? (source.version ?? 'Unknown')
-                  : 'v${source.version ?? 'Unknown'}',
-              theme.tertiary,
-            ),
-            if (source.isNsfw == true) _buildChip("18+", Colors.red),
-          ],
-        ),
-        10.width(),
-      ],
-    );
-  }
-
-  Widget _buildChip(String text, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(
-        color: color.opaque(0.1),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(
-          fontFamily: 'Poppins',
-          fontWeight: FontWeight.bold,
-          fontSize: 10.0,
-          color: color,
-        ),
-      ),
-    );
-  }
+    ),
+  );
 }

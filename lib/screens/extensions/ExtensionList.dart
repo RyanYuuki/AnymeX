@@ -2,6 +2,8 @@ import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/custom_button.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:flutter/gestures.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex_extension_runtime_bridge/Services/Aniyomi/Models/Source.dart';
 import 'package:anymex_extension_runtime_bridge/Services/Sora/Models/Source.dart';
@@ -388,11 +390,10 @@ class _ExtensionListState extends State<ExtensionList>
               proxyDecorator: _proxyDecorator,
               itemBuilder: (context, index) {
                 final source = installed[index];
-                return _DraggableExtensionTile(
+                return _buildDraggableExtensionTile(
                   key: ValueKey(source.uniqueId),
                   index: index,
                   source: source,
-                  mediaType: widget.itemType,
                 );
               },
             ),
@@ -415,11 +416,10 @@ class _ExtensionListState extends State<ExtensionList>
             itemCount: installed.length,
             itemBuilder: (context, index) {
               final source = installed[index];
-              return _DraggableExtensionTile(
+              return _buildDraggableExtensionTile(
                 key: ValueKey(source.uniqueId),
                 index: index,
                 source: source,
-                mediaType: widget.itemType,
               );
             },
           ),
@@ -430,29 +430,31 @@ class _ExtensionListState extends State<ExtensionList>
 
   Widget _buildInstalledHeader() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      child: Row(
-        children: [
-          const Text(
-            'Installed',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-          ),
-          const SizedBox(width: 8),
-          Icon(
-            Icons.drag_indicator_rounded,
-            size: 14,
-            color: Colors.grey.withValues(alpha: 0.7),
-          ),
-          const SizedBox(width: 4),
-          Text(
-            'Hold to reorder',
-            style: TextStyle(
-              fontSize: 11,
-              color: Colors.grey.withValues(alpha: 0.7),
-              fontStyle: FontStyle.italic,
-            ),
-          ),
-        ],
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+      child: Text(
+        'Hold and drag any item to reorder',
+        style: TextStyle(
+          fontSize: 11,
+          color: Colors.grey.withValues(alpha: 0.55),
+          fontStyle: FontStyle.italic,
+          fontFamily: 'Poppins',
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDraggableExtensionTile({
+    required Key key,
+    required int index,
+    required Source source,
+  }) {
+    return _CustomReorderableDelayedDragStartListener(
+      key: key,
+      index: index,
+      delay: const Duration(seconds: 1),
+      child: ExtensionListTileWidget(
+        source: source,
+        mediaType: widget.itemType,
       ),
     );
   }
@@ -481,14 +483,7 @@ class _ExtensionListState extends State<ExtensionList>
       delegate: SliverChildBuilderDelegate(
         (context, index) {
           if (index == 0 && title != null) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Text(
-                title,
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-              ),
-            );
+            return _buildSectionHeader(title);
           }
           final itemIndex = title != null ? index - 1 : index;
           if (itemIndex < 0 || itemIndex >= entries.length) {
@@ -496,7 +491,7 @@ class _ExtensionListState extends State<ExtensionList>
           }
           final source = entries[itemIndex];
           return ExtensionListTileWidget(
-            key: ValueKey(source.uniqueId),
+            key: ValueKey('recommended_${source.uniqueId}'),
             source: source,
             mediaType: widget.itemType,
           );
@@ -511,25 +506,23 @@ class _ExtensionListState extends State<ExtensionList>
       delegate: SliverChildBuilderDelegate(
         (context, index) {
           if (index == 0) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Update Pending',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-                  ),
-                  AnymeXButton(
-                    variant: ButtonVariant.outline,
-                    onTap: () => _updateAllExtensions(updates),
-                    child: const Text(
-                      'Update All',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+            return _buildSectionHeader(
+              'Updates Pending',
+              trailing: InkWell(
+                onTap: () => _updateAllExtensions(updates),
+                child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: context.colors.tertiary,
+                      borderRadius: BorderRadius.circular(30),
                     ),
-                  ),
-                ],
+                    child:  AnymexText(
+                      text: 'Update All',
+                      size: 12,
+                      variant: TextVariant.semiBold,
+                      color: context.colors.onTertiary,
+                    )),
               ),
             );
           }
@@ -569,14 +562,7 @@ class _ExtensionListState extends State<ExtensionList>
         (context, index) {
           final item = items[index];
           if (item.isHeader) {
-            return Padding(
-              padding: const EdgeInsets.only(left: 12, top: 8, bottom: 4),
-              child: Text(
-                item.headerTitle!,
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-              ),
-            );
+            return _buildSectionHeader(item.headerTitle!);
           }
           return ExtensionListTileWidget(
             key: ValueKey(item.source!.uniqueId),
@@ -585,6 +571,22 @@ class _ExtensionListState extends State<ExtensionList>
           );
         },
         childCount: items.length,
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title, {Widget? trailing}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+          ),
+          if (trailing != null) trailing,
+        ],
       ),
     );
   }
@@ -602,40 +604,22 @@ class _ExtensionListState extends State<ExtensionList>
   }
 }
 
-class _DraggableExtensionTile extends StatelessWidget {
-  final int index;
-  final Source source;
-  final ItemType mediaType;
+class _CustomReorderableDelayedDragStartListener
+    extends ReorderableDragStartListener {
+  final Duration delay;
 
-  const _DraggableExtensionTile({
+  const _CustomReorderableDelayedDragStartListener({
     super.key,
-    required this.index,
-    required this.source,
-    required this.mediaType,
+    required super.child,
+    required super.index,
+    required this.delay,
   });
 
   @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        ReorderableDragStartListener(
-          index: index,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4.0),
-            child: Icon(
-              Icons.drag_indicator_rounded,
-              color: context.colors.onSurface.withValues(alpha: 0.35),
-              size: 20,
-            ),
-          ),
-        ),
-        Expanded(
-          child: ExtensionListTileWidget(
-            source: source,
-            mediaType: mediaType,
-          ),
-        ),
-      ],
+  MultiDragGestureRecognizer createRecognizer() {
+    return DelayedMultiDragGestureRecognizer(
+      delay: delay,
+      debugOwner: this,
     );
   }
 }
