@@ -18,7 +18,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:photo_view/photo_view.dart';
-import 'package:preload_page_view/preload_page_view.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:vibration/vibration.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
@@ -98,6 +97,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   final RxInt currentPageIndex = 1.obs;
   final RxDouble pageWidthMultiplier = 1.0.obs;
   final RxDouble scrollSpeedMultiplier = 1.0.obs;
+  final Map<String, double> pageAspectRatios = {};
   ItemScrollController? itemScrollController;
   ScrollOffsetController? scrollOffsetController;
   ItemPositionsListener? itemPositionsListener;
@@ -113,7 +113,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   final RxBool activeTapIsVertical = false.obs;
   ScrollOffsetListener? scrollOffsetListener;
   PhotoViewController? photoViewController;
-  PreloadPageController? pageController;
+  PageController? pageController;
   final RxBool spacedPages = false.obs;
   final RxBool overscrollToChapter = true.obs;
   final defaultWidth = 400.obs;
@@ -701,7 +701,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     scrollOffsetController = ScrollOffsetController();
     itemPositionsListener = ItemPositionsListener.create();
     scrollOffsetListener = ScrollOffsetListener.create();
-    pageController = PreloadPageController(initialPage: 0);
+    pageController = PageController(initialPage: 0);
     _setupPositionListener();
     _setupScrollListener();
   }
