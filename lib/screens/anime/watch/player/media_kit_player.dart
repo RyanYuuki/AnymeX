@@ -7,7 +7,6 @@ import 'package:anymex/utils/player_core_visual_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'base_player.dart' as base;
@@ -75,24 +74,11 @@ class MediaKitPlayer extends base.BasePlayer {
 
   @override
   Future<void> initialize() async {
-    int sdkVersion = 0;
-    if (Platform.isAndroid) {
-      try {
-        final deviceInfo = DeviceInfoPlugin();
-        final androidInfo = await deviceInfo.androidInfo;
-        sdkVersion = androidInfo.version.sdkInt;
-      } catch (e) {
-        debugPrint('Error getting Android SDK version: $e');
-      }
-    }
-
     final resolvedVo = switch (config.videoOutput) {
       'gpu-next' => Platform.isAndroid ? 'gpu-next' : null,
       'mediacodec_embed' => 'mediacodec_embed',
       'gpu' => Platform.isAndroid ? 'gpu' : null,
-      'auto' => Platform.isAndroid
-          ? (sdkVersion >= 34 ? 'gpu-next' : 'gpu')
-          : null,
+      'auto' => Platform.isAndroid ? 'gpu' : null,
       _ => null,
     };
 
@@ -128,12 +114,12 @@ class MediaKitPlayer extends base.BasePlayer {
         if (currentAo == 'auto') {
           await mpv.setProperty("ao", "audiotrack");
         }
-        await mpv.setProperty("hwdec", config.hwdec);
-        await mpv.setProperty("vd-lavc-fast", "yes");
-        await mpv.setProperty("vd-lavc-skiploopfilter", "nonkey");
-        await mpv.setProperty("vd-lavc-threads", "4");
-        await mpv.setProperty("cache", "yes");
       }
+      await mpv.setProperty("hwdec", config.hwdec);
+      await mpv.setProperty("vd-lavc-fast", "yes");
+      await mpv.setProperty("vd-lavc-skiploopfilter", "nonkey");
+      await mpv.setProperty("vd-lavc-threads", "4");
+      await mpv.setProperty("cache", "yes");
     } catch (e) {
       print('Error setting MPV optimization properties: $e');
     }

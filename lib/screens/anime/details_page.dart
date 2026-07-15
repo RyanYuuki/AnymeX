@@ -96,6 +96,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   final sourceController = Get.find<SourceController>();
 
   final RxInt timeLeft = 0.obs;
+  Timer? _countdownTimer;
 
   String posterColor = '';
   int _sourceRequestVersion = 0;
@@ -213,6 +214,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
   @override
   void dispose() {
+    _countdownTimer?.cancel();
     controller.dispose();
     _activeSourceWorker?.dispose();
 
@@ -521,11 +523,12 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   }
 
   void startCountdown(int arrivingAt) {
+    _countdownTimer?.cancel();
     int currentTime = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     int difference = arrivingAt - currentTime;
     timeLeft.value = difference;
 
-    Timer.periodic(const Duration(seconds: 1), (timer) {
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (timeLeft.value > 0) {
         timeLeft.value--;
       } else {
