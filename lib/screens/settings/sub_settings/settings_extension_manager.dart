@@ -10,6 +10,7 @@ import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/AnymeXBridge.dart';
 import 'package:anymex_extension_runtime_bridge/ExtensionManager.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -24,15 +25,14 @@ class SettingsExtensionManager extends StatefulWidget {
 class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
   final _pluginManager = PluginManager();
   bool _isCheckingUpdate = false;
+  bool _isSyncingLocalApk = false;
 
-  String get _installedVersion =>
-      AnymeXRuntimeBridge.installedVersion;
+  String get _installedVersion => AnymeXRuntimeBridge.installedVersion;
 
   String get _installedReleaseTitle =>
       AnymeXRuntimeBridge.installedReleaseTitle;
 
-  bool get _isPluginInstalled =>
-      AnymeXRuntimeBridge.isPluginInstalled;
+  bool get _isPluginInstalled => AnymeXRuntimeBridge.isPluginInstalled;
 
   void _showInstallPopup() async {
     await _pluginManager.showInstallSheet(context);
@@ -84,6 +84,29 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
       }
     } finally {
       if (mounted) setState(() => _isCheckingUpdate = false);
+    }
+  }
+
+  void _syncLocalApk() async {
+    if (_isSyncingLocalApk) return;
+
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: const ['apk'],
+      allowMultiple: false,
+      withData: false,
+    );
+
+    final apkPath = result?.files.single.path;
+    if (apkPath == null || apkPath.isEmpty) return;
+    if (!mounted) return;
+
+    setState(() => _isSyncingLocalApk = true);
+    try {
+      final synced = await _pluginManager.syncLocalApk(apkPath);
+      if (mounted && synced) setState(() {});
+    } finally {
+      if (mounted) setState(() => _isSyncingLocalApk = false);
     }
   }
 
@@ -173,8 +196,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
       final isBusy = isDownloading ||
           (status != "Idle" &&
               !isReady &&
-              (status.contains("Extracting") ||
-                  status.contains("Finalizing")));
+              (status.contains("Extracting") || status.contains("Finalizing")));
 
       return Container(
         width: double.infinity,
@@ -361,7 +383,8 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
         return CustomTile(
           icon: Icons.download_rounded,
           title: 'Download Plugin',
-          description: 'Install the runtime plugin to enable Aniyomi & Cloudstream',
+          description:
+              'Install the runtime plugin to enable Aniyomi & Cloudstream',
           onTap: _showInstallPopup,
         );
       }
@@ -390,6 +413,26 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
             description: 'Re-download and reinstall the plugin from scratch',
             onTap: _forceReDownload,
           ),
+          if (Platform.isAndroid) ...[
+            const SizedBox(height: 8),
+            CustomTile(
+              icon: Icons.install_mobile_rounded,
+              title: 'Sync Local APK',
+              description:
+                  'Select a runtime APK from local storage and sync it',
+              onTap: _isSyncingLocalApk ? null : _syncLocalApk,
+              postFix: _isSyncingLocalApk
+                  ? SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: colors.primary,
+                      ),
+                    )
+                  : null,
+            ),
+          ],
         ],
       );
     });

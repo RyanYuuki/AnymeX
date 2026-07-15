@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -16,11 +15,9 @@ class PluginManager {
   static const String _latestReleaseUrl =
       'https://api.github.com/repos/RyanYuuki/AnymeXExtensionRuntimeBridge/releases/latest';
 
-  String get installedVersion =>
-      AnymeXRuntimeBridge.installedVersion;
+  String get installedVersion => AnymeXRuntimeBridge.installedVersion;
 
-  String get installedReleaseTitle =>
-      AnymeXRuntimeBridge.installedReleaseTitle;
+  String get installedReleaseTitle => AnymeXRuntimeBridge.installedReleaseTitle;
 
   Future<void> ensurePluginLoaded(BuildContext context) async {
     if (Platform.isIOS) return;
@@ -205,25 +202,43 @@ class PluginManager {
     AnymeXRuntimeBridge.setInstalledRelease(release.tagName, release.title);
   }
 
-  Future<void> forceSyncLocalApk() async {
-    const localPath =
-        '/storage/emulated/0/AnymeX/anymex_runtime_host.apk';
-    if (!await File(localPath).exists()) {
-      errorSnackBar('Local APK not found at: $localPath');
-      return;
+  Future<bool> syncLocalApk(String apkPath) async {
+    if (!apkPath.toLowerCase().endsWith('.apk')) {
+      errorSnackBar('Please select a valid APK file.');
+      return false;
+    }
+
+    if (!await File(apkPath).exists()) {
+      errorSnackBar('Local APK not found at: $apkPath');
+      return false;
     }
 
     try {
-      await AnymeXRuntimeBridge.useLocalApk(localPath);
+      await AnymeXRuntimeBridge.useLocalApk(apkPath);
       final bridge = AnymeXRuntimeBridge.controller;
       if (bridge.isReady.value) {
         await Get.find<ExtensionManager>()
             .onRuntimeBridgeInitialization(force: true);
-        successSnackBar('Plugin synced from SD Card.');
+        successSnackBar('Plugin synced from local APK.');
+        return true;
       }
+
+      errorSnackBar('Sync completed, but the plugin is not ready yet.');
+      return false;
     } catch (e) {
       errorSnackBar('Sync failed: $e');
+      return false;
     }
+  }
+
+  Future<bool> forceSyncLocalApk() async {
+    const localPath = '/storage/emulated/0/AnymeX/anymex_runtime_host.apk';
+    if (!await File(localPath).exists()) {
+      errorSnackBar('Local APK not found at: $localPath');
+      return false;
+    }
+
+    return syncLocalApk(localPath);
   }
 }
 
