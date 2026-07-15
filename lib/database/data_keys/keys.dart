@@ -245,6 +245,7 @@ enum PlayerSettingsKeys {
   hardwareDecoder,
   preferredSubtitleLanguage,
   videoOutput,
+  audioOutput,
 }
 
 enum UISettingsKeys {

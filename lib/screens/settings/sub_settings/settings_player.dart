@@ -86,6 +86,18 @@ class _RendererOption {
   });
 }
 
+class _AudioOption {
+  final String value;
+  final String title;
+  final String description;
+
+  const _AudioOption({
+    required this.value,
+    required this.title,
+    required this.description,
+  });
+}
+
 final List<_BottomControl> _bottomControls = [
   const _BottomControl(
       id: 'playlist',
@@ -917,6 +929,125 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
     );
   }
 
+  List<_AudioOption> get _audioOptions {
+    final list = <_AudioOption>[];
+    if (Platform.isAndroid) {
+      list.addAll([
+        const _AudioOption(
+          value: 'auto',
+          title: 'Auto (AudioTrack)',
+          description: 'Default Android AudioTrack API',
+        ),
+        const _AudioOption(
+          value: 'audiotrack',
+          title: 'AudioTrack',
+          description: 'Android AudioTrack API',
+        ),
+        const _AudioOption(
+          value: 'opensles',
+          title: 'OpenSL ES',
+          description: 'OpenSL ES native audio engine',
+        ),
+      ]);
+    } else if (Platform.isWindows) {
+      list.addAll([
+        const _AudioOption(
+          value: 'auto',
+          title: 'Auto (WASAPI)',
+          description: 'Default Windows audio driver',
+        ),
+        const _AudioOption(
+          value: 'wasapi',
+          title: 'WASAPI',
+          description: 'Windows Audio Session API',
+        ),
+        const _AudioOption(
+          value: 'sdl',
+          title: 'SDL',
+          description: 'Simple DirectMedia Layer audio output',
+        ),
+      ]);
+    } else if (Platform.isIOS || Platform.isMacOS) {
+      list.addAll([
+        const _AudioOption(
+          value: 'auto',
+          title: 'Auto (CoreAudio)',
+          description: 'Default Apple CoreAudio API',
+        ),
+        const _AudioOption(
+          value: 'coreaudio',
+          title: 'CoreAudio',
+          description: 'Apple CoreAudio API',
+        ),
+      ]);
+    } else if (Platform.isLinux) {
+      list.addAll([
+        const _AudioOption(
+          value: 'auto',
+          title: 'Auto (PulseAudio)',
+          description: 'Default PulseAudio API',
+        ),
+        const _AudioOption(
+          value: 'pulse',
+          title: 'PulseAudio',
+          description: 'PulseAudio sound server',
+        ),
+        const _AudioOption(
+          value: 'alsa',
+          title: 'ALSA',
+          description: 'Advanced Linux Sound Architecture',
+        ),
+        const _AudioOption(
+          value: 'sdl',
+          title: 'SDL',
+          description: 'Simple DirectMedia Layer audio output',
+        ),
+      ]);
+    } else {
+      list.add(
+        const _AudioOption(
+          value: 'auto',
+          title: 'Auto',
+          description: 'Default system audio driver',
+        ),
+      );
+    }
+    return list;
+  }
+
+  String _audioTitle(String value) {
+    final match = _audioOptions.firstWhere(
+      (option) => option.value == value,
+      orElse: () => _audioOptions.first,
+    );
+    return match.title;
+  }
+
+  String _audioDescription(String value) {
+    final match = _audioOptions.firstWhere(
+      (option) => option.value == value,
+      orElse: () => _audioOptions.first,
+    );
+    return match.description;
+  }
+
+  void _showAudioSelectionDialog() {
+    final options = _audioOptions;
+    if (options.isEmpty) return;
+
+    showSelectionDialog<String>(
+      title: 'Audio Engine',
+      items: options.map((option) => option.value).toList(),
+      selectedItem: settings.audioOutput.obs,
+      getTitle: _audioTitle,
+      onItemSelected: (value) {
+        settings.audioOutput = value;
+        setState(() {});
+      },
+      leadingIcon: Icons.audiotrack_rounded,
+    );
+  }
+
   String _decoderTitle(String value) {
     final match = _decoderOptions.firstWhere(
       (option) => option.value == value,
@@ -1024,6 +1155,18 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                   description:
                                       _rendererDescription(settings.videoOutput),
                                   onTap: _showRendererSelectionDialog,
+                                ),
+                                CustomTile(
+                                  padding: 10,
+                                  icon: Icons.audiotrack_rounded,
+                                  title: 'Audio Engine',
+                                  isDescBold: true,
+                                  descColor: Theme.of(context)
+                                      .colorScheme
+                                      .primary,
+                                  description:
+                                      _audioDescription(settings.audioOutput),
+                                  onTap: _showAudioSelectionDialog,
                                 ),
                               ],
                             )),

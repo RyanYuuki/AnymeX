@@ -825,6 +825,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       useLibass: PlayerKeys.useLibass.get<bool>(false),
       hwdec: decoderHwdec,
       videoOutput: settings.videoOutput,
+      audioOutput: settings.audioOutput,
       playerType: useMediaKit ? PlayerType.mediaKit : PlayerType.betterPlayer,
       autoPlay: (betterCore['autoPlay'] as bool?) ?? true,
       useBuffering: (betterCore['useBuffering'] as bool?) ?? true,

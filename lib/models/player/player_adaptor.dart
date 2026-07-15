@@ -34,6 +34,7 @@ class PlayerSettings {
   String hardwareDecoder;
   String preferredSubtitleLanguage;
   String videoOutput;
+  String audioOutput;
 
   PlayerSettings({
     this.speed = 1.0,
@@ -69,6 +70,7 @@ class PlayerSettings {
     this.hardwareDecoder = 'hw',
     this.preferredSubtitleLanguage = 'none',
     this.videoOutput = 'gpu',
+    this.audioOutput = 'auto',
   });
 
   factory PlayerSettings.fromDB() {
@@ -143,6 +145,8 @@ class PlayerSettings {
           .get<String>(defaults.preferredSubtitleLanguage),
       videoOutput: PlayerSettingsKeys.videoOutput
           .get<String>(defaults.videoOutput),
+      audioOutput: PlayerSettingsKeys.audioOutput
+          .get<String>(defaults.audioOutput),
     );
   }
 }

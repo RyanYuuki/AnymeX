@@ -592,6 +592,15 @@ class Settings extends GetxController {
     }
   }
 
+  String get audioOutput => _getPlayerSetting((s) => s.audioOutput);
+  set audioOutput(String value) {
+    playerSettings.update((s) => s?.audioOutput = value);
+    PlayerSettingsKeys.audioOutput.set(value);
+    if (Get.isRegistered<PlayerController>()) {
+      unawaited(Get.find<PlayerController>().reloadActivePlayer());
+    }
+  }
+
   bool get enableSwipeControls =>
       _getPlayerSetting((s) => s.enableSwipeControls);
   set enableSwipeControls(bool value) {

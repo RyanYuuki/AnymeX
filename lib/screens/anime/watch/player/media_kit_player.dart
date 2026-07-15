@@ -119,9 +119,15 @@ class MediaKitPlayer extends base.BasePlayer {
       final tempDir = await getTemporaryDirectory();
       await mpv.setProperty("demuxer-cache-dir", tempDir.path);
       await mpv.setProperty("af", "scaletempo2=max-speed=8");
+      final currentAo = config.audioOutput;
+      if (currentAo != 'auto') {
+        await mpv.setProperty("ao", currentAo);
+      }
       if (Platform.isAndroid) {
         await mpv.setProperty("volume-max", "100");
-        await mpv.setProperty("ao", "audiotrack");
+        if (currentAo == 'auto') {
+          await mpv.setProperty("ao", "audiotrack");
+        }
         await mpv.setProperty("hwdec", config.hwdec);
         await mpv.setProperty("vd-lavc-fast", "yes");
         await mpv.setProperty("vd-lavc-skiploopfilter", "nonkey");

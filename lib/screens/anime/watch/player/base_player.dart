@@ -235,6 +235,7 @@ class PlayerConfiguration {
   final bool useLibass;
   final String hwdec;
   final String videoOutput;
+  final String audioOutput;
   final PlayerType playerType;
   final bool enableCache;
   final bool autoPlay;
@@ -246,6 +247,7 @@ class PlayerConfiguration {
     this.useLibass = false,
     this.hwdec = 'no',
     this.videoOutput = 'auto',
+    this.audioOutput = 'auto',
     this.playerType = PlayerType.mediaKit,
     this.enableCache = true,
     this.autoPlay = true,
