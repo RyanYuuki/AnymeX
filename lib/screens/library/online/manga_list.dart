@@ -9,6 +9,8 @@ import 'package:anymex/widgets/media_items/media_item.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:anymex/database/kv_helper.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
 
 enum _MangaSortMode { lastUpdated, score, title, releaseDate }
 
@@ -86,6 +88,9 @@ class _AnilistMangaListState extends State<AnilistMangaList>
   @override
   void initState() {
     super.initState();
+    final savedSortModeIndex = KvHelper.get<int>('online_manga_sort_mode', defaultVal: _MangaSortMode.lastUpdated.index);
+    _sortMode = _MangaSortMode.values[savedSortModeIndex];
+    _sortAscending = KvHelper.get<bool>('online_manga_sort_ascending', defaultVal: false);
     if (widget.initialGenres != null) {
       _selectedGenres = Set.from(widget.initialGenres!);
     }
@@ -256,27 +261,13 @@ class _AnilistMangaListState extends State<AnilistMangaList>
 
   void _showSortMenu(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: colors.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (ctx) => SafeArea(
+    AnymexSheet.custom(
+      SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                width: 36,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  color: colors.onSurfaceVariant.withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
@@ -293,8 +284,11 @@ class _AnilistMangaListState extends State<AnilistMangaList>
                     const Spacer(),
                     TextButton.icon(
                       onPressed: () {
-                        setState(() => _sortAscending = !_sortAscending);
-                        Navigator.pop(ctx);
+                        setState(() {
+                          _sortAscending = !_sortAscending;
+                          KvHelper.set('online_manga_sort_ascending', _sortAscending);
+                        });
+                        Navigator.pop(context);
                       },
                       icon: Icon(
                         _sortAscending
@@ -338,8 +332,11 @@ class _AnilistMangaListState extends State<AnilistMangaList>
                           color: colors.primary, size: 20)
                       : null,
                   onTap: () {
-                    setState(() => _sortMode = mode);
-                    Navigator.pop(ctx);
+                    setState(() {
+                      _sortMode = mode;
+                      KvHelper.set('online_manga_sort_mode', _sortMode.index);
+                    });
+                    Navigator.pop(context);
                   },
                 );
               }),
@@ -347,6 +344,8 @@ class _AnilistMangaListState extends State<AnilistMangaList>
           ),
         ),
       ),
+      context,
+      showDragHandle: true,
     );
   }
 
@@ -355,130 +354,110 @@ class _AnilistMangaListState extends State<AnilistMangaList>
     final sortedGenres = _allGenres.toList()..sort();
     final tempSelected = Set<String>.from(_selectedGenres);
 
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: colors.surface,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setSheetState) => SafeArea(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height * 0.6,
+    AnymexSheet.custom(
+      StatefulBuilder(
+        builder: (ctx, setSheetState) => Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              child: Row(
+                children: [
+                  Icon(Iconsax.filter, color: colors.primary, size: 20),
+                  const SizedBox(width: 10),
+                  Text('Filter by Genre',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontFamily: 'Poppins-Bold',
+                        fontWeight: FontWeight.bold,
+                        color: colors.onSurface,
+                      )),
+                  const Spacer(),
+                  if (tempSelected.isNotEmpty)
+                    TextButton(
+                      onPressed: () =>
+                          setSheetState(() => tempSelected.clear()),
+                      child: const Text('Clear',
+                          style: TextStyle(fontSize: 12)),
+                    ),
+                ],
+              ),
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(height: 12),
-                Container(
-                  width: 36,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: colors.onSurfaceVariant.withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                  child: Row(
-                    children: [
-                      Icon(Iconsax.filter, color: colors.primary, size: 20),
-                      const SizedBox(width: 10),
-                      Text('Filter by Genre',
+            Flexible(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: sortedGenres.map((genre) {
+                    final isSelected = tempSelected.contains(genre);
+                    return FilterChip(
+                      label: Text(genre,
                           style: TextStyle(
-                            fontSize: 16,
-                            fontFamily: 'Poppins-Bold',
-                            fontWeight: FontWeight.bold,
-                            color: colors.onSurface,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: isSelected
+                                ? colors.onPrimaryContainer
+                                : colors.onSurfaceVariant,
                           )),
-                      const Spacer(),
-                      if (tempSelected.isNotEmpty)
-                        TextButton(
-                          onPressed: () =>
-                              setSheetState(() => tempSelected.clear()),
-                          child: const Text('Clear',
-                              style: TextStyle(fontSize: 12)),
-                        ),
-                    ],
-                  ),
-                ),
-                Flexible(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: sortedGenres.map((genre) {
-                        final isSelected = tempSelected.contains(genre);
-                        return FilterChip(
-                          label: Text(genre,
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: isSelected
-                                    ? colors.onPrimaryContainer
-                                    : colors.onSurfaceVariant,
-                              )),
-                          selected: isSelected,
-                          onSelected: (val) {
-                            setSheetState(() {
-                              if (val) {
-                                tempSelected.add(genre);
-                              } else {
-                                tempSelected.remove(genre);
-                              }
-                            });
-                          },
-                          backgroundColor: colors.surfaceContainer,
-                          selectedColor: colors.primaryContainer,
-                          checkmarkColor: colors.onPrimaryContainer,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            side: BorderSide(
-                              color: isSelected
-                                  ? colors.primary.withOpacity(0.5)
-                                  : colors.outlineVariant.withOpacity(0.3),
-                            ),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 4, vertical: 2),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: FilledButton(
-                      onPressed: () {
-                        setState(
-                            () => _selectedGenres = Set.from(tempSelected));
-                        Navigator.pop(ctx);
+                      selected: isSelected,
+                      onSelected: (val) {
+                        setSheetState(() {
+                          if (val) {
+                            tempSelected.add(genre);
+                          } else {
+                            tempSelected.remove(genre);
+                          }
+                        });
                       },
-                      style: FilledButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14))),
-                      child: Text(
-                        tempSelected.isEmpty
-                            ? 'Show All'
-                            : 'Apply (${tempSelected.length})',
-                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      backgroundColor: colors.surfaceContainer,
+                      selectedColor: colors.primaryContainer,
+                      checkmarkColor: colors.onPrimaryContainer,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        side: BorderSide(
+                          color: isSelected
+                              ? colors.primary.withOpacity(0.5)
+                              : colors.outlineVariant.withOpacity(0.3),
+                        ),
                       ),
-                    ),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 4, vertical: 2),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              child: SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: () {
+                    setState(
+                        () => _selectedGenres = Set.from(tempSelected));
+                    Navigator.pop(ctx);
+                  },
+                  style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14))),
+                  child: Text(
+                    tempSelected.isEmpty
+                        ? 'Show All'
+                        : 'Apply (${tempSelected.length})',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
+      context,
+      showDragHandle: true,
     );
   }
 

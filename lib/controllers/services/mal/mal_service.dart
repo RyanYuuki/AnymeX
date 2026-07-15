@@ -258,19 +258,23 @@ class MalService extends GetxController implements BaseService, OnlineService {
   @override
   Future<List<Media>> search(SearchParams params) async {
     final mediaType = params.isManga ? 'manga' : 'anime';
-    final response = await http.get(
-      Uri.parse(
-          'https://api.jikan.moe/v4/$mediaType?q=${Uri.encodeComponent(params.query)}&limit=25&page=${params.page}&sfw=${!params.args}'),
-    );
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return (data['data'] as List<dynamic>)
-          .map((e) => Media.fromJikan(e, isManga: params.isManga))
-          .toList()
-          .removeDupes();
-    } else {
-      Logger.i('Jikan search failed: ${response.statusCode}');
+    final offset = (params.page - 1) * 25;
+    final token = AuthKeys.malAuthToken.get<String?>();
+    final isLoggedIn = token != null && token.isNotEmpty;
+    final fields = 'id,title,main_picture,alternative_titles,start_date,end_date,synopsis,mean,rank,popularity,num_episodes,status,genres,num_chapters,num_volumes,media_type,start_season,average_episode_duration,studios';
+    final url = 'https://api.myanimelist.net/v2/$mediaType?q=${Uri.encodeComponent(params.query)}&limit=25&offset=$offset&fields=$fields';
+    
+    try {
+      final data = await fetchMAL(url, useAuthHeader: isLoggedIn);
+      if (data != null && data['data'] != null) {
+        return (data['data'] as List<dynamic>)
+            .map((e) => Media.fromMAL(e, isManga: params.isManga))
+            .toList()
+            .removeDupes();
+      }
+      return [];
+    } catch (e) {
+      Logger.i('MAL search failed: $e');
       return [];
     }
   }
@@ -388,7 +392,6 @@ class MalService extends GetxController implements BaseService, OnlineService {
   Future<void> fetchUserAnimeList() async {
     final data = await fetchMAL(
         'https://api.myanimelist.net/v2/users/@me/animelist?fields=num_episodes,mean,list_status&limit=1000&sort=list_updated_at&nsfw=1',
-        auth: false,
         useAuthHeader: true);
     animeList.value = (data['data'] as List<dynamic>)
         .map((e) => TrackedMedia.fromMAL(e))
@@ -401,7 +404,6 @@ class MalService extends GetxController implements BaseService, OnlineService {
   Future<void> fetchUserMangaList() async {
     final data = await fetchMAL(
         'https://api.myanimelist.net/v2/users/@me/mangalist?fields=num_chapters,mean,list_status&limit=1000&sort=list_updated_at&nsfw=1',
-        auth: false,
         useAuthHeader: true);
     mangaList.value = (data['data'] as List<dynamic>)
         .map((e) => TrackedMedia.fromMAL(e))
@@ -413,9 +415,9 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
   Future<void> fetchUserInfo({String? token}) async {
     final tokenn = token ?? AuthKeys.malAuthToken.get<String?>();
-    final data = await fetchMAL('https://api.myanimelist.net/v2/users/@me',
-        auth: true, useAuthHeader: true, token: tokenn);
-    profileData.value = Profile.fromKitsu(data);
+    final data = await fetchMAL('https://api.myanimelist.net/v2/users/@me?fields=anime_statistics,manga_statistics',
+        useAuthHeader: true, token: tokenn);
+    profileData.value = Profile.fromMAL(data);
     isLoggedIn.value = true;
     Future.wait([fetchUserAnimeList(), fetchUserMangaList()]);
   }
@@ -656,15 +658,16 @@ class MalService extends GetxController implements BaseService, OnlineService {
   }
 
   Future<dynamic> fetchMAL(String url,
-      {bool auth = false, bool useAuthHeader = false, String? token}) async {
+      {bool useAuthHeader = false, String? token}) async {
     try {
       final clientId = dotenv.env['MAL_CLIENT_ID'];
       if (clientId == null || clientId.isEmpty) {
         throw Exception('MAL_CLIENT_ID is not set in .env file.');
       }
       final tokenn = token ?? AuthKeys.malAuthToken.get<String?>();
+      final useAuth = useAuthHeader && tokenn != null && tokenn.isNotEmpty;
       final response = await http.get(Uri.parse(url),
-          headers: useAuthHeader
+          headers: useAuth
               ? {
                   'Authorization': 'Bearer $tokenn',
                 }
@@ -673,13 +676,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                 });
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        if (auth) {
-          final rep = await http.get(
-              Uri.parse('https://api.jikan.moe/v4/users/${data['name']}/full'));
-          return jsonDecode(rep.body)..['picture'] = data['picture'];
-        }
-        return data;
+        return jsonDecode(response.body);
       } else {
         Logger.i('Failed to fetch data from $url: ${response.statusCode}');
         throw Exception(
@@ -687,7 +684,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
       }
     } catch (e) {
       Logger.i('Error fetching data from API: $e');
-      return [];
+      return null;
     }
   }
 
