@@ -316,7 +316,7 @@ final sortedLanguagesMap = {
   "Gujarati": "gu",
   "Hausa": "ha",
   "עברית": "he",
-  "हिन्दी, हिंदी": "hi",
+  "हिन्दी": "hi",
   "Hrvatski": "hr",
   "Haitian Creole": "ht",
   "Magyar": "hu",
