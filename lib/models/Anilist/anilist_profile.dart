@@ -100,6 +100,42 @@ class Profile {
       following: null,
     );
   }
+
+  factory Profile.fromMAL(Map<String, dynamic> json) {
+    final animeStatsJson = json['anime_statistics'];
+    final animeStats = animeStatsJson != null
+        ? AnimeStats(
+            animeCount: animeStatsJson['num_items']?.toString(),
+            episodesWatched: animeStatsJson['num_episodes']?.toString(),
+            meanScore: animeStatsJson['mean_score']?.toString(),
+            minutesWatched: animeStatsJson['num_days_watched'] != null
+                ? (animeStatsJson['num_days_watched'] * 24 * 60).toInt().toString()
+                : '??',
+          )
+        : null;
+
+    final mangaStatsJson = json['manga_statistics'];
+    final mangaStats = mangaStatsJson != null
+        ? MangaStats(
+            mangaCount: mangaStatsJson['num_items']?.toString(),
+            chaptersRead: mangaStatsJson['num_chapters']?.toString(),
+            volumesRead: mangaStatsJson['num_volumes']?.toString(),
+            meanScore: mangaStatsJson['mean_score']?.toString(),
+          )
+        : null;
+
+    return Profile(
+      id: json['id']?.toString(),
+      name: json['name'],
+      avatar: json['picture'],
+      stats: ProfileStatistics(
+        animeStats: animeStats,
+        mangaStats: mangaStats,
+      ),
+      followers: null,
+      following: null,
+    );
+  }
 }
 
 class ProfileFavourites {
