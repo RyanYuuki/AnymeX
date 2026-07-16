@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math' as math;
 import 'package:anymex/controllers/discord/discord_rpc.dart';
+import 'package:anymex/controllers/services/storage/anymex_cache_manager.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -1152,6 +1153,30 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     _safelyUpdateTotalPages(pageList.length);
   }
 
+  void preloadNextPages(int currentIndex) {
+    final limit = preloadPages.value;
+    if (limit <= 0 || pageList.isEmpty) return;
+
+    final sourceController = Get.find<SourceController>();
+
+    for (int i = 1; i <= limit; i++) {
+      final nextIndex = currentIndex + i;
+      if (nextIndex < 0 || nextIndex >= pageList.length) break;
+
+      final page = pageList[nextIndex];
+      final url = page.url;
+      if (url.startsWith('http')) {
+        final headers = (page.headers?.isEmpty ?? true)
+            ? {
+                'Referer': sourceController.activeMangaSource.value?.baseUrl ?? ''
+              }
+            : page.headers;
+
+        AnymeXCacheManager.instance.getSingleFile(url, headers: headers).then((_) {}, onError: (_) {});
+      }
+    }
+  }
+
   Future<void> init(Media data, List<Chapter> chList, Chapter curCh) async {
     media = data;
     chapterList = chList;
@@ -1159,6 +1184,10 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     serviceHandler = data.serviceType;
     _initializeControllers();
     _getPreferences();
+
+    ever(currentPageIndex, (indexVal) {
+      preloadNextPages(indexVal - 1);
+    });
 
     pagedProfile.value = _tapRepo.getPagedLayout();
     pagedVerticalProfile.value = _tapRepo.getPagedVerticalLayout();
@@ -1500,6 +1529,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         _safelyUpdateTotalPages(pageList.length);
 
         _initTracking();
+        preloadNextPages(currentPageIndex.value - 1);
 
         final saved = savedChapter.value;
         if (saved != null &&

@@ -1,13 +1,8 @@
-import 'dart:io';
-
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
-import 'package:anymex/utils/image_cropper.dart';
-import 'package:anymex/utils/lanczos_image.dart';
+import 'package:anymex/widgets/subsampling_scale_image_view/subsampling_image_provider.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Page.dart';
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -66,178 +61,28 @@ class ContinuousReaderViewState extends State<ContinuousReaderView> {
   Widget _buildImage(BuildContext context, PageUrl page, int index) {
     return Obx(() {
       final ctrl = widget.controller;
-      final filterQualityIndex = ctrl.imageFilterQuality.value;
-      final isLanczos = filterQualityIndex == 4;
-      final filterQuality = switch (filterQualityIndex) {
-        0 => FilterQuality.none,
-        1 => FilterQuality.low,
-        3 => FilterQuality.high,
-        _ => FilterQuality.medium,
-      };
-
-      final continuousConstraints = !ctrl.fitToScreen.value
-          ? BoxConstraints(maxWidth: 500 * ctrl.pageWidthMultiplier.value)
-          : null;
-
       final sourceController = Get.find<SourceController>();
 
       return Padding(
         padding:
             EdgeInsets.symmetric(vertical: ctrl.spacedPages.value ? 8.0 : 0),
         child: Center(
-          child: ctrl.cropImages.value
-              ? (page.url.startsWith('http')
-                  ? CroppedNetworkImage(
-                      url: page.url,
-                      headers: (page.headers?.isEmpty ?? true)
-                          ? {
-                              'Referer': sourceController
-                                      .activeMangaSource.value?.baseUrl ??
-                                  ''
-                            }
-                          : page.headers,
-                      fit: ctrl.fitToScreen.value
-                          ? BoxFit.fitWidth
-                          : BoxFit.contain,
-                      alignment: Alignment.center,
-                      cropThreshold: 30,
-                      placeholder: _buildPlaceholder(context, index, page.url),
-                    )
-                  : Image.file(
-                      File(page.url),
-                      fit: ctrl.fitToScreen.value
-                          ? BoxFit.fitWidth
-                          : BoxFit.contain,
-                      alignment: Alignment.center,
-                    ))
-              : isLanczos
-                  ? (page.url.startsWith('http')
-                      ? LanczosNetworkImage(
-                          url: page.url,
-                          headers: (page.headers?.isEmpty ?? true)
-                              ? {
-                                  'Referer': sourceController
-                                          .activeMangaSource.value?.baseUrl ??
-                                      ''
-                                }
-                              : page.headers,
-                          fit: ctrl.fitToScreen.value
-                              ? BoxFit.fitWidth
-                              : BoxFit.contain,
-                          alignment: Alignment.center,
-                          constraints: continuousConstraints,
-                          placeholder:
-                              _buildPlaceholder(context, index, page.url),
-                        )
-                      : LanczosFileImage(
-                          path: page.url,
-                          fit: ctrl.fitToScreen.value
-                              ? BoxFit.fitWidth
-                              : BoxFit.contain,
-                          alignment: Alignment.center,
-                          constraints: continuousConstraints,
-                          placeholder:
-                              _buildPlaceholder(context, index, page.url),
-                        ))
-                  : (page.url.startsWith('http')
-                      ? ExtendedImage.network(
-                          page.url,
-                          cacheMaxAge: Duration(
-                              days: PlayerUiKeys.cacheDays.get<int>(7)),
-                          mode: ExtendedImageMode.none,
-                          gaplessPlayback: true,
-                          headers: (page.headers?.isEmpty ?? true)
-                              ? {
-                                  'Referer': sourceController
-                                          .activeMangaSource.value?.baseUrl ??
-                                      ''
-                                }
-                              : page.headers,
-                          fit: ctrl.fitToScreen.value
-                              ? BoxFit.fitWidth
-                              : BoxFit.contain,
-                          constraints: continuousConstraints,
-                          cache: true,
-                          alignment: Alignment.center,
-                          filterQuality: filterQuality,
-                          enableLoadState: true,
-                          loadStateChanged: (ExtendedImageState state) {
-                            switch (state.extendedImageLoadState) {
-                              case LoadState.loading:
-                                return _buildPlaceholder(
-                                  context,
-                                  index,
-                                  page.url,
-                                  progress: state.loadingProgress
-                                              ?.expectedTotalBytes !=
-                                          null
-                                      ? (state.loadingProgress!
-                                                  .cumulativeBytesLoaded /
-                                              state.loadingProgress!
-                                                  .expectedTotalBytes!)
-                                          .clamp(0.0, 1.0)
-                                      : null,
-                                );
-                              case LoadState.failed:
-                                return AspectRatio(
-                                  aspectRatio:
-                                      ctrl.pageAspectRatios[page.url] ?? 0.65,
-                                  child: Center(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        const Text('Failed to load image',
-                                            style: TextStyle(
-                                                fontFamily: 'Poppins-Bold')),
-                                        const SizedBox(height: 8),
-                                        ElevatedButton.icon(
-                                          onPressed: () => state.reLoadImage(),
-                                          icon: const Icon(Icons.refresh,
-                                              size: 16),
-                                          label: const Text('Retry'),
-                                          style: ElevatedButton.styleFrom(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 12, vertical: 6),
-                                            textStyle:
-                                                const TextStyle(fontSize: 12),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              case LoadState.completed:
-                                final image = state.extendedImageInfo?.image;
-                                if (image != null) {
-                                  ctrl.pageAspectRatios[page.url] =
-                                      image.width / image.height;
-                                }
-                                return state.completedWidget;
-                            }
-                          },
-                        )
-                      : ExtendedImage.file(
-                          File(page.url),
-                          fit: ctrl.fitToScreen.value
-                              ? BoxFit.fitWidth
-                              : BoxFit.contain,
-                          constraints: continuousConstraints,
-                          alignment: Alignment.center,
-                          filterQuality: filterQuality,
-                          enableLoadState: true,
-                          loadStateChanged: (ExtendedImageState state) {
-                            if (state.extendedImageLoadState ==
-                                LoadState.completed) {
-                              final image = state.extendedImageInfo?.image;
-                              if (image != null) {
-                                ctrl.pageAspectRatios[page.url] =
-                                    image.width / image.height;
-                              }
-                            }
-                            return state.completedWidget;
-                          },
-                        )),
+          child: SubsamplingImageProvider(
+            page: PageUrl(
+              page.url,
+              headers: (page.headers?.isEmpty ?? true)
+                  ? {
+                      'Referer': sourceController
+                              .activeMangaSource.value?.baseUrl ??
+                          ''
+                    }
+                  : page.headers,
+            ),
+            fit: ctrl.fitToScreen.value ? BoxFit.fitWidth : BoxFit.contain,
+            alignment: Alignment.center,
+            cropBorders: ctrl.cropImages.value,
+            placeholder: _buildPlaceholder(context, index, page.url),
+          ),
         ),
       );
     });
