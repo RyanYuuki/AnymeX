@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
+
 
 class BottomControls extends StatelessWidget {
   const BottomControls({super.key});
@@ -249,7 +249,7 @@ class BottomControls extends StatelessWidget {
 
     final Map<String, Widget> buttonWidgets = {
       'playlist': ControlButton(
-        icon: Symbols.playlist_play_rounded,
+        icon: Icons.playlist_play_rounded,
         onPressed: () {
           controller.isEpisodePaneOpened.value =
               !controller.isEpisodePaneOpened.value;
@@ -258,13 +258,13 @@ class BottomControls extends StatelessWidget {
         compact: true,
       ),
       'shaders': ControlButton(
-        icon: Symbols.tune_rounded,
+        icon: Icons.tune_rounded,
         onPressed: () => controller.openColorProfileBottomSheet(context),
         tooltip: 'Shaders & Color Profiles',
         compact: true,
       ),
       'source': ControlButton(
-        icon: Symbols.cloud_rounded,
+        icon: Icons.cloud_rounded,
         onPressed: () {
           controller.isSourcePaneOpened.value =
               !controller.isSourcePaneOpened.value;
@@ -273,7 +273,7 @@ class BottomControls extends StatelessWidget {
         compact: true,
       ),
       'tracks': ControlButton(
-        icon: Symbols.library_music_rounded,
+        icon: Icons.library_music_rounded,
         onPressed: () {
           controller.isTracksPaneOpened.value =
               !controller.isTracksPaneOpened.value;
@@ -282,7 +282,7 @@ class BottomControls extends StatelessWidget {
         compact: true,
       ),
       'sync_subs': ControlButton(
-        icon: Symbols.sync_rounded,
+        icon: Icons.sync_rounded,
         onPressed: () {
           controller.isSyncSubsPaneOpened.value =
               !controller.isSyncSubsPaneOpened.value;
@@ -291,7 +291,7 @@ class BottomControls extends StatelessWidget {
         compact: true,
       ),
       'speed': ControlButton(
-        icon: Symbols.speed_rounded,
+        icon: Icons.speed_rounded,
         onPressed: () {
           controller.isSpeedPaneOpened.value =
               !controller.isSpeedPaneOpened.value;
@@ -319,7 +319,7 @@ class BottomControls extends StatelessWidget {
         );
       }),
       'aspect_ratio': ControlButton(
-        icon: Symbols.fit_screen,
+        icon: Icons.fit_screen,
         onPressed: () => controller.toggleVideoFit(),
         onLongPress: controller.resetVideoFit,
         tooltip: 'Aspect Ratio',

@@ -1,12 +1,8 @@
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
-import 'package:anymex/screens/anime/watch/player/better_player.dart';
-
 import 'dart:io' show Platform;
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:material_symbols_icons/symbols.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class SyncSubsPopup extends StatelessWidget {
@@ -109,7 +105,7 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
               color: cs.primary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(Symbols.sync_rounded, color: cs.primary, size: 20),
+            child: Icon(Icons.sync_rounded, color: cs.primary, size: 20),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -403,7 +399,7 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Symbols.subtitles_off_rounded,
+          Icon(Icons.subtitles_off_rounded,
               size: 48, color: cs.onSurface.withOpacity(0.3)),
           const SizedBox(height: 16),
           Text(

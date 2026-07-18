@@ -31,7 +31,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
+
 import 'package:super_sliver_list/super_sliver_list.dart';
 
 const Map<String, List<String>> fontGroups = {
@@ -102,25 +102,25 @@ final List<_BottomControl> _bottomControls = [
   const _BottomControl(
       id: 'playlist',
       name: 'Playlist',
-      icon: Symbols.playlist_play_rounded,
+      icon: Icons.playlist_play_rounded,
       defaultPosition: 'left'),
   const _BottomControl(
-      id: 'shaders', name: 'Shaders', icon: Symbols.tune_rounded),
+      id: 'shaders', name: 'Shaders', icon: Icons.tune_rounded),
   const _BottomControl(
-      id: 'source', name: 'Source', icon: Symbols.cloud_rounded),
+      id: 'source', name: 'Source', icon: Icons.cloud_rounded),
   const _BottomControl(
       id: 'tracks',
       name: 'Tracks (Audio/Subs)',
-      icon: Symbols.library_music_rounded),
+      icon: Icons.library_music_rounded),
   const _BottomControl(
-      id: 'sync_subs', name: 'Sync Subs', icon: Symbols.sync_rounded),
-  const _BottomControl(id: 'speed', name: 'Speed', icon: Symbols.speed_rounded),
+      id: 'sync_subs', name: 'Sync Subs', icon: Icons.sync_rounded),
+  const _BottomControl(id: 'speed', name: 'Speed', icon: Icons.speed_rounded),
   const _BottomControl(
       id: 'orientation',
       name: 'Orientation',
       icon: Icons.screen_rotation_rounded),
   const _BottomControl(
-      id: 'aspect_ratio', name: 'Aspect Ratio', icon: Symbols.fit_screen),
+      id: 'aspect_ratio', name: 'Aspect Ratio', icon: Icons.fit_screen),
   const _BottomControl(
       id: 'external_player', name: 'External Player', icon: Icons.launch_rounded),
 ];

@@ -8,7 +8,7 @@ import 'package:anymex/screens/anime/watch/controls/widgets/decoder_quick_button
 import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
+
 
 class NetflixMobilePlayerControlTheme extends PlayerControlTheme {
   @override
@@ -249,14 +249,14 @@ class NetflixMobilePlayerControlTheme extends PlayerControlTheme {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               NFLabeledButton(
-                                icon: Symbols.playlist_play_rounded,
+                                icon: Icons.playlist_play_rounded,
                                 label: 'Episodes',
                                 onTap: () =>
                                     controller.isEpisodePaneOpened.value =
                                         !controller.isEpisodePaneOpened.value,
                               ),
                               NFLabeledButton(
-                                icon: Symbols.subtitles_rounded,
+                                icon: Icons.subtitles_rounded,
                                 label: 'Audio & Subtitles',
                                 onTap: () =>
                                     controller.isTracksPaneOpened.value =

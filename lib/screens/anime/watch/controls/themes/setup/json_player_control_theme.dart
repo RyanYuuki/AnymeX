@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:get/get.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
+
 
 class JsonThemeParseResult {
   const JsonThemeParseResult({
@@ -2355,15 +2355,15 @@ const Map<String, IconData> _iconMap = {
   'seek_back': Icons.replay_10_rounded,
   'seek_forward': Icons.forward_10_rounded,
   'play_pause': Icons.play_arrow_rounded,
-  'playlist': Symbols.playlist_play_rounded,
-  'shaders': Symbols.tune_rounded,
-  'subtitles': Symbols.subtitles_rounded,
-  'server': Symbols.cloud_rounded,
-  'quality': Symbols.high_quality_rounded,
-  'speed': Symbols.speed_rounded,
-  'audio_track': Symbols.music_note_rounded,
+  'playlist': Icons.playlist_play_rounded,
+  'shaders': Icons.tune_rounded,
+  'subtitles': Icons.subtitles_rounded,
+  'server': Icons.cloud_rounded,
+  'quality': Icons.high_quality_rounded,
+  'speed': Icons.speed_rounded,
+  'audio_track': Icons.music_note_rounded,
   'orientation': Icons.screen_rotation_rounded,
-  'aspect_ratio': Symbols.fit_screen,
+  'aspect_ratio': Icons.fit_screen,
   'mega_seek': Icons.fast_forward_rounded,
   'skip_previous_rounded': Icons.skip_previous_rounded,
   'skip_next_rounded': Icons.skip_next_rounded,

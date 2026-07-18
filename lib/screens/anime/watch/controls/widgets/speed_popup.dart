@@ -5,7 +5,7 @@ import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:material_symbols_icons/symbols.dart';
+
 
 class SpeedPopup extends StatelessWidget {
   final PlayerController controller;
@@ -200,7 +200,7 @@ class _SpeedPopupContentState extends State<_SpeedPopupContent> {
               color: cs.primary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(Symbols.speed_rounded, color: cs.primary, size: 20),
+            child: Icon(Icons.speed_rounded, color: cs.primary, size: 20),
           ),
           const SizedBox(width: 12),
           Expanded(

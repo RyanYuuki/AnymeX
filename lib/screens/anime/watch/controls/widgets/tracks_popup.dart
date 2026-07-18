@@ -7,7 +7,7 @@ import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:material_symbols_icons/symbols.dart';
+
 
 enum _TracksTab { video, audio, subtitles }
 
@@ -94,7 +94,7 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
               color: cs.primary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(Symbols.tune_rounded, color: cs.primary, size: 20),
+            child: Icon(Icons.tune_rounded, color: cs.primary, size: 20),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -158,9 +158,9 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
               _TracksTab.subtitles => 'Subtitles',
             };
             final icon = switch (tab) {
-              _TracksTab.video => Symbols.high_quality_rounded,
-              _TracksTab.audio => Symbols.music_note_rounded,
-              _TracksTab.subtitles => Symbols.subtitles_rounded,
+              _TracksTab.video => Icons.high_quality_rounded,
+              _TracksTab.audio => Icons.music_note_rounded,
+              _TracksTab.subtitles => Icons.subtitles_rounded,
             };
 
             return Expanded(
@@ -223,7 +223,7 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
 
       if (qualities.isEmpty) {
         return _buildEmpty(
-            cs, theme, Symbols.high_quality_rounded, 'No quality tracks');
+            cs, theme, Icons.high_quality_rounded, 'No quality tracks');
       }
 
       return ListView.builder(
@@ -238,7 +238,7 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
             theme: theme,
             title: q.height == 0 ? 'Auto' : '${q.width}x${q.height}',
             subtitle: 'Quality',
-            icon: Symbols.high_quality_rounded,
+            icon: Icons.high_quality_rounded,
             isSelected: isSelected,
             onTap: () => widget.controller.setVideoTrack(q),
           );
@@ -265,7 +265,7 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
               theme: theme,
               title: 'None',
               subtitle: 'Mute Audio',
-              icon: Symbols.music_off_rounded,
+              icon: Icons.music_off_rounded,
               isSelected: isSelected,
               onTap: () {
                 widget.controller.setAudioTrack(AudioTrack.no());
@@ -283,7 +283,7 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
               theme: theme,
               title: 'Auto',
               subtitle: 'Default Audio',
-              icon: Symbols.music_note_rounded,
+              icon: Icons.music_note_rounded,
               isSelected: isSelected,
               onTap: () {
                 widget.controller.setAudioTrack(AudioTrack.auto());
@@ -310,7 +310,7 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
             theme: theme,
             title: displayTitle,
             subtitle: 'Audio Track',
-            icon: Symbols.music_note_rounded,
+            icon: Icons.music_note_rounded,
             isSelected: isSelected,
             onTap: () {
               widget.controller.setAudioTrack(track);
