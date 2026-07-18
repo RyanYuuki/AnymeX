@@ -348,7 +348,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         mediaId: widget.media.id.toString(),
         type: ItemType.anime,
         savedTitle: savedTitle,
-        synonyms: anilistData?.synonyms ?? []);
+        synonyms: (anilistData ?? widget.media).synonyms);
     if (_isStaleSourceRequest(activeRequestId) || !mounted) {
       return;
     }

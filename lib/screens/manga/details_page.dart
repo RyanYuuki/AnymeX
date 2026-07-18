@@ -257,7 +257,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
         mediaId: widget.media.id.toString(),
         type: ItemType.manga,
         savedTitle: savedTitle,
-        synonyms: anilistData?.synonyms ?? []);
+        synonyms: (anilistData ?? widget.media).synonyms);
     if (_isStaleChapterRequest(activeRequestId) || !mounted) {
       return;
     }
