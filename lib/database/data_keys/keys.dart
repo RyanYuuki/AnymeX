@@ -93,6 +93,7 @@ enum ReaderKeys {
   displayRefreshColor,
   imageFilterQuality,
   fitToScreen,
+  navigateByNumber,
 }
 
 enum NovelReaderKeys {
