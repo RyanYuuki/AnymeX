@@ -162,6 +162,7 @@ enum PluginKeys {
   runtimeHostInstalledVersion,
   runtimeHostInstalledReleaseTitle,
   bridgeMode,
+  useInternalExtensionLoading,
 }
 
 enum AuthKeys {

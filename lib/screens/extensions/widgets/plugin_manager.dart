@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:anymex_extension_runtime_bridge/AnymeXBridge.dart';
-import 'package:anymex_extension_runtime_bridge/ExtensionManager.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:get/get.dart';
@@ -72,25 +72,17 @@ class PluginManager {
     BuildContext context, {
     PluginRelease? release,
   }) async {
-    final resolvedRelease = release ?? await fetchLatestRelease();
-    if (resolvedRelease == null) {
-      errorSnackBar('Failed to load plugin release.');
-      return;
-    }
-
     if (!context.mounted) return;
 
-    await showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      showDragHandle: true,
-      backgroundColor: context.colors.surface,
-      builder: (_) => _PluginReleaseSheet(
+    await AnymexSheet.custom(
+      _PluginReleaseSheet(
         manager: this,
-        release: resolvedRelease,
+        release: release,
         installedVersion: installedVersion,
         mode: _PluginSheetMode.install,
       ),
+      context,
+      showDragHandle: true,
     );
   }
 
@@ -101,17 +93,15 @@ class PluginManager {
   }) async {
     if (!context.mounted) return;
 
-    await showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      showDragHandle: true,
-      backgroundColor: context.colors.surface,
-      builder: (_) => _PluginReleaseSheet(
+    await AnymexSheet.custom(
+      _PluginReleaseSheet(
         manager: this,
         release: release,
         installedVersion: installedVersion,
         mode: _PluginSheetMode.update,
       ),
+      context,
+      showDragHandle: true,
     );
   }
 
@@ -203,23 +193,52 @@ class PluginManager {
   }
 
   Future<bool> syncLocalApk(String apkPath) async {
-    if (!apkPath.toLowerCase().endsWith('.apk')) {
+    final isJar = apkPath.toLowerCase().endsWith('.jar');
+    final isApk = apkPath.toLowerCase().endsWith('.apk');
+
+    if (Platform.isAndroid && !isApk) {
       errorSnackBar('Please select a valid APK file.');
+      return false;
+    }
+    if (!Platform.isAndroid && !isJar) {
+      errorSnackBar('Please select a valid JAR file.');
       return false;
     }
 
     if (!await File(apkPath).exists()) {
-      errorSnackBar('Local APK not found at: $apkPath');
+      errorSnackBar('Local file not found at: $apkPath');
       return false;
     }
 
     try {
-      await AnymeXRuntimeBridge.useLocalApk(apkPath);
+      if (Platform.isAndroid) {
+        await AnymeXRuntimeBridge.useLocalApk(apkPath);
+      } else {
+        final paths = RuntimePaths();
+        final destPath = await paths.bridgePath;
+        final destFile = File(destPath);
+        if (await destFile.exists()) {
+          await destFile.delete();
+        }
+        await File(apkPath).copy(destPath);
+        
+        final toolsDir = await paths.toolsDir;
+        final metadataFile = File('${toolsDir.path}/metadata.json');
+        await metadataFile.writeAsString(jsonEncode({
+          'version': 'Local-${DateTime.now().millisecondsSinceEpoch}',
+          'title': 'Local Synced Jar',
+        }));
+        await AnymeXRuntimeBridge.loadMetadata();
+      }
+
       final bridge = AnymeXRuntimeBridge.controller;
-      if (bridge.isReady.value) {
+      if (Platform.isAndroid && bridge.isReady.value) {
         await Get.find<ExtensionManager>()
             .onRuntimeBridgeInitialization(force: true);
         successSnackBar('Plugin synced from local APK.');
+        return true;
+      } else if (!Platform.isAndroid) {
+        successSnackBar('Plugin jar copied. Please restart the app.');
         return true;
       }
 
@@ -253,7 +272,7 @@ class _PluginReleaseSheet extends StatefulWidget {
   });
 
   final PluginManager manager;
-  final PluginRelease release;
+  final PluginRelease? release;
   final String installedVersion;
   final _PluginSheetMode mode;
 
@@ -267,9 +286,14 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
   late final Animation<double> _pulseAnimation;
   bool _installFinished = false;
 
+  PluginRelease? _release;
+  bool _isLoadingRelease = false;
+
   @override
   void initState() {
     super.initState();
+    _release = widget.release;
+
     _pulseController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1400),
@@ -282,13 +306,52 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
       ),
     );
 
+    if (_release == null) {
+      _fetchReleaseDetails();
+    } else {
+      _checkBridgeReady();
+    }
+  }
+
+  void _checkBridgeReady() {
     final bridge = AnymeXRuntimeBridge.controller;
     if (bridge.isReady.value && !AnymeXRuntimeBridge.isPluginInstalled) {
-      widget.manager.persistInstalledRelease(widget.release);
+      if (_release != null) {
+        widget.manager.persistInstalledRelease(_release!);
+      }
       _installFinished = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Get.find<ExtensionManager>().onRuntimeBridgeInitialization(force: true);
       });
+    }
+  }
+
+  Future<void> _fetchReleaseDetails() async {
+    setState(() {
+      _isLoadingRelease = true;
+    });
+    try {
+      final fetched = await widget.manager.fetchLatestRelease();
+      if (mounted) {
+        setState(() {
+          _release = fetched;
+          _isLoadingRelease = false;
+        });
+        if (fetched != null) {
+          _checkBridgeReady();
+        } else {
+          errorSnackBar('Failed to fetch release details.');
+          Navigator.of(context).pop();
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoadingRelease = false;
+        });
+        errorSnackBar('Error: $e');
+        Navigator.of(context).pop();
+      }
     }
   }
 
@@ -299,6 +362,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
   }
 
   Future<void> _downloadAndInstall() async {
+    if (_release == null) return;
     final bridge = AnymeXRuntimeBridge.controller;
     if (bridge.isDownloading.value) return;
 
@@ -310,7 +374,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
       if (bridge.isReady.value) {
         await Get.find<ExtensionManager>()
             .onRuntimeBridgeInitialization(force: true);
-        widget.manager.persistInstalledRelease(widget.release);
+        widget.manager.persistInstalledRelease(_release!);
         if (mounted) {
           setState(() {
             _installFinished = true;
@@ -342,6 +406,30 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
     final theme = Theme.of(context);
     final bridge = AnymeXRuntimeBridge.controller;
 
+    if (_isLoadingRelease || _release == null) {
+      return Container(
+        height: 180,
+        alignment: Alignment.center,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(
+              color: colors.primary,
+              strokeWidth: 3,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Fetching latest release details...',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colors.onSurfaceVariant,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     return Obx(() {
       final bool isBusy = bridge.isDownloading.value ||
           (bridge.status.value != "Idle" &&
@@ -353,57 +441,58 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
               bridge.isReady.value &&
               AnymeXRuntimeBridge.isPluginInstalled);
 
-      return SafeArea(
-        top: false,
-        child: Padding(
-          padding: EdgeInsets.only(
-            left: 20,
-            right: 20,
-            top: 8,
-            bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-          ),
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height * 0.88,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildHeader(colors, theme),
-                const SizedBox(height: 16),
-                _buildVersionCard(colors, bridge, isBusy, isComplete),
-                const SizedBox(height: 16),
-                Expanded(
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: colors.surfaceContainerHigh,
-                      borderRadius: BorderRadius.circular(22),
-                      border: Border.all(
-                        color: colors.outlineVariant.withOpacity(0.45),
-                      ),
-                    ),
-                    child: Markdown(
-                      data: widget.release.body.isEmpty
-                          ? 'No changelog provided for this release.'
-                          : widget.release.body,
-                      selectable: true,
-                    ),
+      return SizedBox(
+        height: context.mediaQuerySize.height * 0.6,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(colors, theme),
+            const SizedBox(height: 14),
+            _buildVersionCard(colors, bridge, isBusy, isComplete),
+            const SizedBox(height: 14),
+            Text(
+              'CHANGELOG',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                color: colors.primary,
+                letterSpacing: 1.1,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: colors.surfaceContainerHigh.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: colors.outlineVariant.withOpacity(0.3),
                   ),
                 ),
-                const SizedBox(height: 16),
-                _buildFooter(colors, theme, isBusy, isComplete),
-                if (bridge.error.value.isNotEmpty) ...[
-                  const SizedBox(height: 12),
-                  Text(
-                    bridge.error.value,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colors.error,
-                    ),
+                child: SingleChildScrollView(
+                  child: MarkdownBody(
+                    data: _release!.body.isEmpty
+                        ? 'No changelog provided for this release.'
+                        : _release!.body,
+                    selectable: true,
                   ),
-                ],
-              ],
+                ),
+              ),
             ),
-          ),
+            const SizedBox(height: 16),
+            _buildFooter(colors, theme, isBusy, isComplete),
+            if (bridge.error.value.isNotEmpty) ...[
+              const SizedBox(height: 10),
+              Text(
+                bridge.error.value,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colors.error,
+                ),
+              ),
+            ],
+          ],
         ),
       );
     });
@@ -411,16 +500,16 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
 
   Widget _buildHeader(ColorScheme colors, ThemeData theme) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         ScaleTransition(
           scale: _pulseAnimation,
           child: Container(
-            width: 52,
-            height: 52,
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
-              color: colors.primaryContainer,
-              borderRadius: BorderRadius.circular(16),
+              color: colors.primaryContainer.withOpacity(0.6),
+              borderRadius: BorderRadius.circular(14),
             ),
             child: widget.installedVersion.isNotEmpty
                 ? IconButton(
@@ -445,35 +534,24 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
                 widget.mode == _PluginSheetMode.install
                     ? 'Plugin Setup'
                     : 'Plugin Update Available',
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w700,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 2),
               Text(
-                widget.release.title,
-                style: theme.textTheme.bodyLarge?.copyWith(
+                _release!.title,
+                style: theme.textTheme.bodyMedium?.copyWith(
                   color: colors.primary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(height: 6),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  _buildChip(colors, widget.release.tagName),
-                  _buildChip(
-                    colors,
-                    widget.release.publishedAt == null
-                        ? 'Latest release'
-                        : _formatDate(widget.release.publishedAt!),
-                  ),
-                ],
-              ),
             ],
           ),
         ),
+        const SizedBox(width: 8),
+        _buildChip(colors, _release!.tagName),
       ],
     );
   }
@@ -482,12 +560,12 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
       ColorScheme colors, dynamic bridge, bool isBusy, bool isComplete) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: colors.surfaceContainer,
-        borderRadius: BorderRadius.circular(18),
+        color: colors.surfaceContainer.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: colors.outlineVariant.withOpacity(0.4),
+          color: colors.outlineVariant.withOpacity(0.3),
         ),
       ),
       child: Column(
@@ -495,57 +573,33 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
         children: [
           _buildMetaRow(
             colors,
-            'Installed plugin version',
+            'Installed version',
             widget.installedVersion.isEmpty
                 ? 'Not installed'
                 : widget.installedVersion,
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           _buildMetaRow(
             colors,
-            'Latest plugin version',
-            '${widget.release.title} (${widget.release.tagName})',
+            'Latest version',
+            _release!.tagName,
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           _buildMetaRow(
             colors,
-            'Plugin size',
+            'File size',
             Platform.isAndroid
-                ? _formatBytes(widget.release.asset.sizeBytes)
+                ? _formatBytes(_release!.asset.sizeBytes)
                 : (widget.mode == _PluginSheetMode.install
-                    ? '${_formatBytes(widget.release.asset.sizeBytes)} + ~60 MB JRE'
-                    : _formatBytes(widget.release.asset.sizeBytes)),
-          ),
-          const SizedBox(height: 14),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Text(
-                  isComplete ? 'Plugin is ready.' : bridge.status.value,
-                  style: TextStyle(
-                    color: colors.onSurfaceVariant,
-                    height: 1.45,
-                  ),
-                ),
-              ),
-              if (isBusy && bridge.sizeInfo.value.isNotEmpty)
-                Text(
-                  bridge.sizeInfo.value,
-                  style: TextStyle(
-                    color: colors.primary,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-            ],
+                    ? '${_formatBytes(_release!.asset.sizeBytes)} + ~60 MB JRE'
+                    : _formatBytes(_release!.asset.sizeBytes)),
           ),
           if (isBusy) ...[
-            const SizedBox(height: 14),
+            const SizedBox(height: 10),
             ClipRRect(
               borderRadius: BorderRadius.circular(999),
               child: LinearProgressIndicator(
-                minHeight: 7,
+                minHeight: 5,
                 value: bridge.downloadProgress.value > 0
                     ? bridge.downloadProgress.value
                     : null,
@@ -566,8 +620,15 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
         Expanded(
           child: OutlinedButton(
             onPressed: isBusy ? null : () => Navigator.of(context).pop(),
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
             child: Text(
               isComplete ? 'Close' : 'Later',
+              style: const TextStyle(fontWeight: FontWeight.w600),
             ),
           ),
         ),
@@ -578,8 +639,15 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
             onPressed: isComplete
                 ? () => Navigator.of(context).pop()
                 : (isBusy ? null : _downloadAndInstall),
+            style: FilledButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
             icon: Icon(
               isComplete ? Icons.check_rounded : Icons.download_rounded,
+              size: 20,
             ),
             label: Text(
               isComplete
@@ -644,23 +712,6 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
     );
   }
 
-  String _formatDate(DateTime date) {
-    final month = switch (date.month) {
-      1 => 'Jan',
-      2 => 'Feb',
-      3 => 'Mar',
-      4 => 'Apr',
-      5 => 'May',
-      6 => 'Jun',
-      7 => 'Jul',
-      8 => 'Aug',
-      9 => 'Sep',
-      10 => 'Oct',
-      11 => 'Nov',
-      _ => 'Dec',
-    };
-    return '$month ${date.day}, ${date.year}';
-  }
 }
 
 class PluginRelease {

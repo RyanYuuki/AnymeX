@@ -221,40 +221,6 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _animeLibraryStream = Get.find<OfflineStorageController>().watchAnimeLibrary().asBroadcastStream();
     _scrollController = ScrollController();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _showDiscordDialog();
-    });
-  }
-
-  void _showDiscordDialog() {
-    if(kDebugMode) return;
-    if (General.hasJoinedNewDiscord.get(false)) return;
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) {
-        return PopScope(
-          canPop: false,
-          child: AnymexDialog(
-            title: 'Important Announcement',
-            showCancelButton: false,
-            confirmText: 'Join Discord',
-            onConfirm: () async {
-              General.hasJoinedNewDiscord.set(true);
-              final url = Uri.parse(Get.find<Settings>().discordUrl.value);
-              await launchUrl(url, mode: LaunchMode.externalApplication);
-            },
-            contentWidget: const Text(
-              'Our previous Discord server with over 2,100 members was unfortunately taken down due to copyright infringement.\n\n'
-              'We are trying to rebuild! Please join our new Discord server to help us gain our wonderful community back. '
-              'You must join to continue using the app.',
-              style: TextStyle(fontFamily: 'Poppins', fontSize: 14),
-            ),
-          ),
-        );
-      },
-    );
   }
 
   ScrollController get scrollController => _scrollController;
