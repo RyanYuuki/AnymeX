@@ -69,8 +69,20 @@ class Chapter {
       maxOffset: (json['maxOffset'] as num?)?.toDouble(),
       sourceName: json['sourceName'] as String?,
       localPath: json['localPath'] as String?,
-      headerKeys: json['headerKeys'] as List<String>?,
-      headerValues: json['headerValues'] as List<String>?,
+      headerKeys: (json['headerKeys'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      headerValues: (json['headerValues'] as List<dynamic>?)?.map((e) => e as String).toList(),
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is Chapter &&
+        other.link == link &&
+        other.number == number &&
+        other.title == title;
+  }
+
+  @override
+  int get hashCode => Object.hash(link, number, title);
 }

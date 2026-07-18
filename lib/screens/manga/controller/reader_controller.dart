@@ -252,7 +252,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     return [];
   }
 
-  final Set<String> _loadingChapterLinks = {};
+  final RxSet<String> loadingChapterLinks = <String>{}.obs;
 
   Future<void> loadNextChapterInline() async {
     if (!overscrollToChapter.value || _isNavigating) return;
@@ -265,16 +265,16 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
     final nextChapterObj = chapterList[curIdx + 1];
     if (loadedChapters.contains(nextChapterObj) ||
-        _loadingChapterLinks.contains(nextChapterObj.link)) {
+        loadingChapterLinks.contains(nextChapterObj.link)) {
       return;
     }
 
-    _loadingChapterLinks.add(nextChapterObj.link ?? '');
+    loadingChapterLinks.add(nextChapterObj.link ?? '');
 
     try {
       final nextPages = await _fetchChapterPages(nextChapterObj);
       if (nextPages.isEmpty) {
-        _loadingChapterLinks.remove(nextChapterObj.link);
+        loadingChapterLinks.remove(nextChapterObj.link);
         return;
       }
 
@@ -307,7 +307,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         print("Error loading next chapter inline: $e");
       }
     } finally {
-      _loadingChapterLinks.remove(nextChapterObj.link);
+      loadingChapterLinks.remove(nextChapterObj.link);
     }
   }
 
@@ -322,16 +322,16 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
     final prevChapterObj = chapterList[curIdx - 1];
     if (loadedChapters.contains(prevChapterObj) ||
-        _loadingChapterLinks.contains(prevChapterObj.link)) {
+        loadingChapterLinks.contains(prevChapterObj.link)) {
       return;
     }
 
-    _loadingChapterLinks.add(prevChapterObj.link ?? '');
+    loadingChapterLinks.add(prevChapterObj.link ?? '');
 
     try {
       final prevPages = await _fetchChapterPages(prevChapterObj);
       if (prevPages.isEmpty) {
-        _loadingChapterLinks.remove(prevChapterObj.link);
+        loadingChapterLinks.remove(prevChapterObj.link);
         return;
       }
 
@@ -384,7 +384,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         print("Error loading previous chapter inline: $e");
       }
     } finally {
-      _loadingChapterLinks.remove(prevChapterObj.link);
+      loadingChapterLinks.remove(prevChapterObj.link);
     }
   }
 
@@ -1360,7 +1360,13 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   }
   Future<void> init(Media data, List<Chapter> chList, Chapter curCh) async {
     media = data;
-    chapterList = chList;
+    final sortedList = List<Chapter>.from(chList);
+    sortedList.sort((a, b) {
+      final aNum = a.number ?? 0.0;
+      final bNum = b.number ?? 0.0;
+      return aNum.compareTo(bNum);
+    });
+    chapterList = sortedList;
     currentChapter.value = curCh;
     serviceHandler = data.serviceType;
     _initializeControllers();
