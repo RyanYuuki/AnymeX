@@ -279,7 +279,7 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
     );
   }
 
-   Widget _buildContentView(BuildContext context) {
+  Widget _buildContentView(BuildContext context) {
     return Obx(() {
       final Color bgColor = switch (widget.controller.readerTheme.value) {
         0 => Colors.white,
@@ -303,7 +303,8 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
               maxScale: PhotoViewComputedScale.covered * 5.0,
               onScaleEnd: _onScaleEnd,
               gestureDetectorBehavior: HitTestBehavior.translucent,
-              backgroundDecoration: const BoxDecoration(color: Colors.transparent),
+              backgroundDecoration:
+                  const BoxDecoration(color: Colors.transparent),
               child: GestureDetector(
                 onTapDown: (details) =>
                     _lastTapPosition = details.globalPosition,
@@ -387,7 +388,6 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
     });
   }
 
-
   Widget _buildPagedView() {
     // Reading spreads inside Obx so PhotoViewGallery rebuilds when new
     // chapters are appended inline (spreads is an RxList).
@@ -429,20 +429,27 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
       );
     });
   }
+
   Widget _buildSpread(BuildContext context, ReaderPage spread, int index) {
     if (spread.isTransition) {
       final ctrl = widget.controller;
       final chapter = spread.chapter ?? ctrl.currentChapter.value!;
       final curIdx = ctrl.chapterList.indexOf(chapter);
       final targetIdx = spread.isNextTransition ? curIdx + 1 : curIdx - 1;
-      final targetChapter = (targetIdx >= 0 && targetIdx < ctrl.chapterList.length)
-          ? ctrl.chapterList[targetIdx]
-          : null;
+      final targetChapter =
+          (targetIdx >= 0 && targetIdx < ctrl.chapterList.length)
+              ? ctrl.chapterList[targetIdx]
+              : null;
+
+      final isLoading = targetChapter != null &&
+          ctrl.loadingChapterLinks.contains(targetChapter.link);
 
       return ReaderChapterTransition(
         isNext: spread.isNextTransition,
         currentChapter: chapter,
         targetChapter: targetChapter,
+        posterUrl: ctrl.media.poster,
+        isLoading: isLoading,
       );
     }
     if (!spread.isSpread) {
@@ -470,9 +477,9 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
               page.url,
               headers: (page.headers?.isEmpty ?? true)
                   ? {
-                      'Referer': sourceController
-                              .activeMangaSource.value?.baseUrl ??
-                          ''
+                      'Referer':
+                          sourceController.activeMangaSource.value?.baseUrl ??
+                              ''
                     }
                   : page.headers,
             ),
@@ -481,13 +488,13 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                 : BoxFit.contain,
             alignment: Alignment.center,
             cropBorders: widget.controller.cropImages.value,
-            placeholder: _buildPageLoadingWidget(context, pageIndex: index, pageUrl: page.url),
+            placeholder: _buildPageLoadingWidget(context,
+                pageIndex: index, pageUrl: page.url),
           ),
         ),
       );
     });
   }
-
 
   Widget _buildPageLoadingWidget(
     BuildContext context, {
@@ -515,4 +522,3 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
     );
   }
 }
-

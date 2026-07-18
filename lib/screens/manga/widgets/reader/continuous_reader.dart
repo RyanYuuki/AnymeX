@@ -52,12 +52,17 @@ class _ContinuousReaderViewState extends State<ContinuousReaderView> {
               ? ctrl.chapterList[targetIdx]
               : null;
 
+      final isLoading = targetChapter != null &&
+          ctrl.loadingChapterLinks.contains(targetChapter.link);
+
       return SizedBox(
-        height: MediaQuery.of(context).size.height * 0.7,
+        height: 500,
         child: ReaderChapterTransition(
           isNext: spread.isNextTransition,
           currentChapter: chapter,
           targetChapter: targetChapter,
+          posterUrl: ctrl.media.poster,
+          isLoading: isLoading,
         ),
       );
     }
