@@ -102,14 +102,22 @@ class _ResponsiveNavBarState extends State<ResponsiveNavBar>
           widget.isDesktop ? 24.multiplyRadius() : 28.multiplyRadius(),
         );
 
+    final bottomPadding = widget.isDesktop ? 0.0 : MediaQuery.of(context).padding.bottom;
+    final finalMargin = widget.margin != null
+        ? widget.margin!.copyWith(
+            bottom: widget.margin!.bottom + bottomPadding,
+          )
+        : EdgeInsets.only(
+            left: widget.isDesktop ? 5 : 40,
+            right: widget.isDesktop ? 5 : 40,
+            top: widget.isDesktop ? 0 : 20,
+            bottom: (widget.isDesktop ? 0 : 20) + bottomPadding,
+          );
+
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
-      margin: widget.margin ??
-          EdgeInsets.symmetric(
-            horizontal: widget.isDesktop ? 5 : 40,
-            vertical: widget.isDesktop ? 0 : 20,
-          ),
+      margin: finalMargin,
       decoration: BoxDecoration(
         borderRadius: borderRadius,
         border: Border.all(

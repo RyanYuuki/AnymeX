@@ -7,6 +7,7 @@ import 'package:anymex/screens/settings/sub_settings/settings_tap_zones.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_tabbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -81,65 +82,91 @@ class _TabbedSettingsSheetState extends State<_TabbedSettingsSheet>
   @override
   Widget build(BuildContext context) {
     final maxH = MediaQuery.of(context).size.height * 0.82;
-    return ClipRRect(
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: EdgeInsets.fromLTRB(12, 0, 12, 16 + bottomInset),
       child: Container(
-        color: context.colors.surface,
         constraints: BoxConstraints(maxHeight: maxH),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.symmetric(vertical: 10),
-              decoration: BoxDecoration(
-                color: context.colors.onSurface.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(2),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: theme.colorScheme.outline.withOpacity(0.1)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, -2),
+            )
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 36,
+                height: 3.5,
+                margin: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.onSurface.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
-            ),
-            const Text(
-              'Reader Settings',
-              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 6),
-            TabBar(
-              controller: _tabController,
-              tabs: _tabs,
-              indicatorColor: context.colors.primary,
-              labelColor: context.colors.primary,
-              unselectedLabelColor: context.colors.onSurface.withOpacity(0.6),
-            ),
-            const Divider(height: 1),
-            Flexible(
-              child: AnimatedSize(
-                duration: const Duration(milliseconds: 250),
-                curve: Curves.easeInOut,
-                alignment: Alignment.topCenter,
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 200),
-                  transitionBuilder:
-                      (Widget child, Animation<double> animation) {
-                    return FadeTransition(
-                      opacity: animation,
-                      child: child,
-                    );
+              const Text(
+                'Reader Settings',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Poppins',
+                ),
+              ),
+              const SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: AnymeXTabBar(
+                  selectTabs: const ['Reading Mode', 'General', 'Color Filter'],
+                  selectedIndex: _selectedIndex,
+                  onTabSelected: (index) {
+                    setState(() {
+                      _selectedIndex = index;
+                      _tabController.animateTo(index);
+                    });
                   },
-                  child: KeyedSubtree(
-                    key: ValueKey<int>(_selectedIndex),
-                    child: switch (_selectedIndex) {
-                      0 => _ReadingModePage(controller: widget.controller),
-                      1 => _GeneralPage(
-                          controller: widget.controller,
-                          settings: widget.settings),
-                      _ =>
-                        ColorFilterSettingsPage(controller: widget.controller),
+                ),
+              ),
+              Flexible(
+                child: AnimatedSize(
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeInOut,
+                  alignment: Alignment.topCenter,
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 200),
+                    transitionBuilder:
+                        (Widget child, Animation<double> animation) {
+                      return FadeTransition(
+                        opacity: animation,
+                        child: child,
+                      );
                     },
+                    child: KeyedSubtree(
+                      key: ValueKey<int>(_selectedIndex),
+                      child: switch (_selectedIndex) {
+                        0 => _ReadingModePage(controller: widget.controller),
+                        1 => _GeneralPage(
+                            controller: widget.controller,
+                            settings: widget.settings),
+                        _ =>
+                          ColorFilterSettingsPage(controller: widget.controller),
+                      },
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -349,6 +376,13 @@ class _ReadingModePage extends StatelessWidget {
               onChanged: (_) => controller.toggleAutoWebtoonMode(),
             ),
             CustomSwitchTile(
+              icon: Icons.onetwothree_rounded,
+              title: 'Navigate by Number',
+              description: 'Always checks current chapter number and compares it with next/prev chapter, navigating only when the number is different. Navigate by Chapter will just move to the next item in the list even if there are duplicates.',
+              switchValue: controller.navigateByNumber.value,
+              onChanged: (_) => controller.toggleNavigateByNumber(),
+            ),
+            CustomSwitchTile(
               icon: Icons.fullscreen_rounded,
               title: 'Fit to Screen Width',
               description: 'Stretch images to fit screen width',
@@ -533,30 +567,32 @@ class _GeneralPage extends StatelessWidget {
                 },
               ),
             ],
-            CustomSwitchTile(
-              icon: Icons.play_arrow_rounded,
-              title: 'Auto Scroll',
-              description: 'Automatically scroll/advance pages',
-              switchValue: controller.autoScrollEnabled.value,
-              onChanged: (_) => controller.toggleAutoScroll(),
-            ),
-            if (controller.autoScrollEnabled.value)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: CustomSliderTile(
-                  title: 'Auto Scroll Speed',
-                  icon: Icons.speed,
-                  description: 'Seconds per page / screen',
-                  sliderValue: controller.autoScrollSpeed.value,
-                  min: 1.0,
-                  max: 10.0,
-                  label:
-                      '${controller.autoScrollSpeed.value.toStringAsFixed(1)}s',
-                  divisions: 18,
-                  onChanged: controller.setAutoScrollSpeed,
-                  onChangedEnd: (_) => controller.savePreferences(),
-                ),
+            if (controller.readingLayout.value == MangaPageViewMode.continuous) ...[
+              CustomSwitchTile(
+                icon: Icons.play_arrow_rounded,
+                title: 'Auto Scroll',
+                description: 'Automatically scroll/advance pages',
+                switchValue: controller.autoScrollEnabled.value,
+                onChanged: (_) => controller.toggleAutoScroll(),
               ),
+              if (controller.autoScrollEnabled.value)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: CustomSliderTile(
+                    title: 'Auto Scroll Speed',
+                    icon: Icons.speed,
+                    description: 'Seconds per page / screen',
+                    sliderValue: controller.autoScrollSpeed.value,
+                    min: 1.0,
+                    max: 10.0,
+                    label:
+                        '${controller.autoScrollSpeed.value.toStringAsFixed(1)}s',
+                    divisions: 18,
+                    onChanged: controller.setAutoScrollSpeed,
+                    onChangedEnd: (_) => controller.savePreferences(),
+                  ),
+                ),
+            ],
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: CustomSliderTile(
