@@ -116,72 +116,80 @@ class TopControls extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text(
-                      controller.currentEpisode.value.title ??
-                          controller.itemName ??
-                          'Unknown Title',
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        color: Get.isDarkMode
-                            ? theme.colorScheme.onSurface
-                            : Colors.white,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.2,
+                    Flexible(
+                      child: Text(
+                        controller.currentEpisode.value.title ??
+                            controller.itemName ??
+                            'Unknown Title',
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          color: Get.isDarkMode
+                              ? theme.colorScheme.onSurface
+                              : Colors.white,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.2,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     )
                   ],
                 ),
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? theme.colorScheme.primary.opaque(0.15)
-                            : theme.colorScheme.primaryContainer,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        (controller.anilistData.title == "?"
-                                ? controller.folderName
-                                : controller.anilistData.title) ??
-                            '',
-                        style: theme.textTheme.bodySmall?.copyWith(
+                    Flexible(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
                           color: isDark
-                              ? theme.colorScheme.primary
-                              : theme.colorScheme.onPrimaryContainer,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 12,
+                              ? theme.colorScheme.primary.opaque(0.15)
+                              : theme.colorScheme.primaryContainer,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          (controller.anilistData.title == "?"
+                                  ? controller.folderName
+                                  : controller.anilistData.title) ??
+                              '',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: isDark
+                                ? theme.colorScheme.primary
+                                : theme.colorScheme.onPrimaryContainer,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ),
-                    6.width(),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? theme.colorScheme.primary.opaque(0.15)
-                            : theme.colorScheme.primaryContainer,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        controller.currentEpisode.value.number == "Offline"
-                            ? "Offline"
-                            : "Episode ${controller.currentEpisode.value.number}",
-                        style: theme.textTheme.bodySmall?.copyWith(
+                    if (!controller.isOffline.value) ...[
+                      6.width(),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
                           color: isDark
-                              ? theme.colorScheme.primary
-                              : theme.colorScheme.onPrimaryContainer,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 12,
+                              ? theme.colorScheme.primary.opaque(0.15)
+                              : theme.colorScheme.primaryContainer,
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        maxLines: 1,
+                        child: Text(
+                          controller.currentEpisode.value.number == "Offline"
+                              ? "Offline"
+                              : "Episode ${controller.currentEpisode.value.number}",
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: isDark
+                                ? theme.colorScheme.primary
+                                : theme.colorScheme.onPrimaryContainer,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12,
+                          ),
+                          maxLines: 1,
+                        ),
                       ),
-                    ),
+                    ],
                     6.width(),
                     Obx(
                       () => _QualityChip(
@@ -287,55 +295,59 @@ class TopControls extends StatelessWidget {
                       const SizedBox(height: 6),
                       Row(
                         children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: isDark
-                                  ? theme.colorScheme.primary.opaque(0.15)
-                                  : theme.colorScheme.primaryContainer,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              (controller.anilistData.title == "?"
-                                      ? controller.folderName
-                                      : controller.anilistData.title) ??
-                                  '',
-                              style: theme.textTheme.bodyMedium?.copyWith(
+                          Flexible(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 4),
+                              decoration: BoxDecoration(
                                 color: isDark
-                                    ? theme.colorScheme.primary
-                                    : theme.colorScheme.onPrimaryContainer,
-                                fontWeight: FontWeight.w600,
+                                    ? theme.colorScheme.primary.opaque(0.15)
+                                    : theme.colorScheme.primaryContainer,
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                              child: Text(
+                                (controller.anilistData.title == "?"
+                                        ? controller.folderName
+                                        : controller.anilistData.title) ??
+                                    '',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: isDark
+                                      ? theme.colorScheme.primary
+                                      : theme.colorScheme.onPrimaryContainer,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                           ),
-                          6.width(),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: isDark
-                                  ? theme.colorScheme.primary.opaque(0.15)
-                                  : theme.colorScheme.primaryContainer,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              controller.currentEpisode.value.number ==
-                                      "Offline"
-                                  ? "Offline"
-                                  : "Episode ${controller.currentEpisode.value.number}",
-                              style: theme.textTheme.bodyMedium?.copyWith(
+                          if (!controller.isOffline.value) ...[
+                            6.width(),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 4),
+                              decoration: BoxDecoration(
                                 color: isDark
-                                    ? theme.colorScheme.primary
-                                    : theme.colorScheme.onPrimaryContainer,
-                                fontWeight: FontWeight.w600,
+                                    ? theme.colorScheme.primary.opaque(0.15)
+                                    : theme.colorScheme.primaryContainer,
+                                borderRadius: BorderRadius.circular(8),
                               ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                              child: Text(
+                                controller.currentEpisode.value.number ==
+                                        "Offline"
+                                    ? "Offline"
+                                    : "Episode ${controller.currentEpisode.value.number}",
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: isDark
+                                      ? theme.colorScheme.primary
+                                      : theme.colorScheme.onPrimaryContainer,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
-                          ),
+                          ],
                           6.width(),
                           Obx(
                             () => _QualityChip(
@@ -492,53 +504,57 @@ class TopControls extends StatelessWidget {
           const SizedBox(height: 4),
           Row(
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: isDark
-                      ? theme.colorScheme.primary.opaque(0.15)
-                      : theme.colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  (controller.anilistData.title == "?"
-                          ? controller.folderName
-                          : controller.anilistData.title) ??
-                      '',
-                  style: theme.textTheme.bodySmall?.copyWith(
+              Flexible(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
                     color: isDark
-                        ? theme.colorScheme.primary
-                        : theme.colorScheme.onPrimaryContainer,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 12,
+                        ? theme.colorScheme.primary.opaque(0.15)
+                        : theme.colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  child: Text(
+                    (controller.anilistData.title == "?"
+                            ? controller.folderName
+                            : controller.anilistData.title) ??
+                        '',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: isDark
+                          ? theme.colorScheme.primary
+                          : theme.colorScheme.onPrimaryContainer,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ),
-              10.width(),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: isDark
-                      ? theme.colorScheme.primary.opaque(0.15)
-                      : theme.colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  controller.currentEpisode.value.number == "Offline"
-                      ? "Offline"
-                      : "Episode ${controller.currentEpisode.value.number}",
-                  style: theme.textTheme.bodySmall?.copyWith(
+              if (!controller.isOffline.value) ...[
+                10.width(),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
                     color: isDark
-                        ? theme.colorScheme.primary
-                        : theme.colorScheme.onPrimaryContainer,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 12,
+                        ? theme.colorScheme.primary.opaque(0.15)
+                        : theme.colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  maxLines: 1,
+                  child: Text(
+                    controller.currentEpisode.value.number == "Offline"
+                        ? "Offline"
+                        : "Episode ${controller.currentEpisode.value.number}",
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: isDark
+                          ? theme.colorScheme.primary
+                          : theme.colorScheme.onPrimaryContainer,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                    ),
+                    maxLines: 1,
+                  ),
                 ),
-              ),
+              ],
             ],
           ),
         ],

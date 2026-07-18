@@ -11,6 +11,7 @@ import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_tabbar.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -141,199 +142,46 @@ class _ExtensionScreenState extends State<ExtensionScreen>
   Widget _buildContentTypeBar() {
     return Obx(() {
       final selected = _selectedContentType.value;
-      final colors = context.colors;
       const tabs = _contentTabs;
-      final total = tabs.length;
-      final currentIndex = tabs.indexWhere((t) => t.type == selected);
-      final alignX = -1.0 + (2.0 * currentIndex / (total - 1));
+      final selectedIndex = tabs.indexWhere((t) => t.type == selected);
 
-      return LayoutBuilder(builder: (context, constraints) {
-        const minTabWidth = 100.0;
-        final naturalTabWidth = constraints.maxWidth / total;
-        final tabWidth =
-            naturalTabWidth < minTabWidth ? minTabWidth : naturalTabWidth;
-        final totalWidth = tabWidth * total;
-
-        return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: SizedBox(
-            width: totalWidth,
-            child: Container(
-              height: 54,
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: colors.surfaceContainerHighest.withOpacity(0.4),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: colors.outline.withOpacity(0.1)),
-              ),
-              child: Stack(children: [
-                AnimatedAlign(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeOutQuint,
-                  alignment: Alignment(alignX, 0),
-                  child: FractionallySizedBox(
-                    widthFactor: 1 / total,
-                    heightFactor: 1,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: colors.primary,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                              color: colors.primary.withOpacity(0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2))
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                Row(
-                  children: tabs.map((t) {
-                    final isSelected = selected == t.type;
-                    return Expanded(
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () {
-                          if (!isSelected) {
-                            HapticFeedback.lightImpact();
-                            _selectedContentType.value = t.type;
-                            _textEditingController.clear();
-                            _searchQuery.value = '';
-                          }
-                        },
-                        child: AnimatedScale(
-                          scale: isSelected ? 1.05 : 1.0,
-                          duration: const Duration(milliseconds: 250),
-                          curve: Curves.easeInOut,
-                          child: AnimatedOpacity(
-                            opacity: isSelected ? 1.0 : 0.7,
-                            duration: const Duration(milliseconds: 200),
-                            child: SizedBox.expand(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(t.icon,
-                                      size: 16,
-                                      color: isSelected
-                                          ? colors.onPrimary
-                                          : colors.onSurfaceVariant),
-                                  const SizedBox(width: 6),
-                                  Flexible(
-                                    child: AnimatedDefaultTextStyle(
-                                      duration:
-                                          const Duration(milliseconds: 200),
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        fontFamily: 'Poppins',
-                                        fontWeight: isSelected
-                                            ? FontWeight.w700
-                                            : FontWeight.w400,
-                                        color: isSelected
-                                            ? colors.onPrimary
-                                            : colors.onSurfaceVariant,
-                                      ),
-                                      child: Text(t.label,
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 1),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ]),
-            ),
-          ),
-        );
-      });
+      return AnymeXTabBar(
+        selectTabs: tabs.map((t) => t.label).toList(),
+        selectedIndex: selectedIndex,
+        icons: tabs.map((t) => t.icon).toList(),
+        height: 54,
+        minTabWidth: 100.0,
+        activeColor: context.colors.primary,
+        activeTextColor: context.colors.onPrimary,
+        inactiveTextColor: context.colors.onSurfaceVariant,
+        onTabSelected: (index) {
+          final t = tabs[index];
+          _selectedContentType.value = t.type;
+          _textEditingController.clear();
+          _searchQuery.value = '';
+        },
+      );
     });
   }
 
   Widget _buildStatusBar() {
     return Obx(() {
       final isInstalled = _showInstalled.value;
-      final colors = context.colors;
       const tabs = ['Installed', 'Available'];
-      final total = tabs.length;
       final currentIndex = isInstalled ? 0 : 1;
-      final alignX = -1.0 + (2.0 * currentIndex / (total - 1));
 
-      return Container(
+      return AnymeXTabBar(
+        selectTabs: tabs,
+        selectedIndex: currentIndex,
         height: 46,
-        padding: const EdgeInsets.all(4),
-        decoration: BoxDecoration(
-          color: colors.surfaceContainerHighest.withOpacity(0.4),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: colors.outline.withOpacity(0.1)),
-        ),
-        child: Stack(children: [
-          AnimatedAlign(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOutQuint,
-            alignment: Alignment(alignX, 0),
-            child: FractionallySizedBox(
-              widthFactor: 1 / total,
-              heightFactor: 1,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: colors.secondary,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                        color: colors.secondary.withOpacity(0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2))
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Row(
-            children: tabs.asMap().entries.map((e) {
-              final selected = currentIndex == e.key;
-              return Expanded(
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () {
-                    if (!selected) {
-                      HapticFeedback.lightImpact();
-                      _showInstalled.value = e.key == 0;
-                      _textEditingController.clear();
-                      _searchQuery.value = '';
-                    }
-                  },
-                  child: AnimatedOpacity(
-                    opacity: selected ? 1.0 : 0.6,
-                    duration: const Duration(milliseconds: 200),
-                    child: SizedBox.expand(
-                      child: Center(
-                        child: Text(
-                          e.value,
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontFamily: 'Poppins',
-                            fontWeight: selected
-                                ? FontWeight.w700
-                                : FontWeight.w400,
-                            color: selected
-                                ? colors.onSecondary
-                                : colors.onSurfaceVariant,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-        ]),
+        activeColor: context.colors.secondary,
+        activeTextColor: context.colors.onSecondary,
+        inactiveTextColor: context.colors.onSurfaceVariant,
+        onTabSelected: (index) {
+          _showInstalled.value = index == 0;
+          _textEditingController.clear();
+          _searchQuery.value = '';
+        },
       );
     });
   }
