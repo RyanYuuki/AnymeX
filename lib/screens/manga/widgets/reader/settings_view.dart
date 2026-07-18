@@ -309,6 +309,9 @@ class ReaderSettings {
                     );
                   }),
                   Obx(() {
+                    if (controller.readingLayout.value == MangaPageViewMode.paged) {
+                      return const SizedBox.shrink();
+                    }
                     return CustomSwitchTile(
                       icon: Icons.play_arrow_rounded,
                       title: "Auto Scroll",
@@ -318,7 +321,8 @@ class ReaderSettings {
                     );
                   }),
                   Obx(() {
-                    if (!controller.autoScrollEnabled.value) {
+                    if (controller.readingLayout.value == MangaPageViewMode.paged ||
+                        !controller.autoScrollEnabled.value) {
                       return const SizedBox.shrink();
                     }
                     return Padding(

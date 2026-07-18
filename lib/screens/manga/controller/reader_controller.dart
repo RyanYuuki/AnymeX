@@ -17,7 +17,9 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+
 import 'package:photo_view/photo_view.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:vibration/vibration.dart';
@@ -71,11 +73,20 @@ enum DualPageMode {
 class ReaderPage {
   final PageUrl? page1;
   final PageUrl? page2;
+  final Chapter? chapter;
+  final bool isTransition;
+  final bool isNextTransition;
 
   bool get isSpread => page2 != null;
-  int get pageCount => isSpread ? 2 : 1;
+  int get pageCount => isTransition ? 0 : (isSpread ? 2 : 1);
 
-  ReaderPage({required this.page1, this.page2});
+  ReaderPage({
+    this.page1,
+    this.page2,
+    this.chapter,
+    this.isTransition = false,
+    this.isNextTransition = true,
+  });
 }
 
 class ReaderController extends GetxController with WidgetsBindingObserver {
@@ -151,6 +162,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   final RxBool alwaysShowChapterTransition = false.obs;
   final RxBool longPressPageActionsEnabled = true.obs;
   final RxBool autoWebtoonMode = false.obs;
+  final RxBool navigateByNumber = false.obs;
   final RxBool displayRefreshEnabled = false.obs;
   final RxInt displayRefreshDurationMs = 200.obs;
   final RxInt displayRefreshInterval = 1.obs;
@@ -183,19 +195,197 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     spreads.clear();
     if (pageList.isEmpty) return;
 
+    final current = currentChapter.value;
+    if (current == null) return;
+
+    if (overscrollToChapter.value && canGoPrev.value) {
+      spreads.add(ReaderPage(
+        page1: null,
+        isTransition: true,
+        isNextTransition: false,
+        chapter: current,
+      ));
+    }
+
     if (!isDualPage) {
       for (var page in pageList) {
-        spreads.add(ReaderPage(page1: page));
+        spreads.add(ReaderPage(page1: page, chapter: current));
       }
     } else {
       for (int i = 0; i < pageList.length; i += 2) {
         final page1 = pageList[i];
         final page2 = (i + 1 < pageList.length) ? pageList[i + 1] : null;
-        spreads.add(ReaderPage(page1: page1, page2: page2));
+        spreads.add(ReaderPage(page1: page1, page2: page2, chapter: current));
       }
     }
 
+    if (overscrollToChapter.value) {
+      spreads.add(ReaderPage(
+        page1: null,
+        isTransition: true,
+        isNextTransition: true,
+        chapter: current,
+      ));
+    }
+
     _syncPageToSpread();
+  }
+
+  Future<List<PageUrl>> _fetchChapterPages(Chapter chapter) async {
+    if (chapter.localPath != null && Directory(chapter.localPath!).existsSync()) {
+      final dir = Directory(chapter.localPath!);
+      final files = dir
+          .listSync()
+          .whereType<File>()
+          .where((f) =>
+              f.path.endsWith('.jpg') ||
+              f.path.endsWith('.jpeg') ||
+              f.path.endsWith('.png') ||
+              f.path.endsWith('.webp'))
+          .toList();
+      files.sort((a, b) => a.path.compareTo(b.path));
+      return files.map((f) => PageUrl(f.path)).toList();
+    } else if (chapter.link != null) {
+      return await sourceController.activeMangaSource.value!.methods
+          .getPageList(DEpisode(episodeNumber: '1', url: chapter.link!));
+    }
+    return [];
+  }
+
+  final Set<String> _loadingChapterLinks = {};
+
+  Future<void> loadNextChapterInline() async {
+    if (!overscrollToChapter.value || _isNavigating) return;
+
+    final lastLoaded = loadedChapters.isNotEmpty ? loadedChapters.last : currentChapter.value;
+    if (lastLoaded == null) return;
+
+    final curIdx = chapterList.indexOf(lastLoaded);
+    if (curIdx == -1 || curIdx >= chapterList.length - 1) return;
+
+    final nextChapterObj = chapterList[curIdx + 1];
+    if (loadedChapters.contains(nextChapterObj) ||
+        _loadingChapterLinks.contains(nextChapterObj.link)) {
+      return;
+    }
+
+    _loadingChapterLinks.add(nextChapterObj.link ?? '');
+
+    try {
+      final nextPages = await _fetchChapterPages(nextChapterObj);
+      if (nextPages.isEmpty) {
+        _loadingChapterLinks.remove(nextChapterObj.link);
+        return;
+      }
+
+      loadedChapterPages[nextChapterObj.link!] = nextPages;
+
+      final List<ReaderPage> newSpreads = [];
+      if (!isDualPage) {
+        for (var page in nextPages) {
+          newSpreads.add(ReaderPage(page1: page, chapter: nextChapterObj));
+        }
+      } else {
+        for (int i = 0; i < nextPages.length; i += 2) {
+          final page1 = nextPages[i];
+          final page2 = (i + 1 < nextPages.length) ? nextPages[i + 1] : null;
+          newSpreads.add(ReaderPage(page1: page1, page2: page2, chapter: nextChapterObj));
+        }
+      }
+
+      newSpreads.add(ReaderPage(
+        page1: null,
+        isTransition: true,
+        isNextTransition: true,
+        chapter: nextChapterObj,
+      ));
+
+      spreads.addAll(newSpreads);
+      loadedChapters.add(nextChapterObj);
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error loading next chapter inline: $e");
+      }
+    } finally {
+      _loadingChapterLinks.remove(nextChapterObj.link);
+    }
+  }
+
+  Future<void> loadPreviousChapterInline() async {
+    if (!overscrollToChapter.value || _isNavigating) return;
+
+    final firstLoaded = loadedChapters.isNotEmpty ? loadedChapters.first : currentChapter.value;
+    if (firstLoaded == null) return;
+
+    final curIdx = chapterList.indexOf(firstLoaded);
+    if (curIdx <= 0) return;
+
+    final prevChapterObj = chapterList[curIdx - 1];
+    if (loadedChapters.contains(prevChapterObj) ||
+        _loadingChapterLinks.contains(prevChapterObj.link)) {
+      return;
+    }
+
+    _loadingChapterLinks.add(prevChapterObj.link ?? '');
+
+    try {
+      final prevPages = await _fetchChapterPages(prevChapterObj);
+      if (prevPages.isEmpty) {
+        _loadingChapterLinks.remove(prevChapterObj.link);
+        return;
+      }
+
+      loadedChapterPages[prevChapterObj.link!] = prevPages;
+
+      final List<ReaderPage> newSpreads = [];
+
+      final prevIdx = chapterList.indexOf(prevChapterObj);
+      if (prevIdx > 0) {
+        newSpreads.add(ReaderPage(
+          page1: null,
+          isTransition: true,
+          isNextTransition: false,
+          chapter: prevChapterObj,
+        ));
+      }
+
+      if (!isDualPage) {
+        for (var page in prevPages) {
+          newSpreads.add(ReaderPage(page1: page, chapter: prevChapterObj));
+        }
+      } else {
+        for (int i = 0; i < prevPages.length; i += 2) {
+          final page1 = prevPages[i];
+          final page2 = (i + 1 < prevPages.length) ? prevPages[i + 1] : null;
+          newSpreads.add(ReaderPage(page1: page1, page2: page2, chapter: prevChapterObj));
+        }
+      }
+
+      _isNavigating = true;
+      spreads.insertAll(0, newSpreads);
+      loadedChapters.insert(0, prevChapterObj);
+
+      final prevPageCount = newSpreads.length;
+      if (readingLayout.value == MangaPageViewMode.continuous) {
+        final positions = itemPositionsListener?.itemPositions.value;
+        if (positions != null && positions.isNotEmpty) {
+          final firstVisible = positions.first;
+          itemScrollController?.jumpTo(
+            index: firstVisible.index + prevPageCount,
+            alignment: firstVisible.itemLeadingEdge,
+          );
+        }
+      } else {
+        pageController?.jumpToPage(pageController!.page!.toInt() + prevPageCount);
+      }
+      _isNavigating = false;
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error loading previous chapter inline: $e");
+      }
+    } finally {
+      _loadingChapterLinks.remove(prevChapterObj.link);
+    }
   }
 
   void _syncPageToSpread() {
@@ -206,6 +396,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       int accumulatedPages = 0;
 
       for (int i = 0; i < spreads.length; i++) {
+        if (spreads[i].isTransition) continue;
         accumulatedPages += spreads[i].pageCount;
         if (accumulatedPages >= currentPageIndex.value) {
           spreadIndex = i;
@@ -219,16 +410,12 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
   RxBool canGoNext = false.obs;
   RxBool canGoPrev = false.obs;
-
   final RxBool isOverscrolling = false.obs;
   final RxDouble overscrollProgress = 0.0.obs;
   final RxBool isOverscrollingNext = true.obs;
-  static const double _dragRate = 0.5;
-  static const int _dragDivider = 5;
-
-  double get _maxDistance => Get.height / _dragDivider;
-
   bool _isNavigating = false;
+  final RxList<Chapter> loadedChapters = RxList();
+  final Map<String, List<PageUrl>> loadedChapterPages = {};
 
   late Worker _rpcWorker;
   final VolumeKeyHandler _volumeKeyHandler = VolumeKeyHandler();
@@ -750,6 +937,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     longPressPageActionsEnabled.value =
         ReaderKeys.longPressPageActionsEnabled.get<bool>(true);
     autoWebtoonMode.value = ReaderKeys.autoWebtoonMode.get<bool>(false);
+    navigateByNumber.value = ReaderKeys.navigateByNumber.get<bool>(false);
     displayRefreshEnabled.value =
         ReaderKeys.displayRefreshEnabled.get<bool>(false);
     displayRefreshDurationMs.value =
@@ -798,6 +986,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     ReaderKeys.longPressPageActionsEnabled
         .set(longPressPageActionsEnabled.value);
     ReaderKeys.autoWebtoonMode.set(autoWebtoonMode.value);
+    ReaderKeys.navigateByNumber.set(navigateByNumber.value);
     ReaderKeys.displayRefreshEnabled.set(displayRefreshEnabled.value);
     ReaderKeys.displayRefreshDurationMs.set(displayRefreshDurationMs.value);
     ReaderKeys.displayRefreshInterval.set(displayRefreshInterval.value);
@@ -817,87 +1006,53 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       scrollOffsetListener!.changes.listen(_onScrollChanged);
     }
   }
-
-  double _virtualOverscrollPixels = 0.0;
-
   bool onScrollNotification(ScrollNotification notification) {
     if (!overscrollToChapter.value || _isNavigating) {
       return false;
-    }
-
-    if (!isOverscrolling.value) {
-      bool isUserDrag = false;
-      if (notification is ScrollUpdateNotification &&
-          notification.dragDetails != null) {
-        isUserDrag = true;
-      } else if (notification is OverscrollNotification &&
-          notification.dragDetails != null) {
-        isUserDrag = true;
-      }
-
-      if (!isUserDrag) return false;
     }
 
     final metrics = notification.metrics;
 
     if (metrics.pixels > metrics.maxScrollExtent) {
       final delta = metrics.pixels - metrics.maxScrollExtent;
-      _virtualOverscrollPixels = delta * _dragRate;
-      _updateOverscrollProgress(true);
+      if (delta > 40) {
+        final lastLoaded = loadedChapters.isNotEmpty ? loadedChapters.last : currentChapter.value;
+        if (lastLoaded != null) {
+          final curIdx = chapterList.indexOf(lastLoaded);
+          if (curIdx == chapterList.length - 1) {
+            _isNavigating = true;
+            snackBar(
+              title: "Last Chapter",
+              "There are no more chapters.",
+            );
+            Future.delayed(const Duration(seconds: 2), () => _isNavigating = false);
+          }
+        }
+      }
       return false;
     } else if (metrics.pixels < metrics.minScrollExtent) {
       final delta = (metrics.pixels - metrics.minScrollExtent).abs();
-      _virtualOverscrollPixels = delta * _dragRate;
-      _updateOverscrollProgress(false);
+      if (delta > 40) {
+        final firstLoaded = loadedChapters.isNotEmpty ? loadedChapters.first : currentChapter.value;
+        if (firstLoaded != null) {
+          final curIdx = chapterList.indexOf(firstLoaded);
+          if (curIdx == 0) {
+            _isNavigating = true;
+            snackBar(
+              title: "First Chapter",
+              "This is the first chapter.",
+            );
+            Future.delayed(const Duration(seconds: 2), () => _isNavigating = false);
+          }
+        }
+      }
       return false;
-    }
-
-    if (notification is OverscrollNotification &&
-        notification.overscroll != 0) {
-      final ovs = notification.overscroll;
-      final isNext = ovs > 0;
-
-      if (isOverscrolling.value && isOverscrollingNext.value != isNext) {
-        _resetOverscroll();
-        return false;
-      }
-
-      _virtualOverscrollPixels += ovs.abs() * _dragRate;
-      _updateOverscrollProgress(isNext);
-    } else if (notification is ScrollUpdateNotification &&
-        notification.scrollDelta != null &&
-        isOverscrolling.value) {
-      final delta = notification.scrollDelta!;
-
-      if (isOverscrollingNext.value) {
-        _virtualOverscrollPixels += delta * _dragRate;
-      } else {
-        _virtualOverscrollPixels -= delta * _dragRate;
-      }
-
-      if (_virtualOverscrollPixels < 0) _virtualOverscrollPixels = 0;
-      _updateOverscrollProgress(isOverscrollingNext.value);
-    }
-
-    if (isOverscrolling.value &&
-        _virtualOverscrollPixels <= 0.1 &&
-        metrics.pixels >= metrics.minScrollExtent &&
-        metrics.pixels <= metrics.maxScrollExtent) {
-      _resetOverscroll();
     }
 
     return false;
   }
-
-  void _updateOverscrollProgress(bool isNext) {
-    final progress = (_virtualOverscrollPixels / _maxDistance).clamp(0.0, 1.0);
-    _handleOverscrollUpdate(progress, isNext);
-  }
-
   void onPointerDown(PointerDownEvent event) {
-    isOverscrolling.value = false;
-    overscrollProgress.value = 0.0;
-    _virtualOverscrollPixels = 0.0;
+    _resetOverscroll();
     if (autoScrollEnabled.value) {
       _autoScrollResumeTimer?.cancel();
       _stopAutoScroll();
@@ -905,17 +1060,6 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   }
 
   void onPointerUp(PointerUpEvent event) {
-    if (isOverscrolling.value && overscrollProgress.value >= 1.0) {
-      if (isOverscrollingNext.value) {
-        if (canGoNext.value) {
-          chapterNavigator(true);
-        }
-      } else {
-        if (canGoPrev.value) {
-          chapterNavigator(false);
-        }
-      }
-    }
     _resetOverscroll();
     if (autoScrollEnabled.value) {
       _scheduleAutoScrollResume();
@@ -938,27 +1082,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     });
   }
 
-  void _handleOverscrollUpdate(double progress, bool isNext) {
-    if (!isOverscrolling.value) {
-      if (progress <= 0.05) return;
 
-      isOverscrolling.value = true;
-      isOverscrollingNext.value = isNext;
-      if (showControls.value) showControls.value = false;
-
-      HapticFeedback.selectionClick();
-    }
-
-    if ((progress - overscrollProgress.value).abs() > 0.01 ||
-        progress <= 0.0 ||
-        progress >= 1.0) {
-      if (overscrollProgress.value < 1.0 && progress >= 1.0) {
-        triggerHapticFeedback();
-      }
-
-      overscrollProgress.value = progress;
-    }
-  }
 
   void _onScrollChanged(double offset) {}
 
@@ -1090,12 +1214,12 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   void _resetOverscroll() {
     isOverscrolling.value = false;
     overscrollProgress.value = 0.0;
-    _virtualOverscrollPixels = 0.0;
     _mouseResetTimer?.cancel();
   }
 
+
   void _onPositionChanged() async {
-    if (itemPositionsListener == null || pageList.isEmpty) return;
+    if (itemPositionsListener == null || spreads.isEmpty) return;
 
     final positions = itemPositionsListener!.itemPositions.value;
     if (positions.isEmpty || _isNavigating) return;
@@ -1104,28 +1228,26 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     double maxVisibleExtent = 0.0;
 
     final lastItemPosition = positions.firstWhere(
-      (pos) => pos.index == pageList.length - 1,
+      (pos) => pos.index == spreads.length - 1,
       orElse: () => positions.first,
     );
 
-    final isAtEnd = lastItemPosition.index == pageList.length - 1 &&
+    final isAtEnd = lastItemPosition.index == spreads.length - 1 &&
         lastItemPosition.itemTrailingEdge <= 1.0;
 
     for (final position in positions) {
       final leadingEdge = position.itemLeadingEdge;
       final trailingEdge = position.itemTrailingEdge;
-
       final visibleExtent =
           (math.min(1.0, trailingEdge) - math.max(0.0, leadingEdge))
               .clamp(0.0, 1.0);
 
-      if (isAtEnd && position.index == pageList.length - 1) {
+      if (isAtEnd && position.index == spreads.length - 1) {
         if (visibleExtent > 0.3) {
           mostVisibleItem = position;
           break;
         }
       }
-
       if (visibleExtent > maxVisibleExtent) {
         maxVisibleExtent = visibleExtent;
         mostVisibleItem = position;
@@ -1134,23 +1256,83 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
     if (mostVisibleItem == null) return;
 
-    final number = mostVisibleItem.index + 1;
+    final index = mostVisibleItem.index;
+    if (index < 0 || index >= spreads.length) return;
 
-    if (!_isValidPageNumber(number)) return;
+    if (index >= spreads.length - 2) {
+      loadNextChapterInline();
+    } else if (index <= 1) {
+      loadPreviousChapterInline();
+    }
 
-    if (number != currentPageIndex.value) {
-      currentPageIndex.value = number;
-      _safelyUpdateChapterPageNumber(number);
+    final spread = spreads[index];
+    if (spread.isTransition) return;
+
+    final activeChapter = spread.chapter;
+    if (activeChapter == null) return;
+
+    _updatePageStateForSpread(index, activeChapter);
+  }
+
+  void _updatePageStateForSpread(int index, Chapter activeChapter) {
+    final activeKey = activeChapter.link ?? activeChapter.localPath ?? '';
+    final activePages = loadedChapterPages[activeKey] ?? [];
+    final activeTotalPages = activePages.isEmpty ? pageList.length : activePages.length;
+
+    // Count how many pages of this chapter have been shown up to this spread index
+    int startIdx = spreads.indexWhere(
+        (s) => s.chapter == activeChapter && !s.isTransition);
+    int chapterPageIndex = 1;
+    if (startIdx != -1 && index >= startIdx) {
+      int acc = 0;
+      for (int i = startIdx; i <= index; i++) {
+        if (spreads[i].chapter == activeChapter && !spreads[i].isTransition) {
+          acc += spreads[i].pageCount;
+        }
+      }
+      chapterPageIndex = acc > 0 ? acc : 1;
+    }
+
+    if (currentChapter.value != activeChapter) {
+      currentChapter.value = activeChapter;
+      _syncAvailability();
+      _initTracking();
+      DiscordRPCController.instance.updateMangaPresence(
+          manga: media,
+          chapter: activeChapter,
+          totalChapters: chapterList.length.toString());
+    }
+
+    // Sync pageList to the active chapter so the slider max/length is correct
+    if (activePages.isNotEmpty &&
+        (pageList.length != activePages.length ||
+            (pageList.isNotEmpty && pageList.first.url != activePages.first.url))) {
+      pageList.assignAll(activePages);
+    }
+
+    if (chapterPageIndex != currentPageIndex.value) {
+      currentPageIndex.value = chapterPageIndex;
+      _safelyUpdateChapterPageNumber(chapterPageIndex);
+      _safelyUpdateTotalPages(activeTotalPages);
     }
   }
 
-  void onPageChanged(int index) async {
-    final number = index + 1;
-    if (!_isValidPageNumber(number)) return;
+  void onPageChanged(int index) {
+    if (index < 0 || index >= spreads.length) return;
 
-    currentPageIndex.value = number;
-    _safelyUpdateChapterPageNumber(number);
-    _safelyUpdateTotalPages(pageList.length);
+    if (index >= spreads.length - 2) {
+      loadNextChapterInline();
+    } else if (index <= 1) {
+      loadPreviousChapterInline();
+    }
+
+    final spread = spreads[index];
+    if (spread.isTransition) return;
+
+    final activeChapter = spread.chapter;
+    if (activeChapter == null) return;
+
+    _updatePageStateForSpread(index, activeChapter);
   }
 
   void preloadNextPages(int currentIndex) {
@@ -1176,7 +1358,6 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       }
     }
   }
-
   Future<void> init(Media data, List<Chapter> chList, Chapter curCh) async {
     media = data;
     chapterList = chList;
@@ -1184,6 +1365,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     serviceHandler = data.serviceType;
     _initializeControllers();
     _getPreferences();
+    _applyAutoWebtoonMode();
 
     ever(currentPageIndex, (indexVal) {
       preloadNextPages(indexVal - 1);
@@ -1364,7 +1546,16 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
   void toggleAutoWebtoonMode() {
     autoWebtoonMode.value = !autoWebtoonMode.value;
+    if (autoWebtoonMode.value) {
+      _applyAutoWebtoonMode();
+    }
     savePreferences();
+  }
+
+  void toggleNavigateByNumber() {
+    navigateByNumber.value = !navigateByNumber.value;
+    savePreferences();
+    _syncAvailability();
   }
 
   void toggleDisplayRefresh() {
@@ -1414,36 +1605,41 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   }
 
   void navigateToPage(int index) async {
-    if (index < 0 || index >= pageList.length) return;
+    final activeChapter = currentChapter.value;
+    if (activeChapter == null) return;
+
+    final activePages = loadedChapterPages[activeChapter.link] ?? [];
+    if (index < 0 || index >= activePages.length) return;
 
     final pageNumber = index + 1;
-    if (!_isValidPageNumber(pageNumber)) return;
-
     currentPageIndex.value = pageNumber;
+    _safelyUpdateChapterPageNumber(pageNumber);
+
+    int startIdx = spreads.indexWhere((s) => s.chapter == activeChapter && !s.isTransition);
+    if (startIdx == -1) return;
+
+    int spreadIndex = startIdx;
+    int accumulatedPages = 0;
+    for (int i = startIdx; i < spreads.length; i++) {
+      if (spreads[i].chapter != activeChapter) break;
+      if (spreads[i].isTransition) continue;
+      accumulatedPages += spreads[i].pageCount;
+      if (accumulatedPages >= pageNumber) {
+        spreadIndex = i;
+        break;
+      }
+    }
 
     if (readingLayout.value == MangaPageViewMode.continuous) {
-      itemScrollController?.jumpTo(index: index);
+      itemScrollController?.jumpTo(index: spreadIndex);
     } else {
-      if (!isDualPage) {
-        pageController?.jumpToPage(index);
-      } else {
-        int spreadIndex = 0;
-
-        for (int i = 0; i < spreads.length; i++) {
-          if (spreads[i].page1 == pageList[index] ||
-              spreads[i].page2 == pageList[index]) {
-            spreadIndex = i;
-            break;
-          }
-        }
-        pageController?.jumpToPage(spreadIndex);
-      }
+      pageController?.jumpToPage(spreadIndex);
     }
   }
 
   void chapterNavigator(bool next) async {
     final current = currentChapter.value;
-    if (current == null || current.number == null) return;
+    if (current == null) return;
 
     _performSave(reason: "Saving before chapter is changed");
 
@@ -1451,7 +1647,32 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         (c) => c.number == current.number || c.link == current.link);
     if (index == -1) return;
 
-    final newIndex = next ? index + 1 : index - 1;
+    int newIndex = -1;
+    if (navigateByNumber.value) {
+      final currentNum = current.number;
+      if (currentNum != null) {
+        if (next) {
+          for (int i = index + 1; i < chapterList.length; i++) {
+            if (chapterList[i].number != currentNum) {
+              newIndex = i;
+              break;
+            }
+          }
+        } else {
+          for (int i = index - 1; i >= 0; i--) {
+            if (chapterList[i].number != currentNum) {
+              newIndex = i;
+              break;
+            }
+          }
+        }
+      } else {
+        newIndex = next ? index + 1 : index - 1;
+      }
+    } else {
+      newIndex = next ? index + 1 : index - 1;
+    }
+
     if (newIndex >= 0 && newIndex < chapterList.length) {
       navigateToChapter(newIndex);
     } else {
@@ -1479,8 +1700,25 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
     final index = chapterList.indexWhere(
         (c) => c.number == chapter.number || c.link == chapter.link);
-    canGoPrev.value = index > 0;
-    canGoNext.value = index < chapterList.length - 1;
+    if (index == -1) {
+      canGoPrev.value = false;
+      canGoNext.value = false;
+      return;
+    }
+
+    if (navigateByNumber.value) {
+      final currentNum = chapter.number;
+      if (currentNum != null) {
+        canGoPrev.value = chapterList.sublist(0, index).any((c) => c.number != currentNum);
+        canGoNext.value = chapterList.sublist(index + 1).any((c) => c.number != currentNum);
+      } else {
+        canGoPrev.value = index > 0;
+        canGoNext.value = index < chapterList.length - 1;
+      }
+    } else {
+      canGoPrev.value = index > 0;
+      canGoNext.value = index < chapterList.length - 1;
+    }
   }
 
   Future<void> fetchImages(String url) async {
@@ -1518,13 +1756,18 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         data = await sourceController.activeMangaSource.value!.methods
             .getPageList(DEpisode(episodeNumber: '1', url: url));
       }
-
       if (data.isNotEmpty) {
         pageList.value = data;
         loadingState.value = LoadingState.loaded;
 
-        _computeSpreads();
+        loadedChapters.clear();
+        loadedChapterPages.clear();
+        if (currentChapter.value != null && currentChapter.value!.link != null) {
+          loadedChapters.add(currentChapter.value!);
+          loadedChapterPages[currentChapter.value!.link!] = data;
+        }
 
+        _computeSpreads();
         currentPageIndex.value = 1;
         _safelyUpdateTotalPages(pageList.length);
 
@@ -1564,6 +1807,10 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   }
 
   void changeReadingLayout(MangaPageViewMode mode) async {
+    if (autoScrollEnabled.value) {
+      autoScrollEnabled.value = false;
+      _stopAutoScroll();
+    }
     readingLayout.value = mode;
 
     await Future.delayed(const Duration(milliseconds: 300), () {
@@ -1573,6 +1820,10 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   }
 
   void changeReadingDirection(MangaPageViewDirection direction) async {
+    if (autoScrollEnabled.value) {
+      autoScrollEnabled.value = false;
+      _stopAutoScroll();
+    }
     readingDirection.value = direction;
     savePreferences();
   }
@@ -1688,5 +1939,31 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOutCubic,
     );
+  }
+
+  bool get _isWebtoon {
+    final lowerFormat = media.format.toLowerCase();
+    if (lowerFormat.contains('webtoon')) return true;
+    
+    for (final genre in media.genres) {
+      final lg = genre.toLowerCase();
+      if (lg.contains('webtoon') || lg.contains('manhwa') || lg.contains('long strip') || lg.contains('long-strip')) {
+        return true;
+      }
+    }
+    for (final tag in media.tags) {
+      final lt = tag.name.toLowerCase();
+      if (lt.contains('webtoon') || lt.contains('manhwa') || lt.contains('long strip') || lt.contains('long-strip')) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  void _applyAutoWebtoonMode() {
+    if (autoWebtoonMode.value && _isWebtoon) {
+      readingLayout.value = MangaPageViewMode.continuous;
+      readingDirection.value = MangaPageViewDirection.down;
+    }
   }
 }

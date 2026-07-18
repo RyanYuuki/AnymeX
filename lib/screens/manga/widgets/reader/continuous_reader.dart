@@ -3,6 +3,7 @@ import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/widgets/subsampling_scale_image_view/subsampling_image_provider.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Page.dart';
+import 'package:anymex/screens/manga/widgets/reader/reader_chapter_transition.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -13,18 +14,16 @@ class ContinuousReaderView extends StatefulWidget {
   const ContinuousReaderView({super.key, required this.controller});
 
   @override
-  State<ContinuousReaderView> createState() => ContinuousReaderViewState();
+  State<ContinuousReaderView> createState() => _ContinuousReaderViewState();
 }
 
-class ContinuousReaderViewState extends State<ContinuousReaderView> {
-  late List<ReaderPage> _spreads;
+class _ContinuousReaderViewState extends State<ContinuousReaderView> {
   late Axis _scrollDirection;
   late bool _reverse;
 
   @override
   void initState() {
     super.initState();
-    _spreads = widget.controller.spreads;
     _scrollDirection = widget.controller.readingDirection.value.axis;
     _reverse = widget.controller.readingDirection.value.reversed;
   }
@@ -34,11 +33,8 @@ class ContinuousReaderViewState extends State<ContinuousReaderView> {
     super.didUpdateWidget(oldWidget);
     final newDirection = widget.controller.readingDirection.value.axis;
     final newReverse = widget.controller.readingDirection.value.reversed;
-    if (!identical(_spreads, widget.controller.spreads) ||
-        _scrollDirection != newDirection ||
-        _reverse != newReverse) {
+    if (_scrollDirection != newDirection || _reverse != newReverse) {
       setState(() {
-        _spreads = widget.controller.spreads;
         _scrollDirection = newDirection;
         _reverse = newReverse;
       });
@@ -46,6 +42,26 @@ class ContinuousReaderViewState extends State<ContinuousReaderView> {
   }
 
   Widget _buildSpread(BuildContext context, ReaderPage spread, int index) {
+    if (spread.isTransition) {
+      final ctrl = widget.controller;
+      final chapter = spread.chapter ?? ctrl.currentChapter.value!;
+      final curIdx = ctrl.chapterList.indexOf(chapter);
+      final targetIdx = spread.isNextTransition ? curIdx + 1 : curIdx - 1;
+      final targetChapter =
+          (targetIdx >= 0 && targetIdx < ctrl.chapterList.length)
+              ? ctrl.chapterList[targetIdx]
+              : null;
+
+      return SizedBox(
+        height: MediaQuery.of(context).size.height * 0.7,
+        child: ReaderChapterTransition(
+          isNext: spread.isNextTransition,
+          currentChapter: chapter,
+          targetChapter: targetChapter,
+        ),
+      );
+    }
+
     if (!spread.isSpread) {
       return _buildImage(context, spread.page1!, index);
     }
@@ -72,9 +88,9 @@ class ContinuousReaderViewState extends State<ContinuousReaderView> {
               page.url,
               headers: (page.headers?.isEmpty ?? true)
                   ? {
-                      'Referer': sourceController
-                              .activeMangaSource.value?.baseUrl ??
-                          ''
+                      'Referer':
+                          sourceController.activeMangaSource.value?.baseUrl ??
+                              ''
                     }
                   : page.headers,
             ),
@@ -111,23 +127,35 @@ class ContinuousReaderViewState extends State<ContinuousReaderView> {
 
   @override
   Widget build(BuildContext context) {
-    final initialIndex = (widget.controller.currentPageIndex.value - 1)
-        .clamp(0, _spreads.length - 1);
+    return Obx(() {
+      final spreads = widget.controller.spreads;
 
-    return ScrollablePositionedList.builder(
-      key: ValueKey(identityHashCode(_spreads)),
-      itemCount: _spreads.length,
-      itemScrollController: widget.controller.itemScrollController,
-      scrollOffsetController: widget.controller.scrollOffsetController,
-      itemPositionsListener: widget.controller.itemPositionsListener,
-      scrollOffsetListener: widget.controller.scrollOffsetListener,
-      initialScrollIndex: initialIndex,
-      physics: const ClampingScrollPhysics(),
-      scrollDirection: _scrollDirection,
-      reverse: _reverse,
-      itemBuilder: (context, index) {
-        return _buildSpread(context, _spreads[index], index);
-      },
-    );
+      int initialIndex = 0;
+      int accumulatedPages = 0;
+      for (int i = 0; i < spreads.length; i++) {
+        if (spreads[i].isTransition) continue;
+        accumulatedPages += spreads[i].pageCount;
+        if (accumulatedPages >= widget.controller.currentPageIndex.value) {
+          initialIndex = i;
+          break;
+        }
+      }
+
+      return ScrollablePositionedList.builder(
+        key: ValueKey('$_scrollDirection-$_reverse'),
+        itemCount: spreads.length,
+        itemScrollController: widget.controller.itemScrollController,
+        scrollOffsetController: widget.controller.scrollOffsetController,
+        itemPositionsListener: widget.controller.itemPositionsListener,
+        scrollOffsetListener: widget.controller.scrollOffsetListener,
+        initialScrollIndex: initialIndex,
+        physics: const ClampingScrollPhysics(),
+        scrollDirection: _scrollDirection,
+        reverse: _reverse,
+        itemBuilder: (context, index) {
+          return _buildSpread(context, spreads[index], index);
+        },
+      );
+    });
   }
 }

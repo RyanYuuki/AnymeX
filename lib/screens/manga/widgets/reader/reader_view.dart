@@ -1,26 +1,20 @@
-import 'dart:io';
-
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/screens/manga/widgets/reader/continuous_reader.dart';
 import 'package:anymex/screens/manga/widgets/reader/display_refresh_host.dart';
 import 'package:anymex/screens/manga/widgets/reader/reader_chapter_transition.dart';
 import 'package:anymex/screens/manga/widgets/reader/reader_color_overlay.dart';
 import 'package:anymex/screens/manga/widgets/reader/reader_page_actions_dialog.dart';
-import 'package:anymex/utils/image_cropper.dart';
-import 'package:anymex/utils/lanczos_image.dart';
+import 'package:anymex/widgets/subsampling_scale_image_view/subsampling_image_provider.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class ReaderView extends StatefulWidget {
   final ReaderController controller;
@@ -388,24 +382,6 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
               ),
             ),
           DisplayRefreshOverlay(host: _displayRefreshHost),
-          Obx(() {
-            final c = widget.controller;
-            if (!c.showingTransition.value) return const SizedBox.shrink();
-            final current = c.currentChapter.value;
-            if (current == null) return const SizedBox.shrink();
-
-            return Material(
-              color: Theme.of(context).colorScheme.surface.withOpacity(0.96),
-              child: GestureDetector(
-                onTap: c.dismissTransition,
-                child: ReaderChapterTransition(
-                  isNext: c.transitionIsNext.value,
-                  currentChapter: current,
-                  targetChapter: c.transitionTargetChapter.value,
-                ),
-              ),
-            );
-          }),
         ],
       );
     });
@@ -413,43 +389,62 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
 
 
   Widget _buildPagedView() {
-    return PhotoViewGallery.builder(
-      itemCount: widget.controller.spreads.length,
-      pageController: widget.controller.pageController,
-      scrollPhysics: const ClampingScrollPhysics(),
-      scrollDirection: widget.controller.readingDirection.value.axis,
-      reverse: widget.controller.readingDirection.value.reversed,
-      onPageChanged: (index) {
-        widget.controller.onPageChanged(index);
-        if (widget.controller.displayRefreshEnabled.value) {
-          _displayRefreshHost.flash();
-        }
-      },
-      backgroundDecoration: const BoxDecoration(color: Colors.transparent),
-      builder: (context, index) {
-        return PhotoViewGalleryPageOptions.customChild(
-          minScale: PhotoViewComputedScale.contained * 1.0,
-          maxScale: PhotoViewComputedScale.covered * 4.0,
-          child: GestureDetector(
-            onTapDown: (details) => _lastTapPosition = details.globalPosition,
-            onTap: () {
-              if (_lastTapPosition != null) {
-                widget.controller.handleTap(_lastTapPosition!);
-              }
-            },
-            onLongPressStart: (details) {
-              if (widget.controller.longPressPageActionsEnabled.value) {
-                showReaderPageActionsDialog(context, widget.controller);
-              }
-            },
-            child: _buildSpread(context, widget.controller.spreads[index], index),
-          ),
-        );
-      },
-    );
+    // Reading spreads inside Obx so PhotoViewGallery rebuilds when new
+    // chapters are appended inline (spreads is an RxList).
+    return Obx(() {
+      final spreads = widget.controller.spreads;
+      return PhotoViewGallery.builder(
+        itemCount: spreads.length,
+        pageController: widget.controller.pageController,
+        scrollPhysics: const ClampingScrollPhysics(),
+        scrollDirection: widget.controller.readingDirection.value.axis,
+        reverse: widget.controller.readingDirection.value.reversed,
+        onPageChanged: (index) {
+          widget.controller.onPageChanged(index);
+          if (widget.controller.displayRefreshEnabled.value) {
+            _displayRefreshHost.flash();
+          }
+        },
+        backgroundDecoration: const BoxDecoration(color: Colors.transparent),
+        builder: (context, index) {
+          return PhotoViewGalleryPageOptions.customChild(
+            minScale: PhotoViewComputedScale.contained * 1.0,
+            maxScale: PhotoViewComputedScale.covered * 4.0,
+            child: GestureDetector(
+              onTapDown: (details) => _lastTapPosition = details.globalPosition,
+              onTap: () {
+                if (_lastTapPosition != null) {
+                  widget.controller.handleTap(_lastTapPosition!);
+                }
+              },
+              onLongPressStart: (details) {
+                if (widget.controller.longPressPageActionsEnabled.value) {
+                  showReaderPageActionsDialog(context, widget.controller);
+                }
+              },
+              child: _buildSpread(context, spreads[index], index),
+            ),
+          );
+        },
+      );
+    });
   }
-
   Widget _buildSpread(BuildContext context, ReaderPage spread, int index) {
+    if (spread.isTransition) {
+      final ctrl = widget.controller;
+      final chapter = spread.chapter ?? ctrl.currentChapter.value!;
+      final curIdx = ctrl.chapterList.indexOf(chapter);
+      final targetIdx = spread.isNextTransition ? curIdx + 1 : curIdx - 1;
+      final targetChapter = (targetIdx >= 0 && targetIdx < ctrl.chapterList.length)
+          ? ctrl.chapterList[targetIdx]
+          : null;
+
+      return ReaderChapterTransition(
+        isNext: spread.isNextTransition,
+        currentChapter: chapter,
+        targetChapter: targetChapter,
+      );
+    }
     if (!spread.isSpread) {
       return _buildImageForPaged(context, spread.page1!, index);
     }
@@ -463,192 +458,36 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
   }
 
   Widget _buildImageForPaged(BuildContext context, PageUrl page, int index) {
-    final isContinuous =
-        widget.controller.readingLayout.value == MangaPageViewMode.continuous;
-
     return Obx(() {
-      final filterQualityIndex = widget.controller.imageFilterQuality.value;
-      final isLanczos = filterQualityIndex == 4;
-      final filterQuality = switch (filterQualityIndex) {
-        0 => FilterQuality.none,
-        1 => FilterQuality.low,
-        3 => FilterQuality.high,
-        _ => FilterQuality.medium,
-      };
-
-      final continuousConstraints = isContinuous && !widget.controller.fitToScreen.value
-          ? BoxConstraints(
-              maxWidth: 500 * widget.controller.pageWidthMultiplier.value)
-          : null;
+      final sourceController = Get.find<SourceController>();
 
       return Padding(
         padding: EdgeInsets.symmetric(
             vertical: widget.controller.spacedPages.value ? 8.0 : 0),
         child: Center(
-          child: widget.controller.cropImages.value
-              ? (page.url.startsWith('http')
-                  ? CroppedNetworkImage(
-                      url: page.url,
-                      headers: (page.headers?.isEmpty ?? true)
-                          ? {
-                              'Referer': sourceController
-                                      .activeMangaSource.value?.baseUrl ??
-                                  ''
-                            }
-                          : page.headers,
-                      fit: widget.controller.fitToScreen.value
-                          ? BoxFit.fitWidth
-                          : BoxFit.contain,
-                      alignment: Alignment.center,
-                      cropThreshold: 30,
-                      placeholder:
-                          _buildPageLoadingWidget(context, pageIndex: index, pageUrl: page.url),
-                    )
-                  : Image.file(
-                      File(page.url),
-                      fit: widget.controller.fitToScreen.value
-                          ? BoxFit.fitWidth
-                          : BoxFit.contain,
-                      alignment: Alignment.center,
-                    ))
-              : isLanczos
-                  ? (page.url.startsWith('http')
-                      ? LanczosNetworkImage(
-                          url: page.url,
-                          headers: (page.headers?.isEmpty ?? true)
-                              ? {
-                                  'Referer': sourceController
-                                          .activeMangaSource.value?.baseUrl ??
-                                      ''
-                                }
-                              : page.headers,
-                          fit: widget.controller.fitToScreen.value
-                              ? BoxFit.fitWidth
-                              : BoxFit.contain,
-                          alignment: Alignment.center,
-                          constraints: continuousConstraints,
-                          placeholder:
-                              _buildPageLoadingWidget(context, pageIndex: index, pageUrl: page.url),
-                        )
-                      : LanczosFileImage(
-                          path: page.url,
-                          fit: widget.controller.fitToScreen.value
-                              ? BoxFit.fitWidth
-                              : BoxFit.contain,
-                          alignment: Alignment.center,
-                          constraints: continuousConstraints,
-                          placeholder:
-                              _buildPageLoadingWidget(context, pageIndex: index, pageUrl: page.url),
-                        ))
-                  : (page.url.startsWith('http')
-                      ? ExtendedImage.network(
-                          page.url,
-                          cacheMaxAge: Duration(
-                              days: PlayerUiKeys.cacheDays.get<int>(7)),
-                          mode: ExtendedImageMode.none,
-                          gaplessPlayback: true,
-                          headers: (page.headers?.isEmpty ?? true)
-                              ? {
-                                  'Referer': sourceController
-                                          .activeMangaSource.value?.baseUrl ??
-                                      ''
-                                }
-                              : page.headers,
-                          fit: widget.controller.fitToScreen.value
-                              ? BoxFit.fitWidth
-                              : BoxFit.contain,
-                          constraints: continuousConstraints,
-                          cache: true,
-                          alignment: Alignment.center,
-                          filterQuality: filterQuality,
-                          enableLoadState: true,
-                          loadStateChanged: (ExtendedImageState state) {
-                            switch (state.extendedImageLoadState) {
-                              case LoadState.loading:
-                                return _buildPageLoadingWidget(
-                                  context,
-                                  pageIndex: index,
-                                  pageUrl: page.url,
-                                  progress: _networkLoadProgress(state),
-                                );
-
-                              case LoadState.failed:
-                                final size = MediaQuery.of(context).size;
-                                return SizedBox(
-                                  height: size.height,
-                                  child: Center(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        const Text(
-                                          'Failed to load image',
-                                          style: TextStyle(
-                                              fontFamily: 'Poppins-Bold'),
-                                        ),
-                                        const SizedBox(height: 8),
-                                        ElevatedButton.icon(
-                                          onPressed: () => state.reLoadImage(),
-                                          icon: const Icon(Icons.refresh,
-                                              size: 16),
-                                          label: const Text('Retry'),
-                                          style: ElevatedButton.styleFrom(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 12, vertical: 6),
-                                            textStyle:
-                                                const TextStyle(fontSize: 12),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-
-                              case LoadState.completed:
-                                final image = state.extendedImageInfo?.image;
-                                if (image != null) {
-                                  final aspect = image.width / image.height;
-                                  widget.controller.pageAspectRatios[page.url] = aspect;
-                                }
-                                return state.completedWidget;
-                            }
-                          },
-                        )
-                      : ExtendedImage.file(
-                          File(page.url),
-                          fit: widget.controller.fitToScreen.value
-                              ? BoxFit.fitWidth
-                              : BoxFit.contain,
-                          constraints: continuousConstraints,
-                          alignment: Alignment.center,
-                          filterQuality: filterQuality,
-                          enableLoadState: true,
-                          loadStateChanged: (ExtendedImageState state) {
-                            if (state.extendedImageLoadState == LoadState.completed) {
-                              final image = state.extendedImageInfo?.image;
-                              if (image != null) {
-                                final aspect = image.width / image.height;
-                                widget.controller.pageAspectRatios[page.url] = aspect;
-                              }
-                            }
-                            return state.completedWidget;
-                          },
-                        )),
+          child: SubsamplingImageProvider(
+            page: PageUrl(
+              page.url,
+              headers: (page.headers?.isEmpty ?? true)
+                  ? {
+                      'Referer': sourceController
+                              .activeMangaSource.value?.baseUrl ??
+                          ''
+                    }
+                  : page.headers,
+            ),
+            fit: widget.controller.fitToScreen.value
+                ? BoxFit.fitWidth
+                : BoxFit.contain,
+            alignment: Alignment.center,
+            cropBorders: widget.controller.cropImages.value,
+            placeholder: _buildPageLoadingWidget(context, pageIndex: index, pageUrl: page.url),
+          ),
         ),
       );
     });
   }
 
-  double? _networkLoadProgress(ExtendedImageState state) {
-    final progress = state.loadingProgress;
-    final totalBytes = progress?.expectedTotalBytes;
-    if (totalBytes == null || totalBytes <= 0) {
-      return null;
-    }
-
-    final loadedBytes = progress?.cumulativeBytesLoaded ?? 0;
-    return (loadedBytes / totalBytes).clamp(0.0, 1.0).toDouble();
-  }
 
   Widget _buildPageLoadingWidget(
     BuildContext context, {
