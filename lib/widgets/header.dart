@@ -111,7 +111,9 @@ class Header extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _profileIcon(context, profileData),
+                  type == PageType.home
+                      ? _buildActionButtons(context, profileData)
+                      : _profileIcon(context, profileData),
                   const SizedBox(width: 12),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -128,14 +130,18 @@ class Header extends StatelessWidget {
             ),
             _FloatingHeaderWrapper(
               margin: const EdgeInsets.fromLTRB(0, 8, 24, 8),
-              child: _buildActionButtons(context, profileData),
+              child: type == PageType.home
+                  ? _profileIcon(context, profileData)
+                  : _buildActionButtons(context, profileData),
             ),
           ],
         );
       } else {
         final content = Row(
           children: [
-            _profileIcon(context, profileData),
+            type == PageType.home
+                ? _buildActionButtons(context, profileData)
+                : _profileIcon(context, profileData),
             const SizedBox(width: 12),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -146,7 +152,9 @@ class Header extends StatelessWidget {
               ],
             ),
             const Spacer(),
-            _buildActionButtons(context, profileData),
+            type == PageType.home
+                ? _profileIcon(context, profileData)
+                : _buildActionButtons(context, profileData),
           ],
         );
         return _FloatingHeaderWrapper(child: content);
@@ -210,8 +218,6 @@ class Header extends StatelessWidget {
 
   Widget _buildHeaderSubtitle(BuildContext context,
       GreetingController greetingController, ServiceHandler profileData) {
-
-
     if (type == PageType.library) {
       return Text(
         "Discover favorites",

@@ -231,7 +231,8 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                         final isInstalled = _isPluginInstalled;
                         return Container(
                           decoration: BoxDecoration(
-                            color: colors.surfaceContainer.withValues(alpha: 0.3),
+                            color:
+                                colors.surfaceContainer.withValues(alpha: 0.3),
                             borderRadius: BorderRadius.circular(18),
                             border: Border.all(
                                 color: colors.outlineVariant
@@ -263,32 +264,31 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                                       )
                                     : null,
                               ),
-                              Divider(
-                                  height: 1,
-                                  color:
-                                      colors.outlineVariant.withValues(alpha: 0.3)),
-                              CustomTile(
-                                icon: Platform.isAndroid
-                                    ? Icons.install_mobile_rounded
-                                    : Icons.folder_zip_rounded,
-                                title: Platform.isAndroid
-                                    ? 'Load Plugin APK from Storage'
-                                    : 'Load Plugin JAR from Storage',
-                                description: Platform.isAndroid
-                                    ? 'Select a runtime APK from local storage to manually install'
-                                    : 'Select a runtime JAR from local storage to manually install',
-                                onTap: _isSyncingLocalApk ? null : _syncLocalApk,
-                                postFix: _isSyncingLocalApk
-                                    ? SizedBox(
-                                        width: 18,
-                                        height: 18,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          color: colors.primary,
-                                        ),
-                                      )
-                                    : null,
-                              ),
+                              if (Platform.isAndroid) ...[
+                                Divider(
+                                    height: 1,
+                                    color: colors.outlineVariant
+                                        .withValues(alpha: 0.3)),
+                                CustomTile(
+                                  icon: Icons.install_mobile_rounded,
+                                  title: 'Load Plugin APK from Storage',
+                                  description: Platform.isAndroid
+                                      ? 'Select a runtime APK from local storage to manually install'
+                                      : 'Select a runtime JAR from local storage to manually install',
+                                  onTap:
+                                      _isSyncingLocalApk ? null : _syncLocalApk,
+                                  postFix: _isSyncingLocalApk
+                                      ? SizedBox(
+                                          width: 18,
+                                          height: 18,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color: colors.primary,
+                                          ),
+                                        )
+                                      : null,
+                                ),
+                              ],
                               if (isInstalled) ...[
                                 Divider(
                                     height: 1,
