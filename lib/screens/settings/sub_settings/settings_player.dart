@@ -2084,6 +2084,15 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                       settings.enableSwipeControls = val),
                               CustomSwitchTile(
                                   padding: const EdgeInsets.all(10),
+                                  icon: Icons.gesture_rounded,
+                                  title: "Hold to Seek",
+                                  description:
+                                      "Enable holding on player screen to fast forward or speed seek",
+                                  switchValue: settings.enableHoldToSeek,
+                                  onChanged: (val) =>
+                                      settings.enableHoldToSeek = val),
+                              CustomSwitchTile(
+                                  padding: const EdgeInsets.all(10),
                                   icon: Icons.screenshot_rounded,
                                   title: "Save Last Frame",
                                   description:

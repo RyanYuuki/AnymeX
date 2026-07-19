@@ -8,6 +8,7 @@ import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controller/player_utils.dart';
 import 'dart:async';
 
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:get/get.dart';
 
 class DoubleTapSeekWidget extends StatefulWidget {
@@ -788,12 +789,20 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
               onHorizontalDragUpdate: _onHorizontalDragUpdate,
               onHorizontalDragEnd: _onHorizontalDragEnd,
               onLongPressStart: (details) {
+                if (!Get.find<Settings>().enableHoldToSeek) return;
                 _initialSwipeY = details.globalPosition.dy;
                 _startHold();
               },
-              onLongPressEnd: (details) => _endHold(),
-              onLongPressCancel: () => _endHold(),
+              onLongPressEnd: (details) {
+                if (!Get.find<Settings>().enableHoldToSeek) return;
+                _endHold();
+              },
+              onLongPressCancel: () {
+                if (!Get.find<Settings>().enableHoldToSeek) return;
+                _endHold();
+              },
               onLongPressMoveUpdate: (details) {
+                if (!Get.find<Settings>().enableHoldToSeek) return;
                 if (_isHolding) {
                   double deltaY = details.globalPosition.dy - _initialSwipeY;
                   _updateSpeedFromSwipe(deltaY);

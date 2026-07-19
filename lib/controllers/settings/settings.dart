@@ -573,6 +573,12 @@ class Settings extends GetxController {
     PlayerSettingsKeys.enableScreenshot.set(value);
   }
 
+  bool get enableHoldToSeek => _getPlayerSetting((s) => s.enableHoldToSeek);
+  set enableHoldToSeek(bool value) {
+    playerSettings.update((s) => s?.enableHoldToSeek = value);
+    PlayerSettingsKeys.enableHoldToSeek.set(value);
+  }
+
   bool get playerMenuAnimation =>
       _getPlayerSetting((s) => s.playerMenuAnimation);
   set playerMenuAnimation(bool value) {

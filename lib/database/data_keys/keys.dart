@@ -248,6 +248,7 @@ enum PlayerSettingsKeys {
   preferredSubtitleLanguage,
   videoOutput,
   audioOutput,
+  enableHoldToSeek,
 }
 
 enum UISettingsKeys {

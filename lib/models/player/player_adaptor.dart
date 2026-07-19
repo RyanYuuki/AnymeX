@@ -35,6 +35,7 @@ class PlayerSettings {
   String preferredSubtitleLanguage;
   String videoOutput;
   String audioOutput;
+  bool enableHoldToSeek;
 
   PlayerSettings({
     this.speed = 1.0,
@@ -71,6 +72,7 @@ class PlayerSettings {
     this.preferredSubtitleLanguage = 'none',
     this.videoOutput = 'gpu',
     this.audioOutput = 'auto',
+    this.enableHoldToSeek = true,
   });
 
   factory PlayerSettings.fromDB() {
@@ -147,6 +149,8 @@ class PlayerSettings {
           .get<String>(defaults.videoOutput),
       audioOutput: PlayerSettingsKeys.audioOutput
           .get<String>(defaults.audioOutput),
+      enableHoldToSeek: PlayerSettingsKeys.enableHoldToSeek
+          .get<bool>(defaults.enableHoldToSeek),
     );
   }
 }
