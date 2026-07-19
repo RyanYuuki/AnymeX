@@ -32,9 +32,9 @@ class IosMediaIndicatorTheme extends MediaIndicatorTheme {
         child: Align(
           alignment: Alignment.center,
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(100),
+            borderRadius: BorderRadius.circular(32),
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
               child: Container(
                 width: 140,
                 height: 140,
@@ -57,8 +57,8 @@ class IosMediaIndicatorTheme extends MediaIndicatorTheme {
                   alignment: Alignment.center,
                   children: [
                     const SizedBox(
-                      width: 80,
-                      height: 80,
+                      width: 88,
+                      height: 88,
                       child: CircularProgressIndicator(
                         value: 1.0,
                         strokeWidth: 8,
@@ -67,8 +67,8 @@ class IosMediaIndicatorTheme extends MediaIndicatorTheme {
                       ),
                     ),
                     SizedBox(
-                      width: 100,
-                      height: 100,
+                      width: 88,
+                      height: 88,
                       child: TweenAnimationBuilder<double>(
                         tween: Tween<double>(end: data.value),
                         duration: valueAnimationDuration,
@@ -78,22 +78,29 @@ class IosMediaIndicatorTheme extends MediaIndicatorTheme {
                           final secondValue = (animValue - 1.0).clamp(0.0, 1.0);
 
                           return Stack(
+                            alignment: Alignment.center,
                             children: [
-                              CircularProgressIndicator(
-                                value: firstValue,
-                                year2023: false,
-                                strokeWidth: 8,
-                                color: data.isVolumeIndicator ? primaryColor : tertiaryColor,
-                                strokeCap: StrokeCap.round,
-                              ),
-                              if (data.isVolumeIndicator && secondValue > 0)
-                                CircularProgressIndicator(
-                                  value: secondValue,
+                              SizedBox.expand(
+                                child: CircularProgressIndicator(
+                                  value: firstValue,
                                   year2023: false,
                                   strokeWidth: 8,
-                                  color: tertiaryColor,
+                                  color: data.isVolumeIndicator
+                                      ? primaryColor
+                                      : tertiaryColor,
                                   strokeCap: StrokeCap.round,
-                                  backgroundColor: Colors.transparent,
+                                ),
+                              ),
+                              if (data.isVolumeIndicator && secondValue > 0)
+                                SizedBox.expand(
+                                  child: CircularProgressIndicator(
+                                    value: secondValue,
+                                    year2023: false,
+                                    strokeWidth: 8,
+                                    color: tertiaryColor,
+                                    strokeCap: StrokeCap.round,
+                                    backgroundColor: Colors.transparent,
+                                  ),
                                 ),
                             ],
                           );
