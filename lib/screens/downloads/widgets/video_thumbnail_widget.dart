@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/local_thumbnail_service.dart';
@@ -23,22 +24,28 @@ class VideoThumbnailWidget extends StatefulWidget {
 }
 
 class _VideoThumbnailWidgetState extends State<VideoThumbnailWidget> {
-  Future<Uint8List?>? _thumbnailFuture;
+  Future<String?>? _pathFuture;
+  Future<Uint8List?>? _bytesFuture;
 
   @override
   void initState() {
     super.initState();
-    _thumbnailFuture = LocalThumbnailService.getThumbnail(widget.videoPath);
+    _loadThumbnail();
   }
 
   @override
   void didUpdateWidget(covariant VideoThumbnailWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.videoPath != widget.videoPath) {
-      setState(() {
-        _thumbnailFuture = LocalThumbnailService.getThumbnail(widget.videoPath);
-      });
+      _loadThumbnail();
     }
+  }
+
+  void _loadThumbnail() {
+    setState(() {
+      _pathFuture = LocalThumbnailService.getThumbnailPath(widget.videoPath);
+      _bytesFuture = null;
+    });
   }
 
   @override
@@ -51,14 +58,15 @@ class _VideoThumbnailWidgetState extends State<VideoThumbnailWidget> {
       child: SizedBox(
         width: widget.width,
         height: widget.height,
-        child: FutureBuilder<Uint8List?>(
-          future: _thumbnailFuture,
+        child: FutureBuilder<String?>(
+          future: _pathFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done &&
                 snapshot.hasData &&
                 snapshot.data != null) {
-              return Image.memory(
-                snapshot.data!,
+              final path = snapshot.data!;
+              return Image.file(
+                File(path),
                 width: widget.width,
                 height: widget.height,
                 fit: BoxFit.cover,
@@ -73,25 +81,50 @@ class _VideoThumbnailWidgetState extends State<VideoThumbnailWidget> {
                 },
               );
             }
-            
-            return widget.fallback ??
-                Container(
-                  width: widget.width,
-                  height: widget.height,
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainer.withOpacity(0.5),
-                  ),
-                  child: Center(
-                    child: Icon(
-                      Icons.play_circle_fill_rounded,
-                      color: theme.colorScheme.primary.withOpacity(0.4),
-                      size: 20,
-                    ),
-                  ),
-                );
+
+            if (snapshot.connectionState == ConnectionState.done &&
+                (snapshot.data == null || snapshot.hasError)) {
+              _bytesFuture ??= LocalThumbnailService.getThumbnail(widget.videoPath);
+              return FutureBuilder<Uint8List?>(
+                future: _bytesFuture,
+                builder: (context, byteSnapshot) {
+                  if (byteSnapshot.connectionState == ConnectionState.done &&
+                      byteSnapshot.hasData &&
+                      byteSnapshot.data != null) {
+                    return Image.memory(
+                      byteSnapshot.data!,
+                      width: widget.width,
+                      height: widget.height,
+                      fit: BoxFit.cover,
+                    );
+                  }
+                  return _buildFallback(theme);
+                },
+              );
+            }
+
+            return _buildFallback(theme);
           },
         ),
       ),
     );
+  }
+
+  Widget _buildFallback(ThemeData theme) {
+    return widget.fallback ??
+        Container(
+          width: widget.width,
+          height: widget.height,
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surfaceContainer.withOpacity(0.5),
+          ),
+          child: Center(
+            child: Icon(
+              Icons.play_circle_fill_rounded,
+              color: theme.colorScheme.primary.withOpacity(0.4),
+              size: 20,
+            ),
+          ),
+        );
   }
 }

@@ -9,6 +9,7 @@ import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'package:anymex/database/data_keys/keys.dart';
 import 'base_player.dart' as base;
 
 class MediaKitPlayer extends base.BasePlayer {
@@ -120,6 +121,10 @@ class MediaKitPlayer extends base.BasePlayer {
       await mpv.setProperty("vd-lavc-skiploopfilter", "nonkey");
       await mpv.setProperty("vd-lavc-threads", "4");
       await mpv.setProperty("cache", "yes");
+      final savedAudioLayout = PlayerKeys.audioChannelLayout.get<String>('auto');
+      if (savedAudioLayout != 'auto') {
+        await mpv.setProperty("audio-channels", savedAudioLayout);
+      }
     } catch (e) {
       print('Error setting MPV optimization properties: $e');
     }
@@ -345,6 +350,16 @@ class MediaKitPlayer extends base.BasePlayer {
   Future<void> setSubtitleDelay(Duration delay) async {
     final seconds = delay.inMicroseconds / 1000000.0;
     (_player.platform as dynamic).setProperty('sub-delay', seconds.toString());
+  }
+
+  @override
+  Future<void> setAudioChannelLayout(String layout) async {
+    try {
+      final mpv = _player.platform as dynamic;
+      await mpv.setProperty('audio-channels', layout);
+    } catch (e) {
+      debugPrint('Error setting audio-channels: $e');
+    }
   }
 
   @override

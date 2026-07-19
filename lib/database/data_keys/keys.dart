@@ -39,7 +39,7 @@ enum ThemeKeys {
   logoAnimationType,
 }
 
-enum PlayerKeys { useLibass, useMediaKit, useExternalPlayer }
+enum PlayerKeys { useLibass, useMediaKit, useExternalPlayer, audioChannelLayout }
 
 enum PlayerUiKeys {
   playerExperimentalEnabled,

@@ -253,10 +253,22 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
           .where((t) => t.id != 'auto' && t.id != 'no')
           .toList();
       final selected = widget.controller.selectedAudioTrack.value;
+      final selectedLayout = widget.controller.selectedAudioChannelLayout.value;
+
+      final layouts = [
+        ('auto', 'Auto', 'System Default'),
+        ('mono', 'Mono', '1.0 Channel'),
+        ('stereo', 'Stereo', '2.0 Channels'),
+        ('2.1', '2.1 Surround', '2.1 Channels'),
+        ('5.1', '5.1 Surround', '5.1 Channels'),
+        ('7.1', '7.1 Surround', '7.1 Channels'),
+      ];
+
+      final totalItems = tracks.length + 2 + 1 + layouts.length;
 
       return ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        itemCount: tracks.length + 2,
+        itemCount: totalItems,
         itemBuilder: (context, index) {
           if (index == 0) {
             final isSelected = selected != null && selected.id == 'no';
@@ -292,29 +304,62 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
             );
           }
 
-          final track = tracks[index - 2];
-          final isSelected = selected != null && selected.id == track.id;
+          if (index >= 2 && index < tracks.length + 2) {
+            final track = tracks[index - 2];
+            final isSelected = selected != null && selected.id == track.id;
 
-          String displayTitle = 'Audio Track ${index - 1}';
-          if (track.language != null && track.title != null) {
-            displayTitle =
-                '${completeSubtitleLanguageName(track.language!)} ${(track.title?.isNotEmpty ?? false) ? '- ${track.title}' : ''}';
-          } else if (track.language != null) {
-            displayTitle = completeSubtitleLanguageName(track.language!);
-          } else if (track.title != null) {
-            displayTitle = track.title!;
+            String displayTitle = 'Audio Track ${index - 1}';
+            if (track.language != null && track.title != null) {
+              displayTitle =
+                  '${completeSubtitleLanguageName(track.language!)} ${(track.title?.isNotEmpty ?? false) ? '- ${track.title}' : ''}';
+            } else if (track.language != null) {
+              displayTitle = completeSubtitleLanguageName(track.language!);
+            } else if (track.title != null) {
+              displayTitle = track.title!;
+            }
+
+            return _buildListItem(
+              cs: cs,
+              theme: theme,
+              title: displayTitle,
+              subtitle: 'Audio Track',
+              icon: Icons.music_note_rounded,
+              isSelected: isSelected,
+              onTap: () {
+                widget.controller.setAudioTrack(track);
+                widget.controller.selectedAudioTrack.value = track;
+              },
+            );
           }
+
+          final layoutHeaderIndex = tracks.length + 2;
+          if (index == layoutHeaderIndex) {
+            return Padding(
+              padding: const EdgeInsets.only(top: 16, bottom: 8, left: 4),
+              child: Text(
+                'AUDIO CHANNELS / LAYOUT',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                  color: cs.primary,
+                ),
+              ),
+            );
+          }
+
+          final layoutIndex = index - layoutHeaderIndex - 1;
+          final layout = layouts[layoutIndex];
+          final isSelected = selectedLayout == layout.$1;
 
           return _buildListItem(
             cs: cs,
             theme: theme,
-            title: displayTitle,
-            subtitle: 'Audio Track',
-            icon: Icons.music_note_rounded,
+            title: layout.$2,
+            subtitle: layout.$3,
+            icon: Icons.speaker_group_rounded,
             isSelected: isSelected,
             onTap: () {
-              widget.controller.setAudioTrack(track);
-              widget.controller.selectedAudioTrack.value = track;
+              widget.controller.setAudioChannelLayout(layout.$1);
             },
           );
         },

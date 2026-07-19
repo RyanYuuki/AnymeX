@@ -199,6 +199,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final Rx<List<SubtitleTrack>> embeddedSubs = Rx([]);
   final Rx<List<VideoTrack>> embeddedQuality = Rx([]);
   final Rx<AudioTrack?> selectedAudioTrack = Rx(null);
+  final RxString selectedAudioChannelLayout = 'auto'.obs;
   final Rx<SubtitleTrack?> selectedSubsTrack = Rx(null);
   final Rx<VideoTrack?> selectedQualityTrack = Rx(null);
   final Rx<model.Track> selectedExternalSub = Rx(model.Track());
@@ -324,6 +325,12 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     });
   }
 
+  void setAudioChannelLayout(String layout) {
+    selectedAudioChannelLayout.value = layout;
+    PlayerKeys.audioChannelLayout.set(layout);
+    _basePlayer.setAudioChannelLayout(layout);
+  }
+
   void applyShaderByIndex(int index) {
     final shaders = PlayerShaders.getShaders();
     if (index >= 0 && index < shaders.length) {
@@ -364,6 +371,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _initDatabaseVars();
     _initOrientations();
+    selectedAudioChannelLayout.value = PlayerKeys.audioChannelLayout.get<String>('auto');
     _activeUseLibass = PlayerKeys.useLibass.get<bool>(false);
     _initializePlayer();
     _updateRpc();

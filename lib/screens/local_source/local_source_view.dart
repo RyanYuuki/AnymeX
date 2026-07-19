@@ -329,7 +329,7 @@ class _WatchOfflineState extends State<WatchOffline> {
         return _buildNoSearchResultsState(theme);
       }
 
-      if (controller.selectedVideos.value.isNotEmpty) {
+      if (controller.selectedVideos.isNotEmpty) {
         return GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -340,10 +340,10 @@ class _WatchOfflineState extends State<WatchOffline> {
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,
           ),
-          itemCount: controller.selectedVideos.value.length,
+          itemCount: controller.selectedVideos.length,
           itemBuilder: (context, index) {
             return _buildServerTile(
-                theme, controller.selectedVideos.value[index]);
+                theme, controller.selectedVideos[index]);
           },
         );
       }
@@ -1186,8 +1186,8 @@ class _WatchOfflineState extends State<WatchOffline> {
           child: Row(
             children: [
               Container(
-                width: 60,
-                height: 88,
+                width: isVideoFile ? 104 : 60,
+                height: isVideoFile ? 60 : 88,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   color: isDirectory
@@ -1325,8 +1325,8 @@ class _WatchOfflineState extends State<WatchOffline> {
     if (isVideoFile) {
       return VideoThumbnailWidget(
         videoPath: item.path,
-        width: 60,
-        height: 88,
+        width: 104,
+        height: 60,
         borderRadius: BorderRadius.circular(12),
         fallback: Container(
           decoration: BoxDecoration(
