@@ -42,6 +42,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
   late int selectedVariantIndex;
   final settings = Get.find<Settings>();
   late LogoAnimationType selectedLogoAnimation;
+  int _selectedTabIndex = 0;
 
   final List<Map<String, dynamic>> themeModes = [
     {"label": "Light", "color": Colors.white},
@@ -51,11 +52,20 @@ class _SettingsThemeState extends State<SettingsTheme> {
   String themeMode = "Light";
   late List<Map<String, dynamic>> customColorMap;
 
+  late final PageController _pageController;
+
   @override
   void initState() {
     super.initState();
+    _pageController = PageController(initialPage: _selectedTabIndex);
     _initializeDbVars();
     _initializeLogoAnimation();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   void handleThemeMode(String theme) {
@@ -186,250 +196,55 @@ class _SettingsThemeState extends State<SettingsTheme> {
       child: Scaffold(
         body: Column(children: [
           const NestedHeader(title: 'Theme'),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: AnymeXTabBar(
+              selectTabs: const ["Theme", "Wallpaper", "Extras"],
+              selectedIndex: _selectedTabIndex,
+              onTabSelected: (index) {
+                setState(() {
+                  _selectedTabIndex = index;
+                });
+                _pageController.animateToPage(
+                  index,
+                  duration: const Duration(milliseconds: 350),
+                  curve: Curves.easeInOut,
+                );
+              },
+            ),
+          ),
           Expanded(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+            child: Container(
+              margin: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface.withOpacity(0.35),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.outline.withOpacity(0.12),
+                ),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: PageView(
+                  controller: _pageController,
+                  onPageChanged: (index) {
+                    setState(() {
+                      _selectedTabIndex = index;
+                    });
+                  },
                   children: [
-                    AnymexExpansionTile(
-                      title: 'Appearance',
-                      content: Column(
-                        children: [
-                          _buildModeTemplates(),
-                          const SizedBox(height: 30),
-                          CustomSwitchTile(
-                            icon: HugeIcons.strokeRoundedPaintBrush01,
-                            title: "Default Theme",
-                            description: "Play around with App theme",
-                            switchValue: defaultTheme,
-                            onChanged: handleDefaultSwitch,
-                          ),
-                          const SizedBox(height: 10),
-                          CustomSwitchTile(
-                            icon: HugeIcons.strokeRoundedImage01,
-                            title: "Material You",
-                            description:
-                                "Take color from your wallpaper (A12+)",
-                            switchValue: materialTheme,
-                            onChanged: handleMaterialSwitch,
-                          ),
-                          const SizedBox(height: 10),
-                          Obx(() {
-                            return Column(
-                              children: [
-                                CustomSwitchTile(
-                                  icon: HugeIcons.strokeRoundedBlur,
-                                  title: "Liquid Mode",
-                                  description:
-                                      "Make everything glassy & liquidy...",
-                                  switchValue: settings.liquidMode,
-                                  onChanged: (e) {
-                                    settings.disableGradient = false;
-                                    settings.liquidMode = e;
-                                  },
-                                ),
-                                settings.liquidMode
-                                    ? Column(
-                                        children: [
-                                          const SizedBox(height: 10),
-                                          CustomTile(
-                                            icon: HugeIcons
-                                                .strokeRoundedImageAdd01,
-                                            title: "Liquid Background",
-                                            description:
-                                                "Choose a custom background for liquid mode.",
-                                            onTap: () async {
-                                              await Liquid.pickLiquidBackground(
-                                                  context);
-                                            },
-                                          ),
-                                          const SizedBox(height: 10),
-                                          CustomSwitchTile(
-                                            switchValue:
-                                                settings.retainOriginalColor,
-                                            icon: HugeIcons
-                                                .strokeRoundedImageComposition,
-                                            title: "Retain Original Color",
-                                            description:
-                                                "Enable this if you want to retain the original color of your wallpaper",
-                                            onChanged: (e) => settings
-                                                .retainOriginalColor = e,
-                                          ),
-                                          const SizedBox(height: 10),
-                                          CustomSwitchTile(
-                                            switchValue:
-                                                settings.usePosterColor,
-                                            icon: HugeIcons
-                                                .strokeRoundedImageDownload,
-                                            title: "Use Poster Color",
-                                            description:
-                                                "Applies anime/manga poster color on details page",
-                                            onChanged: (e) =>
-                                                settings.usePosterColor = e,
-                                          ),
-                                          const SizedBox(height: 10),
-                                          CustomTile(
-                                            icon:
-                                                HugeIcons.strokeRoundedRefresh,
-                                            title: "Reset to Default Picture",
-                                            postFix: 0.width(),
-                                            description:
-                                                "Reset to default wallpaper!",
-                                            onTap: () => settings
-                                                .liquidBackgroundPath = "",
-                                          ),
-                                        ],
-                                      )
-                                    : const SizedBox.shrink(),
-                              ],
-                            );
-                          }),
-                        ],
-                      ),
-                      initialExpanded: true,
+                    SingleChildScrollView(
+                      padding: const EdgeInsets.all(16.0),
+                      child: _buildThemeTab(),
                     ),
-                    const SizedBox(height: 10),
-                    AnymexExpansionTile(
-                        initialExpanded: true,
-                        title: 'Extras',
-                        content: Column(
-                          children: [
-                            Obx(() {
-                              return CustomSwitchTile(
-                                  disabled: settings.liquidMode,
-                                  icon: HugeIcons.strokeRoundedFlower,
-                                  title: "Bloom",
-                                  description:
-                                      "Enables a soft, glowing gradient effect.",
-                                  switchValue: !settings.disableGradient,
-                                  onChanged: (val) =>
-                                      settings.disableGradient = !val);
-                            }),
-                            CustomTile(
-                              icon: HugeIcons.strokeRoundedPaintBoard,
-                              title: "Palette",
-                              description: "Choose your favourite palette!",
-                              onTap: () {
-                                showPaletteSelectionDialog(context);
-                              },
-                            ),
-                            const SizedBox(height: 10),
-                            Obx(() {
-                              return CustomSwitchTile(
-                                icon: Icons.texture_rounded,
-                                title: "Grain Texture Overlay",
-                                description: "Apply a subtle film grain texture over the interface",
-                                switchValue: settings.useGrainTexture,
-                                onChanged: (val) => settings.useGrainTexture = val,
-                              );
-                            }),
-                            Obx(() {
-                              if (!settings.useGrainTexture) return const SizedBox.shrink();
-                              final val = settings.grainIntensity;
-                              int selectedIndex = 0;
-                              if (val <= 0.04) {
-                                selectedIndex = 0;
-                              } else if (val <= 0.10) {
-                                selectedIndex = 1;
-                              } else {
-                                selectedIndex = 2;
-                              }
-
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "Grain Intensity",
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        color: Theme.of(context).colorScheme.onSurface,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    AnymeXTabBar(
-                                      selectTabs: const ["Low", "Medium", "High"],
-                                      selectedIndex: selectedIndex,
-                                      onTabSelected: (index) {
-                                        if (index == 0) {
-                                          settings.grainIntensity = 0.03;
-                                        } else if (index == 1) {
-                                          settings.grainIntensity = 0.07;
-                                        } else {
-                                          settings.grainIntensity = 0.15;
-                                        }
-                                      },
-                                    ),
-                                    const SizedBox(height: 10),
-                                  ],
-                                ),
-                              );
-                            }),
-                            const SizedBox(height: 10),
-                            CustomSwitchTile(
-                              icon: HugeIcons.strokeRoundedMoon,
-                              title: "Oled Mode",
-                              description: "Go Super Dark Mode!",
-                              switchValue: isOled,
-                              onChanged: handleOledSwitch,
-                            ),
-                            const SizedBox(height: 10),
-                            // ExpansionTile(title: AnymexText(text: "Custom Theme")),
-                            CustomSwitchTile(
-                              icon: HugeIcons.strokeRoundedColors,
-                              title: "Custom Theme",
-                              description: "Choose your favourite color!",
-                              switchValue: customTheme,
-                              onChanged: handleCustomThemeSwitch,
-                            ),
-                            const SizedBox(height: 10),
-                            CustomTile(
-                              icon: HugeIcons
-                                  .strokeRoundedPlayCircle, // Changed from strokeRoundedAnimation
-                              title: "Logo Animation",
-                              description:
-                                  "Customize your logo animation style",
-                              onTap: _showLogoAnimationDialog,
-                            ),
-                            if (Platform.isAndroid) ...[
-                              const SizedBox(height: 10),
-                              Obx(() {
-                                final label = settings.getPreferredRefreshRateLabel();
-                                return CustomTile(
-                                  icon: HugeIcons.strokeRoundedRefresh,
-                                  title: "Refresh Rate",
-                                  description: "Current mode: $label",
-                                  onTap: () {
-                                    showRefreshRateDialog(context);
-                                  },
-                                );
-                              }),
-                            ],
-                          ],
-                        )),
-                    const SizedBox(height: 10),
-                    if (customTheme) ...[
-                      AnymexCard(
-                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            AnymexText(
-                              text: "Custom Themes",
-                              size: 16,
-                              variant: TextVariant.semiBold,
-                              color: context.colors.primary,
-                            ),
-                            const SizedBox(height: 10),
-                            SingleChildScrollView(child: _buildColorTemplates())
-                          ],
-                        ),
-                      ),
-                    ],
+                    SingleChildScrollView(
+                      padding: const EdgeInsets.all(16.0),
+                      child: _buildWallpaperTab(),
+                    ),
+                    SingleChildScrollView(
+                      padding: const EdgeInsets.all(16.0),
+                      child: _buildExtrasTab(),
+                    ),
                   ],
                 ),
               ),
@@ -437,6 +252,222 @@ class _SettingsThemeState extends State<SettingsTheme> {
           ),
         ]),
       ),
+    );
+  }
+
+  Widget _buildThemeTab() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildModeTemplates(),
+        const SizedBox(height: 30),
+        CustomSwitchTile(
+          icon: HugeIcons.strokeRoundedPaintBrush01,
+          title: "Default Theme",
+          description: "Play around with App theme",
+          switchValue: defaultTheme,
+          onChanged: handleDefaultSwitch,
+        ),
+        const SizedBox(height: 10),
+        CustomSwitchTile(
+          icon: HugeIcons.strokeRoundedImage01,
+          title: "Material You",
+          description: "Take color from your wallpaper (A12+)",
+          switchValue: materialTheme,
+          onChanged: handleMaterialSwitch,
+        ),
+        const SizedBox(height: 10),
+        CustomSwitchTile(
+          icon: HugeIcons.strokeRoundedColors,
+          title: "Custom Theme",
+          description: "Choose your favourite color!",
+          switchValue: customTheme,
+          onChanged: handleCustomThemeSwitch,
+        ),
+        if (customTheme) ...[
+          const SizedBox(height: 20),
+          AnymexCard(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AnymexText(
+                  text: "Custom Themes",
+                  size: 16,
+                  variant: TextVariant.semiBold,
+                  color: context.colors.primary,
+                ),
+                const SizedBox(height: 10),
+                SingleChildScrollView(child: _buildColorTemplates())
+              ],
+            ),
+          ),
+        ],
+        const SizedBox(height: 10),
+        Obx(() {
+          return CustomSwitchTile(
+            disabled: settings.liquidMode,
+            icon: HugeIcons.strokeRoundedFlower,
+            title: "Bloom",
+            description: "Enables a soft, glowing gradient effect.",
+            switchValue: !settings.disableGradient,
+            onChanged: (val) => settings.disableGradient = !val,
+          );
+        }),
+        CustomTile(
+          icon: HugeIcons.strokeRoundedPaintBoard,
+          title: "Palette",
+          description: "Choose your favourite palette!",
+          onTap: () {
+            showPaletteSelectionDialog(context);
+          },
+        ),
+        const SizedBox(height: 10),
+        Obx(() {
+          return CustomSwitchTile(
+            icon: Icons.texture_rounded,
+            title: "Grain Texture Overlay",
+            description: "Apply a subtle film grain texture over the interface",
+            switchValue: settings.useGrainTexture,
+            onChanged: (val) => settings.useGrainTexture = val,
+          );
+        }),
+        Obx(() {
+          if (!settings.useGrainTexture) return const SizedBox.shrink();
+          final val = settings.grainIntensity;
+          int selectedIndex = 0;
+          if (val <= 0.04) {
+            selectedIndex = 0;
+          } else if (val <= 0.10) {
+            selectedIndex = 1;
+          } else {
+            selectedIndex = 2;
+          }
+
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Grain Intensity",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                AnymeXTabBar(
+                  selectTabs: const ["Low", "Medium", "High"],
+                  selectedIndex: selectedIndex,
+                  onTabSelected: (index) {
+                    if (index == 0) {
+                      settings.grainIntensity = 0.03;
+                    } else if (index == 1) {
+                      settings.grainIntensity = 0.07;
+                    } else {
+                      settings.grainIntensity = 0.15;
+                    }
+                  },
+                ),
+                const SizedBox(height: 10),
+              ],
+            ),
+          );
+        }),
+        const SizedBox(height: 10),
+        CustomSwitchTile(
+          icon: HugeIcons.strokeRoundedMoon,
+          title: "Oled Mode",
+          description: "Go Super Dark Mode!",
+          switchValue: isOled,
+          onChanged: handleOledSwitch,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildWallpaperTab() {
+    return Obx(() {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CustomSwitchTile(
+            icon: HugeIcons.strokeRoundedBlur,
+            title: "Liquid Mode",
+            description: "Make everything glassy & liquidy...",
+            switchValue: settings.liquidMode,
+            onChanged: (e) {
+              settings.disableGradient = false;
+              settings.liquidMode = e;
+            },
+          ),
+          if (settings.liquidMode) ...[
+            const SizedBox(height: 10),
+            CustomTile(
+              icon: HugeIcons.strokeRoundedImageAdd01,
+              title: "Liquid Background",
+              description: "Choose a custom background for liquid mode.",
+              onTap: () async {
+                await Liquid.pickLiquidBackground(context);
+              },
+            ),
+            const SizedBox(height: 10),
+            CustomSwitchTile(
+              switchValue: settings.retainOriginalColor,
+              icon: HugeIcons.strokeRoundedImageComposition,
+              title: "Retain Original Color",
+              description: "Enable this if you want to retain the original color of your wallpaper",
+              onChanged: (e) => settings.retainOriginalColor = e,
+            ),
+            const SizedBox(height: 10),
+            CustomSwitchTile(
+              switchValue: settings.usePosterColor,
+              icon: HugeIcons.strokeRoundedImageDownload,
+              title: "Use Poster Color",
+              description: "Applies anime/manga poster color on details page",
+              onChanged: (e) => settings.usePosterColor = e,
+            ),
+            const SizedBox(height: 10),
+            CustomTile(
+              icon: HugeIcons.strokeRoundedRefresh,
+              title: "Reset to Default Picture",
+              postFix: 0.width(),
+              description: "Reset to default wallpaper!",
+              onTap: () => settings.liquidBackgroundPath = "",
+            ),
+          ],
+        ],
+      );
+    });
+  }
+
+  Widget _buildExtrasTab() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CustomTile(
+          icon: HugeIcons.strokeRoundedPlayCircle,
+          title: "Logo Animation",
+          description: "Customize your logo animation style",
+          onTap: _showLogoAnimationDialog,
+        ),
+        if (Platform.isAndroid) ...[
+          const SizedBox(height: 10),
+          Obx(() {
+            final label = settings.getPreferredRefreshRateLabel();
+            return CustomTile(
+              icon: HugeIcons.strokeRoundedRefresh,
+              title: "Refresh Rate",
+              description: "Current mode: $label",
+              onTap: () {
+                showRefreshRateDialog(context);
+              },
+            );
+          }),
+        ],
+      ],
     );
   }
 
