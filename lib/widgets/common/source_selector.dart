@@ -194,7 +194,7 @@ class _SourceIcon extends StatelessWidget {
       children: [
         AnymeXImage(
           radius: 10,
-          imageUrl: source!.iconUrl ?? '',
+          imageUrl: source!.iconUrl ?? source!.managerIcon,
           height: 36,
           width: 36,
         ),

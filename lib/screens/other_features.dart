@@ -53,8 +53,7 @@ class OtherFeaturesPage extends StatelessWidget {
                           icon: Icons.calendar_month_rounded,
                           title: 'Calendar',
                           description: 'Track airing schedules',
-                          color: colorScheme.secondaryContainer,
-                          onColor: colorScheme.onSecondaryContainer,
+                          accentColor: colorScheme.primary,
                           onTap: () => navigate(() => const Calendar()),
                         ),
                       ),
@@ -64,8 +63,7 @@ class OtherFeaturesPage extends StatelessWidget {
                           icon: Icons.auto_awesome,
                           title: 'AI Picks',
                           description: 'Personalized recommendations',
-                          color: colorScheme.secondaryContainer,
-                          onColor: colorScheme.onSecondaryContainer,
+                          accentColor: colorScheme.primary,
                           onTap: () => navigate(() => const AIRecommendation(
                                 isManga: false,
                               )),
@@ -79,8 +77,7 @@ class OtherFeaturesPage extends StatelessWidget {
                   icon: Icons.file_upload_rounded,
                   title: 'List Exporter',
                   description: 'Export your Anime list',
-                  color: colorScheme.secondaryContainer,
-                  onColor: colorScheme.onSecondaryContainer,
+                  accentColor: colorScheme.primary,
                   isFullWidth: true,
                   onTap: () =>
                       navigate(() => const ListExporterPage(isManga: false)),
@@ -114,8 +111,7 @@ class OtherFeaturesPage extends StatelessWidget {
                           icon: Icons.auto_awesome,
                           title: 'AI Picks',
                           description: 'Smart manga suggestions',
-                          color: colorScheme.tertiaryContainer,
-                          onColor: colorScheme.tertiary,
+                          accentColor: colorScheme.tertiary,
                           onTap: () => navigate(() => const AIRecommendation(
                                 isManga: true,
                               )),
@@ -127,8 +123,7 @@ class OtherFeaturesPage extends StatelessWidget {
                           icon: Icons.qr_code_scanner_rounded,
                           title: 'Scanner',
                           description: 'Scan ISBN barcodes',
-                          color: colorScheme.tertiaryContainer,
-                          onColor: colorScheme.tertiary,
+                          accentColor: colorScheme.tertiary,
                           onTap: () =>
                               navigate(() => const BarcodeScannerPage()),
                         ),
@@ -141,8 +136,7 @@ class OtherFeaturesPage extends StatelessWidget {
                   icon: Icons.file_upload_rounded,
                   title: 'List Exporter',
                   description: 'Export your Manga list',
-                  color: colorScheme.tertiaryContainer,
-                  onColor: colorScheme.tertiary,
+                  accentColor: colorScheme.tertiary,
                   isFullWidth: true,
                   onTap: () =>
                       navigate(() => const ListExporterPage(isManga: true)),
@@ -192,7 +186,7 @@ class NestedHeader extends StatelessWidget {
                 color: theme.colorScheme.onSurface,
               ),
               style: IconButton.styleFrom(
-                backgroundColor: theme.colorScheme.surfaceVariant
+                backgroundColor: theme.colorScheme.surfaceContainerHighest
                     .opaque(0.3, iReallyMeanIt: true),
                 padding: const EdgeInsets.all(12),
               ),
@@ -221,8 +215,7 @@ class _FeatureCard extends StatelessWidget {
   final IconData icon;
   final String title;
   final String description;
-  final Color color;
-  final Color onColor;
+  final Color? accentColor;
   final bool isFullWidth;
   final VoidCallback onTap;
 
@@ -230,59 +223,70 @@ class _FeatureCard extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.description,
-    required this.color,
-    required this.onColor,
+    this.accentColor,
     this.isFullWidth = false,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: color.opaque(0.3),
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        onTap: onTap,
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final effectiveAccent = accentColor ?? cs.primary;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: cs.surfaceContainerHighest.withOpacity(0.3),
         borderRadius: BorderRadius.circular(16),
-        child: Container(
-          padding: EdgeInsets.all(isFullWidth ? 20 : 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: color.opaque(0.4),
-                  borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: cs.outline.withOpacity(0.12),
+          width: 1,
+        ),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            padding: EdgeInsets.all(isFullWidth ? 20 : 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: effectiveAccent.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: effectiveAccent,
+                    size: isFullWidth ? 28 : 24,
+                  ),
                 ),
-                child: Icon(
-                  icon,
-                  color: onColor,
-                  size: isFullWidth ? 32 : 28,
+                SizedBox(height: isFullWidth ? 16 : 12),
+                Text(
+                  title,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: cs.onSurface,
+                  ),
                 ),
-              ),
-              SizedBox(height: isFullWidth ? 16 : 12),
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: isFullWidth ? 22 : 18,
-                  fontWeight: FontWeight.bold,
-                  color: onColor,
+                const SizedBox(height: 4),
+                Text(
+                  description,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: cs.onSurfaceVariant.withOpacity(0.8),
+                    height: 1.3,
+                  ),
+                  maxLines: isFullWidth ? 2 : 3,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                description,
-                style: TextStyle(
-                  fontSize: isFullWidth ? 14 : 13,
-                  color: onColor.opaque(0.8),
-                  height: 1.3,
-                ),
-                maxLines: isFullWidth ? 2 : 3,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

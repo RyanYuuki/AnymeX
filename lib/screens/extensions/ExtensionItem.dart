@@ -116,20 +116,13 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
           child: Icon(Icons.extension_rounded, color: theme.primary, size: 24),
         );
       }
-      if (iconUrl.startsWith('http')) {
-        return AnymeXImage(
-          imageUrl: iconUrl,
-          fit: BoxFit.cover,
-          width: 50,
-          height: 50,
-          radius: 0,
-        );
-      }
-      return Image.file(
-        File(iconUrl),
+
+      return AnymeXImage(
+        imageUrl: iconUrl,
         fit: BoxFit.cover,
-        height: 50,
         width: 50,
+        height: 50,
+        radius: 0,
       );
     }
 
@@ -380,7 +373,8 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
     }
 
     final hasSettings =
-        (widget.source is CloudStreamSource && Platform.isAndroid) || widget.source is CloudStreamSource == false;
+        (widget.source is CloudStreamSource && Platform.isAndroid) ||
+            widget.source is CloudStreamSource == false;
 
     return Row(
       mainAxisSize: MainAxisSize.min,

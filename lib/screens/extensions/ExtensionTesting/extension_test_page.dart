@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/widgets/common/glow.dart';
@@ -405,35 +403,14 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
       );
     }
 
-    if (source.iconUrl!.startsWith('http')) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: AnymeXImage(
-          imageUrl: source.iconUrl!,
-          width: 40,
-          height: 40,
-          fit: BoxFit.cover,
-          radius: 0,
-        ),
-      );
-    }
-
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
-      child: Image.file(
-        File(source.iconUrl!),
+      child: AnymeXImage(
+        imageUrl: source.iconUrl!,
         width: 40,
         height: 40,
         fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) => Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: theme.primary.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(Icons.extension, color: theme.primary, size: 24),
-        ),
+        radius: 0,
       ),
     );
   }

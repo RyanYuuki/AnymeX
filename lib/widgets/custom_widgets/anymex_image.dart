@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:anymex/controllers/services/storage/anymex_cache_manager.dart';
@@ -14,6 +15,11 @@ bool isBase64Image(String value) {
   if (value.startsWith('data:image')) return true;
 
   return RegExp(r'^[A-Za-z0-9+/]+={0,2}$').hasMatch(value);
+}
+
+bool isNetworkImageUrl(String value) {
+  final uri = Uri.tryParse(value);
+  return uri != null && (uri.scheme == 'http' || uri.scheme == 'https');
 }
 
 Uint8List base64ToBytes(String base64) {
@@ -45,7 +51,7 @@ class AnymeXImage extends StatefulWidget {
     this.alignment = Alignment.center,
     this.color,
     this.errorImage,
-    this.onColorExtracted, 
+    this.onColorExtracted,
     this.headers,
     this.fadeInDuration,
     this.fadeOutDuration,
@@ -114,6 +120,7 @@ class _AnymeXImageState extends State<AnymeXImage> {
   @override
   Widget build(BuildContext context) {
     final isBase64 = _cachedBytes != null;
+    final isNetworkImage = isNetworkImageUrl(widget.imageUrl);
 
     return RepaintBoundary(
       child: ClipRRect(
@@ -129,38 +136,100 @@ class _AnymeXImageState extends State<AnymeXImage> {
                 colorBlendMode: widget.color != null ? BlendMode.color : null,
                 errorBuilder: (_, __, ___) => _fallback(context),
               )
-            : CachedNetworkImage(
-                cacheManager: AnymeXCacheManager.instance,
-                imageUrl: widget.imageUrl,
-                httpHeaders: widget.headers,
-                width: widget.width,
-                height: widget.height,
-                fit: widget.fit,
-                alignment: widget.alignment,
-                color: widget.color,
-                colorBlendMode: widget.color != null ? BlendMode.color : null,
-                placeholder: (_, __) => _placeholder(context),
-                fadeInDuration: widget.fadeInDuration ?? const Duration(milliseconds: 500),
-                fadeOutDuration: widget.fadeOutDuration ?? const Duration(milliseconds: 300),
-                errorWidget: (_, __, ___) {
-                  if (widget.errorImage != null && widget.errorImage!.isNotEmpty) {
-                    return CachedNetworkImage(
-                      cacheManager: AnymeXCacheManager.instance,
-                      imageUrl: widget.errorImage!,
-                      width: widget.width,
-                      height: widget.height,
-                      fit: widget.fit,
-                      placeholder: (_, __) => _placeholder(context),
-                      fadeInDuration: widget.fadeInDuration ?? const Duration(milliseconds: 500),
-                      fadeOutDuration: widget.fadeOutDuration ?? const Duration(milliseconds: 300),
-                      errorWidget: (_, __, ___) => _fallback(context),
-                    );
-                  }
-                  return _fallback(context);
-                },
-              ),
+            : isNetworkImage
+                ? _networkImage(widget.imageUrl)
+                : _fileImage(widget.imageUrl),
       ),
     );
+  }
+
+  Widget _networkImage(String imageUrl) {
+    return CachedNetworkImage(
+      cacheManager: AnymeXCacheManager.instance,
+      imageUrl: imageUrl,
+      httpHeaders: widget.headers,
+      width: widget.width,
+      height: widget.height,
+      fit: widget.fit,
+      alignment: widget.alignment,
+      color: widget.color,
+      colorBlendMode: widget.color != null ? BlendMode.color : null,
+      placeholder: (_, __) => _placeholder(context),
+      fadeInDuration:
+          widget.fadeInDuration ?? const Duration(milliseconds: 500),
+      fadeOutDuration:
+          widget.fadeOutDuration ?? const Duration(milliseconds: 300),
+      errorWidget: (_, __, ___) {
+        if (widget.errorImage != null && widget.errorImage!.isNotEmpty) {
+          return _errorImage(widget.errorImage!);
+        }
+        return _fallback(context);
+      },
+    );
+  }
+
+  Widget _fileImage(String imagePath) {
+    return Image.file(
+      _fileFromPath(imagePath),
+      width: widget.width,
+      height: widget.height,
+      fit: widget.fit,
+      alignment: widget.alignment,
+      color: widget.color,
+      colorBlendMode: widget.color != null ? BlendMode.color : null,
+      errorBuilder: (_, __, ___) {
+        if (widget.errorImage != null && widget.errorImage!.isNotEmpty) {
+          return _errorImage(widget.errorImage!);
+        }
+        return _fallback(context);
+      },
+    );
+  }
+
+  Widget _errorImage(String imageUrl) {
+    if (isBase64Image(imageUrl)) {
+      return Image.memory(
+        base64ToBytes(imageUrl),
+        width: widget.width,
+        height: widget.height,
+        fit: widget.fit,
+        alignment: widget.alignment,
+        errorBuilder: (_, __, ___) => _fallback(context),
+      );
+    }
+
+    if (isNetworkImageUrl(imageUrl)) {
+      return CachedNetworkImage(
+        cacheManager: AnymeXCacheManager.instance,
+        imageUrl: imageUrl,
+        width: widget.width,
+        height: widget.height,
+        fit: widget.fit,
+        placeholder: (_, __) => _placeholder(context),
+        fadeInDuration:
+            widget.fadeInDuration ?? const Duration(milliseconds: 500),
+        fadeOutDuration:
+            widget.fadeOutDuration ?? const Duration(milliseconds: 300),
+        errorWidget: (_, __, ___) => _fallback(context),
+      );
+    }
+
+    return Image.file(
+      _fileFromPath(imageUrl),
+      width: widget.width,
+      height: widget.height,
+      fit: widget.fit,
+      alignment: widget.alignment,
+      errorBuilder: (_, __, ___) => _fallback(context),
+    );
+  }
+
+  File _fileFromPath(String path) {
+    final uri = Uri.tryParse(path);
+    if (uri != null && uri.scheme == 'file') {
+      return File.fromUri(uri);
+    }
+    return File(path);
   }
 
   Future<void> _extractDominantColor(bool isBase64) async {
@@ -170,11 +239,13 @@ class _AnymeXImageState extends State<AnymeXImage> {
 
       if (isBase64) {
         imageProvider = MemoryImage(_cachedBytes!);
-      } else {
+      } else if (isNetworkImageUrl(widget.imageUrl)) {
         imageProvider = CachedNetworkImageProvider(
           widget.imageUrl,
           cacheManager: AnymeXCacheManager.instance,
         );
+      } else {
+        imageProvider = FileImage(_fileFromPath(widget.imageUrl));
       }
 
       final PaletteGenerator paletteGenerator =
@@ -199,10 +270,7 @@ class _AnymeXImageState extends State<AnymeXImage> {
       width: widget.width,
       height: widget.height,
       alignment: Alignment.center,
-      color: Theme.of(context)
-          .colorScheme
-          .surfaceContainerHighest
-          .opaque(0.2),
+      color: Theme.of(context).colorScheme.surfaceContainerHighest.opaque(0.2),
       child: const CircularProgressIndicator(strokeWidth: 2),
     );
   }
@@ -216,10 +284,7 @@ class _AnymeXImageState extends State<AnymeXImage> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Theme.of(context)
-                .colorScheme
-                .surfaceContainerHighest
-                .opaque(0.3),
+            Theme.of(context).colorScheme.surfaceContainerHighest.opaque(0.3),
             context.colors.surfaceContainer.opaque(0.5),
           ],
         ),
@@ -228,10 +293,8 @@ class _AnymeXImageState extends State<AnymeXImage> {
         child: Text(
           '(╥﹏╥)',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSurfaceVariant
-                    .opaque(0.3),
+                color:
+                    Theme.of(context).colorScheme.onSurfaceVariant.opaque(0.3),
               ),
         ),
       ),
