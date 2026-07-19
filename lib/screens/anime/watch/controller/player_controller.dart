@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 import 'package:anymex/utils/torrent/torrent_url_detector.dart';
 import 'package:anymex/utils/torrent/torrent_stream_resolver.dart';
@@ -2453,7 +2454,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       if (episodeDuration.value.inMinutes < 1) return;
 
       Uint8List? screenshot;
-      String? thumbnailBase64;
+      String? thumbnailPath;
 
       if (settings.enableScreenshot) {
         screenshot = await _basePlayer.screenshot(
@@ -2461,7 +2462,22 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           format: 'image/png',
         );
 
-        thumbnailBase64 = screenshot != null ? base64Encode(screenshot) : null;
+        if (screenshot != null) {
+          try {
+            final appSupportDir = await getApplicationSupportDirectory();
+            final snapshotsDir = Directory('${appSupportDir.path}/snapshots');
+            if (!await snapshotsDir.exists()) {
+              await snapshotsDir.create(recursive: true);
+            }
+            final cleanTitle = anilistData.title.replaceAll(RegExp(r'[^\w\s\-]'), '').replaceAll(RegExp(r'\s+'), '_');
+            final cleanEpNumber = episode.number.replaceAll(RegExp(r'[^\w\s\-]'), '').replaceAll(RegExp(r'\s+'), '_');
+            final file = File('${snapshotsDir.path}/${cleanTitle}_$cleanEpNumber.png');
+            await file.writeAsBytes(screenshot);
+            thumbnailPath = file.path;
+          } catch (_) {
+            thumbnailPath = base64Encode(screenshot);
+          }
+        }
       }
 
       final episodeToSave = Episode(
@@ -2469,7 +2485,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         title: episode.title,
         link: episode.link,
         timeStampInMilliseconds: currentTimestamp.clamp(0, totalDuration),
-        thumbnail: thumbnailBase64 ?? episode.thumbnail,
+        thumbnail: thumbnailPath ?? episode.thumbnail,
         currentTrack: selectedVideo.value,
         videoTracks: episodeTracks,
         durationInMilliseconds: episode.durationInMilliseconds,

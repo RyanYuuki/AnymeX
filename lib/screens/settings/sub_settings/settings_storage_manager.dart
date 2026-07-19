@@ -38,14 +38,122 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
     });
   }
 
-  Future<void> _clearCacheNow() async {
+  Future<void> _showClearCacheDialog() async {
+    setState(() => _isRunningAction = true);
+    
+    int imageSize = 0;
+    int torrentSize = 0;
+    int snapshotSize = 0;
+    int otherTempSize = 0;
+    
+    try {
+      imageSize = await _service.getImageCacheSize();
+      torrentSize = await _service.getTorrentCacheSize();
+      snapshotSize = await _service.getSnapshotsCacheSize();
+      otherTempSize = await _service.getOtherTempCacheSize();
+    } catch (_) {}
+    
+    setState(() => _isRunningAction = false);
+    
+    if (!mounted) return;
+    
+    bool deleteImages = true;
+    bool deleteTorrents = true;
+    bool deleteSnapshots = false;
+    bool deleteOther = true;
+    
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              backgroundColor: context.colors.surface,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              title: const Text('Clear App Cache'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CheckboxListTile(
+                    activeColor: context.colors.primary,
+                    title: const Text('Cached Images'),
+                    subtitle: Text('App posters, icons, avatars. Size: ${_service.formatBytes(imageSize)}'),
+                    value: deleteImages,
+                    onChanged: (val) {
+                      setDialogState(() => deleteImages = val ?? false);
+                    },
+                  ),
+                  CheckboxListTile(
+                    activeColor: context.colors.primary,
+                    title: const Text('Torrent Stream Cache'),
+                    subtitle: Text('Temporary torrent video data. Size: ${_service.formatBytes(torrentSize)}'),
+                    value: deleteTorrents,
+                    onChanged: (val) {
+                      setDialogState(() => deleteTorrents = val ?? false);
+                    },
+                  ),
+                  CheckboxListTile(
+                    activeColor: context.colors.primary,
+                    title: const Text('Watch History Snapshots'),
+                    subtitle: Text('Screenshots of last-watched frames. Size: ${_service.formatBytes(snapshotSize)}'),
+                    value: deleteSnapshots,
+                    onChanged: (val) {
+                      setDialogState(() => deleteSnapshots = val ?? false);
+                    },
+                  ),
+                  CheckboxListTile(
+                    activeColor: context.colors.primary,
+                    title: const Text('Other Temporary Files'),
+                    subtitle: Text('Video buffer, updates, thumbnails. Size: ${_service.formatBytes(otherTempSize)}'),
+                    value: deleteOther,
+                    onChanged: (val) {
+                      setDialogState(() => deleteOther = val ?? false);
+                    },
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel'),
+                ),
+                FilledButton(
+                  onPressed: () async {
+                    Navigator.pop(context);
+                    await _executeClear(
+                      deleteImages: deleteImages,
+                      deleteTorrents: deleteTorrents,
+                      deleteSnapshots: deleteSnapshots,
+                      deleteOther: deleteOther,
+                    );
+                  },
+                  child: const Text('Clear Selected'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _executeClear({
+    required bool deleteImages,
+    required bool deleteTorrents,
+    required bool deleteSnapshots,
+    required bool deleteOther,
+  }) async {
     if (_isRunningAction) return;
     setState(() => _isRunningAction = true);
     try {
-      await _service.clearImageCache();
+      if (deleteImages) await _service.clearImageCacheOnly();
+      if (deleteTorrents) await _service.clearTorrentCacheOnly();
+      if (deleteSnapshots) await _service.clearSnapshotsOnly();
+      if (deleteOther) await _service.clearOtherTempOnly();
+      
       await Future.delayed(const Duration(milliseconds: 150));
       await _refresh();
-      snackBar('Image cache cleared');
+      snackBar('Selected cache cleared');
     } catch (e) {
       snackBar('Failed to clear cache: $e');
     } finally {
@@ -125,7 +233,7 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Cached Images',
+                                  'Temporary App Cache',
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
@@ -171,7 +279,7 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
                             icon: Icons.storage_rounded,
                             title: 'Auto-clear threshold',
                             description:
-                                'If image cache reaches this size, it will be cleared automatically.',
+                                'If temporary app cache reaches this size, it will be cleared automatically.',
                             sliderValue: _thresholdGb,
                             min: StorageManagerService.minThresholdGb,
                             max: StorageManagerService.maxThresholdGb,
@@ -187,17 +295,17 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
                                   .then((wasCleared) {
                                 if (!mounted || !wasCleared) return;
                                 snackBar(
-                                    'Image cache exceeded threshold and was cleared');
+                                    'App cache exceeded threshold and was cleared');
                                 _refresh();
                               });
                             },
                           ),
                           CustomTile(
                             icon: Icons.delete_sweep_rounded,
-                            title: 'Clear image cache now',
+                            title: 'Clear app cache now',
                             description:
-                                'Delete all currently cached network images.',
-                            onTap: _clearCacheNow,
+                                'Delete all cached images, torrent stream chunks, and temporary files.',
+                            onTap: _showClearCacheDialog,
                             postFix: _isRunningAction
                                 ? const SizedBox(
                                     width: 20,
