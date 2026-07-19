@@ -91,6 +91,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   Rx<Episode> currentEpisode = Rx<Episode>(Episode(number: '1'));
   final _mediaSession = FlutterMediaSession();
+  bool _isMediaSessionActive = false;
+  DateTime? _lastMediaSessionPositionUpdate;
   final List<Episode> episodeList;
   final anymex.Media anilistData;
   RxList<model.Video> episodeTracks = RxList();
@@ -464,6 +466,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   Future<void> _initMediaSession() async {
     try {
       await _mediaSession.activate();
+      _isMediaSessionActive = true;
       _mediaSession.setActionHandler(
         onPlay: () {
           play();
@@ -491,7 +494,18 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
   }
 
+  Future<void> _deactivateMediaSession() async {
+    if (!_isMediaSessionActive) return;
+    _isMediaSessionActive = false;
+    try {
+      await _mediaSession.deactivate();
+    } catch (e) {
+      Logger.e('Failed to deactivate media session: $e');
+    }
+  }
+
   Future<void> _updateMediaSessionMetadata() async {
+    if (!_isMediaSessionActive) return;
     try {
       final epTitle = currentEpisode.value.title ?? '';
       final epNum = currentEpisode.value.number;
@@ -514,6 +528,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> _updateMediaSessionState(bool playing, {Duration? position}) async {
+    if (!_isMediaSessionActive) return;
     try {
       await FlutterMediaSessionPlatform.instance.updatePlaybackState(
         PlaybackState(
@@ -528,7 +543,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   @override
   void onClose() {
-    _mediaSession.deactivate();
+    _deactivateMediaSession();
     PipController.setAutoEnter(enabled: false);
     _accelerometerSub?.cancel();
     delete();
@@ -545,12 +560,15 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
 
     if (state == AppLifecycleState.paused ||
-        state == AppLifecycleState.detached ||
         state == AppLifecycleState.inactive) {
       isPipMode.value = true;
       if (!kDebugMode) {
         _trackLocally();
       }
+    }
+
+    if (state == AppLifecycleState.detached) {
+      _deactivateMediaSession();
     }
   }
 
@@ -1067,7 +1085,13 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         _updateSkipUiState();
         _handleAutoSkip();
       }
-      _updateMediaSessionState(isPlaying.value, position: pos);
+      final now = DateTime.now();
+      if (_lastMediaSessionPositionUpdate == null ||
+          now.difference(_lastMediaSessionPositionUpdate!) >=
+              const Duration(seconds: 3)) {
+        _lastMediaSessionPositionUpdate = now;
+        _updateMediaSessionState(isPlaying.value, position: pos);
+      }
     }));
 
     _playerSubscriptions.add(_basePlayer.durationStream.listen((dur) {
@@ -1693,6 +1717,17 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> delete() async {
+    for (final subscription in _playerSubscriptions) {
+      subscription.cancel();
+    }
+    _playerSubscriptions.clear();
+
+    for (final subscription in _subscriptions) {
+      subscription.cancel();
+    }
+    _subscriptions.clear();
+
+    await _deactivateMediaSession();
     await _basePlayer.pause();
     _subSyncWorker?.dispose();
     _seekDebounce?.cancel();
@@ -1722,16 +1757,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     if (!isOffline.value) {
       DiscordRPCController.instance.updateMediaPresence(media: anilistData);
     }
-
-    for (final subscription in _subscriptions) {
-      subscription.cancel();
-    }
-    _subscriptions.clear();
-
-    for (final subscription in _playerSubscriptions) {
-      subscription.cancel();
-    }
-    _playerSubscriptions.clear();
 
     await _basePlayer.dispose();
 
