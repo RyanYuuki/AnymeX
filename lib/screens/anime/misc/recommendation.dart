@@ -5,6 +5,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/animation/slide_scale.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
@@ -32,6 +33,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
   TextEditingController textEditingController = TextEditingController();
   RxBool isLoading = false.obs;
   RxBool isGrid = false.obs;
+  RxBool noMoreItems = false.obs;
 
   @override
   void initState() {
@@ -45,30 +47,68 @@ class _AIRecommendationState extends State<AIRecommendation> {
   void _scrollListener() {
     if (_scrollController.hasClients &&
         _scrollController.position.pixels >=
-            _scrollController.position.maxScrollExtent - 100 &&
-        !isLoading.value) {
+            _scrollController.position.maxScrollExtent - 200 &&
+        !isLoading.value &&
+        !noMoreItems.value) {
+      final nextPage = currentPage + 1;
       if (textEditingController.text.isEmpty) {
-        fetchAiRecommendations(++currentPage);
+        fetchAiRecommendations(nextPage);
       } else {
-        fetchAiRecommendations(++currentPage,
+        fetchAiRecommendations(nextPage,
             username: textEditingController.text);
       }
     }
   }
 
   Future<void> fetchAiRecommendations(int page, {String? username}) async {
-    if (isLoading.value) return;
+    if (isLoading.value || noMoreItems.value) return;
     isLoading.value = true;
 
     try {
       final listData = widget.isManga
           ? Get.find<ServiceHandler>().mangaList
           : Get.find<ServiceHandler>().animeList;
-      final existingIds = listData.map((e) => e.id).toSet();
-      final data = await getAiRecommendations(widget.isManga, page,
-          username: username, isAdult: isAdult.value);
+      final existingIds = listData.map((e) => e.id.toString()).toSet();
+      final currentUiIds = recItems.map((e) => e.id.toString()).toSet();
 
-      recItems.addAll(data.where((e) => !existingIds.contains(e.id)));
+      int fetchPage = page;
+      int attempts = 0;
+      int newItemsAdded = 0;
+
+      while (attempts < 15 && newItemsAdded < 12) {
+        attempts++;
+        final data = await getAiRecommendations(
+          widget.isManga,
+          fetchPage,
+          username: username,
+          isAdult: isAdult.value,
+        );
+
+        if (data.isEmpty) {
+          noMoreItems.value = true;
+          break;
+        }
+
+        final newItems = data.where((e) =>
+            !existingIds.contains(e.id.toString()) &&
+            !currentUiIds.contains(e.id.toString())).toList();
+
+        for (final item in newItems) {
+          currentUiIds.add(item.id.toString());
+          recItems.add(item);
+          newItemsAdded++;
+        }
+
+        fetchPage++;
+      }
+
+      currentPage = fetchPage;
+
+      if (newItemsAdded == 0 && attempts >= 15) {
+        noMoreItems.value = true;
+      }
+    } catch (e) {
+      Logger.e('Error fetching AI recommendations: $e');
     } finally {
       isLoading.value = false;
     }
@@ -126,6 +166,8 @@ class _AIRecommendationState extends State<AIRecommendation> {
         GestureDetector(
           onTap: () {
             if (textEditingController.text.isNotEmpty) {
+              noMoreItems.value = false;
+              recItems.clear();
               fetchAiRecommendations(1, username: textEditingController.text);
             }
           },
@@ -161,12 +203,32 @@ class _AIRecommendationState extends State<AIRecommendation> {
                 if (lastRowIndex == 0 || lastRowIndex == 2) {
                   return const SizedBox.shrink();
                 } else if (lastRowIndex == 1) {
-                  return Obx(() => isLoading.value
-                      ? const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Center(child: AnymexProgressIndicator()),
-                        )
-                      : const SizedBox.shrink());
+                  return Obx(() {
+                    if (isLoading.value) {
+                      return const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Center(child: AnymexProgressIndicator()),
+                      );
+                    }
+                    if (noMoreItems.value) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        child: Center(
+                          child: Text(
+                            'No more recommendations',
+                            style: TextStyle(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant
+                                  .withOpacity(0.6),
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  });
                 }
               }
 
