@@ -22,12 +22,19 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.IntentFilter
 import android.graphics.drawable.Icon
+import java.io.File
+import java.io.FileOutputStream
+import java.util.UUID
+import java.util.concurrent.atomic.AtomicBoolean
 
 class MainActivity : FlutterActivity() {
     private val CHANNEL = "app/architecture"
     private val VOLUME_CHANNEL = "com.ryan.anymex/volume"
     private val VOLUME_EVENTS = "com.ryan.anymex/volume_events"
     private val PIP_CHANNEL = "com.ryan.anymex/pip"
+    private val THUMBNAIL_CHANNEL = "com.anymex.app/thumbnail"
+    private val THUMBNAIL_TIMEOUT_MS = 8000L
+    private val THUMBNAIL_MAX_AGE_MS = 24 * 60 * 60 * 1000L
     private var volumeKeysEnabled = false
     private var volumeEventsSink: EventChannel.EventSink? = null
 
@@ -181,6 +188,21 @@ class MainActivity : FlutterActivity() {
             }
         }
 
+        cleanupOldThumbnails()
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, THUMBNAIL_CHANNEL).setMethodCallHandler { call, result ->
+            if (call.method == "getVideoThumbnail") {
+                val videoPath = call.argument<String>("videoPath")
+                if (videoPath == null) {
+                    result.error("INVALID_ARGUMENT", "videoPath is null", null)
+                    return@setMethodCallHandler
+                }
+                extractThumbnail(videoPath, result)
+            } else {
+                result.notImplemented()
+            }
+        }
+
         EventChannel(flutterEngine.dartExecutor.binaryMessenger, VOLUME_EVENTS).setStreamHandler(
             object : EventChannel.StreamHandler {
                 override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
@@ -329,5 +351,82 @@ class MainActivity : FlutterActivity() {
         } catch (e: Exception) {
             null
         }
+    }
+
+    private fun extractThumbnail(videoPath: String, result: MethodChannel.Result) {
+        val alreadyResponded = AtomicBoolean(false)
+
+        val worker = Thread {
+            val retriever = android.media.MediaMetadataRetriever()
+            try {
+                retriever.setDataSource(videoPath)
+                val durationStr = retriever.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_DURATION)
+                val durationMs = durationStr?.toLongOrNull() ?: 0L
+
+                val targetTimeUs = when {
+                    durationMs > 60_000L -> minOf(30_000_000L, (durationMs * 1000 * 0.10).toLong())
+                    durationMs > 10_000L -> minOf(5_000_000L, (durationMs * 1000 * 0.10).toLong())
+                    durationMs > 0L -> (durationMs * 1000 * 0.10).toLong()
+                    else -> 1_000_000L
+                }
+
+                val bitmap = retriever.getFrameAtTime(targetTimeUs, android.media.MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+                    ?: retriever.getFrameAtTime(10_000_000L, android.media.MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+                    ?: retriever.getFrameAtTime(1_000_000L, android.media.MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+                    ?: retriever.getFrameAtTime(0, android.media.MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+                    ?: retriever.getFrameAtTime(-1)
+                    ?: retriever.frameAtTime
+
+                if (bitmap != null) {
+                    val tempFile = File(cacheDir, "thumb_${System.currentTimeMillis()}_${UUID.randomUUID()}.jpg")
+                    val fos = FileOutputStream(tempFile)
+                    bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 85, fos)
+                    fos.close()
+
+                    if (alreadyResponded.compareAndSet(false, true)) {
+                        runOnUiThread { result.success(tempFile.absolutePath) }
+                    }
+                } else {
+                    if (alreadyResponded.compareAndSet(false, true)) {
+                        runOnUiThread {
+                            result.error("EXTRACTION_FAILED", "Failed to retrieve frame from video", null)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                if (alreadyResponded.compareAndSet(false, true)) {
+                    runOnUiThread {
+                        result.error("ERROR", e.localizedMessage ?: "Unknown error", null)
+                    }
+                }
+            } finally {
+                try {
+                    retriever.release()
+                } catch (_: Exception) {}
+            }
+        }
+        worker.isDaemon = true
+        worker.start()
+
+        android.os.Handler(mainLooper).postDelayed({
+            if (alreadyResponded.compareAndSet(false, true)) {
+                result.error("TIMEOUT", "Thumbnail extraction timed out", null)
+            }
+        }, THUMBNAIL_TIMEOUT_MS)
+    }
+
+    private fun cleanupOldThumbnails() {
+        Thread {
+            try {
+                val now = System.currentTimeMillis()
+                cacheDir.listFiles { file ->
+                    file.name.startsWith("thumb_") && file.name.endsWith(".jpg")
+                }?.forEach { file ->
+                    if (now - file.lastModified() > THUMBNAIL_MAX_AGE_MS) {
+                        file.delete()
+                    }
+                }
+            } catch (_: Exception) {}
+        }.start()
     }
 }
