@@ -12,6 +12,9 @@ enum SortType {
   lastAdded,
   lastRead,
   rating,
+  popularity,
+  progress,
+  aired,
 }
 
 class LibraryController extends GetxController {
@@ -161,7 +164,24 @@ class LibraryController extends GetxController {
           comparison = aRating.compareTo(bRating);
           break;
         case SortType.lastAdded:
-        // return isAscending ? items.reversed.toList() : items;
+          break;
+        case SortType.popularity:
+          final aPop = double.tryParse(a.popularity ?? '0.0') ?? 0.0;
+          final bPop = double.tryParse(b.popularity ?? '0.0') ?? 0.0;
+          comparison = aPop.compareTo(bPop);
+          break;
+        case SortType.progress:
+          final aProg = type.value.isAnime
+              ? (a.watchedEpisodes?.length ?? 0)
+              : (a.readChapters?.length ?? 0);
+          final bProg = type.value.isAnime
+              ? (b.watchedEpisodes?.length ?? 0)
+              : (b.readChapters?.length ?? 0);
+          comparison = aProg.compareTo(bProg);
+          break;
+        case SortType.aired:
+          comparison = (a.aired ?? '').compareTo(b.aired ?? '');
+          break;
       }
 
       return isAscending.value ? comparison : -comparison;

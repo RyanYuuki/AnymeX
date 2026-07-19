@@ -6,13 +6,10 @@ import 'package:anymex/screens/library/editor/list_editor.dart';
 import 'package:anymex/screens/library/widgets/library_deps.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_chip.dart';
-import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_tabbar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:anymex/widgets/header.dart';
 import 'package:get/get.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:iconsax/iconsax.dart';
@@ -213,279 +210,15 @@ class LibraryHeader extends StatelessWidget {
     }
   }
 
-  void _showSortingSettings(BuildContext context) => AnymexSheet(
-        title: 'Settings',
-        contentWidget: StatefulBuilder(
-          builder: (context, setState) {
-            return SizedBox(
-              height: MediaQuery.of(context).size.height * 0.4,
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    AnymexExpansionTile(
-                        title: 'Sort By',
-                        initialExpanded: true,
-                        content: Obx(() {
-                          final isHistory =
-                              controller.selectedListIndex.value == -1;
-                          return Column(children: [
-                            Row(
-                              children: [
-                                _SortBox(
-                                  title: 'Title',
-                                  currentSort: controller.currentSort.value,
-                                  sortType: SortType.title,
-                                  isAscending: controller.isAscending.value,
-                                  onTap: () {
-                                    controller.handleSortChange(SortType.title);
-                                  },
-                                  icon: Icons.sort_by_alpha,
-                                ),
-                                if (!isHistory)
-                                  _SortBox(
-                                    title: 'Last Added',
-                                    currentSort: controller.currentSort.value,
-                                    sortType: SortType.lastAdded,
-                                    isAscending: controller.isAscending.value,
-                                    onTap: () {
-                                      controller
-                                          .handleSortChange(SortType.lastAdded);
-                                    },
-                                    icon: Icons.add_circle_outline,
-                                  ),
-                                if (isHistory)
-                                  _SortBox(
-                                    title: _getLastReadTitle(),
-                                    currentSort: controller.currentSort.value,
-                                    sortType: SortType.lastRead,
-                                    isAscending: controller.isAscending.value,
-                                    onTap: () {
-                                      controller
-                                          .handleSortChange(SortType.lastRead);
-                                    },
-                                    icon: _getLastReadIcon(),
-                                  ),
-                              ],
-                            ),
-                            if (!isHistory)
-                              Row(
-                                children: [
-                                  _SortBox(
-                                    title: _getLastReadTitle(),
-                                    currentSort: controller.currentSort.value,
-                                    sortType: SortType.lastRead,
-                                    isAscending: controller.isAscending.value,
-                                    onTap: () {
-                                      controller
-                                          .handleSortChange(SortType.lastRead);
-                                    },
-                                    icon: _getLastReadIcon(),
-                                  ),
-                                  _SortBox(
-                                    title: 'Rating',
-                                    currentSort: controller.currentSort.value,
-                                    sortType: SortType.rating,
-                                    isAscending: controller.isAscending.value,
-                                    onTap: () {
-                                      controller
-                                          .handleSortChange(SortType.rating);
-                                    },
-                                    icon: Icons.star_border,
-                                  ),
-                                ],
-                              ),
-                          ]);
-                        })),
-                    AnymexExpansionTile(
-                        title: 'Grid',
-                        content: Column(
-                          children: [
-                            Obx(() {
-                              return CustomSliderTile(
-                                  icon: Icons.grid_view_rounded,
-                                  title: 'Grid Size',
-                                  description: 'Adjust Items per row',
-                                  sliderValue:
-                                      controller.gridCount.value.toDouble(),
-                                  onChanged: (e) {
-                                    controller.gridCount.value = e.toInt();
-                                    controller.savePreferences();
-                                  },
-                                  max: 10);
-                            })
-                          ],
-                        )),
-                    20.height()
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
-      ).show(context);
-
-  String _getLastReadTitle() {
-    switch (controller.type.value) {
-      case ItemType.anime:
-        return 'Last Watched';
-      case ItemType.manga:
-        return 'Last Read';
-      case ItemType.novel:
-        return 'Last Read';
-    }
-  }
-
-  IconData _getLastReadIcon() {
-    switch (controller.type.value) {
-      case ItemType.anime:
-        return Icons.visibility;
-      case ItemType.manga:
-        return Icons.menu_book;
-      case ItemType.novel:
-        return Iconsax.book;
-    }
-  }
-}
-
-class _SortBox extends StatelessWidget {
-  final String title;
-  final SortType currentSort;
-  final SortType sortType;
-  final bool isAscending;
-  final VoidCallback onTap;
-  final IconData icon;
-
-  const _SortBox({
-    required this.title,
-    required this.currentSort,
-    required this.sortType,
-    required this.isAscending,
-    required this.onTap,
-    required this.icon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final isSelected = currentSort == sortType;
-    final theme = Theme.of(context);
-
-    return Expanded(
-      child: SizedBox(
-        height: 90,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
-          child: Material(
-            clipBehavior: Clip.antiAlias,
-            elevation: isSelected ? 3 : 0,
-            shadowColor: isSelected
-                ? theme.colorScheme.primary.opaque(0.4, iReallyMeanIt: true)
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(16),
-            child: InkWell(
-              onTap: onTap,
-              splashColor:
-                  theme.colorScheme.primary.opaque(0.15, iReallyMeanIt: true),
-              highlightColor:
-                  theme.colorScheme.primary.opaque(0.05, iReallyMeanIt: true),
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: isSelected
-                      ? LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            theme.colorScheme.primary
-                                .opaque(0.15, iReallyMeanIt: true),
-                            theme.colorScheme.primaryContainer,
-                          ],
-                        )
-                      : null,
-                  color: isSelected
-                      ? null
-                      : theme.colorScheme.surfaceVariant
-                          .opaque(0.7, iReallyMeanIt: true),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: isSelected
-                        ? theme.colorScheme.primary
-                        : theme.colorScheme.outline
-                            .opaque(0.2, iReallyMeanIt: true),
-                    width: isSelected ? 1.5 : 0.5,
-                  ),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        if (isSelected)
-                          Container(
-                            width: 42,
-                            height: 42,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: theme.colorScheme.primary
-                                  .opaque(0.12, iReallyMeanIt: true),
-                            ),
-                          ),
-                        Icon(
-                          icon,
-                          color: isSelected
-                              ? theme.colorScheme.primary
-                              : theme.colorScheme.onSurfaceVariant,
-                          size: 24,
-                        ),
-                        if (isSelected)
-                          Positioned(
-                            top: 0,
-                            right: 0,
-                            child: Container(
-                              padding: const EdgeInsets.all(2),
-                              decoration: BoxDecoration(
-                                color: theme.colorScheme.primary,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                isAscending
-                                    ? Icons.arrow_upward
-                                    : Icons.arrow_downward,
-                                color: theme.colorScheme.onPrimary,
-                                size: 12,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    AnimatedDefaultTextStyle(
-                      duration: const Duration(milliseconds: 200),
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight:
-                            isSelected ? FontWeight.w600 : FontWeight.w400,
-                        color: isSelected
-                            ? theme.colorScheme.primary
-                            : theme.colorScheme.onSurfaceVariant,
-                      ),
-                      child: AnymexText(
-                        text: title,
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  void _showSortingSettings(BuildContext context) =>
+      showModalBottomSheet(
+        context: context,
+        backgroundColor: Colors.transparent,
+        isScrollControlled: true,
+        builder: (context) {
+          return LibrarySettingsSheet(controller: controller);
+        },
+      );
 }
 
 class ChipTabs extends StatelessWidget {
@@ -643,122 +376,25 @@ class LibrarySegmentedControl extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = context.colors;
-
     return Obx(() {
       final availableTypes =
           serviceHandler.serviceType.value == ServicesType.simkl
               ? [ItemType.anime, ItemType.manga]
               : [ItemType.anime, ItemType.manga, ItemType.novel];
 
-      final totalItems = availableTypes.length;
+      final currentIndex = availableTypes.indexOf(controller.type.value);
 
-      return Container(
+      return AnymeXTabBar(
+        selectTabs: availableTypes.map((itemType) => _getTypeLabel(itemType)).toList(),
+        selectedIndex: currentIndex,
         height: 52,
-        margin: const EdgeInsets.symmetric(horizontal: 0),
-        padding: const EdgeInsets.all(4),
-        decoration: BoxDecoration(
-          color: colorScheme.surfaceContainer.opaque(0.5),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: colorScheme.outline.withOpacity(0.08),
-            width: 1,
-          ),
-        ),
-        child: Stack(
-          children: [
-            Obx(() {
-              final currentIndex = availableTypes.indexOf(controller.type.value);
-
-              double alignmentX = 0.0;
-              if (totalItems > 1) {
-                alignmentX = -1.0 + (2.0 * currentIndex / (totalItems - 1));
-              }
-
-              return AnimatedAlign(
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeOutQuint,
-                alignment: Alignment(alignmentX, 0),
-                child: FractionallySizedBox(
-                  widthFactor: 1 / totalItems,
-                  heightFactor: 1.0,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: colorScheme.surfaceContainerHighest.opaque(0.5),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: colorScheme.outline.withOpacity(0.12),
-                        width: 1,
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            }),
-            Row(
-              children: availableTypes.map((itemType) {
-                return Expanded(
-                  child: Obx(() {
-                    final isSelected = controller.type.value == itemType;
-
-                    return GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: () {
-                        if (!isSelected) {
-                          HapticFeedback.lightImpact();
-                          controller.switchCategory(itemType);
-                        }
-                      },
-                      child: AnimatedScale(
-                        scale: isSelected ? 1.02 : 1.0,
-                        duration: const Duration(milliseconds: 250),
-                        curve: Curves.easeInOut,
-                        child: AnimatedOpacity(
-                          opacity: isSelected ? 1.0 : 0.6,
-                          duration: const Duration(milliseconds: 200),
-                          child: SizedBox.expand(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  _getTypeIcon(itemType),
-                                  size: 18,
-                                  color: isSelected
-                                      ? colorScheme.primary
-                                      : colorScheme.onSurfaceVariant,
-                                ),
-                                const SizedBox(width: 8),
-                                Flexible(
-                                  child: AnimatedDefaultTextStyle(
-                                    duration: const Duration(milliseconds: 200),
-                                    style: TextStyle(
-                                      fontFamily: "Poppins-Bold",
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w700,
-                                      color: isSelected
-                                          ? colorScheme.primary
-                                          : colorScheme.onSurfaceVariant,
-                                    ),
-                                    child: Text(
-                                      _getTypeLabel(itemType),
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
-                );
-              }).toList(),
-            ),
-          ],
-        ),
+        icons: availableTypes.map((itemType) => _getTypeIcon(itemType)).toList(),
+        activeColor: context.colors.secondary,
+        activeTextColor: context.colors.onSecondary,
+        inactiveTextColor: context.colors.onSurfaceVariant,
+        onTabSelected: (index) {
+          controller.switchCategory(availableTypes[index]);
+        },
       );
     });
   }

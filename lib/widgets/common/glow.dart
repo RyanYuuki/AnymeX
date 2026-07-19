@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:anymex/widgets/common/grain_texture.dart';
 
 enum GradientVariant {
   subtle,
@@ -67,8 +68,9 @@ class Glow extends StatelessWidget {
       settings.liquidBackgroundPath;
       final liquidMode = settings.liquidMode;
 
+      Widget content;
       if (liquidMode) {
-        return LiquidMode(
+        content = LiquidMode(
           isOled: isOled,
           theme: theme,
           gradientVariant: GradientVariant.subtle,
@@ -76,11 +78,31 @@ class Glow extends StatelessWidget {
         );
       } else {
         if (settings.disableGradient || isOled) {
-          return Container(
+          content = Container(
               color: isOled ? Colors.black : theme.surface, child: ch);
+        } else {
+          content = LightweightGlow(begin: begin, end: end, child: ch);
         }
-        return LightweightGlow(begin: begin, end: end, child: ch);
       }
+
+      final useGrain = settings.useGrainTexture;
+      final intensity = settings.grainIntensity;
+      if (useGrain && intensity > 0) {
+        return Stack(
+          children: [
+            content,
+            Positioned.fill(
+              child: IgnorePointer(
+                child: GrainTexture(
+                  color: Colors.black,
+                  opacity: intensity,
+                ),
+              ),
+            ),
+          ],
+        );
+      }
+      return content;
     });
   }
 }

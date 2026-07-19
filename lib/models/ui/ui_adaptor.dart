@@ -28,6 +28,9 @@ class UISettings {
   bool enablePosterKenBurns;
   int carouselStyle;
   bool showContinueWatchingCard;
+  bool useLegacyHeader;
+  bool useGrainTexture;
+  double grainIntensity;
 
   UISettings({
     this.glowMultiplier = 1.0,
@@ -55,6 +58,9 @@ class UISettings {
     this.enablePosterKenBurns = true,
     this.carouselStyle = 0,
     this.showContinueWatchingCard = true,
+    this.useLegacyHeader = false,
+    this.useGrainTexture = false,
+    this.grainIntensity = 0.05,
   })  : homePageCards = homePageCards ??
             {
               "Continue Watching": true,
@@ -149,6 +155,12 @@ class UISettings {
           UISettingsKeys.carouselStyle.get<int>(uiDefaults.carouselStyle),
       showContinueWatchingCard: UISettingsKeys.showContinueWatchingCard
           .get<bool>(uiDefaults.showContinueWatchingCard),
+      useLegacyHeader:
+          UISettingsKeys.useLegacyHeader.get<bool>(uiDefaults.useLegacyHeader),
+      useGrainTexture:
+          UISettingsKeys.useGrainTexture.get<bool>(uiDefaults.useGrainTexture),
+      grainIntensity:
+          UISettingsKeys.grainIntensity.get<double>(uiDefaults.grainIntensity),
     );
   }
 }

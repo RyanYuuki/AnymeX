@@ -329,6 +329,25 @@ class Settings extends GetxController {
     UISettingsKeys.disableGradient.set(value);
   }
 
+  bool get useLegacyHeader => _getUISetting((s) => s.useLegacyHeader);
+  set useLegacyHeader(bool value) {
+    uiSettings.update((s) => s?.useLegacyHeader = value);
+    UISettingsKeys.useLegacyHeader.set(value);
+  }
+
+  bool get useGrainTexture => _getUISetting((s) => s.useGrainTexture);
+  set useGrainTexture(bool value) {
+    uiSettings.update((s) => s?.useGrainTexture = value);
+    UISettingsKeys.useGrainTexture.set(value);
+  }
+
+  double get grainIntensity => _getUISetting((s) => s.grainIntensity);
+  set grainIntensity(double value) {
+    uiSettings.update((s) => s?.grainIntensity = value);
+    UISettingsKeys.grainIntensity.set(value);
+  }
+
+
   Map<String, bool> get homePageCards => _getUISetting((s) => s.homePageCards);
   Map<String, bool> get homePageCardsMal =>
       _getUISetting((s) => s.homePageCardsMal);

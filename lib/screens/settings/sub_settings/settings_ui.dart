@@ -1,5 +1,4 @@
 import 'package:anymex/controllers/settings/settings.dart';
-import 'package:anymex/screens/settings/widgets/carousel_style_selector.dart';
 import 'package:anymex/screens/settings/widgets/card_selector.dart';
 import 'package:anymex/screens/settings/widgets/history_card_selector.dart';
 import 'package:anymex/utils/function.dart';
@@ -45,15 +44,12 @@ class _SettingsUiState extends State<SettingsUi> {
   Widget build(BuildContext context) {
     return Glow(
         child: Scaffold(
-            body: Column(// Changed from SingleChildScrollView to Column
-                children: [
-      const NestedHeader(title: 'UI'), // Add NestedHeader
+            body: Column(children: [
+      const NestedHeader(title: 'UI'),
       Expanded(
-        // Wrap scrollable content in Expanded
         child: SingleChildScrollView(
           child: Padding(
-              padding: const EdgeInsets.fromLTRB(
-                  15.0, 20.0, 15.0, 50), // Changed top from 50.0 to 20.0
+              padding: const EdgeInsets.fromLTRB(15.0, 20.0, 15.0, 50),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -92,6 +88,15 @@ class _SettingsUiState extends State<SettingsUi> {
                                     onChanged: (val) {
                                       settings.transculentBar = val;
                                     }),
+                                CustomSwitchTile(
+                                    icon: Icons.view_headline_rounded,
+                                    title: "Use Legacy Header",
+                                    description:
+                                        "Enable the classic simple header style on home screens",
+                                    switchValue: settings.useLegacyHeader,
+                                    onChanged: (val) {
+                                      settings.useLegacyHeader = val;
+                                    }),
                                 CustomTile(
                                   onTap: () => showCardStyleSwitcher(context),
                                   icon: Iconsax.card5,
@@ -105,13 +110,6 @@ class _SettingsUiState extends State<SettingsUi> {
                                   title: "History Card Style",
                                   description: "Change history card style",
                                 ),
-                                // CustomTile(
-                                //   onTap: () =>
-                                //       showCarouselStyleSelector(context),
-                                //   icon: Icons.view_carousel_rounded,
-                                //   title: "Carousel Style",
-                                //   description: "Change big carousel style",
-                                // ),
                                 10.height(),
                               ],
                             )),

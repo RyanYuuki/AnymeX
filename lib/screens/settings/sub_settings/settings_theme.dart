@@ -22,6 +22,7 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 import 'package:anymex/screens/other_features.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_tabbar.dart';
 
 import 'package:provider/provider.dart';
 
@@ -314,6 +315,60 @@ class _SettingsThemeState extends State<SettingsTheme> {
                                 showPaletteSelectionDialog(context);
                               },
                             ),
+                            const SizedBox(height: 10),
+                            Obx(() {
+                              return CustomSwitchTile(
+                                icon: Icons.texture_rounded,
+                                title: "Grain Texture Overlay",
+                                description: "Apply a subtle film grain texture over the interface",
+                                switchValue: settings.useGrainTexture,
+                                onChanged: (val) => settings.useGrainTexture = val,
+                              );
+                            }),
+                            Obx(() {
+                              if (!settings.useGrainTexture) return const SizedBox.shrink();
+                              final val = settings.grainIntensity;
+                              int selectedIndex = 0;
+                              if (val <= 0.04) {
+                                selectedIndex = 0;
+                              } else if (val <= 0.10) {
+                                selectedIndex = 1;
+                              } else {
+                                selectedIndex = 2;
+                              }
+
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Grain Intensity",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: Theme.of(context).colorScheme.onSurface,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    AnymeXTabBar(
+                                      selectTabs: const ["Low", "Medium", "High"],
+                                      selectedIndex: selectedIndex,
+                                      onTabSelected: (index) {
+                                        if (index == 0) {
+                                          settings.grainIntensity = 0.03;
+                                        } else if (index == 1) {
+                                          settings.grainIntensity = 0.07;
+                                        } else {
+                                          settings.grainIntensity = 0.15;
+                                        }
+                                      },
+                                    ),
+                                    const SizedBox(height: 10),
+                                  ],
+                                ),
+                              );
+                            }),
                             const SizedBox(height: 10),
                             CustomSwitchTile(
                               icon: HugeIcons.strokeRoundedMoon,

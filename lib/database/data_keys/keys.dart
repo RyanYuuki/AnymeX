@@ -276,6 +276,9 @@ enum UISettingsKeys {
   enablePosterKenBurns,
   carouselStyle,
   showContinueWatchingCard,
+  useLegacyHeader,
+  useGrainTexture,
+  grainIntensity,
 }
 
 enum DownloadKeys {
