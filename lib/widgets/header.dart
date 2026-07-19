@@ -11,7 +11,6 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
 import 'package:flutter/material.dart';
@@ -22,10 +21,10 @@ import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/screens/library/controller/library_controller.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
-import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/screens/library/widgets/library_deps.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
+import 'package:anymex/widgets/legacy_header.dart' as legacy;
+import 'package:anymex/widgets/custom_widgets/anymex_tabbar.dart';
 
 enum PageType { manga, anime, home, novel, library }
 
@@ -39,6 +38,102 @@ class Header extends StatelessWidget {
     final greetingController = Get.find<GreetingController>();
 
     return Obx(() {
+      if (settingsController.useLegacyHeader) {
+        final isLibrarySearchActive = type == PageType.library &&
+            Get.isRegistered<LibraryController>() &&
+            Get.find<LibraryController>().isSearchActive.value;
+
+        if (isLibrarySearchActive) {
+          final libraryController = Get.find<LibraryController>();
+          final searchContent = Row(
+            children: [
+              GestureDetector(
+                onTap: libraryController.toggleSearch,
+                child: Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: context.colors.secondaryContainer.opaque(0.5),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.arrow_back_ios_new,
+                      color: context.colors.primary, size: 16),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: TextField(
+                  controller: libraryController.searchController,
+                  onChanged: libraryController.search,
+                  autofocus: true,
+                  style: const TextStyle(fontSize: 14, fontFamily: 'Poppins'),
+                  decoration: InputDecoration(
+                    hintText: 'Search in Library...',
+                    hintStyle: TextStyle(
+                      color: context.colors.onSurface.withOpacity(0.4),
+                      fontSize: 14,
+                      fontFamily: 'Poppins',
+                    ),
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    filled: true,
+                    fillColor: context.colors.secondaryContainer.opaque(0.3),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: BorderSide.none,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: BorderSide.none,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: BorderSide(
+                        color: context.colors.primary.withOpacity(0.3),
+                        width: 1.0,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+          return _FloatingHeaderWrapper(child: searchContent);
+        }
+
+        legacy.PageType legacyType;
+        switch (type) {
+          case PageType.manga:
+            legacyType = legacy.PageType.manga;
+            break;
+          case PageType.anime:
+            legacyType = legacy.PageType.anime;
+            break;
+          case PageType.home:
+            legacyType = legacy.PageType.home;
+            break;
+          case PageType.novel:
+            legacyType = legacy.PageType.novel;
+            break;
+          case PageType.library:
+            legacyType = legacy.PageType.library;
+            break;
+        }
+
+        final libraryController = Get.isRegistered<LibraryController>()
+            ? Get.find<LibraryController>()
+            : null;
+
+        return legacy.Header(
+          type: legacyType,
+          onSearchPressed: libraryController != null
+              ? () => libraryController.toggleSearch()
+              : null,
+          onSortPressed: libraryController != null
+              ? () => _showSortingSettings(context, libraryController)
+              : null,
+        );
+      }
       final isDesktop = MediaQuery.of(context).size.width > 600;
       final isLibrarySearchActive = type == PageType.library &&
           Get.isRegistered<LibraryController>() &&
@@ -220,7 +315,7 @@ class Header extends StatelessWidget {
       GreetingController greetingController, ServiceHandler profileData) {
     if (type == PageType.library) {
       return Text(
-        "Discover favorites",
+        "All your local shi",
         style: TextStyle(
           fontSize: 11,
           color: context.colors.onSurface.withOpacity(0.55),
@@ -360,120 +455,224 @@ class Header extends StatelessWidget {
 
   void _showSortingSettings(
           BuildContext context, LibraryController controller) =>
-      AnymexSheet(
-        title: 'Settings',
-        contentWidget: StatefulBuilder(
-          builder: (context, setState) {
-            return SizedBox(
-              height: MediaQuery.of(context).size.height * 0.4,
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    AnymexExpansionTile(
-                      title: 'Sort By',
-                      initialExpanded: true,
-                      content: Obx(() {
-                        final isHistory =
-                            controller.selectedListIndex.value == -1;
-                        return Column(children: [
-                          Row(
-                            children: [
-                              _SortBox(
-                                title: 'Title',
-                                currentSort: controller.currentSort.value,
-                                sortType: SortType.title,
-                                isAscending: controller.isAscending.value,
-                                onTap: () {
-                                  controller.handleSortChange(SortType.title);
-                                },
-                                icon: Icons.sort_by_alpha,
-                              ),
-                              if (!isHistory)
-                                _SortBox(
-                                  title: 'Last Added',
-                                  currentSort: controller.currentSort.value,
-                                  sortType: SortType.lastAdded,
-                                  isAscending: controller.isAscending.value,
-                                  onTap: () {
-                                    controller
-                                        .handleSortChange(SortType.lastAdded);
-                                  },
-                                  icon: Icons.add_circle_outline,
-                                ),
-                              if (isHistory)
-                                _SortBox(
-                                  title: _getLastReadTitle(controller),
-                                  currentSort: controller.currentSort.value,
-                                  sortType: SortType.lastRead,
-                                  isAscending: controller.isAscending.value,
-                                  onTap: () {
-                                    controller
-                                        .handleSortChange(SortType.lastRead);
-                                  },
-                                  icon: _getLastReadIcon(controller),
-                                ),
-                            ],
-                          ),
-                          if (!isHistory)
-                            Row(
-                              children: [
-                                _SortBox(
-                                  title: _getLastReadTitle(controller),
-                                  currentSort: controller.currentSort.value,
-                                  sortType: SortType.lastRead,
-                                  isAscending: controller.isAscending.value,
-                                  onTap: () {
-                                    controller
-                                        .handleSortChange(SortType.lastRead);
-                                  },
-                                  icon: _getLastReadIcon(controller),
-                                ),
-                                _SortBox(
-                                  title: 'Rating',
-                                  currentSort: controller.currentSort.value,
-                                  sortType: SortType.rating,
-                                  isAscending: controller.isAscending.value,
-                                  onTap: () {
-                                    controller
-                                        .handleSortChange(SortType.rating);
-                                  },
-                                  icon: Icons.star_border,
-                                ),
-                              ],
-                            ),
-                        ]);
-                      }),
-                    ),
-                    AnymexExpansionTile(
-                      title: 'Grid',
-                      content: Column(
-                        children: [
-                          Obx(() {
-                            return CustomSliderTile(
-                              icon: Icons.grid_view_rounded,
-                              title: 'Grid Size',
-                              description: 'Adjust Items per row',
-                              sliderValue:
-                                  controller.gridCount.value.toDouble(),
-                              onChanged: (e) {
-                                controller.gridCount.value = e.toInt();
-                                controller.savePreferences();
-                              },
-                              max: 10,
-                            );
-                          })
-                        ],
-                      ),
-                    ),
-                    20.height()
-                  ],
+      showModalBottomSheet(
+        context: context,
+        backgroundColor: Colors.transparent,
+        isScrollControlled: true,
+        builder: (context) {
+          return LibrarySettingsSheet(controller: controller);
+        },
+      );
+}
+
+class LibrarySettingsSheet extends StatefulWidget {
+  final LibraryController controller;
+  const LibrarySettingsSheet({super.key, required this.controller});
+
+  @override
+  State<LibrarySettingsSheet> createState() => LibrarySettingsSheetState();
+}
+
+class LibrarySettingsSheetState extends State<LibrarySettingsSheet>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
+  int _selectedIndex = 0;
+
+  static const _tabs = ['Sort Options', 'Layout Settings'];
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: _tabs.length, vsync: this);
+    _tabController.addListener(() {
+      if (_tabController.index != _selectedIndex) {
+        setState(() {
+          _selectedIndex = _tabController.index;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final maxH = MediaQuery.of(context).size.height * 0.75;
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: EdgeInsets.fromLTRB(12, 0, 12, 16 + bottomInset),
+      child: Container(
+        constraints: BoxConstraints(maxHeight: maxH),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: theme.colorScheme.outline.withOpacity(0.1)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.15),
+              blurRadius: 16,
+              offset: const Offset(0, -2),
+            )
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 36,
+                height: 3.5,
+                margin: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.onSurface.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
-            );
-          },
+              const Text(
+                'Library Settings',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Poppins',
+                ),
+              ),
+              const SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: AnymeXTabBar(
+                  selectTabs: _tabs,
+                  selectedIndex: _selectedIndex,
+                  activeColor: theme.colorScheme.secondary,
+                  activeTextColor: theme.colorScheme.onSecondary,
+                  inactiveTextColor: theme.colorScheme.onSurfaceVariant,
+                  onTabSelected: (index) {
+                    setState(() {
+                      _selectedIndex = index;
+                      _tabController.animateTo(index);
+                    });
+                  },
+                ),
+              ),
+              const SizedBox(height: 10),
+              Flexible(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                  child: AnimatedSize(
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeInOut,
+                    child: [
+                      _buildSortTab(),
+                      _buildLayoutTab(),
+                    ][_selectedIndex],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-      ).show(context);
+      ),
+    );
+  }
+
+  Widget _buildSortTab() {
+    return Obx(() {
+      final isHistory = widget.controller.selectedListIndex.value == -1;
+
+      final List<Widget> sortTiles = [
+        SortTile(
+          title: 'Title',
+          sortType: SortType.title,
+          currentSort: widget.controller.currentSort.value,
+          isAscending: widget.controller.isAscending.value,
+          icon: Icons.sort_by_alpha,
+          onTap: () => widget.controller.handleSortChange(SortType.title),
+        ),
+        SortTile(
+          title: _getLastReadTitle(widget.controller),
+          sortType: SortType.lastRead,
+          currentSort: widget.controller.currentSort.value,
+          isAscending: widget.controller.isAscending.value,
+          icon: _getLastReadIcon(widget.controller),
+          onTap: () => widget.controller.handleSortChange(SortType.lastRead),
+        ),
+        if (!isHistory) ...[
+          SortTile(
+            title: 'Last Added',
+            sortType: SortType.lastAdded,
+            currentSort: widget.controller.currentSort.value,
+            isAscending: widget.controller.isAscending.value,
+            icon: Icons.add_circle_outline,
+            onTap: () => widget.controller.handleSortChange(SortType.lastAdded),
+          ),
+          SortTile(
+            title: 'Rating',
+            sortType: SortType.rating,
+            currentSort: widget.controller.currentSort.value,
+            isAscending: widget.controller.isAscending.value,
+            icon: Icons.star_border,
+            onTap: () => widget.controller.handleSortChange(SortType.rating),
+          ),
+          SortTile(
+            title: 'Popularity',
+            sortType: SortType.popularity,
+            currentSort: widget.controller.currentSort.value,
+            isAscending: widget.controller.isAscending.value,
+            icon: Icons.trending_up,
+            onTap: () => widget.controller.handleSortChange(SortType.popularity),
+          ),
+          SortTile(
+            title: _getProgressTitle(widget.controller),
+            sortType: SortType.progress,
+            currentSort: widget.controller.currentSort.value,
+            isAscending: widget.controller.isAscending.value,
+            icon: Icons.play_circle_outline,
+            onTap: () => widget.controller.handleSortChange(SortType.progress),
+          ),
+          SortTile(
+            title: 'Release Date',
+            sortType: SortType.aired,
+            currentSort: widget.controller.currentSort.value,
+            isAscending: widget.controller.isAscending.value,
+            icon: Icons.calendar_today,
+            onTap: () => widget.controller.handleSortChange(SortType.aired),
+          ),
+        ],
+      ];
+
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: sortTiles,
+      );
+    });
+  }
+
+  Widget _buildLayoutTab() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Obx(() {
+          return CustomSliderTile(
+            icon: Icons.grid_view_rounded,
+            title: 'Grid Size',
+            description: 'Adjust Items per row',
+            sliderValue: widget.controller.gridCount.value.toDouble(),
+            onChanged: (e) {
+              widget.controller.gridCount.value = e.toInt();
+              widget.controller.savePreferences();
+            },
+            max: 10,
+          );
+        }),
+      ],
+    );
+  }
 
   String _getLastReadTitle(LibraryController controller) {
     switch (controller.type.value) {
@@ -495,6 +694,10 @@ class Header extends StatelessWidget {
       case ItemType.novel:
         return Iconsax.book;
     }
+  }
+
+  String _getProgressTitle(LibraryController controller) {
+    return controller.type.value == ItemType.anime ? 'Watch Progress' : 'Read Progress';
   }
 }
 
@@ -595,21 +798,22 @@ class _PillIconButton extends StatelessWidget {
   }
 }
 
-class _SortBox extends StatelessWidget {
+class SortTile extends StatelessWidget {
   final String title;
-  final SortType currentSort;
   final SortType sortType;
+  final SortType currentSort;
   final bool isAscending;
-  final VoidCallback onTap;
   final IconData icon;
+  final VoidCallback onTap;
 
-  const _SortBox({
+  const SortTile({
+    super.key,
     required this.title,
-    required this.currentSort,
     required this.sortType,
+    required this.currentSort,
     required this.isAscending,
-    required this.onTap,
     required this.icon,
+    required this.onTap,
   });
 
   @override
@@ -617,119 +821,53 @@ class _SortBox extends StatelessWidget {
     final isSelected = currentSort == sortType;
     final theme = Theme.of(context);
 
-    return Expanded(
-      child: SizedBox(
-        height: 90,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
-          child: Material(
-            clipBehavior: Clip.antiAlias,
-            elevation: isSelected ? 3 : 0,
-            shadowColor: isSelected
-                ? theme.colorScheme.primary.opaque(0.4, iReallyMeanIt: true)
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(16),
-            child: InkWell(
-              onTap: onTap,
-              splashColor:
-                  theme.colorScheme.primary.opaque(0.15, iReallyMeanIt: true),
-              highlightColor:
-                  theme.colorScheme.primary.opaque(0.05, iReallyMeanIt: true),
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: isSelected
-                      ? LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            theme.colorScheme.primary
-                                .opaque(0.15, iReallyMeanIt: true),
-                            theme.colorScheme.primaryContainer,
-                          ],
-                        )
-                      : null,
-                  color: isSelected
-                      ? null
-                      : theme.colorScheme.surfaceVariant
-                          .opaque(0.7, iReallyMeanIt: true),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: isSelected
-                        ? theme.colorScheme.primary
-                        : theme.colorScheme.outline
-                            .opaque(0.2, iReallyMeanIt: true),
-                    width: isSelected ? 1.5 : 0.5,
-                  ),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        if (isSelected)
-                          Container(
-                            width: 42,
-                            height: 42,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: theme.colorScheme.primary
-                                  .opaque(0.12, iReallyMeanIt: true),
-                            ),
-                          ),
-                        Icon(
-                          icon,
-                          color: isSelected
-                              ? theme.colorScheme.primary
-                              : theme.colorScheme.onSurfaceVariant,
-                          size: 24,
-                        ),
-                        if (isSelected)
-                          Positioned(
-                            top: 0,
-                            right: 0,
-                            child: Container(
-                              padding: const EdgeInsets.all(2),
-                              decoration: BoxDecoration(
-                                color: theme.colorScheme.primary,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                isAscending
-                                    ? Icons.arrow_upward
-                                    : Icons.arrow_downward,
-                                color: theme.colorScheme.onPrimary,
-                                size: 12,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    AnimatedDefaultTextStyle(
-                      duration: const Duration(milliseconds: 200),
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight:
-                            isSelected ? FontWeight.w600 : FontWeight.w400,
-                        color: isSelected
-                            ? theme.colorScheme.primary
-                            : theme.colorScheme.onSurfaceVariant,
-                      ),
-                      child: AnymexText(
-                        text: title,
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: isSelected
+            ? theme.colorScheme.secondary.withOpacity(0.08)
+            : theme.colorScheme.surfaceVariant.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isSelected
+              ? theme.colorScheme.secondary.withOpacity(0.3)
+              : theme.colorScheme.outline.withOpacity(0.08),
+          width: isSelected ? 1.5 : 1.0,
+        ),
+      ),
+      child: ListTile(
+        onTap: onTap,
+        leading: Icon(
+          icon,
+          color: isSelected
+              ? theme.colorScheme.secondary
+              : theme.colorScheme.onSurfaceVariant,
+        ),
+        title: Text(
+          title,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+            fontFamily: 'Poppins',
+            color: isSelected
+                ? theme.colorScheme.secondary
+                : theme.colorScheme.onSurface,
           ),
         ),
+        trailing: isSelected
+            ? Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.secondary,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  isAscending ? Icons.arrow_upward : Icons.arrow_downward,
+                  color: theme.colorScheme.onSecondary,
+                  size: 14,
+                ),
+              )
+            : null,
       ),
     );
   }
