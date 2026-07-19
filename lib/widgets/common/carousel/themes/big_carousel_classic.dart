@@ -4,6 +4,7 @@ import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/carousel/carousel_types.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/common/marquee_text.dart';
@@ -74,20 +75,9 @@ class BigCarouselClassicState extends State<BigCarouselClassic> {
         .trim();
     final colors = Theme.of(context).colorScheme;
 
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      elevation: 0,
-      backgroundColor: Colors.transparent,
-      builder: (sheetContext) => DraggableScrollableSheet(
-        initialChildSize: 0.6,
-        maxChildSize: 0.9,
-        minChildSize: 0.3,
-        builder: (sheetContext, scrollController) => Container(
-          decoration: BoxDecoration(
-            color: colors.surfaceContainerLow,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-          ),
+    AnymexSheet.custom(
+        SizedBox(
+          height: MediaQuery.sizeOf(context).height * 0.4,
           child: Column(
             children: [
               Container(
@@ -114,40 +104,32 @@ class BigCarouselClassicState extends State<BigCarouselClassic> {
                       ),
                     ),
                     IconButton.filledTonal(
-                      onPressed: () => Navigator.pop(sheetContext),
+                      onPressed: () => Navigator.pop(context),
                       icon: const Icon(Icons.close_rounded, size: 20),
                     ),
                   ],
                 ),
               ),
               Expanded(
-                child: Scrollbar(
-                  controller: scrollController,
-                  thumbVisibility: true,
-                  radius: const Radius.circular(8),
-                  thickness: 5,
-                  child: SingleChildScrollView(
-                    controller: scrollController,
-                    padding: const EdgeInsets.fromLTRB(24, 4, 24, 32),
-                    child: cleanDescription.isEmpty
-                        ? buildEmptyDescriptionState(colors)
-                        : Text(
-                            cleanDescription,
-                            style: TextStyle(
-                              fontSize: 15.5,
-                              height: 1.75,
-                              letterSpacing: 0.1,
-                              color: colors.onSurfaceVariant,
-                            ),
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(24, 4, 24, 32),
+                  child: cleanDescription.isEmpty
+                      ? buildEmptyDescriptionState(colors)
+                      : Text(
+                          cleanDescription,
+                          style: TextStyle(
+                            fontSize: 15.5,
+                            height: 1.75,
+                            letterSpacing: 0.1,
+                            color: colors.onSurfaceVariant,
                           ),
-                  ),
+                        ),
                 ),
               ),
             ],
           ),
         ),
-      ),
-    );
+        context);
   }
 
   @override
@@ -338,7 +320,7 @@ Widget buildCarouselCard({
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 10),
           decoration: BoxDecoration(
-            color: colors.surfaceContainerLow.withValues(alpha: 0.4),
+            color: colors.surfaceContainerLow.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(30),
           ),
           clipBehavior: Clip.antiAlias,
@@ -423,7 +405,7 @@ Widget buildCarouselCard({
                           borderRadius: BorderRadius.circular(20),
                           child: Material(
                             color: colors.secondaryContainer
-                                .withValues(alpha: 0.4),
+                                .withValues(alpha: 0.2),
                             child: InkWell(
                               onTap: onDescriptionTap,
                               splashColor:

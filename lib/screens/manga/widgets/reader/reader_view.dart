@@ -29,30 +29,13 @@ class ReaderView extends StatefulWidget {
 }
 
 class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
-  final PhotoViewController _photoViewController = PhotoViewController();
-  final PhotoViewScaleStateController _photoViewScaleStateController =
-      PhotoViewScaleStateController();
   final DisplayRefreshHost _displayRefreshHost = DisplayRefreshHost();
-  Alignment _scalePosition = Alignment.center;
-  bool _isCtrlPressed = false;
-  late AnimationController _scaleAnimationController;
-  late Animation<double> _animation;
-  final List<double> _doubleTapScales = [1.0, 2.0];
   Offset? _lastTapPosition;
 
   @override
   void initState() {
     super.initState();
     HardwareKeyboard.instance.addHandler(_handleKeyPress);
-    _scaleAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 200),
-      vsync: this,
-    );
-    _animation = Tween(begin: 1.0, end: 2.0).animate(
-      CurvedAnimation(curve: Curves.ease, parent: _scaleAnimationController),
-    );
-    _animation.addListener(() => _photoViewController.scale = _animation.value);
-    widget.controller.photoViewController = _photoViewController;
 
     ever(widget.controller.displayRefreshInterval,
         (v) => _displayRefreshHost.flashInterval.value = v);
@@ -69,116 +52,17 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
   @override
   void dispose() {
     HardwareKeyboard.instance.removeHandler(_handleKeyPress);
-    _photoViewController.dispose();
-    _photoViewScaleStateController.dispose();
-    _scaleAnimationController.dispose();
     _displayRefreshHost.dispose();
     super.dispose();
   }
 
   bool _handleKeyPress(KeyEvent event) {
-    if (event is KeyDownEvent || event is KeyRepeatEvent) {
-      if (event.logicalKey == LogicalKeyboardKey.controlLeft ||
-          event.logicalKey == LogicalKeyboardKey.controlRight ||
-          event.logicalKey == LogicalKeyboardKey.metaLeft ||
-          event.logicalKey == LogicalKeyboardKey.metaRight) {
-        setState(() => _isCtrlPressed = true);
-      }
-    } else if (event is KeyUpEvent) {
-      if (event.logicalKey == LogicalKeyboardKey.controlLeft ||
-          event.logicalKey == LogicalKeyboardKey.controlRight ||
-          event.logicalKey == LogicalKeyboardKey.metaLeft ||
-          event.logicalKey == LogicalKeyboardKey.metaRight) {
-        setState(() => _isCtrlPressed = false);
-      }
-    }
     return false;
   }
 
   void _handlePointerSignal(PointerSignalEvent event) {
     if (event is PointerScrollEvent) {
-      if (_isCtrlPressed) {
-        final delta = event.scrollDelta.dy;
-        final currentScale = _photoViewController.scale ?? 1.0;
-        final newScale = (currentScale - (delta * 0.002)).clamp(1.0, 5.0);
-
-        if (newScale != currentScale) {
-          _photoViewController.scale = newScale;
-        }
-      } else {
-        widget.controller.handleMouseScroll(event.scrollDelta.dy);
-      }
-    }
-  }
-
-  void _onScaleEnd(
-    BuildContext context,
-    ScaleEndDetails details,
-    PhotoViewControllerValue controllerValue,
-  ) {
-    if (controllerValue.scale! < 1) {
-      _photoViewScaleStateController.reset();
-    }
-  }
-
-  double get pixelRatio => View.of(context).devicePixelRatio;
-  Size get size => View.of(context).physicalSize / pixelRatio;
-
-  Alignment _computeAlignmentByTapOffset(Offset offset) {
-    return Alignment(
-      (offset.dx - size.width / 2) / (size.width / 2),
-      (offset.dy - size.height / 2) / (size.height / 2),
-    );
-  }
-
-  void _toggleScale(Offset tapPosition) {
-    if (mounted) {
-      setState(() {
-        if (_scaleAnimationController.isAnimating) {
-          return;
-        }
-
-        final currentScale = _photoViewController.scale ?? 1.0;
-
-        if (currentScale == _doubleTapScales[0]) {
-          _scalePosition = _computeAlignmentByTapOffset(tapPosition);
-
-          if (_scaleAnimationController.isCompleted) {
-            _scaleAnimationController.reset();
-          }
-
-          _animation =
-              Tween(begin: _doubleTapScales[0], end: _doubleTapScales[1])
-                  .animate(
-            CurvedAnimation(
-                curve: Curves.ease, parent: _scaleAnimationController),
-          );
-          _animation
-              .addListener(() => _photoViewController.scale = _animation.value);
-
-          _scaleAnimationController.forward();
-          return;
-        }
-
-        if (currentScale >= _doubleTapScales[1]) {
-          _animation =
-              Tween(begin: currentScale, end: _doubleTapScales[0]).animate(
-            CurvedAnimation(
-                curve: Curves.ease, parent: _scaleAnimationController),
-          );
-          _animation
-              .addListener(() => _photoViewController.scale = _animation.value);
-
-          if (_scaleAnimationController.isCompleted) {
-            _scaleAnimationController.reset();
-          }
-
-          _scaleAnimationController.forward();
-          return;
-        }
-
-        _photoViewScaleStateController.reset();
-      });
+      widget.controller.handleMouseScroll(event.scrollDelta.dy);
     }
   }
 
@@ -291,106 +175,96 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
       final isContinuous =
           widget.controller.readingLayout.value == MangaPageViewMode.continuous;
 
+      Widget readerContent = isContinuous
+          ? ContinuousReaderView(controller: widget.controller)
+          : _buildPagedView();
+
+      if (widget.controller.grayscaleEnabled.value) {
+        readerContent = ColorFiltered(
+          colorFilter: const ColorFilter.matrix([
+            0.2126, 0.7152, 0.0722, 0, 0,
+            0.2126, 0.7152, 0.0722, 0, 0,
+            0.2126, 0.7152, 0.0722, 0, 0,
+            0,      0,      0,      1, 0,
+          ]),
+          child: readerContent,
+        );
+      } else if (widget.controller.invertColorsEnabled.value) {
+        readerContent = ColorFiltered(
+          colorFilter: const ColorFilter.matrix([
+            -1,  0,  0, 0, 255,
+             0, -1,  0, 0, 255,
+             0,  0, -1, 0, 255,
+             0,  0,  0, 1,   0,
+          ]),
+          child: readerContent,
+        );
+      }
+
+      if (widget.controller.colorFilterEnabled.value) {
+        final colorValue = widget.controller.colorFilterValue.value;
+        final blendModeIndex = widget.controller.colorFilterMode.value;
+        final blendMode = _blendModeFromIndex(blendModeIndex);
+        readerContent = ColorFiltered(
+          colorFilter: ColorFilter.mode(Color(colorValue), blendMode),
+          child: readerContent,
+        );
+      }
+
       return Stack(
         children: [
           Container(color: bgColor),
+          readerContent,
+          
+          
+          
           if (isContinuous)
-            PhotoView.customChild(
-              controller: _photoViewController,
-              scaleStateController: _photoViewScaleStateController,
-              basePosition: _scalePosition,
-              minScale: PhotoViewComputedScale.contained * 1.0,
-              maxScale: PhotoViewComputedScale.covered * 5.0,
-              onScaleEnd: _onScaleEnd,
-              gestureDetectorBehavior: HitTestBehavior.translucent,
-              backgroundDecoration:
-                  const BoxDecoration(color: Colors.transparent),
+            Positioned.fill(
               child: GestureDetector(
-                onTapDown: (details) =>
-                    _lastTapPosition = details.globalPosition,
-                onTap: () {
-                  if (_lastTapPosition != null) {
-                    widget.controller.handleTap(_lastTapPosition!);
-                  }
+                behavior: HitTestBehavior.translucent,
+                onTapUp: (details) {
+                  widget.controller.handleTap(details.globalPosition);
                 },
                 onLongPressStart: (details) {
                   if (widget.controller.longPressPageActionsEnabled.value) {
                     showReaderPageActionsDialog(context, widget.controller);
                   }
                 },
-                onDoubleTapDown: (details) {
-                  _toggleScale(details.globalPosition);
-                },
-                onDoubleTap: () {},
-                child: ContinuousReaderView(controller: widget.controller),
-              ),
-            )
-          else
-            _buildPagedView(),
-          ReaderContentOverlay(controller: widget.controller),
-          if (widget.controller.grayscaleEnabled.value ||
-              widget.controller.invertColorsEnabled.value)
-            IgnorePointer(
-              child: ColorFiltered(
-                colorFilter: ColorFilter.matrix(
-                  widget.controller.grayscaleEnabled.value
-                      ? [
-                          0.2126,
-                          0.7152,
-                          0.0722,
-                          0,
-                          0,
-                          0.2126,
-                          0.7152,
-                          0.0722,
-                          0,
-                          0,
-                          0.2126,
-                          0.7152,
-                          0.0722,
-                          0,
-                          0,
-                          0,
-                          0,
-                          0,
-                          1,
-                          0,
-                        ]
-                      : [
-                          -1,
-                          0,
-                          0,
-                          0,
-                          255,
-                          0,
-                          -1,
-                          0,
-                          0,
-                          255,
-                          0,
-                          0,
-                          -1,
-                          0,
-                          255,
-                          0,
-                          0,
-                          0,
-                          1,
-                          0,
-                        ],
-                ),
-                child: Container(color: Colors.transparent),
               ),
             ),
+          ReaderContentOverlay(controller: widget.controller),
           DisplayRefreshOverlay(host: _displayRefreshHost),
         ],
       );
     });
   }
 
+  static BlendMode _blendModeFromIndex(int index) {
+    const modes = [
+      BlendMode.srcOver,
+      BlendMode.multiply,
+      BlendMode.screen,
+      BlendMode.overlay,
+      BlendMode.darken,
+      BlendMode.lighten,
+      BlendMode.colorDodge,
+      BlendMode.colorBurn,
+      BlendMode.hardLight,
+      BlendMode.softLight,
+      BlendMode.difference,
+      BlendMode.exclusion,
+      BlendMode.hue,
+      BlendMode.saturation,
+      BlendMode.color,
+      BlendMode.luminosity,
+    ];
+    if (index >= 0 && index < modes.length) return modes[index];
+    return BlendMode.srcOver;
+  }
+
   Widget _buildPagedView() {
-    // Reading spreads inside Obx so PhotoViewGallery rebuilds when new
-    // chapters are appended inline (spreads is an RxList).
+    
+    
     return Obx(() {
       final spreads = widget.controller.spreads;
       return PhotoViewGallery.builder(
