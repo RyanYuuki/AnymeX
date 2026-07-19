@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math' show Random;
+import 'package:anymex/utils/oauth_helper.dart';
 
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
@@ -33,7 +34,6 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
@@ -514,16 +514,19 @@ class MalService extends GetxController implements BaseService, OnlineService {
         'https://myanimelist.net/v1/oauth2/authorize?response_type=code&client_id=$clientId&code_challenge=$codeChallenge';
 
     try {
-      final result = await FlutterWebAuth2.authenticate(
+      final result = await OauthHelper.authenticate(
+        context: context,
         url: url,
         callbackUrlScheme: 'anymex',
       );
 
-      final code = Uri.parse(result).queryParameters['code'];
-      if (code != null) {
-        Logger.i("Authorization code: $code");
-        await _exchangeCodeForTokenMAL(code, clientId, codeChallenge, secret);
-        await _fetchAndStoreMalSessionId();
+      if (result != null) {
+        final code = Uri.parse(result).queryParameters['code'];
+        if (code != null) {
+          Logger.i("Authorization code: $code");
+          await _exchangeCodeForTokenMAL(code, clientId, codeChallenge, secret);
+          await _fetchAndStoreMalSessionId();
+        }
       }
     } catch (e) {
       Logger.i('Error during MyAnimeList login: $e');

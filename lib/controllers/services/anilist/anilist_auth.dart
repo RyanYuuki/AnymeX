@@ -1,5 +1,6 @@
 // ignore_for_file: invalid_use_of_protected_member
 
+import 'package:anymex/utils/oauth_helper.dart';
 import 'dart:convert';
 
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
@@ -20,7 +21,6 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher_string.dart';
@@ -164,14 +164,17 @@ class AnilistAuth extends GetxController {
       final url =
           'https://anilist.co/api/v2/oauth/authorize?client_id=$clientId&redirect_uri=anymex://callback&response_type=code';
       try {
-        final result = await FlutterWebAuth2.authenticate(
+        final result = await OauthHelper.authenticate(
+          context: context,
           url: url,
           callbackUrlScheme: 'anymex',
         );
-        final code = Uri.parse(result).queryParameters['code'];
-        if (code != null) {
-          Logger.i("token found");
-          await _exchangeCodeForToken(code, clientId, clientSecret);
+        if (result != null) {
+          final code = Uri.parse(result).queryParameters['code'];
+          if (code != null) {
+            Logger.i("token found");
+            await _exchangeCodeForToken(code, clientId, clientSecret);
+          }
         }
       } catch (e) {
         Logger.i('Error during login: $e');

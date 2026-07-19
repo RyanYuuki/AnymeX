@@ -75,3 +75,9 @@ android {
 flutter {
     source = "../.."
 }
+
+dependencies {
+    // TESTING - CS SETTINGS
+    // implementation "androidx.appcompat:appcompat:1.6.1"
+    // implementation "androidx.fragment:fragment-ktx:1.7.1"
+}

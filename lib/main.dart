@@ -31,7 +31,6 @@ import 'package:anymex/utils/external_font_loader.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/deeplink.dart';
 import 'package:anymex/utils/register_protocol/register_protocol.dart';
-import 'package:anymex/widgets/animation/more_page_transitions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex/widgets/common/fps_meter.dart';
@@ -438,6 +437,8 @@ class _FilterScreenState extends State<FilterScreen> {
     const MyLibrary()
   ];
 
+  DateTime? _lastBackPressTime;
+
   @override
   void dispose() {
     Logger.dispose();
@@ -447,11 +448,32 @@ class _FilterScreenState extends State<FilterScreen> {
   @override
   Widget build(BuildContext context) {
     final authService = Get.put(ServiceHandler());
-    return Glow(
-      child: PlatformBuilder(
-        strictMode: false,
-        desktopBuilder: _buildDesktopLayout(context, authService),
-        androidBuilder: _buildAndroidLayout(authService),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+
+        final navigator = Navigator.of(context);
+        if (navigator.canPop()) {
+          navigator.pop();
+          return;
+        }
+
+        final now = DateTime.now();
+        if (_lastBackPressTime == null ||
+            now.difference(_lastBackPressTime!) > const Duration(seconds: 2)) {
+          _lastBackPressTime = now;
+          snackBar('Press back again to close', duration: 2000);
+        } else {
+          SystemNavigator.pop();
+        }
+      },
+      child: Glow(
+        child: PlatformBuilder(
+          strictMode: false,
+          desktopBuilder: _buildDesktopLayout(context, authService),
+          androidBuilder: _buildAndroidLayout(authService),
+        ),
       ),
     );
   }

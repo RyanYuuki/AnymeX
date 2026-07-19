@@ -1,6 +1,7 @@
 // ignore_for_file: invalid_use_of_protected_member
 
 import 'dart:convert';
+import 'package:anymex/utils/oauth_helper.dart';
 import 'dart:math' as math;
 
 import 'package:anymex/controllers/cacher/cache_controller.dart';
@@ -28,7 +29,6 @@ import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart';
 
@@ -469,7 +469,6 @@ class SimklService extends GetxController
     final double? score = params.score;
     final String? status = params.status;
     final int? progress = params.progress;
-    final bool isAnime = params.isAnime;
     final int? season = params.season;
     try {
       final isMovie = listId.split('*').last == 'MOVIE';
@@ -660,14 +659,18 @@ class SimklService extends GetxController
     final url =
         'https://simkl.com/oauth/authorize?response_type=code&client_id=$clientId&redirect_uri=anymex://callback';
     try {
-      final result = await FlutterWebAuth2.authenticate(
+      final result = await OauthHelper.authenticate(
+        context: context,
         url: url,
         callbackUrlScheme: 'anymex',
+        forceWebAuth: true,
       );
 
-      final code = Uri.parse(result).queryParameters['code'];
-      if (code != null) {
-        await _exchangeCodeForToken(code);
+      if (result != null) {
+        final code = Uri.parse(result).queryParameters['code'];
+        if (code != null) {
+          await _exchangeCodeForToken(code);
+        }
       }
     } catch (e) {
       Logger.i(e.toString());
