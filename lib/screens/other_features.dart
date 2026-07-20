@@ -223,10 +223,8 @@ class NestedHeader extends StatelessWidget {
     if (isDesktop) {
       final subtitleText = subtitle ??
           (title == 'Extensions' ? 'Manage installed plugins & sources' : null);
-      final topMargin = isWindows ? 42.0 : 12.0;
-
       return Padding(
-        padding: EdgeInsets.fromLTRB(24, topMargin, 24, 8),
+        padding: const EdgeInsets.fromLTRB(24, 18, 24, 8),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

@@ -14,6 +14,12 @@ class Deeplink {
   static Future<void> handleDeepLink(Uri uri) async {
     print("HANDLING DEEEPLIINK => ${uri.toString()}");
 
+    if (uri.host == 'callback' ||
+        uri.path.contains('callback') ||
+        uri.queryParameters.containsKey('code')) {
+      return;
+    }
+
     final extensionManager = Get.find<ExtensionManager>();
     int attempts = 0;
     while (extensionManager.managers.isEmpty && attempts < 25) {
