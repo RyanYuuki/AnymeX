@@ -18,6 +18,7 @@ import 'package:anymex/screens/settings/sub_settings/settings_ui.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
+import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
@@ -108,51 +109,22 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Widget _buildSearchBar(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        boxShadow: [lightGlowingShadow(context)],
-      ),
-      child: TextField(
-        controller: _search.textController,
-        style: TextStyle(color: context.colors.onSurface, fontSize: 16),
-        decoration: InputDecoration(
-          hintText: 'Search settings...',
-          filled: true,
-          fillColor: context.colors.secondaryContainer.opaque(0.5),
-          hintStyle: TextStyle(
-            color: context.colors.onSurface.opaque(0.4, iReallyMeanIt: true),
-            fontSize: 16,
-          ),
-          prefixIcon: Icon(IconlyLight.search, color: context.colors.primary),
-          suffixIcon: _isSearching
-              ? IconButton(
-                  icon: Icon(Icons.close_rounded,
-                      color: context.colors.onSurface
-                          .opaque(0.5, iReallyMeanIt: true)),
-                  onPressed: () {
-                    _search.textController.clear();
-                    FocusScope.of(context).unfocus();
-                  },
-                )
-              : null,
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(999),
-            borderSide: BorderSide(
-              color: context.colors.secondaryContainer,
-              width: 1,
-            ),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(999),
-            borderSide: BorderSide(
-              color: context.colors.secondaryContainer,
-              width: 1,
-            ),
-          ),
-        ),
-      ),
+    return CustomSearchBar(
+      controller: _search.textController,
+      hintText: 'Search settings...',
+      onSubmitted: (value) {},
+      onChanged: (value) {
+        setState(() {});
+      },
+      suffixIcon: Icons.close_rounded,
+      onSuffixIconPressed: _isSearching
+          ? () {
+              _search.textController.clear();
+              FocusScope.of(context).unfocus();
+              setState(() {});
+            }
+          : null,
+      padding: EdgeInsets.zero,
     );
   }
 

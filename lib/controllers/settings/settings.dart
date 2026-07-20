@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:anymex/database/data_keys/keys.dart';
@@ -341,6 +342,21 @@ class Settings extends GetxController {
   set grainIntensity(double value) {
     uiSettings.update((s) => s?.grainIntensity = value);
     UISettingsKeys.grainIntensity.set(value);
+  }
+
+  bool get enableImmersiveMode => _getUISetting((s) => s.enableImmersiveMode);
+  set enableImmersiveMode(bool value) {
+    uiSettings.update((s) => s?.enableImmersiveMode = value);
+    UISettingsKeys.enableImmersiveMode.set(value);
+    applyImmersiveMode(value);
+  }
+
+  static void applyImmersiveMode(bool enable) {
+    if (enable) {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    } else {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    }
   }
 
 

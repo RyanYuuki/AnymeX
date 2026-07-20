@@ -31,6 +31,7 @@ class UISettings {
   bool useLegacyHeader;
   bool useGrainTexture;
   double grainIntensity;
+  bool enableImmersiveMode;
 
   UISettings({
     this.glowMultiplier = 1.0,
@@ -61,6 +62,7 @@ class UISettings {
     this.useLegacyHeader = false,
     this.useGrainTexture = false,
     this.grainIntensity = 0.05,
+    this.enableImmersiveMode = false,
   })  : homePageCards = homePageCards ??
             {
               "Continue Watching": true,
@@ -161,6 +163,8 @@ class UISettings {
           UISettingsKeys.useGrainTexture.get<bool>(uiDefaults.useGrainTexture),
       grainIntensity:
           UISettingsKeys.grainIntensity.get<double>(uiDefaults.grainIntensity),
+      enableImmersiveMode: UISettingsKeys.enableImmersiveMode
+          .get<bool>(uiDefaults.enableImmersiveMode),
     );
   }
 }

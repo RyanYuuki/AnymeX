@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/settings/widgets/card_selector.dart';
 import 'package:anymex/screens/settings/widgets/history_card_selector.dart';
@@ -97,6 +99,16 @@ class _SettingsUiState extends State<SettingsUi> {
                                     onChanged: (val) {
                                       settings.useLegacyHeader = val;
                                     }),
+                                if (Platform.isAndroid || Platform.isIOS)
+                                  CustomSwitchTile(
+                                      icon: Icons.fullscreen_rounded,
+                                      title: "Immersive Mode",
+                                      description:
+                                          "Hide status bar and system navigation bar for an immersed view",
+                                      switchValue: settings.enableImmersiveMode,
+                                      onChanged: (val) {
+                                        settings.enableImmersiveMode = val;
+                                      }),
                                 CustomTile(
                                   onTap: () => showCardStyleSwitcher(context),
                                   icon: Iconsax.card5,

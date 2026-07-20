@@ -1,14 +1,24 @@
+import 'package:anymex/controllers/offline/offline_storage_controller.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/screens/library/controller/library_controller.dart';
+import 'package:anymex/screens/library/editor/history_editor.dart';
+import 'package:anymex/screens/library/editor/list_editor.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/common/anymex_slider_m3.dart';
 import 'package:anymex/widgets/common/slider_semantics.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_tabbar.dart';
 import 'package:anymex/widgets/custom_widgets/custom_icon_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
+import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:iconsax/iconsax.dart';
 
 class CustomSearchBar extends StatefulWidget {
   final TextEditingController? controller;
@@ -196,7 +206,7 @@ class CustomSliderTile extends StatelessWidget {
                   ),
                   const SizedBox(width: 10),
                   Expanded(
-                    child: CustomSlider(
+                    child: AnymeXSliderM3(
                       focusNode: FocusNode(
                           canRequestFocus: false, skipTraversal: true),
                       value: double.parse(sliderValue.toStringAsFixed(1)),
@@ -204,15 +214,8 @@ class CustomSliderTile extends StatelessWidget {
                       max: max,
                       min: min,
                       label: label ?? sliderValue.toInt().toString(),
-                      onDragEnd: onChangedEnd,
-                      glowBlurMultiplier: 1,
-                      glowSpreadMultiplier: 1,
+                      onChangeEnd: onChangedEnd,
                       divisions: divisions?.toInt() ?? (max * 10).toInt(),
-                      customValueIndicatorSize: RoundedSliderValueIndicator(
-                          context.colors,
-                          width: 40,
-                          height: 40,
-                          radius: 50),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -229,5 +232,223 @@ class CustomSliderTile extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class ChipTabs extends StatelessWidget {
+  final LibraryController controller;
+
+  const ChipTabs({super.key, required this.controller});
+
+  Widget _buildCustomPill({
+    required BuildContext context,
+    required String label,
+    required bool isSelected,
+    required VoidCallback onTap,
+    VoidCallback? onLongPress,
+    Widget? icon,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          onLongPress: onLongPress,
+          borderRadius: BorderRadius.circular(30),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? context.colors.primary.withOpacity(0.08)
+                  : context.colors.surfaceContainer.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(30),
+              border: Border.all(
+                color: isSelected
+                    ? context.colors.primary.withOpacity(0.3)
+                    : context.colors.outline.withOpacity(0.08),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (icon != null) ...[
+                  icon,
+                  const SizedBox(width: 6),
+                ],
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: isSelected
+                        ? context.colors.primary
+                        : context.colors.onSurfaceVariant,
+                    fontSize: 12,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Obx(() {
+          controller.selectedListIndex.value;
+          return StreamBuilder<List<dynamic>>(
+            stream: controller.offlineStorage
+                .watchCustomLists(controller.type.value)
+                .map((lists) => lists
+                    .where(
+                        (l) => l.mediaTypeIndex == controller.type.value.index)
+                    .toList()),
+            builder: (context, customListSnapshot) {
+              return StreamBuilder<List<dynamic>>(
+                stream: controller.getHistoryStream(),
+                builder: (context, historySnapshot) {
+                  final customLists = customListSnapshot.data ?? [];
+                  final historyCount = historySnapshot.data?.length ?? 0;
+
+                  return Row(children: [
+                    _buildCustomPill(
+                      context: context,
+                      label: 'History ($historyCount)',
+                      isSelected: controller.selectedListIndex.value == -1,
+                      onTap: () => controller.selectList(-1),
+                      onLongPress: () => Get.to(
+                          () => HistoryEditor(type: controller.type.value)),
+                      icon: Icon(
+                        controller.selectedListIndex.value == -1
+                            ? Iconsax.clock5
+                            : Iconsax.clock,
+                        size: 16,
+                        color: controller.selectedListIndex.value == -1
+                            ? context.colors.primary
+                            : context.colors.onSurfaceVariant,
+                      ),
+                    ),
+                    ...List.generate(
+                      customLists.length,
+                      (index) {
+                        final list = customLists[index];
+                        final listName = list.listName ?? '';
+
+                        return StreamBuilder<CustomListData>(
+                          stream: controller.offlineStorage.watchCustomListData(
+                              listName, controller.type.value),
+                          builder: (context, listDataSnapshot) {
+                            final itemCount =
+                                listDataSnapshot.data?.listData.length ?? 0;
+
+                            return _buildCustomPill(
+                              context: context,
+                              label: '$listName ($itemCount)',
+                              isSelected:
+                                  controller.selectedListIndex.value == index,
+                              onTap: () => controller.selectList(index),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                    _buildCustomPill(
+                      context: context,
+                      label: 'Edit',
+                      isSelected: false,
+                      onTap: () => navigate(
+                          () => CustomListsEditor(type: controller.type.value)),
+                      icon: Icon(
+                        Iconsax.edit,
+                        size: 16,
+                        color: context.colors.onSurfaceVariant,
+                      ),
+                    ),
+                  ]);
+                },
+              );
+            },
+          );
+        }),
+      ),
+    );
+  }
+}
+
+class LibrarySegmentedControl extends StatelessWidget {
+  final LibraryController controller;
+
+  const LibrarySegmentedControl({super.key, required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      final availableTypes =
+          serviceHandler.serviceType.value == ServicesType.simkl
+              ? [ItemType.anime, ItemType.manga]
+              : [ItemType.anime, ItemType.manga, ItemType.novel];
+
+      final currentIndex = availableTypes.indexOf(controller.type.value);
+
+      return AnymeXTabBar(
+        selectTabs:
+            availableTypes.map((itemType) => _getTypeLabel(itemType)).toList(),
+        selectedIndex: currentIndex,
+        height: 52,
+        icons:
+            availableTypes.map((itemType) => _getTypeIcon(itemType)).toList(),
+        activeColor: context.colors.secondary,
+        activeTextColor: context.colors.onSecondary,
+        inactiveTextColor: context.colors.onSurfaceVariant,
+        onTabSelected: (index) {
+          controller.switchCategory(availableTypes[index]);
+        },
+      );
+    });
+  }
+
+  String _getTypeLabel(ItemType itemType) {
+    if (serviceHandler.serviceType.value == ServicesType.simkl) {
+      switch (itemType) {
+        case ItemType.anime:
+          return 'Movies';
+        case ItemType.manga:
+          return 'Series';
+        case ItemType.novel:
+          return 'Books';
+      }
+    } else {
+      switch (itemType) {
+        case ItemType.anime:
+          return 'Anime';
+        case ItemType.manga:
+          return 'Manga';
+        case ItemType.novel:
+          return 'Novels';
+      }
+    }
+  }
+
+  IconData _getTypeIcon(ItemType itemType) {
+    switch (itemType) {
+      case ItemType.anime:
+        return Icons.movie_filter_rounded;
+      case ItemType.manga:
+        return serviceHandler.serviceType.value == ServicesType.simkl
+            ? Iconsax.monitor
+            : Icons.menu_book_outlined;
+      case ItemType.novel:
+        return serviceHandler.serviceType.value == ServicesType.simkl
+            ? Icons.library_books
+            : Iconsax.book;
+    }
   }
 }

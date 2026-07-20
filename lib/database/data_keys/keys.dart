@@ -280,6 +280,7 @@ enum UISettingsKeys {
   useLegacyHeader,
   useGrainTexture,
   grainIntensity,
+  enableImmersiveMode,
 }
 
 enum DownloadKeys {
