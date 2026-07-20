@@ -387,12 +387,19 @@ class _MobileNavItem extends StatelessWidget {
                       .opaque(0.45, iReallyMeanIt: true),
               height: 1.2,
             ),
-            child: AnymexText(
-              text: item.label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              size: 12,
-              variant: isSelected ? TextVariant.semiBold : TextVariant.regular,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: AnymexText(
+                text: item.label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                size: isSelected ? 10.5 : 10,
+                variant: isSelected ? TextVariant.semiBold : TextVariant.regular,
+                color: isSelected
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSurface
+                        .opaque(0.45, iReallyMeanIt: true),
+              ),
             ),
           ),
         ],
