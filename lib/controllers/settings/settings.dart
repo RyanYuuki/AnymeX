@@ -97,10 +97,6 @@ class Settings extends GetxController {
         DownloadKeys.enableJxlCompression.get<bool>(false);
 
     bridgeMode.value = PluginKeys.bridgeMode.get<String>(_defaultBridgeMode);
-    if (Platform.isMacOS && bridgeMode.value != 'sidecar') {
-      PluginKeys.bridgeMode.set('sidecar');
-      bridgeMode.value = 'sidecar';
-    }
     _updateBridgeDispatcher();
     Logger.setFileLoggingEnabled(writeLogToFile.value,
         customPath: customLogDirectory.value);
