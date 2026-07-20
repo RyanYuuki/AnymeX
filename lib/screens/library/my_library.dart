@@ -36,10 +36,14 @@ class MyLibrary extends StatefulWidget {
   State<MyLibrary> createState() => _MyLibraryState();
 }
 
-class _MyLibraryState extends State<MyLibrary> {
+class _MyLibraryState extends State<MyLibrary>
+    with AutomaticKeepAliveClientMixin {
   late final ScrollController _scrollController;
   final ValueNotifier<bool> _isAppBarVisibleExternally =
       ValueNotifier<bool>(true);
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -56,6 +60,7 @@ class _MyLibraryState extends State<MyLibrary> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final controller = Get.put(LibraryController());
     final isDesktop = MediaQuery.of(context).size.width > 600;
     final statusBarHeight = MediaQuery.of(context).padding.top;
@@ -150,12 +155,8 @@ class _LibraryContent extends StatelessWidget {
         final selectedListName = listNames[controller.selectedListIndex.value];
 
         return Obx(() {
-          final searchQuery = controller.searchQuery.value;
-          final sortType = controller.currentSort.value;
-          final isAscending = controller.isAscending.value;
-
           return StreamBuilder<List<OfflineMedia>>(
-            stream: controller.getCustomListStream(
+            stream: controller.getProcessedCustomListStream(
                 selectedListName, controller.type.value),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
@@ -170,9 +171,6 @@ class _LibraryContent extends StatelessWidget {
                 return const SliverToBoxAdapter(child: EmptyLibrary());
               }
 
-              items = controller.applySearch(items, searchQuery);
-              items = controller.applySorting(items);
-
               return _buildGridView(context, items);
             },
           );
@@ -183,10 +181,6 @@ class _LibraryContent extends StatelessWidget {
 
   Widget _buildHistoryView(BuildContext context) {
     return Obx(() {
-      final searchQuery = controller.searchQuery.value;
-      final sortType = controller.currentSort.value;
-      final isAscending = controller.isAscending.value;
-
       return StreamBuilder<List<OfflineMedia>>(
         stream: controller.getHistoryStream(),
         builder: (context, snapshot) {
@@ -197,8 +191,6 @@ class _LibraryContent extends StatelessWidget {
           }
 
           var data = snapshot.data!;
-          data = controller.applySearch(data, searchQuery);
-          data = controller.applySorting(data);
 
           if (data.isEmpty) {
             return const SliverToBoxAdapter(child: EmptyLibrary());

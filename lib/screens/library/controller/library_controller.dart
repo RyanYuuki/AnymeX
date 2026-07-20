@@ -211,31 +211,17 @@ class LibraryController extends GetxController {
   }
 
   Stream<List<OfflineMedia>> getHistoryStream() {
-    return getLibraryStream().map((items) {
+    return getLibraryStream().asyncMap((items) async {
+      List<OfflineMedia> filtered;
       if (type.value.isAnime) {
-        var filtered = items
+        filtered = items
             .where((e) => e.currentEpisode?.currentTrack != null)
             .toList();
-        filtered.sort((a, b) => (b.currentEpisode?.lastWatchedTime ?? 0)
-            .compareTo(a.currentEpisode?.lastWatchedTime ?? 0));
-        return filtered;
+      } else {
+        filtered = items.where((e) => e.currentChapter?.link != null).toList();
       }
-
-      if (type.value.isManga) {
-        var filtered = items.where((e) => e.currentChapter?.link != null).toList();
-        filtered.sort((a, b) => (b.currentChapter?.lastReadTime ?? 0)
-            .compareTo(a.currentChapter?.lastReadTime ?? 0));
-        return filtered;
-      }
-
-      if (type.value.isNovel) {
-        var filtered = items.where((e) => e.currentChapter?.link != null).toList();
-        filtered.sort((a, b) => (b.currentChapter?.lastReadTime ?? 0)
-            .compareTo(a.currentChapter?.lastReadTime ?? 0));
-        return filtered;
-      }
-
-      return items;
+      final searched = applySearch(filtered, searchQuery.value);
+      return applySorting(searched);
     });
   }
 
@@ -249,5 +235,13 @@ class LibraryController extends GetxController {
     return offlineStorage
         .watchCustomListData(listName, type)
         .map((data) => data.listData);
+  }
+
+  Stream<List<OfflineMedia>> getProcessedCustomListStream(
+      String listName, ItemType type) {
+    return getCustomListStream(listName, type).asyncMap((items) async {
+      final searched = applySearch(items, searchQuery.value);
+      return applySorting(searched);
+    });
   }
 }
