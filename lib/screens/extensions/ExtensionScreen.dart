@@ -83,37 +83,25 @@ class _ExtensionScreenState extends State<ExtensionScreen>
               action: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: theme.primaryContainer.opaque(0.3),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: IconButton(
-                      icon: Icon(Icons.build_outlined,
-                          color: theme.primary, size: 22),
-                      onPressed: () => Get.to(() => const ExtensionTestPage()),
-                      tooltip: "Test Extensions",
-                      style: IconButton.styleFrom(
-                        padding: const EdgeInsets.all(6),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
+                  IconButton(
+                    icon: Icon(Icons.build_outlined,
+                        color: theme.primary, size: 20),
+                    onPressed: () => Get.to(() => const ExtensionTestPage()),
+                    tooltip: "Test Extensions",
+                    style: IconButton.styleFrom(
+                      padding: const EdgeInsets.all(6),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                   ),
-                  const SizedBox(width: 6),
-                  DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: theme.primaryContainer.opaque(0.3),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: IconButton(
-                      icon: Icon(HugeIcons.strokeRoundedGithub,
-                          color: theme.primary, size: 22),
-                      onPressed: () => navigate(() => const SettingsExtensions()),
-                      tooltip: "Repositories",
-                      style: IconButton.styleFrom(
-                        padding: const EdgeInsets.all(6),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
+                  const SizedBox(width: 4),
+                  IconButton(
+                    icon: Icon(HugeIcons.strokeRoundedGithub,
+                        color: theme.primary, size: 20),
+                    onPressed: () => navigate(() => const SettingsExtensions()),
+                    tooltip: "Repositories",
+                    style: IconButton.styleFrom(
+                      padding: const EdgeInsets.all(6),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                   ),
                 ],
