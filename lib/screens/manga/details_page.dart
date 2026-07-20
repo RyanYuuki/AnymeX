@@ -29,6 +29,7 @@ import 'package:anymex/widgets/anime/gradient_image.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
@@ -36,16 +37,12 @@ import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
-import 'package:expandable_page_view/expandable_page_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:anymex/controllers/services/community_service.dart';
-import 'package:anymex/widgets/non_widgets/recommend_button.dart';
 
 class MangaDetailsPage extends StatefulWidget {
   final Media media;
@@ -89,9 +86,17 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   late final PageController controller;
 
   void _onPageSelected(int index) {
+    final current = selectedPage.value;
     selectedPage.value = index;
-    controller.animateToPage(index,
-        duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+    if (controller.hasClients) {
+      if ((index - current).abs() > 1) {
+        final adjacent = index > current ? index - 1 : index + 1;
+        controller.jumpToPage(adjacent);
+      }
+      controller.animateToPage(index,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut);
+    }
   }
 
   Future<void> _showShareOptions() async {
@@ -773,13 +778,9 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
 
   // List Editor Modal: START
   void showListEditorModal(BuildContext context) {
-    showModalBottomSheet(
-      backgroundColor: context.colors.surfaceContainer,
-      context: context,
-      isScrollControlled: true,
-      showDragHandle: true,
-      builder: (BuildContext context) {
-        return ListEditorModal(
+    AnymexSheet.custom(
+        showDragHandle: true,
+        ListEditorModal(
           animeStatus: mangaStatus,
           animeScore: mangaScore,
           animeProgress: mangaProgress,
@@ -808,9 +809,8 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                 .deleteListEntry(id!, isAnime: false);
             _checkMangaPresence();
           },
-        );
-      },
-    );
+        ),
+        context);
   }
   // List Editor Modal: END
 }

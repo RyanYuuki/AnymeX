@@ -196,54 +196,43 @@ class _ListEditorModalState extends State<ListEditorModal> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
-
-    return Container(
-      margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(24),
+    return SingleChildScrollView(
+      padding: EdgeInsets.only(
+        left: 20,
+        right: 20,
+        top: 16,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
       ),
-      child: SingleChildScrollView(
-        padding: EdgeInsets.only(
-          left: 20,
-          right: 20,
-          top: 16,
-          bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildDragHandle(),
-            const SizedBox(height: 4),
-            _buildHeader(context),
-            const SizedBox(height: 20),
-            _buildStatusChips(context),
-            const SizedBox(height: 20),
-            if (widget.media.serviceType == ServicesType.simkl &&
-                !widget.isManga) ...[
-              if (_isLoadingSeasons) ...[
-                const Center(child: CircularProgressIndicator()),
-                const SizedBox(height: 20),
-              ] else ...[
-                _buildSeasonRow(context),
-                const SizedBox(height: 20),
-              ]
-            ],
-            _buildProgressRow(context),
-            const SizedBox(height: 20),
-            _buildScoreRow(context),
-            const SizedBox(height: 20),
-            _buildDateRow(context),
-            if (widget.media.serviceType.isAL) ...[
-              const SizedBox(height: 16),
-              _buildPrivateRow(context),
-            ],
-            const SizedBox(height: 24),
-            _buildActionButtons(context),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildHeader(context),
+          const SizedBox(height: 20),
+          _buildStatusChips(context),
+          const SizedBox(height: 20),
+          if (widget.media.serviceType == ServicesType.simkl &&
+              !widget.isManga) ...[
+            if (_isLoadingSeasons) ...[
+              const Center(child: CircularProgressIndicator()),
+              const SizedBox(height: 20),
+            ] else ...[
+              _buildSeasonRow(context),
+              const SizedBox(height: 20),
+            ]
           ],
-        ),
+          _buildProgressRow(context),
+          const SizedBox(height: 20),
+          _buildScoreRow(context),
+          const SizedBox(height: 20),
+          _buildDateRow(context),
+          if (widget.media.serviceType.isAL) ...[
+            const SizedBox(height: 16),
+            _buildPrivateRow(context),
+          ],
+          const SizedBox(height: 24),
+          _buildActionButtons(context),
+        ],
       ),
     );
   }

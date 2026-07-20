@@ -41,10 +41,15 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
   final RxInt selectedPage = 0.obs;
 
   void _onPageSelected(int index) {
+    final current = selectedPage.value;
     selectedPage.value = index;
     if (pageController.hasClients) {
+      if ((index - current).abs() > 1) {
+        final adjacent = index > current ? index - 1 : index + 1;
+        pageController.jumpToPage(adjacent);
+      }
       pageController.animateToPage(index,
-          duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+          duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
     }
   }
 
