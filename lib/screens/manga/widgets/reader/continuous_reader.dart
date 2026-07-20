@@ -340,8 +340,10 @@ class _ContinuousReaderViewState extends State<ContinuousReaderView>
             : null;
 
     return Obx(() {
+      ctrl.currentPageIndex.value;
+      final loadingSet = ctrl.loadingChapterLinks;
       final isLoading = targetChapter != null &&
-          ctrl.loadingChapterLinks.contains(targetChapter.link);
+          loadingSet.contains(targetChapter.link);
       return SizedBox(
         height: 500,
         child: ReaderChapterTransition(
