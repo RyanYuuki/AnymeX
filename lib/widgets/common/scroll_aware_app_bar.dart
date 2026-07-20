@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/services.dart';
 
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/mixins/scroll_aware_app_bar_mixin.dart';
 import 'package:anymex/widgets/common/animated_app_bar.dart';
 
@@ -94,7 +94,12 @@ class _CustomAnimatedAppBarState extends State<CustomAnimatedAppBar>
         ? (widget.visibleStatusBarStyle ?? SystemUiOverlayStyle.dark)
         : (widget.hiddenStatusBarStyle ?? SystemUiOverlayStyle.light);
 
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    if (settingsController.enableImmersiveMode) {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    } else {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    }
+
     SystemChrome.setSystemUIOverlayStyle(
       baseStyle.copyWith(
         systemNavigationBarColor: Colors.transparent,
