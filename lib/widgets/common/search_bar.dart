@@ -1,7 +1,6 @@
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
-import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -41,7 +40,7 @@ class CustomSearchBar extends StatefulWidget {
     this.suffixIconWidget,
     this.padding,
     this.focusNode,
-    this.enableGlow = true,
+    this.enableGlow = false,
     this.border,
   });
 
@@ -90,47 +89,67 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final borderRadius = BorderRadius.circular(16.multiplyRadius());
+
     return Container(
       padding: widget.padding ??
-          const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
-      decoration: BoxDecoration(
-          boxShadow: widget.enableGlow ? [lightGlowingShadow(context)] : []),
-      clipBehavior: Clip.antiAlias,
+          const EdgeInsets.symmetric(vertical: 6.0, horizontal: 16.0),
       child: TextField(
         focusNode: widget.focusNode ?? _focusNode,
         controller: widget.controller,
-        onSubmitted: (value) {
-          widget.onSubmitted(value);
-        },
+        onSubmitted: widget.onSubmitted,
         onChanged: widget.onChanged,
+        style: TextStyle(
+          color: theme.colorScheme.onSurface,
+          fontSize: 14,
+          fontFamily: 'Poppins',
+        ),
         decoration: InputDecoration(
           hintText: widget.hintText,
+          hintStyle: TextStyle(
+            color: theme.colorScheme.onSurface.opaque(0.45, iReallyMeanIt: true),
+            fontSize: 14,
+            fontFamily: 'Poppins',
+          ),
           filled: true,
-          fillColor:
-              context.colors.secondaryContainer.opaque(0.5),
+          fillColor: theme.colorScheme.surfaceContainerHighest.opaque(0.35),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           prefixIcon: IconButton(
-            icon: Icon(widget.prefixIcon),
+            icon: Icon(
+              widget.prefixIcon,
+              color: theme.colorScheme.onSurface.opaque(0.6, iReallyMeanIt: true),
+              size: 20,
+            ),
             onPressed: widget.onPrefixIconPressed,
           ),
-          suffix: widget.suffixWidget,
           suffixIcon: widget.disableIcons
               ? widget.suffixIconWidget
-              : IconButton(
-                  icon: Icon(widget.suffixIcon),
-                  onPressed: widget.onSuffixIconPressed,
-                ),
+              : (widget.onSuffixIconPressed != null || widget.suffixIconWidget != null)
+                  ? IconButton(
+                      icon: widget.suffixIconWidget ??
+                          Icon(
+                            widget.suffixIcon,
+                            color: theme.colorScheme.onSurface
+                                .opaque(0.6, iReallyMeanIt: true),
+                            size: 20,
+                          ),
+                      onPressed: widget.onSuffixIconPressed,
+                    )
+                  : null,
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16.multiplyRadius()),
+            borderRadius: borderRadius,
             borderSide: BorderSide(
-              color: context.colors.secondaryContainer,
-              width: 1,
+              color: theme.colorScheme.primary.opaque(0.5, iReallyMeanIt: true),
+              width: 1.0,
             ),
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16.multiplyRadius()),
+            borderRadius: borderRadius,
             borderSide: BorderSide(
-              color: context.colors.secondaryContainer,
-              width: 1,
+              color: theme.colorScheme.onSurface.opaque(0.08, iReallyMeanIt: true),
+              width: 0.5,
             ),
           ),
         ),
@@ -142,7 +161,6 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
 class TappableSearchBar extends StatelessWidget {
   final VoidCallback onSubmitted;
   final IconData prefixIcon;
-
   final String chipLabel;
   final String hintText;
 
@@ -156,51 +174,50 @@ class TappableSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final borderRadius = BorderRadius.circular(16.multiplyRadius());
+
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
-      decoration: BoxDecoration(boxShadow: [lightGlowingShadow(context)]),
-      clipBehavior: Clip.antiAlias,
+      padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 16.0),
       child: AnymexOnTap(
         onTap: onSubmitted,
         scale: 1,
         margin: 0,
         child: InkWell(
           onTap: onSubmitted,
+          borderRadius: borderRadius,
           child: Container(
-            height: 50,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            height: 48,
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
             decoration: BoxDecoration(
-              color: Theme.of(context)
-                  .colorScheme
-                  .secondaryContainer
-                  .opaque(0.5),
-              borderRadius: BorderRadius.circular(16.multiplyRadius()),
+              color: theme.colorScheme.surfaceContainerHighest.opaque(0.35),
+              borderRadius: borderRadius,
               border: Border.all(
-                color: context.colors.secondaryContainer,
-                width: 1,
+                color: theme.colorScheme.onSurface
+                    .opaque(0.08, iReallyMeanIt: true),
+                width: 0.5,
               ),
             ),
             child: Row(
               children: [
-                // const SizedBox(width: 12),
-                // Expanded(
-                //   child: AnymexText(
-                //     text: hintText,
-                //     color: Theme.of(context).hintColor,
-                //     size: 16,
-                //   ),
-                // ),
-                // if (suffixWidget != null) suffixWidget!,
-                // if (!disableIcons)
-                //   IconButton(
-                //     icon: suffixIconWidget ?? Icon(suffixIcon),
-                //     onPressed: null,
-                //   ),
                 buildChip(chipLabel),
                 const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    hintText,
+                    style: TextStyle(
+                      color: theme.colorScheme.onSurface
+                          .opaque(0.45, iReallyMeanIt: true),
+                      fontSize: 14,
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
+                ),
                 Icon(
                   prefixIcon,
-                  color: Theme.of(context).hintColor,
+                  color: theme.colorScheme.onSurface
+                      .opaque(0.6, iReallyMeanIt: true),
+                  size: 20,
                 ),
               ],
             ),
