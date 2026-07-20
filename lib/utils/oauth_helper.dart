@@ -78,12 +78,19 @@ class _OauthWebViewPageState extends State<OauthWebViewPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isWindows = Platform.isWindows;
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sign In'),
-        leading: IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: () => Navigator.pop(context),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(kToolbarHeight + (isWindows ? 40.0 : 0.0)),
+        child: Padding(
+          padding: EdgeInsets.only(top: isWindows ? 40.0 : 0.0),
+          child: AppBar(
+            title: const Text('Sign In'),
+            leading: IconButton(
+              icon: const Icon(Icons.close),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ),
         ),
       ),
       body: InAppWebView(
