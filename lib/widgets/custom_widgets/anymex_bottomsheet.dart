@@ -49,9 +49,10 @@ class AnymexSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(12, 0, 12, 16 + bottomInset),
+      padding: EdgeInsets.fromLTRB(12, 0, 12, 16 + bottomInset + bottomPadding),
       child: Container(
         decoration: BoxDecoration(
           color: theme.colorScheme.surface,
