@@ -294,6 +294,9 @@ class _ExtensionListState extends State<ExtensionList>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final isDesktop = MediaQuery.of(context).size.width > 600;
+    final bottomScrollPadding =
+        isDesktop ? 20.0 : (MediaQuery.of(context).padding.bottom + 80.0);
 
     return RefreshIndicator(
       onRefresh: _refreshData,
@@ -349,6 +352,9 @@ class _ExtensionListState extends State<ExtensionList>
                             ),
                           ),
                         ),
+                      SliverToBoxAdapter(
+                        child: SizedBox(height: bottomScrollPadding),
+                      ),
                     ],
                   ),
           );
@@ -358,6 +364,9 @@ class _ExtensionListState extends State<ExtensionList>
   }
 
   Widget _buildInstalledView(List<Source> installed, List<Source> updates) {
+    final isDesktop = MediaQuery.of(context).size.width > 600;
+    final bottomScrollPadding =
+        isDesktop ? 20.0 : (MediaQuery.of(context).padding.bottom + 80.0);
     final hasUpdates = updates.isNotEmpty;
     final hasInstalled = installed.isNotEmpty;
 
@@ -373,10 +382,6 @@ class _ExtensionListState extends State<ExtensionList>
       );
     }
 
-    // When there are pending updates we need a shared scroll view so the
-    // update header and the reorderable list scroll together. Use
-    // SliverReorderableList which is the sliver counterpart to
-    // ReorderableListView and natively supports auto-scroll.
     if (hasUpdates) {
       return CustomScrollView(
         controller: _controller,
@@ -398,18 +403,20 @@ class _ExtensionListState extends State<ExtensionList>
               },
             ),
           ],
+          SliverToBoxAdapter(
+            child: SizedBox(height: bottomScrollPadding),
+          ),
         ],
       );
     }
 
-    // No updates — let ReorderableListView own the entire scroll so its
-    // built-in auto-scroll logic works without any workarounds.
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildInstalledHeader(),
         Expanded(
           child: ReorderableListView.builder(
+            padding: EdgeInsets.only(bottom: bottomScrollPadding),
             onReorder: _onReorder,
             proxyDecorator: _proxyDecorator,
             buildDefaultDragHandles: false,
@@ -517,7 +524,7 @@ class _ExtensionListState extends State<ExtensionList>
                       color: context.colors.tertiary,
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    child:  AnymexText(
+                    child: AnymexText(
                       text: 'Update All',
                       size: 12,
                       variant: TextVariant.semiBold,
