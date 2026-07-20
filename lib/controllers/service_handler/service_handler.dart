@@ -87,15 +87,38 @@ class ServiceHandler extends GetxController {
     }
   }
 
-  Rx<Profile> get profileData => serviceType.value == ServicesType.extensions
-      ? Profile(name: onlineService.profileData.value.name ?? 'Guest').obs
-      : onlineService.profileData;
+  OnlineService? get activeOrLoggedInOnlineService {
+    if (serviceType.value == ServicesType.extensions) {
+      if (anilistService.isLoggedIn.value) return anilistService;
+      if (malService.isLoggedIn.value) return malService;
+      if (simklService.isLoggedIn.value) return simklService;
+      return null;
+    }
+    return onlineService;
+  }
+
+  Rx<Profile> get profileData {
+    if (serviceType.value == ServicesType.extensions) {
+      final activeService = activeOrLoggedInOnlineService;
+      if (activeService != null) {
+        return activeService.profileData;
+      }
+      return Profile(name: 'Guest').obs;
+    }
+    return onlineService.profileData;
+  }
+
   RxList<TrackedMedia> get animeList => onlineService.animeList;
   RxList<TrackedMedia> get mangaList => onlineService.mangaList;
 
   Rx<TrackedMedia> get currentMedia => onlineService.currentMedia;
 
-  RxBool get isLoggedIn => onlineService.isLoggedIn;
+  RxBool get isLoggedIn {
+    if (serviceType.value == ServicesType.extensions) {
+      return (activeOrLoggedInOnlineService != null).obs;
+    }
+    return onlineService.isLoggedIn;
+  }
 
   // Online Services Method
   Future<void> login(BuildContext context) => onlineService.login(context);

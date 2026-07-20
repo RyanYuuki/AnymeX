@@ -1,27 +1,20 @@
-// ignore_for_file: invalid_use_of_protected_member
-
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/widgets/header.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
-import 'package:get/get.dart';
-
-import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/widgets/common/installed_extensions_gridview.dart';
 import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
+import 'package:anymex/widgets/header.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 
-class MangaHomePage extends StatefulWidget {
-  const MangaHomePage({
-    super.key,
-  });
+class NovelHomePage extends StatefulWidget {
+  const NovelHomePage({super.key});
 
   @override
-  State<MangaHomePage> createState() => _MangaHomePageState();
+  State<NovelHomePage> createState() => _NovelHomePageState();
 }
 
-class _MangaHomePageState extends State<MangaHomePage> {
+class _NovelHomePageState extends State<NovelHomePage> {
   late ScrollController _scrollController;
   final ValueNotifier<bool> _isAppBarVisibleExternally =
       ValueNotifier<bool>(true);
@@ -30,10 +23,8 @@ class _MangaHomePageState extends State<MangaHomePage> {
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-    sourceController.initNovelExtensions();
+    Get.find<SourceController>().initNovelExtensions();
   }
-
-  ScrollController get scrollController => _scrollController;
 
   @override
   void dispose() {
@@ -44,7 +35,6 @@ class _MangaHomePageState extends State<MangaHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final serviceHandler = Get.find<ServiceHandler>();
     final isDesktop = MediaQuery.of(context).size.width > 600;
     final statusBarHeight = MediaQuery.of(context).padding.top;
     const appBarHeight = kToolbarHeight + 20;
@@ -62,14 +52,10 @@ class _MangaHomePageState extends State<MangaHomePage> {
                 SizedBox(height: statusBarHeight + appBarHeight),
                 const SizedBox(height: 10),
                 Obx(() {
-                  if (serviceHandler.serviceType.value == ServicesType.extensions) {
-                    return InstalledExtensionsGridView(
-                      sources: sourceController.installedMangaExtensions.value,
-                      itemType: ItemType.manga,
-                    );
-                  }
-                  return Column(
-                    children: serviceHandler.mangaWidgets(context),
+                  final sourceController = Get.find<SourceController>();
+                  return InstalledExtensionsGridView(
+                    sources: sourceController.installedNovelExtensions.value,
+                    itemType: ItemType.novel,
                   );
                 }),
                 if (!isDesktop)
@@ -82,7 +68,7 @@ class _MangaHomePageState extends State<MangaHomePage> {
           CustomAnimatedAppBar(
             isVisible: _isAppBarVisibleExternally,
             scrollController: _scrollController,
-            headerContent: const Header(type: PageType.manga),
+            headerContent: const Header(type: PageType.novel),
             visibleStatusBarStyle: SystemUiOverlayStyle(
               statusBarIconBrightness:
                   Theme.of(context).brightness == Brightness.light

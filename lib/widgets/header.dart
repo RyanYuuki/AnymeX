@@ -7,6 +7,8 @@ import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/controllers/ui/greeting.dart';
 import 'package:anymex/screens/manga/widgets/search_selector.dart';
 import 'package:anymex/screens/search/search_view.dart';
+import 'package:anymex/screens/search/source_search_page.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -373,15 +375,20 @@ class Header extends StatelessWidget {
       );
     } else {
       if (profileData.serviceType.value == ServicesType.extensions) {
+        final itemType = type == PageType.manga
+            ? ItemType.manga
+            : (type == PageType.novel ? ItemType.novel : ItemType.anime);
         list.add(
           _PillIconButton(
             onPressed: () {
-              Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
+              navigateWithAnimation(() => SourceSearchPage(
+                    initialTerm: '',
+                    type: itemType,
+                    source: null,
+                  ));
             },
             icon: Icon(
-              Get.theme.brightness == Brightness.light
-                  ? HugeIcons.strokeRoundedSun03
-                  : HugeIcons.strokeRoundedMoon01,
+              IconlyLight.search,
               color: context.colors.primary,
               size: 18,
             ),

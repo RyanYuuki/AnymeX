@@ -477,10 +477,6 @@ class SourceController extends GetxController implements BaseService {
     try {
       _buildOfflineSections();
       _homeReady = true;
-
-      for (final type in ItemType.values) {
-        _syncSections(type);
-      }
     } catch (e) {
       Logger.i('Error in fetchHomePage: $e');
       errorSnackBar('Failed to fetch data from sources.');
@@ -516,40 +512,7 @@ class SourceController extends GetxController implements BaseService {
   }
 
   void _syncSections(ItemType type) {
-    final sources = _installedFor(type);
-    final cache = _widgetCache[type]!;
-    final sections = _sectionsFor(type);
-
-    final liveIds = {for (final s in sources) s.id};
-    final cachedIds = cache.keys.toSet();
-
-    final added = liveIds.difference(cachedIds);
-    final removed = cachedIds.difference(liveIds);
-
-    if (added.isEmpty && removed.isEmpty) return;
-
-    for (final id in removed) {
-      cache.remove(id);
-    }
-
-    for (final src in sources.where((s) => added.contains(s.id))) {
-      cache[src.id?.toInt() ?? 0] = buildFutureSection(
-        src.name ?? '??',
-        src.methods.getPopular(1).then((r) => r.list),
-        type: type,
-        variant: DataVariant.extension,
-        source: src,
-      );
-    }
-
-    sections.value = [
-      if (cache.isNotEmpty && type != ItemType.novel)
-        CustomSearchBar(
-          disableIcons: true,
-          onSubmitted: (v) => SourceSearchPage(initialTerm: v, type: type).go(),
-        ),
-      ...cache.values,
-    ];
+    return;
   }
 
   Future<void> initNovelExtensions() async {

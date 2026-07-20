@@ -49,14 +49,58 @@ class _FutureReusableCarouselState extends State<FutureReusableCarousel> {
 
         // Error state
         if (snapshot.hasError) {
+          final theme = Theme.of(context);
           return widget.errorWidget ??
-              ReusableCarousel(
-                data: const [],
-                title: '${widget.title} (Error)',
-                type: widget.type,
-                variant: widget.variant,
-                isLoading: false,
-                source: widget.source,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+                child: Container(
+                  padding: const EdgeInsets.all(14.0),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.errorContainer.opaque(0.2, iReallyMeanIt: true),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: theme.colorScheme.error.opaque(0.3, iReallyMeanIt: true),
+                      width: 0.5,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.warning_amber_rounded,
+                        color: theme.colorScheme.error,
+                        size: 24,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.title,
+                              style: TextStyle(
+                                fontFamily: 'Poppins-SemiBold',
+                                fontSize: 14,
+                                color: theme.colorScheme.error,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              '${snapshot.error}',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontFamily: 'Poppins-Regular',
+                                fontSize: 12,
+                                color: theme.colorScheme.onSurface
+                                    .opaque(0.7, iReallyMeanIt: true),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               );
         }
 

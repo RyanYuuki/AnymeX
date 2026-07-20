@@ -4,6 +4,8 @@ import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/controllers/ui/greeting.dart';
 import 'package:anymex/screens/manga/widgets/search_selector.dart';
 import 'package:anymex/screens/search/search_view.dart';
+import 'package:anymex/screens/search/source_search_page.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
@@ -124,15 +126,25 @@ class Header extends StatelessWidget {
                   radius: 24,
                   backgroundColor: context.colors.secondaryContainer,
                   child: IconButton(
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: context.colors.secondaryContainer),
-                      onPressed: () {
-                        Provider.of<ThemeProvider>(context, listen: false)
-                            .toggleTheme();
-                      },
-                      icon: Icon(Get.theme.brightness == Brightness.light
-                          ? HugeIcons.strokeRoundedSun03
-                          : HugeIcons.strokeRoundedMoon01)),
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: context.colors.secondaryContainer),
+                    onPressed: () {
+                      final itemType = type == PageType.manga
+                          ? ItemType.manga
+                          : (type == PageType.novel
+                              ? ItemType.novel
+                              : ItemType.anime);
+                      navigateWithAnimation(() => SourceSearchPage(
+                            initialTerm: '',
+                            type: itemType,
+                            source: null,
+                          ));
+                    },
+                    icon: Icon(
+                      IconlyLight.search,
+                      color: context.colors.primary,
+                    ),
+                  ),
                 )),
               ] else ...[
                 getResponsiveValue(context,
