@@ -1,7 +1,5 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
@@ -13,13 +11,64 @@ class OauthHelper {
     required String callbackUrlScheme,
     bool forceWebAuth = false,
   }) async {
-    final supportsWebView = !forceWebAuth &&
-        (Platform.isAndroid ||
-            Platform.isIOS ||
-            Platform.isWindows ||
-            Platform.isMacOS);
+    final method = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) {
+        final theme = Theme.of(ctx);
+        return AnymexSheet(
+          title: 'Select Sign In Method',
+          showDragHandle: true,
+          contentWidget: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              AnymexText(
+                text: 'Choose how you would like to sign in:',
+                size: 13,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+              const SizedBox(height: 16),
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primaryContainer.withOpacity(0.4),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.web_rounded, color: theme.colorScheme.primary),
+                ),
+                title: const Text('Internal Webview', style: TextStyle(fontWeight: FontWeight.w600)),
+                subtitle: const Text('Sign in inside the app using built-in web browser'),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                onTap: () => Navigator.pop(ctx, 'webview'),
+              ),
+              const SizedBox(height: 8),
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primaryContainer.withOpacity(0.4),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.open_in_browser_rounded, color: theme.colorScheme.primary),
+                ),
+                title: const Text('Login with Browser', style: TextStyle(fontWeight: FontWeight.w600)),
+                subtitle: const Text('Open system browser and paste authorization code'),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                onTap: () => Navigator.pop(ctx, 'browser'),
+              ),
+              const SizedBox(height: 12),
+            ],
+          ),
+        );
+      },
+    );
 
-    if (supportsWebView) {
+    if (method == null) return null;
+
+    if (method == 'webview') {
       final result = await Navigator.push<String>(
         context,
         MaterialPageRoute(
@@ -33,21 +82,10 @@ class OauthHelper {
       if (result != null) {
         return result;
       }
+      return null;
     } else {
-      try {
-        final result = await FlutterWebAuth2.authenticate(
-          url: url,
-          callbackUrlScheme: callbackUrlScheme,
-        );
-        if (result.isNotEmpty) {
-          return result;
-        }
-      } catch (e) {
-        debugPrint('FlutterWebAuth2 error: $e');
-      }
+      return await _fallbackAuthenticate(context, url, callbackUrlScheme);
     }
-
-    return await _fallbackAuthenticate(context, url, callbackUrlScheme);
   }
 
   static Future<String?> _fallbackAuthenticate(
