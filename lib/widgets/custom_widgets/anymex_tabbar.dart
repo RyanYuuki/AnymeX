@@ -1,3 +1,4 @@
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -40,7 +41,8 @@ class AnymeXTabBar extends StatelessWidget {
         width: width,
         padding: const EdgeInsets.all(4),
         decoration: BoxDecoration(
-          color: inactiveColor ?? colors.surfaceContainerHighest.withOpacity(0.4),
+          color:
+              inactiveColor ?? colors.surfaceContainerHighest.withOpacity(0.4),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: colors.outline.withOpacity(0.1)),
         ),
@@ -59,7 +61,8 @@ class AnymeXTabBar extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: (activeColor ?? colors.secondary).withOpacity(0.3),
+                        color:
+                            (activeColor ?? colors.secondary).withOpacity(0.3),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       )
@@ -71,7 +74,9 @@ class AnymeXTabBar extends StatelessWidget {
             Row(
               children: selectTabs.asMap().entries.map((e) {
                 final selected = selectedIndex == e.key;
-                final icon = (icons != null && e.key < icons!.length) ? icons![e.key] : null;
+                final icon = (icons != null && e.key < icons!.length)
+                    ? icons![e.key]
+                    : null;
 
                 return Expanded(
                   child: GestureDetector(
@@ -99,23 +104,24 @@ class AnymeXTabBar extends StatelessWidget {
                                   size: 15,
                                   color: selected
                                       ? (activeTextColor ?? colors.onSecondary)
-                                      : (inactiveTextColor ?? colors.onSurfaceVariant),
+                                      : (inactiveTextColor ??
+                                          colors.onSurfaceVariant),
                                 ),
                                 const SizedBox(width: 6),
                               ],
                               Flexible(
-                                child: Text(
-                                  e.value,
+                                child: AnymexText(
+                                  text: e.value,
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontFamily: 'Poppins',
-                                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                                    color: selected
-                                        ? (activeTextColor ?? colors.onSecondary)
-                                        : (inactiveTextColor ?? colors.onSurfaceVariant),
-                                  ),
+                                  size: 13,
+                                  variant: selected
+                                      ? TextVariant.semiBold
+                                      : TextVariant.regular,
+                                  color: selected
+                                      ? (activeTextColor ?? colors.onSecondary)
+                                      : (inactiveTextColor ??
+                                          colors.onSurfaceVariant),
                                 ),
                               ),
                             ],
@@ -135,7 +141,8 @@ class AnymeXTabBar extends StatelessWidget {
     if (minTabWidth != null) {
       return LayoutBuilder(builder: (context, constraints) {
         final naturalTabWidth = constraints.maxWidth / total;
-        final tabWidth = naturalTabWidth < minTabWidth! ? minTabWidth! : naturalTabWidth;
+        final tabWidth =
+            naturalTabWidth < minTabWidth! ? minTabWidth! : naturalTabWidth;
         final totalWidth = tabWidth * total;
 
         return SingleChildScrollView(

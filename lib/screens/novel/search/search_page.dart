@@ -115,7 +115,7 @@ class _NovelSearchPageState extends State<NovelSearchPage>
     });
 
     try {
-      final novelExtensions = sourceController.installedNovelExtensions.value;
+      final novelExtensions = sourceController.installedNovelExtensions;
 
       if (novelExtensions.isEmpty) {
         setState(() {
@@ -486,6 +486,7 @@ class _NovelSearchPageState extends State<NovelSearchPage>
     return Glow(
       child: SafeArea(
         child: Scaffold(
+          resizeToAvoidBottomInset: false,
           body: Column(
             children: [
               Container(

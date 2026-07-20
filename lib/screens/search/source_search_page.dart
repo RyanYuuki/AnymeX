@@ -48,6 +48,7 @@ class _SourceSearchPageState extends State<SourceSearchPage> {
   Widget build(BuildContext context) {
     return Glow(
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         body: SafeArea(
           child: SingleChildScrollView(
             child: Column(

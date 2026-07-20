@@ -202,14 +202,21 @@ class _SettingsThemeState extends State<SettingsTheme> {
               selectTabs: const ["Theme", "Wallpaper", "Extras"],
               selectedIndex: _selectedTabIndex,
               onTabSelected: (index) {
+                final current = _selectedTabIndex;
                 setState(() {
                   _selectedTabIndex = index;
                 });
-                _pageController.animateToPage(
-                  index,
-                  duration: const Duration(milliseconds: 350),
-                  curve: Curves.easeInOut,
-                );
+                if (_pageController.hasClients) {
+                  if ((index - current).abs() > 1) {
+                    final adjacent = index > current ? index - 1 : index + 1;
+                    _pageController.jumpToPage(adjacent);
+                  }
+                  _pageController.animateToPage(
+                    index,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                  );
+                }
               },
             ),
           ),
