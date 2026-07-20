@@ -364,6 +364,24 @@ class Settings extends GetxController {
   Map<String, bool> get homePageCardsMal =>
       _getUISetting((s) => s.homePageCardsMal);
 
+  List<String> get navigationTabOrder {
+    final raw = General.navigationTabOrder.get<String>('');
+    if (raw.isEmpty) {
+      return ['Home', 'Anime', 'Manga', 'Library'];
+    }
+    try {
+      final List<dynamic> list = jsonDecode(raw);
+      final strings = list.map((e) => e.toString()).toList();
+      if (strings.isNotEmpty) return strings;
+    } catch (_) {}
+    return ['Home', 'Anime', 'Manga', 'Library'];
+  }
+
+  set navigationTabOrder(List<String> order) {
+    General.navigationTabOrder.set(jsonEncode(order));
+    update();
+  }
+
   double get glowMultiplier => _getUISetting((s) => s.glowMultiplier);
   set glowMultiplier(double value) {
     uiSettings.update((s) => s?.glowMultiplier = value);

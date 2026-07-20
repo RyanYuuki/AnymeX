@@ -26,6 +26,7 @@ import 'package:anymex/screens/extensions/ExtensionScreen.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/my_library.dart';
 import 'package:anymex/screens/manga/home_page.dart';
+import 'package:anymex/screens/novel/home_page.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/external_font_loader.dart';
 import 'package:anymex/utils/logger.dart';
@@ -421,21 +422,85 @@ class _FilterScreenState extends State<FilterScreen> {
     });
   }
 
-  final routes = [
-    const SizedBox.shrink(),
-    const HomePage(),
-    const AnimeHomePage(),
-    const MangaHomePage(),
-    const MyLibrary(),
-    const ExtensionScreen(disableGlow: true),
-  ];
+  List<String> _getNavTabs(ServiceHandler authService, Settings settings) {
+    if (authService.serviceType.value == ServicesType.extensions) {
+      return ['Library', 'Anime', 'Manga', 'Novel'];
+    }
+    return settings.navigationTabOrder;
+  }
 
-  final mobileRoutes = [
-    const HomePage(),
-    const AnimeHomePage(),
-    const MangaHomePage(),
-    const MyLibrary()
-  ];
+  Widget _getWidgetForTab(String tabKey) {
+    switch (tabKey) {
+      case 'Home':
+        return const HomePage();
+      case 'Anime':
+        return const AnimeHomePage();
+      case 'Manga':
+        return const MangaHomePage();
+      case 'Novel':
+        return const NovelHomePage();
+      case 'Library':
+        return const MyLibrary();
+      case 'Extensions':
+        return const ExtensionScreen(disableGlow: true);
+      default:
+        return const HomePage();
+    }
+  }
+
+  NavItem _getNavItemForTab(String tabKey, bool isSimkl, Function(int) onTap) {
+    switch (tabKey) {
+      case 'Home':
+        return NavItem(
+          unselectedIcon: IconlyLight.home,
+          selectedIcon: IconlyBold.home,
+          onTap: onTap,
+          label: 'Home',
+        );
+      case 'Anime':
+        return NavItem(
+          unselectedIcon: Icons.movie_filter_outlined,
+          selectedIcon: Icons.movie_filter_rounded,
+          onTap: onTap,
+          label: isSimkl ? 'Movies' : 'Anime',
+        );
+      case 'Manga':
+        return NavItem(
+          unselectedIcon: isSimkl ? Iconsax.monitor : Iconsax.book,
+          selectedIcon: isSimkl ? Iconsax.monitor5 : Iconsax.book,
+          onTap: onTap,
+          label: isSimkl ? 'Series' : 'Manga',
+        );
+      case 'Novel':
+        return NavItem(
+          unselectedIcon: Icons.auto_stories_outlined,
+          selectedIcon: Icons.auto_stories_rounded,
+          onTap: onTap,
+          label: 'Novel',
+        );
+      case 'Library':
+        return NavItem(
+          unselectedIcon: HugeIcons.strokeRoundedLibrary,
+          selectedIcon: HugeIcons.strokeRoundedLibrary,
+          onTap: onTap,
+          label: 'Library',
+        );
+      case 'Extensions':
+        return NavItem(
+          unselectedIcon: Icons.extension_outlined,
+          selectedIcon: Icons.extension_rounded,
+          onTap: onTap,
+          label: 'Extensions',
+        );
+      default:
+        return NavItem(
+          unselectedIcon: IconlyLight.home,
+          selectedIcon: IconlyBold.home,
+          onTap: onTap,
+          label: tabKey,
+        );
+    }
+  }
 
   DateTime? _lastBackPressTime;
 
@@ -478,8 +543,9 @@ class _FilterScreenState extends State<FilterScreen> {
     );
   }
 
-  Scaffold _buildDesktopLayout(
+  Widget _buildDesktopLayout(
       BuildContext context, ServiceHandler authService) {
+    final settings = Get.find<Settings>();
     return Scaffold(
       extendBody: true,
       backgroundColor: Provider.of<ThemeProvider>(context).isOled
@@ -490,13 +556,14 @@ class _FilterScreenState extends State<FilterScreen> {
         children: [
           Obx(() {
             final isSimkl = authService.serviceType.value == ServicesType.simkl;
+            final navTabs = _getNavTabs(authService, settings);
             return SizedBox(
               width: 120,
               child: SuperListView(
                 children: [
                   ResponsiveNavBar(
                     isDesktop: true,
-                    currentIndex: _selectedIndex,
+                    currentIndex: _selectedIndex.clamp(0, navTabs.length),
                     margin: const EdgeInsets.fromLTRB(20, 18, 15, 10),
                     borderRadius: BorderRadius.circular(50),
                     items: [
@@ -526,93 +593,57 @@ class _FilterScreenState extends State<FilterScreen> {
                                               ''),
                                     )
                                   : const Icon((IconlyBold.profile)))),
-                      NavItem(
-                        unselectedIcon: IconlyLight.home,
-                        selectedIcon: IconlyBold.home,
-                        onTap: _onItemTapped,
-                        label: 'Home',
-                      ),
-                      NavItem(
-                        unselectedIcon: Icons.movie_filter_outlined,
-                        selectedIcon: Icons.movie_filter_rounded,
-                        onTap: _onItemTapped,
-                        label: isSimkl ? 'Movies' : 'Anime',
-                      ),
-                      NavItem(
-                        unselectedIcon:
-                            isSimkl ? Iconsax.monitor : Iconsax.book,
-                        selectedIcon: isSimkl ? Iconsax.monitor5 : Iconsax.book,
-                        onTap: _onItemTapped,
-                        label: isSimkl ? 'Series' : 'Manga',
-                      ),
-                      NavItem(
-                        unselectedIcon: HugeIcons.strokeRoundedLibrary,
-                        selectedIcon: HugeIcons.strokeRoundedLibrary,
-                        onTap: _onItemTapped,
-                        label: 'Library',
-                      ),
-                      NavItem(
-                        unselectedIcon: Icons.extension_outlined,
-                        selectedIcon: Icons.extension_rounded,
-                        onTap: _onItemTapped,
-                        label: "Extensions",
-                      ),
+                      for (final tab in navTabs)
+                        _getNavItemForTab(tab, isSimkl, _onItemTapped),
                     ],
                   ),
                 ],
               ));
           }),
           Expanded(
-            child: IndexedStack(
-              index: _selectedIndex,
-              children: routes,
-            ),
+            child: Obx(() {
+              final navTabs = _getNavTabs(authService, settings);
+              final desktopRoutes = [
+                const SizedBox.shrink(),
+                for (final tab in navTabs) _getWidgetForTab(tab),
+              ];
+              final validIndex = _selectedIndex.clamp(0, desktopRoutes.length - 1);
+              return IndexedStack(
+                index: validIndex,
+                children: desktopRoutes,
+              );
+            }),
           ),
         ],
       ),
     );
   }
 
-  Scaffold _buildAndroidLayout(ServiceHandler authService) {
-    return Scaffold(
-        body: IndexedStack(
-          index: _mobileSelectedIndex,
-          children: mobileRoutes,
-        ),
-        extendBody: true,
-        bottomNavigationBar: Obx(() {
-          final isSimkl = authService.serviceType.value == ServicesType.simkl;
-          return ResponsiveNavBar(
+  Widget _buildAndroidLayout(ServiceHandler authService) {
+    final settings = Get.find<Settings>();
+    return Obx(() {
+      final isSimkl = authService.serviceType.value == ServicesType.simkl;
+      final navTabs = _getNavTabs(authService, settings);
+      final mobileRoutes = [
+        for (final tab in navTabs) _getWidgetForTab(tab),
+      ];
+      final validIndex = _mobileSelectedIndex.clamp(0, mobileRoutes.length - 1);
+
+      return Scaffold(
+          body: IndexedStack(
+            index: validIndex,
+            children: mobileRoutes,
+          ),
+          extendBody: true,
+          bottomNavigationBar: ResponsiveNavBar(
             isDesktop: false,
-            currentIndex: _mobileSelectedIndex,
+            currentIndex: validIndex,
             margin: const EdgeInsets.symmetric(vertical: 30, horizontal: 32),
             items: [
-              NavItem(
-                unselectedIcon: IconlyBold.home,
-                selectedIcon: IconlyBold.home,
-                onTap: _onMobileItemTapped,
-                label: 'Home',
-              ),
-              NavItem(
-                unselectedIcon: Icons.movie_filter_rounded,
-                selectedIcon: Icons.movie_filter_rounded,
-                onTap: _onMobileItemTapped,
-                label: isSimkl ? 'Movies' : 'Anime',
-              ),
-              NavItem(
-                unselectedIcon: isSimkl ? Iconsax.monitor : Iconsax.book,
-                selectedIcon: isSimkl ? Iconsax.monitor5 : Iconsax.book,
-                onTap: _onMobileItemTapped,
-                label: isSimkl ? 'Series' : 'Manga',
-              ),
-              NavItem(
-                unselectedIcon: HugeIcons.strokeRoundedLibrary,
-                selectedIcon: HugeIcons.strokeRoundedLibrary,
-                onTap: _onMobileItemTapped,
-                label: 'Library',
-              ),
+              for (final tab in navTabs)
+                _getNavItemForTab(tab, isSimkl, _onMobileItemTapped),
             ],
-          );
-        }));
+          ));
+    });
   }
 }

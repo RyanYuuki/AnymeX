@@ -27,6 +27,7 @@ enum General {
   discordRpcEnabled,
   useHighRefreshRate,
   preferredDisplayMode,
+  navigationTabOrder,
 }
 
 enum ThemeKeys {
