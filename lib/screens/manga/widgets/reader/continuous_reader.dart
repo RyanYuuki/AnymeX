@@ -371,6 +371,23 @@ class _ContinuousReaderViewState extends State<ContinuousReaderView>
         }
       }
 
+      final screenWidth = MediaQuery.sizeOf(context).width;
+      final multiplier = ctrl.pageWidthMultiplier.value;
+      final isFitToScreen = ctrl.fitToScreen.value;
+      final isDesktop = screenWidth > 600;
+
+      final double? calculatedWidth;
+      if (isFitToScreen) {
+        calculatedWidth = screenWidth * multiplier;
+      } else {
+        if (isDesktop) {
+          calculatedWidth = math.min(screenWidth, 700.0) * multiplier;
+        } else {
+          calculatedWidth = multiplier != 1.0 ? screenWidth * multiplier : null;
+        }
+      }
+      final fitMode = isFitToScreen ? BoxFit.fitWidth : BoxFit.contain;
+
       return Padding(
         padding: EdgeInsets.symmetric(
             vertical: ctrl.spacedPages.value ? 8.0 : 0),
@@ -386,7 +403,8 @@ class _ContinuousReaderViewState extends State<ContinuousReaderView>
                     }
                   : page.headers,
             ),
-            fit: ctrl.fitToScreen.value ? BoxFit.fitWidth : BoxFit.contain,
+            width: calculatedWidth,
+            fit: fitMode,
             alignment: Alignment.center,
             cropBorders: ctrl.cropImages.value,
             isContinuousMode: true,

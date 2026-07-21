@@ -15,6 +15,8 @@ class SubsamplingImageProvider extends StatefulWidget {
   final bool isContinuousMode;
   final Widget? placeholder;
   final Function(double width, double height)? onImageLoaded;
+  final double? width;
+  final double? height;
 
   const SubsamplingImageProvider({
     super.key,
@@ -25,6 +27,8 @@ class SubsamplingImageProvider extends StatefulWidget {
     this.isContinuousMode = false,
     this.placeholder,
     this.onImageLoaded,
+    this.width,
+    this.height,
   });
 
   @override
@@ -69,6 +73,8 @@ class _SubsamplingImageProviderState extends State<SubsamplingImageProvider> {
         return ext.ExtendedImage.network(
           url,
           headers: widget.page.headers,
+          width: widget.width,
+          height: widget.height,
           fit: widget.fit,
           alignment: widget.alignment,
           enableLoadState: true,
@@ -97,6 +103,8 @@ class _SubsamplingImageProviderState extends State<SubsamplingImageProvider> {
         }
         return Image.file(
           file,
+          width: widget.width,
+          height: widget.height,
           fit: widget.fit,
           alignment: widget.alignment,
         );
@@ -119,6 +127,8 @@ class _SubsamplingImageProviderState extends State<SubsamplingImageProvider> {
           return ext.ExtendedImage.network(
             url,
             headers: widget.page.headers,
+            width: widget.width,
+            height: widget.height,
             fit: widget.fit,
             alignment: widget.alignment,
             enableLoadState: true,
@@ -132,6 +142,8 @@ class _SubsamplingImageProviderState extends State<SubsamplingImageProvider> {
         } else {
           return Image.file(
             File(url),
+            width: widget.width,
+            height: widget.height,
             fit: widget.fit,
             alignment: widget.alignment,
           );

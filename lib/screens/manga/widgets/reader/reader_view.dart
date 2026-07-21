@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/screens/manga/widgets/reader/continuous_reader.dart';
@@ -340,11 +341,29 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
 
   Widget _buildImageForPaged(BuildContext context, PageUrl page, int index) {
     return Obx(() {
+      final ctrl = widget.controller;
       final sourceController = Get.find<SourceController>();
+
+      final screenWidth = MediaQuery.sizeOf(context).width;
+      final multiplier = ctrl.pageWidthMultiplier.value;
+      final isFitToScreen = ctrl.fitToScreen.value;
+      final isDesktop = screenWidth > 600;
+
+      final double? calculatedWidth;
+      if (isFitToScreen) {
+        calculatedWidth = screenWidth * multiplier;
+      } else {
+        if (isDesktop) {
+          calculatedWidth = math.min(screenWidth, 700.0) * multiplier;
+        } else {
+          calculatedWidth = multiplier != 1.0 ? screenWidth * multiplier : null;
+        }
+      }
+      final fitMode = isFitToScreen ? BoxFit.fitWidth : BoxFit.contain;
 
       return Padding(
         padding: EdgeInsets.symmetric(
-            vertical: widget.controller.spacedPages.value ? 8.0 : 0),
+            vertical: ctrl.spacedPages.value ? 8.0 : 0),
         child: Center(
           child: SubsamplingImageProvider(
             page: PageUrl(
@@ -357,11 +376,10 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                     }
                   : page.headers,
             ),
-            fit: widget.controller.fitToScreen.value
-                ? BoxFit.fitWidth
-                : BoxFit.contain,
+            width: calculatedWidth,
+            fit: fitMode,
             alignment: Alignment.center,
-            cropBorders: widget.controller.cropImages.value,
+            cropBorders: ctrl.cropImages.value,
             placeholder: _buildPageLoadingWidget(context,
                 pageIndex: index, pageUrl: page.url),
           ),
