@@ -35,22 +35,49 @@ class Database {
   Future<void> init() async {
     Directory? dir;
     try {
-      dir = await getDatabaseDirectory();
-      isar = _openIsar(dir!);
+      final existingInstance = Isar.getInstance('AnymeX');
+      if (existingInstance != null && existingInstance.isOpen) {
+        isar = existingInstance;
+      } else {
+        dir = await getDatabaseDirectory();
+        isar = _openIsar(dir!);
+      }
     } catch (e) {
+      Logger.e('Primary Isar open failed: $e. Attempting lock recovery...');
       try {
         dir = await getDatabaseDirectory();
-        final dbFile = File(path.join(dir!.path, 'AnymeX.isar'));
-        final lockFile = File(path.join(dir.path, 'AnymeX.isar.lock'));
-        if (await dbFile.exists()) await dbFile.delete();
-        if (await lockFile.exists()) await lockFile.delete();
-        isar = _openIsar(dir);
+        final lockFile = File(path.join(dir!.path, 'AnymeX.isar.lock'));
+        if (await lockFile.exists()) {
+          try {
+            await lockFile.delete();
+          } catch (_) {}
+        }
+        final existingInstance = Isar.getInstance('AnymeX');
+        if (existingInstance != null && existingInstance.isOpen) {
+          isar = existingInstance;
+        } else {
+          isar = _openIsar(dir);
+        }
       } catch (e2) {
+        Logger.e('Lock recovery failed: $e2. Creating backup before recovery...');
         try {
-          final tempDir = await getTemporaryDirectory();
-          dir = Directory(path.join(tempDir.path,
-              'anymex_temp_db_${DateTime.now().millisecondsSinceEpoch}'));
-          await dir.create(recursive: true);
+          dir = await getDatabaseDirectory();
+          final dbFile = File(path.join(dir!.path, 'AnymeX.isar'));
+          if (await dbFile.exists()) {
+            final backupPath = path.join(
+              dir.path,
+              'AnymeX.isar.corrupted_bak_${DateTime.now().millisecondsSinceEpoch}',
+            );
+            try {
+              await dbFile.copy(backupPath);
+            } catch (_) {}
+          }
+          final lockFile = File(path.join(dir.path, 'AnymeX.isar.lock'));
+          if (await lockFile.exists()) {
+            try {
+              await lockFile.delete();
+            } catch (_) {}
+          }
           isar = _openIsar(dir);
         } catch (e3) {
           rethrow;
