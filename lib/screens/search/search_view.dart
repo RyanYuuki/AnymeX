@@ -2,21 +2,25 @@
 
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/screens/search/widgets/inline_search_history.dart';
 import 'package:anymex/screens/search/widgets/search_widgets.dart';
 import 'package:anymex/screens/settings/misc/sauce_finder_view.dart';
+import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/common/future_reusable_carousel.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/media_items/media_item.dart';
 import 'package:anymex/widgets/media_items/media_peek_popup.dart';
-import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -29,16 +33,32 @@ enum ViewMode { grid, list }
 
 enum SearchState { initial, loading, success, error, empty }
 
+class ExtensionSearchItem {
+  final Source source;
+  final Future<List<dynamic>> future;
+  int status;
+  String errorMessage;
+
+  ExtensionSearchItem({
+    required this.source,
+    required this.future,
+    this.status = 1,
+    this.errorMessage = '',
+  });
+}
+
 class SearchPage extends StatefulWidget {
   final String searchTerm;
   final dynamic source;
   final bool isManga;
+  final ItemType? type;
   final Map<String, dynamic>? initialFilters;
 
   const SearchPage({
     super.key,
     required this.searchTerm,
     required this.isManga,
+    this.type,
     this.source,
     this.initialFilters,
   });
@@ -47,18 +67,23 @@ class SearchPage extends StatefulWidget {
   State<SearchPage> createState() => _SearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
+class _SearchPageState extends State<SearchPage>
+    with TickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
   final ServiceHandler _serviceHandler = Get.find<ServiceHandler>();
+  final SourceController _sourceController = Get.find<SourceController>();
   final RxList<String> _searchedTerms = <String>[].obs;
   final ScrollController _resultsScrollController = ScrollController();
+
+  Source? _selectedSource;
+  List<ExtensionSearchItem> _extensionSearchItems = [];
 
   List<Media>? _searchResults;
   ViewMode _currentViewMode = ViewMode.grid;
   SearchState _searchState = SearchState.initial;
   String? _errorMessage;
   Map<String, dynamic> _activeFilters = {};
-  RxBool isAdult = false.obs;
+  bool isAdult = false;
   int _currentPage = 1;
   bool _isLoadingMore = false;
   bool _hasMoreResults = false;
@@ -67,16 +92,27 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
 
   final FocusNode _searchFocusNode = FocusNode();
 
+  final Map<String, List<ExtensionSearchItem>> _allSourcesCache = {};
+  final Map<String, List<Media>> _singleSourceCache = {};
+
+  ItemType get effectiveType =>
+      widget.type ?? (widget.isManga ? ItemType.manga : ItemType.anime);
+
+  bool get isExtensionMode =>
+      _serviceHandler.serviceType.value == ServicesType.extensions ||
+      _selectedSource != null;
+
   @override
   void initState() {
     super.initState();
+    _selectedSource = widget.source is Source ? widget.source as Source : null;
     _initializeAnimations();
     _initializeData();
   }
 
   void _initializeAnimations() {
     _searchFocusNode.addListener(() {
-      setState(() {});
+      if (mounted) setState(() {});
     });
     _resultsScrollController.addListener(_onResultsScroll);
   }
@@ -84,14 +120,16 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   void _initializeData() {
     _searchController.text = widget.searchTerm;
     _searchedTerms.value = DynamicKeys.searchHistory.get<List<String>>(
-      '${widget.isManga ? 'manga' : 'anime'}_${serviceHandler.serviceType.value.name}',
+      '${effectiveType.name}_${serviceHandler.serviceType.value.name}',
       <String>[],
     );
 
-    prefetchFilterMeta(
-      mediaType: widget.isManga ? 'manga' : 'anime',
-      config: _resolvedFilterConfig(),
-    );
+    if (!isExtensionMode) {
+      prefetchFilterMeta(
+        mediaType: widget.isManga ? 'manga' : 'anime',
+        config: _resolvedFilterConfig(),
+      );
+    }
 
     if (widget.initialFilters != null) {
       _activeFilters = Map<String, dynamic>.from(widget.initialFilters!);
@@ -116,7 +154,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
 
   void _saveHistory() {
     DynamicKeys.searchHistory.set(
-      '${widget.isManga ? 'manga' : 'anime'}_${serviceHandler.serviceType.value.name}',
+      '${effectiveType.name}_${serviceHandler.serviceType.value.name}',
       _searchedTerms.toList(),
     );
   }
@@ -164,7 +202,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     Map<String, dynamic> currentFilters = filters ?? _activeFilters;
     bool hasActiveContent = currentFilters.isNotEmpty;
 
-    if (searchQuery.isEmpty && !isAdult.value && !hasActiveContent) {
+    if (searchQuery.isEmpty && !isAdult && !hasActiveContent) {
       setState(() {
         _searchState = SearchState.initial;
         _searchResults = null;
@@ -175,6 +213,9 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         _hasMoreResults = false;
         _lastSearchQuery = '';
         _lastApiFilters = {};
+        _extensionSearchItems.clear();
+        _allSourcesCache.clear();
+        _singleSourceCache.clear();
       });
       return;
     }
@@ -190,17 +231,30 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       }
     });
 
-    await Future.delayed(const Duration(milliseconds: 350));
+    if (searchQuery.isNotEmpty && !_searchedTerms.contains(searchQuery)) {
+      _searchedTerms.add(searchQuery);
+      _saveHistory();
+    }
+
+    if (isExtensionMode) {
+      if (_selectedSource != null) {
+        await _performSingleSourceSearch(searchQuery);
+      } else {
+        _performAllSourcesSearch(searchQuery);
+      }
+      return;
+    }
+
+    await Future.delayed(const Duration(milliseconds: 300));
     if (!mounted) return;
 
     try {
       final apiFilters = _buildApiFilters(searchQuery);
-
       final results = (await _serviceHandler.search(SearchParams(
             query: searchQuery,
             isManga: widget.isManga,
             filters: apiFilters.isNotEmpty ? apiFilters : null,
-            args: isAdult.value,
+            args: isAdult,
             page: 1,
           ))) ??
           [];
@@ -213,11 +267,6 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         if (seen.add(key)) {
           uniqueResults.add(item);
         }
-      }
-
-      if (searchQuery.isNotEmpty && !_searchedTerms.contains(searchQuery)) {
-        _searchedTerms.add(searchQuery);
-        _saveHistory();
       }
 
       setState(() {
@@ -245,6 +294,119 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     }
   }
 
+  Future<void> _performSingleSourceSearch(String searchQuery) async {
+    final queryKey = searchQuery.toLowerCase().trim();
+    final cacheKey = '${_selectedSource!.id}|$queryKey';
+
+    if (_singleSourceCache.containsKey(cacheKey)) {
+      final cachedList = _singleSourceCache[cacheKey]!;
+      setState(() {
+        _searchResults = List<Media>.from(cachedList);
+        _currentPage = 1;
+        _hasMoreResults = cachedList.isNotEmpty;
+        _lastSearchQuery = searchQuery;
+        _searchState =
+            cachedList.isEmpty ? SearchState.empty : SearchState.success;
+      });
+      if (_resultsScrollController.hasClients) {
+        _resultsScrollController.jumpTo(0);
+      }
+      return;
+    }
+
+    if (_allSourcesCache.containsKey(queryKey)) {
+      final allItems = _allSourcesCache[queryKey]!;
+      final match = allItems
+          .firstWhereOrNull((e) => e.source.id == _selectedSource!.id);
+      if (match != null) {
+        try {
+          final rawList = await match.future;
+          final mediaList = rawList
+              .map((e) => Media.froDMedia(e, effectiveType))
+              .toList();
+          _singleSourceCache[cacheKey] = mediaList;
+          setState(() {
+            _searchResults = List<Media>.from(mediaList);
+            _currentPage = 1;
+            _hasMoreResults = mediaList.isNotEmpty;
+            _lastSearchQuery = searchQuery;
+            _searchState =
+                mediaList.isEmpty ? SearchState.empty : SearchState.success;
+          });
+          if (_resultsScrollController.hasClients) {
+            _resultsScrollController.jumpTo(0);
+          }
+          return;
+        } catch (_) {}
+      }
+    }
+
+    try {
+      final res = await _selectedSource!.methods.search(searchQuery, 1, []);
+      final rawList = res.list;
+      if (!mounted) return;
+
+      final mediaList =
+          rawList.map((e) => Media.froDMedia(e, effectiveType)).toList();
+      _singleSourceCache[cacheKey] = mediaList;
+
+      setState(() {
+        _searchResults = mediaList;
+        _currentPage = 1;
+        _hasMoreResults = mediaList.isNotEmpty;
+        _lastSearchQuery = searchQuery;
+        _searchState =
+            mediaList.isEmpty ? SearchState.empty : SearchState.success;
+      });
+
+      if (_resultsScrollController.hasClients) {
+        _resultsScrollController.jumpTo(0);
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _searchState = SearchState.error;
+        _errorMessage = e.toString();
+        _hasMoreResults = false;
+      });
+    }
+  }
+
+  void _performAllSourcesSearch(String searchQuery) {
+    final key = searchQuery.toLowerCase().trim();
+
+    if (_allSourcesCache.containsKey(key)) {
+      setState(() {
+        _extensionSearchItems =
+            List<ExtensionSearchItem>.from(_allSourcesCache[key]!);
+        _lastSearchQuery = searchQuery;
+        _searchState = _allSourcesCache[key]!.isEmpty
+            ? SearchState.empty
+            : SearchState.success;
+      });
+      return;
+    }
+
+    final installed = effectiveType.extensions;
+    final items = installed.map((s) {
+      final Future<List<dynamic>> future =
+          s.methods.search(searchQuery, 1, []).then<List<dynamic>>((res) {
+        return res.list;
+      }).catchError((err) {
+        return <dynamic>[];
+      });
+
+      return ExtensionSearchItem(source: s, future: future);
+    }).toList();
+
+    _allSourcesCache[key] = items;
+    setState(() {
+      _extensionSearchItems = items;
+      _lastSearchQuery = searchQuery;
+      _searchState = items.isEmpty ? SearchState.empty : SearchState.success;
+    });
+  }
+
   Future<void> _loadMoreResults() async {
     if (_isLoadingMore ||
         !_hasMoreResults ||
@@ -260,16 +422,26 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     final nextPage = _currentPage + 1;
 
     try {
-      final results = (await _serviceHandler.search(SearchParams(
-            query: _lastSearchQuery,
-            isManga: widget.isManga,
-            filters: _lastApiFilters.isNotEmpty
-                ? Map<String, dynamic>.from(_lastApiFilters)
-                : null,
-            args: isAdult.value,
-            page: nextPage,
-          ))) ??
-          [];
+      List<Media> results = [];
+      if (_selectedSource != null) {
+        final res = await _selectedSource!.methods
+            .search(_lastSearchQuery, nextPage, []);
+        results = res.list
+            .map((e) => Media.froDMedia(e, effectiveType))
+            .toList();
+      } else {
+        results = (await _serviceHandler.search(SearchParams(
+              query: _lastSearchQuery,
+              isManga: widget.isManga,
+              filters: _lastApiFilters.isNotEmpty
+                  ? Map<String, dynamic>.from(_lastApiFilters)
+                  : null,
+              args: isAdult,
+              page: nextPage,
+            ))) ??
+            [];
+      }
+
       if (!mounted) return;
 
       if (results.isEmpty) {
@@ -335,9 +507,44 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     super.dispose();
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return Glow(
+      child: Scaffold(
+        body: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+                child: Row(
+                  children: [
+                    IconButton(
+                      onPressed: () => Get.back(),
+                      icon: const Icon(Icons.arrow_back_ios_new),
+                    ),
+                    Expanded(child: _buildModernSearchBar()),
+                  ],
+                ),
+              ),
+              _buildControlsSection(),
+              _buildActiveFilters(),
+              const SizedBox(height: 6),
+              Expanded(child: _buildMainContent()),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildModernSearchBar() {
+    final hintText = _selectedSource != null
+        ? 'Search ${_selectedSource!.name}...'
+        : 'Search ${effectiveType.name.capitalizeFirst}...';
+
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
+      margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30),
         boxShadow: _searchFocusNode.hasFocus
@@ -359,8 +566,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         decoration: InputDecoration(
           filled: true,
           fillColor: context.colors.surfaceContainer.opaque(.5),
-          hintText:
-              'Search ${serviceHandler.serviceType.value == ServicesType.simkl ? 'movie or series' : widget.isManga ? 'manga' : 'anime'}...',
+          hintText: hintText,
           hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: context.colors.onSurface.opaque(0.5),
               ),
@@ -382,6 +588,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                       _hasMoreResults = false;
                       _lastSearchQuery = '';
                       _lastApiFilters = {};
+                      _extensionSearchItems.clear();
                     });
                   },
                   icon: Icon(
@@ -389,9 +596,9 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                     color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
                   ),
                 )
-              : serviceHandler.serviceType.value != ServicesType.anilist
-                  ? null
-                  : IconButton(
+              : (!isExtensionMode &&
+                      serviceHandler.serviceType.value == ServicesType.anilist)
+                  ? IconButton(
                       onPressed: _showFilterBottomSheet,
                       icon: Icon(
                         Iconsax.setting_4,
@@ -402,7 +609,8 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                                 .onSurface
                                 .opaque(0.7),
                       ),
-                    ),
+                    )
+                  : null,
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         ),
@@ -413,42 +621,144 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   }
 
   Widget _buildControlsSection() {
+    final installedSources = effectiveType.extensions;
+
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Row(
         children: [
-          if (serviceHandler.serviceType.value == ServicesType.anilist) ...[
-            if (!General.hideAdultContent.get(true)) ...[
-              Obx(() {
-                return _buildToggleButton(
+          if (isExtensionMode) ...[
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Row(
+                  children: [
+                    _buildSourceChip(
+                      label: 'All Sources',
+                      isSelected: _selectedSource == null,
+                      onTap: () {
+                        setState(() {
+                          _selectedSource = null;
+                        });
+                        _performSearch();
+                      },
+                    ),
+                    const SizedBox(width: 8),
+                    for (final src in installedSources) ...[
+                      _buildSourceChip(
+                        label:
+                            '${src.name ?? "Src"} (${src.lang?.toUpperCase() ?? "ALL"})',
+                        iconUrl: src.iconUrl,
+                        isSelected: _selectedSource?.id == src.id,
+                        onTap: () {
+                          setState(() {
+                            _selectedSource = src;
+                            _sourceController.setActiveSource(src);
+                          });
+                          _performSearch();
+                        },
+                      ),
+                      const SizedBox(width: 8),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+            if (_selectedSource != null) ...[
+              const SizedBox(width: 12),
+              _buildViewModeToggle(),
+            ],
+          ] else ...[
+            if (serviceHandler.serviceType.value == ServicesType.anilist) ...[
+              if (!General.hideAdultContent.get(true)) ...[
+                _buildToggleButton(
                   label: 'Adult',
-                  isActive: isAdult.value,
+                  isActive: isAdult,
                   onTap: () {
-                    isAdult.value = !isAdult.value;
+                    setState(() {
+                      isAdult = !isAdult;
+                    });
                     _performSearch();
                   },
-                );
-              }),
-              const SizedBox(width: 12),
-            ],
-            _buildActionButton(
-              icon: Iconsax.setting_4,
-              label: 'Filters',
-              isActive: _activeFilters.isNotEmpty,
-              onTap: _showFilterBottomSheet,
-            ),
-            if (!widget.isManga &&
-                serviceHandler.serviceType.value == ServicesType.anilist) ...[
-              const SizedBox(width: 12),
+                ),
+                const SizedBox(width: 12),
+              ],
               _buildActionButton(
-                icon: Iconsax.eye,
-                label: 'Image',
-                isActive: false,
-                onTap: () => navigate(() => const SauceFinderView()),
+                icon: Iconsax.setting_4,
+                label: 'Filters',
+                isActive: _activeFilters.isNotEmpty,
+                onTap: _showFilterBottomSheet,
               ),
+              if (!widget.isManga &&
+                  serviceHandler.serviceType.value == ServicesType.anilist) ...[
+                const SizedBox(width: 12),
+                _buildActionButton(
+                  icon: Iconsax.eye,
+                  label: 'Image',
+                  isActive: false,
+                  onTap: () => navigate(() => const SauceFinderView()),
+                ),
+              ],
             ],
+            const Spacer(),
+            _buildViewModeToggle(),
           ],
         ],
+      ),
+    );
+  }
+
+  Widget _buildSourceChip({
+    required String label,
+    String? iconUrl,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    final theme = Theme.of(context);
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? theme.colorScheme.primary.opaque(0.15, iReallyMeanIt: true)
+              : theme.colorScheme.surfaceContainerHighest
+                  .opaque(0.3, iReallyMeanIt: true),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected
+                ? theme.colorScheme.primary.opaque(0.4, iReallyMeanIt: true)
+                : theme.colorScheme.onSurface
+                    .opaque(0.08, iReallyMeanIt: true),
+            width: isSelected ? 1.2 : 0.5,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (iconUrl != null && iconUrl.isNotEmpty) ...[
+              ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: AnymeXImage(
+                  width: 16,
+                  height: 16,
+                  imageUrl: iconUrl,
+                ),
+              ),
+              const SizedBox(width: 6),
+            ],
+            AnymexText.semiBold(
+              text: label,
+              size: 12,
+              color: isSelected
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.onSurface,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -745,6 +1055,10 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   }
 
   Widget _buildMainContent() {
+    if (isExtensionMode && _selectedSource == null) {
+      return _buildAllSourcesContent();
+    }
+
     switch (_searchState) {
       case SearchState.initial:
         return _buildInitialState();
@@ -759,152 +1073,165 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     }
   }
 
-  Widget _buildInitialState() {
-    return Expanded(
-      child: InlineSearchHistory(
-        searchTerms: _searchedTerms,
-        onTermSelected: (term) {
-          _searchController.text = term;
-          _performSearch(query: term);
-        },
-        onHistoryUpdated: (updatedTerms) {
-          setState(() {
-            _searchedTerms.value = updatedTerms;
-          });
-          _saveHistory();
-        },
+  Widget _buildAllSourcesContent() {
+    if (_extensionSearchItems.isEmpty) {
+      return _buildInitialState();
+    }
+
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.only(top: 8, bottom: 24),
+      child: Column(
+        children: [
+          for (final item in _extensionSearchItems)
+            Padding(
+              key: ObjectKey(item),
+              padding: const EdgeInsets.only(bottom: 4.0),
+              child: FutureReusableCarousel(
+                title: (item.source.lang?.isNotEmpty ?? false)
+                    ? '${item.source.name ?? "Unknown"} (${item.source.lang!.toUpperCase()})'
+                    : (item.source.name ?? 'Unknown'),
+                future: item.future,
+                type: effectiveType,
+                variant: DataVariant.extension,
+                source: item.source,
+              ),
+            ),
+        ],
       ),
     );
   }
 
+  Widget _buildInitialState() {
+    return InlineSearchHistory(
+      searchTerms: _searchedTerms,
+      onTermSelected: (term) {
+        _searchController.text = term;
+        _performSearch(query: term);
+      },
+      onHistoryUpdated: (updatedTerms) {
+        setState(() {
+          _searchedTerms.value = updatedTerms;
+        });
+        _saveHistory();
+      },
+    );
+  }
+
   Widget _buildLoadingState() {
-    return Expanded(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: context.colors.primary.opaque(0.1, iReallyMeanIt: true),
-                shape: BoxShape.circle,
-              ),
-              child: const ExpressiveLoadingIndicator(),
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: context.colors.primary.opaque(0.1, iReallyMeanIt: true),
+              shape: BoxShape.circle,
             ),
-            const SizedBox(height: 24),
-            Text(
-              'Searching...',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .opaque(0.7, iReallyMeanIt: true),
-                    fontWeight: FontWeight.w500,
-                  ),
-            ),
-          ],
-        ),
+            child: const ExpressiveLoadingIndicator(),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'Searching...',
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .opaque(0.7, iReallyMeanIt: true),
+                  fontWeight: FontWeight.w500,
+                ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildErrorState() {
-    return Expanded(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: context.colors.error.opaque(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Iconsax.warning_2,
-                size: 48,
-                color: context.colors.error,
-              ),
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: context.colors.error.opaque(0.1),
+              shape: BoxShape.circle,
             ),
-            const SizedBox(height: 24),
-            Text(
-              'Oops! Something went wrong',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+            child: Icon(
+              Iconsax.warning_2,
+              size: 48,
+              color: context.colors.error,
             ),
-            const SizedBox(height: 8),
-            Text(
-              _errorMessage ?? 'Please try again later',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
-                  ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: () => _performSearch(),
-              icon: Icon(Iconsax.refresh, color: context.colors.onPrimary),
-              label: const Text('Try Again'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: context.colors.primary,
-                foregroundColor: context.colors.onPrimary,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+          ),
+          const SizedBox(height: 24),
+          const AnymexText.bold(
+            text: 'Oops! Something went wrong',
+            size: 18,
+          ),
+          const SizedBox(height: 8),
+          AnymexText.regular(
+            text: _errorMessage ?? 'Please try again later',
+            textAlign: TextAlign.center,
+            size: 14,
+            color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
+          ),
+          const SizedBox(height: 24),
+          ElevatedButton.icon(
+            onPressed: () => _performSearch(),
+            icon: Icon(Iconsax.refresh, color: context.colors.onPrimary),
+            label: const AnymexText.semiBold(text: 'Try Again', size: 14),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: context.colors.primary,
+              foregroundColor: context.colors.onPrimary,
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildEmptyState() {
-    return Expanded(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceVariant.opaque(0.5),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Iconsax.search_normal,
-                size: 48,
-                color: context.colors.onSurfaceVariant,
-              ),
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceVariant.opaque(0.5),
+              shape: BoxShape.circle,
             ),
-            const SizedBox(height: 24),
-            Text(
-              'No results found',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+            child: Icon(
+              Iconsax.search_normal,
+              size: 48,
+              color: context.colors.onSurfaceVariant,
             ),
-            const SizedBox(height: 8),
-            Text(
-              'Try adjusting your search terms or filters',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
-                  ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 24),
+          const AnymexText.bold(
+            text: 'No results found',
+            size: 18,
+          ),
+          const SizedBox(height: 8),
+          AnymexText.regular(
+            text: 'Try adjusting your search terms or filters',
+            textAlign: TextAlign.center,
+            size: 14,
+            color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildSuccessState() {
-    return Expanded(
-      child: _buildSearchResults(),
-    );
+    return _buildSearchResults();
   }
 
   Widget _buildSearchResults() {
@@ -958,13 +1285,12 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   }
 
   Widget _buildListItem(Media media) {
-    final itemType = widget.isManga ? ItemType.manga : ItemType.anime;
     final heroTag = '${media.id}-search-list';
     return GestureDetector(
       onTap: () => _navigateToDetails(media, heroTag),
       onLongPress: () {
         if (media.userStatus == null || media.userStatus!.isEmpty) {
-          MediaPeekPopup.show(context, media, itemType, heroTag);
+          MediaPeekPopup.show(context, media, effectiveType, heroTag);
         }
       },
       child: Container(
@@ -1060,6 +1386,31 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     );
   }
 
+  void _navigateToDetails(Media media, String heroTag) {
+    if (effectiveType == ItemType.novel) {
+      final novSource = _selectedSource ??
+          _sourceController.activeNovelSource.value ??
+          _sourceController.installedNovelExtensions.firstOrNull;
+      if (novSource != null) {
+        navigateWithAnimation(() => NovelDetailsPage(
+              media: media,
+              tag: heroTag,
+              source: novSource,
+            ));
+      }
+    } else if (effectiveType == ItemType.manga) {
+      navigateWithAnimation(() => MangaDetailsPage(
+            media: media,
+            tag: heroTag,
+          ));
+    } else {
+      navigateWithAnimation(() => AnimeDetailsPage(
+            media: media,
+            tag: heroTag,
+          ));
+    }
+  }
+
   void _showFilterBottomSheet() {
     showFilterBottomSheet(context, (filters) {
       _performSearch(filters: filters);
@@ -1099,132 +1450,36 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
           return value == true ? "My Manga Only" : "Hide My Manga";
         }
         return value == true ? "My Anime Only" : "Hide My Anime";
-      case 'sort':
-        final sortVal =
-            value is List ? value.first.toString() : value.toString();
-        return "Sort: ${SearchFilterConstants.formatSort(sortVal)}";
-      case 'season':
-        return "Season: ${value.toString().toLowerCase().capitalize}";
+
       case 'status':
-        return value.toString() != 'All'
-            ? "Status: ${SearchFilterConstants.formatStatus(value.toString(), isManga: widget.isManga)}"
-            : "";
+        return value.toString();
+
       case 'format':
-        return "Format: ${SearchFilterConstants.formatFormat(value.toString(), isManga: widget.isManga)}";
-      case 'isAdult':
-        return "18+ Content";
-      case 'source':
-        return "Source: ${value.toString().replaceAll('_', ' ').toLowerCase().split(' ').map((w) => w[0].toUpperCase() + w.substring(1)).join(' ')}";
-      case 'countryOfOrigin':
-        return "Country: ${SearchFilterConstants.formatCountry(value.toString())}";
+        return value.toString();
+
+      case 'season':
+        return value.toString();
+
+      case 'sort':
+        if (value is List && value.isNotEmpty) {
+          return SearchFilterConstants.formatSort(value.first.toString());
+        }
+        return SearchFilterConstants.formatSort(value.toString());
+
       case 'year':
-        return "Year: ${value.toString().replaceAll('%', '')}";
+        return "Year: $value";
+
+      case 'episodeGreater':
+        return "Min Ep: $value";
+      case 'episodeLesser':
+        return "Max Ep: $value";
+      case 'chapterGreater':
+        return "Min Chap: $value";
+      case 'chapterLesser':
+        return "Max Chap: $value";
+
       default:
-        return "$key: $value";
+        return value.toString();
     }
-  }
-
-  void _navigateToDetails(Media media, [String? tag]) {
-    final shouldOpenAnime = media.serviceType == ServicesType.simkl;
-    final heroTag = tag ?? '${media.id}-search-list';
-
-    if (widget.isManga && !shouldOpenAnime) {
-      navigateWithAnimation(() => MangaDetailsPage(
-            media: media,
-            tag: heroTag,
-          ));
-    } else {
-      navigateWithAnimation(() => AnimeDetailsPage(
-            media: media,
-            tag: heroTag,
-          ));
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Glow(
-      child: SafeArea(
-        child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          body: Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
-                child: Row(
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(right: 5),
-                      decoration: BoxDecoration(
-                        color: context.colors.surface.opaque(0.3),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color:
-                              Theme.of(context).colorScheme.outline.opaque(0.3),
-                        ),
-                      ),
-                      child: IconButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        icon: Icon(
-                          Iconsax.arrow_left_2,
-                          color: context.colors.onSurface,
-                        ),
-                      ),
-                    ),
-                    Expanded(child: _buildModernSearchBar()),
-                  ],
-                ),
-              ),
-              _buildControlsSection(),
-              const SizedBox(height: 16),
-              _buildActiveFilters(),
-              if (_searchState == SearchState.success &&
-                  _searchResults!.isNotEmpty) ...[
-                Container(
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                  child: Row(
-                    children: [
-                      Text(
-                        'Search Results',
-                        style:
-                            Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .primary
-                              .opaque(0.1, iReallyMeanIt: true),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          '${_searchResults!.length}',
-                          style:
-                              Theme.of(context).textTheme.labelSmall?.copyWith(
-                                    color: context.colors.primary,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                        ),
-                      ),
-                      if (_searchState == SearchState.success) ...[
-                        const Spacer(),
-                        _buildViewModeToggle(),
-                      ],
-                    ],
-                  ),
-                ),
-              ],
-              _buildMainContent(),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }

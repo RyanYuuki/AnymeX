@@ -424,9 +424,17 @@ class _FilterScreenState extends State<FilterScreen> {
 
   List<String> _getNavTabs(ServiceHandler authService, Settings settings) {
     if (authService.serviceType.value == ServicesType.extensions) {
-      return ['Library', 'Anime', 'Manga', 'Novel'];
+      return ['Library', 'Anime', 'Manga', 'Novel', 'Extensions'];
     }
-    return settings.navigationTabOrder;
+    final rawTabs = settings.navigationTabOrder;
+    final isDesktop = MediaQuery.of(context).size.width > 600;
+    if (!isDesktop) {
+      return rawTabs.where((t) => t != 'Extensions').toList();
+    }
+    if (!rawTabs.contains('Extensions')) {
+      return [...rawTabs, 'Extensions'];
+    }
+    return rawTabs;
   }
 
   Widget _getWidgetForTab(String tabKey) {

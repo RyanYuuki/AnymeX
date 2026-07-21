@@ -366,15 +366,24 @@ class Settings extends GetxController {
 
   List<String> get navigationTabOrder {
     final raw = General.navigationTabOrder.get<String>('');
+    final isDesktop = Get.context != null && MediaQuery.of(Get.context!).size.width > 600;
+    final defaultTabs = isDesktop
+        ? ['Home', 'Anime', 'Manga', 'Library', 'Extensions']
+        : ['Home', 'Anime', 'Manga', 'Library'];
     if (raw.isEmpty) {
-      return ['Home', 'Anime', 'Manga', 'Library'];
+      return defaultTabs;
     }
     try {
       final List<dynamic> list = jsonDecode(raw);
       final strings = list.map((e) => e.toString()).toList();
-      if (strings.isNotEmpty) return strings;
+      if (strings.isNotEmpty) {
+        if (isDesktop && !strings.contains('Extensions')) {
+          strings.add('Extensions');
+        }
+        return strings;
+      }
     } catch (_) {}
-    return ['Home', 'Anime', 'Manga', 'Library'];
+    return defaultTabs;
   }
 
   set navigationTabOrder(List<String> order) {
