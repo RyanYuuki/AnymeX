@@ -592,66 +592,110 @@ class LibrarySettingsSheetState extends State<LibrarySettingsSheet>
     return Obx(() {
       final isHistory = widget.controller.selectedListIndex.value == -1;
 
-      final List<Widget> sortTiles = [
-        SortTile(
-          title: 'Title',
-          sortType: SortType.title,
-          currentSort: widget.controller.currentSort.value,
-          isAscending: widget.controller.isAscending.value,
-          icon: Icons.sort_by_alpha,
-          onTap: () => widget.controller.handleSortChange(SortType.title),
-        ),
-        SortTile(
-          title: _getLastReadTitle(widget.controller),
-          sortType: SortType.lastRead,
-          currentSort: widget.controller.currentSort.value,
-          isAscending: widget.controller.isAscending.value,
-          icon: _getLastReadIcon(widget.controller),
-          onTap: () => widget.controller.handleSortChange(SortType.lastRead),
-        ),
-        if (!isHistory) ...[
-          SortTile(
-            title: 'Last Added',
-            sortType: SortType.lastAdded,
-            currentSort: widget.controller.currentSort.value,
-            isAscending: widget.controller.isAscending.value,
-            icon: Icons.add_circle_outline,
-            onTap: () => widget.controller.handleSortChange(SortType.lastAdded),
-          ),
-          SortTile(
-            title: 'Rating',
-            sortType: SortType.rating,
-            currentSort: widget.controller.currentSort.value,
-            isAscending: widget.controller.isAscending.value,
-            icon: Icons.star_border,
-            onTap: () => widget.controller.handleSortChange(SortType.rating),
-          ),
-          SortTile(
-            title: 'Popularity',
-            sortType: SortType.popularity,
-            currentSort: widget.controller.currentSort.value,
-            isAscending: widget.controller.isAscending.value,
-            icon: Icons.trending_up,
-            onTap: () => widget.controller.handleSortChange(SortType.popularity),
-          ),
-          SortTile(
-            title: _getProgressTitle(widget.controller),
-            sortType: SortType.progress,
-            currentSort: widget.controller.currentSort.value,
-            isAscending: widget.controller.isAscending.value,
-            icon: Icons.play_circle_outline,
-            onTap: () => widget.controller.handleSortChange(SortType.progress),
-          ),
-          SortTile(
-            title: 'Release Date',
-            sortType: SortType.aired,
-            currentSort: widget.controller.currentSort.value,
-            isAscending: widget.controller.isAscending.value,
-            icon: Icons.calendar_today,
-            onTap: () => widget.controller.handleSortChange(SortType.aired),
-          ),
-        ],
-      ];
+      final List<Widget> sortTiles = isHistory
+          ? [
+              SortTile(
+                title: _getLastReadTitle(widget.controller),
+                sortType: SortType.lastRead,
+                currentSort: widget.controller.currentSort.value,
+                isAscending: widget.controller.isAscending.value,
+                icon: _getLastReadIcon(widget.controller),
+                onTap: () =>
+                    widget.controller.handleSortChange(SortType.lastRead),
+              ),
+              SortTile(
+                title: 'Title',
+                sortType: SortType.title,
+                currentSort: widget.controller.currentSort.value,
+                isAscending: widget.controller.isAscending.value,
+                icon: Icons.sort_by_alpha,
+                onTap: () =>
+                    widget.controller.handleSortChange(SortType.title),
+              ),
+              SortTile(
+                title: _getProgressTitle(widget.controller),
+                sortType: SortType.progress,
+                currentSort: widget.controller.currentSort.value,
+                isAscending: widget.controller.isAscending.value,
+                icon: Icons.play_circle_outline,
+                onTap: () =>
+                    widget.controller.handleSortChange(SortType.progress),
+              ),
+              SortTile(
+                title: 'Rating',
+                sortType: SortType.rating,
+                currentSort: widget.controller.currentSort.value,
+                isAscending: widget.controller.isAscending.value,
+                icon: Icons.star_border,
+                onTap: () =>
+                    widget.controller.handleSortChange(SortType.rating),
+              ),
+            ]
+          : [
+              SortTile(
+                title: 'Last Added',
+                sortType: SortType.lastAdded,
+                currentSort: widget.controller.currentSort.value,
+                isAscending: widget.controller.isAscending.value,
+                icon: Icons.add_circle_outline,
+                onTap: () =>
+                    widget.controller.handleSortChange(SortType.lastAdded),
+              ),
+              SortTile(
+                title: 'Title',
+                sortType: SortType.title,
+                currentSort: widget.controller.currentSort.value,
+                isAscending: widget.controller.isAscending.value,
+                icon: Icons.sort_by_alpha,
+                onTap: () =>
+                    widget.controller.handleSortChange(SortType.title),
+              ),
+              SortTile(
+                title: _getLastReadTitle(widget.controller),
+                sortType: SortType.lastRead,
+                currentSort: widget.controller.currentSort.value,
+                isAscending: widget.controller.isAscending.value,
+                icon: _getLastReadIcon(widget.controller),
+                onTap: () =>
+                    widget.controller.handleSortChange(SortType.lastRead),
+              ),
+              SortTile(
+                title: 'Rating',
+                sortType: SortType.rating,
+                currentSort: widget.controller.currentSort.value,
+                isAscending: widget.controller.isAscending.value,
+                icon: Icons.star_border,
+                onTap: () =>
+                    widget.controller.handleSortChange(SortType.rating),
+              ),
+              SortTile(
+                title: 'Popularity',
+                sortType: SortType.popularity,
+                currentSort: widget.controller.currentSort.value,
+                isAscending: widget.controller.isAscending.value,
+                icon: Icons.trending_up,
+                onTap: () =>
+                    widget.controller.handleSortChange(SortType.popularity),
+              ),
+              SortTile(
+                title: _getProgressTitle(widget.controller),
+                sortType: SortType.progress,
+                currentSort: widget.controller.currentSort.value,
+                isAscending: widget.controller.isAscending.value,
+                icon: Icons.play_circle_outline,
+                onTap: () =>
+                    widget.controller.handleSortChange(SortType.progress),
+              ),
+              SortTile(
+                title: 'Release Date',
+                sortType: SortType.aired,
+                currentSort: widget.controller.currentSort.value,
+                isAscending: widget.controller.isAscending.value,
+                icon: Icons.calendar_today,
+                onTap: () =>
+                    widget.controller.handleSortChange(SortType.aired),
+              ),
+            ];
 
       return Column(
         mainAxisSize: MainAxisSize.min,
