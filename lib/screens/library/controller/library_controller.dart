@@ -69,10 +69,18 @@ class LibraryController extends GetxController {
   }
 
   void _loadSortPrefs() {
-    final prefix = selectedListIndex.value == -1 ? '${type.value.name}_history' : type.value.name;
-    final defaultSort = selectedListIndex.value == -1 ? SortType.lastRead.index : SortType.lastAdded.index;
+    final isHistory = selectedListIndex.value == -1;
+    final prefix = isHistory ? '${type.value.name}_history' : type.value.name;
+    final defaultSort = isHistory ? SortType.lastRead.index : SortType.lastAdded.index;
 
-    currentSort.value = SortType.values[DynamicKeys.librarySortType.get<int>(prefix, defaultSort)];
+    final savedSortIndex = DynamicKeys.librarySortType.get<int>(prefix, defaultSort);
+    var loadedSort = SortType.values[savedSortIndex.clamp(0, SortType.values.length - 1)];
+
+    if (isHistory && (loadedSort == SortType.lastAdded || loadedSort == SortType.aired || loadedSort == SortType.popularity)) {
+      loadedSort = SortType.lastRead;
+    }
+
+    currentSort.value = loadedSort;
     isAscending.value = DynamicKeys.librarySortOrder.get<bool>(prefix, false);
   }
 
@@ -100,6 +108,7 @@ class LibraryController extends GetxController {
       searchController.clear();
       searchQuery.value = '';
     }
+    _loadSortPrefs();
     savePreferences();
   }
 
@@ -164,6 +173,7 @@ class LibraryController extends GetxController {
           comparison = aRating.compareTo(bRating);
           break;
         case SortType.lastAdded:
+          comparison = a.id.compareTo(b.id);
           break;
         case SortType.popularity:
           final aPop = double.tryParse(a.popularity ?? '0.0') ?? 0.0;

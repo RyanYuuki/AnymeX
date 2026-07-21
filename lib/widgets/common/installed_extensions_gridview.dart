@@ -172,15 +172,15 @@ class _InstalledExtensionsGridViewState
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: theme.colorScheme.primary
-                    .opaque(0.08, iReallyMeanIt: true),
+                color:
+                    theme.colorScheme.primary.opaque(0.08, iReallyMeanIt: true),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.extension_off_rounded,
                 size: 44,
-                color: theme.colorScheme.primary
-                    .opaque(0.6, iReallyMeanIt: true),
+                color:
+                    theme.colorScheme.primary.opaque(0.6, iReallyMeanIt: true),
               ),
             ),
             const SizedBox(height: 14),
@@ -190,8 +190,8 @@ class _InstalledExtensionsGridViewState
                   : 'No extensions found for "$_searchQuery"',
               textAlign: TextAlign.center,
               size: 15,
-              color: theme.colorScheme.onSurface
-                  .opaque(0.7, iReallyMeanIt: true),
+              color:
+                  theme.colorScheme.onSurface.opaque(0.7, iReallyMeanIt: true),
             ),
             if (_searchQuery.isNotEmpty) ...[
               const SizedBox(height: 12),
@@ -230,13 +230,6 @@ class _ExtensionCard extends StatelessWidget {
     final theme = Theme.of(context);
     final sourceController = Get.find<SourceController>();
 
-    final activeSource = switch (itemType) {
-      ItemType.manga => sourceController.activeMangaSource.value,
-      ItemType.novel => sourceController.activeNovelSource.value,
-      _ => sourceController.activeSource.value,
-    };
-    final isActive = activeSource?.id == source.id;
-
     return AnymexOnTap(
       scale: 0.98,
       onTap: () {
@@ -250,27 +243,14 @@ class _ExtensionCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(12.0),
         decoration: BoxDecoration(
-          color: isActive
-              ? theme.colorScheme.primary.opaque(0.12, iReallyMeanIt: true)
-              : theme.colorScheme.surfaceContainerHighest
-                  .opaque(0.35, iReallyMeanIt: true),
+          color: theme.colorScheme.surfaceContainerHighest
+              .opaque(0.35, iReallyMeanIt: true),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isActive
-                ? theme.colorScheme.primary.opaque(0.4, iReallyMeanIt: true)
-                : theme.colorScheme.onSurface
-                    .opaque(0.08, iReallyMeanIt: true),
-            width: isActive ? 1.2 : 0.5,
+            color:
+                theme.colorScheme.onSurface.opaque(0.08, iReallyMeanIt: true),
+            width: 0.5,
           ),
-          boxShadow: [
-            if (isActive)
-              BoxShadow(
-                color:
-                    theme.colorScheme.primary.opaque(0.1, iReallyMeanIt: true),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
-              ),
-          ],
         ),
         child: Row(
           children: [
@@ -278,11 +258,8 @@ class _ExtensionCard extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: isActive
-                      ? theme.colorScheme.primary
-                          .opaque(0.4, iReallyMeanIt: true)
-                      : theme.colorScheme.onSurface
-                          .opaque(0.08, iReallyMeanIt: true),
+                  color: theme.colorScheme.onSurface
+                      .opaque(0.08, iReallyMeanIt: true),
                   width: 0.8,
                 ),
               ),
@@ -310,9 +287,7 @@ class _ExtensionCard extends StatelessWidget {
                           style: TextStyle(
                             fontFamily: 'Poppins-SemiBold',
                             fontSize: 14,
-                            color: isActive
-                                ? theme.colorScheme.primary
-                                : theme.colorScheme.onSurface,
+                            color: theme.colorScheme.onSurface,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -370,8 +345,8 @@ class _ExtensionCard extends StatelessWidget {
               width: 30,
               height: 30,
               decoration: BoxDecoration(
-                color: theme.colorScheme.primary
-                    .opaque(0.12, iReallyMeanIt: true),
+                color:
+                    theme.colorScheme.primary.opaque(0.12, iReallyMeanIt: true),
                 shape: BoxShape.circle,
               ),
               child: Icon(

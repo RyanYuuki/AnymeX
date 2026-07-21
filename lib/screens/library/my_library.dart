@@ -62,7 +62,6 @@ class _MyLibraryState extends State<MyLibrary>
   Widget build(BuildContext context) {
     super.build(context);
     final controller = Get.put(LibraryController());
-    final isDesktop = MediaQuery.of(context).size.width > 600;
     final statusBarHeight = MediaQuery.of(context).padding.top;
     const appBarHeight = kToolbarHeight + 20;
 
@@ -154,43 +153,59 @@ class _LibraryContent extends StatelessWidget {
 
         final selectedListName = listNames[controller.selectedListIndex.value];
 
-        return Obx(() {
-          return StreamBuilder<List<OfflineMedia>>(
-            stream: controller.getProcessedCustomListStream(
-                selectedListName, controller.type.value),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return const SliverToBoxAdapter(
-                  child: Center(child: CircularProgressIndicator()),
-                );
-              }
+        return StreamBuilder<List<OfflineMedia>>(
+          stream: controller.getCustomListStream(
+              selectedListName, controller.type.value),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return const SliverToBoxAdapter(
+                child: Center(child: CircularProgressIndicator()),
+              );
+            }
 
-              var items = snapshot.data!;
+            return Obx(() {
+              final rawItems = snapshot.data!;
+              final searched = controller.applySearch(
+                  rawItems, controller.searchQuery.value);
+              final sortedItems = controller.applySorting(searched);
 
-              if (items.isEmpty) {
+              if (sortedItems.isEmpty) {
                 return const SliverToBoxAdapter(child: EmptyLibrary());
               }
 
-              return _buildGridView(context, items);
-            },
-          );
-        });
+              return _buildGridView(context, sortedItems);
+            });
+          },
+        );
       },
     );
   }
 
   Widget _buildHistoryView(BuildContext context) {
-    return Obx(() {
-      return StreamBuilder<List<OfflineMedia>>(
-        stream: controller.getHistoryStream(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const SliverToBoxAdapter(
-              child: Center(child: CircularProgressIndicator()),
-            );
+    return StreamBuilder<List<OfflineMedia>>(
+      stream: controller.getLibraryStream(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const SliverToBoxAdapter(
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        return Obx(() {
+          final items = snapshot.data!;
+          List<OfflineMedia> filtered;
+          if (controller.type.value.isAnime) {
+            filtered = items
+                .where((e) => e.currentEpisode?.currentTrack != null)
+                .toList();
+          } else {
+            filtered =
+                items.where((e) => e.currentChapter?.link != null).toList();
           }
 
-          var data = snapshot.data!;
+          final searched =
+              controller.applySearch(filtered, controller.searchQuery.value);
+          final data = controller.applySorting(searched);
 
           if (data.isEmpty) {
             return const SliverToBoxAdapter(child: EmptyLibrary());
@@ -227,9 +242,9 @@ class _LibraryContent extends StatelessWidget {
               ),
             ),
           );
-        },
-      );
-    });
+        });
+      },
+    );
   }
 
   Widget _buildGridView(BuildContext context, List<OfflineMedia> items) {

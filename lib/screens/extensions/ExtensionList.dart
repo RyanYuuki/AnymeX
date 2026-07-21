@@ -458,7 +458,7 @@ class _ExtensionListState extends State<ExtensionList>
     return _CustomReorderableDelayedDragStartListener(
       key: key,
       index: index,
-      delay: const Duration(seconds: 1),
+      delay: const Duration(milliseconds: 300),
       child: ExtensionListTileWidget(
         source: source,
         mediaType: widget.itemType,

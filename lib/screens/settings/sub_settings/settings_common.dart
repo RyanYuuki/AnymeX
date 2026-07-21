@@ -368,8 +368,13 @@ class _SettingsCommonState extends State<SettingsCommon> {
   }
 
   void _showReorderTabsDialog(BuildContext context) {
-    final allPossibleTabs = ['Home', 'Anime', 'Manga', 'Library', 'Extensions'];
-    final currentOrder = List<String>.from(settings.navigationTabOrder);
+    final isDesktop = MediaQuery.of(context).size.width > 600;
+    final allPossibleTabs = isDesktop
+        ? ['Home', 'Anime', 'Manga', 'Library', 'Extensions']
+        : ['Home', 'Anime', 'Manga', 'Library'];
+    final currentOrder = settings.navigationTabOrder
+        .where((t) => allPossibleTabs.contains(t))
+        .toList();
 
     for (final tab in allPossibleTabs) {
       if (!currentOrder.contains(tab)) {
