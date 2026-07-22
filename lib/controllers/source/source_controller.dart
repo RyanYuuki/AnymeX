@@ -242,6 +242,7 @@ class SourceController extends GetxController implements BaseService {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Future.delayed(const Duration(seconds: 3), () {
         unawaited(checkForUpdates());
+        unawaited(_refreshRepos());
         unawaited(checkBridgeUpdate());
       });
     });
@@ -582,7 +583,16 @@ class SourceController extends GetxController implements BaseService {
     final type = source.itemType;
     if (type == null) return false;
     final availableList = getAvailableExtensions(type);
-    final available = availableList.firstWhereOrNull((s) => s.id?.toString() == source.id?.toString());
+    final pkgName = source is ASource ? source.pkgName : null;
+    final available = availableList.firstWhereOrNull((s) {
+      if (pkgName != null && pkgName.isNotEmpty && s is ASource && s.pkgName == pkgName) {
+        return true;
+      }
+      if (s.id?.toString() == source.id?.toString() && s.id != null && s.id!.isNotEmpty) {
+        return true;
+      }
+      return s.name != null && s.name!.isNotEmpty && s.name == source.name;
+    });
     if (available == null) return false;
     return isExtensionNewerVersion(source.version, available.version);
   }

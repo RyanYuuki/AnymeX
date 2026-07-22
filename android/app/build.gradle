@@ -40,9 +40,9 @@ android {
         jniLibs {
             useLegacyPackaging true
         }
-        // resources {
-        //     exclude 'META-INF/versions/9/OSGI-INF/MANIFEST.MF'
-        // }
+        resources {
+            exclude 'META-INF/versions/9/OSGI-INF/MANIFEST.MF'
+        }
     }
 
     signingConfigs {
