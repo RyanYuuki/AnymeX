@@ -631,7 +631,7 @@ class Settings extends GetxController {
       'hw+' => 'hw+',
       'hw' => 'hw',
       'sw' => 'sw',
-      _ => 'hw',
+      _ => 'hw+',
     };
     playerSettings.update((s) => s?.hardwareDecoder = normalized);
     PlayerSettingsKeys.hardwareDecoder.set(normalized);
