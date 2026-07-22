@@ -1277,6 +1277,7 @@ class _SearchPageState extends State<SearchPage>
                 : GridAnimeCard(
                     data: media,
                     isManga: widget.isManga,
+                    type: effectiveType,
                     variant: CardVariant.search),
           ),
         );

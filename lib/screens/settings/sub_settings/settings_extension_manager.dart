@@ -25,8 +25,6 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
   final _pluginManager = PluginManager();
   bool _isCheckingUpdate = false;
   bool _isSyncingLocalApk = false;
-  bool _useInternalExtensions = false;
-
   String get _installedVersion => AnymeXRuntimeBridge.installedVersion;
 
   String get _installedReleaseTitle =>
@@ -37,7 +35,6 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
   @override
   void initState() {
     super.initState();
-    _useInternalExtensions = AnymeXRuntimeBridge.useInternalExtensionLoading;
   }
 
   void _showInstallPopup() async {
@@ -170,48 +167,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildPluginStatusCard(context),
-                      if (Platform.isAndroid) ...[
-                        const SizedBox(height: 25),
-                        Padding(
-                          padding:
-                              const EdgeInsets.only(left: 4.0, bottom: 10.0),
-                          child: Text(
-                            'OPTIONS',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: colors.primary,
-                              letterSpacing: 1.2,
-                            ),
-                          ),
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                            color:
-                                colors.surfaceContainer.withValues(alpha: 0.3),
-                            borderRadius: BorderRadius.circular(18),
-                            border: Border.all(
-                                color: colors.outlineVariant
-                                    .withValues(alpha: 0.4)),
-                          ),
-                          child: CustomSwitchTile(
-                            icon: Icons.settings_input_component_rounded,
-                            title: 'Aniyomi Internal Extensions',
-                            description:
-                                'Install extensions only to AnymeX (No Package Manager)',
-                            switchValue: _useInternalExtensions,
-                            onChanged: (val) {
-                              setState(() {
-                                _useInternalExtensions = val;
-                              });
-                              AnymeXRuntimeBridge
-                                  .setUseInternalExtensionLoading(val);
-                              successSnackBar(
-                                  'Settings saved. Please restart the app to apply.');
-                            },
-                          ),
-                        ),
-                      ],
+                      ..._buildExtensionSettings(context),
                       const SizedBox(height: 25),
                       Padding(
                         padding: const EdgeInsets.only(left: 4.0, bottom: 10.0),
@@ -503,6 +459,125 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
           ),
         ),
       ],
+    );
+  }
+
+  List<Widget> _buildExtensionSettings(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final em = Get.find<ExtensionManager>();
+    final settingsList = <Widget>[];
+
+    for (final manager in em.managers) {
+      final managerSettings = manager.settings;
+      if (managerSettings == null || managerSettings.isEmpty) continue;
+
+      settingsList.add(const SizedBox(height: 25));
+      settingsList.add(
+        Padding(
+          padding: const EdgeInsets.only(left: 4.0, bottom: 10.0),
+          child: Text(
+            '${manager.name.toUpperCase()} SETTINGS',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: colors.primary,
+              letterSpacing: 1.2,
+            ),
+          ),
+        ),
+      );
+
+      final children = <Widget>[];
+      for (final entry in managerSettings.entries) {
+        final setting = entry.value;
+
+        if (setting.type == 'bool') {
+          children.add(
+            CustomSwitchTile(
+              icon: Icons.settings_input_component_rounded,
+              title: setting.label,
+              description: setting.description,
+              switchValue: setting.value as bool,
+              onChanged: (val) {
+                setting.onChanged(val);
+                setState(() {});
+              },
+            ),
+          );
+        } else if (setting.type == 'string') {
+          children.add(
+            CustomTile(
+              icon: Icons.folder_open_rounded,
+              title: setting.label,
+              description: (setting.value as String).isNotEmpty
+                  ? setting.value as String
+                  : setting.description,
+              onTap: () => _showTextInputDialog(
+                context,
+                title: setting.label,
+                initialValue: setting.value as String,
+                onSave: (val) {
+                  setting.onChanged(val);
+                  setState(() {});
+                },
+              ),
+            ),
+          );
+        }
+      }
+
+      if (children.isNotEmpty) {
+        settingsList.add(
+          Container(
+            decoration: BoxDecoration(
+              color: colors.surfaceContainer.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                  color: colors.outlineVariant.withValues(alpha: 0.4)),
+            ),
+            child: Column(children: children),
+          ),
+        );
+      }
+    }
+
+    return settingsList;
+  }
+
+  void _showTextInputDialog(
+    BuildContext context, {
+    required String title,
+    required String initialValue,
+    required ValueChanged<String> onSave,
+  }) {
+    final controller = TextEditingController(text: initialValue);
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(title),
+          content: TextField(
+            controller: controller,
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Enter value',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                onSave(controller.text);
+                Navigator.of(context).pop();
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

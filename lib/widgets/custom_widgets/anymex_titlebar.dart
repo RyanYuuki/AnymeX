@@ -10,7 +10,6 @@ import 'package:window_manager/window_manager.dart';
 import 'package:win32/win32.dart';
 import 'dart:ffi';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart' hide isar;
-import 'package:anymex/utils/torrent/torrent_stream_resolver.dart';
 
 class AnymexTitleBar {
   static final ValueNotifier<bool> isFullScreen = ValueNotifier(false);
