@@ -285,24 +285,11 @@ class ReaderChapterTransition extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     return Center(
       child: Icon(
-        !isNext
+        isNext
             ? Icons.keyboard_double_arrow_down_rounded
             : Icons.keyboard_double_arrow_up_rounded,
         size: 22,
         color: scheme.onSurface.withOpacity(0.25),
-      ),
-    );
-  }
-
-  Widget _buildFooterHint(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Center(
-      child: AnymexText(
-        text: isNext ? 'Swipe up to continue' : 'Swipe down to go back',
-        size: 12,
-        color: scheme.onSurface.withOpacity(0.56),
-        fontStyle: FontStyle.italic,
-        maxLines: 1,
       ),
     );
   }

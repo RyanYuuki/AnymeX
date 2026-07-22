@@ -27,7 +27,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:thanos_snap_effect/thanos_snap_effect.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
@@ -119,16 +118,10 @@ class _HomePageState extends State<HomePage> {
             SizedBox(
               height: 228,
               child: RepaintBoundary(
-                child: GridView.builder(
+                child: ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   scrollDirection: Axis.horizontal,
                   itemCount: visibleHistory.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 1,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 0,
-                    mainAxisExtent: 300,
-                  ),
                   itemBuilder: (context, i) => _RemovableHistoryCard(
                     key: ValueKey(visibleHistory[i].mediaId),
                     media: HistoryModel.fromOfflineMedia(
@@ -508,7 +501,10 @@ class _RemovableHistoryCardState extends State<_RemovableHistoryCard>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 1500),
+    duration: const Duration(milliseconds: 150),
+  );
+  late final Animation<double> _animation = Tween<double>(begin: 1.0, end: 0.0).animate(
+    CurvedAnimation(parent: _controller, curve: Curves.easeInOutCubic),
   );
 
   @override
@@ -532,15 +528,24 @@ class _RemovableHistoryCardState extends State<_RemovableHistoryCard>
 
   @override
   Widget build(BuildContext context) {
-    return Snappable(
-      animation: _controller,
-      outerPadding: const EdgeInsets.all(20),
-      style: const SnappableStyle(
-        particleLifetime: 0.6,
-        fadeOutDuration: 0.3,
-        particleSpeed: 1.0,
-        particleSize: SnappableParticleSize.squareFromRelativeWidth(0.008),
-      ),
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return Opacity(
+          opacity: _animation.value,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            widthFactor: _animation.value,
+            child: SizedBox(
+              width: 300,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: child,
+              ),
+            ),
+          ),
+        );
+      },
       child: ContinueWatchingCard(
         media: widget.media,
         onRemove: _triggerRemoval,

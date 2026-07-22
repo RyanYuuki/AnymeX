@@ -94,6 +94,7 @@ class AnymexOnTap extends StatelessWidget {
         return GestureDetector(
           onTap: onTap,
           onLongPress: onLongPress,
+          behavior: HitTestBehavior.opaque,
           child: child,
         );
       }

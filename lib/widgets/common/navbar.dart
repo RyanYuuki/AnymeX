@@ -285,6 +285,7 @@ class _ResponsiveNavBarState extends State<ResponsiveNavBar>
                     onTap: () => item.onTap(index),
                     child: SizedBox(
                       height: itemHeight,
+                      width: double.infinity,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
