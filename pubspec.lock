@@ -54,7 +54,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "15cf84501f601ccfcc9d833bbc422a6798072a60"
+      resolved-ref: "4685712701caf5c477129b1ce47bcaa0034b0e9d"
       url: "https://github.com/RyanYuuki/AnymeXExtensionRuntimeBridge.git"
     source: git
     version: "1.6.1"
@@ -1261,7 +1261,7 @@ packages:
     source: hosted
     version: "3.0.2"
   libtorrent_flutter:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: libtorrent_flutter
       sha256: "48605ded68779749246deac803bce4ecea75eb2aac2394fdb8b85961014a3d36"

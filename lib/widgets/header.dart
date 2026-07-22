@@ -438,24 +438,36 @@ class Header extends StatelessWidget {
             navigate(() => const ProfilePage());
           }
         },
-        child: CircleAvatar(
-          radius: 20,
-          backgroundColor: context.colors.secondaryContainer.opaque(0.50),
-          child: profileData.isLoggedIn.value
-              ? ClipRRect(
-                  borderRadius: BorderRadius.circular(50),
-                  child: AnymeXImage(
-                    width: 40,
-                    height: 40,
-                    fit: BoxFit.cover,
-                    radius: 0,
-                    errorImage: '',
-                    imageUrl: profileData.profileData.value.avatar ?? '',
-                  ),
-                )
-              : Icon(IconlyBold.profile,
-                  color: context.colors.onSecondaryContainer, size: 18),
-        ),
+        child: Obx(() {
+          final count = Get.find<SourceController>().extensionUpdatesCount.value;
+          final avatar = CircleAvatar(
+            radius: 20,
+            backgroundColor: context.colors.secondaryContainer.opaque(0.50),
+            child: profileData.isLoggedIn.value
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(50),
+                    child: AnymeXImage(
+                      width: 40,
+                      height: 40,
+                      fit: BoxFit.cover,
+                      radius: 0,
+                      errorImage: '',
+                      imageUrl: profileData.profileData.value.avatar ?? '',
+                    ),
+                  )
+                : Icon(IconlyBold.profile,
+                    color: context.colors.onSecondaryContainer, size: 18),
+          );
+          if (count > 0) {
+            return Badge(
+              label: Text(count.toString()),
+              backgroundColor: context.colors.primary,
+              textColor: context.colors.onPrimary,
+              child: avatar,
+            );
+          }
+          return avatar;
+        }),
       ),
     );
   }
