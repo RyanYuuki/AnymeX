@@ -312,7 +312,7 @@ class _ExtensionListState extends State<ExtensionList>
           final updates = widget.installed
               ? _filterData(
                   installedSources
-                      .where((source) => source.hasUpdate == true)
+                      .where((source) => sourceController.extensionHasUpdate(source))
                       .toList(growable: false),
                 )
               : const <Source>[];
@@ -382,45 +382,16 @@ class _ExtensionListState extends State<ExtensionList>
       );
     }
 
-    if (hasUpdates) {
-      return CustomScrollView(
-        controller: _controller,
-        slivers: [
-          _buildUpdateSection(updates),
-          if (hasInstalled) ...[
-            SliverToBoxAdapter(child: _buildInstalledHeader()),
-            SliverReorderableList(
-              itemCount: installed.length,
-              onReorder: _onReorder,
-              proxyDecorator: _proxyDecorator,
-              itemBuilder: (context, index) {
-                final source = installed[index];
-                return _buildDraggableExtensionTile(
-                  key: ValueKey(source.uniqueId),
-                  index: index,
-                  source: source,
-                );
-              },
-            ),
-          ],
-          SliverToBoxAdapter(
-            child: SizedBox(height: bottomScrollPadding),
-          ),
-        ],
-      );
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildInstalledHeader(),
-        Expanded(
-          child: ReorderableListView.builder(
-            padding: EdgeInsets.only(bottom: bottomScrollPadding),
+    return CustomScrollView(
+      controller: _controller,
+      slivers: [
+        if (hasUpdates) _buildUpdateSection(updates),
+        if (hasInstalled) ...[
+          SliverToBoxAdapter(child: _buildInstalledHeader()),
+          SliverReorderableList(
+            itemCount: installed.length,
             onReorder: _onReorder,
             proxyDecorator: _proxyDecorator,
-            buildDefaultDragHandles: false,
-            itemCount: installed.length,
             itemBuilder: (context, index) {
               final source = installed[index];
               return _buildDraggableExtensionTile(
@@ -430,6 +401,9 @@ class _ExtensionListState extends State<ExtensionList>
               );
             },
           ),
+        ],
+        SliverToBoxAdapter(
+          child: SizedBox(height: bottomScrollPadding),
         ),
       ],
     );
@@ -601,9 +575,23 @@ class _ExtensionListState extends State<ExtensionList>
   Future<void> _updateAllExtensions(List<Source> updateEntries) async {
     if (updateEntries.isEmpty) return;
     try {
-      final futures = updateEntries
-          .map((source) => source.update())
-          .whereType<Future<dynamic>>();
+      final futures = updateEntries.map((source) async {
+        final id = source.id?.toString();
+        if (id != null) {
+          sourceController.updatingSourceIds.add(id);
+        }
+        try {
+          final manager = getSourceManager(source);
+          await manager.updateSource(source);
+          await sourceController.refreshSourceState(source);
+        } catch (e) {
+          debugPrint('Error updating extension ${source.name}: $e');
+        } finally {
+          if (id != null) {
+            sourceController.updatingSourceIds.remove(id);
+          }
+        }
+      });
       await Future.wait(futures);
     } catch (e) {
       debugPrint('Error updating extensions: $e');

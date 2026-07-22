@@ -104,7 +104,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
   @override
   Widget build(BuildContext context) {
     final theme = context.colors;
-    final updateAvailable = widget.source.hasUpdate ?? false;
+    final updateAvailable = sourceController.extensionHasUpdate(widget.source);
 
     Widget buildMainIcon() {
       final iconUrl = widget.source.iconUrl ?? '';
@@ -306,7 +306,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
               ),
             ),
             const SizedBox(width: 16),
-            _isLoading
+            (_isLoading || sourceController.updatingSourceIds.contains(widget.source.id?.toString()))
                 ? const SizedBox(
                     height: 40,
                     width: 40,

@@ -15,6 +15,7 @@ import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:anymex/screens/extensions/widgets/plugin_manager.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart'
     hide isar;
 import 'package:anymex_extension_runtime_bridge/Services/Aniyomi/Models/Source.dart';
@@ -45,6 +46,8 @@ class SourceController extends GetxController implements BaseService {
   final activeMangaSource = Rxn<Source>();
   final activeNovelSource = Rxn<Source>();
   final lastUpdatedSource = ''.obs;
+  final RxInt extensionUpdatesCount = 0.obs;
+  final RxSet<String> updatingSourceIds = <String>{}.obs;
 
   final Map<String, String> _activeTokens = {};
 
@@ -236,9 +239,12 @@ class SourceController extends GetxController implements BaseService {
         ServicesType.extensions) {
       fetchHomePage();
     }
-    if (Get.context != null) {
-      checkForUpdates(Get.context!);
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(const Duration(seconds: 3), () {
+        unawaited(checkForUpdates());
+        unawaited(checkBridgeUpdate());
+      });
+    });
   }
 
   void _scheduleRebuild(ItemType type) {
@@ -281,6 +287,7 @@ class SourceController extends GetxController implements BaseService {
       _loadExtensionOrders();
       _restoreActiveSources();
       _refreshVisibility();
+      unawaited(checkForUpdates());
     } catch (e) {
       Logger.i('Error initializing extensions: $e');
     }
@@ -460,16 +467,16 @@ class SourceController extends GetxController implements BaseService {
 
   @override
   RxList<Widget> animeWidgets(BuildContext context) =>
-      [Obx(() => Column(children: _animeSections.value))].obs;
+      [Obx(() => Column(children: _animeSections))].obs;
 
   @override
   RxList<Widget> homeWidgets(BuildContext context) =>
-      [Obx(() => Column(children: _homeSections.value))].obs;
+      [Obx(() => Column(children: _homeSections))].obs;
 
   @override
   RxList<Widget> mangaWidgets(BuildContext context) => [
         Obx(() =>
-            Column(children: [..._mangaSections.value, ...novelSections.value]))
+            Column(children: [..._mangaSections, ...novelSections]))
       ].obs;
 
   @override
@@ -543,18 +550,67 @@ class SourceController extends GetxController implements BaseService {
         .toList();
   }
 
-  Future<void> checkForUpdates(BuildContext context) async {
-    try {
-      // await _bridge.checkForUpdates();
-      final updatesCount = [
-        ...availableExtensions,
-        ...availableMangaExtensions,
-        ...availableNovelExtensions
-      ].where((s) => (s.hasUpdate ?? false)).length;
+  bool isExtensionNewerVersion(String? installed, String? latest) {
+    if (installed == null || latest == null) return false;
+    if (installed.isEmpty || latest.isEmpty) return false;
 
-      if (updatesCount > 0) {
-        snackString("Updates available for $updatesCount extensions");
+    String clean(String v) => v.toLowerCase().replaceAll(RegExp(r'[^0-9.]'), '');
+    final installedClean = clean(installed);
+    final latestClean = clean(latest);
+
+    if (installedClean.isEmpty || latestClean.isEmpty) return false;
+
+    final installedParts = installedClean.split('.').map((e) => int.tryParse(e) ?? 0).toList();
+    final latestParts = latestClean.split('.').map((e) => int.tryParse(e) ?? 0).toList();
+
+    final maxLength = installedParts.length > latestParts.length
+        ? installedParts.length
+        : latestParts.length;
+
+    for (var index = 0; index < maxLength; index++) {
+      final installedPart = index < installedParts.length ? installedParts[index] : 0;
+      final latestPart = index < latestParts.length ? latestParts[index] : 0;
+
+      if (latestPart > installedPart) return true;
+      if (latestPart < installedPart) return false;
+    }
+    return false;
+  }
+
+  bool extensionHasUpdate(Source source) {
+    if (source.hasUpdate == true) return true;
+    final type = source.itemType;
+    if (type == null) return false;
+    final availableList = getAvailableExtensions(type);
+    final available = availableList.firstWhereOrNull((s) => s.id?.toString() == source.id?.toString());
+    if (available == null) return false;
+    return isExtensionNewerVersion(source.version, available.version);
+  }
+
+  Future<void> checkBridgeUpdate() async {
+    try {
+      final manager = PluginManager();
+      final latestRelease = await manager.fetchLatestRelease();
+      if (latestRelease != null) {
+        final installed = manager.installedVersion;
+        if (installed.isNotEmpty && manager.isNewerVersion(installed, latestRelease.tagName)) {
+          infoSnackBar("Extension Bridge has an update available (${latestRelease.tagName})", title: "Bridge Update Available");
+        }
       }
+    } catch (e) {
+      Logger.e('Error checking for bridge updates on startup: $e');
+    }
+  }
+
+  Future<void> checkForUpdates() async {
+    try {
+      final updatesCount = [
+        ...installedExtensions,
+        ...installedMangaExtensions,
+        ...installedNovelExtensions
+      ].where((s) => extensionHasUpdate(s)).length;
+
+      extensionUpdatesCount.value = updatesCount;
     } catch (e) {
       Logger.e('Error checking for updates: $e');
     }

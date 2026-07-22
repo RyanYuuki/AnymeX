@@ -68,7 +68,7 @@ class PlayerSettings {
     this.autoSkipFiller = false,
     this.enableScreenshot = true,
     this.playerMenuAnimation = true,
-    this.hardwareDecoder = 'hw',
+    this.hardwareDecoder = 'hw+',
     this.preferredSubtitleLanguage = 'none',
     this.videoOutput = 'gpu',
     this.audioOutput = 'auto',
@@ -162,14 +162,14 @@ String _normalizeHardwareDecoder(String value) {
     case 'sw':
       return value;
     default:
-      return 'hw';
+      return 'hw+';
   }
 }
 
 String _readHardwareDecoder() {
   final stored = PlayerSettingsKeys.hardwareDecoder.get<String>('');
   if (stored.isEmpty) {
-    return 'hw';
+    return 'hw+';
   }
   return _normalizeHardwareDecoder(stored);
 }

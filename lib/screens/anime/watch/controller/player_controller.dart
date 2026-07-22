@@ -5,8 +5,7 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
-import 'package:anymex/utils/torrent/torrent_url_detector.dart';
-import 'package:anymex/utils/torrent/torrent_stream_resolver.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
@@ -41,8 +40,7 @@ import 'package:anymex/utils/subtitle_translator.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_titlebar.dart';
 import 'package:anymex/widgets/non_widgets/anymex_toast.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:anymex_extension_runtime_bridge/ExtensionManager.dart';
-import 'package:anymex_extension_runtime_bridge/Models/DEpisode.dart' as d;
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart' as d;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

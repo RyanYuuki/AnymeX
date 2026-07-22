@@ -582,25 +582,37 @@ class _FilterScreenState extends State<FilterScreen> {
                             return SettingsSheet.show(context);
                           },
                           label: 'Profile',
-                          altIcon: CircleAvatar(
-                              radius: 24,
-                              backgroundColor: Theme.of(context)
-                                  .colorScheme
-                                  .surfaceContainer
-                                  .withValues(alpha: 0.3),
-                              child: authService.isLoggedIn.value
-                                  ? ClipRRect(
-                                      borderRadius: BorderRadius.circular(59),
-                                      child: AnymeXImage(
-                                          width: 40,
-                                          height: 40,
-                                          fit: BoxFit.cover,
-                                          radius: 0,
-                                          imageUrl: authService
-                                                  .profileData.value.avatar ??
-                                              ''),
-                                    )
-                                  : const Icon((IconlyBold.profile)))),
+                          altIcon: Obx(() {
+                            final count = Get.find<SourceController>().extensionUpdatesCount.value;
+                            final avatar = CircleAvatar(
+                                radius: 24,
+                                backgroundColor: Theme.of(context)
+                                    .colorScheme
+                                    .surfaceContainer
+                                    .withValues(alpha: 0.3),
+                                child: authService.isLoggedIn.value
+                                    ? ClipRRect(
+                                        borderRadius: BorderRadius.circular(59),
+                                        child: AnymeXImage(
+                                            width: 40,
+                                            height: 40,
+                                            fit: BoxFit.cover,
+                                            radius: 0,
+                                            imageUrl: authService
+                                                    .profileData.value.avatar ??
+                                                ''),
+                                      )
+                                    : const Icon((IconlyBold.profile)));
+                            if (count > 0) {
+                              return Badge(
+                                label: Text(count.toString()),
+                                backgroundColor: Theme.of(context).colorScheme.primary,
+                                textColor: Theme.of(context).colorScheme.onPrimary,
+                                child: avatar,
+                              );
+                            }
+                            return avatar;
+                          })),
                       for (final tab in navTabs)
                         _getNavItemForTab(tab, isSimkl, _onItemTapped),
                     ],

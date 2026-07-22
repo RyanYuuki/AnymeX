@@ -241,11 +241,8 @@ class BottomControls extends StatelessWidget {
         List<String>.from(decodedConfig['rightButtonIds'] ?? []);
     final Map<String, dynamic> buttonConfigs =
         Map<String, dynamic>.from(decodedConfig['buttonConfigs'] ?? {});
-
     bool isVisible(String id) =>
         (buttonConfigs[id]?['visible'] as bool?) ?? true;
-
-    final serverCount = controller.episodeTracks.length;
 
     final Map<String, Widget> buttonWidgets = {
       'playlist': ControlButton(
@@ -339,10 +336,7 @@ class BottomControls extends StatelessWidget {
 
       for (var id in ids) {
         if (!isVisible(id)) continue;
-        if (id == 'source' &&
-            (controller.isOffline.value ||
-                (serverCount <= 1 &&
-                    controller.getCurrentStreamSubtitleOptions().isEmpty)))
+        if (id == 'source' && controller.isOffline.value)
           continue;
         if (id == 'tracks' &&
             (controller.embeddedAudioTracks.value.isEmpty &&
