@@ -182,6 +182,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final RxDouble playbackSpeed = 1.0.obs;
   double _sessionSpeed = 1.0;
   final RxBool isBuffering = false.obs;
+  bool _isTorrentBuffering = false;
   final RxBool isPlaying = false.obs;
   final RxBool showControls = true.obs;
   final RxBool isSeeking = false.obs;
@@ -542,7 +543,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   @override
   void onClose() {
-    _deactivateMediaSession();
+    WidgetsBinding.instance.removeObserver(this);
     PipController.setAutoEnter(enabled: false);
     _accelerometerSub?.cancel();
     delete();
@@ -955,12 +956,16 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     } catch (_) {}
 
     if (isTorrentUrl(url)) {
+      _isTorrentBuffering = true;
+      isBuffering.value = true;
       try {
         Logger.i('Torrent URL detected from extension, resolving stream...');
         final resolved = await TorrentStreamResolver.resolve(url, episode: episodeNum);
         url = resolved.streamUrl;
         Logger.i('Torrent stream resolved: $url');
       } catch (e) {
+        _isTorrentBuffering = false;
+        isBuffering.value = false;
         Logger.e('Failed to resolve torrent stream: $e');
         snackBar('Failed to start torrent stream: $e');
         return;
@@ -1076,6 +1081,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       currentEpisode.value.durationInMilliseconds =
           episodeDuration.value.inMilliseconds;
 
+      if (_isTorrentBuffering && pos.inMilliseconds > 500) {
+        _isTorrentBuffering = false;
+        isBuffering.value = _basePlayer.state.isBuffering;
+      }
+
       if (_shouldMarkAsCompleted && !isOffline.value) {
         _trackOnline(true);
       }
@@ -1130,7 +1140,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     _playerSubscriptions.add(_basePlayer.bufferingStream.listen((e) {
       if (_isReloadingPlayer.value) return;
-      isBuffering.value = e;
+      if (_isTorrentBuffering) {
+        isBuffering.value = true;
+      } else {
+        isBuffering.value = e;
+      }
     }));
 
     _playerSubscriptions.add(_basePlayer.tracksStream.listen((e) {
@@ -1698,6 +1712,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
 
     if (isTorrentUrl(url)) {
+      _isTorrentBuffering = true;
+      isBuffering.value = true;
       try {
         Logger.i('Torrent URL detected (switch), resolving stream...');
         final episodeNum = currentEpisode.value.number;
@@ -1705,6 +1721,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         url = resolved.streamUrl;
         Logger.i('Torrent stream resolved: $url');
       } catch (e) {
+        _isTorrentBuffering = false;
+        isBuffering.value = false;
         Logger.e('Failed to resolve torrent stream: $e');
         snackBar('Failed to start torrent stream: $e');
         return;
@@ -1752,7 +1770,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
 
     _revertOrientations();
-    WidgetsBinding.instance.removeObserver(this);
     if (!isOffline.value) {
       DiscordRPCController.instance.updateMediaPresence(media: anilistData);
     }
