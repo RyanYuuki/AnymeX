@@ -40,9 +40,9 @@ android {
         jniLibs {
             useLegacyPackaging true
         }
-        resources {
-            exclude 'META-INF/versions/9/OSGI-INF/MANIFEST.MF'
-        }
+        // resources {
+        //     exclude 'META-INF/versions/9/OSGI-INF/MANIFEST.MF'
+        // }
     }
 
     signingConfigs {
@@ -64,7 +64,7 @@ android {
             signingConfig = signingConfigs.release
             minifyEnabled true
             shrinkResources true
-            // proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
 
         debug {

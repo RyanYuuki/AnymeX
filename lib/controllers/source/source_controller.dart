@@ -461,7 +461,7 @@ class SourceController extends GetxController implements BaseService {
     if (type == null) return;
 
     final managerId = getSourceManager(source).id;
-    await _bridge.refreshManagerType(managerId, type);
+    await _bridge.refreshManagerType(managerId, type, refreshAvailableSource: false);
     await initExtensions();
   }
 
