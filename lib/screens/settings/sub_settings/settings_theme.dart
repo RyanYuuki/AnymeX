@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math' as math;
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:anymex/constants/contants.dart';
 import 'package:anymex/controllers/settings/settings.dart';
@@ -965,26 +966,302 @@ class _SettingsThemeState extends State<SettingsTheme> {
     );
   }
 
+  void handleCustomColorSelection(Color color) {
+    setState(() {
+      selectedColorIndex = -1;
+    });
+    Provider.of<ThemeProvider>(context, listen: false)
+        .setCustomSeedColor(-1, customColor: color);
+  }
+
+  void _showCustomColorPicker() {
+    final provider = Provider.of<ThemeProvider>(context, listen: false);
+    String initialHex = ThemeKeys.customHexColor.get<String>("#FFFFFF");
+    final controller = TextEditingController(text: initialHex);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        Color previewColor = Color(int.parse(initialHex.replaceFirst('#', '0xff')));
+        HSVColor hsv = HSVColor.fromColor(previewColor);
+        double hue = hsv.hue;
+        double saturation = hsv.saturation;
+        double value = hsv.value;
+
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            bool isValid = true;
+            try {
+              final hex = controller.text.trim();
+              final normalized = hex.startsWith('#') ? hex.replaceFirst('#', '0xff') : '0xff$hex';
+              previewColor = Color(int.parse(normalized));
+              final newHsv = HSVColor.fromColor(previewColor);
+              hue = newHsv.hue;
+              saturation = newHsv.saturation;
+              value = newHsv.value;
+            } catch (_) {
+              isValid = false;
+            }
+
+            void updateColorFromSliders() {
+              previewColor = HSVColor.fromAHSV(1.0, hue, saturation, value).toColor();
+              final hexStr = '#${previewColor.value.toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}';
+              controller.value = TextEditingValue(
+                text: hexStr,
+                selection: TextSelection.collapsed(offset: hexStr.length),
+              );
+              isValid = true;
+            }
+
+            return Dialog(
+              backgroundColor: context.colors.surface,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Container(
+                width: getResponsiveValue(context, mobileValue: null, desktopValue: 400.0),
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Custom Color Picker',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                    ),
+                    const SizedBox(height: 16),
+                    Center(
+                      child: Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          color: isValid ? previewColor : Colors.grey,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: (isValid ? previewColor : Colors.grey).withOpacity(0.4),
+                              blurRadius: 12,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        ),
+                        child: !isValid
+                            ? const Icon(Icons.error_outline, color: Colors.white, size: 30)
+                            : null,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    const Text(
+                      'Hue',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                    ),
+                    const SizedBox(height: 6),
+                    Container(
+                      height: 12,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(6),
+                        gradient: const LinearGradient(
+                          colors: [
+                            Colors.red,
+                            Colors.yellow,
+                            Colors.green,
+                            Colors.cyan,
+                            Colors.blue,
+                            Colors.purple,
+                            Colors.red,
+                          ],
+                        ),
+                      ),
+                      child: SliderTheme(
+                        data: SliderTheme.of(context).copyWith(
+                          activeTrackColor: Colors.transparent,
+                          inactiveTrackColor: Colors.transparent,
+                          trackHeight: 12,
+                          thumbColor: Colors.white,
+                        ),
+                        child: Slider(
+                          value: hue,
+                          min: 0.0,
+                          max: 360.0,
+                          onChanged: (val) {
+                            setDialogState(() {
+                              hue = val;
+                              updateColorFromSliders();
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    const Text(
+                      'Saturation',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                    ),
+                    const SizedBox(height: 6),
+                    Container(
+                      height: 12,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(6),
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.white,
+                            HSVColor.fromAHSV(1.0, hue, 1.0, 1.0).toColor(),
+                          ],
+                        ),
+                      ),
+                      child: SliderTheme(
+                        data: SliderTheme.of(context).copyWith(
+                          activeTrackColor: Colors.transparent,
+                          inactiveTrackColor: Colors.transparent,
+                          trackHeight: 12,
+                          thumbColor: Colors.white,
+                        ),
+                        child: Slider(
+                          value: saturation,
+                          min: 0.0,
+                          max: 1.0,
+                          onChanged: (val) {
+                            setDialogState(() {
+                              saturation = val;
+                              updateColorFromSliders();
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    const Text(
+                      'Lightness',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                    ),
+                    const SizedBox(height: 6),
+                    Container(
+                      height: 12,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(6),
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.black,
+                            HSVColor.fromAHSV(1.0, hue, saturation, 1.0).toColor(),
+                          ],
+                        ),
+                      ),
+                      child: SliderTheme(
+                        data: SliderTheme.of(context).copyWith(
+                          activeTrackColor: Colors.transparent,
+                          inactiveTrackColor: Colors.transparent,
+                          trackHeight: 12,
+                          thumbColor: Colors.white,
+                        ),
+                        child: Slider(
+                          value: value,
+                          min: 0.0,
+                          max: 1.0,
+                          onChanged: (val) {
+                            setDialogState(() {
+                              value = val;
+                              updateColorFromSliders();
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    TextField(
+                      controller: controller,
+                      decoration: InputDecoration(
+                        labelText: 'Hex Color Code',
+                        hintText: '#3F51B5 or 3F51B5',
+                        errorText: isValid ? null : 'Invalid Hex color code',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onChanged: (val) {
+                        setDialogState(() {});
+                      },
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: const Text('Cancel'),
+                        ),
+                        const SizedBox(width: 8),
+                        ElevatedButton(
+                          onPressed: isValid
+                              ? () {
+                                  Navigator.of(context).pop();
+                                  handleCustomColorSelection(previewColor);
+                                }
+                              : null,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: context.colors.primary,
+                            foregroundColor: context.colors.onPrimary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          child: const Text('Confirm'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   Widget _buildColorTemplates() {
     return GridView.builder(
       shrinkWrap: true,
       scrollDirection: Axis.vertical,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: colorMap.length,
+      itemCount: colorMap.length + 1,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: getResponsiveCrossAxisCount(context),
           mainAxisExtent: 150,
           crossAxisSpacing: 10,
           mainAxisSpacing: 10),
       itemBuilder: (context, index) {
-        final theme = colorMap.entries.toList()[index];
-        bool isSelected = selectedColorIndex == index;
-        final ColorScheme colorScheme = ColorScheme.fromSeed(
-            seedColor: theme.value, brightness: Theme.of(context).brightness);
+        final Color customColor;
+        final String label;
+        final bool isSelected;
+        final ColorScheme colorScheme;
+
+        if (index == 0) {
+          final hexStr = ThemeKeys.customHexColor.get<String>("#FFFFFF");
+          customColor = Color(int.parse(hexStr.replaceFirst('#', '0xff')));
+          label = "Custom";
+          isSelected = selectedColorIndex == -1;
+          colorScheme = ColorScheme.fromSeed(
+              seedColor: customColor, brightness: Theme.of(context).brightness);
+        } else {
+          final themeIndex = index - 1;
+          final theme = colorMap.entries.toList()[themeIndex];
+          customColor = theme.value;
+          label = theme.key;
+          isSelected = selectedColorIndex == themeIndex;
+          colorScheme = ColorScheme.fromSeed(
+              seedColor: customColor, brightness: Theme.of(context).brightness);
+        }
 
         return GestureDetector(
           onTap: () {
-            handleColorSelection(index);
+            if (index == 0) {
+              if (!isSelected) {
+                handleColorSelection(-1);
+              }
+              _showCustomColorPicker();
+            } else {
+              handleColorSelection(index - 1);
+            }
           },
           child: Column(
             children: [
@@ -1031,7 +1308,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                             width: 300,
                             padding: const EdgeInsets.only(left: 10, top: 5),
                             decoration: BoxDecoration(
-                              color: theme.value.withAlpha(140),
+                              color: customColor,
                               borderRadius: BorderRadius.circular(12),
                             ),
                             alignment: Alignment.center,
@@ -1113,37 +1390,43 @@ class _SettingsThemeState extends State<SettingsTheme> {
                       Positioned(
                           top: 10,
                           left: 10,
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 10,
-                                height: 10,
-                                margin:
-                                    const EdgeInsets.symmetric(horizontal: 2),
-                                decoration: BoxDecoration(
-                                    color: Colors.red,
-                                    borderRadius: BorderRadius.circular(50)),
-                              ),
-                              Container(
-                                width: 10,
-                                height: 10,
-                                margin:
-                                    const EdgeInsets.symmetric(horizontal: 2),
-                                decoration: BoxDecoration(
-                                    color: Colors.yellow,
-                                    borderRadius: BorderRadius.circular(50)),
-                              ),
-                              Container(
-                                width: 10,
-                                height: 10,
-                                margin:
-                                    const EdgeInsets.symmetric(horizontal: 2),
-                                decoration: BoxDecoration(
-                                    color: Colors.green,
-                                    borderRadius: BorderRadius.circular(50)),
-                              ),
-                            ],
-                          )),
+                          child: index == 0
+                              ? Icon(
+                                  Icons.color_lens_outlined,
+                                  size: 14,
+                                  color: context.colors.onSurface,
+                                )
+                              : Row(
+                                  children: [
+                                    Container(
+                                      width: 10,
+                                      height: 10,
+                                      margin:
+                                          const EdgeInsets.symmetric(horizontal: 2),
+                                      decoration: BoxDecoration(
+                                          color: Colors.red,
+                                          borderRadius: BorderRadius.circular(50)),
+                                    ),
+                                    Container(
+                                      width: 10,
+                                      height: 10,
+                                      margin:
+                                          const EdgeInsets.symmetric(horizontal: 2),
+                                      decoration: BoxDecoration(
+                                          color: Colors.yellow,
+                                          borderRadius: BorderRadius.circular(50)),
+                                    ),
+                                    Container(
+                                      width: 10,
+                                      height: 10,
+                                      margin:
+                                          const EdgeInsets.symmetric(horizontal: 2),
+                                      decoration: BoxDecoration(
+                                          color: Colors.green,
+                                          borderRadius: BorderRadius.circular(50)),
+                                    ),
+                                  ],
+                                )),
                       AnimatedPositioned(
                         bottom: 0,
                         right: 0,
@@ -1170,7 +1453,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
               ),
               const SizedBox(height: 10),
               Text(
-                theme.key,
+                label,
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ],

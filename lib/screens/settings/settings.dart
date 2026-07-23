@@ -1,4 +1,5 @@
 import 'package:anymex/screens/downloads/download_screen.dart';
+import 'package:anymex/screens/onboarding/welcome_dialog.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/screens/settings/search/settings_registry.dart';
 import 'package:anymex/screens/settings/search/settings_search_icons.dart';
@@ -290,16 +291,17 @@ class _SettingsPageState extends State<SettingsPage> {
           description: "About the App",
           destination: () => const AboutPage(),
           addDividerAbove: true),
-      _CategoryItem(
-        icon: HugeIcons.strokeRoundedInformationCircle,
-        title: "Test",
-        description: "Debug extensions",
-        isDebugOnly: true,
-        addDividerAbove: true,
-        customTap: () async {
-          print('HELOOO');
-        },
-      ),
+      if (kDebugMode)
+        _CategoryItem(
+          icon: HugeIcons.strokeRoundedInformationCircle,
+          title: "Test",
+          description: "Debug extensions",
+          isDebugOnly: true,
+          addDividerAbove: true,
+          customTap: () async {
+            showWelcomeDialogg(context);
+          },
+        ),
     ];
 
     final widgets = <Widget>[];
