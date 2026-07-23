@@ -70,6 +70,7 @@ class _HomePageState extends State<HomePage> {
   Widget _buildContinueWatchingSection(
       OfflineStorageController offlineStorageController) {
     return StreamBuilder<List<OfflineMedia>>(
+      initialData: offlineStorageController.getAnimeLibrarySync(),
       stream: _animeLibraryStream,
       builder: (context, snapshot) {
         final historyData = (snapshot.data ?? const <OfflineMedia>[])

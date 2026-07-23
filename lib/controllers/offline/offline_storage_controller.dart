@@ -98,6 +98,27 @@ class OfflineStorageController extends GetxController {
         .watch(fireImmediately: true);
   }
 
+  List<OfflineMedia> getAnimeLibrarySync() {
+    return isar.offlineMedias
+        .filter()
+        .mediaTypeIndexEqualTo(1)
+        .findAllSync();
+  }
+
+  List<OfflineMedia> getMangaLibrarySync() {
+    return isar.offlineMedias
+        .filter()
+        .mediaTypeIndexEqualTo(0)
+        .findAllSync();
+  }
+
+  List<OfflineMedia> getNovelLibrarySync() {
+    return isar.offlineMedias
+        .filter()
+        .mediaTypeIndexEqualTo(2)
+        .findAllSync();
+  }
+
   Stream<OfflineMedia?> watchMediaById(String mediaId) {
     return isar.offlineMedias
         .filter()
