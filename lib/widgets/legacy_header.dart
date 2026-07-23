@@ -41,7 +41,7 @@ class Header extends StatelessWidget {
   Widget build(BuildContext context) {
     final profileData = Get.find<ServiceHandler>();
     final greetingController = Get.find<GreetingController>();
-    return Obx(() {
+    return Builder(builder: (ctx) {
       if (type != PageType.home) {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -120,7 +120,8 @@ class Header extends StatelessWidget {
                     ],
                   ],
                 ),
-              ] else if (profileData.serviceType.value == ServicesType.extensions) ...[
+              ] else if (profileData.serviceType.value ==
+                  ServicesType.extensions) ...[
                 AnymexOnTap(
                     child: CircleAvatar(
                   radius: 24,
@@ -159,9 +160,8 @@ class Header extends StatelessWidget {
                               onPressed: () {
                                 final hasNovelExts = sourceController
                                     .installedNovelExtensions.isNotEmpty;
-                                final isSimkl =
-                                    profileData.serviceType.value ==
-                                        ServicesType.simkl;
+                                final isSimkl = profileData.serviceType.value ==
+                                    ServicesType.simkl;
                                 if (type == PageType.manga) {
                                   if (isSimkl) {
                                     navigate(() => const SearchPage(
@@ -181,7 +181,7 @@ class Header extends StatelessWidget {
                                 } else {
                                   navigate(() => const SearchPage(
                                         searchTerm: '',
-                                    isManga: false,
+                                        isManga: false,
                                       ));
                                 }
                               },
@@ -285,7 +285,8 @@ class Header extends StatelessWidget {
           }
         },
         child: Obx(() {
-          final count = Get.find<SourceController>().extensionUpdatesCount.value;
+          final count =
+              Get.find<SourceController>().extensionUpdatesCount.value;
           final avatar = CircleAvatar(
             radius: 24,
             backgroundColor: context.colors.secondaryContainer.opaque(0.50),

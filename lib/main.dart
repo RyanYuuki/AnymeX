@@ -526,8 +526,8 @@ class _FilterScreenState extends State<FilterScreen> {
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
 
-        final navigator = Navigator.of(context);
-        if (navigator.canPop()) {
+        final navigator = Get.key.currentState;
+        if (navigator != null && navigator.canPop()) {
           navigator.pop();
           return;
         }
