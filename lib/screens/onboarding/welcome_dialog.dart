@@ -1,12 +1,12 @@
 import 'dart:io';
 
 import 'package:anymex/database/data_keys/keys.dart';
-import 'package:anymex/controllers/settings/settings.dart';
-import 'package:anymex/screens/settings/sub_settings/settings_accounts.dart';
+import 'package:anymex/screens/extensions/ExtensionScreen.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -93,7 +93,6 @@ void showWelcomeDialogg(BuildContext context) {
     barrierDismissible: true,
     barrierLabel: "Welcome To AnymeX",
     pageBuilder: (context, animation1, animation2) {
-      final settings = Get.find<Settings>();
       final RxBool storagePermissionGranted = false.obs;
       final RxBool installPermissionGranted = false.obs;
 
@@ -114,25 +113,29 @@ void showWelcomeDialogg(BuildContext context) {
       }
 
       return Obx(() {
+        storagePermissionGranted.value;
         return Material(
           color: context.colors.surface,
           child: Center(
             child: Container(
               width: getResponsiveSize(context,
-                  mobileSize: MediaQuery.of(context).size.width - 20,
-                  desktopSize: MediaQuery.of(context).size.width * 0.4),
+                  mobileSize: MediaQuery.of(context).size.width - 24,
+                  desktopSize: MediaQuery.of(context).size.width * 0.42),
               constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(context).size.height *
-                    0.8, // Limit max height
+                maxHeight: MediaQuery.of(context).size.height * 0.85,
               ),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surfaceContainer,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: context.colors.outline.withOpacity(0.12),
+                  width: 1,
+                ),
                 boxShadow: const [
                   BoxShadow(
-                    color: Colors.black54,
-                    blurRadius: 8,
-                    offset: Offset(0, 4),
+                    color: Colors.black38,
+                    blurRadius: 16,
+                    offset: Offset(0, 8),
                   ),
                 ],
               ),
@@ -140,84 +143,113 @@ void showWelcomeDialogg(BuildContext context) {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
-                    height: 50,
-                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 18, horizontal: 20),
                     decoration: BoxDecoration(
                       borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(24),
-                          topRight: Radius.circular(24)),
-                      color: context.colors.surfaceContainer,
-                    ),
-                    child: const Center(
-                      child: Text(
-                        'Welcome To AnymeX',
-                        style: TextStyle(fontFamily: 'Poppins-SemiBold'),
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20),
                       ),
+                      color: context.colors.surfaceContainerHigh,
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: context.colors.primary.withOpacity(0.12),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const AnymeXAnimatedLogo(
+                            size: 40,
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Welcome to AnymeX',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins-SemiBold',
+                                  fontSize: 18,
+                                  color: context.colors.onSurface,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                'Set up your preferences for the best experience',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: context.colors.onSurfaceVariant
+                                      .withOpacity(0.8),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   Flexible(
                     child: SingleChildScrollView(
-                      padding: const EdgeInsets.all(6.0),
+                      padding: const EdgeInsets.all(12.0),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          CustomSwitchTile(
-                              icon: HugeIcons.strokeRoundedCpu,
-                              title: "Performance Mode",
-                              description:
-                                  "Disable Animations to get smoother experience",
-                              switchValue: !settings.enableAnimation,
-                              onChanged: (val) {
-                                settings.enableAnimation = !val;
-                              }),
-                          CustomSwitchTile(
-                              icon: HugeIcons.strokeRoundedBounceRight,
-                              title: "Disable Gradient",
-                              description:
-                                  "Disable Gradient, might give you smoother experience",
-                              switchValue: settings.disableGradient,
-                              onChanged: (val) {
-                                settings.disableGradient = val;
-                              }),
-                          if (Platform.isAndroid) ...[
-                            CustomSwitchTile(
-                                icon: HugeIcons.strokeRoundedFolderSecurity,
-                                title: "Storage Permission",
-                                description:
-                                    "Allow storage access to download updates",
-                                switchValue: storagePermissionGranted.value,
-                                onChanged: (val) {
-                                  if (val) {
-                                    requestStoragePermission();
-                                  }
-                                }),
-                            CustomSwitchTile(
-                                icon: HugeIcons.strokeRoundedDownload01,
-                                title: "Install Permission",
-                                description:
-                                    "Allow installing updates for the app",
-                                switchValue: installPermissionGranted.value,
-                                onChanged: (val) {
-                                  if (val) {
-                                    requestInstallPermission();
-                                  }
-                                }),
-                          ],
                           CustomTile(
+                            icon: HugeIcons.strokeRoundedUserCheck01,
+                            title: 'Choose Service / Tracker',
                             description:
-                                'Change Service to whichever you prefer! like AL, MAL, Simkl',
-                            icon: HugeIcons.strokeRoundedAiSetting,
-                            title: 'Change Service',
+                                'Select AniList, MyAnimeList, Simkl, or Extensions mode',
                             onTap: () {
                               SettingsSheet().showServiceSelector(context);
                             },
                           ),
-                          if (Platform.isAndroid)
-                            CustomTile(
+                          const SizedBox(height: 6),
+                          CustomTile(
+                            icon: HugeIcons.strokeRoundedPuzzle,
+                            title: 'Extensions & Repositories',
+                            description:
+                                'Manage sources and repositories to use the app to its full potential',
+                            onTap: () {
+                              navigate(() => const ExtensionScreen());
+                            },
+                          ),
+                          const SizedBox(height: 6),
+                          if (Platform.isAndroid) ...[
+                            CustomSwitchTile(
+                              icon: HugeIcons.strokeRoundedFolderSecurity,
+                              title: "Storage Permission",
                               description:
-                                  'Open app settings to allow AnymeX to open supported links',
+                                  "Allow storage access to download app & extension updates",
+                              switchValue: storagePermissionGranted.value,
+                              onChanged: (val) {
+                                if (val) {
+                                  requestStoragePermission();
+                                }
+                              },
+                            ),
+                            const SizedBox(height: 6),
+                            CustomSwitchTile(
+                              icon: HugeIcons.strokeRoundedDownload01,
+                              title: "Install Permission",
+                              description:
+                                  "Allow installing updates for extensions and app",
+                              switchValue: installPermissionGranted.value,
+                              onChanged: (val) {
+                                if (val) {
+                                  requestInstallPermission();
+                                }
+                              },
+                            ),
+                            const SizedBox(height: 6),
+                            CustomTile(
                               icon: Icons.link_rounded,
-                              title: 'Open Link Settings',
+                              title: 'Open Supported Links',
+                              description:
+                                  'Allow AnymeX to automatically open anime & manga web links',
                               onTap: () async {
                                 bool opened = false;
                                 try {
@@ -240,79 +272,38 @@ void showWelcomeDialogg(BuildContext context) {
                                 }
                               },
                             ),
-                          Container(
-                            height: 50,
-                            padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12)),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                        backgroundColor: Theme.of(context)
-                                            .colorScheme
-                                            .surfaceContainerHighest,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(12))),
-                                    onPressed: () {
-                                      General.isFirstTime.set(false);
-                                      Navigator.of(context).pop();
-                                      navigate(() => const SettingsAccounts());
-                                    },
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          'Login',
-                                          style: TextStyle(
-                                              fontFamily: 'Poppins-SemiBold',
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .inverseSurface),
-                                        ),
-                                        const Spacer(),
-                                        _buildIcon(context, 'anilist-icon.png'),
-                                        _buildIcon(context, 'mal-icon.png'),
-                                        _buildIcon(context, 'simkl-icon.png'),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                ElevatedButton.icon(
-                                  style: ElevatedButton.styleFrom(
-                                      backgroundColor: Theme.of(context)
-                                          .colorScheme
-                                          .surfaceContainerHighest,
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(12))),
-                                  onPressed: () {
-                                    General.isFirstTime.set(false);
-                                    Get.back();
-                                  },
-                                  label: Text(
-                                    'Skip',
-                                    style: TextStyle(
-                                        fontFamily: 'Poppins-SemiBold',
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .inverseSurface),
-                                  ),
-                                  icon: Icon(IconlyBold.arrowRight,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .inverseSurface),
-                                  iconAlignment: IconAlignment.end,
-                                ),
-                              ],
-                            ),
-                          ),
+                          ],
                         ],
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(14.0),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 48,
+                      child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: context.colors.primary,
+                          foregroundColor: context.colors.onPrimary,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        onPressed: () {
+                          General.isFirstTime.set(false);
+                          Navigator.of(context).pop();
+                        },
+                        label: const Text(
+                          'Get Started',
+                          style: TextStyle(
+                            fontFamily: 'Poppins-SemiBold',
+                            fontSize: 15,
+                          ),
+                        ),
+                        icon: const Icon(IconlyBold.arrowRight, size: 18),
+                        iconAlignment: IconAlignment.end,
                       ),
                     ),
                   ),
@@ -323,19 +314,5 @@ void showWelcomeDialogg(BuildContext context) {
         );
       });
     },
-  );
-}
-
-Widget _buildIcon(BuildContext context, String url) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 4.0),
-    child: CircleAvatar(
-      radius: 11,
-      backgroundColor: Colors.transparent,
-      child: Image.asset(
-        'assets/images/$url',
-        color: context.colors.primary,
-      ),
-    ),
   );
 }
