@@ -66,7 +66,7 @@ class PlayerSettings {
     this.subtitleBottomMargin = 10.0,
     this.subtitleOutlineType = "Outline",
     this.autoSkipFiller = false,
-    this.enableScreenshot = true,
+    this.enableScreenshot = false,
     this.playerMenuAnimation = true,
     this.hardwareDecoder = 'hw+',
     this.preferredSubtitleLanguage = 'none',

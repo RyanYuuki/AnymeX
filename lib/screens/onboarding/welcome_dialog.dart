@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:url_launcher/url_launcher.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/extensions/ExtensionScreen.dart';
 import 'package:anymex/utils/function.dart';
@@ -215,6 +217,30 @@ void showWelcomeDialogg(BuildContext context) {
                                 'Manage sources and repositories to use the app to its full potential',
                             onTap: () {
                               navigate(() => const ExtensionScreen());
+                            },
+                          ),
+                          const SizedBox(height: 6),
+                          CustomTile(
+                            icon: HugeIcons.strokeRoundedDiscord,
+                            title: 'Join Discord Community',
+                            description:
+                                'Propose new features, report bugs, and chat with other members',
+                            onTap: () async {
+                              final url = Get.find<Settings>().discordUrl.value;
+                              await launchUrl(Uri.parse(url),
+                                  mode: LaunchMode.externalApplication);
+                            },
+                          ),
+                          const SizedBox(height: 6),
+                          CustomTile(
+                            icon: HugeIcons.strokeRoundedTelegram,
+                            title: 'Join Telegram Channel',
+                            description:
+                                'Stay updated with the latest releases, announcements, and discussions',
+                            onTap: () async {
+                              final url = Get.find<Settings>().telegramUrl.value;
+                              await launchUrl(Uri.parse(url),
+                                  mode: LaunchMode.externalApplication);
                             },
                           ),
                           const SizedBox(height: 6),

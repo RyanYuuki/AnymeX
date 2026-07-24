@@ -377,9 +377,6 @@ class Settings extends GetxController {
       final List<dynamic> list = jsonDecode(raw);
       final strings = list.map((e) => e.toString()).toList();
       if (strings.isNotEmpty) {
-        if (isDesktop && !strings.contains('Extensions')) {
-          strings.add('Extensions');
-        }
         return strings;
       }
     } catch (_) {}

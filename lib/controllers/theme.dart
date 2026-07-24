@@ -125,7 +125,9 @@ class ThemeProvider extends ChangeNotifier {
   }
 
   void syncStatusBar() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    final enableImmersive = UISettingsKeys.enableImmersiveMode.get<bool>(false);
+    SystemChrome.setEnabledSystemUIMode(
+        enableImmersive ? SystemUiMode.immersiveSticky : SystemUiMode.edgeToEdge);
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
         systemNavigationBarColor: Colors.transparent,
         systemNavigationBarContrastEnforced: false,
