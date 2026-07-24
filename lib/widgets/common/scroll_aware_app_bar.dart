@@ -51,8 +51,10 @@ class _CustomAnimatedAppBarState extends State<CustomAnimatedAppBar>
   void initState() {
     super.initState();
 
-    _isAtTopNotifier = ValueNotifier<bool>(
-        (widget.scrollController?.offset ?? 0.0) <= widget.scrollThreshold);
+    final bool isAtTopInitial = widget.scrollController != null && widget.scrollController!.hasClients
+        ? widget.scrollController!.offset <= widget.scrollThreshold
+        : true;
+    _isAtTopNotifier = ValueNotifier<bool>(isAtTopInitial);
 
     _getEffectiveIsVisibleNotifier().addListener(_updateSystemOverlayStyle);
 

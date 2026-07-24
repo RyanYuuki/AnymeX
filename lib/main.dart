@@ -423,18 +423,8 @@ class _FilterScreenState extends State<FilterScreen> {
   }
 
   List<String> _getNavTabs(ServiceHandler authService, Settings settings) {
-    if (authService.serviceType.value == ServicesType.extensions) {
-      return ['Library', 'Anime', 'Manga', 'Novel', 'Extensions'];
-    }
-    final rawTabs = settings.navigationTabOrder;
-    final isDesktop = MediaQuery.of(context).size.width > 600;
-    if (!isDesktop) {
-      return rawTabs.where((t) => t != 'Extensions').toList();
-    }
-    if (!rawTabs.contains('Extensions')) {
-      return [...rawTabs, 'Extensions'];
-    }
-    return rawTabs;
+    settings.uiSettings.value;
+    return settings.navigationTabOrder;
   }
 
   Widget _getWidgetForTab(String tabKey) {
@@ -450,7 +440,7 @@ class _FilterScreenState extends State<FilterScreen> {
       case 'Library':
         return const MyLibrary();
       case 'Extensions':
-        return const ExtensionScreen(disableGlow: true);
+        return const ExtensionScreen(disableGlow: true, isTabScreen: true);
       default:
         return const HomePage();
     }
@@ -510,7 +500,6 @@ class _FilterScreenState extends State<FilterScreen> {
     }
   }
 
-  DateTime? _lastBackPressTime;
 
   @override
   void dispose() {
@@ -521,38 +510,16 @@ class _FilterScreenState extends State<FilterScreen> {
   @override
   Widget build(BuildContext context) {
     final authService = Get.put(ServiceHandler());
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) {
-        if (didPop) return;
-
-        final navigator = Get.key.currentState;
-        if (navigator != null && navigator.canPop()) {
-          navigator.pop();
-          return;
-        }
-
-        final now = DateTime.now();
-        if (_lastBackPressTime == null ||
-            now.difference(_lastBackPressTime!) > const Duration(seconds: 2)) {
-          _lastBackPressTime = now;
-          snackBar('Press back again to close', duration: 2000);
-        } else {
-          SystemNavigator.pop();
-        }
-      },
-      child: Glow(
-        child: PlatformBuilder(
-          strictMode: false,
-          desktopBuilder: _buildDesktopLayout(context, authService),
-          androidBuilder: _buildAndroidLayout(authService),
-        ),
+    return Glow(
+      child: PlatformBuilder(
+        strictMode: false,
+        desktopBuilder: _buildDesktopLayout(context, authService),
+        androidBuilder: _buildAndroidLayout(authService),
       ),
     );
   }
 
-  Widget _buildDesktopLayout(
-      BuildContext context, ServiceHandler authService) {
+  Widget _buildDesktopLayout(BuildContext context, ServiceHandler authService) {
     final settings = Get.find<Settings>();
     return Scaffold(
       extendBody: true,
@@ -566,59 +533,64 @@ class _FilterScreenState extends State<FilterScreen> {
             final isSimkl = authService.serviceType.value == ServicesType.simkl;
             final navTabs = _getNavTabs(authService, settings);
             return SizedBox(
-              width: 120,
-              child: SuperListView(
-                children: [
-                  ResponsiveNavBar(
-                    isDesktop: true,
-                    currentIndex: _selectedIndex.clamp(0, navTabs.length),
-                    margin: const EdgeInsets.fromLTRB(20, 18, 15, 10),
-                    borderRadius: BorderRadius.circular(50),
-                    items: [
-                      NavItem(
-                          unselectedIcon: IconlyBold.profile,
-                          selectedIcon: IconlyBold.profile,
-                          onTap: (index) {
-                            return SettingsSheet.show(context);
-                          },
-                          label: 'Profile',
-                          altIcon: Obx(() {
-                            final count = Get.find<SourceController>().extensionUpdatesCount.value;
-                            final avatar = CircleAvatar(
-                                radius: 24,
-                                backgroundColor: Theme.of(context)
-                                    .colorScheme
-                                    .surfaceContainer
-                                    .withValues(alpha: 0.3),
-                                child: authService.isLoggedIn.value
-                                    ? ClipRRect(
-                                        borderRadius: BorderRadius.circular(59),
-                                        child: AnymeXImage(
-                                            width: 40,
-                                            height: 40,
-                                            fit: BoxFit.cover,
-                                            radius: 0,
-                                            imageUrl: authService
-                                                    .profileData.value.avatar ??
-                                                ''),
-                                      )
-                                    : const Icon((IconlyBold.profile)));
-                            if (count > 0) {
-                              return Badge(
-                                label: Text(count.toString()),
-                                backgroundColor: Theme.of(context).colorScheme.primary,
-                                textColor: Theme.of(context).colorScheme.onPrimary,
-                                child: avatar,
-                              );
-                            }
-                            return avatar;
-                          })),
-                      for (final tab in navTabs)
-                        _getNavItemForTab(tab, isSimkl, _onItemTapped),
-                    ],
-                  ),
-                ],
-              ));
+                width: 120,
+                child: SuperListView(
+                  children: [
+                    ResponsiveNavBar(
+                      isDesktop: true,
+                      currentIndex: _selectedIndex.clamp(0, navTabs.length),
+                      margin: const EdgeInsets.fromLTRB(20, 18, 15, 10),
+                      borderRadius: BorderRadius.circular(50),
+                      items: [
+                        NavItem(
+                            unselectedIcon: IconlyBold.profile,
+                            selectedIcon: IconlyBold.profile,
+                            onTap: (index) {
+                              return SettingsSheet.show(context);
+                            },
+                            label: 'Profile',
+                            altIcon: Obx(() {
+                              final count = Get.find<SourceController>()
+                                  .extensionUpdatesCount
+                                  .value;
+                              final avatar = CircleAvatar(
+                                  radius: 24,
+                                  backgroundColor: Theme.of(context)
+                                      .colorScheme
+                                      .surfaceContainer
+                                      .withValues(alpha: 0.3),
+                                  child: authService.isLoggedIn.value
+                                      ? ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(59),
+                                          child: AnymeXImage(
+                                              width: 40,
+                                              height: 40,
+                                              fit: BoxFit.cover,
+                                              radius: 0,
+                                              imageUrl: authService.profileData
+                                                      .value.avatar ??
+                                                  ''),
+                                        )
+                                      : const Icon((IconlyBold.profile)));
+                              if (count > 0) {
+                                return Badge(
+                                  label: Text(count.toString()),
+                                  backgroundColor:
+                                      Theme.of(context).colorScheme.primary,
+                                  textColor:
+                                      Theme.of(context).colorScheme.onPrimary,
+                                  child: avatar,
+                                );
+                              }
+                              return avatar;
+                            })),
+                        for (final tab in navTabs)
+                          _getNavItemForTab(tab, isSimkl, _onItemTapped),
+                      ],
+                    ),
+                  ],
+                ));
           }),
           Expanded(
             child: Obx(() {
@@ -627,7 +599,8 @@ class _FilterScreenState extends State<FilterScreen> {
                 const SizedBox.shrink(),
                 for (final tab in navTabs) _getWidgetForTab(tab),
               ];
-              final validIndex = _selectedIndex.clamp(0, desktopRoutes.length - 1);
+              final validIndex =
+                  _selectedIndex.clamp(0, desktopRoutes.length - 1);
               return IndexedStack(
                 index: validIndex,
                 children: desktopRoutes,

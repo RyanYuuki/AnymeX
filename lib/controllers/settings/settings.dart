@@ -16,6 +16,7 @@ import 'package:anymex/utils/updater.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:get/get.dart';
 
 Settings get settingsController => Get.find<Settings>();
@@ -364,12 +365,25 @@ class Settings extends GetxController {
   Map<String, bool> get homePageCardsMal =>
       _getUISetting((s) => s.homePageCardsMal);
 
+  String get _currentTabOrderKey {
+    final service = Get.isRegistered<ServiceHandler>()
+        ? Get.find<ServiceHandler>().serviceType.value.name
+        : 'none';
+    return 'navigationTabOrder_$service';
+  }
+
   List<String> get navigationTabOrder {
-    final raw = General.navigationTabOrder.get<String>('');
+    final raw = KvHelper.get<String>(_currentTabOrderKey, defaultVal: '');
     final isDesktop = Get.context != null && MediaQuery.of(Get.context!).size.width > 600;
-    final defaultTabs = isDesktop
-        ? ['Home', 'Anime', 'Manga', 'Library', 'Extensions']
-        : ['Home', 'Anime', 'Manga', 'Library'];
+    final authService = Get.isRegistered<ServiceHandler>() ? Get.find<ServiceHandler>() : null;
+    final isExtensionsService = authService?.serviceType.value == ServicesType.extensions;
+
+    final defaultTabs = isExtensionsService
+        ? ['Library', 'Anime', 'Manga', 'Novel', 'Extensions']
+        : (isDesktop
+            ? ['Home', 'Anime', 'Manga', 'Library', 'Extensions']
+            : ['Home', 'Anime', 'Manga', 'Library']);
+
     if (raw.isEmpty) {
       return defaultTabs;
     }
@@ -384,7 +398,8 @@ class Settings extends GetxController {
   }
 
   set navigationTabOrder(List<String> order) {
-    General.navigationTabOrder.set(jsonEncode(order));
+    KvHelper.set(_currentTabOrderKey, jsonEncode(order));
+    uiSettings.refresh();
     update();
   }
 

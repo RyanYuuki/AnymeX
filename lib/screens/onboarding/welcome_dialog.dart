@@ -124,7 +124,7 @@ void showWelcomeDialogg(BuildContext context) {
                   mobileSize: MediaQuery.of(context).size.width - 24,
                   desktopSize: MediaQuery.of(context).size.width * 0.42),
               constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(context).size.height * 0.85,
+                maxHeight: MediaQuery.of(context).size.height * 0.7,
               ),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surfaceContainer,

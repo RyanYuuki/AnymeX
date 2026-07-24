@@ -13,6 +13,8 @@ import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_tabbar.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
+import 'package:anymex/widgets/header.dart';
+import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -20,9 +22,14 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
 
 class ExtensionScreen extends StatefulWidget {
-  final bool disableGlow;
-  const ExtensionScreen({super.key, this.disableGlow = false});
+  const ExtensionScreen({
+    super.key,
+    this.disableGlow = false,
+    this.isTabScreen = false,
+  });
 
+  final bool disableGlow;
+  final bool isTabScreen;
   @override
   State<ExtensionScreen> createState() => _ExtensionScreenState();
 }
@@ -37,6 +44,8 @@ class _ExtensionScreenState extends State<ExtensionScreen>
   final _showInstalled = true.obs;
 
   Timer? _searchDebounce;
+  late final ScrollController _appBarScrollController;
+  final ValueNotifier<bool> _isAppBarVisible = ValueNotifier<bool>(true);
 
   static const _contentTabs = [
     (label: 'Anime', icon: Icons.movie_creation_outlined, type: ItemType.anime),
@@ -47,6 +56,7 @@ class _ExtensionScreenState extends State<ExtensionScreen>
   @override
   void initState() {
     super.initState();
+    _appBarScrollController = ScrollController();
     _checkPermission();
   }
 
@@ -54,6 +64,8 @@ class _ExtensionScreenState extends State<ExtensionScreen>
   void dispose() {
     _textEditingController.dispose();
     _searchDebounce?.cancel();
+    _appBarScrollController.dispose();
+    _isAppBarVisible.dispose();
     super.dispose();
   }
 
@@ -72,55 +84,102 @@ class _ExtensionScreenState extends State<ExtensionScreen>
   @override
   Widget build(BuildContext context) {
     final theme = context.colors;
+    final isDesktop = MediaQuery.of(context).size.width > 600;
+    final showMobileAppBar = widget.isTabScreen && !isDesktop;
+
+    final statusBarHeight = MediaQuery.of(context).padding.top;
+    const appBarHeight = kToolbarHeight + 20;
+
+    final mainContent = Column(
+      children: [
+        if (widget.isTabScreen) ...[
+          if (isDesktop) ...[
+            const SizedBox(height: 10),
+            const Header(type: PageType.extensions),
+            const SizedBox(height: 20),
+          ] else ...[
+            SizedBox(height: statusBarHeight + appBarHeight),
+          ]
+        ] else ...[
+          NestedHeader(
+            title: 'Extensions',
+            action: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.build_outlined,
+                      color: theme.primary, size: 20),
+                  onPressed: () => Get.to(() => const ExtensionTestPage()),
+                  tooltip: "Test Extensions",
+                  style: IconButton.styleFrom(
+                    padding: const EdgeInsets.all(6),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                IconButton(
+                  icon: Icon(HugeIcons.strokeRoundedGithub,
+                      color: theme.primary, size: 20),
+                  onPressed: () => navigate(() => const SettingsExtensions()),
+                  tooltip: "Repositories",
+                  style: IconButton.styleFrom(
+                    padding: const EdgeInsets.all(6),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+        const SizedBox(height: 12),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: _buildContentTypeBar(),
+        ),
+        const SizedBox(height: 8),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: _buildStatusBar(),
+        ),
+        const SizedBox(height: 6),
+        _buildSearchRow(),
+        const SizedBox(height: 4),
+        Expanded(child: _buildView()),
+      ],
+    );
+
     return Glow(
       disabled: widget.disableGlow,
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        body: Column(
+        body: Stack(
           children: [
-            NestedHeader(
-              title: 'Extensions',
-              action: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.build_outlined,
-                        color: theme.primary, size: 20),
-                    onPressed: () => Get.to(() => const ExtensionTestPage()),
-                    tooltip: "Test Extensions",
-                    style: IconButton.styleFrom(
-                      padding: const EdgeInsets.all(6),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  IconButton(
-                    icon: Icon(HugeIcons.strokeRoundedGithub,
-                        color: theme.primary, size: 20),
-                    onPressed: () => navigate(() => const SettingsExtensions()),
-                    tooltip: "Repositories",
-                    style: IconButton.styleFrom(
-                      padding: const EdgeInsets.all(6),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                  ),
-                ],
+            mainContent,
+            if (showMobileAppBar)
+              CustomAnimatedAppBar(
+                isVisible: _isAppBarVisible,
+                scrollController: _appBarScrollController,
+                headerContent: const Header(type: PageType.extensions),
+                visibleStatusBarStyle: SystemUiOverlayStyle(
+                  statusBarIconBrightness:
+                      Theme.of(context).brightness == Brightness.light
+                          ? Brightness.dark
+                          : Brightness.light,
+                  statusBarBrightness: Theme.of(context).brightness,
+                  statusBarColor: Colors.transparent,
+                ),
+                hiddenStatusBarStyle: SystemUiOverlayStyle(
+                  statusBarIconBrightness:
+                      Theme.of(context).brightness == Brightness.light
+                          ? Brightness.light
+                          : Brightness.dark,
+                  statusBarBrightness:
+                      Theme.of(context).brightness == Brightness.light
+                          ? Brightness.dark
+                          : Brightness.light,
+                  statusBarColor: Colors.transparent,
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: _buildContentTypeBar(),
-            ),
-            const SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: _buildStatusBar(),
-            ),
-            const SizedBox(height: 6),
-            _buildSearchRow(),
-            const SizedBox(height: 4),
-            Expanded(child: _buildView()),
           ],
         ),
       ),

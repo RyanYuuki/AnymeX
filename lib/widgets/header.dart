@@ -27,8 +27,10 @@ import 'package:anymex/screens/library/widgets/library_deps.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:anymex/widgets/legacy_header.dart' as legacy;
 import 'package:anymex/widgets/custom_widgets/anymex_tabbar.dart';
+import 'package:anymex/screens/extensions/ExtensionTesting/extension_test_page.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_extensions.dart';
 
-enum PageType { manga, anime, home, novel, library }
+enum PageType { manga, anime, home, novel, library, extensions }
 
 class Header extends StatelessWidget {
   final PageType type;
@@ -119,6 +121,9 @@ class Header extends StatelessWidget {
             break;
           case PageType.library:
             legacyType = legacy.PageType.library;
+            break;
+          case PageType.extensions:
+            legacyType = legacy.PageType.extensions;
             break;
         }
 
@@ -310,6 +315,15 @@ class Header extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         );
+      case PageType.extensions:
+        return const Text(
+          "Extensions",
+          style: TextStyle(
+            fontFamily: "Poppins-Bold",
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+          ),
+        );
     }
   }
 
@@ -318,6 +332,15 @@ class Header extends StatelessWidget {
     if (type == PageType.library) {
       return Text(
         "All your local shi",
+        style: TextStyle(
+          fontSize: 11,
+          color: context.colors.onSurface.withOpacity(0.55),
+        ),
+      );
+    }
+    if (type == PageType.extensions) {
+      return Text(
+        "Manage plugins & sources",
         style: TextStyle(
           fontSize: 11,
           color: context.colors.onSurface.withOpacity(0.55),
@@ -353,6 +376,22 @@ class Header extends StatelessWidget {
         _PillIconButton(
           onPressed: () => _showSortingSettings(context, libraryController),
           icon: Icon(Icons.sort, color: context.colors.primary, size: 18),
+          context: context,
+        ),
+      );
+    } else if (type == PageType.extensions) {
+      list.add(
+        _PillIconButton(
+          onPressed: () => Get.to(() => const ExtensionTestPage()),
+          icon: Icon(Icons.build_outlined, color: context.colors.primary, size: 18),
+          context: context,
+        ),
+      );
+      list.add(const SizedBox(width: 8));
+      list.add(
+        _PillIconButton(
+          onPressed: () => navigate(() => const SettingsExtensions()),
+          icon: Icon(HugeIcons.strokeRoundedGithub, color: context.colors.primary, size: 18),
           context: context,
         ),
       );

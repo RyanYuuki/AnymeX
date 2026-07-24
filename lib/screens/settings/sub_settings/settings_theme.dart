@@ -43,7 +43,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
   late int selectedVariantIndex;
   final settings = Get.find<Settings>();
   late LogoAnimationType selectedLogoAnimation;
-  int _selectedTabIndex = 0;
+  static int _selectedTabIndex = 0;
 
   final List<Map<String, dynamic>> themeModes = [
     {"label": "Light", "color": Colors.white},
@@ -234,6 +234,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
                 child: PageView(
+                  key: const PageStorageKey('settings_theme_page_view'),
                   controller: _pageController,
                   onPageChanged: (index) {
                     setState(() {

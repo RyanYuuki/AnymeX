@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 import 'package:anymex/screens/other_features.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'dart:io';
 
 class SettingsCommon extends StatefulWidget {
@@ -117,13 +118,6 @@ class _SettingsCommonState extends State<SettingsCommon> {
                                 onChanged: (e) =>
                                     settings.showContinueWatchingCard = e,
                               ),
-                            ),
-                            CustomTile(
-                              icon: Icons.reorder_rounded,
-                              title: 'Reorder Navigation Tabs',
-                              description:
-                                  'Drag and drop to reorder the main navigation tabs',
-                              onTap: () => _showReorderTabsDialog(context),
                             ),
                           ],
                         ),
@@ -367,145 +361,7 @@ class _SettingsCommonState extends State<SettingsCommon> {
     );
   }
 
-  void _showReorderTabsDialog(BuildContext context) {
-    final isDesktop = MediaQuery.of(context).size.width > 600;
-    final allPossibleTabs = isDesktop
-        ? ['Home', 'Anime', 'Manga', 'Library', 'Extensions']
-        : ['Home', 'Anime', 'Manga', 'Library'];
-    final currentOrder = settings.navigationTabOrder
-        .where((t) => allPossibleTabs.contains(t))
-        .toList();
 
-    for (final tab in allPossibleTabs) {
-      if (!currentOrder.contains(tab)) {
-        currentOrder.add(tab);
-      }
-    }
-
-    const tabIcons = {
-      'Home': Icons.home_rounded,
-      'Anime': Icons.movie_rounded,
-      'Manga': Icons.menu_book_rounded,
-      'Library': Icons.video_library_rounded,
-      'Extensions': Icons.extension_rounded,
-    };
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            final theme = Theme.of(context);
-
-            return AnymexDialog(
-              title: 'Reorder Navigation Tabs',
-              contentWidget: SizedBox(
-                width: double.maxFinite,
-                child: ReorderableListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  buildDefaultDragHandles: false,
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  itemCount: currentOrder.length,
-                  onReorder: (oldIndex, newIndex) {
-                    setDialogState(() {
-                      if (newIndex > oldIndex) newIndex--;
-                      final item = currentOrder.removeAt(oldIndex);
-                      currentOrder.insert(newIndex, item);
-                    });
-                  },
-                  proxyDecorator: (child, index, animation) {
-                    return AnimatedBuilder(
-                      animation: animation,
-                      builder: (context, _) {
-                        final t = Curves.easeOut.transform(animation.value);
-                        return Transform.scale(
-                          scale: 1.0 + (0.03 * t),
-                          child: Material(
-                            color: Colors.transparent,
-                            elevation: 6 * t,
-                            borderRadius: BorderRadius.circular(14),
-                            shadowColor:
-                                theme.colorScheme.primary.withOpacity(0.3),
-                            child: child,
-                          ),
-                        );
-                      },
-                      child: child,
-                    );
-                  },
-                  itemBuilder: (context, i) {
-                    final tab = currentOrder[i];
-                    return Container(
-                      key: ValueKey(tab),
-                      width: double.infinity,
-                      margin: const EdgeInsets.symmetric(vertical: 5),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.surfaceContainerHigh,
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.only(
-                          left: 12,
-                          right: 8,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        leading: Container(
-                          width: 32,
-                          height: 32,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.primary.withOpacity(0.12),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            '${i + 1}',
-                            style: theme.textTheme.labelLarge?.copyWith(
-                              color: theme.colorScheme.primary,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        title: Row(
-                          children: [
-                            Icon(
-                              tabIcons[tab] ?? Icons.circle_outlined,
-                              size: 18,
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                            const SizedBox(width: 10),
-                            AnymexText(
-                              text: tab,
-                              variant: TextVariant.semiBold,
-                            ),
-                          ],
-                        ),
-                        trailing: ReorderableDragStartListener(
-                          index: i,
-                          child: Icon(
-                            Icons.drag_indicator_rounded,
-                            color: theme.colorScheme.onSurfaceVariant
-                                .withOpacity(0.6),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              confirmText: 'Save',
-              onConfirm: () {
-                settings.navigationTabOrder = currentOrder;
-                setState(() {});
-              },
-            );
-          },
-        );
-      },
-    );
-  }
 }
 
 class _BridgeModeOptionTile extends StatelessWidget {

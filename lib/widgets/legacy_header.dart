@@ -22,8 +22,10 @@ import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:provider/provider.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
+import 'package:anymex/screens/extensions/ExtensionTesting/extension_test_page.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_extensions.dart';
 
-enum PageType { manga, anime, home, novel, library }
+enum PageType { manga, anime, home, novel, library, extensions }
 
 class Header extends StatelessWidget {
   final PageType type;
@@ -59,6 +61,17 @@ class Header extends StatelessWidget {
                     ),
                     Text(
                       "All your local shi",
+                      style: TextStyle(
+                        fontFamily: "Poppins-SemiBold",
+                        color: context.colors.primary,
+                      ),
+                    ),
+                  ] else if (type == PageType.extensions) ...[
+                    const Text(
+                      "Extensions",
+                    ),
+                    Text(
+                      "Manage plugins & sources",
                       style: TextStyle(
                         fontFamily: "Poppins-SemiBold",
                         color: context.colors.primary,
@@ -120,87 +133,101 @@ class Header extends StatelessWidget {
                     ],
                   ],
                 ),
-              ] else if (profileData.serviceType.value ==
-                  ServicesType.extensions) ...[
+              ] else if (type == PageType.extensions) ...[
+                Row(
+                  children: [
+                    AnymexOnTap(
+                      child: CircleAvatar(
+                        radius: 24,
+                        backgroundColor: Theme.of(context)
+                            .colorScheme
+                            .secondaryContainer
+                            .opaque(0.50),
+                        child: IconButton(
+                          onPressed: () => Get.to(() => const ExtensionTestPage()),
+                          icon: Icon(
+                            Icons.build_outlined,
+                            color: context.colors.primary,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    AnymexOnTap(
+                      child: CircleAvatar(
+                        radius: 24,
+                        backgroundColor: Theme.of(context)
+                            .colorScheme
+                            .secondaryContainer
+                            .opaque(0.50),
+                        child: IconButton(
+                          onPressed: () => navigate(() => const SettingsExtensions()),
+                          icon: Icon(
+                            HugeIcons.strokeRoundedGithub,
+                            color: context.colors.primary,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ] else ...[
                 AnymexOnTap(
-                    child: CircleAvatar(
-                  radius: 24,
-                  backgroundColor: context.colors.secondaryContainer,
-                  child: IconButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: context.colors.secondaryContainer),
-                    onPressed: () {
-                      final itemType = type == PageType.manga
-                          ? ItemType.manga
-                          : (type == PageType.novel
-                              ? ItemType.novel
-                              : ItemType.anime);
-                      navigateWithAnimation(() => SourceSearchPage(
-                            initialTerm: '',
-                            type: itemType,
-                            source: null,
-                          ));
-                    },
-                    icon: Icon(
-                      IconlyLight.search,
-                      color: context.colors.primary,
+                  child: CircleAvatar(
+                    radius: 24,
+                    backgroundColor: Theme.of(context)
+                        .colorScheme
+                        .secondaryContainer
+                        .opaque(0.50),
+                    child: IconButton(
+                      onPressed: () {
+                        if (profileData.serviceType.value == ServicesType.extensions) {
+                          final itemType = type == PageType.manga
+                              ? ItemType.manga
+                              : (type == PageType.novel
+                                  ? ItemType.novel
+                                  : ItemType.anime);
+                          navigateWithAnimation(() => SourceSearchPage(
+                                initialTerm: '',
+                                type: itemType,
+                                source: null,
+                              ));
+                        } else {
+                          final hasNovelExts = sourceController
+                              .installedNovelExtensions.isNotEmpty;
+                          final isSimkl = profileData.serviceType.value ==
+                              ServicesType.simkl;
+                          if (type == PageType.manga) {
+                            if (isSimkl) {
+                              navigate(() => const SearchPage(
+                                    searchTerm: '',
+                                    isManga: false,
+                                  ));
+                              return;
+                            }
+                            if (!hasNovelExts) {
+                              navigate(() => const SearchPage(
+                                    searchTerm: '',
+                                    isManga: true,
+                                  ));
+                              return;
+                            }
+                            searchTypeSheet(context);
+                          } else {
+                            navigate(() => const SearchPage(
+                                  searchTerm: '',
+                                  isManga: false,
+                                ));
+                          }
+                        }
+                      },
+                      icon: Icon(
+                        IconlyLight.search,
+                        color: context.colors.primary,
+                      ),
                     ),
                   ),
-                )),
-              ] else ...[
-                getResponsiveValue(context,
-                    mobileValue: AnymexOnTap(
-                      child: CircleAvatar(
-                          radius: 24,
-                          backgroundColor: Theme.of(context)
-                              .colorScheme
-                              .secondaryContainer
-                              .opaque(0.50),
-                          child: IconButton(
-                              onPressed: () {
-                                final hasNovelExts = sourceController
-                                    .installedNovelExtensions.isNotEmpty;
-                                final isSimkl = profileData.serviceType.value ==
-                                    ServicesType.simkl;
-                                if (type == PageType.manga) {
-                                  if (isSimkl) {
-                                    navigate(() => const SearchPage(
-                                          searchTerm: '',
-                                          isManga: false,
-                                        ));
-                                    return;
-                                  }
-                                  if (!hasNovelExts) {
-                                    navigate(() => const SearchPage(
-                                          searchTerm: '',
-                                          isManga: true,
-                                        ));
-                                    return;
-                                  }
-                                  searchTypeSheet(context);
-                                } else {
-                                  navigate(() => const SearchPage(
-                                        searchTerm: '',
-                                        isManga: false,
-                                      ));
-                                }
-                              },
-                              icon: Icon(
-                                IconlyLight.search,
-                                color: context.colors.primary,
-                              ))),
-                    ), desktopValue: TappableSearchBar(
-                  onSubmitted: () {
-                    if (type == PageType.manga) {
-                      searchTypeSheet(context);
-                    } else {
-                      navigate(() => const SearchPage(
-                            searchTerm: '',
-                            isManga: false,
-                          ));
-                    }
-                  },
-                )),
+                ),
               ]
             ],
           ),
@@ -231,37 +258,45 @@ class Header extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AnymexTextSpans(
-                      fontSize: 24,
-                      spans: [
-                        const AnymexTextSpan(
-                            text: 'Hey ', variant: TextVariant.bold),
-                        AnymexTextSpan(
-                            text:
-                                '${serviceHandler.isLoggedIn.value ? serviceHandler.profileData.value.name : 'Guest'}',
-                            color: context.colors.primary,
-                            variant: TextVariant.bold),
-                        const AnymexTextSpan(
-                            text: ', what are we doing today?',
-                            variant: TextVariant.bold)
-                      ],
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 4),
-                    const Text(
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      AnymexTextSpans(
+                        fontSize: 18,
+                        spans: [
+                          const AnymexTextSpan(
+                              text: 'Hey ', variant: TextVariant.bold),
+                          AnymexTextSpan(
+                              text:
+                                  '${serviceHandler.isLoggedIn.value ? serviceHandler.profileData.value.name : 'Guest'}',
+                              color: context.colors.primary,
+                              variant: TextVariant.bold),
+                          const AnymexTextSpan(
+                              text: ', what are we doing today?',
+                              variant: TextVariant.bold)
+                        ],
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
                         "Find your favourite Anime, Manga, Manhwa or whatever you like!",
-                        style: TextStyle())
-                  ],
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: context.colors.onSurface.withOpacity(0.7),
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      )
+                    ],
+                  ),
                 ),
-                const Spacer(),
+                const SizedBox(width: 20),
                 CircleAvatar(
-                    radius: 40,
+                    radius: 28,
                     backgroundColor: Colors.transparent,
                     child: AnymeXAnimatedLogo(
-                      size: 80,
+                      size: 56,
                       autoPlay: true,
                       color: context.colors.inverseSurface,
                     )),
