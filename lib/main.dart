@@ -163,7 +163,7 @@ void main(List<String> args) async {
           errorMessage: 'Failed to initialize Firebase');
     }
 
-    if (Platform.isWindows) {
+    if (Platform.isWindows || Platform.isLinux) {
       await safeCall(() {
         [
           'dar',
