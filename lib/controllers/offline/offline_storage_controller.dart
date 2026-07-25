@@ -98,25 +98,77 @@ class OfflineStorageController extends GetxController {
         .watch(fireImmediately: true);
   }
 
+  void _attemptDatabaseRepair(dynamic error) {
+    try {
+      isar.writeTxnSync(() {
+        final ids = isar.offlineMedias.where().idProperty().findAllSync();
+        final corruptedIds = <int>[];
+        for (final id in ids) {
+          try {
+            final obj = isar.offlineMedias.getSync(id);
+            if (obj != null) {
+              obj.currentEpisode;
+              obj.episodes;
+            }
+          } catch (_) {
+            corruptedIds.add(id);
+          }
+        }
+        if (corruptedIds.isNotEmpty) {
+          for (final id in corruptedIds) {
+            isar.offlineMedias.deleteSync(id);
+          }
+        }
+      });
+    } catch (_) {
+      try {
+        isar.writeTxnSync(() {
+          isar.offlineMedias.clearSync();
+        });
+      } catch (_) {}
+    }
+  }
+
   List<OfflineMedia> getAnimeLibrarySync() {
-    return isar.offlineMedias
-        .filter()
-        .mediaTypeIndexEqualTo(1)
-        .findAllSync();
+    try {
+      return isar.offlineMedias
+          .filter()
+          .mediaTypeIndexEqualTo(1)
+          .findAllSync();
+    } catch (e) {
+      if (e.toString().contains('RangeError') || e.toString().contains('deserialize')) {
+        _attemptDatabaseRepair(e);
+      }
+      return [];
+    }
   }
 
   List<OfflineMedia> getMangaLibrarySync() {
-    return isar.offlineMedias
-        .filter()
-        .mediaTypeIndexEqualTo(0)
-        .findAllSync();
+    try {
+      return isar.offlineMedias
+          .filter()
+          .mediaTypeIndexEqualTo(0)
+          .findAllSync();
+    } catch (e) {
+      if (e.toString().contains('RangeError') || e.toString().contains('deserialize')) {
+        _attemptDatabaseRepair(e);
+      }
+      return [];
+    }
   }
 
   List<OfflineMedia> getNovelLibrarySync() {
-    return isar.offlineMedias
-        .filter()
-        .mediaTypeIndexEqualTo(2)
-        .findAllSync();
+    try {
+      return isar.offlineMedias
+          .filter()
+          .mediaTypeIndexEqualTo(2)
+          .findAllSync();
+    } catch (e) {
+      if (e.toString().contains('RangeError') || e.toString().contains('deserialize')) {
+        _attemptDatabaseRepair(e);
+      }
+      return [];
+    }
   }
 
   Stream<OfflineMedia?> watchMediaById(String mediaId) {
