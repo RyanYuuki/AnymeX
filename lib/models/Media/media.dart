@@ -52,6 +52,7 @@ class Media {
   int? seasonYear;
   List<String> synonyms;
   List<MediaTag> tags;
+  List<ExternalLink>? externalLinks;
 
   // String get uniqueId => "$id-${serviceType.name}";
   String get uniqueId => id.split('*').first;
@@ -97,6 +98,7 @@ class Media {
       this.characterRole,
       this.synonyms = const [],
       this.tags = const [],
+      this.externalLinks,
       DateTime? createdAt})
       : createdAt = DateTime.now();
 
@@ -467,6 +469,68 @@ class Media {
       }).whereType<Relation>().toList();
     }
 
+    final linksList = <ExternalLink>[];
+    final ids = json['ids'] as Map?;
+    if (ids != null) {
+      final simklId = ids['simkl_id']?.toString() ?? ids['simkl']?.toString() ?? '';
+      final slug = ids['slug']?.toString() ?? '';
+      final imdbId = ids['imdb']?.toString() ?? '';
+      final tmdbId = ids['tmdb']?.toString() ?? '';
+      final netflixId = ids['netflix']?.toString() ?? '';
+      final huluId = ids['hulu']?.toString() ?? '';
+      final crunchyId = ids['crunchyroll']?.toString() ?? '';
+
+      if (simklId.isNotEmpty) {
+        linksList.add(ExternalLink(
+          site: 'Simkl',
+          url: 'https://simkl.com/${isMovie ? "movies" : "tv"}/$simklId${slug.isNotEmpty ? "/$slug" : ""}',
+        ));
+      }
+      if (imdbId.isNotEmpty) {
+        linksList.add(ExternalLink(
+          site: 'IMDb',
+          url: 'https://www.imdb.com/title/$imdbId',
+        ));
+      }
+      if (tmdbId.isNotEmpty) {
+        linksList.add(ExternalLink(
+          site: 'TMDb',
+          url: 'https://www.themoviedb.org/${isMovie ? "movie" : "tv"}/$tmdbId',
+        ));
+      }
+      if (netflixId.isNotEmpty) {
+        linksList.add(ExternalLink(
+          site: 'Netflix',
+          url: 'https://www.netflix.com/title/$netflixId',
+        ));
+      }
+      if (huluId.isNotEmpty) {
+        linksList.add(ExternalLink(
+          site: 'Hulu',
+          url: 'https://www.hulu.com/series/$huluId',
+        ));
+      }
+      if (crunchyId.isNotEmpty) {
+        linksList.add(ExternalLink(
+          site: 'Crunchyroll',
+          url: 'https://www.crunchyroll.com/series/$crunchyId',
+        ));
+      }
+    }
+
+    if (json['trailers'] is List) {
+      for (final t in (json['trailers'] as List)) {
+        if (t is Map && t['youtube'] != null && t['youtube'].toString().isNotEmpty) {
+          final ytId = t['youtube'].toString();
+          final tName = t['name']?.toString() ?? 'Trailer';
+          linksList.add(ExternalLink(
+            site: 'Trailer ($tName)',
+            url: 'https://www.youtube.com/watch?v=$ytId',
+          ));
+        }
+      }
+    }
+
     return Media(
       id: '${json['ids']?['simkl_id']?.toString() ?? json['ids']?['simkl']?.toString()}*${isMovie ? "MOVIE" : "SERIES"}',
       title: json['title'] ?? 'Unknown Title',
@@ -503,6 +567,7 @@ class Media {
       synonyms: synonymsList,
       tags: tagsList,
       relations: relationsList,
+      externalLinks: linksList.isNotEmpty ? linksList : null,
       nextAiringEpisode: parseNextAiringEpisode(),
       recommendations: (json['users_recommendations'] as List<dynamic>?)
               ?.map((e) {
@@ -987,4 +1052,16 @@ extension RemoveDupesOnTM on List<TrackedMedia> {
     final seen = <String>{};
     return where((media) => seen.add(media.id!)).toList();
   }
+}
+
+class ExternalLink {
+  final String site;
+  final String url;
+  final String? icon;
+
+  ExternalLink({
+    required this.site,
+    required this.url,
+    this.icon,
+  });
 }
