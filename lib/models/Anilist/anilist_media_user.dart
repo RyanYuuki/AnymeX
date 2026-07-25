@@ -123,7 +123,11 @@ class TrackedMedia {
           ? "https://wsrv.nl/?url=https://simkl.in/posters/${show['poster']}_m.jpg"
           : '?',
       episodeCount: json['watched_episodes_count']?.toString(),
-      totalEpisodes: json['total_episodes_count']?.toString(),
+      totalEpisodes: (json['total_episodes_count'] ??
+              json['total_episodes'] ??
+              json['episodes_count'] ??
+              json['episodes'])
+          ?.toString(),
       watchingStatus: Simkl.simklShowToAL(json['status']),
       type: "show",
       servicesType: ServicesType.simkl,
