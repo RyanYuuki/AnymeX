@@ -757,6 +757,10 @@ class AnimeStats extends StatelessWidget {
 
   Widget _buildStatsGrid(BuildContext context) {
     final colorScheme = context.colors;
+    final ratingValue = (data.rating.isNotEmpty && data.rating != 'N/A' && data.rating != '?')
+        ? '${data.rating}/10'
+        : 'N/A';
+
     final stats = [
       {
         'label': 'Type',
@@ -765,7 +769,7 @@ class AnimeStats extends StatelessWidget {
       },
       {
         'label': 'Rating',
-        'value': '${data.rating}/10',
+        'value': ratingValue,
         'icon': Icons.star_outline_rounded
       },
       {'label': 'Format', 'value': data.format, 'icon': Icons.style_outlined},
@@ -784,11 +788,12 @@ class AnimeStats extends StatelessWidget {
         'value': data.totalEpisodes,
         'icon': Icons.movie_outlined
       },
-      {
-        'label': 'Season',
-        'value': data.season,
-        'icon': Icons.calendar_today_outlined
-      },
+      if (data.season != 'N/A' && data.season != '?' && data.season.isNotEmpty)
+        {
+          'label': 'Season',
+          'value': data.season,
+          'icon': Icons.calendar_today_outlined
+        },
       {
         'label': 'Duration',
         'value': data.duration,
