@@ -508,6 +508,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                       child: BetterEpisode(
                         episode: episode,
                         isSelected: isSelected,
+                        mediaTitle: widget.anilistData?.title ?? widget.media.title,
                         layoutType: hasAnifyThumbs
                             ? EpisodeLayoutType.detailed
                             : EpisodeLayoutType.compact,
@@ -649,6 +650,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                         child: BetterEpisode(
                           episode: episode,
                           isSelected: isSelected,
+                          mediaTitle: widget.anilistData?.title ?? widget.media.title,
                           layoutType: hasAnifyThumbs
                               ? EpisodeLayoutType.detailed
                               : EpisodeLayoutType.compact,
@@ -1088,10 +1090,16 @@ class ContinueEpisodeButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final safeTitle = (episode.title?.trim().isNotEmpty ?? false)
-            ? episode.title!.trim()
-            : "Episode ${episode.number}";
-        final episodeLabel = 'Episode ${episode.number}: $safeTitle';
+        final rawTitle = episode.title?.trim();
+        final isGenericMovie = rawTitle == null ||
+            rawTitle.isEmpty ||
+            rawTitle.toLowerCase() == 'movie' ||
+            rawTitle.toLowerCase() == 'full movie';
+        final isMovieMedia = data.id.endsWith('*MOVIE') || data.type == 'MOVIE';
+        final resolvedTitle = (isGenericMovie || isMovieMedia)
+            ? (data.title.isNotEmpty ? data.title : "Episode ${episode.number}")
+            : (rawTitle ?? "Episode ${episode.number}");
+        final episodeLabel = 'Episode ${episode.number}: $resolvedTitle';
         final double progressPercentage;
         if (progressEpisode.number != episode.number ||
             progressEpisode.timeStampInMilliseconds == null ||
