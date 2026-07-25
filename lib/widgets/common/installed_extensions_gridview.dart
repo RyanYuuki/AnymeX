@@ -340,21 +340,6 @@ class _ExtensionCard extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: 8),
-            Container(
-              width: 30,
-              height: 30,
-              decoration: BoxDecoration(
-                color:
-                    theme.colorScheme.primary.opaque(0.12, iReallyMeanIt: true),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                IconlyLight.arrowRight,
-                color: theme.colorScheme.primary,
-                size: 14,
-              ),
-            ),
           ],
         ),
       ),

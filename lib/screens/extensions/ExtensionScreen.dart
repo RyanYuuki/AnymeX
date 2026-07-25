@@ -345,7 +345,7 @@ class _ExtensionScreenState extends State<ExtensionScreen>
       contentWidget: SizedBox(
         height: MediaQuery.of(context).size.height * 0.65,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+          padding: const EdgeInsets.fromLTRB(8, 0, 8, 24),
           child: Obx(() {
             final selSource = _selectedSourceType.value;
             final selLang = _selectedLanguage.value;
@@ -384,91 +384,88 @@ class _ExtensionScreenState extends State<ExtensionScreen>
                 AnymexExpansionTile(
                   title: 'Source Type',
                   initialExpanded: true,
-                  content: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: 3.8,
-                        crossAxisSpacing: 8,
-                        mainAxisSpacing: 8,
-                      ),
-                      itemCount: sourceTypes.length,
-                      itemBuilder: (context, index) {
-                        final type = sourceTypes[index];
-                        final needsPlugin = _typeRequiresPlugin(type) &&
-                            !_isPluginInstalled;
-                        final isSelected = !needsPlugin && selSource == type;
-                        final label = type == 'all' ? 'All Sources' : type;
-
-                        return InkWell(
-                          onTap: needsPlugin
-                              ? null
-                              : () {
-                                  _selectedSourceType.value = type;
-                                },
-                          borderRadius: BorderRadius.circular(12),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 155),
-                            decoration: BoxDecoration(
+                  content: GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 3.8,
+                      crossAxisSpacing: 8,
+                      mainAxisSpacing: 8,
+                    ),
+                    itemCount: sourceTypes.length,
+                    itemBuilder: (context, index) {
+                      final type = sourceTypes[index];
+                      final needsPlugin = _typeRequiresPlugin(type) &&
+                          !_isPluginInstalled;
+                      final isSelected = !needsPlugin && selSource == type;
+                      final label = type == 'all' ? 'All Sources' : type;
+                  
+                      return InkWell(
+                        onTap: needsPlugin
+                            ? null
+                            : () {
+                                _selectedSourceType.value = type;
+                              },
+                        borderRadius: BorderRadius.circular(12),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 155),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? context.colors.primaryContainer
+                                    .withOpacity(0.25)
+                                : context.colors.surfaceContainerHighest
+                                    .withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
                               color: isSelected
-                                  ? context.colors.primaryContainer
-                                      .withOpacity(0.25)
-                                  : context.colors.surfaceContainerHighest
-                                      .withOpacity(0.3),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: isSelected
-                                    ? Colors.transparent
-                                    : context.colors.outline.withOpacity(0.12),
-                                width: 1.0,
-                              ),
-                            ),
-                            alignment: Alignment.center,
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                if (isSelected) ...[
-                                  Icon(Icons.check_circle_rounded,
-                                      size: 14,
-                                      color: context.colors.primary),
-                                  const SizedBox(width: 6),
-                                ] else if (needsPlugin) ...[
-                                  Icon(Icons.lock_outline_rounded,
-                                      size: 14,
-                                      color: context.colors.onSurface
-                                          .withOpacity(0.4)),
-                                  const SizedBox(width: 6),
-                                ],
-                                Flexible(
-                                  child: Text(
-                                    label,
-                                    style: TextStyle(
-                                      fontFamily: 'Poppins',
-                                      fontSize: 12,
-                                      fontWeight: isSelected
-                                          ? FontWeight.w600
-                                          : FontWeight.w400,
-                                      color: isSelected
-                                          ? context.colors.primary
-                                          : context.colors.onSurface
-                                              .withOpacity(0.85),
-                                    ),
-                                    textAlign: TextAlign.center,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ],
+                                  ? Colors.transparent
+                                  : context.colors.outline.withOpacity(0.12),
+                              width: 1.0,
                             ),
                           ),
-                        );
-                      },
-                    ),
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              if (isSelected) ...[
+                                Icon(Icons.check_circle_rounded,
+                                    size: 14,
+                                    color: context.colors.primary),
+                                const SizedBox(width: 6),
+                              ] else if (needsPlugin) ...[
+                                Icon(Icons.lock_outline_rounded,
+                                    size: 14,
+                                    color: context.colors.onSurface
+                                        .withOpacity(0.4)),
+                                const SizedBox(width: 6),
+                              ],
+                              Flexible(
+                                child: Text(
+                                  label,
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    fontSize: 12,
+                                    fontWeight: isSelected
+                                        ? FontWeight.w600
+                                        : FontWeight.w400,
+                                    color: isSelected
+                                        ? context.colors.primary
+                                        : context.colors.onSurface
+                                            .withOpacity(0.85),
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
                 const SizedBox(height: 16),

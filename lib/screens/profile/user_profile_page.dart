@@ -782,32 +782,58 @@ class _UserProfilePageState extends State<UserProfilePage>
     }
 
     if (isDesktop) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // About
-            Expanded(
-              flex: 6,
-              child: buildAboutSection(needsPadding: false),
-            ),
-            const SizedBox(width: 20),
-            // Activity + Favourites
-            Expanded(
-              flex: 4,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  buildActivitySection(needsPadding: false),
-                  buildFavouritesSection(needsPadding: false),
-                  const SizedBox(height: 50),
-                ],
+      final hasFavourites = (user.favourites?.anime.isNotEmpty ?? false) ||
+          (user.favourites?.manga.isNotEmpty ?? false) ||
+          (user.favourites?.characters.isNotEmpty ?? false) ||
+          (user.favourites?.staff.isNotEmpty ?? false) ||
+          (user.favourites?.studios.isNotEmpty ?? false);
+      final hasRightColumn = hasActivity || hasFavourites;
+
+      if (hasAbout && hasRightColumn) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                flex: 6,
+                child: buildAboutSection(needsPadding: false),
               ),
-            ),
-          ],
-        ),
-      );
+              const SizedBox(width: 20),
+              Expanded(
+                flex: 4,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    buildActivitySection(needsPadding: false),
+                    buildFavouritesSection(needsPadding: false),
+                    const SizedBox(height: 50),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      } else if (hasAbout) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: buildAboutSection(needsPadding: false),
+        );
+      } else if (hasRightColumn) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              buildActivitySection(needsPadding: false),
+              buildFavouritesSection(needsPadding: false),
+              const SizedBox(height: 50),
+            ],
+          ),
+        );
+      } else {
+        return const SizedBox.shrink();
+      }
     }
 
     return Column(
