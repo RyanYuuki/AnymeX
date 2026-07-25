@@ -160,7 +160,58 @@ class _ListEditorModalState extends State<ListEditorModal> {
     return parsed;
   }
 
+  int? get _overallTotal {
+    if (_simklSeasons.isNotEmpty) {
+      return _simklSeasons.entries
+          .where((e) => e.key > 0)
+          .fold<int>(0, (sum, e) => sum + e.value);
+    }
+    final tracked = widget.currentAnime.value;
+    final preferredRaw = widget.isManga
+        ? widget.media.totalChapters
+        : widget.media.totalEpisodes;
+    final fallbackRaw = tracked?.totalEpisodes;
+    return _parseKnownPositiveInt(preferredRaw) ??
+        _parseKnownPositiveInt(fallbackRaw);
+  }
+
   void _setProgress(int value, {bool updateController = true}) {
+    if (_simklSeasons.isNotEmpty) {
+      final validSeasons =
+          _simklSeasons.keys.where((k) => k > 0).toList()..sort();
+      final currentSeasonMax = _simklSeasons[_localSeason];
+
+      if (currentSeasonMax != null) {
+        if (value > currentSeasonMax) {
+          final currentIdx = validSeasons.indexOf(_localSeason);
+          if (currentIdx != -1 && currentIdx + 1 < validSeasons.length) {
+            final nextSeason = validSeasons[currentIdx + 1];
+            final remainder = value - currentSeasonMax;
+            setState(() {
+              _localSeason = nextSeason;
+              _seasonController.text = _localSeason.toString();
+            });
+            _setProgress(remainder, updateController: updateController);
+            return;
+          }
+        } else if (value < 0) {
+          final currentIdx = validSeasons.indexOf(_localSeason);
+          if (currentIdx > 0) {
+            final prevSeason = validSeasons[currentIdx - 1];
+            final prevMax = _simklSeasons[prevSeason] ?? 1;
+            final remainder = prevMax + value + 1;
+            setState(() {
+              _localSeason = prevSeason;
+              _seasonController.text = _localSeason.toString();
+            });
+            _setProgress(remainder.clamp(0, prevMax),
+                updateController: updateController);
+            return;
+          }
+        }
+      }
+    }
+
     final max = _maxTotal;
     setState(() {
       _localProgress =
@@ -462,6 +513,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
     final colors = context.colors;
     final max = _maxTotal;
     final pct = max != null ? (_localProgress / max).clamp(0.0, 1.0) : null;
+    final overall = _overallTotal;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -475,12 +527,25 @@ class _ListEditorModalState extends State<ListEditorModal> {
                     color: colors.onSurfaceVariant,
                   ),
             ),
-            Text(
-              '$_localProgress / $_displayTotal',
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: colors.onSurface,
-                    fontWeight: FontWeight.w600,
-                  ),
+            RichText(
+              text: TextSpan(
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: colors.onSurface,
+                      fontWeight: FontWeight.w600,
+                    ),
+                children: [
+                  TextSpan(text: '$_localProgress / $_displayTotal'),
+                  if (overall != null && _simklSeasons.isNotEmpty)
+                    TextSpan(
+                      text: '  ($overall total)',
+                      style: TextStyle(
+                        color: colors.onSurfaceVariant,
+                        fontWeight: FontWeight.normal,
+                        fontSize: 11,
+                      ),
+                    ),
+                ],
+              ),
             ),
           ],
         ),
