@@ -508,7 +508,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                       child: BetterEpisode(
                         episode: episode,
                         isSelected: isSelected,
-                        mediaTitle: widget.anilistData?.title ?? widget.media.title,
+                        mediaTitle: widget.anilistData?.title,
                         layoutType: hasAnifyThumbs
                             ? EpisodeLayoutType.detailed
                             : EpisodeLayoutType.compact,
@@ -650,7 +650,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                         child: BetterEpisode(
                           episode: episode,
                           isSelected: isSelected,
-                          mediaTitle: widget.anilistData?.title ?? widget.media.title,
+                          mediaTitle: widget.anilistData?.title,
                           layoutType: hasAnifyThumbs
                               ? EpisodeLayoutType.detailed
                               : EpisodeLayoutType.compact,
