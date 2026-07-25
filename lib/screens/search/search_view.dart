@@ -105,6 +105,7 @@ class _SearchPageState extends State<SearchPage>
   @override
   void initState() {
     super.initState();
+    isAdult = !General.hideAdultContent.get(true);
     _selectedSource = widget.source is Source ? widget.source as Source : null;
     _initializeAnimations();
     _initializeData();
@@ -671,7 +672,8 @@ class _SearchPageState extends State<SearchPage>
               _buildViewModeToggle(),
             ],
           ] else ...[
-            if (serviceHandler.serviceType.value == ServicesType.anilist) ...[
+            if (serviceHandler.serviceType.value == ServicesType.anilist ||
+                serviceHandler.serviceType.value == ServicesType.mal) ...[
               if (!General.hideAdultContent.get(true)) ...[
                 _buildToggleButton(
                   label: 'Adult',
@@ -685,12 +687,6 @@ class _SearchPageState extends State<SearchPage>
                 ),
                 const SizedBox(width: 12),
               ],
-              _buildActionButton(
-                icon: Iconsax.setting_4,
-                label: 'Filters',
-                isActive: _activeFilters.isNotEmpty,
-                onTap: _showFilterBottomSheet,
-              ),
               if (!widget.isManga &&
                   serviceHandler.serviceType.value == ServicesType.anilist) ...[
                 const SizedBox(width: 12),

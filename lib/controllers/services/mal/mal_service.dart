@@ -262,7 +262,8 @@ class MalService extends GetxController implements BaseService, OnlineService {
     final token = AuthKeys.malAuthToken.get<String?>();
     final isLoggedIn = token != null && token.isNotEmpty;
     final fields = 'id,title,main_picture,alternative_titles,start_date,end_date,synopsis,mean,rank,popularity,num_episodes,status,genres,num_chapters,num_volumes,media_type,start_season,average_episode_duration,studios';
-    final url = 'https://api.myanimelist.net/v2/$mediaType?q=${Uri.encodeComponent(params.query)}&limit=25&offset=$offset&fields=$fields';
+    final showNsfw = params.args == true;
+    final url = 'https://api.myanimelist.net/v2/$mediaType?q=${Uri.encodeComponent(params.query)}&limit=25&offset=$offset&fields=$fields${showNsfw ? '&nsfw=true' : ''}';
     
     try {
       final data = await fetchMAL(url, useAuthHeader: isLoggedIn);

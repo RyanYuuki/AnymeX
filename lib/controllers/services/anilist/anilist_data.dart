@@ -874,7 +874,7 @@ averageScore
 
     final Map<String, dynamic> variables = {
       if (query != null && query.isNotEmpty) 'search': query,
-      'isAdult': isAdult,
+      if (!isAdult) 'isAdult': false,
     };
 
     if (filters != null) {
