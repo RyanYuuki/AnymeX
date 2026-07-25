@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
 import 'package:anymex/controllers/settings/methods.dart';
-import 'package:anymex/screens/anime/misc/barcode_scanner_page.dart';
 import 'package:anymex/screens/anime/misc/calendar.dart';
 import 'package:anymex/screens/anime/misc/list_exporter.dart';
 import 'package:anymex/screens/anime/misc/recommendation.dart';
@@ -104,35 +103,15 @@ class OtherFeaturesPage extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 16),
-                SizedBox(
-                  height: 170,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Expanded(
-                        child: _FeatureCard(
-                          icon: Icons.auto_awesome,
-                          title: 'AI Picks',
-                          description: 'Smart manga suggestions',
-                          accentColor: colorScheme.tertiary,
-                          onTap: () => navigate(() => const AIRecommendation(
-                                isManga: true,
-                              )),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _FeatureCard(
-                          icon: Icons.qr_code_scanner_rounded,
-                          title: 'Scanner',
-                          description: 'Scan ISBN barcodes',
-                          accentColor: colorScheme.tertiary,
-                          onTap: () =>
-                              navigate(() => const BarcodeScannerPage()),
-                        ),
-                      ),
-                    ],
-                  ),
+                _FeatureCard(
+                  icon: Icons.auto_awesome,
+                  title: 'AI Picks',
+                  description: 'Smart manga suggestions',
+                  accentColor: colorScheme.tertiary,
+                  isFullWidth: true,
+                  onTap: () => navigate(() => const AIRecommendation(
+                        isManga: true,
+                      )),
                 ),
                 const SizedBox(height: 12),
                 _FeatureCard(
