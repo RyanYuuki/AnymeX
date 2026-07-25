@@ -281,7 +281,12 @@ class Media {
       cover: json['fanart'] != null
           ? 'https://wsrv.nl/?url=https://simkl.in/fanart/${json['fanart']}_medium.jpg'
           : null,
-      totalEpisodes: json['total_episodes']?.toString() ?? '1',
+      totalEpisodes: (json['total_episodes'] ??
+              json['total_episodes_count'] ??
+              json['episodes_count'] ??
+              json['episodes'])
+          ?.toString() ??
+          (isMovie ? '1' : '??'),
       type: json['country']?.toUpperCase() ?? 'UNKNOWN',
       premiered: json['released'] ?? 'Unknown release date',
       duration: json['runtime'] != null
@@ -338,7 +343,12 @@ class Media {
       cover: json['fanart'] != null
           ? 'https://simkl.in/fanart/${json['fanart']}_medium.jpg'
           : posterUrl,
-      totalEpisodes: json['total_episodes']?.toString() ?? '1',
+      totalEpisodes: (json['total_episodes'] ??
+              json['total_episodes_count'] ??
+              json['episodes_count'] ??
+              json['episodes'])
+          ?.toString() ??
+          (isMovie ? '1' : '??'),
       type: isMovie ? 'MOVIE' : 'TV',
       rating: json['ratings']?['simkl']?['rating']?.toString() ?? '0.0',
       popularity: json['rank']?.toString() ?? '0',

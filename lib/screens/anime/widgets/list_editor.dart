@@ -80,7 +80,12 @@ class _ListEditorModalState extends State<ListEditorModal> {
       _isPrivate = tracked.isPrivate ?? false;
     }
 
-    if (widget.media.serviceType == ServicesType.simkl && !widget.isManga) {
+    final activeService = Get.find<ServiceHandler>().serviceType;
+    final isSimklMedia = widget.media.serviceType == ServicesType.simkl ||
+        activeService == ServicesType.simkl ||
+        widget.currentAnime.value?.servicesType == ServicesType.simkl;
+
+    if (isSimklMedia && !widget.isManga) {
       _fetchSimklSeasons();
     }
   }
@@ -95,21 +100,29 @@ class _ListEditorModalState extends State<ListEditorModal> {
   Future<void> _fetchSimklSeasons() async {
     setState(() => _isLoadingSeasons = true);
     final service = Get.find<ServiceHandler>().simklService;
-    final listId = widget.currentAnime.value?.id ?? widget.media.id;
+    var listId = widget.currentAnime.value?.id ?? widget.media.id;
+    if (!listId.contains('*')) {
+      listId = '$listId*SERIES';
+    }
     final seasons = await service.getEpisodesBySeason(listId);
     if (mounted) {
       setState(() {
         _simklSeasons = seasons;
         _isLoadingSeasons = false;
         if (_simklSeasons.isNotEmpty && !_simklSeasons.containsKey(_localSeason)) {
-          _localSeason = _simklSeasons.keys.first;
+          final validSeasons =
+              _simklSeasons.keys.where((k) => k > 0).toList()..sort();
+          if (validSeasons.isNotEmpty) {
+            _localSeason = validSeasons.first;
+            _seasonController.text = _localSeason.toString();
+          }
         }
       });
     }
   }
 
   int? get _maxTotal {
-    if (_simklSeasons.isNotEmpty) {
+    if (_simklSeasons.isNotEmpty && _simklSeasons.containsKey(_localSeason)) {
       return _simklSeasons[_localSeason];
     }
     final tracked = widget.currentAnime.value;
@@ -123,7 +136,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
   }
 
   String get _displayTotal {
-    if (_simklSeasons.isNotEmpty) {
+    if (_simklSeasons.isNotEmpty && _simklSeasons.containsKey(_localSeason)) {
       return _simklSeasons[_localSeason]?.toString() ?? '??';
     }
     final tracked = widget.currentAnime.value;
@@ -147,7 +160,58 @@ class _ListEditorModalState extends State<ListEditorModal> {
     return parsed;
   }
 
+  int? get _overallTotal {
+    if (_simklSeasons.isNotEmpty) {
+      return _simklSeasons.entries
+          .where((e) => e.key > 0)
+          .fold<int>(0, (sum, e) => sum + e.value);
+    }
+    final tracked = widget.currentAnime.value;
+    final preferredRaw = widget.isManga
+        ? widget.media.totalChapters
+        : widget.media.totalEpisodes;
+    final fallbackRaw = tracked?.totalEpisodes;
+    return _parseKnownPositiveInt(preferredRaw) ??
+        _parseKnownPositiveInt(fallbackRaw);
+  }
+
   void _setProgress(int value, {bool updateController = true}) {
+    if (_simklSeasons.isNotEmpty) {
+      final validSeasons =
+          _simklSeasons.keys.where((k) => k > 0).toList()..sort();
+      final currentSeasonMax = _simklSeasons[_localSeason];
+
+      if (currentSeasonMax != null) {
+        if (value > currentSeasonMax) {
+          final currentIdx = validSeasons.indexOf(_localSeason);
+          if (currentIdx != -1 && currentIdx + 1 < validSeasons.length) {
+            final nextSeason = validSeasons[currentIdx + 1];
+            final remainder = value - currentSeasonMax;
+            setState(() {
+              _localSeason = nextSeason;
+              _seasonController.text = _localSeason.toString();
+            });
+            _setProgress(remainder, updateController: updateController);
+            return;
+          }
+        } else if (value < 0) {
+          final currentIdx = validSeasons.indexOf(_localSeason);
+          if (currentIdx > 0) {
+            final prevSeason = validSeasons[currentIdx - 1];
+            final prevMax = _simklSeasons[prevSeason] ?? 1;
+            final remainder = prevMax + value + 1;
+            setState(() {
+              _localSeason = prevSeason;
+              _seasonController.text = _localSeason.toString();
+            });
+            _setProgress(remainder.clamp(0, prevMax),
+                updateController: updateController);
+            return;
+          }
+        }
+      }
+    }
+
     final max = _maxTotal;
     setState(() {
       _localProgress =
@@ -349,7 +413,11 @@ class _ListEditorModalState extends State<ListEditorModal> {
   Widget _buildSeasonRow(BuildContext context) {
     final colors = context.colors;
 
-    final maxSeason = _simklSeasons.isNotEmpty ? _simklSeasons.keys.reduce((a, b) => a > b ? a : b) : null;
+    final validSeasons =
+        _simklSeasons.keys.where((k) => k > 0).toList();
+    final maxSeason = validSeasons.isNotEmpty
+        ? validSeasons.reduce((a, b) => a > b ? a : b)
+        : null;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -445,6 +513,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
     final colors = context.colors;
     final max = _maxTotal;
     final pct = max != null ? (_localProgress / max).clamp(0.0, 1.0) : null;
+    final overall = _overallTotal;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -458,12 +527,25 @@ class _ListEditorModalState extends State<ListEditorModal> {
                     color: colors.onSurfaceVariant,
                   ),
             ),
-            Text(
-              '$_localProgress / $_displayTotal',
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: colors.onSurface,
-                    fontWeight: FontWeight.w600,
-                  ),
+            RichText(
+              text: TextSpan(
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: colors.onSurface,
+                      fontWeight: FontWeight.w600,
+                    ),
+                children: [
+                  TextSpan(text: '$_localProgress / $_displayTotal'),
+                  if (overall != null && _simklSeasons.isNotEmpty)
+                    TextSpan(
+                      text: '  ($overall total)',
+                      style: TextStyle(
+                        color: colors.onSurfaceVariant,
+                        fontWeight: FontWeight.normal,
+                        fontSize: 11,
+                      ),
+                    ),
+                ],
+              ),
             ),
           ],
         ),

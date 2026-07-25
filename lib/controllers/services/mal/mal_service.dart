@@ -742,6 +742,20 @@ class MalService extends GetxController implements BaseService, OnlineService {
           completedAt: completedAt));
     }
 
+    if (isAnime && serviceHandler.simklService.isLoggedIn.value) {
+      final anilistId =
+          (params.syncIds?.isNotEmpty ?? false) ? params.syncIds![0] : null;
+      serviceHandler.simklService.updateListEntryFromExternalId(
+        malId: listId,
+        anilistId: anilistId,
+        score: score,
+        status: status,
+        progress: progress,
+        season: params.season,
+        isAnime: isAnime,
+      );
+    }
+
     if (req.statusCode == 200) {
       // snackBar(
       //     "${isAnime ? 'Anime' : 'Manga'} Tracked to ${isAnime ? 'Episode' : 'Chapter'} $progress Successfully!");
