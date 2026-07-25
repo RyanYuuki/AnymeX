@@ -11,8 +11,7 @@ plugins {
 android {
     namespace = "com.ryan.anymex"
     compileSdk = 36
-    // ndkVersion = flutter.ndkVersion
-    ndkVersion = "27.0.12077973"
+    ndkVersion = flutter.ndkVersion
 
     dependenciesInfo {
         includeInApk = false
@@ -39,6 +38,8 @@ android {
     packagingOptions {
         jniLibs {
             useLegacyPackaging true
+            excludes += "**/libtorrent_flutter.so"
+            excludes += "**/libdartjni.so"
         }
         resources {
             exclude 'META-INF/versions/9/OSGI-INF/MANIFEST.MF'
@@ -68,8 +69,12 @@ android {
         }
 
         debug {
-            minifyEnabled false
-            shrinkResources false
+            // minifyEnabled false
+            // shrinkResources false
+            signingConfig = signingConfigs.debug
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 }
