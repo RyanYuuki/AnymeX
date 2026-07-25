@@ -425,19 +425,21 @@ class SimklService extends GetxController
           if (decoded is! List || decoded.isEmpty) return {};
           final seasons = <int, int>{};
           for (final ep in decoded) {
-            int s = 1;
+            final isSpecial = ep['type'] == 'special';
+            int? s;
             final directSeason = ep['season'];
             if (directSeason != null) {
               s = directSeason is int
                   ? directSeason
-                  : int.tryParse(directSeason.toString()) ?? 1;
+                  : int.tryParse(directSeason.toString());
             } else if (ep['tvdb'] is Map && ep['tvdb']['season'] != null) {
               final tvdbSeason = ep['tvdb']['season'];
               s = tvdbSeason is int
                   ? tvdbSeason
-                  : int.tryParse(tvdbSeason.toString()) ?? 1;
+                  : int.tryParse(tvdbSeason.toString());
             }
-            seasons[s] = (seasons[s] ?? 0) + 1;
+            final finalSeason = (isSpecial || s == null || s <= 0) ? 0 : s;
+            seasons[finalSeason] = (seasons[finalSeason] ?? 0) + 1;
           }
           Logger.i('[Simkl/$endpointType] Season map for $id: $seasons');
           return seasons;
