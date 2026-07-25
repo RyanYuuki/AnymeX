@@ -54,4 +54,84 @@ class MediaSyncer {
     }
     return null;
   }
+
+  /// Resolves an external ID (e.g. anilist, mal, kitsu, tvdb, imdb, etc.)
+  /// to a Simkl ID using Simkl's redirect endpoint:
+  /// `GET https://api.simkl.com/redirect?to=simkl&{service}={id}`
+  static Future<String?> getSimklIdFromExternal({
+    String? anilistId,
+    String? malId,
+    String? service,
+    String? externalId,
+  }) async {
+    final client = Client();
+    try {
+      String? paramName;
+      String? idToUse;
+
+      if (service != null && externalId != null) {
+        paramName = service;
+        idToUse = externalId;
+      } else if (anilistId != null) {
+        paramName = 'anilist';
+        idToUse = anilistId;
+      } else if (malId != null) {
+        paramName = 'mal';
+        idToUse = malId;
+      }
+
+      if (paramName == null || idToUse == null) return null;
+
+      final url = Uri.parse(
+          'https://api.simkl.com/redirect?to=simkl&$paramName=$idToUse');
+      final request = Request('GET', url)..followRedirects = false;
+      final response = await client.send(request);
+
+      final location = response.headers['location'];
+      if (location != null) {
+        final match =
+            RegExp(r'/(?:anime|shows|movies)/(\d+)').firstMatch(location);
+        if (match != null) {
+          return match.group(1);
+        }
+      }
+
+      // If resolving via anilist failed, fallback to malId if available
+      if (paramName == 'anilist' && malId != null) {
+        final fallbackUrl =
+            Uri.parse('https://api.simkl.com/redirect?to=simkl&mal=$malId');
+        final fallbackReq = Request('GET', fallbackUrl)..followRedirects = false;
+        final fallbackResp = await client.send(fallbackReq);
+        final fallbackLoc = fallbackResp.headers['location'];
+        if (fallbackLoc != null) {
+          final match =
+              RegExp(r'/(?:anime|shows|movies)/(\d+)').firstMatch(fallbackLoc);
+          if (match != null) {
+            return match.group(1);
+          }
+        }
+      }
+    } catch (e) {
+      Logger.i('Error resolving Simkl ID: $e');
+    } finally {
+      client.close();
+    }
+    return null;
+  }
+
+  /// Fetches anime details from Simkl API by Simkl ID:
+  /// `GET https://api.simkl.com/anime/{simklId}`
+  static Future<Map<String, dynamic>?> fetchSimklAnimeDetails(
+      String simklId) async {
+    try {
+      final url = Uri.parse('https://api.simkl.com/anime/$simklId');
+      final resp = await get(url);
+      if (resp.statusCode == 200) {
+        return jsonDecode(resp.body) as Map<String, dynamic>;
+      }
+    } catch (e) {
+      Logger.i('Error fetching Simkl anime details: $e');
+    }
+    return null;
+  }
 }

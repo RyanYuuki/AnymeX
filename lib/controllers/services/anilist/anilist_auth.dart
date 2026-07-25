@@ -2177,6 +2177,17 @@ class AnilistAuth extends GetxController {
             completedAt: completedAt));
       }
 
+      if (isAnime && serviceHandler.simklService.isLoggedIn.value) {
+        serviceHandler.simklService.updateListEntryFromExternalId(
+          anilistId: listId,
+          malId: malId,
+          score: score,
+          status: status,
+          progress: progress,
+          isAnime: isAnime,
+        );
+      }
+
       if (response.statusCode == 200) {
         final newMedia = currentMedia.value
           ..episodeCount = progress.toString()

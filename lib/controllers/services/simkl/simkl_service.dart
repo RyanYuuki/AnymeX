@@ -23,6 +23,7 @@ import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
+import 'package:anymex/utils/media_syncer.dart';
 import 'package:anymex/widgets/common/big_carousel_gate.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
@@ -589,6 +590,124 @@ class SimklService extends GetxController
     } catch (e, stack) {
       Logger.i('Exception: $e\n$stack');
       errorSnackBar('An unexpected error occurred');
+    }
+  }
+
+  /// Syncs anime progress to Simkl using an external ID (e.g. AniList ID or MAL ID).
+  /// Resolves the external ID to Simkl ID via `MediaSyncer.getSimklIdFromExternal`.
+  Future<void> updateListEntryFromExternalId({
+    String? anilistId,
+    String? malId,
+    double? score,
+    String? status,
+    int? progress,
+    int? season,
+    bool isAnime = true,
+  }) async {
+    if (!isLoggedIn.value) {
+      return;
+    }
+    try {
+      final simklId = await MediaSyncer.getSimklIdFromExternal(
+        anilistId: anilistId,
+        malId: malId,
+      );
+
+      if (simklId != null) {
+        await updateListEntry(UpdateListEntryParams(
+          listId: simklId,
+          score: score,
+          status: status,
+          progress: progress,
+          season: season,
+          isAnime: isAnime,
+        ));
+      } else if (anilistId != null || malId != null) {
+        // Fallback: If redirect resolution yielded no ID, update via external IDs directly in Simkl sync API
+        final token = AuthKeys.simklAuthToken.get<String?>();
+        final apiKey = dotenv.env['SIMKL_CLIENT_ID'];
+        if (token == null || apiKey == null) return;
+
+        final ids = <String, dynamic>{
+          if (anilistId != null) 'anilist': int.tryParse(anilistId) ?? anilistId,
+          if (malId != null) 'mal': int.tryParse(malId) ?? malId,
+        };
+
+        if (status != null) {
+          final url = Uri.parse('https://api.simkl.com/sync/add-to-list');
+          final newStatus = Simkl.alToSimklShow(status);
+          final body = {
+            'shows': [
+              {
+                'to': newStatus,
+                'ids': ids,
+              }
+            ]
+          };
+          await post(
+            url,
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $token',
+              'simkl-api-key': apiKey,
+            },
+            body: jsonEncode(body),
+          );
+        }
+
+        if (progress != null && progress > 0 && status != 'PLANNING') {
+          final historyUrl = Uri.parse('https://api.simkl.com/sync/history');
+          final effectiveSeason = (season != null && season > 0) ? season : 1;
+          final historyBody = {
+            'shows': [
+              {
+                'ids': ids,
+                'seasons': [
+                  {
+                    'number': effectiveSeason,
+                    'episodes': [
+                      for (int i = 1; i <= progress; i++) {'number': i}
+                    ]
+                  }
+                ]
+              }
+            ]
+          };
+          await post(
+            historyUrl,
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $token',
+              'simkl-api-key': apiKey,
+            },
+            body: jsonEncode(historyBody),
+          );
+        }
+
+        if (score != null && score > 0) {
+          final ratingsUrl = Uri.parse('https://api.simkl.com/sync/ratings');
+          final ratingsBody = {
+            'shows': [
+              {
+                'rating': score.toInt(),
+                'ids': ids,
+              }
+            ]
+          };
+          await post(
+            ratingsUrl,
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $token',
+              'simkl-api-key': apiKey,
+            },
+            body: jsonEncode(ratingsBody),
+          );
+        }
+        fetchUserSeriesList();
+      }
+    } catch (e, stack) {
+      Logger.i('Exception in updateListEntryFromExternalId: $e\n$stack');
     }
   }
 

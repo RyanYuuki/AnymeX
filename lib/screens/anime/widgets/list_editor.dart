@@ -80,7 +80,12 @@ class _ListEditorModalState extends State<ListEditorModal> {
       _isPrivate = tracked.isPrivate ?? false;
     }
 
-    if (widget.media.serviceType == ServicesType.simkl && !widget.isManga) {
+    final activeService = Get.find<ServiceHandler>().serviceType;
+    final isSimklMedia = widget.media.serviceType == ServicesType.simkl ||
+        activeService == ServicesType.simkl ||
+        widget.currentAnime.value?.servicesType == ServicesType.simkl;
+
+    if (isSimklMedia && !widget.isManga) {
       _fetchSimklSeasons();
     }
   }
@@ -95,21 +100,29 @@ class _ListEditorModalState extends State<ListEditorModal> {
   Future<void> _fetchSimklSeasons() async {
     setState(() => _isLoadingSeasons = true);
     final service = Get.find<ServiceHandler>().simklService;
-    final listId = widget.currentAnime.value?.id ?? widget.media.id;
+    var listId = widget.currentAnime.value?.id ?? widget.media.id;
+    if (!listId.contains('*')) {
+      listId = '$listId*SERIES';
+    }
     final seasons = await service.getEpisodesBySeason(listId);
     if (mounted) {
       setState(() {
         _simklSeasons = seasons;
         _isLoadingSeasons = false;
         if (_simklSeasons.isNotEmpty && !_simklSeasons.containsKey(_localSeason)) {
-          _localSeason = _simklSeasons.keys.first;
+          final validSeasons =
+              _simklSeasons.keys.where((k) => k > 0).toList()..sort();
+          if (validSeasons.isNotEmpty) {
+            _localSeason = validSeasons.first;
+            _seasonController.text = _localSeason.toString();
+          }
         }
       });
     }
   }
 
   int? get _maxTotal {
-    if (_simklSeasons.isNotEmpty) {
+    if (_simklSeasons.isNotEmpty && _simklSeasons.containsKey(_localSeason)) {
       return _simklSeasons[_localSeason];
     }
     final tracked = widget.currentAnime.value;
@@ -123,7 +136,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
   }
 
   String get _displayTotal {
-    if (_simklSeasons.isNotEmpty) {
+    if (_simklSeasons.isNotEmpty && _simklSeasons.containsKey(_localSeason)) {
       return _simklSeasons[_localSeason]?.toString() ?? '??';
     }
     final tracked = widget.currentAnime.value;
@@ -349,7 +362,11 @@ class _ListEditorModalState extends State<ListEditorModal> {
   Widget _buildSeasonRow(BuildContext context) {
     final colors = context.colors;
 
-    final maxSeason = _simklSeasons.isNotEmpty ? _simklSeasons.keys.reduce((a, b) => a > b ? a : b) : null;
+    final validSeasons =
+        _simklSeasons.keys.where((k) => k > 0).toList();
+    final maxSeason = validSeasons.isNotEmpty
+        ? validSeasons.reduce((a, b) => a > b ? a : b)
+        : null;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
