@@ -9,6 +9,7 @@ import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'base_player.dart' as base;
 
@@ -159,7 +160,7 @@ class MediaKitPlayer extends base.BasePlayer {
       _bufferingController.add(buffering);
     }));
 
-    _subscriptions.add(_player.stream.tracks.listen((tracks) {
+    _subscriptions.add(_player.stream.tracks.listen((tracks) async {
       final playerTracks = base.PlayerTracks(
         audio: tracks.audio
             .map((t) => base.AudioTrack(
@@ -188,6 +189,18 @@ class MediaKitPlayer extends base.BasePlayer {
             .toList(),
       );
       _tracksController.add(playerTracks);
+      try {
+        final mpv = _player.platform as dynamic;
+        final rawFps = await mpv.getProperty("container-fps");
+        double? fps = double.tryParse(rawFps.toString());
+        if (fps == null || fps <= 0) {
+          final estFps = await mpv.getProperty("estimated-vf-fps");
+          fps = double.tryParse(estFps.toString());
+        }
+        if (fps != null && fps > 0) {
+          await settingsController.setPlayerDisplayMode(fps);
+        }
+      } catch (_) {}
     }));
 
     _subscriptions.add(_player.stream.rate.listen((rate) {
