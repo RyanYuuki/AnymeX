@@ -6,6 +6,8 @@ import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/controllers/settings/settings.dart';
+import 'package:get/get.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
@@ -44,6 +46,9 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
   @override
   void initState() {
     super.initState();
+    try {
+      Get.find<Settings>().setPlayerDisplayMode();
+    } catch (_) {}
     player = Player();
     controller = VideoController(player);
     _initializePlayer();
@@ -122,6 +127,9 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
 
   @override
   void dispose() {
+    try {
+      Get.find<Settings>().applyDisplayRefreshMode();
+    } catch (_) {}
     player.dispose();
     super.dispose();
   }
