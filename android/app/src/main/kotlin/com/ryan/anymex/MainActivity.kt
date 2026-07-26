@@ -146,15 +146,15 @@ class MainActivity : FlutterActivity() {
                 "setFrameRate" -> {
                     val rate = call.argument<Double>("rate")?.toFloat() ?: 0f
                     try {
+                        val params = window.attributes
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                            val params = window.attributes
-                            params.preferredFrameRate = rate
-                            window.attributes = params
-                        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            val params = window.attributes
+                            params.preferredMinDisplayRefreshRate = rate
+                            params.preferredMaxDisplayRefreshRate = rate
                             params.preferredRefreshRate = rate
-                            window.attributes = params
+                        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            params.preferredRefreshRate = rate
                         }
+                        window.attributes = params
                         result.success(true)
                     } catch (e: Exception) {
                         result.error("SET_FRAME_RATE_FAILED", e.message, null)
