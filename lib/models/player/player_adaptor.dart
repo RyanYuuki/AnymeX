@@ -36,6 +36,7 @@ class PlayerSettings {
   String videoOutput;
   String audioOutput;
   bool enableHoldToSeek;
+  bool matchFrameRateInPlayer;
 
   PlayerSettings({
     this.speed = 1.0,
@@ -73,6 +74,7 @@ class PlayerSettings {
     this.videoOutput = 'gpu',
     this.audioOutput = 'auto',
     this.enableHoldToSeek = true,
+    this.matchFrameRateInPlayer = true,
   });
 
   factory PlayerSettings.fromDB() {
@@ -151,6 +153,8 @@ class PlayerSettings {
           .get<String>(defaults.audioOutput),
       enableHoldToSeek: PlayerSettingsKeys.enableHoldToSeek
           .get<bool>(defaults.enableHoldToSeek),
+      matchFrameRateInPlayer: PlayerSettingsKeys.matchFrameRateInPlayer
+          .get<bool>(defaults.matchFrameRateInPlayer),
     );
   }
 }
