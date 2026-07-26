@@ -7,7 +7,7 @@ import 'package:anymex/models/mangaupdates/news_item.dart';
 import 'package:http/http.dart' as http;
 
 class MangaAnimeUtil {
-  static const String _baseUrl = 'https://api.mangabaka.dev/v1';
+  static const String _baseUrl = 'https://api.mangabaka.org/v1';
 
   static const Map<String, String> _muHeaders = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
