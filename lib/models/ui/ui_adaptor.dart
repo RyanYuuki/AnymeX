@@ -19,6 +19,7 @@ class UISettings {
   bool enableAnimation;
   bool disableGradient;
   Map<String, bool> homePageCardsMal;
+  Map<String, bool> homePageCardsSimkl;
   int cardStyle;
   int historyCardStyle;
   bool liquidMode;
@@ -48,6 +49,7 @@ class UISettings {
     this.translucentTabBar = true,
     Map<String, bool>? homePageCards,
     Map<String, bool>? homePageCardsMal,
+    Map<String, bool>? homePageCardsSimkl,
     this.enableAnimation = true,
     this.disableGradient = false,
     this.cardStyle = 2,
@@ -91,6 +93,19 @@ class UISettings {
               "Dropped Manga": false,
               "Planning Animes": false,
               "Planning Manga": false,
+            },
+        homePageCardsSimkl = homePageCardsSimkl ??
+            {
+              "Continue Watching (Movies)": true,
+              "Continue Watching (Shows)": true,
+              "Completed Movies": false,
+              "Completed Shows": false,
+              "Paused Movies": false,
+              "Paused Shows": false,
+              "Dropped Movies": false,
+              "Dropped Shows": false,
+              "Planning Movies": false,
+              "Planning Shows": false,
             };
 
   void normalizeMaps() {
@@ -100,12 +115,15 @@ class UISettings {
     homePageCardsMal = Map<String, bool>.from(homePageCardsMal);
     homePageCardsMal.putIfAbsent('Recommended Animes', () => true);
     homePageCardsMal.putIfAbsent('Recommended Mangas', () => true);
+    homePageCardsSimkl = Map<String, bool>.from(homePageCardsSimkl);
   }
 
   factory UISettings.fromDB() {
     final uiDefaults = UISettings();
     final homeCardsRaw = UISettingsKeys.homePageCards.get<String?>(null);
     final homeCardsMalRaw = UISettingsKeys.homePageCardsMal.get<String?>(null);
+    final homeCardsSimklRaw =
+        UISettingsKeys.homePageCardsSimkl.get<String?>(null);
     return UISettings(
       glowMultiplier:
           UISettingsKeys.glowMultiplier.get<double>(uiDefaults.glowMultiplier),
@@ -140,6 +158,9 @@ class UISettings {
           UISettingsKeys.disableGradient.get<bool>(uiDefaults.disableGradient),
       homePageCardsMal: homeCardsMalRaw != null
           ? Map<String, bool>.from(jsonDecode(homeCardsMalRaw))
+          : null,
+      homePageCardsSimkl: homeCardsSimklRaw != null
+          ? Map<String, bool>.from(jsonDecode(homeCardsSimklRaw))
           : null,
       cardStyle: UISettingsKeys.cardStyle.get<int>(uiDefaults.cardStyle),
       historyCardStyle:
