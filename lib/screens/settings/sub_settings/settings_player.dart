@@ -2109,6 +2109,16 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                   switchValue: settings.playerMenuAnimation,
                                   onChanged: (val) =>
                                       settings.playerMenuAnimation = val),
+                              if (Platform.isAndroid)
+                                CustomSwitchTile(
+                                    padding: const EdgeInsets.all(10),
+                                    icon: Icons.speed_rounded,
+                                    title: "Match Video Frame Rate",
+                                    description:
+                                        "Dynamically adjust screen refresh rate to match video frame rate in player (reduces power consumption and CPU/GPU usage)",
+                                    switchValue: settings.matchFrameRateInPlayer,
+                                    onChanged: (val) =>
+                                        settings.matchFrameRateInPlayer = val),
                               CustomSliderTile(
                                 sliderValue: settings.seekDuration.toDouble(),
                                 max: 50,
