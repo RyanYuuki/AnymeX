@@ -150,6 +150,19 @@ class Settings extends GetxController {
     }
   }
 
+  Future<void> setPlayerDisplayMode() async {
+    if (!Platform.isAndroid) return;
+    try {
+      if (matchFrameRateInPlayer) {
+        await FlutterDisplayMode.setPreferredMode(DisplayMode.auto);
+        await Future.delayed(const Duration(milliseconds: 100));
+        activeDisplayMode.value = await FlutterDisplayMode.active;
+      }
+    } catch (e) {
+      Logger.e("Error setting player display mode: $e");
+    }
+  }
+
   Future<void> savePreferredDisplayMode(DisplayMode mode) async {
     preferredDisplayMode.value = mode;
     General.preferredDisplayMode.set(mode.toString());
@@ -364,6 +377,8 @@ class Settings extends GetxController {
   Map<String, bool> get homePageCards => _getUISetting((s) => s.homePageCards);
   Map<String, bool> get homePageCardsMal =>
       _getUISetting((s) => s.homePageCardsMal);
+  Map<String, bool> get homePageCardsSimkl =>
+      _getUISetting((s) => s.homePageCardsSimkl);
 
   String get _currentTabOrderKey {
     final service = Get.isRegistered<ServiceHandler>()
@@ -697,6 +712,18 @@ class Settings extends GetxController {
     PlayerSettingsKeys.preferredSubtitleLanguage.set(value);
   }
 
+  bool get matchFrameRateInPlayer =>
+      _getPlayerSetting((s) => s.matchFrameRateInPlayer);
+  set matchFrameRateInPlayer(bool value) {
+    playerSettings.update((s) => s?.matchFrameRateInPlayer = value);
+    PlayerSettingsKeys.matchFrameRateInPlayer.set(value);
+    if (!value) {
+      applyDisplayRefreshMode();
+    } else {
+      setPlayerDisplayMode();
+    }
+  }
+
   void updateHomePageCard(String key, bool value) {
     final currentCards = Map<String, bool>.from(uiSettings.value.homePageCards);
     currentCards[key] = value;
@@ -710,5 +737,13 @@ class Settings extends GetxController {
     currentCards[key] = value;
     uiSettings.update((s) => s?.homePageCardsMal = currentCards);
     UISettingsKeys.homePageCardsMal.set(jsonEncode(currentCards));
+  }
+
+  void updateHomePageCardSimkl(String key, bool value) {
+    final currentCards =
+        Map<String, bool>.from(uiSettings.value.homePageCardsSimkl);
+    currentCards[key] = value;
+    uiSettings.update((s) => s?.homePageCardsSimkl = currentCards);
+    UISettingsKeys.homePageCardsSimkl.set(jsonEncode(currentCards));
   }
 }
