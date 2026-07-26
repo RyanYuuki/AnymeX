@@ -1,5 +1,6 @@
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controller/player_utils.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/player_thumbnail_preview.dart';
 import 'package:anymex/utils/aniskip.dart' as aniskip;
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/anymex_slider_m3.dart';
@@ -35,6 +36,26 @@ class ProgressSlider extends StatefulWidget {
 }
 
 class _ProgressSliderState extends State<ProgressSlider> {
+  double? _hoverX;
+
+  void _updateHover(double localX, double totalWidth, double maxValue, PlayerController controller) {
+    if (totalWidth <= 0 || maxValue <= 0) return;
+    final clampedX = localX.clamp(0.0, totalWidth);
+    final percent = clampedX / totalWidth;
+    final ms = (percent * maxValue).toInt();
+    setState(() {
+      _hoverX = clampedX;
+    });
+    controller.updatePreviewPosition(Duration(milliseconds: ms));
+  }
+
+  void _clearHover(PlayerController controller) {
+    setState(() {
+      _hoverX = null;
+    });
+    controller.stopPreviewThumbnail();
+  }
+
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<PlayerController>();
@@ -56,74 +77,112 @@ class _ProgressSliderState extends State<ProgressSlider> {
       final containerHeight = isDefaultStyle ? 27.0 : 27.0;
       final markerSize = isDefaultStyle ? 15.0 : 4.0;
 
-      return SizedBox(
-        height: containerHeight,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            if (isDefaultStyle)
-              AnymeXSliderM3(
-                theme: AnymeXSliderM3Theme(
-                  trackHeight: 15,
-                  thumbHeight: 20,
-                  activeColor: widget.activeTrackColor,
-                  inactiveColor: widget.inactiveTrackColor,
-                  secondaryActiveColor: widget.secondaryActiveTrackColor,
-                ),
-                label: PlayerUtils.formatDuration(
-                    Duration(milliseconds: position)),
-                divisions: null,
-                focusNode:
-                    FocusNode(canRequestFocus: false, skipTraversal: true),
-                min: 0,
-                value: clampedPosition,
-                max: maxValue,
-                secondaryTrackValue: clampedBuffer,
-                onChangeStart: (v) => controller.isSeeking.value = true,
-                onChanged: (v) =>
-                    controller.seekTo(Duration(milliseconds: v.toInt())),
-                onChangeEnd: (v) {
-                  controller.isSeeking.value = false;
-                },
-              )
-            else
-              SliderTheme(
-                data: _getSliderTheme(colorScheme, widget.style),
-                child: Slider(
-                  focusNode:
-                      FocusNode(canRequestFocus: false, skipTraversal: true),
-                  min: 0,
-                  value: clampedPosition,
-                  max: maxValue,
-                  secondaryTrackValue: clampedBuffer,
-                  onChangeStart: (v) => controller.isSeeking.value = true,
-                  onChanged: (v) =>
-                      controller.seekTo(Duration(milliseconds: v.toInt())),
-                  onChangeEnd: (v) {
-                    controller.isSeeking.value = false;
-                  },
-                ),
-              ),
-            if (skipTimes != null && totalDuration.inMilliseconds > 0)
-              Positioned.fill(
-                child: IgnorePointer(
-                  child: CustomPaint(
-                    painter: SkipTimelinePainter(
-                      skipTimes: skipTimes,
-                      totalDuration: totalDuration,
-                      currentPosition: Duration(
-                        milliseconds: clampedPosition.toInt(),
-                      ),
-                      markerHeight: markerSize,
-                      hideUnderThumb: widget.style != SliderStyle.ios,
-                      segmentColor: widget.segmentColor,
-                      recapSegmentColor: widget.recapSegmentColor,
-                    ),
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final boxWidth = constraints.maxWidth;
+
+          return SizedBox(
+            height: containerHeight,
+            child: Stack(
+              clipBehavior: Clip.none,
+              alignment: Alignment.center,
+              children: [
+                MouseRegion(
+                  onHover: (e) => _updateHover(e.localPosition.dx, boxWidth, maxValue, controller),
+                  onExit: (_) => _clearHover(controller),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      if (isDefaultStyle)
+                        AnymeXSliderM3(
+                          theme: AnymeXSliderM3Theme(
+                            trackHeight: 15,
+                            thumbHeight: 20,
+                            activeColor: widget.activeTrackColor,
+                            inactiveColor: widget.inactiveTrackColor,
+                            secondaryActiveColor: widget.secondaryActiveTrackColor,
+                          ),
+                          label: PlayerUtils.formatDuration(
+                              Duration(milliseconds: position)),
+                          divisions: null,
+                          focusNode:
+                              FocusNode(canRequestFocus: false, skipTraversal: true),
+                          min: 0,
+                          value: clampedPosition,
+                          max: maxValue,
+                          secondaryTrackValue: clampedBuffer,
+                          onChangeStart: (v) {
+                            controller.isSeeking.value = true;
+                            _updateHover((v / maxValue) * boxWidth, boxWidth, maxValue, controller);
+                          },
+                          onChanged: (v) {
+                            controller.seekTo(Duration(milliseconds: v.toInt()));
+                            _updateHover((v / maxValue) * boxWidth, boxWidth, maxValue, controller);
+                          },
+                          onChangeEnd: (v) {
+                            controller.isSeeking.value = false;
+                            _clearHover(controller);
+                          },
+                        )
+                      else
+                        SliderTheme(
+                          data: _getSliderTheme(colorScheme, widget.style),
+                          child: Slider(
+                            focusNode:
+                                FocusNode(canRequestFocus: false, skipTraversal: true),
+                            min: 0,
+                            value: clampedPosition,
+                            max: maxValue,
+                            secondaryTrackValue: clampedBuffer,
+                            onChangeStart: (v) {
+                              controller.isSeeking.value = true;
+                              _updateHover((v / maxValue) * boxWidth, boxWidth, maxValue, controller);
+                            },
+                            onChanged: (v) {
+                              controller.seekTo(Duration(milliseconds: v.toInt()));
+                              _updateHover((v / maxValue) * boxWidth, boxWidth, maxValue, controller);
+                            },
+                            onChangeEnd: (v) {
+                              controller.isSeeking.value = false;
+                              _clearHover(controller);
+                            },
+                          ),
+                        ),
+                      if (skipTimes != null && totalDuration.inMilliseconds > 0)
+                        Positioned.fill(
+                          child: IgnorePointer(
+                            child: CustomPaint(
+                              painter: SkipTimelinePainter(
+                                skipTimes: skipTimes,
+                                totalDuration: totalDuration,
+                                currentPosition: Duration(
+                                  milliseconds: clampedPosition.toInt(),
+                                ),
+                                markerHeight: markerSize,
+                                hideUnderThumb: widget.style != SliderStyle.ios,
+                                segmentColor: widget.segmentColor,
+                                recapSegmentColor: widget.recapSegmentColor,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
-              ),
-          ],
-        ),
+                if (controller.isPreviewingThumbnail.value && _hoverX != null)
+                  Positioned(
+                    bottom: containerHeight + 10,
+                    left: (_hoverX! - 80.0).clamp(0.0, (boxWidth - 160.0).clamp(0.0, boxWidth)),
+                    child: PlayerThumbnailPreview(
+                      imageBytes: controller.previewThumbnailBytes.value,
+                      position: controller.previewPosition.value,
+                      totalDuration: totalDuration,
+                    ),
+                  ),
+              ],
+            ),
+          );
+        },
       );
     });
   }
