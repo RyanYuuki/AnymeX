@@ -369,6 +369,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   @override
   void onInit() {
     super.onInit();
+    settings.setPlayerDisplayMode();
     PlayerController.initializePlayerControlsIfNeeded(settings);
     WidgetsBinding.instance.addObserver(this);
     _initDatabaseVars();
@@ -547,6 +548,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     PipController.setAutoEnter(enabled: false);
     _accelerometerSub?.cancel();
     delete();
+    settings.applyDisplayRefreshMode();
     super.onClose();
   }
 
