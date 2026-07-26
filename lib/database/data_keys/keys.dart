@@ -173,6 +173,7 @@ enum AuthKeys {
   malRefreshToken,
   simklAuthToken,
   malSessionId,
+  mangaBakaAuthToken,
 }
 
 enum SearchKeys { novelSearchedQueries }
@@ -251,6 +252,7 @@ enum PlayerSettingsKeys {
   videoOutput,
   audioOutput,
   enableHoldToSeek,
+  matchFrameRateInPlayer,
 }
 
 enum UISettingsKeys {
@@ -270,6 +272,7 @@ enum UISettingsKeys {
   enableAnimation,
   disableGradient,
   homePageCardsMal,
+  homePageCardsSimkl,
   cardStyle,
   historyCardStyle,
   liquidMode,
