@@ -23,11 +23,12 @@ import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
-const _kBaseApi = 'https://api.mangabaka.dev';
+const _kBaseApi = 'https://api.mangabaka.org';
 const _kBaseAuth = 'https://mangabaka.org/auth/oauth2';
 const _kClientId = 'TpsJLfZWOXJgqTlzYRFMQJHeZXXFnCyq';
 const _kRedirectUri = 'anymex://callback';
 const _kCallbackScheme = 'anymex';
+
 
 class MangaBakaService extends GetxController
     implements BaseService, OnlineService {
@@ -265,6 +266,21 @@ class MangaBakaService extends GetxController
 
   Future<void> _fetchUserProfile() async {
     try {
+      final meResp = await _get('/v1/my/profile');
+      if (meResp.statusCode == 200) {
+        final envelope = MangaBakaResponse<MangaBakaUserProfile>.fromJson(
+          jsonDecode(meResp.body) as Map<String, dynamic>,
+          (d) => MangaBakaUserProfile.fromJson(d as Map<String, dynamic>),
+        );
+        if (envelope.data != null) {
+          profileData.value = Profile(
+            id: envelope.data!.id,
+            name: envelope.data!.displayName,
+            avatar: null,
+          );
+          return;
+        }
+      }
       final resp = await http.get(
         Uri.parse('$_kBaseAuth/userinfo'),
         headers: {
@@ -278,20 +294,6 @@ class MangaBakaService extends GetxController
           id: body['sub']?.toString(),
           name: body['preferred_username'] as String? ??
               body['nickname'] as String? ??
-              'MangaBaka User',
-          avatar: null,
-        );
-        return;
-      }
-      final meResp = await _get('/v1/my/profile');
-      if (meResp.statusCode != 200) return;
-      final data = (jsonDecode(meResp.body) as Map<String, dynamic>)['data']
-          as Map<String, dynamic>?;
-      if (data != null) {
-        profileData.value = Profile(
-          id: data['id']?.toString(),
-          name: data['preferred_username'] as String? ??
-              data['nickname'] as String? ??
               'MangaBaka User',
           avatar: null,
         );
@@ -360,19 +362,30 @@ class MangaBakaService extends GetxController
 
   Future<MangaBakaLibraryEntry?> fetchLibraryEntry(int seriesId) async {
     try {
-      final resp =
+      final resp = await _get('/v1/my/library/$seriesId');
+      if (resp.statusCode == 200) {
+        final envelope = MangaBakaResponse<MangaBakaLibraryEntry>.fromJson(
+          jsonDecode(resp.body) as Map<String, dynamic>,
+          (d) => MangaBakaLibraryEntry.fromJson(d as Map<String, dynamic>),
+        );
+        return envelope.data;
+      }
+      if (resp.statusCode == 404) return null;
+      final batchResp =
           await _get('/v1/my/library/batch', rawQuery: 'series_id=$seriesId');
-      if (resp.statusCode != 200) return null;
-      final envelope =
-          MangaBakaResponse<List<MangaBakaLibraryEntry>>.fromJson(
-        jsonDecode(resp.body) as Map<String, dynamic>,
-        (d) => (d as List<dynamic>)
-            .map((e) =>
-                MangaBakaLibraryEntry.fromJson(e as Map<String, dynamic>))
-            .toList(),
-      );
-      final entries = envelope.data;
-      return (entries != null && entries.isNotEmpty) ? entries.first : null;
+      if (batchResp.statusCode == 200) {
+        final envelope =
+            MangaBakaResponse<List<MangaBakaLibraryEntry>>.fromJson(
+          jsonDecode(batchResp.body) as Map<String, dynamic>,
+          (d) => (d as List<dynamic>)
+              .map((e) =>
+                  MangaBakaLibraryEntry.fromJson(e as Map<String, dynamic>))
+              .toList(),
+        );
+        final entries = envelope.data;
+        return (entries != null && entries.isNotEmpty) ? entries.first : null;
+      }
+      return null;
     } catch (e) {
       Logger.i('[MangaBaka] fetchLibraryEntry error: $e');
       return null;
@@ -484,14 +497,21 @@ class MangaBakaService extends GetxController
         ? MangaBakaLibraryState.fromAnilistStatus(params.status)
         : null;
 
-    String? isoDate(DateTime? d) => d?.toUtc().toIso8601String();
+    String? formattedDate(DateTime? d) {
+      if (d == null) return null;
+      final day = d.day.toString().padLeft(2, '0');
+      final month = d.month.toString().padLeft(2, '0');
+      final year = d.year.toString();
+      return '$day-$month-$year';
+    }
+
 
     final body = <String, dynamic>{};
     if (state != null) body['state'] = state.value;
     if (params.score != null) body['rating'] = params.score!.toInt();
     if (params.progress != null) body['progress_chapter'] = params.progress;
-    if (params.startedAt != null) body['start_date'] = isoDate(params.startedAt);
-    if (params.completedAt != null) body['finish_date'] = isoDate(params.completedAt);
+    if (params.startedAt != null) body['start_date'] = formattedDate(params.startedAt);
+    if (params.completedAt != null) body['finish_date'] = formattedDate(params.completedAt);
     if (create && state == null) body['state'] = 'reading';
 
     final ok = await _writeLibraryEntry(
