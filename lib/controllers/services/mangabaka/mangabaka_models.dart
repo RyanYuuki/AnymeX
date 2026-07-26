@@ -185,9 +185,84 @@ enum MangaBakaLibraryState {
       };
 }
 
+const _titlePriorities = [
+  'en',
+  'ja-Latn',
+  'ja',
+  'ko-Latn',
+  'ko',
+  'zh-Latn',
+  'zh',
+];
+
+class MangaBakaItemTitle {
+  final String language;
+  final List<String> traits;
+  final String title;
+  final bool isPrimary;
+
+  const MangaBakaItemTitle({
+    required this.language,
+    required this.traits,
+    required this.title,
+    required this.isPrimary,
+  });
+
+  factory MangaBakaItemTitle.fromJson(Map<String, dynamic> json) {
+    return MangaBakaItemTitle(
+      language: json['language'] as String? ?? '',
+      traits: (json['traits'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
+      title: json['title'] as String? ?? '',
+      isPrimary: json['is_primary'] as bool? ?? false,
+    );
+  }
+}
+
+String chooseBestTitle(
+    int id, List<MangaBakaItemTitle>? titles, String? defaultTitle) {
+  if (titles != null && titles.isNotEmpty) {
+    for (final lang in _titlePriorities) {
+      final matching = titles.where((t) => t.language == lang).toList();
+      if (matching.isNotEmpty) {
+        matching.sort((a, b) {
+          int score(MangaBakaItemTitle t) {
+            if (t.isPrimary) return 0;
+            if (t.traits.contains('official')) return 1;
+            if (t.traits.contains('native')) return 2;
+            return 3;
+          }
+
+          return score(a).compareTo(score(b));
+        });
+        return matching.first.title;
+      }
+    }
+    return titles.first.title;
+  }
+  if (defaultTitle != null && defaultTitle.isNotEmpty) return defaultTitle;
+  return 'ID: $id - Title unavailable';
+}
+
+String? parseCoverUrl(Map<String, dynamic>? cover) {
+  if (cover == null) return null;
+  final x250 = cover['x250'] as Map<String, dynamic>?;
+  if (x250 != null && x250['x1'] != null) {
+    return x250['x1'] as String;
+  }
+  final raw = cover['raw'] as Map<String, dynamic>?;
+  if (raw != null && raw['url'] != null) {
+    return raw['url'] as String;
+  }
+  return null;
+}
+
 class MangaBakaSeries {
   final int id;
   final String title;
+  final List<MangaBakaItemTitle>? titles;
   final String? coverUrl;
   final String? description;
   final MangaBakaStatus status;
@@ -197,10 +272,14 @@ class MangaBakaSeries {
   final int? anilistId;
   final int? malId;
   final double? rating;
+  final List<String>? authors;
+  final List<String>? artists;
+  final String? startDate;
 
   const MangaBakaSeries({
     required this.id,
     required this.title,
+    this.titles,
     this.coverUrl,
     this.description,
     required this.status,
@@ -210,27 +289,51 @@ class MangaBakaSeries {
     this.anilistId,
     this.malId,
     this.rating,
+    this.authors,
+    this.artists,
+    this.startDate,
   });
 
   factory MangaBakaSeries.fromJson(Map<String, dynamic> json) {
     final cover = json['cover'] as Map<String, dynamic>?;
-    final raw = cover?['raw'] as Map<String, dynamic>?;
+    final coverUrl = parseCoverUrl(cover);
+    final rawTitles = json['titles'] as List<dynamic>?;
+    final titles = rawTitles
+        ?.map((e) => MangaBakaItemTitle.fromJson(e as Map<String, dynamic>))
+        .toList();
+    final defaultTitle = json['title'] as String?;
+    final bestTitle = chooseBestTitle(
+        json['id'] as int? ?? 0, titles, defaultTitle);
+
     final source = json['source'] as Map<String, dynamic>?;
     final anilistSource = source?['anilist'] as Map<String, dynamic>?;
     final malSource = source?['my_anime_list'] as Map<String, dynamic>?;
 
+    final authorsList = (json['authors'] as List<dynamic>?)
+        ?.map((e) => e.toString())
+        .toList();
+    final artistsList = (json['artists'] as List<dynamic>?)
+        ?.map((e) => e.toString())
+        .toList();
+    final pubData = json['published'] as Map<String, dynamic>?;
+    final startDate = pubData?['start_date'] as String?;
+
     return MangaBakaSeries(
       id: json['id'] as int,
-      title: json['title'] as String? ?? '',
-      coverUrl: raw?['url'] as String?,
+      title: bestTitle,
+      titles: titles,
+      coverUrl: coverUrl,
       description: json['description'] as String?,
       status: MangaBakaStatus.fromString(json['status'] as String?),
       type: MangaBakaType.fromString(json['type'] as String?),
-      totalChapters: json['total_chapters'] as String?,
-      finalVolume: json['final_volume'] as String?,
+      totalChapters: json['total_chapters']?.toString(),
+      finalVolume: json['final_volume']?.toString(),
       anilistId: anilistSource?['id'] as int?,
       malId: malSource?['id'] as int?,
       rating: (json['rating'] as num?)?.toDouble(),
+      authors: authorsList,
+      artists: artistsList,
+      startDate: startDate,
     );
   }
 
@@ -250,12 +353,38 @@ class MangaBakaSeries {
   }
 }
 
+class MangaBakaUserProfile {
+  final String? id;
+  final String? nickname;
+  final String? preferredUsername;
+  final int ratingSteps;
+
+  const MangaBakaUserProfile({
+    this.id,
+    this.nickname,
+    this.preferredUsername,
+    this.ratingSteps = 1,
+  });
+
+  factory MangaBakaUserProfile.fromJson(Map<String, dynamic> json) {
+    return MangaBakaUserProfile(
+      id: json['id']?.toString(),
+      nickname: json['nickname'] as String?,
+      preferredUsername: json['preferred_username'] as String?,
+      ratingSteps: (json['rating_steps'] as num?)?.toInt() ?? 1,
+    );
+  }
+
+  String get displayName =>
+      nickname ?? preferredUsername ?? id ?? 'MangaBaka User';
+}
+
 class MangaBakaLibraryEntry {
   final int? id;
   final int? seriesId;
   final MangaBakaLibraryState? state;
   final String? note;
-  final int? progressChapter;
+  final double? progressChapter;
   final int? progressVolume;
   final int? numberOfRereads;
   final int? rating;
@@ -292,7 +421,7 @@ class MangaBakaLibraryEntry {
       seriesId: json['series_id'] as int?,
       state: MangaBakaLibraryState.fromString(json['state'] as String?),
       note: json['note'] as String?,
-      progressChapter: (json['progress_chapter'] as num?)?.toInt(),
+      progressChapter: (json['progress_chapter'] as num?)?.toDouble(),
       progressVolume: (json['progress_volume'] as num?)?.toInt(),
       numberOfRereads: (json['number_of_rereads'] as num?)?.toInt(),
       rating: (json['rating'] as num?)?.toInt(),
@@ -307,7 +436,6 @@ class MangaBakaLibraryEntry {
           : null,
     );
   }
-
 }
 
 class MangaBakaOAuthToken {
