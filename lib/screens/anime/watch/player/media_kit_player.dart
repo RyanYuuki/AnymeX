@@ -80,7 +80,7 @@ class MediaKitPlayer extends base.BasePlayer {
       'gpu-next' => Platform.isAndroid ? 'gpu-next' : null,
       'mediacodec_embed' => 'mediacodec_embed',
       'gpu' => Platform.isAndroid ? 'gpu' : null,
-      'auto' => Platform.isAndroid ? 'gpu' : null,
+      'auto' => Platform.isAndroid ? 'mediacodec_embed' : null,
       _ => null,
     };
 
