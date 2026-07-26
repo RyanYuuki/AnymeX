@@ -141,6 +141,11 @@ class Settings extends GetxController {
   Future<void> applyDisplayRefreshMode() async {
     if (!Platform.isAndroid) return;
     try {
+      try {
+        const channel = MethodChannel('com.ryan.anymex/utils');
+        await channel.invokeMethod('setFrameRate', {'rate': 0.0});
+      } catch (_) {}
+
       final mode = preferredDisplayMode.value ?? DisplayMode.auto;
       await FlutterDisplayMode.setPreferredMode(mode);
       await Future.delayed(const Duration(milliseconds: 100));
@@ -150,14 +155,38 @@ class Settings extends GetxController {
     }
   }
 
-  Future<void> setPlayerDisplayMode() async {
+  Future<void> setPlayerDisplayMode([double? targetFps]) async {
     if (!Platform.isAndroid) return;
     try {
-      if (matchFrameRateInPlayer) {
-        await FlutterDisplayMode.setPreferredMode(DisplayMode.auto);
-        await Future.delayed(const Duration(milliseconds: 100));
-        activeDisplayMode.value = await FlutterDisplayMode.active;
+      if (!matchFrameRateInPlayer) return;
+
+      final fps = targetFps ?? 24.0;
+      try {
+        const channel = MethodChannel('com.ryan.anymex/utils');
+        await channel.invokeMethod('setFrameRate', {'rate': fps});
+      } catch (e) {
+        Logger.e("Error setting native frame rate: $e");
       }
+
+      final modes = await FlutterDisplayMode.supported;
+      DisplayMode? bestMode;
+      for (final mode in modes) {
+        final modeHz = mode.refreshRate;
+        if ((modeHz - fps).abs() < 0.5 || (modeHz - (fps * 2)).abs() < 0.5) {
+          if (bestMode == null || modeHz < bestMode.refreshRate) {
+            bestMode = mode;
+          }
+        }
+      }
+
+      if (bestMode != null) {
+        await FlutterDisplayMode.setPreferredMode(bestMode);
+      } else {
+        await FlutterDisplayMode.setPreferredMode(DisplayMode.auto);
+      }
+
+      await Future.delayed(const Duration(milliseconds: 100));
+      activeDisplayMode.value = await FlutterDisplayMode.active;
     } catch (e) {
       Logger.e("Error setting player display mode: $e");
     }
