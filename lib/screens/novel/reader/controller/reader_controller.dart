@@ -15,6 +15,7 @@ import 'package:get/get.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart';
 import 'package:vibration/vibration.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 enum LoadingState { loading, loaded, error }
 
@@ -124,6 +125,9 @@ class NovelReaderController extends GetxController {
     currentChapter.value = initialChapter;
     updateNavigationButtons();
     _loadSettings();
+    if (keepScreenOn.value) {
+      WakelockPlus.enable();
+    }
     fetchData();
     scrollController.addListener(_scrollListener);
     _initTts();
@@ -138,6 +142,7 @@ class NovelReaderController extends GetxController {
     _hideTimer?.cancel();
     _disableVolumeKeys();
     flutterTts.stop();
+    WakelockPlus.disable();
     super.onClose();
   }
 
@@ -176,7 +181,9 @@ class NovelReaderController extends GetxController {
         NovelReaderKeys.overscrollToChapter.get<bool>(true);
 
     if (keepScreenOn.value) {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+      WakelockPlus.enable();
+    } else {
+      WakelockPlus.disable();
     }
     if (volumeButtonScrolling.value) {
       _enableVolumeKeys();
@@ -386,35 +393,29 @@ class NovelReaderController extends GetxController {
   void _scrollToTtsElement() {
     if (ttsSegments.isEmpty || !scrollController.hasClients) return;
 
-    int charsBefore = 0;
-    for (int i = 0;
-        i < ttsCurrentElement.value && i < ttsSegments.length;
-        i++) {
-      charsBefore += ttsSegments[i].length;
-    }
+    final currentSegIndex =
+        ttsCurrentElement.value.clamp(0, ttsSegments.length - 1);
+    final currentSeg = ttsSegments[currentSegIndex];
+    final wordProgressInSeg = currentSeg.isEmpty
+        ? 0.0
+        : (ttsCurrentWordStart.value / currentSeg.length).clamp(0.0, 1.0);
 
-    charsBefore += ttsCurrentWordStart.value;
-
-    int totalChars = 0;
-    for (final s in ttsSegments) {
-      totalChars += s.length;
-    }
-    if (totalChars <= 0) return;
+    final double segmentProgress =
+        (currentSegIndex + wordProgressInSeg) / ttsSegments.length;
 
     final double viewportHeight = scrollController.position.viewportDimension;
-    final double totalContentHeight =
-        scrollController.position.maxScrollExtent + viewportHeight;
-    final double targetPosition =
-        (charsBefore / totalChars) * totalContentHeight;
+    final double maxScroll = scrollController.position.maxScrollExtent;
+    final double totalContentHeight = maxScroll + viewportHeight;
 
-    final double scrollTo = (targetPosition - viewportHeight * 0.52)
-        .clamp(0.0, scrollController.position.maxScrollExtent);
+    final double targetPosition = segmentProgress * totalContentHeight;
+    final double scrollTo = (targetPosition - viewportHeight * 0.35)
+        .clamp(0.0, maxScroll);
 
     final double diff = (scrollTo - scrollController.offset).abs();
-    if (diff > 30) {
+    if (diff > 50) {
       scrollController.animateTo(
         scrollTo,
-        duration: const Duration(milliseconds: 250),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
     }
@@ -1129,9 +1130,11 @@ class NovelReaderController extends GetxController {
 
   void toggleKeepScreenOn() {
     keepScreenOn.value = !keepScreenOn.value;
-    SystemChrome.setEnabledSystemUIMode(
-        keepScreenOn.value ? SystemUiMode.edgeToEdge : SystemUiMode.manual,
-        overlays: SystemUiOverlay.values);
+    if (keepScreenOn.value) {
+      WakelockPlus.enable();
+    } else {
+      WakelockPlus.disable();
+    }
     _saveSettings();
   }
 
