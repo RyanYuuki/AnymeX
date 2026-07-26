@@ -151,7 +151,7 @@ class MediaShare {
                 : 'anime';
         return 'https://simkl.com/$path/$id';
       case ServicesType.mangabaka:
-        return null;
+        return 'https://mangabaka.org/${baseMedia.id}';
       case ServicesType.extensions:
         return null;
     }
@@ -188,7 +188,7 @@ class MediaShare {
                 : 'anime';
         return 'anymex://simkl/$path/$id';
       case ServicesType.mangabaka:
-        return null;
+        return 'anymex://mangabaka/${baseMedia.id}';
       case ServicesType.extensions:
         return null;
     }
