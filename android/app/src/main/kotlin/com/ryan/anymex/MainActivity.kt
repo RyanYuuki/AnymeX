@@ -143,6 +143,23 @@ class MainActivity : FlutterActivity() {
                         result.error("INVALID_ARGUMENT", "URL and MIME type required", null)
                     }
                 }
+                "setFrameRate" -> {
+                    val rate = call.argument<Double>("rate")?.toFloat() ?: 0f
+                    try {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            val params = window.attributes
+                            params.preferredFrameRate = rate
+                            window.attributes = params
+                        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            val params = window.attributes
+                            params.preferredRefreshRate = rate
+                            window.attributes = params
+                        }
+                        result.success(true)
+                    } catch (e: Exception) {
+                        result.error("SET_FRAME_RATE_FAILED", e.message, null)
+                    }
+                }
                 else -> result.notImplemented()
             }
         }
