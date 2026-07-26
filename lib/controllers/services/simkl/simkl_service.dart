@@ -22,6 +22,7 @@ import 'package:anymex/screens/anime/misc/calendar.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/media_syncer.dart';
 import 'package:anymex/widgets/common/big_carousel_gate.dart';
@@ -211,6 +212,12 @@ class SimklService extends GetxController
 
   @override
   RxList<Widget> homeWidgets(BuildContext context) {
+    final settings = Get.find<Settings>();
+    final acceptedLists = settings.homePageCardsSimkl.entries
+        .where((entry) => entry.value)
+        .map<String>((entry) => entry.key)
+        .toList();
+
     return [
       if (isLoggedIn.value)
         LayoutBuilder(
@@ -292,12 +299,20 @@ class SimklService extends GetxController
         },
       ),
       const SizedBox(height: 25),
-      if (isLoggedIn.value) ...[
-        buildSection("Planned Movies", continueWatchingMovies.value,
-            variant: DataVariant.anilist),
-        buildSection("Continue Watching (SHOWS)", continueWatchingSeries.value,
-            variant: DataVariant.anilist),
-      ],
+      if (isLoggedIn.value)
+        Obx(() => Column(
+              children: acceptedLists.map((e) {
+                final isShowsList = e.contains("Shows") || e.contains("Series");
+                final sourceList = isShowsList ? mangaList : animeList;
+                final filtered = filterListByLabel(sourceList, e);
+                return ReusableCarousel(
+                  data: filtered,
+                  title: e,
+                  variant: DataVariant.anilist,
+                  type: isShowsList ? ItemType.manga : ItemType.anime,
+                );
+              }).toList(),
+            )),
       if (trendingMovies.value.isNotEmpty)
         ReusableCarousel(
             data: trendingMovies.value.sublist(0, 10),
