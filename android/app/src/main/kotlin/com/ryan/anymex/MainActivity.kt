@@ -151,6 +151,12 @@ class MainActivity : FlutterActivity() {
                             params.preferredRefreshRate = rate
                             window.attributes = params
                         }
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            try {
+                                val decorView = window.decorView
+                                findAndSetSurfaceFrameRate(decorView, rate)
+                            } catch (_: Exception) {}
+                        }
                         result.success(true)
                     } catch (e: Exception) {
                         result.error("SET_FRAME_RATE_FAILED", e.message, null)
@@ -325,6 +331,22 @@ class MainActivity : FlutterActivity() {
                 .setAspectRatio(Rational(16, 9))
                 .build()
             setPictureInPictureParams(params)
+        }
+    }
+
+    private fun findAndSetSurfaceFrameRate(view: android.view.View?, rate: Float) {
+        if (view == null) return
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (view is android.view.SurfaceView) {
+                try {
+                    val compat = if (rate > 0f) android.view.Surface.FRAME_RATE_COMPATIBILITY_FIXED_SOURCE else android.view.Surface.FRAME_RATE_COMPATIBILITY_DEFAULT
+                    view.holder.surface?.setFrameRate(rate, compat)
+                } catch (_: Exception) {}
+            } else if (view is android.view.ViewGroup) {
+                for (i in 0 until view.childCount) {
+                    findAndSetSurfaceFrameRate(view.getChildAt(i), rate)
+                }
+            }
         }
     }
 
