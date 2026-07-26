@@ -1,21 +1,84 @@
 String completeLanguageName(String lang) {
-  lang = lang.toLowerCase();
+  final cleanLang = lang.trim().toLowerCase();
+  if (cleanLang.isEmpty) return "Unknown";
+  if (cleanLang == "all") return "All Languages";
+
+  final byCode = extensionLanguageNameByCode[cleanLang];
+  if (byCode != null) return byCode;
+
   for (var element in sortedLanguagesMap.entries) {
-    if (element.value.toLowerCase() == lang) {
+    if (element.value.toLowerCase() == cleanLang) {
       return element.key;
     }
   }
-  return lang.toUpperCase();
+
+  for (var element in sortedLanguagesMap.entries) {
+    final keyLower = element.key.toLowerCase();
+    if (keyLower == cleanLang || cleanLang.contains(keyLower) || keyLower.contains(cleanLang)) {
+      return element.key;
+    }
+  }
+
+  if (cleanLang.contains("indonesia") || cleanLang.contains("indonesian")) return "Indonesia";
+  if (cleanLang.contains("русский") || cleanLang.contains("russian")) return "Pусский язык";
+  if (cleanLang.contains("한국어") || cleanLang.contains("korean")) return "한국어";
+  if (cleanLang.contains("中文") || cleanLang.contains("chinese")) return "中文(Zhōngwén)";
+  if (cleanLang.contains("العربية") || cleanLang.contains("arabic")) return "العربية";
+  if (cleanLang.contains("español") || cleanLang.contains("spanish")) return "Español";
+  if (cleanLang.contains("português") || cleanLang.contains("portuguese")) return "Português";
+  if (cleanLang.contains("français") || cleanLang.contains("french")) return "Français";
+  if (cleanLang.contains("türkçe") || cleanLang.contains("turkish")) return "Türkçe";
+  if (cleanLang.contains("українська") || cleanLang.contains("ukrainian")) return "Українська";
+  if (cleanLang.contains("tiếng việt") || cleanLang.contains("vietnamese")) return "Tiếng Việt";
+
+  return lang.length > 2 ? lang : lang.toUpperCase();
 }
 
 String completeLanguageCode(String lang) {
-  lang = lang.toLowerCase();
+  final cleanLang = lang.trim().toLowerCase();
+  if (cleanLang.isEmpty) return "";
+
+  if (extensionLanguageNameByCode.containsKey(cleanLang)) {
+    return cleanLang;
+  }
   for (var element in sortedLanguagesMap.entries) {
-    if (element.key.toLowerCase() == lang) {
-      return element.value;
+    if (element.value.toLowerCase() == cleanLang) {
+      return element.value.toLowerCase();
     }
   }
-  return lang.toUpperCase();
+
+  for (var element in sortedLanguagesMap.entries) {
+    if (element.key.toLowerCase() == cleanLang) {
+      return element.value.toLowerCase();
+    }
+  }
+
+  if (cleanLang.contains("english")) return "en";
+  if (cleanLang.contains("indonesia") || cleanLang.contains("indonesian")) return "id";
+  if (cleanLang.contains("русский") || cleanLang.contains("russian")) return "ru";
+  if (cleanLang.contains("한국어") || cleanLang.contains("조선말") || cleanLang.contains("korean")) return "ko";
+  if (cleanLang.contains("中文") || cleanLang.contains("汉语") || cleanLang.contains("漢語") || cleanLang.contains("chinese")) return "zh";
+  if (cleanLang.contains("العربية") || cleanLang.contains("arabic")) return "ar";
+  if (cleanLang.contains("español") || cleanLang.contains("spanish")) return "es";
+  if (cleanLang.contains("português") || cleanLang.contains("portuguese")) return "pt";
+  if (cleanLang.contains("français") || cleanLang.contains("french")) return "fr";
+  if (cleanLang.contains("türkçe") || cleanLang.contains("turkish")) return "tr";
+  if (cleanLang.contains("українська") || cleanLang.contains("ukrainian")) return "uk";
+  if (cleanLang.contains("tiếng việt") || cleanLang.contains("vietnamese")) return "vi";
+  if (cleanLang.contains("ไทย") || cleanLang.contains("thai")) return "th";
+  if (cleanLang.contains("polski") || cleanLang.contains("polish")) return "pl";
+  if (cleanLang.contains("日本語") || cleanLang.contains("japanese")) return "ja";
+  if (cleanLang.contains("deutsch") || cleanLang.contains("german")) return "de";
+  if (cleanLang.contains("italiano") || cleanLang.contains("italian")) return "it";
+
+  for (var element in sortedLanguagesMap.entries) {
+    final keyLower = element.key.toLowerCase();
+    if (cleanLang.contains(keyLower) || keyLower.contains(cleanLang)) {
+      return element.value.toLowerCase();
+    }
+  }
+
+  return cleanLang;
 }
 
 const Map<String, String> extensionLanguageNameByCode = {
