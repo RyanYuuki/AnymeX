@@ -7,7 +7,8 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/library/controller/library_controller.dart';
 import 'package:anymex/screens/library/widgets/history_model.dart';
-import 'package:anymex/screens/library/widgets/library_header.dart';
+import 'package:anymex/screens/library/widgets/library_deps.dart';
+// import 'package:anymex/screens/library/widgets/library_header.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/screens/settings/widgets/history_card_gate.dart';
@@ -24,26 +25,94 @@ import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class MyLibrary extends StatelessWidget {
+import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
+import 'package:anymex/widgets/header.dart';
+import 'package:flutter/services.dart';
+
+class MyLibrary extends StatefulWidget {
   const MyLibrary({super.key});
 
   @override
+  State<MyLibrary> createState() => _MyLibraryState();
+}
+
+class _MyLibraryState extends State<MyLibrary>
+    with AutomaticKeepAliveClientMixin {
+  late final ScrollController _scrollController;
+  final ValueNotifier<bool> _isAppBarVisibleExternally =
+      ValueNotifier<bool>(true);
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _isAppBarVisibleExternally.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     final controller = Get.put(LibraryController());
+    final statusBarHeight = MediaQuery.of(context).padding.top;
+    const appBarHeight = kToolbarHeight + 20;
 
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 28.0),
-              child: LibraryHeader(controller: controller),
+      extendBodyBehindAppBar: true,
+      body: Stack(
+        children: [
+          CustomScrollView(
+            controller: _scrollController,
+            slivers: [
+              SliverToBoxAdapter(
+                child: SizedBox(
+                  height: statusBarHeight + appBarHeight,
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
+                  child: LibrarySegmentedControl(controller: controller),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: ChipTabs(controller: controller),
+              ),
+              _LibraryContent(controller: controller),
+            ],
+          ),
+          CustomAnimatedAppBar(
+            isVisible: _isAppBarVisibleExternally,
+            scrollController: _scrollController,
+            headerContent: const Header(type: PageType.library),
+            visibleStatusBarStyle: SystemUiOverlayStyle(
+              statusBarIconBrightness:
+                  Theme.of(context).brightness == Brightness.light
+                      ? Brightness.dark
+                      : Brightness.light,
+              statusBarBrightness: Theme.of(context).brightness,
+              statusBarColor: Colors.transparent,
+            ),
+            hiddenStatusBarStyle: SystemUiOverlayStyle(
+              statusBarIconBrightness:
+                  Theme.of(context).brightness == Brightness.light
+                      ? Brightness.light
+                      : Brightness.dark,
+              statusBarBrightness:
+                  Theme.of(context).brightness == Brightness.light
+                      ? Brightness.dark
+                      : Brightness.light,
+              statusBarColor: Colors.transparent,
             ),
           ),
-          SliverToBoxAdapter(
-            child: ChipTabs(controller: controller),
-          ),
-          _LibraryContent(controller: controller),
         ],
       ),
     );
@@ -84,56 +153,59 @@ class _LibraryContent extends StatelessWidget {
 
         final selectedListName = listNames[controller.selectedListIndex.value];
 
-        return Obx(() {
-          final searchQuery = controller.searchQuery.value;
-          final sortType = controller.currentSort.value;
-          final isAscending = controller.isAscending.value;
+        return StreamBuilder<List<OfflineMedia>>(
+          stream: controller.getCustomListStream(
+              selectedListName, controller.type.value),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return const SliverToBoxAdapter(
+                child: Center(child: CircularProgressIndicator()),
+              );
+            }
 
-          return StreamBuilder<List<OfflineMedia>>(
-            stream: controller.getCustomListStream(
-                selectedListName, controller.type.value),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return const SliverToBoxAdapter(
-                  child: Center(child: CircularProgressIndicator()),
-                );
-              }
+            return Obx(() {
+              final rawItems = snapshot.data!;
+              final searched = controller.applySearch(
+                  rawItems, controller.searchQuery.value);
+              final sortedItems = controller.applySorting(searched);
 
-              var items = snapshot.data!;
-
-              if (items.isEmpty) {
+              if (sortedItems.isEmpty) {
                 return const SliverToBoxAdapter(child: EmptyLibrary());
               }
 
-              items = controller.applySearch(items, searchQuery);
-              items = controller.applySorting(items);
-
-              return _buildGridView(context, items);
-            },
-          );
-        });
+              return _buildGridView(context, sortedItems);
+            });
+          },
+        );
       },
     );
   }
 
   Widget _buildHistoryView(BuildContext context) {
-    return Obx(() {
-      final searchQuery = controller.searchQuery.value;
-      final sortType = controller.currentSort.value;
-      final isAscending = controller.isAscending.value;
+    return StreamBuilder<List<OfflineMedia>>(
+      stream: controller.getLibraryStream(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const SliverToBoxAdapter(
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
 
-      return StreamBuilder<List<OfflineMedia>>(
-        stream: controller.getHistoryStream(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const SliverToBoxAdapter(
-              child: Center(child: CircularProgressIndicator()),
-            );
+        return Obx(() {
+          final items = snapshot.data!;
+          List<OfflineMedia> filtered;
+          if (controller.type.value.isAnime) {
+            filtered = items
+                .where((e) => e.currentEpisode?.currentTrack != null)
+                .toList();
+          } else {
+            filtered =
+                items.where((e) => e.currentChapter?.link != null).toList();
           }
 
-          var data = snapshot.data!;
-          data = controller.applySearch(data, searchQuery);
-          data = controller.applySorting(data);
+          final searched =
+              controller.applySearch(filtered, controller.searchQuery.value);
+          final data = controller.applySorting(searched);
 
           if (data.isEmpty) {
             return const SliverToBoxAdapter(child: EmptyLibrary());
@@ -170,9 +242,9 @@ class _LibraryContent extends StatelessWidget {
               ),
             ),
           );
-        },
-      );
-    });
+        });
+      },
+    );
   }
 
   Widget _buildGridView(BuildContext context, List<OfflineMedia> items) {
@@ -182,15 +254,16 @@ class _LibraryContent extends StatelessWidget {
         gridDelegate: _getSliverDelegate(context),
         delegate: SliverChildBuilderDelegate(
           (context, i) {
-            final tag = getRandomTag(addition: i.toString());
             OfflineMedia item = items[i];
+            final tag =
+                '${item.mediaId ?? item.id}-library-grid-${controller.type.value.name}';
             return AnymexOnTap(
               margin: 0,
               scale: 1,
               onTap: () => _handleItemTap(context, item, items, i, tag),
               child: MediaCardGate(
                 itemData: items[i],
-                tag: '${getRandomTag()}-$i',
+                tag: tag,
                 variant: DataVariant.library,
                 type: controller.type.value,
                 cardStyle: CardStyle.values[settingsController.cardStyle],
@@ -206,21 +279,24 @@ class _LibraryContent extends StatelessWidget {
   SliverGridDelegateWithFixedCrossAxisCount _getSliverDelegate(
       BuildContext context) {
     if (controller.gridCount.value == 0) {
-      final width = MediaQuery.of(context).size.width;
-      final itemWidth = getPlatform(context) ? 170.0 : 140.0;
+      const horizontalPadding = 32.0;
+      const crossAxisSpacing = 10.0;
+      final availableWidth =
+          MediaQuery.of(context).size.width - horizontalPadding;
+      final isDesktop = getPlatform(context);
+      final itemWidth = isDesktop ? 170.0 : 140.0;
+
       final crossAxisCount = math.max(
         1,
-        getResponsiveCrossAxisVal(width - 120, itemWidth: itemWidth.toInt()),
+        ((availableWidth + crossAxisSpacing) / (itemWidth + crossAxisSpacing))
+            .floor(),
       );
 
       return SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: crossAxisCount,
-        crossAxisSpacing: 10,
+        crossAxisSpacing: crossAxisSpacing,
         mainAxisSpacing: 20,
-        mainAxisExtent: _getCardHeight(
-          context,
-          CardStyle.values[settingsController.cardStyle],
-        ),
+        childAspectRatio: 2 / 3,
       );
     }
 
@@ -232,29 +308,13 @@ class _LibraryContent extends StatelessWidget {
     );
   }
 
-  double _getCardHeight(BuildContext context, CardStyle style) {
-    final isDesktop = getPlatform(context);
-    switch (style) {
-      case CardStyle.modern:
-        return isDesktop ? 220 : 170;
-      case CardStyle.exotic:
-        return isDesktop ? 270 : 210;
-      case CardStyle.saikou:
-        return isDesktop ? 270 : 230;
-      case CardStyle.minimalExotic:
-        return isDesktop ? 250 : 280;
-      default:
-        return isDesktop ? 230 : 170;
-    }
-  }
-
   void _handleItemTap(BuildContext context, OfflineMedia item,
       List<OfflineMedia> items, int index, String tag) {
     if (controller.type.value.isAnime) {
-      navigate(() => AnimeDetailsPage(
+      navigateWithAnimation(() => AnimeDetailsPage(
           media: Media.fromOfflineMedia(item, ItemType.anime), tag: tag));
     } else if (controller.type.value.isManga) {
-      navigate(() => MangaDetailsPage(
+      navigateWithAnimation(() => MangaDetailsPage(
           media: Media.fromOfflineMedia(item, ItemType.manga), tag: tag));
     } else {
       final source =
@@ -264,7 +324,7 @@ class _LibraryContent extends StatelessWidget {
         return;
       }
 
-      navigate(() => NovelDetailsPage(
+      navigateWithAnimation(() => NovelDetailsPage(
           source: source,
           media: Media.fromOfflineMedia(items[index], ItemType.novel),
           tag: tag));

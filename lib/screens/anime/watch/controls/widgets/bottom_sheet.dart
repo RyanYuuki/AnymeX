@@ -1,8 +1,6 @@
-import 'package:anymex/database/isar_models/track.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/player/base_player.dart';
 import 'package:anymex/screens/anime/widgets/episode/normal_episode.dart';
-import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -84,8 +82,6 @@ class _DynamicBottomSheetState extends State<DynamicBottomSheet>
     _fadeController.dispose();
     super.dispose();
   }
-
-
 
   void _closeBottomSheet() async {
     await _fadeController.reverse();
@@ -461,13 +457,15 @@ class PlayerBottomSheets {
       onItemSelected: onItemSelected,
       customContent: customContent,
     );
-    return showModalBottomSheet<T>(
-      context: context,
-      isScrollControlled: true,
-      isDismissible: isDismissible,
-      backgroundColor: Colors.transparent,
-      builder: (context) =>
-          !isExpanded ? sheet : SizedBox(height: double.infinity, child: sheet),
+    return Get.find<PlayerController>().showSheetWithPause(
+      () => showModalBottomSheet<T>(
+        context: context,
+        isScrollControlled: true,
+        isDismissible: isDismissible,
+        backgroundColor: Colors.transparent,
+        builder: (context) =>
+            !isExpanded ? sheet : SizedBox(height: double.infinity, child: sheet),
+      ),
     );
   }
 
@@ -522,19 +520,19 @@ class PlayerBottomSheets {
       title: title,
       customContent: content,
     );
-    return showModalBottomSheet<T>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => isExpanded
-          ? SizedBox(
-              height: MediaQuery.of(context).size.height * expandedHeightFactor,
-              child: sheet)
-          : sheet,
+    return Get.find<PlayerController>().showSheetWithPause(
+      () => showModalBottomSheet<T>(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => isExpanded
+            ? SizedBox(
+                height: MediaQuery.of(context).size.height * expandedHeightFactor,
+                child: sheet)
+            : sheet,
+      ),
     );
   }
-
-
 
   static Future<String?> showVideoServers(
       BuildContext context, PlayerController controller) {
@@ -562,7 +560,8 @@ class PlayerBottomSheets {
   static Future<String?> showVideoQuality(
       BuildContext context, PlayerController controller) {
     final qualities = controller.embeddedQuality.value
-        .where((e) => e.height != null && e.width != null).toList();
+        .where((e) => e.height != null && e.width != null)
+        .toList();
     final selectedQuality = controller.selectedQualityTrack.value;
     return show<String>(
       context: context,
@@ -583,17 +582,6 @@ class PlayerBottomSheets {
         controller.setVideoTrack(selectedQuality);
       },
     );
-  }
-
-  static Future<double?> showPlaybackSpeed(
-      BuildContext context, PlayerController controller) {
-    return showCustom(
-        context: context,
-        isExpanded: true,
-        title: 'Playback Speed',
-        content: SizedBox(
-            height: Get.height,
-            child: PlaybackSpeedSheet(controller: controller)));
   }
 
   static Future<double?> showPlaylist(
@@ -705,357 +693,6 @@ class _LoaderContentState extends State<_LoaderContent> {
               ],
             )
           : const SizedBox.shrink(),
-    );
-  }
-}
-
-class PlaybackSpeedSheet extends StatefulWidget {
-  final PlayerController controller;
-
-  const PlaybackSpeedSheet({super.key, required this.controller});
-
-  @override
-  State<PlaybackSpeedSheet> createState() => _PlaybackSpeedSheetState();
-}
-
-class _PlaybackSpeedSheetState extends State<PlaybackSpeedSheet> {
-  static const List<double> _defaultSpeeds = [
-    0.25,
-    0.5,
-    0.75,
-    1.0,
-    1.25,
-    1.5,
-    1.75,
-    2.0
-  ];
-
-  late List<double> _speedChips;
-  late double _currentSpeed;
-
-  @override
-  void initState() {
-    super.initState();
-    _currentSpeed = widget.controller.playbackSpeed.value;
-
-    _speedChips = List<double>.from(_defaultSpeeds);
-
-    _currentSpeed = _currentSpeed.clamp(_speedChips.first, _speedChips.last);
-  }
-
-  double get _min => _speedChips.first;
-  double get _max => _speedChips.last;
-
-  void _setSpeed(double v) {
-    setState(() => _currentSpeed = v);
-    widget.controller.setRate(v);
-  }
-
-  void _removeChip(double speed) {
-    if (_speedChips.length <= 1) return;
-    setState(() {
-      _speedChips.remove(speed);
-
-      _currentSpeed = _currentSpeed.clamp(_min, _max);
-    });
-    widget.controller.setRate(_currentSpeed);
-  }
-
-  void _addChip() async {
-    double? newSpeed = await _showAddSpeedDialog();
-    if (newSpeed == null) return;
-    if (_speedChips.contains(newSpeed)) return;
-    setState(() {
-      _speedChips.add(newSpeed);
-      _speedChips.sort();
-    });
-  }
-
-  Future<double?> _showAddSpeedDialog() async {
-    double value = 2.5;
-    return showDialog<double>(
-      context: context,
-      builder: (ctx) {
-        return StatefulBuilder(builder: (ctx, setSt) {
-          return AlertDialog(
-            title: const Text('Add Speed'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('${value.toStringAsFixed(2)}x',
-                    style: ctx.textTheme.headlineSmall
-                        ?.copyWith(fontWeight: FontWeight.bold)),
-                Slider(
-                  min: 0.05,
-                  max: 20.0,
-                  divisions: 399,
-                  year2023: false,
-                  value: value,
-                  onChanged: (v) => setSt(() => value = v),
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                  onPressed: () => Navigator.pop(ctx),
-                  child: const Text('Cancel')),
-              FilledButton(
-                  onPressed: () => Navigator.pop(ctx, value),
-                  child: const Text('Add')),
-            ],
-          );
-        });
-      },
-    );
-  }
-
-  void _restoreChips() {
-    setState(() {
-      _speedChips = List<double>.from(_defaultSpeeds);
-      _currentSpeed = _currentSpeed.clamp(_min, _max);
-    });
-    widget.controller.setRate(_currentSpeed);
-  }
-
-  void _restoreSpeed() {
-    _setSpeed(1.0);
-  }
-
-  String _fmt(double v) {
-    if (v == 1.0) return '1×';
-
-    final s = v.toStringAsFixed(2);
-    return '${s.replaceAll(RegExp(r'0+$'), '').replaceAll(RegExp(r'\.$'), '')}×';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = context.theme.colorScheme;
-    final tt = context.theme.textTheme;
-    final sliderVal = _currentSpeed.clamp(_min, _max);
-
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
-      child: Column(
-        mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Current Speed',
-                      style: tt.labelSmall?.copyWith(
-                          color: cs.onSurface.opaque(0.5, iReallyMeanIt: true),
-                          letterSpacing: 0.8)),
-                  const SizedBox(height: 2),
-                  Text(
-                    _fmt(_currentSpeed),
-                    style: tt.displaySmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: cs.primary,
-                      height: 1,
-                    ),
-                  ),
-                ],
-              ),
-              _ActionChip(
-                label: 'Reset to 1×',
-                icon: Icons.replay_rounded,
-                onTap: _restoreSpeed,
-                color: cs.secondary,
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              Text(_fmt(_min),
-                  style: tt.labelSmall?.copyWith(
-                      color: cs.onSurface.opaque(0.45, iReallyMeanIt: true))),
-              Expanded(
-                child: Slider(
-                  min: _min,
-                  max: _max,
-                  value: sliderVal,
-                  year2023: false,
-                  onChanged: (v) {
-                    final snapped = (v * 20).round() / 20;
-                    _setSpeed(snapped);
-                  },
-                ),
-              ),
-              Text(_fmt(_max),
-                  style: tt.labelSmall?.copyWith(
-                      color: cs.onSurface.opaque(0.45, iReallyMeanIt: true))),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              Expanded(
-                child: Text('Speed Presets',
-                    style: tt.labelMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: cs.onSurface.opaque(0.7, iReallyMeanIt: true))),
-              ),
-              _ActionChip(
-                label: 'Restore',
-                icon: Icons.settings_backup_restore_rounded,
-                onTap: _restoreChips,
-                color: cs.tertiary,
-              ),
-              const SizedBox(width: 8),
-              _ActionChip(
-                label: 'Add',
-                icon: Icons.add_rounded,
-                onTap: _addChip,
-                color: cs.primary,
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: _speedChips.map((speed) {
-              final isActive = (speed - _currentSpeed).abs() < 0.001;
-              final isLast = _speedChips.length == 1;
-              return _SpeedChip(
-                label: _fmt(speed),
-                isActive: isActive,
-                canDelete: !isLast,
-                onTap: () => _setSpeed(speed),
-                onDelete: () => _removeChip(speed),
-              );
-            }).toList(),
-          ),
-          const SizedBox(height: 20),
-          const Divider(height: 1),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton.icon(
-              onPressed: () {
-                _setSpeed(widget.controller.settings.speed);
-              },
-              icon: const Icon(Icons.star_outline_rounded, size: 18),
-              label: const Text('Make Default Speed'),
-              style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
-                side: BorderSide(
-                    color: cs.outline.opaque(0.3, iReallyMeanIt: true)),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SpeedChip extends StatelessWidget {
-  final String label;
-  final bool isActive;
-  final bool canDelete;
-  final VoidCallback onTap;
-  final VoidCallback onDelete;
-
-  const _SpeedChip({
-    required this.label,
-    required this.isActive,
-    required this.canDelete,
-    required this.onTap,
-    required this.onDelete,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = context.theme.colorScheme;
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 160),
-        padding: EdgeInsets.only(
-            left: 12, right: canDelete ? 4 : 12, top: 6, bottom: 6),
-        decoration: BoxDecoration(
-          color: isActive
-              ? cs.primary
-              : cs.surfaceVariant.opaque(0.5, iReallyMeanIt: true),
-          borderRadius: BorderRadius.circular(20),
-          border: isActive
-              ? null
-              : Border.all(color: cs.outline.opaque(0.2, iReallyMeanIt: true)),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              label,
-              style: context.theme.textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: isActive ? cs.onPrimary : cs.onSurface,
-              ),
-            ),
-            if (canDelete) ...[
-              const SizedBox(width: 4),
-              GestureDetector(
-                onTap: onDelete,
-                child: Icon(Icons.close_rounded,
-                    size: 14,
-                    color: isActive
-                        ? cs.onPrimary.opaque(0.7, iReallyMeanIt: true)
-                        : cs.onSurface.opaque(0.5, iReallyMeanIt: true)),
-              ),
-              const SizedBox(width: 4),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ActionChip extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final VoidCallback onTap;
-  final Color color;
-
-  const _ActionChip({
-    required this.label,
-    required this.icon,
-    required this.onTap,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
-          color: color.opaque(0.1, iReallyMeanIt: true),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: color.opaque(0.2, iReallyMeanIt: true)),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 14, color: color),
-            const SizedBox(width: 4),
-            Text(label,
-                style: context.theme.textTheme.labelSmall
-                    ?.copyWith(color: color, fontWeight: FontWeight.w600)),
-          ],
-        ),
-      ),
     );
   }
 }

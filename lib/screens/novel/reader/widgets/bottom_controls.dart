@@ -1,5 +1,6 @@
 import 'package:anymex/screens/novel/reader/controller/reader_controller.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/common/anymex_slider_m3.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -211,8 +212,7 @@ class NovelBottomControls extends StatelessWidget {
               ),
               if (controller.showReadingProgress.value) ...[
                 SizedBox(height: isDesktop ? 12 : 8),
-                Slider(
-                  year2023: false,
+                AnymeXSliderM3(
                   value: controller.progress.value.clamp(0.0, 1.0),
                   onChanged: (value) {
                     if (controller.scrollController.hasClients) {

@@ -8,7 +8,9 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/widgets/common/installed_extensions_gridview.dart';
 import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 
 class MangaHomePage extends StatefulWidget {
   const MangaHomePage({
@@ -60,6 +62,12 @@ class _MangaHomePageState extends State<MangaHomePage> {
                 SizedBox(height: statusBarHeight + appBarHeight),
                 const SizedBox(height: 10),
                 Obx(() {
+                  if (serviceHandler.serviceType.value == ServicesType.extensions) {
+                    return InstalledExtensionsGridView(
+                      sources: sourceController.installedMangaExtensions.value,
+                      itemType: ItemType.manga,
+                    );
+                  }
                   return Column(
                     children: serviceHandler.mangaWidgets(context),
                   );

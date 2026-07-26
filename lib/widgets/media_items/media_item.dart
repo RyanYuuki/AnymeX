@@ -3,6 +3,8 @@ import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex/screens/novel/details/details_view.dart';
+import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
@@ -59,6 +61,7 @@ class CardData {
           id: data.id!,
           title: data.title ?? '??',
           poster: data.poster ?? '',
+          mediaType: data.type == 'MANGA' ? ItemType.manga : ItemType.anime,
           serviceType: data.servicesType),
     );
   }
@@ -90,10 +93,12 @@ class GridAnimeCard extends StatelessWidget {
     required this.data,
     required this.isManga,
     this.variant,
+    this.type,
   });
   final dynamic data;
   final bool isManga;
   final CardVariant? variant;
+  final ItemType? type;
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +107,7 @@ class GridAnimeCard extends StatelessWidget {
     final media = data is Media
         ? CardData.fromMedia(data)
         : CardData.fromTrackedMedia(data);
-    final itemType = isManga ? ItemType.manga : ItemType.anime;
+    final itemType = type ?? (isManga ? ItemType.manga : ItemType.anime);
 
     return GestureDetector(
       onSecondaryTap: () {
@@ -132,13 +137,30 @@ class GridAnimeCard extends StatelessWidget {
                 AnymexOnTap(
                   margin: 0,
                   onTap: () {
-                    navigate(() => isManga
-                        ? MangaDetailsPage(media: media.data, tag: media.title)
-                        : AnimeDetailsPage(
-                            media: media.data, tag: media.title));
+                    final heroTag = '${media.id}-${itemType.name}-grid-card';
+                    if (itemType == ItemType.novel) {
+                      final sourceController = Get.find<SourceController>();
+                      var novSource = sourceController.getNovelExtensionByName(media.data.season);
+                      novSource ??= sourceController.activeNovelSource.value ??
+                          sourceController.installedNovelExtensions.firstOrNull;
+                      if (novSource != null) {
+                        final Source activeSource = novSource;
+                        navigate(() => NovelDetailsPage(
+                              media: media.data,
+                              tag: heroTag,
+                              source: activeSource,
+                            ));
+                      }
+                    } else if (itemType == ItemType.manga) {
+                      navigate(() => MangaDetailsPage(media: media.data, tag: heroTag));
+                    } else {
+                      navigate(() => AnimeDetailsPage(media: media.data, tag: heroTag));
+                    }
                   },
                   child: Hero(
-                    tag: media.title,
+                    tag: '${media.id}-${itemType.name}-grid-card',
+                    transitionOnUserGestures: true,
+                    flightShuttleBuilder: AnymeXImage.heroFlightShuttleBuilder,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: AnymeXImage(
@@ -146,6 +168,8 @@ class GridAnimeCard extends StatelessWidget {
                         imageUrl: media.poster,
                         width: cardWidth,
                         height: 160,
+                        fadeInDuration: Duration.zero,
+                        fadeOutDuration: Duration.zero,
                         errorImage:
                             'https://s4.anilist.co/file/anilistcdn/character/large/default.jpg',
                       ),

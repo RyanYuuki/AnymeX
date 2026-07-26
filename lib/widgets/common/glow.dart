@@ -1,6 +1,5 @@
 // ignore_for_file: deprecated_member_use
 import 'dart:io';
-import 'dart:math';
 
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
@@ -11,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:anymex/widgets/common/grain_texture.dart';
 
 enum GradientVariant {
   subtle,
@@ -68,8 +68,9 @@ class Glow extends StatelessWidget {
       settings.liquidBackgroundPath;
       final liquidMode = settings.liquidMode;
 
+      Widget content;
       if (liquidMode) {
-        return LiquidMode(
+        content = LiquidMode(
           isOled: isOled,
           theme: theme,
           gradientVariant: GradientVariant.subtle,
@@ -77,11 +78,31 @@ class Glow extends StatelessWidget {
         );
       } else {
         if (settings.disableGradient || isOled) {
-          return Container(
+          content = Container(
               color: isOled ? Colors.black : theme.surface, child: ch);
+        } else {
+          content = LightweightGlow(begin: begin, end: end, child: ch);
         }
-        return LightweightGlow(begin: begin, end: end, child: ch);
       }
+
+      final useGrain = settings.useGrainTexture;
+      final intensity = settings.grainIntensity;
+      if (useGrain && intensity > 0) {
+        return Stack(
+          children: [
+            content,
+            Positioned.fill(
+              child: IgnorePointer(
+                child: GrainTexture(
+                  color: Colors.black,
+                  opacity: intensity,
+                ),
+              ),
+            ),
+          ],
+        );
+      }
+      return content;
     });
   }
 }
@@ -105,28 +126,35 @@ class LiquidMode extends StatelessWidget {
         ? 'assets/images/bg_glass.webp'
         : "file://${settingsController.liquidBackgroundPath}";
 
-    return Stack(
-      children: [
-        Positioned.fill(
-          child: Obx(() {
-            return _CachedColorFilteredImage(
-              color: settingsController.retainOriginalColor
-                  ? null
-                  : theme.primary.opaque(0.6),
-              imagePath: imagePath,
-            );
-          }),
-        ),
-        Positioned.fill(
-          child: isOled
-              ? Container(color: Colors.black)
-              : _OptimizedGradientOverlay(
-                  gradientVariant: gradientVariant,
-                  theme: theme,
-                ),
-        ),
-        child,
-      ],
+    final fallbackColor = isOled
+        ? (theme.brightness == Brightness.dark ? Colors.black : Colors.white)
+        : theme.surface;
+
+    return Container(
+      color: fallbackColor,
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: Obx(() {
+              return _CachedColorFilteredImage(
+                color: settingsController.retainOriginalColor
+                    ? null
+                    : theme.primary.opaque(0.6),
+                imagePath: imagePath,
+              );
+            }),
+          ),
+          Positioned.fill(
+            child: isOled
+                ? Container(color: Colors.black)
+                : _OptimizedGradientOverlay(
+                    gradientVariant: gradientVariant,
+                    theme: theme,
+                  ),
+          ),
+          child,
+        ],
+      ),
     );
   }
 }

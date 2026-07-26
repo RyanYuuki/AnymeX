@@ -19,13 +19,14 @@ class AnimeCard extends StatelessWidget {
   const AnimeCard({super.key, required this.data, required this.cardtype});
   @override
   Widget build(BuildContext context) {
+    final tag = 'library-${data.id}';
     return AnymexOnTap(
       margin: 0,
       scale: 1,
       onTap: () {
-        navigate(() => AnimeDetailsPage(
+        navigateWithAnimation(() => AnimeDetailsPage(
             media: Media.fromOfflineMedia(data, ItemType.anime),
-            tag: '${data.id!}${UniqueKey().toString()}'));
+            tag: tag));
       },
       child: Container(
         clipBehavior: Clip.antiAlias,
@@ -37,11 +38,16 @@ class AnimeCard extends StatelessWidget {
             Expanded(
               child: Stack(
                 children: [
-                  AnymeXImage(
-                    imageUrl: data.poster ?? '',
-                    radius: 12.multiplyRadius(),
-                    width: double.infinity,
-                    height: double.infinity,
+                  Hero(
+                    tag: tag,
+                    transitionOnUserGestures: true,
+                    flightShuttleBuilder: AnymeXImage.heroFlightShuttleBuilder,
+                    child: AnymeXImage(
+                      imageUrl: data.poster ?? '',
+                      radius: 12.multiplyRadius(),
+                      width: double.infinity,
+                      height: double.infinity,
+                    ),
                   ),
                   Positioned(
                     top: 0,

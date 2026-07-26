@@ -29,6 +29,7 @@ import 'package:anymex/widgets/anime/gradient_image.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
@@ -36,16 +37,12 @@ import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
-import 'package:expandable_page_view/expandable_page_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:iconly/iconly.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:anymex/controllers/services/community_service.dart';
-import 'package:anymex/widgets/non_widgets/recommend_button.dart';
 
 class MangaDetailsPage extends StatefulWidget {
   final Media media;
@@ -89,9 +86,17 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   late final PageController controller;
 
   void _onPageSelected(int index) {
+    final current = selectedPage.value;
     selectedPage.value = index;
-    controller.animateToPage(index,
-        duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+    if (controller.hasClients) {
+      if ((index - current).abs() > 1) {
+        final adjacent = index > current ? index - 1 : index + 1;
+        controller.jumpToPage(adjacent);
+      }
+      controller.animateToPage(index,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut);
+    }
   }
 
   Future<void> _showShareOptions() async {
@@ -180,12 +185,12 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
     try {
       Media tempData;
       try {
-        tempData = await mediaService.service
-            .fetchDetails(FetchDetailsParams(id: widget.media.id.toString()));
+        tempData = await mediaService.service.fetchDetails(FetchDetailsParams(
+            id: widget.media.id.toString(), type: ItemType.manga));
       } catch (e) {
         if (!e.toString().contains("dynamic")) rethrow;
-        tempData = await mediaService.service
-            .fetchDetails(FetchDetailsParams(id: widget.media.id.toString()));
+        tempData = await mediaService.service.fetchDetails(FetchDetailsParams(
+            id: widget.media.id.toString(), type: ItemType.manga));
       }
       final isExtensions = mediaService == ServicesType.extensions;
 
@@ -257,7 +262,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
         mediaId: widget.media.id.toString(),
         type: ItemType.manga,
         savedTitle: savedTitle,
-        synonyms: anilistData?.synonyms ?? []);
+        synonyms: (anilistData ?? widget.media).synonyms);
     if (_isStaleChapterRequest(activeRequestId) || !mounted) {
       return;
     }
@@ -713,7 +718,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                     Get.back();
                   },
                   selectedIcon: Iconsax.back_square,
-                  unselectedIcon: IconlyBold.arrow_left,
+                  unselectedIcon: IconlyBold.arrowLeft,
                 ),
               ),
               const SizedBox(height: 10),
@@ -750,7 +755,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
     return Obx(() => ResponsiveNavBar(
             isDesktop: false,
             currentIndex: selectedPage.value,
-            margin: const EdgeInsets.symmetric(horizontal: 80, vertical: 40),
+            margin: const EdgeInsets.symmetric(horizontal: 60, vertical: 30),
             items: [
               NavItem(
                   onTap: _onPageSelected,
@@ -761,7 +766,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                   onTap: _onPageSelected,
                   selectedIcon: Iconsax.book,
                   unselectedIcon: Iconsax.book,
-                  label: "Watch"),
+                  label: "Read"),
               NavItem(
                   onTap: _onPageSelected,
                   selectedIcon: HugeIcons.strokeRoundedComment01,
@@ -773,13 +778,9 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
 
   // List Editor Modal: START
   void showListEditorModal(BuildContext context) {
-    showModalBottomSheet(
-      backgroundColor: context.colors.surfaceContainer,
-      context: context,
-      isScrollControlled: true,
-      showDragHandle: true,
-      builder: (BuildContext context) {
-        return ListEditorModal(
+    AnymexSheet.custom(
+        showDragHandle: true,
+        ListEditorModal(
           animeStatus: mangaStatus,
           animeScore: mangaScore,
           animeProgress: mangaProgress,
@@ -808,9 +809,8 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                 .deleteListEntry(id!, isAnime: false);
             _checkMangaPresence();
           },
-        );
-      },
-    );
+        ),
+        context);
   }
   // List Editor Modal: END
 }

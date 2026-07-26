@@ -18,6 +18,7 @@ class BetterEpisode extends StatelessWidget {
   final bool isSelected;
   final EpisodeLayoutType layoutType;
   final String? fallbackImageUrl;
+  final String? mediaTitle;
   final List<Episode>? offlineEpisodes;
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
@@ -28,6 +29,7 @@ class BetterEpisode extends StatelessWidget {
     this.isSelected = false,
     this.layoutType = EpisodeLayoutType.compact,
     this.fallbackImageUrl,
+    this.mediaTitle,
     this.offlineEpisodes,
     this.onTap,
     this.onLongPress,
@@ -55,7 +57,17 @@ class BetterEpisode extends StatelessWidget {
 
   String get episodeNumber => episode.number.contains('.0') ? episode.number.toInt().toString() : episode.number.toString();
 
-  String get episodeTitle => episode.title ?? 'Episode $episodeNumber'; 
+  String get episodeTitle {
+    final raw = episode.title?.trim();
+    final isGeneric = raw == null ||
+        raw.isEmpty ||
+        raw.toLowerCase() == 'movie' ||
+        raw.toLowerCase() == 'full movie';
+    if (isGeneric && mediaTitle != null && mediaTitle!.trim().isNotEmpty) {
+      return mediaTitle!.trim();
+    }
+    return (raw != null && raw.isNotEmpty) ? raw : 'Episode $episodeNumber';
+  } 
 
 
   double _calculateProgress() {

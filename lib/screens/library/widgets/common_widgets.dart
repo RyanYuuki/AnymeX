@@ -25,7 +25,7 @@ class MediaCard extends StatelessWidget {
       required this.isManga});
   @override
   Widget build(BuildContext context) {
-    final tag = getRandomTag();
+    final tag = '${data.mediaId ?? data.id}-library-card';
     return AnymexOnTap(
       onTap: () => navGate(tag),
       child: Container(
@@ -40,11 +40,15 @@ class MediaCard extends StatelessWidget {
                 children: [
                   Hero(
                     tag: tag,
+                    transitionOnUserGestures: true,
+                    flightShuttleBuilder: AnymeXImage.heroFlightShuttleBuilder,
                     child: AnymeXImage(
                       imageUrl: data.poster ?? '',
                       radius: 12.multiplyRadius(),
                       width: double.infinity,
                       height: double.infinity,
+                      fadeInDuration: Duration.zero,
+                      fadeOutDuration: Duration.zero,
                     ),
                   ),
                   Positioned(

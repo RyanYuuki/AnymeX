@@ -46,11 +46,11 @@ class UpdateManager {
         final latestRelease = await _fetchLatestRelease(isBeta: isBeta);
 
         if (latestRelease == null) {
-          snackBar("Failed to check for updates");
+          Logger.i("Failed to check for updates");
           return;
         }
 
-        final assets = latestRelease['assets'];
+        final assets = latestRelease['assets'] ?? [];
 
         Map<String, String> downloadUrls = {
           'android_arm64': getDownloadUrlByArch(assets, 'arm64'),
@@ -61,12 +61,13 @@ class UpdateManager {
           'linux': getDownloadUrlByArch(assets, '.AppImage'),
         };
 
-        if (_shouldUpdate(currentVersion, latestRelease['tag_name'])) {
+        if (_shouldUpdate(currentVersion, latestRelease['tag_name'] ?? '',
+            isBeta: isBeta)) {
           _showUpdateBottomSheet(
             context,
             currentVersion,
-            latestRelease['tag_name'],
-            latestRelease['body'],
+            latestRelease['tag_name'] ?? '',
+            latestRelease['body'] ?? '',
             downloadUrls,
           );
         } else {
@@ -74,24 +75,24 @@ class UpdateManager {
         }
       } catch (e) {
         debugPrint('Error checking for updates: $e');
-        snackBar("Error checking for updates: ${e.toString()}");
       }
-    } else {
-      snackBar("Skipping Update Popup");
     }
   }
 
   final bool _currentVersionIncludesHotfix = true;
 
-  bool _shouldUpdate(String currentVersion, String latestVersion) {
+  bool _shouldUpdate(String currentVersion, String latestVersion,
+      {bool isBeta = false}) {
     currentVersion = currentVersion.replaceFirst(RegExp(r'^v'), '');
     latestVersion = latestVersion.replaceFirst(RegExp(r'^v'), '');
 
     final currentSplit = currentVersion.split('-');
     final latestSplit = latestVersion.split('-');
 
-    final currentNums = currentSplit[0].split('.').map(int.parse).toList();
-    final latestNums = latestSplit[0].split('.').map(int.parse).toList();
+    final currentNums =
+        currentSplit[0].split('+')[0].split('.').map(int.parse).toList();
+    final latestNums =
+        latestSplit[0].split('+')[0].split('.').map(int.parse).toList();
 
     for (int i = 0; i < 3; i++) {
       final c = i < currentNums.length ? currentNums[i] : 0;
@@ -111,7 +112,12 @@ class UpdateManager {
       return true;
     }
 
-    if (!currentHasTag && latestHasTag) return false;
+    if (!currentHasTag && latestHasTag) {
+      if (isBeta) {
+        return true;
+      }
+      return false;
+    }
 
     if (currentHasTag && !latestHasTag) return true;
 
@@ -141,8 +147,22 @@ class UpdateManager {
     bool isBeta = false,
   }) async {
     try {
-      final url = isBeta ? _betaRepoUrl : _stableRepoUrl;
+      if (isBeta) {
+        const betaReleasesListUrl =
+            'https://api.github.com/repos/Shebyyy/AnymeX-Preview/releases';
+        final response = await http.get(
+          Uri.parse(betaReleasesListUrl),
+          headers: {'Accept': 'application/vnd.github.v3+json'},
+        );
+        if (response.statusCode == 200) {
+          final List<dynamic> list = json.decode(response.body);
+          if (list.isNotEmpty) {
+            return list.first as Map<String, dynamic>;
+          }
+        }
+      }
 
+      final url = isBeta ? _betaRepoUrl : _stableRepoUrl;
       final response = await http.get(
         Uri.parse(url),
         headers: {'Accept': 'application/vnd.github.v3+json'},
@@ -150,8 +170,6 @@ class UpdateManager {
 
       if (response.statusCode == 200) {
         return json.decode(response.body);
-      } else {
-        Logger.i('Failed to fetch latest release: ${response.statusCode}');
       }
     } catch (e) {
       debugPrint('Error fetching latest release: $e');

@@ -9,6 +9,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   dynamic_color
   firebase_core
   flutter_inappwebview_windows
+  flutter_media_session
   flutter_qjs
   flutter_tts
   isar_community_flutter_libs

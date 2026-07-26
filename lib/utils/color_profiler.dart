@@ -234,9 +234,9 @@ class ColorProfileBottomSheet extends StatefulWidget {
     required this.player,
   });
 
-  static void showColorProfileSheet(
+  static Future<void> showColorProfileSheet(
       BuildContext context, PlayerController controller, dynamic player) {
-    showGeneralDialog(
+    return showGeneralDialog(
       context: context,
       barrierDismissible: true,
       barrierLabel: 'Color Profile',

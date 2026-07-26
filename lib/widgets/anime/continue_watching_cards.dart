@@ -9,8 +9,9 @@ import 'package:flutter/material.dart';
 
 class ContinueWatchingCard extends StatelessWidget {
   final HistoryModel media;
+  final VoidCallback? onRemove;
 
-  const ContinueWatchingCard({super.key, required this.media});
+  const ContinueWatchingCard({super.key, required this.media, this.onRemove});
 
   @override
   Widget build(BuildContext context) {
@@ -95,6 +96,26 @@ class ContinueWatchingCard extends StatelessWidget {
                     ),
                   ),
                 ),
+                if (onRemove != null)
+                  Positioned(
+                    top: 6,
+                    left: 6,
+                    child: GestureDetector(
+                      onTap: onRemove,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color:
+                              Colors.black.opaque(0.65, iReallyMeanIt: true),
+                          shape: BoxShape.circle,
+                          border:
+                              Border.all(color: Colors.white24, width: 0.5),
+                        ),
+                        child: const Icon(Icons.close_rounded,
+                            size: 14, color: Colors.white),
+                      ),
+                    ),
+                  ),
                 Positioned.fill(
                   child: Center(
                     child: Container(

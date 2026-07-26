@@ -10,7 +10,7 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconly/iconly.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ProgressSyncSection extends StatelessWidget {
@@ -23,15 +23,6 @@ class ProgressSyncSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4.0),
-          child: AnymexText(
-            text: 'PROGRESS SYNC',
-            variant: TextVariant.bold,
-            color: context.colors.onSurfaceVariant.withOpacity(0.7),
-            size: 12,
-          ),
-        ),
         const SizedBox(height: 12),
         _GistSyncCard(ctrl: ctrl),
       ],

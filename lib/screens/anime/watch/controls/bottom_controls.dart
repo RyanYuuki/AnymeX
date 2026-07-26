@@ -3,14 +3,14 @@ import 'dart:io';
 
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
-import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
+
 
 class BottomControls extends StatelessWidget {
   const BottomControls({super.key});
@@ -241,15 +241,12 @@ class BottomControls extends StatelessWidget {
         List<String>.from(decodedConfig['rightButtonIds'] ?? []);
     final Map<String, dynamic> buttonConfigs =
         Map<String, dynamic>.from(decodedConfig['buttonConfigs'] ?? {});
-
     bool isVisible(String id) =>
         (buttonConfigs[id]?['visible'] as bool?) ?? true;
 
-    final serverCount = controller.episodeTracks.length;
-
     final Map<String, Widget> buttonWidgets = {
       'playlist': ControlButton(
-        icon: Symbols.playlist_play_rounded,
+        icon: Icons.playlist_play_rounded,
         onPressed: () {
           controller.isEpisodePaneOpened.value =
               !controller.isEpisodePaneOpened.value;
@@ -258,13 +255,13 @@ class BottomControls extends StatelessWidget {
         compact: true,
       ),
       'shaders': ControlButton(
-        icon: Symbols.tune_rounded,
+        icon: Icons.tune_rounded,
         onPressed: () => controller.openColorProfileBottomSheet(context),
         tooltip: 'Shaders & Color Profiles',
         compact: true,
       ),
       'source': ControlButton(
-        icon: Symbols.cloud_rounded,
+        icon: Icons.cloud_rounded,
         onPressed: () {
           controller.isSourcePaneOpened.value =
               !controller.isSourcePaneOpened.value;
@@ -273,7 +270,7 @@ class BottomControls extends StatelessWidget {
         compact: true,
       ),
       'tracks': ControlButton(
-        icon: Symbols.library_music_rounded,
+        icon: Icons.library_music_rounded,
         onPressed: () {
           controller.isTracksPaneOpened.value =
               !controller.isTracksPaneOpened.value;
@@ -282,7 +279,7 @@ class BottomControls extends StatelessWidget {
         compact: true,
       ),
       'sync_subs': ControlButton(
-        icon: Symbols.sync_rounded,
+        icon: Icons.sync_rounded,
         onPressed: () {
           controller.isSyncSubsPaneOpened.value =
               !controller.isSyncSubsPaneOpened.value;
@@ -291,23 +288,44 @@ class BottomControls extends StatelessWidget {
         compact: true,
       ),
       'speed': ControlButton(
-        icon: Symbols.speed_rounded,
-        onPressed: () =>
-            PlayerBottomSheets.showPlaybackSpeed(context, controller),
+        icon: Icons.speed_rounded,
+        onPressed: () {
+          controller.isSpeedPaneOpened.value =
+              !controller.isSpeedPaneOpened.value;
+        },
         tooltip: 'Speed',
         compact: true,
       ),
-      'orientation': ControlButton(
-        icon: Icons.screen_rotation_rounded,
-        onPressed: () => controller.toggleOrientation(),
-        tooltip: 'Toggle Orientation',
-        compact: true,
-      ),
+      'orientation': Obx(() {
+        final orientation = controller.physicalOrientation.value;
+        double angle = 0.0;
+        IconData icon = Icons.smartphone_rounded;
+        if (orientation == DeviceOrientation.landscapeLeft) {
+          icon = Icons.rotate_left_rounded;
+        } else if (orientation == DeviceOrientation.landscapeRight) {
+          icon = Icons.rotate_right_rounded;
+        } else if (orientation == DeviceOrientation.portraitDown) {
+          angle = 3.14159265359;
+        }
+        return ControlButton(
+          icon: icon,
+          rotationAngle: angle,
+          onPressed: () => controller.toggleOrientation(),
+          tooltip: 'Toggle Orientation',
+          compact: true,
+        );
+      }),
       'aspect_ratio': ControlButton(
-        icon: Symbols.fit_screen,
+        icon: Icons.fit_screen,
         onPressed: () => controller.toggleVideoFit(),
         onLongPress: controller.resetVideoFit,
         tooltip: 'Aspect Ratio',
+        compact: true,
+      ),
+      'external_player': ControlButton(
+        icon: Icons.launch_rounded,
+        onPressed: () => controller.launchExternalPlayer(),
+        tooltip: 'External Player',
         compact: true,
       ),
     };
@@ -318,10 +336,7 @@ class BottomControls extends StatelessWidget {
 
       for (var id in ids) {
         if (!isVisible(id)) continue;
-        if (id == 'source' &&
-            (controller.isOffline.value ||
-                (serverCount <= 1 &&
-                    controller.getCurrentStreamSubtitleOptions().isEmpty)))
+        if (id == 'source' && controller.isOffline.value)
           continue;
         if (id == 'tracks' &&
             (controller.embeddedAudioTracks.value.isEmpty &&
@@ -332,7 +347,7 @@ class BottomControls extends StatelessWidget {
 
         final widget = buttonWidgets[id];
         if (widget != null) {
-          if (widget is ControlButton && widget.compact) {
+          if (id == 'orientation' || (widget is ControlButton && widget.compact)) {
             compactButtons.add(widget);
           } else {
             regularButtons.add(widget);
@@ -367,7 +382,8 @@ class BottomControls extends StatelessWidget {
     final leftButtons = buildButtonList(leftButtonIds);
     final rightButtons = buildButtonList(rightButtonIds);
 
-    final isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
+    final isPortrait =
+        MediaQuery.of(context).orientation == Orientation.portrait;
 
     if (isPortrait) {
       return Column(

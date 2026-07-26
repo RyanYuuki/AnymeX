@@ -48,11 +48,15 @@ class SaikouCard extends CarouselCard {
           children: [
             Hero(
               tag: tag,
+              transitionOnUserGestures: true,
+              flightShuttleBuilder: AnymeXImage.heroFlightShuttleBuilder,
               child: AnymeXImage(
                 imageUrl: itemData.poster!,
                 radius: 12,
                 height: double.infinity,
                 width: double.infinity,
+                fadeInDuration: Duration.zero,
+                fadeOutDuration: Duration.zero,
               ),
             ),
             buildCardBadge(context, variant, type),
@@ -123,11 +127,15 @@ class ModernCard extends CarouselCard {
           children: [
             Hero(
               tag: tag,
+              transitionOnUserGestures: true,
+              flightShuttleBuilder: AnymeXImage.heroFlightShuttleBuilder,
               child: AnymeXImage(
                 imageUrl: itemData.poster!,
                 radius: 12,
                 height: double.infinity,
                 width: double.infinity,
+                fadeInDuration: Duration.zero,
+                fadeOutDuration: Duration.zero,
               ),
             ),
             if (shouldShowTitle())
@@ -214,11 +222,15 @@ class ExoticCard extends CarouselCard {
                   children: [
                     Hero(
                       tag: tag,
+                      transitionOnUserGestures: true,
+                      flightShuttleBuilder: AnymeXImage.heroFlightShuttleBuilder,
                       child: AnymeXImage(
                         imageUrl: itemData.poster!,
                         radius: 10,
                         height: double.infinity,
                         width: double.infinity,
+                        fadeInDuration: Duration.zero,
+                        fadeOutDuration: Duration.zero,
                       ),
                     ),
                     if (variant == DataVariant.library)
@@ -340,11 +352,15 @@ class MinimalExoticCard extends CarouselCard {
                   children: [
                     Hero(
                       tag: tag,
+                      transitionOnUserGestures: true,
+                      flightShuttleBuilder: AnymeXImage.heroFlightShuttleBuilder,
                       child: AnymeXImage(
                         imageUrl: itemData.poster!,
                         radius: 10,
                         height: double.infinity,
                         width: double.infinity,
+                        fadeInDuration: Duration.zero,
+                        fadeOutDuration: Duration.zero,
                       ),
                     ),
                     if (variant == DataVariant.library)
@@ -463,11 +479,15 @@ class BlurCard extends CarouselCard {
           children: [
             Hero(
               tag: tag,
+              transitionOnUserGestures: true,
+              flightShuttleBuilder: AnymeXImage.heroFlightShuttleBuilder,
               child: AnymeXImage(
                 imageUrl: itemData.poster!,
                 radius: 12,
                 height: double.infinity,
                 width: double.infinity,
+                fadeInDuration: Duration.zero,
+                fadeOutDuration: Duration.zero,
               ),
             ),
             if (shouldShowTitle()) ...[

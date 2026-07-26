@@ -26,11 +26,15 @@ class AnymexExpansionTile extends StatelessWidget {
         initialExpanded || (highlightProvider?.expansionTitle == title);
 
     return AnymexCard(
+      clipBehavior: Clip.antiAlias,
       child: ExpansionTile(
-        shape: ShapeBorder.lerp(
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
-          1,
+        collapsedShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: const Radius.circular(16),
+          ),
         ),
         leading: leading,
         title: AnymexText(

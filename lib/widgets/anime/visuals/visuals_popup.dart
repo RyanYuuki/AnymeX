@@ -44,15 +44,23 @@ class _VisualsPopupState extends State<VisualsPopup> {
   };
 
   int currentIndex = 0;
+  late PageController _pageController;
 
   @override
   void initState() {
     super.initState();
+    _pageController = PageController();
     images[VisualSource.anilist] = [widget.originalCover];
     if (widget.isAnime) {
       _fetchLiveChartVisuals();
       _fetchMalVisuals();
     }
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   Future<void> _fetchMalVisuals() async {
@@ -267,23 +275,30 @@ class _VisualsPopupState extends State<VisualsPopup> {
       currentSource = source;
       currentIndex = 0;
     });
+    _pageController.jumpToPage(0);
   }
 
   void _nextImage() {
     final currentList = images[currentSource] ?? [];
     if (currentList.isEmpty) return;
-    setState(() {
-      currentIndex = (currentIndex + 1) % currentList.length;
-    });
+    final nextIndex = (currentIndex + 1) % currentList.length;
+    _pageController.animateToPage(
+      nextIndex,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
   }
 
   void _prevImage() {
     final currentList = images[currentSource] ?? [];
     if (currentList.isEmpty) return;
-    setState(() {
-      currentIndex =
-          (currentIndex - 1 + currentList.length) % currentList.length;
-    });
+    final prevIndex =
+        (currentIndex - 1 + currentList.length) % currentList.length;
+    _pageController.animateToPage(
+      prevIndex,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
   }
 
   @override
@@ -307,33 +322,46 @@ class _VisualsPopupState extends State<VisualsPopup> {
 
           // Main thing
           Positioned.fill(
-              child: GestureDetector(
-            onTapUp: (details) {
-              final width = MediaQuery.of(context).size.width;
-              if (width > 0) {
-                if (details.localPosition.dx < width / 3) {
-                  _prevImage();
-                } else {
-                  _nextImage();
-                }
-              }
-            },
-            onLongPress: () {
-              if (currentImage != null) _saveImage(currentImage);
-            },
-            child: (currentImage != null && currentImage.isNotEmpty)
-                ? SizedBox.expand(
-                    child: ClipRect(
-                      child: InteractiveViewer(
-                        minScale: 0.5,
-                        maxScale: 4.0,
-                        child: AnymeXImage(
-                          imageUrl: currentImage,
-                          key: ValueKey(currentImage),
-                          fit: BoxFit.contain,
-                          radius: 0,
-                        ),
-                      ),
+            child: currentList.isNotEmpty
+                ? GestureDetector(
+                    onTapUp: (details) {
+                      final width = MediaQuery.of(context).size.width;
+                      if (width > 0) {
+                        if (details.localPosition.dx < width / 3) {
+                          _prevImage();
+                        } else {
+                          _nextImage();
+                        }
+                      }
+                    },
+                    child: PageView.builder(
+                      key: ValueKey(currentSource),
+                      controller: _pageController,
+                      itemCount: currentList.length,
+                      onPageChanged: (index) {
+                        setState(() {
+                          currentIndex = index;
+                        });
+                      },
+                      itemBuilder: (context, index) {
+                        return InteractiveViewer(
+                          minScale: 0.5,
+                          maxScale: 4.0,
+                          child: GestureDetector(
+                            onLongPress: () {
+                              if (currentList[index].isNotEmpty) {
+                                _saveImage(currentList[index]);
+                              }
+                            },
+                            child: AnymeXImage(
+                              imageUrl: currentList[index],
+                              key: ValueKey(currentList[index]),
+                              fit: BoxFit.contain,
+                              radius: 0,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   )
                 : const Center(
@@ -342,7 +370,7 @@ class _VisualsPopupState extends State<VisualsPopup> {
                       color: Colors.white,
                     ),
                   ),
-          )),
+          ),
 
           // top
           Positioned(

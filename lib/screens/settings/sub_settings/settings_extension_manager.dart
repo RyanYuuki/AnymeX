@@ -1,14 +1,15 @@
+import 'dart:io';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/extensions/widgets/plugin_manager.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/AnymeXBridge.dart';
 import 'package:anymex_extension_runtime_bridge/ExtensionManager.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -23,15 +24,18 @@ class SettingsExtensionManager extends StatefulWidget {
 class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
   final _pluginManager = PluginManager();
   bool _isCheckingUpdate = false;
-
-  String get _installedVersion =>
-      AnymeXRuntimeBridge.installedVersion;
+  bool _isSyncingLocalApk = false;
+  String get _installedVersion => AnymeXRuntimeBridge.installedVersion;
 
   String get _installedReleaseTitle =>
       AnymeXRuntimeBridge.installedReleaseTitle;
 
-  bool get _isPluginInstalled =>
-      AnymeXRuntimeBridge.isPluginInstalled;
+  bool get _isPluginInstalled => AnymeXRuntimeBridge.isPluginInstalled;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   void _showInstallPopup() async {
     await _pluginManager.showInstallSheet(context);
@@ -86,6 +90,29 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
     }
   }
 
+  void _syncLocalApk() async {
+    if (_isSyncingLocalApk) return;
+
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: Platform.isAndroid ? const ['apk'] : const ['jar'],
+      allowMultiple: false,
+      withData: false,
+    );
+
+    final apkPath = result?.files.single.path;
+    if (apkPath == null || apkPath.isEmpty) return;
+    if (!mounted) return;
+
+    setState(() => _isSyncingLocalApk = true);
+    try {
+      final synced = await _pluginManager.syncLocalApk(apkPath);
+      if (mounted && synced) setState(() {});
+    } finally {
+      if (mounted) setState(() => _isSyncingLocalApk = false);
+    }
+  }
+
   void _forceReDownload() async {
     final bridge = AnymeXRuntimeBridge.controller;
     if (bridge.isDownloading.value) return;
@@ -106,6 +133,23 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+    final bridge = AnymeXRuntimeBridge.controller;
+    if (Platform.isIOS) {
+      return const Scaffold(
+        body: Column(
+          children: [
+            NestedHeader(title: 'Extension Manager'),
+            Expanded(
+              child: Center(
+                child: Text('Extension Manager is not supported on iOS.'),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     return Glow(
       child: Scaffold(
         body: Column(
@@ -116,23 +160,108 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                 child: Padding(
                   padding: getResponsiveValue(context,
                       mobileValue:
-                          const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0),
+                          const EdgeInsets.fromLTRB(14.0, 20.0, 14.0, 20.0),
                       desktopValue:
                           const EdgeInsets.fromLTRB(25.0, 20.0, 25.0, 20.0)),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AnymexExpansionTile(
-                        initialExpanded: true,
-                        title: 'Plugin Status',
-                        content: Column(
-                          children: [
-                            _buildPluginStatusCard(context),
-                            const SizedBox(height: 10),
-                            _buildPluginActions(context),
-                          ],
+                      _buildPluginStatusCard(context),
+                      ..._buildExtensionSettings(context),
+                      const SizedBox(height: 25),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 4.0, bottom: 10.0),
+                        child: Text(
+                          'PLUGIN INSTALLATION & SYNC',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: colors.primary,
+                            letterSpacing: 1.2,
+                          ),
                         ),
                       ),
+                      Obx(() {
+                        // Access bridge.isReady.value to trigger reactive rebuilds
+                        final _ = bridge.isReady.value;
+                        final isInstalled = _isPluginInstalled;
+                        return Container(
+                          decoration: BoxDecoration(
+                            color:
+                                colors.surfaceContainer.withValues(alpha: 0.3),
+                            borderRadius: BorderRadius.circular(18),
+                            border: Border.all(
+                                color: colors.outlineVariant
+                                    .withValues(alpha: 0.4)),
+                          ),
+                          child: Column(
+                            children: [
+                              CustomTile(
+                                icon: Icons.cloud_download_rounded,
+                                title: isInstalled
+                                    ? 'Update Plugin'
+                                    : 'Download the Plugin',
+                                description: isInstalled
+                                    ? 'Check and install the latest plugin update from Github'
+                                    : 'Automatically download and install the latest plugin version',
+                                onTap: isInstalled
+                                    ? (_isCheckingUpdate
+                                        ? null
+                                        : _checkForUpdates)
+                                    : _showInstallPopup,
+                                postFix: _isCheckingUpdate
+                                    ? SizedBox(
+                                        width: 18,
+                                        height: 18,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: colors.primary,
+                                        ),
+                                      )
+                                    : null,
+                              ),
+                              if (Platform.isAndroid) ...[
+                                Divider(
+                                    height: 1,
+                                    color: colors.outlineVariant
+                                        .withValues(alpha: 0.3)),
+                                CustomTile(
+                                  icon: Icons.install_mobile_rounded,
+                                  title: 'Load Plugin APK from Storage',
+                                  description: Platform.isAndroid
+                                      ? 'Select a runtime APK from local storage to manually install'
+                                      : 'Select a runtime JAR from local storage to manually install',
+                                  onTap:
+                                      _isSyncingLocalApk ? null : _syncLocalApk,
+                                  postFix: _isSyncingLocalApk
+                                      ? SizedBox(
+                                          width: 18,
+                                          height: 18,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color: colors.primary,
+                                          ),
+                                        )
+                                      : null,
+                                ),
+                              ],
+                              if (isInstalled) ...[
+                                Divider(
+                                    height: 1,
+                                    color: colors.outlineVariant
+                                        .withValues(alpha: 0.3)),
+                                CustomTile(
+                                  icon: Icons.refresh_rounded,
+                                  title: 'Force Re-download',
+                                  description:
+                                      'Re-download and reinstall the plugin from scratch',
+                                  onTap: _forceReDownload,
+                                ),
+                              ],
+                            ],
+                          ),
+                        );
+                      }),
                     ],
                   ),
                 ),
@@ -157,8 +286,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
       final isBusy = isDownloading ||
           (status != "Idle" &&
               !isReady &&
-              (status.contains("Extracting") ||
-                  status.contains("Finalizing")));
+              (status.contains("Extracting") || status.contains("Finalizing")));
 
       return Container(
         width: double.infinity,
@@ -226,7 +354,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                             ? status
                             : _isPluginInstalled
                                 ? 'Aniyomi & Cloudstream ready'
-                                : 'Download plugin to unlock Aniyomi & Cloudstream',
+                                : 'Install runtime plugin to unlock Aniyomi & Cloudstream',
                         style: TextStyle(
                           fontSize: 13,
                           color: colors.onSurfaceVariant,
@@ -334,48 +462,122 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
     );
   }
 
-  Widget _buildPluginActions(BuildContext context) {
-    final colors = context.colors;
-    final bridge = AnymeXRuntimeBridge.controller;
-    return Obx(() {
-      final isBusy = bridge.isDownloading.value ||
-          (bridge.status.value != "Idle" && !bridge.isReady.value);
-      if (isBusy) return const SizedBox.shrink();
-      if (!_isPluginInstalled) {
-        return CustomTile(
-          icon: Icons.download_rounded,
-          title: 'Download Plugin',
-          description: 'Install the runtime plugin to enable Aniyomi & Cloudstream',
-          onTap: _showInstallPopup,
+  List<Widget> _buildExtensionSettings(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final em = Get.find<ExtensionManager>();
+    final settingsList = <Widget>[];
+
+    for (final manager in em.managers) {
+      final managerSettings = manager.settings;
+      if (managerSettings == null || managerSettings.isEmpty) continue;
+
+      settingsList.add(const SizedBox(height: 25));
+      settingsList.add(
+        Padding(
+          padding: const EdgeInsets.only(left: 4.0, bottom: 10.0),
+          child: Text(
+            '${manager.name.toUpperCase()} SETTINGS',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: colors.primary,
+              letterSpacing: 1.2,
+            ),
+          ),
+        ),
+      );
+
+      final children = <Widget>[];
+      for (final entry in managerSettings.entries) {
+        final setting = entry.value;
+
+        if (setting.type == 'bool') {
+          children.add(
+            CustomSwitchTile(
+              icon: Icons.settings_input_component_rounded,
+              title: setting.label,
+              description: setting.description,
+              switchValue: setting.value as bool,
+              onChanged: (val) {
+                setting.onChanged(val);
+                setState(() {});
+              },
+            ),
+          );
+        } else if (setting.type == 'string') {
+          children.add(
+            CustomTile(
+              icon: Icons.folder_open_rounded,
+              title: setting.label,
+              description: (setting.value as String).isNotEmpty
+                  ? setting.value as String
+                  : setting.description,
+              onTap: () => _showTextInputDialog(
+                context,
+                title: setting.label,
+                initialValue: setting.value as String,
+                onSave: (val) {
+                  setting.onChanged(val);
+                  setState(() {});
+                },
+              ),
+            ),
+          );
+        }
+      }
+
+      if (children.isNotEmpty) {
+        settingsList.add(
+          Container(
+            decoration: BoxDecoration(
+              color: colors.surfaceContainer.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                  color: colors.outlineVariant.withValues(alpha: 0.4)),
+            ),
+            child: Column(children: children),
+          ),
         );
       }
-      return Column(
-        children: [
-          CustomTile(
-            icon: Icons.system_update_alt_rounded,
-            title: 'Check for Updates',
-            description: 'Check if a newer plugin version is available',
-            onTap: _isCheckingUpdate ? null : _checkForUpdates,
-            postFix: _isCheckingUpdate
-                ? SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: colors.primary,
-                    ),
-                  )
-                : null,
+    }
+
+    return settingsList;
+  }
+
+  void _showTextInputDialog(
+    BuildContext context, {
+    required String title,
+    required String initialValue,
+    required ValueChanged<String> onSave,
+  }) {
+    final controller = TextEditingController(text: initialValue);
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(title),
+          content: TextField(
+            controller: controller,
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Enter value',
+            ),
           ),
-          const SizedBox(height: 8),
-          CustomTile(
-            icon: Icons.refresh_rounded,
-            title: 'Force Re-download',
-            description: 'Re-download and reinstall the plugin from scratch',
-            onTap: _forceReDownload,
-          ),
-        ],
-      );
-    });
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                onSave(controller.text);
+                Navigator.of(context).pop();
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

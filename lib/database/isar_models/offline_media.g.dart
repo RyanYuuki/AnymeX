@@ -76,94 +76,99 @@ const OfflineMediaSchema = CollectionSchema(
       name: r'genres',
       type: IsarType.stringList,
     ),
-    r'japanese': PropertySchema(
+    r'idMal': PropertySchema(
       id: 11,
+      name: r'idMal',
+      type: IsarType.string,
+    ),
+    r'japanese': PropertySchema(
+      id: 12,
       name: r'japanese',
       type: IsarType.string,
     ),
     r'jname': PropertySchema(
-      id: 12,
+      id: 13,
       name: r'jname',
       type: IsarType.string,
     ),
     r'mediaId': PropertySchema(
-      id: 13,
+      id: 14,
       name: r'mediaId',
       type: IsarType.string,
     ),
     r'mediaTypeIndex': PropertySchema(
-      id: 14,
+      id: 15,
       name: r'mediaTypeIndex',
       type: IsarType.long,
     ),
     r'name': PropertySchema(
-      id: 15,
+      id: 16,
       name: r'name',
       type: IsarType.string,
     ),
     r'popularity': PropertySchema(
-      id: 16,
+      id: 17,
       name: r'popularity',
       type: IsarType.string,
     ),
     r'poster': PropertySchema(
-      id: 17,
+      id: 18,
       name: r'poster',
       type: IsarType.string,
     ),
     r'premiered': PropertySchema(
-      id: 18,
+      id: 19,
       name: r'premiered',
       type: IsarType.string,
     ),
     r'rating': PropertySchema(
-      id: 19,
+      id: 20,
       name: r'rating',
       type: IsarType.string,
     ),
     r'readChapters': PropertySchema(
-      id: 20,
+      id: 21,
       name: r'readChapters',
       type: IsarType.objectList,
       target: r'Chapter',
     ),
     r'season': PropertySchema(
-      id: 21,
+      id: 22,
       name: r'season',
       type: IsarType.string,
     ),
     r'serviceIndex': PropertySchema(
-      id: 22,
+      id: 23,
       name: r'serviceIndex',
       type: IsarType.long,
     ),
     r'status': PropertySchema(
-      id: 23,
+      id: 24,
       name: r'status',
       type: IsarType.string,
     ),
     r'studios': PropertySchema(
-      id: 24,
+      id: 25,
       name: r'studios',
       type: IsarType.stringList,
     ),
     r'totalChapters': PropertySchema(
-      id: 25,
+      id: 26,
       name: r'totalChapters',
       type: IsarType.string,
     ),
     r'totalEpisodes': PropertySchema(
-      id: 26,
+      id: 27,
       name: r'totalEpisodes',
       type: IsarType.string,
     ),
     r'type': PropertySchema(
-      id: 27,
+      id: 28,
       name: r'type',
       type: IsarType.string,
     ),
     r'watchedEpisodes': PropertySchema(
-      id: 28,
+      id: 29,
       name: r'watchedEpisodes',
       type: IsarType.objectList,
       target: r'Episode',
@@ -294,6 +299,12 @@ int _offlineMediaEstimateSize(
           bytesCount += value.length * 3;
         }
       }
+    }
+  }
+  {
+    final value = object.idMal;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
     }
   }
   {
@@ -452,30 +463,31 @@ void _offlineMediaSerialize(
   );
   writer.writeString(offsets[9], object.format);
   writer.writeStringList(offsets[10], object.genres);
-  writer.writeString(offsets[11], object.japanese);
-  writer.writeString(offsets[12], object.jname);
-  writer.writeString(offsets[13], object.mediaId);
-  writer.writeLong(offsets[14], object.mediaTypeIndex);
-  writer.writeString(offsets[15], object.name);
-  writer.writeString(offsets[16], object.popularity);
-  writer.writeString(offsets[17], object.poster);
-  writer.writeString(offsets[18], object.premiered);
-  writer.writeString(offsets[19], object.rating);
+  writer.writeString(offsets[11], object.idMal);
+  writer.writeString(offsets[12], object.japanese);
+  writer.writeString(offsets[13], object.jname);
+  writer.writeString(offsets[14], object.mediaId);
+  writer.writeLong(offsets[15], object.mediaTypeIndex);
+  writer.writeString(offsets[16], object.name);
+  writer.writeString(offsets[17], object.popularity);
+  writer.writeString(offsets[18], object.poster);
+  writer.writeString(offsets[19], object.premiered);
+  writer.writeString(offsets[20], object.rating);
   writer.writeObjectList<Chapter>(
-    offsets[20],
+    offsets[21],
     allOffsets,
     ChapterSchema.serialize,
     object.readChapters,
   );
-  writer.writeString(offsets[21], object.season);
-  writer.writeLong(offsets[22], object.serviceIndex);
-  writer.writeString(offsets[23], object.status);
-  writer.writeStringList(offsets[24], object.studios);
-  writer.writeString(offsets[25], object.totalChapters);
-  writer.writeString(offsets[26], object.totalEpisodes);
-  writer.writeString(offsets[27], object.type);
+  writer.writeString(offsets[22], object.season);
+  writer.writeLong(offsets[23], object.serviceIndex);
+  writer.writeString(offsets[24], object.status);
+  writer.writeStringList(offsets[25], object.studios);
+  writer.writeString(offsets[26], object.totalChapters);
+  writer.writeString(offsets[27], object.totalEpisodes);
+  writer.writeString(offsets[28], object.type);
   writer.writeObjectList<Episode>(
-    offsets[28],
+    offsets[29],
     allOffsets,
     EpisodeSchema.serialize,
     object.watchedEpisodes,
@@ -518,30 +530,31 @@ OfflineMedia _offlineMediaDeserialize(
     ),
     format: reader.readStringOrNull(offsets[9]),
     genres: reader.readStringList(offsets[10]),
-    japanese: reader.readStringOrNull(offsets[11]),
-    jname: reader.readStringOrNull(offsets[12]),
-    mediaId: reader.readStringOrNull(offsets[13]),
-    mediaTypeIndex: reader.readLongOrNull(offsets[14]),
-    name: reader.readStringOrNull(offsets[15]),
-    popularity: reader.readStringOrNull(offsets[16]),
-    poster: reader.readStringOrNull(offsets[17]),
-    premiered: reader.readStringOrNull(offsets[18]),
-    rating: reader.readStringOrNull(offsets[19]),
+    idMal: reader.readStringOrNull(offsets[11]),
+    japanese: reader.readStringOrNull(offsets[12]),
+    jname: reader.readStringOrNull(offsets[13]),
+    mediaId: reader.readStringOrNull(offsets[14]),
+    mediaTypeIndex: reader.readLongOrNull(offsets[15]),
+    name: reader.readStringOrNull(offsets[16]),
+    popularity: reader.readStringOrNull(offsets[17]),
+    poster: reader.readStringOrNull(offsets[18]),
+    premiered: reader.readStringOrNull(offsets[19]),
+    rating: reader.readStringOrNull(offsets[20]),
     readChapters: reader.readObjectList<Chapter>(
-      offsets[20],
+      offsets[21],
       ChapterSchema.deserialize,
       allOffsets,
       Chapter(),
     ),
-    season: reader.readStringOrNull(offsets[21]),
-    serviceIndex: reader.readLongOrNull(offsets[22]),
-    status: reader.readStringOrNull(offsets[23]),
-    studios: reader.readStringList(offsets[24]),
-    totalChapters: reader.readStringOrNull(offsets[25]),
-    totalEpisodes: reader.readStringOrNull(offsets[26]),
-    type: reader.readStringOrNull(offsets[27]),
+    season: reader.readStringOrNull(offsets[22]),
+    serviceIndex: reader.readLongOrNull(offsets[23]),
+    status: reader.readStringOrNull(offsets[24]),
+    studios: reader.readStringList(offsets[25]),
+    totalChapters: reader.readStringOrNull(offsets[26]),
+    totalEpisodes: reader.readStringOrNull(offsets[27]),
+    type: reader.readStringOrNull(offsets[28]),
     watchedEpisodes: reader.readObjectList<Episode>(
-      offsets[28],
+      offsets[29],
       EpisodeSchema.deserialize,
       allOffsets,
       Episode(),
@@ -605,9 +618,9 @@ P _offlineMediaDeserializeProp<P>(
     case 13:
       return (reader.readStringOrNull(offset)) as P;
     case 14:
-      return (reader.readLongOrNull(offset)) as P;
-    case 15:
       return (reader.readStringOrNull(offset)) as P;
+    case 15:
+      return (reader.readLongOrNull(offset)) as P;
     case 16:
       return (reader.readStringOrNull(offset)) as P;
     case 17:
@@ -617,27 +630,29 @@ P _offlineMediaDeserializeProp<P>(
     case 19:
       return (reader.readStringOrNull(offset)) as P;
     case 20:
+      return (reader.readStringOrNull(offset)) as P;
+    case 21:
       return (reader.readObjectList<Chapter>(
         offset,
         ChapterSchema.deserialize,
         allOffsets,
         Chapter(),
       )) as P;
-    case 21:
-      return (reader.readStringOrNull(offset)) as P;
     case 22:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 23:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 24:
-      return (reader.readStringList(offset)) as P;
-    case 25:
       return (reader.readStringOrNull(offset)) as P;
+    case 25:
+      return (reader.readStringList(offset)) as P;
     case 26:
       return (reader.readStringOrNull(offset)) as P;
     case 27:
       return (reader.readStringOrNull(offset)) as P;
     case 28:
+      return (reader.readStringOrNull(offset)) as P;
+    case 29:
       return (reader.readObjectList<Episode>(
         offset,
         EpisodeSchema.deserialize,
@@ -2270,6 +2285,158 @@ extension OfflineMediaQueryFilter
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterFilterCondition>
+      idMalIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'idMal',
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterFilterCondition>
+      idMalIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'idMal',
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterFilterCondition> idMalEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'idMal',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterFilterCondition>
+      idMalGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'idMal',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterFilterCondition> idMalLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'idMal',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterFilterCondition> idMalBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'idMal',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterFilterCondition>
+      idMalStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'idMal',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterFilterCondition> idMalEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'idMal',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterFilterCondition> idMalContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'idMal',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterFilterCondition> idMalMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'idMal',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterFilterCondition>
+      idMalIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'idMal',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterFilterCondition>
+      idMalIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'idMal',
+        value: '',
       ));
     });
   }
@@ -4993,6 +5160,18 @@ extension OfflineMediaQuerySortBy
     });
   }
 
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterSortBy> sortByIdMal() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'idMal', Sort.asc);
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterSortBy> sortByIdMalDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'idMal', Sort.desc);
+    });
+  }
+
   QueryBuilder<OfflineMedia, OfflineMedia, QAfterSortBy> sortByJapanese() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'japanese', Sort.asc);
@@ -5267,6 +5446,18 @@ extension OfflineMediaQuerySortThenBy
     });
   }
 
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterSortBy> thenByIdMal() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'idMal', Sort.asc);
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterSortBy> thenByIdMalDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'idMal', Sort.desc);
+    });
+  }
+
   QueryBuilder<OfflineMedia, OfflineMedia, QAfterSortBy> thenByJapanese() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'japanese', Sort.asc);
@@ -5504,6 +5695,13 @@ extension OfflineMediaQueryWhereDistinct
     });
   }
 
+  QueryBuilder<OfflineMedia, OfflineMedia, QDistinct> distinctByIdMal(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'idMal', caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<OfflineMedia, OfflineMedia, QDistinct> distinctByJapanese(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -5692,6 +5890,12 @@ extension OfflineMediaQueryProperty
   QueryBuilder<OfflineMedia, List<String>?, QQueryOperations> genresProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'genres');
+    });
+  }
+
+  QueryBuilder<OfflineMedia, String?, QQueryOperations> idMalProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'idMal');
     });
   }
 

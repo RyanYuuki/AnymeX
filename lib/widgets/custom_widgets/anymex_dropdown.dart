@@ -9,6 +9,7 @@ class AnymexDropdown extends StatefulWidget {
   final IconData icon;
   final IconData? actionIcon;
   final VoidCallback? onActionPressed;
+  final List<Widget>? actions;
 
   const AnymexDropdown({
     super.key,
@@ -19,6 +20,7 @@ class AnymexDropdown extends StatefulWidget {
     required this.icon,
     this.actionIcon,
     this.onActionPressed,
+    this.actions,
   });
 
   @override
@@ -350,9 +352,9 @@ class _AnymexDropdownState extends State<AnymexDropdown>
                   ),
                 ),
               ),
-            ),
           ),
-        ],
+        ),
+        ]
       ),
     );
   }
@@ -479,7 +481,9 @@ class _AnymexDropdownState extends State<AnymexDropdown>
                       ],
                     ),
                   ),
-                  if (widget.actionIcon != null &&
+                  if (widget.actions != null && widget.selectedItem != null)
+                    ...widget.actions!
+                  else if (widget.actionIcon != null &&
                       widget.onActionPressed != null &&
                       widget.selectedItem != null)
                     Padding(

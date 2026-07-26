@@ -4,10 +4,11 @@ import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/themes/player_control_themes/netflix_shared.dart';
 import 'package:anymex/screens/anime/watch/controls/themes/setup/player_control_theme.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/decoder_quick_button.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
+
 
 class NetflixMobilePlayerControlTheme extends PlayerControlTheme {
   @override
@@ -74,6 +75,11 @@ class NetflixMobilePlayerControlTheme extends PlayerControlTheme {
                               ),
                             )),
                       ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 5),
+                      child: DecoderQuickButton.netflix(isMobile: true),
                     ),
                     const SizedBox(width: 4),
                     NFRawButton(
@@ -243,16 +249,18 @@ class NetflixMobilePlayerControlTheme extends PlayerControlTheme {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               NFLabeledButton(
-                                icon: Symbols.playlist_play_rounded,
+                                icon: Icons.playlist_play_rounded,
                                 label: 'Episodes',
                                 onTap: () =>
                                     controller.isEpisodePaneOpened.value =
                                         !controller.isEpisodePaneOpened.value,
                               ),
                               NFLabeledButton(
-                                icon: Symbols.subtitles_rounded,
+                                icon: Icons.subtitles_rounded,
                                 label: 'Audio & Subtitles',
-                                onTap: () => controller.isTracksPaneOpened.value = !controller.isTracksPaneOpened.value,
+                                onTap: () =>
+                                    controller.isTracksPaneOpened.value =
+                                        !controller.isTracksPaneOpened.value,
                               ),
                               Obx(() => NFLabeledButton(
                                     icon: Icons.skip_next_rounded,

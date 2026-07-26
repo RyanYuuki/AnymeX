@@ -3,9 +3,11 @@ import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
 import 'package:anymex/screens/anime/watch/player/base_player.dart';
 import 'package:anymex/utils/language.dart';
 
+import 'dart:io' show Platform;
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:material_symbols_icons/symbols.dart';
+
 
 enum _TracksTab { video, audio, subtitles }
 
@@ -75,9 +77,9 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
   }
 
   Widget _buildHeader(ColorScheme cs, ThemeData theme) {
+    final isDesktop = !Platform.isAndroid && !Platform.isIOS;
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 16 + 40, 16, 16),
-
+      padding: EdgeInsets.fromLTRB(16, isDesktop ? 16 + 40 : 16, 16, 16),
       decoration: BoxDecoration(
         color: cs.surfaceContainerHighest.withOpacity(0.3),
         border: Border(
@@ -92,7 +94,7 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
               color: cs.primary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(Symbols.tune_rounded, color: cs.primary, size: 20),
+            child: Icon(Icons.tune_rounded, color: cs.primary, size: 20),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -111,7 +113,8 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
                 color: cs.surfaceContainerHighest.withOpacity(0.5),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(Icons.close, size: 20, color: cs.onSurface.withOpacity(0.7)),
+              child: Icon(Icons.close,
+                  size: 20, color: cs.onSurface.withOpacity(0.7)),
             ),
           ),
         ],
@@ -155,9 +158,9 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
               _TracksTab.subtitles => 'Subtitles',
             };
             final icon = switch (tab) {
-              _TracksTab.video => Symbols.high_quality_rounded,
-              _TracksTab.audio => Symbols.music_note_rounded,
-              _TracksTab.subtitles => Symbols.subtitles_rounded,
+              _TracksTab.video => Icons.high_quality_rounded,
+              _TracksTab.audio => Icons.music_note_rounded,
+              _TracksTab.subtitles => Icons.subtitles_rounded,
             };
 
             return Expanded(
@@ -186,14 +189,18 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
                       Icon(
                         icon,
                         size: 16,
-                        color: isSelected ? cs.onPrimary : cs.onSurface.withOpacity(0.6),
+                        color: isSelected
+                            ? cs.onPrimary
+                            : cs.onSurface.withOpacity(0.6),
                       ),
                       const SizedBox(width: 4),
                       Text(
                         label,
                         style: theme.textTheme.labelMedium?.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: isSelected ? cs.onPrimary : cs.onSurface.withOpacity(0.6),
+                          color: isSelected
+                              ? cs.onPrimary
+                              : cs.onSurface.withOpacity(0.6),
                         ),
                       ),
                     ],
@@ -215,7 +222,8 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
       final selected = widget.controller.selectedQualityTrack.value;
 
       if (qualities.isEmpty) {
-        return _buildEmpty(cs, theme, Symbols.high_quality_rounded, 'No quality tracks');
+        return _buildEmpty(
+            cs, theme, Icons.high_quality_rounded, 'No quality tracks');
       }
 
       return ListView.builder(
@@ -223,13 +231,14 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
         itemCount: qualities.length,
         itemBuilder: (context, index) {
           final q = qualities[index];
-          final isSelected = selected != null && qualities.indexOf(selected) == index;
+          final isSelected =
+              selected != null && qualities.indexOf(selected) == index;
           return _buildListItem(
             cs: cs,
             theme: theme,
             title: q.height == 0 ? 'Auto' : '${q.width}x${q.height}',
             subtitle: 'Quality',
-            icon: Symbols.high_quality_rounded,
+            icon: Icons.high_quality_rounded,
             isSelected: isSelected,
             onTap: () => widget.controller.setVideoTrack(q),
           );
@@ -240,27 +249,53 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
 
   Widget _buildAudioTracks(ColorScheme cs, ThemeData theme) {
     return Obx(() {
-      final tracks = widget.controller.embeddedAudioTracks.value.toList();
+      final tracks = widget.controller.embeddedAudioTracks.value
+          .where((t) => t.id != 'auto' && t.id != 'no')
+          .toList();
       final selected = widget.controller.selectedAudioTrack.value;
+      final selectedLayout = widget.controller.selectedAudioChannelLayout.value;
 
-      if (tracks.isEmpty) {
-        return _buildEmpty(cs, theme, Symbols.music_note_rounded, 'No audio tracks');
-      }
+      final layouts = [
+        ('auto', 'Auto', 'System Default'),
+        ('mono', 'Mono', '1.0 Channel'),
+        ('stereo', 'Stereo', '2.0 Channels'),
+        ('2.1', '2.1 Surround', '2.1 Channels'),
+        ('5.1', '5.1 Surround', '5.1 Channels'),
+        ('7.1', '7.1 Surround', '7.1 Channels'),
+      ];
+
+      final totalItems = tracks.length + 2 + 1 + layouts.length;
 
       return ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        itemCount: tracks.length + 1,
+        itemCount: totalItems,
         itemBuilder: (context, index) {
           if (index == 0) {
+            final isSelected = selected != null && selected.id == 'no';
+            return _buildListItem(
+              cs: cs,
+              theme: theme,
+              title: 'None',
+              subtitle: 'Mute Audio',
+              icon: Icons.music_off_rounded,
+              isSelected: isSelected,
+              onTap: () {
+                widget.controller.setAudioTrack(AudioTrack.no());
+                widget.controller.selectedAudioTrack.value = AudioTrack.no();
+              },
+            );
+          }
+
+          if (index == 1) {
             final isSelected = selected == null ||
                 selected.id == 'auto' ||
-                !tracks.contains(selected);
+                (!tracks.any((t) => t.id == selected.id) && selected.id != 'no');
             return _buildListItem(
               cs: cs,
               theme: theme,
               title: 'Auto',
-              subtitle: 'Audio Track',
-              icon: Symbols.music_note_rounded,
+              subtitle: 'Default Audio',
+              icon: Icons.music_note_rounded,
               isSelected: isSelected,
               onTap: () {
                 widget.controller.setAudioTrack(AudioTrack.auto());
@@ -269,28 +304,62 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
             );
           }
 
-          final track = tracks[index - 1];
-          final isSelected = selected != null && tracks.indexOf(selected) == index - 1;
-          
-          String displayTitle = 'Audio Track $index';
-          if (track.language != null && track.title != null) {
-            displayTitle = '${completeSubtitleLanguageName(track.language!)} - ${track.title}';
-          } else if (track.language != null) {
-            displayTitle = completeSubtitleLanguageName(track.language!);
-          } else if (track.title != null) {
-            displayTitle = track.title!;
+          if (index >= 2 && index < tracks.length + 2) {
+            final track = tracks[index - 2];
+            final isSelected = selected != null && selected.id == track.id;
+
+            String displayTitle = 'Audio Track ${index - 1}';
+            if (track.language != null && track.title != null) {
+              displayTitle =
+                  '${completeSubtitleLanguageName(track.language!)} ${(track.title?.isNotEmpty ?? false) ? '- ${track.title}' : ''}';
+            } else if (track.language != null) {
+              displayTitle = completeSubtitleLanguageName(track.language!);
+            } else if (track.title != null) {
+              displayTitle = track.title!;
+            }
+
+            return _buildListItem(
+              cs: cs,
+              theme: theme,
+              title: displayTitle,
+              subtitle: 'Audio Track',
+              icon: Icons.music_note_rounded,
+              isSelected: isSelected,
+              onTap: () {
+                widget.controller.setAudioTrack(track);
+                widget.controller.selectedAudioTrack.value = track;
+              },
+            );
           }
+
+          final layoutHeaderIndex = tracks.length + 2;
+          if (index == layoutHeaderIndex) {
+            return Padding(
+              padding: const EdgeInsets.only(top: 16, bottom: 8, left: 4),
+              child: Text(
+                'AUDIO CHANNELS / LAYOUT',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                  color: cs.primary,
+                ),
+              ),
+            );
+          }
+
+          final layoutIndex = index - layoutHeaderIndex - 1;
+          final layout = layouts[layoutIndex];
+          final isSelected = selectedLayout == layout.$1;
 
           return _buildListItem(
             cs: cs,
             theme: theme,
-            title: displayTitle,
-            subtitle: 'Audio Track',
-            icon: Symbols.music_note_rounded,
+            title: layout.$2,
+            subtitle: layout.$3,
+            icon: Icons.speaker_group_rounded,
             isSelected: isSelected,
             onTap: () {
-              widget.controller.setAudioTrack(track);
-              widget.controller.selectedAudioTrack.value = track;
+              widget.controller.setAudioChannelLayout(layout.$1);
             },
           );
         },
@@ -317,7 +386,8 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
               subtitle: 'No subtitles',
               icon: Icons.subtitles_off,
               isSelected: currentIndex == 0,
-              onTap: () => widget.controller.setSubtitleTrack(SubtitleTrack.no()),
+              onTap: () =>
+                  widget.controller.setSubtitleTrack(SubtitleTrack.no()),
             );
           }
 
@@ -326,7 +396,7 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
           return _buildListItem(
             cs: cs,
             theme: theme,
-            title: ( completeSubtitleLanguageName(track.language ?? ''))
+            title: (completeSubtitleLanguageName(track.language ?? ''))
                 .toUpperCase(),
             subtitle: 'Embedded Subtitle',
             icon: Icons.closed_caption_rounded,
@@ -359,7 +429,9 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
               border: Border.all(
-                color: isSelected ? cs.primary.withOpacity(0.3) : Colors.transparent,
+                color: isSelected
+                    ? cs.primary.withOpacity(0.3)
+                    : Colors.transparent,
                 width: 1.0,
               ),
               borderRadius: BorderRadius.circular(16),
@@ -377,7 +449,8 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
                   child: Icon(
                     icon,
                     size: 20,
-                    color: isSelected ? cs.primary : cs.onSurface.withOpacity(0.7),
+                    color:
+                        isSelected ? cs.primary : cs.onSurface.withOpacity(0.7),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -389,7 +462,8 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
                       Text(
                         title,
                         style: theme.textTheme.bodyLarge?.copyWith(
-                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                          fontWeight:
+                              isSelected ? FontWeight.w600 : FontWeight.w500,
                           color: isSelected ? cs.primary : cs.onSurface,
                         ),
                       ),
@@ -419,7 +493,8 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
     );
   }
 
-  Widget _buildEmpty(ColorScheme cs, ThemeData theme, IconData icon, String message) {
+  Widget _buildEmpty(
+      ColorScheme cs, ThemeData theme, IconData icon, String message) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

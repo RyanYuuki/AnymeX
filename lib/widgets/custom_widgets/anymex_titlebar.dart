@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:win32/win32.dart';
 import 'dart:ffi';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart' hide isar;
 
 class AnymexTitleBar {
   static final ValueNotifier<bool> isFullScreen = ValueNotifier(false);
@@ -23,6 +24,8 @@ class AnymexTitleBar {
           skipTaskbar: null,
         ),
       );
+      await windowManager.setPreventClose(true);
+      windowManager.addListener(_WindowListener());
       return;
     }
 
@@ -37,6 +40,7 @@ class AnymexTitleBar {
       await windowManager.focus();
 
       AnymexTitleBar.isMaximized.value = await windowManager.isMaximized();
+      await windowManager.setPreventClose(true);
       windowManager.addListener(_WindowListener());
     });
   }
@@ -87,6 +91,21 @@ class _WindowListener extends WindowListener {
     if (Platform.isWindows) {
       AnymexTitleBar.listenToWin32();
     }
+  }
+
+  @override
+  void onWindowClose() async {
+    try {
+      AnymeXExtensionBridge.dispose();
+    } catch (e) {
+      debugPrint('Error disposing AnymeXExtensionBridge: $e');
+    }
+    try {
+      await TorrentStreamResolver.dispose();
+    } catch (e) {
+      debugPrint('Error disposing TorrentStreamResolver: $e');
+    }
+    await windowManager.destroy();
   }
 }
 

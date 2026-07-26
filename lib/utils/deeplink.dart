@@ -13,7 +13,13 @@ import 'package:get/get.dart';
 class Deeplink {
   static Future<void> handleDeepLink(Uri uri) async {
     print("HANDLING DEEEPLIINK => ${uri.toString()}");
-    
+
+    if (uri.host == 'callback' ||
+        uri.path.contains('callback') ||
+        uri.queryParameters.containsKey('code')) {
+      return;
+    }
+
     final extensionManager = Get.find<ExtensionManager>();
     int attempts = 0;
     while (extensionManager.managers.isEmpty && attempts < 25) {
@@ -21,25 +27,30 @@ class Deeplink {
       attempts++;
     }
 
-    final illegalSchemes = extensionManager
-        .managers
-        .expand((e) => e.schemes.toList())
-        .toList();
+    final illegalSchemes =
+        extensionManager.managers.expand((e) => e.schemes.toList()).toList();
 
     if (_isThemeDeepLink(uri)) {
       _handleThemeDeepLink(uri);
       return;
     }
 
-    if (!illegalSchemes.contains(uri.scheme.toLowerCase())) {
-      final mediaTarget = _parseMediaTarget(uri);
-      if (mediaTarget == null) return;
+    final mediaTarget = _parseMediaTarget(uri);
+    if (mediaTarget != null) {
       _openMediaTarget(mediaTarget);
       return;
     }
 
+    if (!illegalSchemes.contains(uri.scheme.toLowerCase())) {
+      return;
+    }
+
     bool isRepoAdded = false;
-    snackBar("Adding repo... please wait.");
+    if (uri.scheme.toLowerCase() == 'kotatsu') {
+      snackBar("Adding Kotatsu repository. This will take at least 1-2 minutes, please wait...");
+    } else {
+      snackBar("Adding repo... please wait.");
+    }
     final manager = extensionManager.managers;
     for (final handler in manager) {
       print('Matching ${uri.scheme} with ${handler.schemes.toString()}');

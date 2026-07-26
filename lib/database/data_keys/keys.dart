@@ -24,6 +24,10 @@ enum General {
   filterRepeating,
   communityListViewIsGrid,
   hasJoinedNewDiscord,
+  discordRpcEnabled,
+  useHighRefreshRate,
+  preferredDisplayMode,
+  navigationTabOrder,
 }
 
 enum ThemeKeys {
@@ -34,9 +38,10 @@ enum ThemeKeys {
   themeMode,
   customColorIndex,
   logoAnimationType,
+  customHexColor,
 }
 
-enum PlayerKeys { useLibass, useMediaKit }
+enum PlayerKeys { useLibass, useMediaKit, useExternalPlayer, audioChannelLayout }
 
 enum PlayerUiKeys {
   playerExperimentalEnabled,
@@ -89,6 +94,8 @@ enum ReaderKeys {
   displayRefreshInterval,
   displayRefreshColor,
   imageFilterQuality,
+  fitToScreen,
+  navigateByNumber,
 }
 
 enum NovelReaderKeys {
@@ -157,6 +164,7 @@ enum PluginKeys {
   runtimeHostInstalledVersion,
   runtimeHostInstalledReleaseTitle,
   bridgeMode,
+  useInternalExtensionLoading,
 }
 
 enum AuthKeys {
@@ -241,6 +249,9 @@ enum PlayerSettingsKeys {
   playerMenuAnimation,
   hardwareDecoder,
   preferredSubtitleLanguage,
+  videoOutput,
+  audioOutput,
+  enableHoldToSeek,
 }
 
 enum UISettingsKeys {
@@ -269,6 +280,10 @@ enum UISettingsKeys {
   enablePosterKenBurns,
   carouselStyle,
   showContinueWatchingCard,
+  useLegacyHeader,
+  useGrainTexture,
+  grainIntensity,
+  enableImmersiveMode,
 }
 
 enum DownloadKeys {
@@ -279,4 +294,3 @@ enum DownloadKeys {
   hlsParallelSegments,
   enableJxlCompression,
 }
-

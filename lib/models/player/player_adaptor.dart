@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:anymex/database/data_keys/keys.dart';
 
 class PlayerSettings {
@@ -35,6 +33,9 @@ class PlayerSettings {
   bool playerMenuAnimation;
   String hardwareDecoder;
   String preferredSubtitleLanguage;
+  String videoOutput;
+  String audioOutput;
+  bool enableHoldToSeek;
 
   PlayerSettings({
     this.speed = 1.0,
@@ -65,10 +66,13 @@ class PlayerSettings {
     this.subtitleBottomMargin = 10.0,
     this.subtitleOutlineType = "Outline",
     this.autoSkipFiller = false,
-    this.enableScreenshot = true,
+    this.enableScreenshot = false,
     this.playerMenuAnimation = true,
-    this.hardwareDecoder = 'hw',
+    this.hardwareDecoder = 'hw+',
     this.preferredSubtitleLanguage = 'none',
+    this.videoOutput = 'gpu',
+    this.audioOutput = 'auto',
+    this.enableHoldToSeek = true,
   });
 
   factory PlayerSettings.fromDB() {
@@ -141,6 +145,12 @@ class PlayerSettings {
       hardwareDecoder: _readHardwareDecoder(),
       preferredSubtitleLanguage: PlayerSettingsKeys.preferredSubtitleLanguage
           .get<String>(defaults.preferredSubtitleLanguage),
+      videoOutput: PlayerSettingsKeys.videoOutput
+          .get<String>(defaults.videoOutput),
+      audioOutput: PlayerSettingsKeys.audioOutput
+          .get<String>(defaults.audioOutput),
+      enableHoldToSeek: PlayerSettingsKeys.enableHoldToSeek
+          .get<bool>(defaults.enableHoldToSeek),
     );
   }
 }
@@ -148,19 +158,18 @@ class PlayerSettings {
 String _normalizeHardwareDecoder(String value) {
   switch (value) {
     case 'hw+':
-      return Platform.isAndroid ? 'hw+' : 'hw';
     case 'hw':
     case 'sw':
       return value;
     default:
-      return Platform.isAndroid ? 'hw+' : 'hw';
+      return 'hw+';
   }
 }
 
 String _readHardwareDecoder() {
   final stored = PlayerSettingsKeys.hardwareDecoder.get<String>('');
   if (stored.isEmpty) {
-    return Platform.isAndroid ? 'hw+' : 'hw';
+    return 'hw+';
   }
   return _normalizeHardwareDecoder(stored);
 }

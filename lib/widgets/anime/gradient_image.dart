@@ -88,9 +88,6 @@ class GradientPoster extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap: () {
-                  snackBar("come-on man, long press it !!!");
-                },
-                onLongPress: () {
                   Get.to(
                     () => VisualsPopup(
                       animeTitle: data?.title ?? 'Unknown',
@@ -105,11 +102,15 @@ class GradientPoster extends StatelessWidget {
                 child: Stack(children: [
                   Hero(
                     tag: tag,
+                    transitionOnUserGestures: true,
+                    flightShuttleBuilder: AnymeXImage.heroFlightShuttleBuilder,
                     child: AnymeXImage(
                         imageUrl: posterUrl,
                         radius: 16.multiplyRoundness(),
                         width: isDesktop ? 150 : 120,
-                        height: isDesktop ? 200 : 180),
+                        height: isDesktop ? 200 : 180,
+                        fadeInDuration: Duration.zero,
+                        fadeOutDuration: Duration.zero),
                   ),
                   if (data?.isAdult ?? false)
                     Positioned(
@@ -152,9 +153,9 @@ class GradientPoster extends StatelessWidget {
                           text: data?.title ?? 'Loading...',
                           variant: TextVariant.bold,
                           size: 16,
-                          maxLines: 1,
+                          maxLines: 5,
                           overflow: TextOverflow.ellipsis,
-                          isMarquee: true),
+                          isMarquee: false),
                     ),
                   ),
                   Padding(

@@ -45,11 +45,19 @@ void registerProtocolHandler(
   String? executable,
   List<String>? arguments,
 }) {
-  WindowsProtocolHandler().register(
-    scheme,
-    executable: executable,
-    arguments: arguments,
-  );
+  if (defaultTargetPlatform == TargetPlatform.windows) {
+    WindowsProtocolHandler().register(
+      scheme,
+      executable: executable,
+      arguments: arguments,
+    );
+  } else if (defaultTargetPlatform == TargetPlatform.linux) {
+    LinuxProtocolHandler().register(
+      scheme,
+      executable: executable,
+      arguments: arguments,
+    );
+  }
 }
 
 /// Unregisters the protocol handler with the underlying platform. The provided
@@ -65,7 +73,11 @@ void registerProtocolHandler(
 /// application is undefined and depends on platform-specific restrictions.
 
 void unregisterProtocolHandler(String scheme) {
-  WindowsProtocolHandler().unregister(scheme);
+  if (defaultTargetPlatform == TargetPlatform.windows) {
+    WindowsProtocolHandler().unregister(scheme);
+  } else if (defaultTargetPlatform == TargetPlatform.linux) {
+    LinuxProtocolHandler().unregister(scheme);
+  }
 }
 
 const _hive = HKEY_CURRENT_USER;
@@ -151,5 +163,74 @@ abstract class ProtocolHandler {
     }
 
     return arguments;
+  }
+}
+
+class LinuxProtocolHandler extends ProtocolHandler {
+  @override
+  void register(String scheme, {String? executable, List<String>? arguments}) {
+    if (defaultTargetPlatform != TargetPlatform.linux) return;
+
+    try {
+      final homeDir = Platform.environment['HOME'];
+      if (homeDir == null) return;
+
+      final appDir = Directory('$homeDir/.local/share/applications');
+      if (!appDir.existsSync()) {
+        appDir.createSync(recursive: true);
+      }
+
+      final desktopFile = File('${appDir.path}/anymex.desktop');
+      final execPath = executable ?? Platform.resolvedExecutable;
+
+      final schemes = [
+        'dar',
+        'anymex',
+        'sugoireads',
+        'mangayomi',
+        'cloudstreamrepo',
+        'sora',
+        'tachiyomi',
+        'aniyomi'
+      ];
+
+      final mimeTypes = schemes.map((s) => 'x-scheme-handler/$s').join(';');
+
+      final desktopContent = '''
+[Desktop Entry]
+Type=Application
+Name=AnymeX
+Exec="$execPath" %u
+Icon=anymex
+Terminal=false
+Categories=Utility;
+MimeType=$mimeTypes;
+''';
+
+      desktopFile.writeAsStringSync(desktopContent);
+
+      for (final s in schemes) {
+        Process.runSync('xdg-mime', ['default', 'anymex.desktop', 'x-scheme-handler/$s']);
+      }
+
+      Process.runSync('update-desktop-database', [appDir.path]);
+    } catch (e) {
+      debugPrint('Failed to register protocol handler on Linux: $e');
+    }
+  }
+
+  @override
+  void unregister(String scheme) {
+    if (defaultTargetPlatform != TargetPlatform.linux) return;
+    try {
+      final homeDir = Platform.environment['HOME'];
+      if (homeDir == null) return;
+
+      final appDir = Directory('$homeDir/.local/share/applications');
+      final desktopFile = File('${appDir.path}/anymex.desktop');
+      if (desktopFile.existsSync()) {
+        desktopFile.deleteSync();
+      }
+    } catch (_) {}
   }
 }

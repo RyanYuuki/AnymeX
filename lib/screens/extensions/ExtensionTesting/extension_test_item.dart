@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
@@ -380,35 +379,14 @@ class ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
       );
     }
 
-    if (widget.source.iconUrl!.startsWith('http')) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: AnymeXImage(
-          imageUrl: widget.source.iconUrl!,
-          width: 40,
-          height: 40,
-          fit: BoxFit.cover,
-          radius: 0,
-        ),
-      );
-    }
-
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
-      child: Image.file(
-        File(widget.source.iconUrl!),
+      child: AnymeXImage(
+        imageUrl: widget.source.iconUrl!,
         width: 40,
         height: 40,
         fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) => Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: theme.primary.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(Icons.extension, color: theme.primary, size: 24),
-        ),
+        radius: 0,
       ),
     );
   }

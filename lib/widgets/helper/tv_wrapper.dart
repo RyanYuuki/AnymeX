@@ -18,6 +18,7 @@ class AnymexOnTap extends StatelessWidget {
   final Color? bgColor;
   final double borderWidth;
   final double? margin;
+  final BorderRadius? borderRadius;
 
   const AnymexOnTap({
     super.key,
@@ -34,6 +35,7 @@ class AnymexOnTap extends StatelessWidget {
     this.onTapDown,
     this.onTapCancel,
     this.onLongPress,
+    this.borderRadius,
   });
 
   @override
@@ -85,12 +87,14 @@ class AnymexOnTap extends StatelessWidget {
         return InkWell(
           onTap: onTap,
           onLongPress: onLongPress,
+          borderRadius: borderRadius,
           child: child,
         );
       } else {
         return GestureDetector(
           onTap: onTap,
           onLongPress: onLongPress,
+          behavior: HitTestBehavior.opaque,
           child: child,
         );
       }

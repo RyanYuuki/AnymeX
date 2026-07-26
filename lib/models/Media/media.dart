@@ -100,8 +100,23 @@ class Media {
       DateTime? createdAt})
       : createdAt = DateTime.now();
 
-  factory Media.fromMAL(Map<String, dynamic> json) {
+  factory Media.fromMAL(Map<String, dynamic> json, {bool isManga = false}) {
     final node = json['node'] ?? {};
+    final mediaTypeStr = node['media_type'] as String?;
+    
+    ItemType determinedType;
+    if (mediaTypeStr != null) {
+      final t = mediaTypeStr.toLowerCase();
+      if (t == 'tv' || t == 'ova' || t == 'movie' || t == 'special' || t == 'ona' || t == 'music') {
+        determinedType = ItemType.anime;
+      } else if (t == 'manga' || t == 'novel' || t == 'one_shot' || t == 'doujinshi' || t == 'manhwa' || t == 'manhua' || t == 'oel') {
+        determinedType = ItemType.manga;
+      } else {
+        determinedType = isManga ? ItemType.manga : ItemType.anime;
+      }
+    } else {
+      determinedType = isManga ? ItemType.manga : ItemType.anime;
+    }
 
     return Media(
       id: node['id']?.toString() ?? '0',
@@ -134,8 +149,14 @@ class Media {
       nextAiringEpisode: null,
       rankings: [],
       mediaContent: [],
-      mediaType: node['media_type'] == 'tv' ? ItemType.anime : ItemType.manga,
+      mediaType: determinedType,
       serviceType: ServicesType.mal,
+      synonyms: {
+        if (node['title'] != null) node['title'].toString(),
+        if (node['alternative_titles']?['en'] != null) node['alternative_titles']['en'].toString(),
+        if (node['alternative_titles']?['ja'] != null) node['alternative_titles']['ja'].toString(),
+        ...?((node['alternative_titles']?['synonyms'] as List?)?.map((e) => e.toString())),
+      }.where((t) => t.isNotEmpty && t != '??' && t != '?').toList(),
     );
   }
 
@@ -175,11 +196,32 @@ class Media {
       mediaContent: [],
       mediaType: isManga ? ItemType.manga : ItemType.anime,
       serviceType: ServicesType.mal,
+      synonyms: {
+        if (json['title'] != null) json['title'].toString(),
+        if (json['title_english'] != null) json['title_english'].toString(),
+        if (json['title_japanese'] != null) json['title_japanese'].toString(),
+        ...?((json['title_synonyms'] as List?)?.map((e) => e.toString())),
+      }.where((t) => t.isNotEmpty && t != '??' && t != '?').toList(),
     );
   }
 
-  factory Media.fromFullMAL(Map<String, dynamic> json) {
+  factory Media.fromFullMAL(Map<String, dynamic> json, {bool isManga = false}) {
     final node = json;
+    final mediaTypeStr = node['media_type'] as String?;
+    
+    ItemType determinedType;
+    if (mediaTypeStr != null) {
+      final t = mediaTypeStr.toLowerCase();
+      if (t == 'tv' || t == 'ova' || t == 'movie' || t == 'special' || t == 'ona' || t == 'music') {
+        determinedType = ItemType.anime;
+      } else if (t == 'manga' || t == 'novel' || t == 'one_shot' || t == 'doujinshi' || t == 'manhwa' || t == 'manhua' || t == 'oel') {
+        determinedType = ItemType.manga;
+      } else {
+        determinedType = isManga ? ItemType.manga : ItemType.anime;
+      }
+    } else {
+      determinedType = isManga ? ItemType.manga : ItemType.anime;
+    }
 
     return Media(
       id: node['id']?.toString() ?? '0',
@@ -208,14 +250,20 @@ class Media {
           .toList(),
       characters: [],
       recommendations: (node['recommendations'] as List<dynamic>?)
-              ?.map((e) => Media.fromMAL(e))
+              ?.map((e) => Media.fromMAL(e, isManga: isManga))
               .toList() ??
           [],
       nextAiringEpisode: null,
       rankings: [],
       mediaContent: [],
-      mediaType: node['media_type'] == 'tv' ? ItemType.anime : ItemType.manga,
+      mediaType: determinedType,
       serviceType: ServicesType.mal,
+      synonyms: {
+        if (node['title'] != null) node['title'].toString(),
+        if (node['alternative_titles']?['en'] != null) node['alternative_titles']['en'].toString(),
+        if (node['alternative_titles']?['ja'] != null) node['alternative_titles']['ja'].toString(),
+        ...?((node['alternative_titles']?['synonyms'] as List?)?.map((e) => e.toString())),
+      }.where((t) => t.isNotEmpty && t != '??' && t != '?').toList(),
     );
   }
 
@@ -233,7 +281,12 @@ class Media {
       cover: json['fanart'] != null
           ? 'https://wsrv.nl/?url=https://simkl.in/fanart/${json['fanart']}_medium.jpg'
           : null,
-      totalEpisodes: json['total_episodes']?.toString() ?? '1',
+      totalEpisodes: (json['total_episodes'] ??
+              json['total_episodes_count'] ??
+              json['episodes_count'] ??
+              json['episodes'])
+          ?.toString() ??
+          (isMovie ? '1' : '??'),
       type: json['country']?.toUpperCase() ?? 'UNKNOWN',
       premiered: json['released'] ?? 'Unknown release date',
       duration: json['runtime'] != null
@@ -290,7 +343,12 @@ class Media {
       cover: json['fanart'] != null
           ? 'https://simkl.in/fanart/${json['fanart']}_medium.jpg'
           : posterUrl,
-      totalEpisodes: json['total_episodes']?.toString() ?? '1',
+      totalEpisodes: (json['total_episodes'] ??
+              json['total_episodes_count'] ??
+              json['episodes_count'] ??
+              json['episodes'])
+          ?.toString() ??
+          (isMovie ? '1' : '??'),
       type: isMovie ? 'MOVIE' : 'TV',
       rating: json['ratings']?['simkl']?['rating']?.toString() ?? '0.0',
       popularity: json['rank']?.toString() ?? '0',
@@ -378,7 +436,10 @@ class Media {
       id: json['id'].toString(),
       idMal: json['idMal']?.toString() ?? '0',
       romajiTitle: json['title']['romaji'] ?? '?',
-      title: json['title']['userPreferred'] ?? json['title']['english'] ?? json['title']['romaji'] ?? '?',
+      title: json['title']['userPreferred'] ??
+          json['title']['english'] ??
+          json['title']['romaji'] ??
+          '?',
       description: json['description'] ?? '?',
       poster: json['coverImage']['large'] ?? '?',
       isAdult: json['isAdult'] ?? false,
@@ -418,7 +479,13 @@ class Media {
           [],
       mediaType: type,
       serviceType: ServicesType.anilist,
-      synonyms: (json['synonyms'] as List?)?.cast<String>() ?? [],
+      synonyms: {
+        if (json['title']?['english'] != null) json['title']['english'].toString(),
+        if (json['title']?['userPreferred'] != null) json['title']['userPreferred'].toString(),
+        if (json['title']?['romaji'] != null) json['title']['romaji'].toString(),
+        if (json['title']?['native'] != null) json['title']['native'].toString(),
+        ...?((json['synonyms'] as List?)?.cast<String>()),
+      }.where((t) => t.isNotEmpty && t != '??' && t != '?').toList(),
       tags: (json['tags'] as List?)
               ?.map((t) => MediaTag.fromJson(t))
               .where((t) => !t.isMediaSpoiler && !t.isGeneralSpoiler)
@@ -464,7 +531,10 @@ class Media {
     return Media(
       id: (isMal ? json['idMal']?.toString() : json['id'].toString()) ?? '',
       romajiTitle: json['title']['romaji'] ?? '?',
-      title: json['title']['userPreferred'] ?? json['title']['english'] ?? json['title']['romaji'] ?? '?',
+      title: json['title']['userPreferred'] ??
+          json['title']['english'] ??
+          json['title']['romaji'] ??
+          '?',
       description: json['description'] ?? '',
       isAdult: (json['isAdult'] as bool?) ?? false,
       totalEpisodes: (json['episodes'] as int?)?.toString() ?? '?',
@@ -480,6 +550,13 @@ class Media {
       serviceType: ServicesType.anilist,
       characterRole: role,
       seasonYear: json['seasonYear'] ?? json['startDate']?['year'],
+      synonyms: {
+        if (json['title']?['english'] != null) json['title']['english'].toString(),
+        if (json['title']?['userPreferred'] != null) json['title']['userPreferred'].toString(),
+        if (json['title']?['romaji'] != null) json['title']['romaji'].toString(),
+        if (json['title']?['native'] != null) json['title']['native'].toString(),
+        ...?((json['synonyms'] as List?)?.cast<String>()),
+      }.where((t) => t.isNotEmpty && t != '??' && t != '?').toList(),
     )..type = json['type'] ?? (isManga ? 'MANGA' : 'ANIME');
   }
   factory Media.fromCarouselData(CarouselData data, ItemType type) {
@@ -496,12 +573,20 @@ class Media {
   factory Media.fromRecs(Map<String, dynamic> json) {
     final rec = json['mediaRecommendation'];
     if (rec == null) {
-      return Media(id: '', title: '', poster: '', rating: '0', serviceType: ServicesType.anilist);
+      return Media(
+          id: '',
+          title: '',
+          poster: '',
+          rating: '0',
+          serviceType: ServicesType.anilist);
     }
     final title = rec['title'];
     return Media(
         id: rec['id'].toString(),
-        title: title?['userPreferred'] ?? title?['english'] ?? title?['romaji'] ?? '',
+        title: title?['userPreferred'] ??
+            title?['english'] ??
+            title?['romaji'] ??
+            '',
         poster: rec['coverImage']?['large'] ?? '',
         rating: ((rec['averageScore'] ?? 0) / 10).toString(),
         serviceType: ServicesType.anilist);
@@ -510,6 +595,7 @@ class Media {
   factory Media.fromOfflineMedia(OfflineMedia offline, ItemType type) {
     return Media(
       id: offline.mediaId.toString(),
+      idMal: offline.idMal ?? '0',
       title: offline.name ?? offline.english ?? offline.jname ?? '?',
       romajiTitle: offline.jname ?? '?',
       description: offline.description ?? '?',
@@ -546,12 +632,14 @@ class Media {
       id: json['id']?.toString() ?? '0',
       title: json['title'] ?? 'Unknown Title',
       romajiTitle: json['title'] ?? 'Unknown Title',
-      description: json['reason'] ?? json['description'] ?? 'No description available.',
+      description:
+          json['reason'] ?? json['description'] ?? 'No description available.',
       poster: json['cover'] ?? json['poster'] ?? '',
       cover: json['cover'] ?? json['banner'] ?? '',
       totalEpisodes: json['episodes']?.toString() ?? '?',
       totalChapters: json['chapters']?.toString() ?? '?',
-      rating: json['score']?.toString() ?? json['averageScore']?.toString() ?? '?',
+      rating:
+          json['score']?.toString() ?? json['averageScore']?.toString() ?? '?',
       type: isManga ? 'MANGA' : 'ANIME',
       mediaType: isManga ? ItemType.manga : ItemType.anime,
       serviceType: ServicesType.anilist,
@@ -570,7 +658,10 @@ class Media {
       id: json['id']?.toString() ?? '0',
       idMal: json['idMal']?.toString() ?? '0',
       romajiTitle: json['title']?['romaji'] ?? '?',
-      title: json['title']?['userPreferred'] ?? json['title']?['english'] ?? json['title']?['romaji'] ?? '?',
+      title: json['title']?['userPreferred'] ??
+          json['title']?['english'] ??
+          json['title']?['romaji'] ??
+          '?',
       description: json['description'] ?? '',
       poster: json['coverImage']?['large'] ?? '',
       largePoster: json['coverImage']?['extraLarge'] ?? '',

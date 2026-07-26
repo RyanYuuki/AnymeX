@@ -26,12 +26,12 @@ class AnymexSegmentedButton extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
           child: Container(
             padding: padding,
             decoration: BoxDecoration(
-              color: isSelected
-                  ? context.colors.primary
-                  : context.colors.surface,
+              color:
+                  isSelected ? context.colors.primary : context.colors.surface,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: isSelected
@@ -46,9 +46,8 @@ class AnymexSegmentedButton extends StatelessWidget {
                   children: [
                     Icon(
                       icon,
-                      color: isSelected
-                          ? context.colors.onPrimary
-                          : Colors.grey,
+                      color:
+                          isSelected ? context.colors.onPrimary : Colors.grey,
                     ),
                     const SizedBox(width: 8),
                     Text(
@@ -56,9 +55,8 @@ class AnymexSegmentedButton extends StatelessWidget {
                       style: TextStyle(
                         fontFamily: "Poppins-Bold",
                         fontSize: 16,
-                        color: isSelected
-                            ? context.colors.onPrimary
-                            : Colors.grey,
+                        color:
+                            isSelected ? context.colors.onPrimary : Colors.grey,
                       ),
                     ),
                   ],

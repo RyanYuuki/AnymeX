@@ -71,7 +71,12 @@ class DownloadController extends GetxController {
     _initForegroundTask();
 
     Future.delayed(const Duration(seconds: 3), () async {
-      if (!await FlutterForegroundTask.isRunningService) {
+      bool isRunning = false;
+      if (Platform.isAndroid || Platform.isIOS) {
+        isRunning = await FlutterForegroundTask.isRunningService;
+      }
+      
+      if (!isRunning) {
         for (final task in activeTasks) {
           if (task.status == DownloadStatus.downloading ||
               task.status == DownloadStatus.queued) {
@@ -95,6 +100,8 @@ class DownloadController extends GetxController {
   }
 
   void _initForegroundTask() {
+    if (!Platform.isAndroid && !Platform.isIOS) return;
+
     FlutterForegroundTask.init(
       androidNotificationOptions: AndroidNotificationOptions(
         channelId: 'anymex_downloads',
@@ -125,6 +132,7 @@ class DownloadController extends GetxController {
   }
 
   void _attachReceivePortListener() {
+    if (!Platform.isAndroid && !Platform.isIOS) return;
     if (_receivePortListening) return;
     final port = FlutterForegroundTask.receivePort;
     if (port == null) return;
@@ -133,7 +141,7 @@ class DownloadController extends GetxController {
   }
 
   Future<void> _startBackgroundServiceIfNotRunning() async {
-    if (Platform.isIOS) return;
+    if (!Platform.isAndroid) return;
     if (!await FlutterForegroundTask.isRunningService) {
       await FlutterForegroundTask.startService(
         notificationTitle: 'AnymeX Downloads',
@@ -898,7 +906,12 @@ class DownloadController extends GetxController {
       activeMangaTasks.refresh();
       _saveMangaActiveTasks();
 
-      if (await FlutterForegroundTask.isRunningService) {
+      bool isRunning = false;
+      if (Platform.isAndroid || Platform.isIOS) {
+        isRunning = await FlutterForegroundTask.isRunningService;
+      }
+
+      if (isRunning) {
         _sendToBackground({
           'type': 'CANCEL_TASK',
           'taskId': taskId,
@@ -967,7 +980,12 @@ class DownloadController extends GetxController {
   Future<void> cancelDownload(String taskId) async {
     dl.DownloadIsolatePool.instance.cancelTask(taskId);
 
-    if (await FlutterForegroundTask.isRunningService) {
+    bool isRunning = false;
+    if (Platform.isAndroid || Platform.isIOS) {
+      isRunning = await FlutterForegroundTask.isRunningService;
+    }
+
+    if (isRunning) {
       _sendToBackground({
         'type': 'CANCEL_TASK',
         'taskId': taskId,

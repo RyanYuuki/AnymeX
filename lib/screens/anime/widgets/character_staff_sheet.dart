@@ -818,8 +818,14 @@ class _CharacterStaffSheetContentState
                                       size: 16,
                                     ),
                                     GestureDetector(
-                                      onTap: () => showOnlyOnList.value =
-                                          !showOnlyOnList.value,
+                                      onTap: () {
+                                        if (!anilistAuth.isLoggedIn.value) {
+                                          snackBar("Please login to use this filter!");
+                                          return;
+                                        }
+                                        showOnlyOnList.value =
+                                            !showOnlyOnList.value;
+                                      },
                                       child: Row(
                                         children: [
                                           Obx(() => AnimatedContainer(

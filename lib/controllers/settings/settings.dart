@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:anymex/database/data_keys/keys.dart';
@@ -15,6 +16,7 @@ import 'package:anymex/utils/updater.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:get/get.dart';
 
 Settings get settingsController => Get.find<Settings>();
@@ -32,6 +34,9 @@ class Settings extends GetxController {
 
   RxBool enableBetaUpdates = false.obs;
   RxBool writeLogToFile = false.obs;
+  Rxn<DisplayMode> preferredDisplayMode = Rxn<DisplayMode>();
+  Rxn<DisplayMode> activeDisplayMode = Rxn<DisplayMode>();
+  RxList<DisplayMode> supportedModes = <DisplayMode>[].obs;
   RxString customLogDirectory = ''.obs;
 
   RxString downloadPath = ''.obs;
@@ -85,18 +90,15 @@ class Settings extends GetxController {
     enableBetaUpdates.value = General.enableBetaUpdates.get<bool>(false);
     writeLogToFile.value = General.writeLogToFile.get<bool>(false);
     customLogDirectory.value = General.customLogDirectory.get<String>("");
-    
+
     downloadPath.value = DownloadKeys.downloadPath.get<String>("");
     concurrentDownloads.value = DownloadKeys.concurrentDownloads.get<int>(3);
     downloadChunks.value = DownloadKeys.downloadChunks.get<int>(1);
     hlsParallelSegments.value = DownloadKeys.hlsParallelSegments.get<int>(3);
-    enableJxlCompression.value = DownloadKeys.enableJxlCompression.get<bool>(false);
+    enableJxlCompression.value =
+        DownloadKeys.enableJxlCompression.get<bool>(false);
 
     bridgeMode.value = PluginKeys.bridgeMode.get<String>(_defaultBridgeMode);
-    if (Platform.isMacOS && bridgeMode.value != 'sidecar') {
-      PluginKeys.bridgeMode.set('sidecar');
-      bridgeMode.value = 'sidecar';
-    }
     _updateBridgeDispatcher();
     Logger.setFileLoggingEnabled(writeLogToFile.value,
         customPath: customLogDirectory.value);
@@ -108,16 +110,58 @@ class Settings extends GetxController {
     PlayerShaders.getMpvPath().then((e) {
       mpvPath.value = e;
     });
-    setHighRefreshRate();
+
+    if (Platform.isAndroid) {
+      _initDisplayModes();
+    }
   }
 
-  Future<void> setHighRefreshRate() async {
+  Future<void> _initDisplayModes() async {
+    try {
+      final modes = await FlutterDisplayMode.supported;
+      supportedModes.value = modes;
+      
+      final savedStr = General.preferredDisplayMode.get<String?>();
+      if (savedStr != null) {
+        preferredDisplayMode.value = modes.firstWhere(
+          (m) => m.toString() == savedStr,
+          orElse: () => DisplayMode.auto,
+        );
+      } else {
+        preferredDisplayMode.value = DisplayMode.auto;
+      }
+      
+      await applyDisplayRefreshMode();
+      activeDisplayMode.value = await FlutterDisplayMode.active;
+    } catch (e) {
+      Logger.e("Error initializing display modes: $e");
+    }
+  }
+
+  Future<void> applyDisplayRefreshMode() async {
     if (!Platform.isAndroid) return;
     try {
-      await FlutterDisplayMode.setHighRefreshRate();
+      final mode = preferredDisplayMode.value ?? DisplayMode.auto;
+      await FlutterDisplayMode.setPreferredMode(mode);
+      await Future.delayed(const Duration(milliseconds: 100));
+      activeDisplayMode.value = await FlutterDisplayMode.active;
     } catch (e) {
-      Logger.e("Error setting high refresh rate: $e");
+      Logger.e("Error setting display refresh mode: $e");
     }
+  }
+
+  Future<void> savePreferredDisplayMode(DisplayMode mode) async {
+    preferredDisplayMode.value = mode;
+    General.preferredDisplayMode.set(mode.toString());
+    await applyDisplayRefreshMode();
+  }
+
+  String getPreferredRefreshRateLabel() {
+    final mode = preferredDisplayMode.value;
+    if (mode == null || mode == DisplayMode.auto) {
+      return "Auto";
+    }
+    return "${mode.width}x${mode.height} @ ${mode.refreshRate.toInt()}Hz";
   }
 
   Future<void> _fetchInviteLinks() async {
@@ -283,9 +327,81 @@ class Settings extends GetxController {
     UISettingsKeys.disableGradient.set(value);
   }
 
+  bool get useLegacyHeader => _getUISetting((s) => s.useLegacyHeader);
+  set useLegacyHeader(bool value) {
+    uiSettings.update((s) => s?.useLegacyHeader = value);
+    UISettingsKeys.useLegacyHeader.set(value);
+  }
+
+  bool get useGrainTexture => _getUISetting((s) => s.useGrainTexture);
+  set useGrainTexture(bool value) {
+    uiSettings.update((s) => s?.useGrainTexture = value);
+    UISettingsKeys.useGrainTexture.set(value);
+  }
+
+  double get grainIntensity => _getUISetting((s) => s.grainIntensity);
+  set grainIntensity(double value) {
+    uiSettings.update((s) => s?.grainIntensity = value);
+    UISettingsKeys.grainIntensity.set(value);
+  }
+
+  bool get enableImmersiveMode => _getUISetting((s) => s.enableImmersiveMode);
+  set enableImmersiveMode(bool value) {
+    uiSettings.update((s) => s?.enableImmersiveMode = value);
+    UISettingsKeys.enableImmersiveMode.set(value);
+    applyImmersiveMode(value);
+  }
+
+  static void applyImmersiveMode(bool enable) {
+    if (enable) {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    } else {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    }
+  }
+
+
   Map<String, bool> get homePageCards => _getUISetting((s) => s.homePageCards);
   Map<String, bool> get homePageCardsMal =>
       _getUISetting((s) => s.homePageCardsMal);
+
+  String get _currentTabOrderKey {
+    final service = Get.isRegistered<ServiceHandler>()
+        ? Get.find<ServiceHandler>().serviceType.value.name
+        : 'none';
+    return 'navigationTabOrder_$service';
+  }
+
+  List<String> get navigationTabOrder {
+    final raw = KvHelper.get<String>(_currentTabOrderKey, defaultVal: '');
+    final isDesktop = Get.context != null && MediaQuery.of(Get.context!).size.width > 600;
+    final authService = Get.isRegistered<ServiceHandler>() ? Get.find<ServiceHandler>() : null;
+    final isExtensionsService = authService?.serviceType.value == ServicesType.extensions;
+
+    final defaultTabs = isExtensionsService
+        ? ['Library', 'Anime', 'Manga', 'Novel', 'Extensions']
+        : (isDesktop
+            ? ['Home', 'Anime', 'Manga', 'Library', 'Extensions']
+            : ['Home', 'Anime', 'Manga', 'Library']);
+
+    if (raw.isEmpty) {
+      return defaultTabs;
+    }
+    try {
+      final List<dynamic> list = jsonDecode(raw);
+      final strings = list.map((e) => e.toString()).toList();
+      if (strings.isNotEmpty) {
+        return strings;
+      }
+    } catch (_) {}
+    return defaultTabs;
+  }
+
+  set navigationTabOrder(List<String> order) {
+    KvHelper.set(_currentTabOrderKey, jsonEncode(order));
+    uiSettings.refresh();
+    update();
+  }
 
   double get glowMultiplier => _getUISetting((s) => s.glowMultiplier);
   set glowMultiplier(double value) {
@@ -508,6 +624,12 @@ class Settings extends GetxController {
     PlayerSettingsKeys.enableScreenshot.set(value);
   }
 
+  bool get enableHoldToSeek => _getPlayerSetting((s) => s.enableHoldToSeek);
+  set enableHoldToSeek(bool value) {
+    playerSettings.update((s) => s?.enableHoldToSeek = value);
+    PlayerSettingsKeys.enableHoldToSeek.set(value);
+  }
+
   bool get playerMenuAnimation =>
       _getPlayerSetting((s) => s.playerMenuAnimation);
   set playerMenuAnimation(bool value) {
@@ -518,13 +640,38 @@ class Settings extends GetxController {
   String get hardwareDecoder => _getPlayerSetting((s) => s.hardwareDecoder);
   set hardwareDecoder(String value) {
     final normalized = switch (value) {
-      'hw+' => Platform.isAndroid ? 'hw+' : 'hw',
+      'hw+' => 'hw+',
       'hw' => 'hw',
       'sw' => 'sw',
-      _ => Platform.isAndroid ? 'hw+' : 'hw',
+      _ => 'hw+',
     };
     playerSettings.update((s) => s?.hardwareDecoder = normalized);
     PlayerSettingsKeys.hardwareDecoder.set(normalized);
+    if (Get.isRegistered<PlayerController>()) {
+      unawaited(Get.find<PlayerController>().reloadActivePlayer());
+    }
+  }
+
+  String get videoOutput => _getPlayerSetting((s) => s.videoOutput);
+  set videoOutput(String value) {
+    final normalized = switch (value) {
+      'gpu' => 'gpu',
+      'gpu-next' => 'gpu-next',
+      'mediacodec_embed' => 'mediacodec_embed',
+      'auto' => 'auto',
+      _ => 'auto',
+    };
+    playerSettings.update((s) => s?.videoOutput = normalized);
+    PlayerSettingsKeys.videoOutput.set(normalized);
+    if (Get.isRegistered<PlayerController>()) {
+      unawaited(Get.find<PlayerController>().reloadActivePlayer());
+    }
+  }
+
+  String get audioOutput => _getPlayerSetting((s) => s.audioOutput);
+  set audioOutput(String value) {
+    playerSettings.update((s) => s?.audioOutput = value);
+    PlayerSettingsKeys.audioOutput.set(value);
     if (Get.isRegistered<PlayerController>()) {
       unawaited(Get.find<PlayerController>().reloadActivePlayer());
     }

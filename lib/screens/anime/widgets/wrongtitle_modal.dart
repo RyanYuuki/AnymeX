@@ -125,14 +125,23 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                       );
                     }
 
+                    final url = Uri.tryParse(
+                      sourceController.activeMangaSource.value?.baseUrl ?? '',
+                    );
+
+                    final origin =
+                        (url != null && url.hasScheme && url.host.isNotEmpty)
+                            ? url.origin
+                            : 'https://google.com';
+
                     return GridView.builder(
                       padding: const EdgeInsets.all(20),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: getResponsiveCrossAxisCount(context,
                               maxColumns: 5, baseColumns: 3),
                           crossAxisSpacing: 20,
-                          mainAxisSpacing: 20,
-                          mainAxisExtent: 210),
+                          childAspectRatio: 0.45,
+                          mainAxisSpacing: 0),
                       itemCount: results.length,
                       itemBuilder: (context, index) {
                         final item = results[index];
@@ -156,18 +165,23 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Center(
+                                AspectRatio(
+                                  aspectRatio: 2/ 3,
                                   child: AnymeXImage(
                                     imageUrl: item!.cover ?? "",
-                                    height: 140,
                                     radius: 12,
                                     width: double.infinity,
+                                    headers: {
+                                      'Referer': '$origin/',
+                                      'Origin': origin,
+                                    },
                                   ),
                                 ),
                                 const SizedBox(height: 10),
-                                Text(
-                                  item.title ?? '??',
-                                  maxLines: 3,
+                                AnymexText(
+                                  text:  item.title ?? '??',
+                                  maxLines: 3 ,
+                                  variant: TextVariant.semiBold,
                                 )
                               ],
                             ),

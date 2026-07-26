@@ -1,4 +1,5 @@
 import 'package:anymex/controllers/services/backup_restore/backup_restore_service.dart';
+import 'package:anymex/controllers/sync/progress_sync_section.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/screens/settings/sub_settings/widgets/backup_and_restore_widgets.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -97,7 +98,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
         RestorePreviewSheet(
           info: info,
           isEncrypted: isEncrypted,
-        onConfirm: (restoreSettings, restoreAuthTokens) async {
+          onConfirm: (restoreSettings, restoreAuthTokens) async {
             Get.back();
             try {
               await controller.restoreBackup(
@@ -186,6 +187,10 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                       color: theme.colorScheme.tertiary,
                       onTap: () => _handleRestore(context),
                     ),
+                    const SizedBox(height: 32),
+                    const _SectionHeader(title: "Cloud Sync"),
+                    const SizedBox(height: 16),
+                    const ProgressSyncSection(),
                   ],
                 ),
               ),

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/mal/mal_service.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:get/get.dart';
@@ -90,7 +91,7 @@ Future<List<Media>> getAiRecommendations(
 
   final List<Future<List<Media>>> futures = [];
 
-  if (!isManga) {
+  if (page == 1 && !isManga) {
     futures.add(_fetchAnimeSproutRecommendations(
       userName: userName,
       isAL: isAL,
@@ -113,7 +114,7 @@ Future<List<Media>> getAiRecommendations(
 
   for (final recList in resultsList) {
     for (final media in recList) {
-      if (media.id != null && !trackedIds.contains(media.id)) {
+      if (!trackedIds.contains(media.id)) {
         bool isDuplicate = false;
         for (final existingId in uniqueMap.keys) {
           if (existingId == media.id) {
@@ -142,30 +143,21 @@ Future<List<Media>> getAiRecommendations(
     results = results.where((media) {
       final hasAdultGenres = media.genres.any((g) {
         final genre = g.toUpperCase();
-        return genre.contains('HENTAI') || 
-               genre.contains('EROTICA') || 
-               genre.contains('ADULT') || 
-               genre.contains('18+') ||
-               genre.contains('ECCHI') ||
-               genre.contains('MATURE');
+        return genre.contains('HENTAI') ||
+            genre.contains('EROTICA') ||
+            genre.contains('ADULT') ||
+            genre.contains('18+') ||
+            genre.contains('ECCHI') ||
+            genre.contains('MATURE');
       });
-      
+
       final isMediaAdult = media.isAdult == true;
       final titleHasAdult = media.title.toLowerCase().contains('hentai') ||
-                           media.title.toLowerCase().contains('erotica') ||
-                           media.title.toLowerCase().contains('nsfw');
-      
+          media.title.toLowerCase().contains('erotica') ||
+          media.title.toLowerCase().contains('nsfw');
+
       return !hasAdultGenres && !isMediaAdult && !titleHasAdult;
     }).toList();
-  }
-
-  const int pageSize = 30;
-  final startIndex = (page - 1) * pageSize;
-  if (startIndex < results.length) {
-    final endIndex = (startIndex + pageSize).clamp(0, results.length);
-    results = results.sublist(startIndex, endIndex);
-  } else {
-    results = [];
   }
 
   if (results.isEmpty && page == 1) {
@@ -558,104 +550,33 @@ Future<List<Media>> _fetchMalRecommendations({
   required bool isAdult,
 }) async {
   try {
+    final malService = Get.find<MalService>();
     final type = isManga ? 'manga' : 'anime';
-    final url = 'https://api.jikan.moe/v4/recommendations/$type?page=$page';
-
-    final response =
-        await http.get(Uri.parse(url)).timeout(const Duration(seconds: 10));
-    
-    if (response.statusCode == 429) {
-      Logger.i('Jikan rate limited, waiting...');
-      await Future.delayed(const Duration(seconds: 2));
-      return _fetchMalRecommendations(
-        isManga: isManga, 
-        page: page, 
-        isAdult: isAdult
-      );
+    final offset = (page - 1) * 25;
+    final token = AuthKeys.malAuthToken.get<String?>();
+    final isLoggedIn = token != null && token.isNotEmpty;
+    final String url;
+    if (isLoggedIn && !isManga) {
+      url = 'https://api.myanimelist.net/v2/anime/suggestions?limit=25&offset=$offset&fields=id,title,main_picture,alternative_titles,start_date,end_date,synopsis,mean,rank,popularity,num_episodes,status,genres,media_type,start_season,average_episode_duration,studios';
+    } else {
+      url = 'https://api.myanimelist.net/v2/$type/ranking?ranking_type=bypopularity&limit=25&offset=$offset&fields=id,title,main_picture,alternative_titles,start_date,end_date,synopsis,mean,rank,popularity,num_episodes,status,genres,num_chapters,num_volumes,media_type,start_season,average_episode_duration,studios';
     }
 
-    if (response.statusCode != 200) {
-      Logger.i('Jikan recommendations failed: ${response.statusCode}');
-      return [];
-    }
+    final data = await malService.fetchMAL(url, useAuthHeader: isLoggedIn);
+    if (data == null || data['data'] == null) return [];
 
-    final data = jsonDecode(response.body);
-    final recs = data['data'] as List<dynamic>?;
-    if (recs == null) return [];
-
+    final recs = data['data'] as List<dynamic>;
     final results = <Media>[];
-    final seen = <String>{};
-
-    final adultKeywords = [
-      'Hentai', 'Erotica', 'Ecchi', 'Adult', '18+', 
-      'Sex', 'Porn', 'NSFW', 'Mature'
-    ];
-
     for (final rec in recs) {
-      final entries = rec['entry'] as List<dynamic>?;
-      if (entries == null) continue;
-
-      for (final entry in entries) {
-        final malId = entry['mal_id']?.toString();
-        if (malId == null || !seen.add(malId)) continue;
-
-        bool isAdultContent = false;
-
-        final genres = entry['genres'] as List? ?? [];
-        isAdultContent = genres.any((g) {
-          final genreName = g['name']?.toString() ?? '';
-          return adultKeywords.any((keyword) => 
-            genreName.toLowerCase().contains(keyword.toLowerCase()));
-        });
-
-        if (!isAdultContent) {
-          final demographics = entry['demographics'] as List? ?? [];
-          isAdultContent = demographics.any((d) {
-            final demoName = d['name']?.toString() ?? '';
-            return adultKeywords.any((keyword) => 
-              demoName.toLowerCase().contains(keyword.toLowerCase()));
-          });
-        }
-
-        if (!isAdultContent) {
-          final explicitGenres = entry['explicit_genres'] as List? ?? [];
-          isAdultContent = explicitGenres.isNotEmpty;
-        }
-
-        if (!isAdultContent) {
-          final rating = entry['rating']?.toString() ?? '';
-          isAdultContent = rating.toLowerCase().contains('rx') || 
-                          rating.toLowerCase().contains('hentai');
-        }
-
-        if (!isAdult && isAdultContent) {
-          Logger.i('Filtered adult content: ${entry['title']}');
-          continue;
-        }
-
-        final title = entry['title'] as String? ?? 'Unknown';
-        final imageUrl =
-            (entry['images'] as Map?)?['jpg']?['large_image_url'] as String?;
-        final synopsis = entry['synopsis'] as String?;
-
-        results.add(Media(
-          id: malId,
-          idMal: malId,
-          title: title,
-          romajiTitle: title,
-          poster: imageUrl ?? '',
-          description: synopsis ?? '',
-          serviceType: ServicesType.mal,
-          genres: genres.map((g) => g['name']?.toString() ?? '').toList(),
-          isAdult: isAdultContent,
-        ));
+      try {
+        final media = Media.fromMAL(rec, isManga: isManga);
+        results.add(media);
+      } catch (e) {
       }
     }
-
-    Logger.i('Fetched ${results.length} MAL recommendations');
     return results;
   } catch (e) {
-    Logger.i('Jikan recommendations error: $e');
+    Logger.i('MAL recommendations error: $e');
     return [];
   }
 }

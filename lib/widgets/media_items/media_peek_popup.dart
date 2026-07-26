@@ -28,6 +28,7 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:anymex/widgets/non_widgets/recommend_button.dart';
 import 'package:anymex/widgets/non_widgets/reasons_sheet.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
 
 class MediaPeekPopup extends StatefulWidget {
   final Media media;
@@ -331,12 +332,8 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
 
     Navigator.of(context).pop();
 
-    showModalBottomSheet(
-      backgroundColor: Colors.transparent,
-      context: rootContext,
-      isScrollControlled: true,
-      showDragHandle: false,
-      builder: (ctx) => ListEditorModal(
+    AnymexSheet.custom(
+      ListEditorModal(
         animeStatus: _animeStatus,
         isManga: isManga,
         animeScore: _animeScore,
@@ -376,6 +373,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
           _animeStatus.value = '';
         },
       ),
+      rootContext,
     );
   }
 

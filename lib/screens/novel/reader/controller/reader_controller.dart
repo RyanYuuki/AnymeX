@@ -407,14 +407,15 @@ class NovelReaderController extends GetxController {
     final double targetPosition =
         (charsBefore / totalChars) * totalContentHeight;
 
-    final double scrollTo = (targetPosition - viewportHeight * 0.4)
+    final double scrollTo = (targetPosition - viewportHeight * 0.52)
         .clamp(0.0, scrollController.position.maxScrollExtent);
 
-    if (scrollTo > scrollController.offset + 10) {
+    final double diff = (scrollTo - scrollController.offset).abs();
+    if (diff > 30) {
       scrollController.animateTo(
         scrollTo,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeInOut,
       );
     }
   }
@@ -574,9 +575,13 @@ class NovelReaderController extends GetxController {
       ttsPlaying.value = false;
       return;
     }
+    if (autoScrollEnabled.value) {
+      autoScrollEnabled.value = false;
+      _stopAutoScroll();
+      _saveSettings();
+    }
     if (ttsHighlightedElement.value >= 0 &&
         ttsHighlightedElement.value == ttsCurrentElement.value) {
-      // reusume state
       final fullText = ttsSegments[ttsCurrentElement.value];
       final resumeFrom = ttsCurrentWordEnd.value.clamp(0, fullText.length);
       if (resumeFrom > 0 && resumeFrom < fullText.length) {
@@ -619,6 +624,11 @@ class NovelReaderController extends GetxController {
       ttsCurrentWordStart.value = 0;
       ttsCurrentWordEnd.value = 0;
       return;
+    }
+    if (autoScrollEnabled.value) {
+      autoScrollEnabled.value = false;
+      _stopAutoScroll();
+      _saveSettings();
     }
     await flutterTts.setSpeechRate(ttsSpeed.value);
     await flutterTts.setPitch(ttsPitch.value);
@@ -690,6 +700,14 @@ class NovelReaderController extends GetxController {
   void toggleAutoScroll() {
     autoScrollEnabled.value = !autoScrollEnabled.value;
     if (autoScrollEnabled.value) {
+      if (ttsPlaying.value) {
+        flutterTts.stop();
+        ttsPlaying.value = false;
+        ttsHighlightedElement.value = -1;
+        ttsCurrentWordStart.value = 0;
+        ttsCurrentWordEnd.value = 0;
+        if (_rawNovelContent.isNotEmpty) novelContent.value = _rawNovelContent;
+      }
       _startAutoScroll();
     } else {
       _stopAutoScroll();

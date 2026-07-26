@@ -15,8 +15,8 @@ import 'package:iconsax/iconsax.dart';
 
 const _animeStandardOrder = [
   'Watching',
-  'Completed', 
-  'Completed TV', 
+  'Completed',
+  'Completed TV',
   'Completed Movie',
   'Completed OVA',
   'Completed ONA',
@@ -183,7 +183,6 @@ class _UserMediaListPageState extends State<UserMediaListPage>
       data['Favourites'] = favEntries;
     }
 
-   
     final genres = <String>{..._anilistGenres};
     for (final list in data.values) {
       for (final entry in list) {
@@ -222,7 +221,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
         remaining.add(name);
       }
     }
-    
+
     sorted.sort((a, b) => order.indexOf(a).compareTo(order.indexOf(b)));
 
     final result = [...sorted, ...remaining];
@@ -280,7 +279,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
     if (items.isEmpty) return;
     final random = items[Random().nextInt(items.length)];
     final isManga = widget.type == 'MANGA';
-   
+
     final media = CardData.fromTrackedMedia(random);
     navigate(() => isManga
         ? MangaDetailsPage(media: media.data, tag: media.title)
@@ -386,7 +385,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
   void _showGenreFilter(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final sortedGenres = _allGenres.toList()..sort();
-   
+
     final tempSelected = Set<String>.from(_selectedGenres);
 
     showModalBottomSheet(
@@ -559,7 +558,6 @@ class _UserMediaListPageState extends State<UserMediaListPage>
 
     final tabs = _isReversed ? _tabNames.reversed.toList() : _tabNames;
 
-    
     if (_tabController == null || _tabController!.length != tabs.length) {
       _tabController?.dispose();
       _tabController = TabController(length: tabs.length, vsync: this);
@@ -578,7 +576,6 @@ class _UserMediaListPageState extends State<UserMediaListPage>
             style: TextStyle(fontSize: 16, color: colors.primary),
           ),
           actions: [
-          
             IconButton(
               onPressed: () {
                 setState(() {

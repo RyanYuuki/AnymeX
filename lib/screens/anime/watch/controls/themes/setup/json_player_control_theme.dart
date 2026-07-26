@@ -10,8 +10,10 @@ import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:anymex/widgets/common/marquee_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:get/get.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
+
 
 class JsonThemeParseResult {
   const JsonThemeParseResult({
@@ -562,7 +564,10 @@ class ThemeRenderer {
         final text = _getTitleText();
         if (text.isEmpty) return null;
         return _makeTextThing(
-            value: text, item: item, maxLines: item.grabInt('maxLines', 1), isMarquee: true);
+            value: text,
+            item: item,
+            maxLines: item.grabInt('maxLines', 1),
+            isMarquee: true);
 
       case 'episode_badge':
         return _makeBadgeThing(_getEpisodeLabel(), item);
@@ -576,6 +581,9 @@ class ThemeRenderer {
         final label = _heightToQuality(controller.videoHeight.value);
         if (label.isEmpty) return null;
         return _makeBadgeThing(label, item);
+
+      case 'decoder_button':
+        return _makeDecoderThing(item);
 
       case 'label_stack':
         return _makeLabelStackThing(item);
@@ -724,12 +732,40 @@ class ThemeRenderer {
 
     if (isPlayPause) return _makePlayPauseButton(item, style, enabled);
 
-    final icon = _pickIcon(item.grabString('icon'), id);
-    if (icon == null) return null;
-
     final iconColor = _resolveColor(style.iconColor, fallback: Colors.white);
     final disabledColor = _resolveColor(style.disabledIconColor,
         fallback: Colors.white.withValues(alpha: 0.55));
+
+    if (id == 'orientation') {
+      return Obx(() {
+        final orientation = controller.physicalOrientation.value;
+        double angle = 0.0;
+        if (orientation == DeviceOrientation.landscapeLeft) {
+          angle = -1.57079632679;
+        } else if (orientation == DeviceOrientation.landscapeRight) {
+          angle = 1.57079632679;
+        } else if (orientation == DeviceOrientation.portraitDown) {
+          angle = 3.14159265359;
+        }
+        return _makeButtonShell(
+          style: style,
+          tooltip: item.grabString('tooltip') ?? _tooltipForId(id),
+          enabled: enabled,
+          onTap: enabled ? () => _doAction(id, item) : null,
+          guts: Transform.rotate(
+            angle: angle,
+            child: Icon(
+              Icons.smartphone_rounded,
+              size: style.iconSize,
+              color: enabled ? iconColor : disabledColor,
+            ),
+          ),
+        );
+      });
+    }
+
+    final icon = _pickIcon(item.grabString('icon'), id);
+    if (icon == null) return null;
 
     return _makeButtonShell(
       style: style,
@@ -866,8 +902,43 @@ class ThemeRenderer {
   Widget _makeChipThing(String text, ThemeItem item) =>
       _makeBadgeThing(text, item);
 
+  Widget _makeDecoderThing(ThemeItem item) {
+    final settings = Get.find<Settings>();
+    final current = settings.hardwareDecoder;
+    final next = _nextDecoder(current);
+
+    return Tooltip(
+      message: '${_decoderLabel(current)} → ${_decoderLabel(next)}',
+      child: GestureDetector(
+        onTap: () {
+          HapticFeedback.lightImpact();
+          settings.hardwareDecoder = next;
+        },
+        child: _makeBadgeThing(_decoderLabel(current), item),
+      ),
+    );
+  }
+
+  String _nextDecoder(String current) {
+    return switch (current) {
+      'hw' => 'hw+',
+      'hw+' => 'sw',
+      _ => 'hw',
+    };
+  }
+
+  String _decoderLabel(String value) => switch (value) {
+        'hw+' => 'HW+',
+        'hw' => 'HW',
+        'sw' => 'SW',
+        _ => value.toUpperCase(),
+      };
+
   Widget _makeTextThing(
-      {required String value, required ThemeItem item, int maxLines = 1, bool isMarquee = false}) {
+      {required String value,
+      required ThemeItem item,
+      int maxLines = 1,
+      bool isMarquee = false}) {
     final style = def.styles.text.mash(item.style);
     final textColor = _resolveColor(style.textColor, fallback: Colors.white);
     final textAlign = _parseTextAlign(item.grabString('textAlign'));
@@ -1148,17 +1219,21 @@ class ThemeRenderer {
         break;
       case 'subtitles':
       case 'source':
-        controller.isSourcePaneOpened.value = !controller.isSourcePaneOpened.value;
+        controller.isSourcePaneOpened.value =
+            !controller.isSourcePaneOpened.value;
         break;
       case 'server':
-        controller.isSourcePaneOpened.value = !controller.isSourcePaneOpened.value;
+        controller.isSourcePaneOpened.value =
+            !controller.isSourcePaneOpened.value;
         break;
       case 'sync_subs':
-        controller.isSyncSubsPaneOpened.value = !controller.isSyncSubsPaneOpened.value;
+        controller.isSyncSubsPaneOpened.value =
+            !controller.isSyncSubsPaneOpened.value;
         break;
       case 'tracks':
       case 'audio_track':
-        controller.isTracksPaneOpened.value = !controller.isTracksPaneOpened.value;
+        controller.isTracksPaneOpened.value =
+            !controller.isTracksPaneOpened.value;
         break;
       case 'quality':
         if (!controller.isOffline.value) {
@@ -1166,8 +1241,8 @@ class ThemeRenderer {
         }
         break;
       case 'speed':
-        PlayerBottomSheets.showPlaybackSpeed(context, controller);
-        break;
+        controller.isSpeedPaneOpened.value =
+            !controller.isSpeedPaneOpened.value;
         break;
       case 'orientation':
         if (_isMobile) controller.toggleOrientation();
@@ -1186,18 +1261,20 @@ class ThemeRenderer {
   }
 
   void _popSettingsSheet() {
-    showModalBottomSheet(
-      context: Get.context ?? context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (sheetCtx) => Container(
-        height: MediaQuery.of(sheetCtx).size.height,
-        clipBehavior: Clip.antiAlias,
-        decoration: const BoxDecoration(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+    controller.showSheetWithPause(
+      () => showModalBottomSheet(
+        context: Get.context ?? context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (sheetCtx) => Container(
+          height: MediaQuery.of(sheetCtx).size.height,
+          clipBehavior: Clip.antiAlias,
+          decoration: const BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+          ),
+          child: const SettingsPlayer(isModal: true),
         ),
-        child: const SettingsPlayer(isModal: true),
       ),
     );
   }
@@ -2149,7 +2226,7 @@ class BottomZone {
           : parsedLocked,
       showProgress: _readBool(json['showProgress'], true),
       progressStyle: _toSliderStyle(_readString(json['progressStyle']),
-          fallback: SliderStyle.ios),
+          fallback: SliderStyle.defaultM3),
       progressPadding: _readEdgeInsets(
           json['progressPadding'], const EdgeInsets.symmetric(horizontal: 4)),
       progressActiveTrackColor: _readString(json['progressActiveTrackColor']),
@@ -2262,7 +2339,8 @@ BottomSlotDef _defaultBottomLocked() {
 const Set<String> _badgeIds = {
   'episode_badge',
   'series_badge',
-  'quality_badge'
+  'quality_badge',
+  'decoder_button',
 };
 
 const Map<String, IconData> _iconMap = {
@@ -2277,15 +2355,15 @@ const Map<String, IconData> _iconMap = {
   'seek_back': Icons.replay_10_rounded,
   'seek_forward': Icons.forward_10_rounded,
   'play_pause': Icons.play_arrow_rounded,
-  'playlist': Symbols.playlist_play_rounded,
-  'shaders': Symbols.tune_rounded,
-  'subtitles': Symbols.subtitles_rounded,
-  'server': Symbols.cloud_rounded,
-  'quality': Symbols.high_quality_rounded,
-  'speed': Symbols.speed_rounded,
-  'audio_track': Symbols.music_note_rounded,
+  'playlist': Icons.playlist_play_rounded,
+  'shaders': Icons.tune_rounded,
+  'subtitles': Icons.subtitles_rounded,
+  'server': Icons.cloud_rounded,
+  'quality': Icons.high_quality_rounded,
+  'speed': Icons.speed_rounded,
+  'audio_track': Icons.music_note_rounded,
   'orientation': Icons.screen_rotation_rounded,
-  'aspect_ratio': Symbols.fit_screen,
+  'aspect_ratio': Icons.fit_screen,
   'mega_seek': Icons.fast_forward_rounded,
   'skip_previous_rounded': Icons.skip_previous_rounded,
   'skip_next_rounded': Icons.skip_next_rounded,
@@ -2312,6 +2390,7 @@ final Set<String> _supportedThemeItemIds = {
   'episode_badge',
   'series_badge',
   'quality_badge',
+  'decoder_button',
   'label_stack',
   'watching_label',
   'text',
@@ -2599,6 +2678,8 @@ Curve _parseCurve(String? raw, Curve fallback) {
 
 SliderStyle _toSliderStyle(String? raw, {required SliderStyle fallback}) {
   switch (raw) {
+    case 'default':
+      return SliderStyle.defaultM3;
     case 'ios':
       return SliderStyle.ios;
     case 'capsule':

@@ -7,9 +7,7 @@ import 'package:anymex/screens/anime/watch/controls/themes/setup/themed_controls
 import 'package:anymex/screens/anime/watch/controls/widgets/double_tap_seek.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/overlay.dart';
-import 'package:anymex/screens/anime/watch/controls/widgets/source_popup.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/subtitle_text.dart';
-import 'package:anymex/screens/anime/watch/controls/widgets/sync_subs_popup.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/tracks_popup.dart';
 import 'package:anymex/screens/anime/widgets/media_indicator.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/shader_osd.dart';
@@ -106,53 +104,60 @@ class _OfflineWatchPageState extends State<OfflineWatchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Stack(
-      children: [
-        Obx(() {
-          return controller.videoWidget;
-        }),
-        PlayerOverlay(controller: controller),
-        if (!PlayerKeys.useLibass.get<bool>(false))
-          SubtitleText(controller: controller),
-        DoubleTapSeekWidget(
-          controller: controller,
-        ),
-        const Align(
-          alignment: Alignment.center,
-          child: ThemedCenterControls(),
-        ),
-        const Align(
-          alignment: Alignment.topCenter,
-          child: ThemedTopControls(),
-        ),
-        const Align(
-          alignment: Alignment.bottomCenter,
-          child: ThemedBottomControls(),
-        ),
-        MediaIndicatorBuilder(
-          isVolumeIndicator: false,
-          controller: controller,
-        ),
-        MediaIndicatorBuilder(
-          isVolumeIndicator: true,
-          controller: controller,
-        ),
-        ShaderOsd(controller: controller),
-        Positioned(
-          right: 0,
-          top: 0,
-          bottom: 0,
-          left: 0,
-          child: TracksPopup(controller: controller),
-        ),
-        Positioned(
-          right: 0,
-          top: 0,
-          bottom: 0,
-          left: 0,
-          child: EpisodesPane(controller: controller),
-        ),
-      ],
-    ));
+      body: Obx(() {
+        final isPip = controller.isPipMode.value;
+        return Stack(
+          children: [
+            Obx(() => KeyedSubtree(
+                  key: ValueKey(controller.playerReloadVersion.value),
+                  child: controller.videoWidget,
+                )),
+            if (!PlayerKeys.useLibass.get<bool>(false))
+              SubtitleText(controller: controller),
+            if (!isPip) ...[
+              PlayerOverlay(controller: controller),
+              DoubleTapSeekWidget(
+                controller: controller,
+              ),
+              const Align(
+                alignment: Alignment.center,
+                child: ThemedCenterControls(),
+              ),
+              const Align(
+                alignment: Alignment.topCenter,
+                child: ThemedTopControls(),
+              ),
+              const Align(
+                alignment: Alignment.bottomCenter,
+                child: ThemedBottomControls(),
+              ),
+              MediaIndicatorBuilder(
+                isVolumeIndicator: false,
+                controller: controller,
+              ),
+              MediaIndicatorBuilder(
+                isVolumeIndicator: true,
+                controller: controller,
+              ),
+              ShaderOsd(controller: controller),
+              Positioned(
+                right: 0,
+                top: 0,
+                bottom: 0,
+                left: 0,
+                child: TracksPopup(controller: controller),
+              ),
+              Positioned(
+                right: 0,
+                top: 0,
+                bottom: 0,
+                left: 0,
+                child: EpisodesPane(controller: controller),
+              ),
+            ],
+          ],
+        );
+      }),
+    );
   }
 }

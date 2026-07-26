@@ -41,6 +41,8 @@ abstract class BasePlayer {
 
   Future<void> pause();
 
+  Future<void> stop();
+
   Future<void> playOrPause();
 
   Future<void> setRate(double rate);
@@ -54,6 +56,8 @@ abstract class BasePlayer {
   Future<void> setSubtitleTrack(SubtitleTrack track);
   
   Future<void> setSubtitleDelay(Duration delay);
+
+  Future<void> setAudioChannelLayout(String layout);
 
   Future<void> toggleVideoFit(BoxFit fit);
 
@@ -232,6 +236,8 @@ class PlayerConfiguration {
   final int bufferSize;
   final bool useLibass;
   final String hwdec;
+  final String videoOutput;
+  final String audioOutput;
   final PlayerType playerType;
   final bool enableCache;
   final bool autoPlay;
@@ -242,6 +248,8 @@ class PlayerConfiguration {
     this.bufferSize = 1024 * 1024 * 32,
     this.useLibass = false,
     this.hwdec = 'no',
+    this.videoOutput = 'auto',
+    this.audioOutput = 'auto',
     this.playerType = PlayerType.mediaKit,
     this.enableCache = true,
     this.autoPlay = true,

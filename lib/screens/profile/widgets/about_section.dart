@@ -2,7 +2,7 @@ import 'package:anymex/screens/profile/widgets/stats_overview_cards.dart';
 import 'package:anymex/utils/al_about_me.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconly/iconly.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 
 class AboutSection extends StatelessWidget {
   final String aboutText;

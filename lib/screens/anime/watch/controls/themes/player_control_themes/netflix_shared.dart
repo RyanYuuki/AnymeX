@@ -3,7 +3,7 @@ import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
+
 
 class NFColors {
   static const white = Color(0xFFFFFFFF);
@@ -23,16 +23,18 @@ String buildNFTitle(PlayerController c) {
 }
 
 void showNFMoreSheet(BuildContext context, PlayerController controller) {
-  showModalBottomSheet(
-    context: context,
-    isDismissible: true,
-    enableDrag: true,
-    isScrollControlled: true,
-    backgroundColor: const Color(0xFF141414),
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+  controller.showSheetWithPause(
+    () => showModalBottomSheet(
+      context: context,
+      isDismissible: true,
+      enableDrag: true,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF141414),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (_) => NFMoreSheet(controller: controller, ctx: context),
     ),
-    builder: (_) => NFMoreSheet(controller: controller, ctx: context),
   );
 }
 
@@ -292,7 +294,7 @@ class NFMoreSheet extends StatelessWidget {
               ),
             ),
             NFSheetTile(
-              icon: Symbols.high_quality_rounded,
+              icon: Icons.high_quality_rounded,
               label: 'Quality',
               onTap: () {
                 Get.back();
@@ -300,15 +302,15 @@ class NFMoreSheet extends StatelessWidget {
               },
             ),
             NFSheetTile(
-              icon: Symbols.speed_rounded,
+              icon: Icons.speed_rounded,
               label: 'Playback speed',
               onTap: () {
                 Get.back();
-                PlayerBottomSheets.showPlaybackSpeed(ctx, controller);
+                controller.isSpeedPaneOpened.value = true;
               },
             ),
             NFSheetTile(
-              icon: Symbols.music_note_rounded,
+              icon: Icons.music_note_rounded,
               label: 'Audio track',
               onTap: () {
                 Get.back();
@@ -316,7 +318,7 @@ class NFMoreSheet extends StatelessWidget {
               },
             ),
             NFSheetTile(
-              icon: Symbols.tune_rounded,
+              icon: Icons.tune_rounded,
               label: 'Picture & shaders',
               onTap: () {
                 Get.back();
@@ -325,7 +327,7 @@ class NFMoreSheet extends StatelessWidget {
             ),
             if (!controller.isOffline.value)
               NFSheetTile(
-                icon: Symbols.cloud_rounded,
+                icon: Icons.cloud_rounded,
                 label: 'Server',
                 onTap: () {
                   Get.back();
@@ -337,13 +339,15 @@ class NFMoreSheet extends StatelessWidget {
               label: 'Player settings',
               onTap: () {
                 Get.back();
-                showModalBottomSheet(
-                  context: Get.context!,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.transparent,
-                  builder: (c) => SizedBox(
-                    height: MediaQuery.of(c).size.height,
-                    child: const SettingsPlayer(isModal: true),
+                controller.showSheetWithPause(
+                  () => showModalBottomSheet(
+                    context: Get.context!,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (c) => SizedBox(
+                      height: MediaQuery.of(c).size.height,
+                      child: const SettingsPlayer(isModal: true),
+                    ),
                   ),
                 );
               },
