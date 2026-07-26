@@ -125,11 +125,24 @@ class _ExtensionListState extends State<ExtensionList>
 
     if (!hasLangFilter && !hasQuery && !hasSourceFilter) return data;
 
-    final targetLang = hasLangFilter ? completeLanguageCode(lang) : '';
+    final targetLangCode = hasLangFilter ? completeLanguageCode(lang).toLowerCase() : '';
 
     return data.where((element) {
-      if (hasLangFilter && (element.lang?.toLowerCase() ?? '') != targetLang) {
-        return false;
+      if (hasLangFilter) {
+        final srcLangRaw = element.lang?.trim().toLowerCase() ?? '';
+        final srcLangCode = completeLanguageCode(srcLangRaw).toLowerCase();
+
+        final matchesLang = srcLangCode == targetLangCode ||
+            srcLangRaw == targetLangCode ||
+            srcLangRaw == lang.trim().toLowerCase() ||
+            srcLangRaw == 'all' ||
+            srcLangRaw == 'multi' ||
+            srcLangCode == 'all' ||
+            srcLangCode == 'multi';
+
+        if (!matchesLang) {
+          return false;
+        }
       }
       if (hasSourceFilter && !_matchesSourceType(element, sourceType)) {
         return false;
