@@ -70,6 +70,19 @@ class _SubsamplingImageProviderState extends State<SubsamplingImageProvider> {
     if (widget.isContinuousMode) {
       final url = widget.page.url;
       if (url.startsWith('http')) {
+        if (widget.cropBorders) {
+          return CroppedNetworkImage(
+            url: widget.page.url,
+            headers: widget.page.headers,
+            width: widget.width,
+            height: widget.height,
+            fit: widget.fit,
+            alignment: widget.alignment,
+            cropThreshold: 30,
+            placeholder: widget.placeholder,
+            onImageLoaded: widget.onImageLoaded,
+          );
+        }
         return ext.ExtendedImage.network(
           url,
           headers: widget.page.headers,
