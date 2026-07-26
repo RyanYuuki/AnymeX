@@ -42,6 +42,8 @@ import 'package:anymex/widgets/custom_widgets/anymex_titlebar.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart'
+    hide isar;
 import 'package:app_links/app_links.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
