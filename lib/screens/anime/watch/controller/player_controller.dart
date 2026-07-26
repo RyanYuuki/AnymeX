@@ -24,6 +24,7 @@ import 'package:anymex/utils/pip_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
 import 'package:anymex/screens/anime/watch/player/base_player.dart';
 import 'package:anymex/screens/anime/watch/player/media_kit_player.dart';
+import 'package:anymex/services/thumbnail_service.dart';
 import 'package:flutter_media_session/flutter_media_session.dart';
 import 'package:flutter_media_session/flutter_media_session_platform_interface.dart';
 
@@ -186,6 +187,34 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final RxBool isPlaying = false.obs;
   final RxBool showControls = true.obs;
   final RxBool isSeeking = false.obs;
+  final RxBool isPreviewingThumbnail = false.obs;
+  final Rx<Duration> previewPosition = Duration.zero.obs;
+  final Rx<Uint8List?> previewThumbnailBytes = Rx<Uint8List?>(null);
+  Timer? _thumbnailDebounce;
+
+  void updatePreviewPosition(Duration pos) {
+    previewPosition.value = pos;
+    isPreviewingThumbnail.value = true;
+    _thumbnailDebounce?.cancel();
+    _thumbnailDebounce = Timer(const Duration(milliseconds: 80), () async {
+      final videoUrl = selectedVideo.value?.url ?? offlineVideoPath ?? '';
+      if (videoUrl.isNotEmpty) {
+        final bytes = await ThumbnailService().getThumbnail(
+          videoPath: videoUrl,
+          timeInSeconds: pos.inSeconds.toDouble(),
+        );
+        if (isPreviewingThumbnail.value) {
+          previewThumbnailBytes.value = bytes;
+        }
+      }
+    });
+  }
+
+  void stopPreviewThumbnail() {
+    _thumbnailDebounce?.cancel();
+    isPreviewingThumbnail.value = false;
+    previewThumbnailBytes.value = null;
+  }
 
   final RxInt skipDuration = 85.obs;
   final RxInt seekDuration = 10.obs;
@@ -369,6 +398,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   @override
   void onInit() {
     super.onInit();
+    settings.setPlayerDisplayMode();
     PlayerController.initializePlayerControlsIfNeeded(settings);
     WidgetsBinding.instance.addObserver(this);
     _initDatabaseVars();
@@ -547,6 +577,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     PipController.setAutoEnter(enabled: false);
     _accelerometerSub?.cancel();
     delete();
+    settings.applyDisplayRefreshMode();
     super.onClose();
   }
 
