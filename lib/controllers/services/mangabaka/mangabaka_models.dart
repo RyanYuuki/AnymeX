@@ -248,13 +248,13 @@ String chooseBestTitle(
 
 String? parseCoverUrl(Map<String, dynamic>? cover) {
   if (cover == null) return null;
-  final x250 = cover['x250'] as Map<String, dynamic>?;
-  if (x250 != null && x250['x1'] != null) {
-    return x250['x1'] as String;
-  }
   final raw = cover['raw'] as Map<String, dynamic>?;
   if (raw != null && raw['url'] != null) {
     return raw['url'] as String;
+  }
+  final x250 = cover['x250'] as Map<String, dynamic>?;
+  if (x250 != null && x250['x1'] != null) {
+    return x250['x1'] as String;
   }
   return null;
 }
