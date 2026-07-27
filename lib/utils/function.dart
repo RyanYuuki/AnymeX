@@ -569,37 +569,48 @@ List<TrackedMedia> filterListByStatus(
 List<TrackedMedia> filterListByLabel(
     List<TrackedMedia> animeList, String label) {
   return animeList.where((anime) {
-    if (label == "Continue Watching" && anime.watchingStatus == 'CURRENT') {
+    if ((label == "Continue Watching" ||
+            label == "Continue Watching (Movies)" ||
+            label == "Continue Watching (Shows)") &&
+        anime.watchingStatus == 'CURRENT') {
       return true;
     }
     if (label == "Continue Reading" && anime.watchingStatus == 'CURRENT') {
       return true;
     }
-    if (label == "Completed TV" && anime.watchingStatus == 'COMPLETED') {
+    if ((label == "Completed TV" || label == "Completed Movies") &&
+        anime.watchingStatus == 'COMPLETED') {
       return true;
     }
-    if (label == "Completed Manga" && anime.watchingStatus == 'COMPLETED') {
+    if ((label == "Completed Manga" || label == "Completed Shows") &&
+        anime.watchingStatus == 'COMPLETED') {
       return true;
     }
     if (label == "Completed Movie" && anime.watchingStatus == 'COMPLETED') {
       return true;
     }
-    if (label == "Paused Animes" && anime.watchingStatus == 'PAUSED') {
+    if ((label == "Paused Animes" || label == "Paused Movies") &&
+        anime.watchingStatus == 'PAUSED') {
       return true;
     }
-    if (label == "Paused Manga" && anime.watchingStatus == 'PAUSED') {
+    if ((label == "Paused Manga" || label == "Paused Shows") &&
+        anime.watchingStatus == 'PAUSED') {
       return true;
     }
-    if (label == "Dropped Animes" && anime.watchingStatus == 'DROPPED') {
+    if ((label == "Dropped Animes" || label == "Dropped Movies") &&
+        anime.watchingStatus == 'DROPPED') {
       return true;
     }
-    if (label == "Dropped Manga" && anime.watchingStatus == 'DROPPED') {
+    if ((label == "Dropped Manga" || label == "Dropped Shows") &&
+        anime.watchingStatus == 'DROPPED') {
       return true;
     }
-    if (label == "Planning Animes" && anime.watchingStatus == 'PLANNING') {
+    if ((label == "Planning Animes" || label == "Planning Movies") &&
+        anime.watchingStatus == 'PLANNING') {
       return true;
     }
-    if (label == "Planning Manga" && anime.watchingStatus == 'PLANNING') {
+    if ((label == "Planning Manga" || label == "Planning Shows") &&
+        anime.watchingStatus == 'PLANNING') {
       return true;
     }
     if (label == "Rewatching Animes" && anime.watchingStatus == 'REPEATING') {
