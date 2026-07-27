@@ -216,23 +216,6 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
         children: [
           Container(color: bgColor),
           readerContent,
-          
-          
-          
-          if (isContinuous)
-            Positioned.fill(
-              child: GestureDetector(
-                behavior: HitTestBehavior.translucent,
-                onTapUp: (details) {
-                  widget.controller.handleTap(details.globalPosition);
-                },
-                onLongPressStart: (details) {
-                  if (widget.controller.longPressPageActionsEnabled.value) {
-                    showReaderPageActionsDialog(context, widget.controller);
-                  }
-                },
-              ),
-            ),
           ReaderContentOverlay(controller: widget.controller),
           DisplayRefreshOverlay(host: _displayRefreshHost),
         ],
