@@ -11,6 +11,7 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../widgets/non_widgets/snackbar.dart';
 import '../main.dart';
 
 class Database {
@@ -102,6 +103,11 @@ class Database {
           return d;
         },
       );
+      AnymeXExtensionBridge.onLog = (log, show) {
+        if (show) {
+          snackBar(log);
+        }
+      };
     } catch (e) {
       Logger.e(e.toString());
     }
