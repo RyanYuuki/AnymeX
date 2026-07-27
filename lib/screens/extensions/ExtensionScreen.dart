@@ -151,6 +151,7 @@ class _ExtensionScreenState extends State<ExtensionScreen>
     return Glow(
       disabled: widget.disableGlow,
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: Colors.transparent,
         body: Stack(
           children: [

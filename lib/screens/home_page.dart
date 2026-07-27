@@ -73,6 +73,9 @@ class _HomePageState extends State<HomePage> {
       initialData: offlineStorageController.getAnimeLibrarySync(),
       stream: _animeLibraryStream,
       builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return const SizedBox.shrink();
+        }
         final historyData = (snapshot.data ?? const <OfflineMedia>[])
             .where((e) => e.currentEpisode?.currentTrack != null)
             .toList()
