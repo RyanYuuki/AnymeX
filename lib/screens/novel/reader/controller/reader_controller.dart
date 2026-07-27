@@ -396,28 +396,53 @@ class NovelReaderController extends GetxController {
     final currentSegIndex =
         ttsCurrentElement.value.clamp(0, ttsSegments.length - 1);
     final currentSeg = ttsSegments[currentSegIndex];
-    final wordProgressInSeg = currentSeg.isEmpty
+
+    int charsBefore = 0;
+    for (int i = 0; i < currentSegIndex; i++) {
+      charsBefore += ttsSegments[i].length;
+    }
+    charsBefore += ttsCurrentWordStart.value;
+
+    int totalChars = 0;
+    for (final s in ttsSegments) {
+      totalChars += s.length;
+    }
+    if (totalChars <= 0) return;
+
+    final double charProgress = (charsBefore / totalChars).clamp(0.0, 1.0);
+    final double wordProgressInSeg = currentSeg.isEmpty
         ? 0.0
         : (ttsCurrentWordStart.value / currentSeg.length).clamp(0.0, 1.0);
+    final double segProgress =
+        ((currentSegIndex + wordProgressInSeg) / ttsSegments.length)
+            .clamp(0.0, 1.0);
 
-    final double segmentProgress =
-        (currentSegIndex + wordProgressInSeg) / ttsSegments.length;
+    // Weighted progress: 70% character density (time spent reading), 30% paragraph structure
+    final double weightedProgress = (charProgress * 0.7) + (segProgress * 0.3);
 
     final double viewportHeight = scrollController.position.viewportDimension;
     final double maxScroll = scrollController.position.maxScrollExtent;
     final double totalContentHeight = maxScroll + viewportHeight;
 
-    final double targetPosition = segmentProgress * totalContentHeight;
-    final double scrollTo = (targetPosition - viewportHeight * 0.35)
+    final double targetPosition = weightedProgress * totalContentHeight;
+    final double desiredScroll = (targetPosition - viewportHeight * 0.35)
         .clamp(0.0, maxScroll);
 
-    final double diff = (scrollTo - scrollController.offset).abs();
-    if (diff > 50) {
-      scrollController.animateTo(
-        scrollTo,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
+    final double currentOffset = scrollController.offset;
+
+    // Comfort zone check: if target is already inside 15% - 55% of viewport height, don't jump!
+    final double upperLimit = currentOffset + (viewportHeight * 0.15);
+    final double lowerLimit = currentOffset + (viewportHeight * 0.55);
+
+    if (targetPosition < upperLimit || targetPosition > lowerLimit) {
+      final double diff = (desiredScroll - currentOffset).abs();
+      if (diff > 40) {
+        scrollController.animateTo(
+          desiredScroll,
+          duration: const Duration(milliseconds: 350),
+          curve: Curves.easeOutCubic,
+        );
+      }
     }
   }
 
