@@ -109,7 +109,9 @@ class Media {
       final t = mediaTypeStr.toLowerCase();
       if (t == 'tv' || t == 'ova' || t == 'movie' || t == 'special' || t == 'ona' || t == 'music') {
         determinedType = ItemType.anime;
-      } else if (t == 'manga' || t == 'novel' || t == 'one_shot' || t == 'doujinshi' || t == 'manhwa' || t == 'manhua' || t == 'oel') {
+      } else if (t == 'novel' || t == 'light_novel') {
+        determinedType = ItemType.novel;
+      } else if (t == 'manga' || t == 'one_shot' || t == 'doujinshi' || t == 'manhwa' || t == 'manhua' || t == 'oel') {
         determinedType = ItemType.manga;
       } else {
         determinedType = isManga ? ItemType.manga : ItemType.anime;
@@ -214,7 +216,9 @@ class Media {
       final t = mediaTypeStr.toLowerCase();
       if (t == 'tv' || t == 'ova' || t == 'movie' || t == 'special' || t == 'ona' || t == 'music') {
         determinedType = ItemType.anime;
-      } else if (t == 'manga' || t == 'novel' || t == 'one_shot' || t == 'doujinshi' || t == 'manhwa' || t == 'manhua' || t == 'oel') {
+      } else if (t == 'novel' || t == 'light_novel') {
+        determinedType = ItemType.novel;
+      } else if (t == 'manga' || t == 'one_shot' || t == 'doujinshi' || t == 'manhwa' || t == 'manhua' || t == 'oel') {
         determinedType = ItemType.manga;
       } else {
         determinedType = isManga ? ItemType.manga : ItemType.anime;
@@ -412,11 +416,16 @@ class Media {
 
   factory Media.fromJson(Map<String, dynamic> json,
       {Map<String, dynamic>? pageJson}) {
-    ItemType type = json['type'] == "ANIME"
+    final isAnime = json['type'] == "ANIME";
+    final isNovel = json['type'] == "MANGA" &&
+        (json['format'] ?? '').toUpperCase() == 'NOVEL';
+    ItemType type = isAnime
         ? ItemType.anime
-        : json['type'] == "MANGA"
-            ? ItemType.manga
-            : ItemType.novel;
+        : isNovel
+            ? ItemType.novel
+            : json['type'] == "MANGA"
+                ? ItemType.manga
+                : ItemType.novel;
 
     List<Media> recs = [];
     final recsJson = json['recommendations'];

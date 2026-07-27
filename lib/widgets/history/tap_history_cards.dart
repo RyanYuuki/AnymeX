@@ -3,6 +3,8 @@ import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
+import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
@@ -53,7 +55,9 @@ class RecentlyOpenedAnimeCard extends StatelessWidget {
               AnimeDetailsPage(media: media, tag: heroTag));
         } else {
           navigate(() =>
-              MangaDetailsPage(media: media, tag: heroTag));
+              media.mediaType == ItemType.novel
+              ? NovelDetailsPage(media: media)
+              : MangaDetailsPage(media: media, tag: heroTag));
         }
       },
       child: Container(

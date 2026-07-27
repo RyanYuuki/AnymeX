@@ -17,11 +17,13 @@ class WrongTitleModal extends StatefulWidget {
     required this.initialText,
     required this.onTap,
     required this.isManga,
+    this.isNovel = false,
     this.mediaId,
   });
   final String initialText;
   final Function(DMedia) onTap;
   final bool isManga;
+  final bool isNovel;
   final String? mediaId;
 
   @override
@@ -43,9 +45,11 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
     searchFuture = performSearch();
 
     _sourceWorker = ever<Source?>(
-        widget.isManga
-            ? sourceController.activeMangaSource
-            : sourceController.activeSource, (_) {
+        widget.isNovel
+            ? sourceController.activeNovelSource
+            : widget.isManga
+                ? sourceController.activeMangaSource
+                : sourceController.activeSource, (_) {
       if (mounted) {
         setState(() {
           searchFuture = performSearch();
@@ -63,9 +67,11 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
 
   Future<List<DMedia?>?> performSearch() async {
     searchStatus.value = "Searching: ${controller.text}";
-    final source = widget.isManga
-        ? sourceController.activeMangaSource.value
-        : sourceController.activeSource.value;
+    final source = widget.isNovel
+        ? sourceController.activeNovelSource.value
+        : widget.isManga
+            ? sourceController.activeMangaSource.value
+            : sourceController.activeSource.value;
     final results = (await source!.methods.search(controller.text, 1, [])).list;
     searchStatus.value = "";
     return results;
@@ -148,9 +154,11 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                         return AnymexOnTap(
                           onTap: () {
                             SourceMapper.interruptMapping();
-                            final source = widget.isManga
-                                ? sourceController.activeMangaSource.value
-                                : sourceController.activeSource.value;
+                            final source = widget.isNovel
+                                ? sourceController.activeNovelSource.value
+                                : widget.isManga
+                                    ? sourceController.activeMangaSource.value
+                                    : sourceController.activeSource.value;
                             if (source != null && widget.mediaId != null) {
                               sourceController.setActiveSource(source,
                                   mediaId: widget.mediaId);
@@ -206,7 +214,7 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
 
 Future<void> showWrongTitleModal(
     BuildContext context, String initialText, Function(DMedia) onTap,
-    {bool isManga = false, String? mediaId}) {
+    {bool isManga = false, bool isNovel = false, String? mediaId}) {
   return showModalBottomSheet(
     context: context,
     backgroundColor: context.colors.surfaceContainer,
@@ -228,6 +236,7 @@ Future<void> showWrongTitleModal(
               initialText: initialText,
               onTap: onTap,
               isManga: isManga,
+              isNovel: isNovel,
               mediaId: mediaId),
         ),
       );

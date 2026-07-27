@@ -23,13 +23,13 @@ import 'package:iconsax/iconsax.dart';
 
 class NovelDetailsPage extends StatefulWidget {
   final Media media;
-  final Source source;
+  final Source? source;
   final String tag;
   const NovelDetailsPage(
       {super.key,
       required this.media,
-      required this.source,
-      required this.tag});
+      this.source,
+      this.tag = ''});
 
   @override
   State<NovelDetailsPage> createState() => _NovelDetailsPageState();
@@ -58,7 +58,7 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
     super.initState();
     pageController = PageController();
     controller = Get.put(NovelDetailsController(
-        source: widget.source, initialMedia: widget.media));
+        initialSource: widget.source, initialMedia: widget.media));
 
     final novel =
         controller.offlineStorage.getNovelById(controller.initialMedia.id);

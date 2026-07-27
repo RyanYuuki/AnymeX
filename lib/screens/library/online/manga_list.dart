@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
+import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/media_items/media_item.dart';
@@ -256,7 +258,11 @@ class _AnilistMangaListState extends State<AnilistMangaList>
     if (items.isEmpty) return;
     final random = items[Random().nextInt(items.length)];
     final media = CardData.fromTrackedMedia(random);
+    if (media.data.mediaType == ItemType.novel) {
+    navigate(() => NovelDetailsPage(media: media.data));
+  } else {
     navigate(() => MangaDetailsPage(media: media.data, tag: media.title));
+  }
   }
 
   void _showSortMenu(BuildContext context) {

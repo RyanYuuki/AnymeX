@@ -9,6 +9,8 @@ import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
+import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/screens/profile/user_profile_page.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/utils/al_about_me.dart';
@@ -1104,7 +1106,11 @@ class _ActivityAnilistCardState extends State<_ActivityAnilistCard> {
           borderRadius: BorderRadius.circular(14),
           onTap: () {
             if (widget.isManga) {
+              if (media.mediaType == ItemType.novel) {
+              navigate(() => NovelDetailsPage(media: media));
+            } else {
               navigate(() => MangaDetailsPage(media: media, tag: title));
+            }
             } else {
               navigate(() => AnimeDetailsPage(media: media, tag: title));
             }
