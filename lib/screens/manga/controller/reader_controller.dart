@@ -767,6 +767,15 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     if (_autoScrollTimer != null) {
       _autoScrollTimer!.cancel();
       _autoScrollTimer = null;
+      if (readingLayout.value == MangaPageViewMode.continuous) {
+        try {
+          scrollOffsetController?.animateScroll(
+            offset: 0,
+            duration: const Duration(milliseconds: 10),
+            curve: Curves.linear,
+          );
+        } catch (_) {}
+      }
     }
   }
 
