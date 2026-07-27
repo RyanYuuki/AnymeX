@@ -160,7 +160,7 @@ class _ContinuousReaderViewState extends State<ContinuousReaderView>
     _animStartOffsetDy = _offset.dy;
 
     _zoomAnimController
-      ..duration = const Duration(milliseconds: 350)
+      ..duration = const Duration(milliseconds: 200)
       ..forward(from: 0.0);
   }
 
@@ -187,11 +187,12 @@ class _ContinuousReaderViewState extends State<ContinuousReaderView>
   void _handleScaleUpdate(ScaleUpdateDetails details) {
     if (_zoomAnimController.isAnimating) return;
 
-    if (details.pointerCount > 1 && _lastPointerCount <= 1) {
+    if (details.pointerCount != _lastPointerCount) {
       _baseScale = _scale;
       _baseOffset = _offset;
+      _pinchStartFocalPoint = details.localFocalPoint;
+      _lastPointerCount = details.pointerCount;
     }
-    _lastPointerCount = details.pointerCount;
 
     final screenWidth = MediaQuery.sizeOf(context).width;
     final screenHeight = MediaQuery.sizeOf(context).height;
@@ -461,8 +462,8 @@ class _ContinuousReaderViewState extends State<ContinuousReaderView>
       onScaleStart: _handleScaleStart,
       onScaleUpdate: _handleScaleUpdate,
       onScaleEnd: _handleScaleEnd,
-      onDoubleTapDown: _scale > 1.0 ? (d) => _doubleTapPosition = d.localPosition : null,
-      onDoubleTap: _scale > 1.0 ? () => _toggleScale(_doubleTapPosition) : null,
+      onDoubleTapDown: (d) => _doubleTapPosition = d.localPosition,
+      onDoubleTap: () => _toggleScale(_doubleTapPosition),
       child: Transform(
         transform: Matrix4.diagonal3Values(_scale, _scale, 1.0)
           ..setTranslationRaw(_offset.dx, _offset.dy, 0.0),

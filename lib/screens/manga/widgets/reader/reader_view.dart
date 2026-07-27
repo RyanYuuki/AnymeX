@@ -31,7 +31,6 @@ class ReaderView extends StatefulWidget {
 
 class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
   final DisplayRefreshHost _displayRefreshHost = DisplayRefreshHost();
-  Offset? _lastTapPosition;
 
   @override
   void initState() {
@@ -285,18 +284,8 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
           return PhotoViewGalleryPageOptions.customChild(
             minScale: PhotoViewComputedScale.contained * 1.0,
             maxScale: PhotoViewComputedScale.covered * 4.0,
-            child: GestureDetector(
-              onTapDown: (details) => _lastTapPosition = details.globalPosition,
-              onTap: () {
-                if (_lastTapPosition != null) {
-                  widget.controller.handleTap(_lastTapPosition!);
-                }
-              },
-              onLongPressStart: (details) {
-                if (widget.controller.longPressPageActionsEnabled.value) {
-                  showReaderPageActionsDialog(context, widget.controller);
-                }
-              },
+            child: PagedItemView(
+              controller: widget.controller,
               child: _buildSpread(context, spreads[index], index),
             ),
           );
@@ -409,6 +398,120 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
             const SizedBox(height: 8),
             Text('Loading page ${pageIndex + 1}$progressText...'),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class PagedItemView extends StatefulWidget {
+  final Widget child;
+  final ReaderController controller;
+
+  const PagedItemView({
+    super.key,
+    required this.child,
+    required this.controller,
+  });
+
+  @override
+  State<PagedItemView> createState() => _PagedItemViewState();
+}
+
+class _PagedItemViewState extends State<PagedItemView>
+    with SingleTickerProviderStateMixin {
+  late final PhotoViewController _photoViewController;
+  late final PhotoViewScaleStateController _photoViewScaleStateController;
+  late final AnimationController _scaleAnimationController;
+  late final Animation<double> _animation;
+
+  Offset? _lastTapPosition;
+  Offset _doubleTapPosition = Offset.zero;
+  Alignment _scalePosition = Alignment.center;
+
+  @override
+  void initState() {
+    super.initState();
+    _photoViewController = PhotoViewController();
+    _photoViewScaleStateController = PhotoViewScaleStateController();
+
+    _scaleAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+
+    _animation = Tween<double>(begin: 1.0, end: 2.5).animate(
+      CurvedAnimation(
+        parent: _scaleAnimationController,
+        curve: Curves.easeOutCubic,
+      ),
+    )..addListener(() {
+        _photoViewController.scale = _animation.value;
+      });
+  }
+
+  @override
+  void dispose() {
+    _scaleAnimationController.dispose();
+    _photoViewController.dispose();
+    _photoViewScaleStateController.dispose();
+    super.dispose();
+  }
+
+  Alignment _computeAlignmentByTapOffset(Offset offset, Size size) {
+    return Alignment(
+      (offset.dx - size.width / 2) / (size.width / 2),
+      (offset.dy - size.height / 2) / (size.height / 2),
+    );
+  }
+
+  void _toggleScale(Offset tapPosition) {
+    if (!mounted) return;
+    if (_scaleAnimationController.isAnimating) return;
+
+    final currentScale = _photoViewController.scale ?? 1.0;
+    if (currentScale <= 1.01) {
+      final size = MediaQuery.sizeOf(context);
+      _scalePosition = _computeAlignmentByTapOffset(tapPosition, size);
+      if (_scaleAnimationController.isCompleted) {
+        _scaleAnimationController.reset();
+      }
+      _scaleAnimationController.forward();
+    } else if (currentScale >= 2.49) {
+      _scaleAnimationController.reverse();
+    } else {
+      _photoViewScaleStateController.reset();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PhotoViewGestureDetectorScope(
+      axis: widget.controller.readingDirection.value.axis,
+      child: PhotoView.customChild(
+        controller: _photoViewController,
+        scaleStateController: _photoViewScaleStateController,
+        basePosition: _scalePosition,
+        minScale: PhotoViewComputedScale.contained * 1.0,
+        maxScale: PhotoViewComputedScale.covered * 4.0,
+        child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTapDown: (details) => _lastTapPosition = details.globalPosition,
+          onTap: () {
+            if (_lastTapPosition != null) {
+              widget.controller.handleTap(_lastTapPosition!);
+            }
+          },
+          onDoubleTapDown: (details) {
+            _doubleTapPosition = details.globalPosition;
+          },
+          onDoubleTap: () => _toggleScale(_doubleTapPosition),
+          onLongPressStart: (details) {
+            if (widget.controller.longPressPageActionsEnabled.value) {
+              showReaderPageActionsDialog(context, widget.controller);
+            }
+          },
+          child: widget.child,
         ),
       ),
     );
