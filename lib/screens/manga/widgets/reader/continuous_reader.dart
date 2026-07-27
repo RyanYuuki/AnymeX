@@ -461,8 +461,16 @@ class _ContinuousReaderViewState extends State<ContinuousReaderView>
       onScaleStart: _handleScaleStart,
       onScaleUpdate: _handleScaleUpdate,
       onScaleEnd: _handleScaleEnd,
-      onDoubleTapDown: _scale > 1.0 ? (d) => _doubleTapPosition = d.localPosition : null,
-      onDoubleTap: _scale > 1.0 ? () => _toggleScale(_doubleTapPosition) : null,
+      onDoubleTapDown: (d) => _doubleTapPosition = d.localPosition,
+      onDoubleTap: () => _toggleScale(_doubleTapPosition),
+      onTapUp: (details) {
+        widget.controller.handleTap(details.globalPosition);
+      },
+      onLongPressStart: (details) {
+        if (widget.controller.longPressPageActionsEnabled.value) {
+          showReaderPageActionsDialog(context, widget.controller);
+        }
+      },
       child: Transform(
         transform: Matrix4.diagonal3Values(_scale, _scale, 1.0)
           ..setTranslationRaw(_offset.dx, _offset.dy, 0.0),
