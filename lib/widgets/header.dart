@@ -217,15 +217,17 @@ class Header extends StatelessWidget {
                       ? _buildActionButtons(context, profileData)
                       : _profileIcon(context, profileData),
                   const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _buildHeaderTitle(
-                          context, greetingController, profileData),
-                      _buildHeaderSubtitle(
-                          context, greetingController, profileData),
-                    ],
+                  Flexible(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _buildHeaderTitle(
+                            context, greetingController, profileData),
+                        _buildHeaderSubtitle(
+                            context, greetingController, profileData),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -245,15 +247,17 @@ class Header extends StatelessWidget {
                 ? _buildActionButtons(context, profileData)
                 : _profileIcon(context, profileData),
             const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildHeaderTitle(context, greetingController, profileData),
-                _buildHeaderSubtitle(context, greetingController, profileData),
-              ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildHeaderTitle(context, greetingController, profileData),
+                  _buildHeaderSubtitle(context, greetingController, profileData),
+                ],
+              ),
             ),
-            const Spacer(),
+            const SizedBox(width: 8),
             type == PageType.home
                 ? _profileIcon(context, profileData)
                 : _buildActionButtons(context, profileData),
@@ -278,6 +282,8 @@ class Header extends StatelessWidget {
             fontWeight: FontWeight.bold,
             color: context.colors.primary,
           ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         );
       case PageType.anime:
         return Text(
@@ -287,6 +293,8 @@ class Header extends StatelessWidget {
             fontSize: 15,
             fontWeight: FontWeight.bold,
           ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         );
       case PageType.manga:
         return Text(
@@ -296,6 +304,8 @@ class Header extends StatelessWidget {
             fontSize: 15,
             fontWeight: FontWeight.bold,
           ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         );
       case PageType.novel:
         return const Text(
@@ -305,6 +315,8 @@ class Header extends StatelessWidget {
             fontSize: 15,
             fontWeight: FontWeight.bold,
           ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         );
       case PageType.library:
         return const Text(
@@ -314,6 +326,8 @@ class Header extends StatelessWidget {
             fontSize: 15,
             fontWeight: FontWeight.bold,
           ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         );
       case PageType.extensions:
         return const Text(
@@ -323,6 +337,8 @@ class Header extends StatelessWidget {
             fontSize: 15,
             fontWeight: FontWeight.bold,
           ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         );
     }
   }
@@ -336,6 +352,8 @@ class Header extends StatelessWidget {
           fontSize: 11,
           color: context.colors.onSurface.withOpacity(0.55),
         ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
       );
     }
     if (type == PageType.extensions) {
@@ -345,6 +363,8 @@ class Header extends StatelessWidget {
           fontSize: 11,
           color: context.colors.onSurface.withOpacity(0.55),
         ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
       );
     }
 
@@ -355,6 +375,8 @@ class Header extends StatelessWidget {
         fontSize: 11,
         color: context.colors.onSurface.withOpacity(0.55),
       ),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
     );
   }
 
@@ -446,7 +468,7 @@ class Header extends StatelessWidget {
       }
     }
 
-    return Row(children: list);
+    return Row(mainAxisSize: MainAxisSize.min, children: list);
   }
 
   void _handleSearchPress(BuildContext context, ServiceHandler profileData) {
