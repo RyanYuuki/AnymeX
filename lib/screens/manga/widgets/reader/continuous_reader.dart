@@ -7,6 +7,7 @@ import 'package:anymex/widgets/subsampling_scale_image_view/subsampling_image_pr
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Page.dart';
 import 'package:anymex/screens/manga/widgets/reader/reader_chapter_transition.dart';
+import 'package:anymex/screens/manga/widgets/reader/reader_page_actions_dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
