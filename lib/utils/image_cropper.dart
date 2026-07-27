@@ -56,7 +56,6 @@ class CroppedNetworkImage extends StatefulWidget {
   final double? height;
   final Widget? placeholder;
   final int cropThreshold;
-  final Function(double width, double height)? onImageLoaded;
 
   const CroppedNetworkImage({
     super.key,
@@ -68,7 +67,6 @@ class CroppedNetworkImage extends StatefulWidget {
     this.height,
     this.placeholder,
     this.cropThreshold = 10,
-    this.onImageLoaded,
   });
 
   @override
@@ -77,7 +75,6 @@ class CroppedNetworkImage extends StatefulWidget {
 
 class _CroppedNetworkImageState extends State<CroppedNetworkImage> {
   static final Map<String, Uint8List> _cache = {};
-  static final Map<String, Size> _sizeCache = {};
   late Future<Uint8List> _futureBytes;
 
   @override
@@ -95,6 +92,7 @@ class _CroppedNetworkImageState extends State<CroppedNetworkImage> {
   }
 
   Future<Uint8List> _loadBytes() async {
+  
     final headersKey =
         widget.headers?.entries.map((e) => '${e.key}:${e.value}').join(';') ??
             '';
@@ -102,16 +100,7 @@ class _CroppedNetworkImageState extends State<CroppedNetworkImage> {
     final cacheKey = '${widget.url}#$headersKey#${widget.cropThreshold}';
     
     if (_cache.containsKey(cacheKey)) {
-      final bytes = _cache[cacheKey]!;
-      final cachedSize = _sizeCache[cacheKey];
-      if (cachedSize != null) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) {
-            widget.onImageLoaded?.call(cachedSize.width, cachedSize.height);
-          }
-        });
-      }
-      return bytes;
+      return _cache[cacheKey]!;
     }
     
     final bytes = await fetchAndCropImageBytes(
@@ -122,15 +111,6 @@ class _CroppedNetworkImageState extends State<CroppedNetworkImage> {
     
     if (bytes.isNotEmpty) {
       _cache[cacheKey] = bytes;
-      final imageStream = MemoryImage(bytes).resolve(const ImageConfiguration());
-      imageStream.addListener(ImageStreamListener((info, _) {
-        final w = info.image.width.toDouble();
-        final h = info.image.height.toDouble();
-        _sizeCache[cacheKey] = Size(w, h);
-        if (mounted) {
-          widget.onImageLoaded?.call(w, h);
-        }
-      }));
     }
     return bytes;
   }
