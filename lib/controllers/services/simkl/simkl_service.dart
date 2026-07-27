@@ -61,12 +61,39 @@ class SimklService extends GetxController
     final newId = id.split('*').first;
     final isSeries = id.split('*').last == "SERIES";
     Logger.i(isSeries.toString());
+    final clientId = dotenv.env['SIMKL_CLIENT_ID'];
     final resp = await get(Uri.parse(
-        "https://api.simkl.com/${isSeries ? 'tv' : 'movies'}/$newId?extended=full&client_id=${dotenv.env['SIMKL_CLIENT_ID']}"));
+        "https://api.simkl.com/${isSeries ? 'tv' : 'movies'}/$newId?extended=full&client_id=$clientId"));
     if (resp.statusCode == 200) {
       final data = jsonDecode(resp.body);
       data['id'] = '$newId*${isSeries ? "SERIES" : "MOVIE"}';
       data['__isMovie'] = !isSeries;
+
+      if (isSeries && data['next_episode'] == null && (data['status']?.toString().toLowerCase() == 'airing' || data['status']?.toString().toLowerCase() == 'returning series')) {
+        try {
+          final epResp = await get(Uri.parse("https://api.simkl.com/tv/episodes/$newId?client_id=$clientId"));
+          if (epResp.statusCode == 200) {
+            data['episodes'] = jsonDecode(epResp.body);
+          }
+        } catch (e) {
+          Logger.i("Failed to fetch episodes for Simkl series $newId: $e");
+        }
+      }
+
+      final tmdbId = data['ids']?['tmdb']?.toString();
+      final tmdbApiKey = dotenv.env['TMDB_API_KEY'];
+      if (tmdbId != null && tmdbId.isNotEmpty && tmdbApiKey != null && tmdbApiKey.isNotEmpty) {
+        try {
+          final creditsResp = await get(Uri.parse(
+              "https://api.themoviedb.org/3/${isSeries ? 'tv' : 'movie'}/$tmdbId/credits?api_key=$tmdbApiKey"));
+          if (creditsResp.statusCode == 200) {
+            data['tmdb_credits'] = jsonDecode(creditsResp.body);
+          }
+        } catch (e) {
+          Logger.i("Failed to fetch TMDb credits for $tmdbId: $e");
+        }
+      }
+
       cacheController.addCache(data);
       detailsData.value = Media.fromSimkl(data, !isSeries);
       return detailsData.value;
