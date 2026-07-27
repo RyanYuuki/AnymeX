@@ -5,6 +5,11 @@ String completeLanguageName(String lang) {
       return element.key;
     }
   }
+  for (var element in sortedLanguagesMap.entries) {
+    if (element.key.toLowerCase() == lang) {
+      return element.key;
+    }
+  }
   return lang.toUpperCase();
 }
 

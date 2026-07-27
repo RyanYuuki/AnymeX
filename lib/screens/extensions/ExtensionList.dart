@@ -128,8 +128,14 @@ class _ExtensionListState extends State<ExtensionList>
     final targetLang = hasLangFilter ? completeLanguageCode(lang) : '';
 
     return data.where((element) {
-      if (hasLangFilter && (element.lang?.toLowerCase() ?? '') != targetLang) {
-        return false;
+      if (hasLangFilter) {
+        final rawLang = element.lang?.trim().toLowerCase() ?? '';
+        final codeFromName = completeLanguageCode(rawLang).toLowerCase();
+        final matchesAsCode = rawLang == targetLang;
+        final matchesAsName = codeFromName == targetLang;
+        if (!matchesAsCode && !matchesAsName) {
+          return false;
+        }
       }
       if (hasSourceFilter && !_matchesSourceType(element, sourceType)) {
         return false;
