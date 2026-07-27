@@ -7,7 +7,6 @@ import 'package:anymex/widgets/subsampling_scale_image_view/subsampling_image_pr
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Page.dart';
 import 'package:anymex/screens/manga/widgets/reader/reader_chapter_transition.dart';
-import 'package:anymex/screens/manga/widgets/reader/reader_page_actions_dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -462,16 +461,8 @@ class _ContinuousReaderViewState extends State<ContinuousReaderView>
       onScaleStart: _handleScaleStart,
       onScaleUpdate: _handleScaleUpdate,
       onScaleEnd: _handleScaleEnd,
-      onDoubleTapDown: (d) => _doubleTapPosition = d.localPosition,
-      onDoubleTap: () => _toggleScale(_doubleTapPosition),
-      onTapUp: (details) {
-        widget.controller.handleTap(details.globalPosition);
-      },
-      onLongPressStart: (details) {
-        if (widget.controller.longPressPageActionsEnabled.value) {
-          showReaderPageActionsDialog(context, widget.controller);
-        }
-      },
+      onDoubleTapDown: _scale > 1.0 ? (d) => _doubleTapPosition = d.localPosition : null,
+      onDoubleTap: _scale > 1.0 ? () => _toggleScale(_doubleTapPosition) : null,
       child: Transform(
         transform: Matrix4.diagonal3Values(_scale, _scale, 1.0)
           ..setTranslationRaw(_offset.dx, _offset.dy, 0.0),
