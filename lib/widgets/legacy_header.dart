@@ -51,47 +51,61 @@ class Header extends StatelessWidget {
             children: [
               _profileIcon(context, profileData),
               const SizedBox(width: 15),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (type == PageType.library) ...[
-                    const Text(
-                      "Library",
-                    ),
-                    Text(
-                      "All your local shi",
-                      style: TextStyle(
-                        fontFamily: "Poppins-SemiBold",
-                        color: context.colors.primary,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (type == PageType.library) ...[
+                      const Text(
+                        "Library",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                  ] else if (type == PageType.extensions) ...[
-                    const Text(
-                      "Extensions",
-                    ),
-                    Text(
-                      "Manage plugins & sources",
-                      style: TextStyle(
-                        fontFamily: "Poppins-SemiBold",
-                        color: context.colors.primary,
+                      Text(
+                        "All your local shi",
+                        style: TextStyle(
+                          fontFamily: "Poppins-SemiBold",
+                          color: context.colors.primary,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                  ] else ...[
-                    Obx(() => Text(
-                          "${greetingController.currentGreeting.value},",
-                        )),
-                    Text(
-                      profileData.profileData.value.name ?? 'Guest',
-                      style: TextStyle(
-                        fontFamily: "Poppins-SemiBold",
-                        color: context.colors.primary,
+                    ] else if (type == PageType.extensions) ...[
+                      const Text(
+                        "Extensions",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
+                      Text(
+                        "Manage plugins & sources",
+                        style: TextStyle(
+                          fontFamily: "Poppins-SemiBold",
+                          color: context.colors.primary,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ] else ...[
+                      Obx(() => Text(
+                            "${greetingController.currentGreeting.value},",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          )),
+                      Text(
+                        profileData.profileData.value.name ?? 'Guest',
+                        style: TextStyle(
+                          fontFamily: "Poppins-SemiBold",
+                          color: context.colors.primary,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
-              const Spacer(),
+              const SizedBox(width: 8),
               if (type == PageType.library) ...[
                 Row(
                   children: [
