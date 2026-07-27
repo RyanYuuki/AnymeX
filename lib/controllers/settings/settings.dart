@@ -127,11 +127,11 @@ class Settings extends GetxController {
           (m) => m.toString() == savedStr,
           orElse: () => DisplayMode.auto,
         );
+        await applyDisplayRefreshMode();
       } else {
         preferredDisplayMode.value = DisplayMode.auto;
       }
       
-      await applyDisplayRefreshMode();
       activeDisplayMode.value = await FlutterDisplayMode.active;
     } catch (e) {
       Logger.e("Error initializing display modes: $e");
@@ -141,8 +141,11 @@ class Settings extends GetxController {
   Future<void> applyDisplayRefreshMode() async {
     if (!Platform.isAndroid) return;
     try {
-      final mode = preferredDisplayMode.value ?? DisplayMode.auto;
-      await FlutterDisplayMode.setPreferredMode(mode);
+      final savedStr = General.preferredDisplayMode.get<String?>();
+      if (savedStr != null) {
+        final mode = preferredDisplayMode.value ?? DisplayMode.auto;
+        await FlutterDisplayMode.setPreferredMode(mode);
+      }
       await Future.delayed(const Duration(milliseconds: 100));
       activeDisplayMode.value = await FlutterDisplayMode.active;
     } catch (e) {
