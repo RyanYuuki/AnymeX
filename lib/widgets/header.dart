@@ -397,17 +397,20 @@ class Header extends StatelessWidget {
       );
     } else if (type == PageType.home) {
       list.add(
-        Container(
-          width: 36,
-          height: 36,
-          decoration: BoxDecoration(
-            color: context.colors.secondaryContainer.opaque(0.5),
-            shape: BoxShape.circle,
-          ),
-          child: Center(
-            child: AnymeXAnimatedLogo(
-              size: 36,
-              color: context.colors.primary,
+        AnymexOnTap(
+          onTap: () => SettingsSheet().showServiceSelector(context),
+          child: Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: context.colors.secondaryContainer.opaque(0.5),
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: AnymeXAnimatedLogo(
+                size: 36,
+                color: context.colors.primary,
+              ),
             ),
           ),
         ),
