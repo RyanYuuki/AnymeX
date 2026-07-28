@@ -2093,6 +2093,15 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                       settings.enableHoldToSeek = val),
                               CustomSwitchTile(
                                   padding: const EdgeInsets.all(10),
+                                  icon: Icons.swap_horiz_rounded,
+                                  title: "Slide to Seek",
+                                  description:
+                                      "Enable horizontal swipe on player to seek through video",
+                                  switchValue: settings.enableSlideToSeek,
+                                  onChanged: (val) =>
+                                      settings.enableSlideToSeek = val),
+                              CustomSwitchTile(
+                                  padding: const EdgeInsets.all(10),
                                   icon: Icons.screenshot_rounded,
                                   title: "Save Last Frame",
                                   description:

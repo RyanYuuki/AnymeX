@@ -253,6 +253,7 @@ enum PlayerSettingsKeys {
   videoOutput,
   audioOutput,
   enableHoldToSeek,
+  enableSlideToSeek,
 }
 
 enum UISettingsKeys {
