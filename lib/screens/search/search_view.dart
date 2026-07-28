@@ -33,6 +33,8 @@ enum ViewMode { grid, list }
 
 enum SearchState { initial, loading, success, error, empty }
 
+enum BrowseMode { none, popular, latest }
+
 class ExtensionSearchItem {
   final Source source;
   final Future<List<dynamic>> future;
@@ -88,6 +90,7 @@ class _SearchPageState extends State<SearchPage>
   bool _isLoadingMore = false;
   bool _hasMoreResults = false;
   String _lastSearchQuery = '';
+  BrowseMode _browseMode = BrowseMode.none;
   Map<String, dynamic> _lastApiFilters = {};
 
   final FocusNode _searchFocusNode = FocusNode();
@@ -101,6 +104,19 @@ class _SearchPageState extends State<SearchPage>
   bool get isExtensionMode =>
       _serviceHandler.serviceType.value == ServicesType.extensions ||
       _selectedSource != null;
+
+  /// Managers that have real Popular/Latest implementations (not stubs/empty).
+  static const _browseSupportedManagers = {
+    'mangayomi',
+    'aniyomi',
+    'aniyomi-desktop',
+    'kotatsu',
+    'kotatsu-desktop',
+  };
+
+  bool get _sourceSupportsBrowse =>
+      _selectedSource != null &&
+      _browseSupportedManagers.contains(_selectedSource!.managerId);
 
   @override
   void initState() {
@@ -217,6 +233,7 @@ class _SearchPageState extends State<SearchPage>
         _extensionSearchItems.clear();
         _allSourcesCache.clear();
         _singleSourceCache.clear();
+        _browseMode = BrowseMode.none;
       });
       return;
     }
@@ -424,7 +441,16 @@ class _SearchPageState extends State<SearchPage>
 
     try {
       List<Media> results = [];
-      if (_selectedSource != null) {
+      if (_browseMode != BrowseMode.none && _selectedSource != null) {
+        final Pages pages;
+        if (_browseMode == BrowseMode.popular) {
+          pages = await _selectedSource!.methods.getPopular(nextPage);
+        } else {
+          pages = await _selectedSource!.methods.getLatestUpdates(nextPage);
+        }
+        results =
+            pages.list.map((e) => Media.froDMedia(e, effectiveType)).toList();
+      } else if (_selectedSource != null) {
         final res = await _selectedSource!.methods
             .search(_lastSearchQuery, nextPage, []);
         results = res.list
@@ -482,6 +508,47 @@ class _SearchPageState extends State<SearchPage>
           _isLoadingMore = false;
         });
       }
+    }
+  }
+
+  Future<void> _performBrowse(BrowseMode mode) async {
+    if (_selectedSource == null) return;
+
+    setState(() {
+      _browseMode = mode;
+      _searchState = SearchState.loading;
+      _searchResults = null;
+      _searchController.clear();
+    });
+
+    try {
+      final Pages pages;
+      if (mode == BrowseMode.popular) {
+        pages = await _selectedSource!.methods.getPopular(1);
+      } else {
+        pages = await _selectedSource!.methods.getLatestUpdates(1);
+      }
+
+      if (!mounted) return;
+
+      final mediaList =
+          pages.list.map((e) => Media.froDMedia(e, effectiveType)).toList();
+
+      setState(() {
+        _searchResults = mediaList;
+        _currentPage = 1;
+        _hasMoreResults = pages.hasNextPage;
+        _lastSearchQuery = '';
+        _searchState =
+            mediaList.isEmpty ? SearchState.empty : SearchState.success;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _searchState = SearchState.error;
+        _errorMessage = e.toString();
+        _hasMoreResults = false;
+      });
     }
   }
 
@@ -590,6 +657,7 @@ class _SearchPageState extends State<SearchPage>
                       _lastSearchQuery = '';
                       _lastApiFilters = {};
                       _extensionSearchItems.clear();
+                      _browseMode = BrowseMode.none;
                     });
                   },
                   icon: Icon(
@@ -668,6 +736,22 @@ class _SearchPageState extends State<SearchPage>
               ),
             ),
             if (_selectedSource != null) ...[
+              if (_sourceSupportsBrowse) ...[
+                const SizedBox(width: 12),
+                _buildBrowseButton(
+                  label: 'Popular',
+                  icon: Iconsax.crown,
+                  isActive: _browseMode == BrowseMode.popular,
+                  onTap: () => _performBrowse(BrowseMode.popular),
+                ),
+                const SizedBox(width: 8),
+                _buildBrowseButton(
+                  label: 'Latest',
+                  icon: Iconsax.clock,
+                  isActive: _browseMode == BrowseMode.latest,
+                  onTap: () => _performBrowse(BrowseMode.latest),
+                ),
+              ],
               const SizedBox(width: 12),
               _buildViewModeToggle(),
             ],
@@ -905,6 +989,54 @@ class _SearchPageState extends State<SearchPage>
           icon,
           size: 20,
           color: isActive ? context.colors.onPrimary : context.colors.onSurface,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBrowseButton({
+    required String label,
+    required IconData icon,
+    required bool isActive,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+        decoration: BoxDecoration(
+          color: isActive
+              ? context.colors.primary.opaque(0.15, iReallyMeanIt: true)
+              : context.colors.surfaceContainerHighest
+                  .opaque(0.3, iReallyMeanIt: true),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isActive
+                ? context.colors.primary.opaque(0.4, iReallyMeanIt: true)
+                : context.colors.onSurface.opaque(0.08, iReallyMeanIt: true),
+            width: isActive ? 1.2 : 0.5,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 14,
+              color: isActive
+                  ? context.colors.primary
+                  : context.colors.onSurface,
+            ),
+            const SizedBox(width: 5),
+            AnymexText.semiBold(
+              text: label,
+              size: 12,
+              color: isActive
+                  ? context.colors.primary
+                  : context.colors.onSurface,
+            ),
+          ],
         ),
       ),
     );
