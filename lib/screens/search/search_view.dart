@@ -105,7 +105,6 @@ class _SearchPageState extends State<SearchPage>
       _serviceHandler.serviceType.value == ServicesType.extensions ||
       _selectedSource != null;
 
-  /// Managers that have real Popular/Latest implementations (not stubs/empty).
   static const _browseSupportedManagers = {
     'mangayomi',
     'aniyomi',
