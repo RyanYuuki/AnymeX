@@ -1,5 +1,6 @@
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/track/track_binding_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/screens/anime/widgets/track_dialog.dart' as anime_track;
@@ -186,16 +187,21 @@ Future<void> _handleMangaTap(OfflineMedia media) async {
   final savedTracking = DynamicKeys.trackingPermission.get<bool?>(dbId);
 
   bool? shouldTrack;
+  final isExtension = mediaModel.serviceType == ServicesType.extensions;
+  final hasTrackBinding = Get.isRegistered<TrackBindingController>() &&
+      Get.find<TrackBindingController>().hasAnyBinding(mediaModel.id);
+
   if (savedTracking != null) {
     shouldTrack = savedTracking;
+  } else if (isExtension) {
+    shouldTrack = hasTrackBinding;
   } else if (General.shouldAskForTrack.get(true) == false) {
     shouldTrack = true;
   } else if (Get.context != null) {
-    shouldTrack = mediaModel.serviceType == ServicesType.extensions
-        ? false
-        : await manga_track.showTrackingDialog(Get.context!, dbId: dbId);
+    shouldTrack =
+        await manga_track.showTrackingDialog(Get.context!, dbId: dbId);
   } else {
-    shouldTrack = mediaModel.serviceType != ServicesType.extensions;
+    shouldTrack = !isExtension;
   }
 
   if (shouldTrack == null) return;

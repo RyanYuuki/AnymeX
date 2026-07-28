@@ -201,7 +201,8 @@ enum DynamicKeys {
   libraryGridSize,
   mappedMediaTitle,
   offlineVideoProgress,
-  stickySource;
+  stickySource,
+  trackBindings;
 
   T get<T>(dynamic id, [T? defaultValue]) {
     return KvHelper.get<T>('${name}_$id', defaultVal: defaultValue);
