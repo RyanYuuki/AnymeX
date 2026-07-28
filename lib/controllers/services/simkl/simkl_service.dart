@@ -34,6 +34,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart';
 
+enum SimklSearchCategory { anime, movie, show }
+
 class SimklService extends GetxController
     implements BaseService, OnlineService {
   RxList<Media> trendingMovies = <Media>[].obs;
@@ -207,8 +209,7 @@ class SimklService extends GetxController
     final resp = await get(movieUrl);
     if (resp.statusCode == 200) {
       final data = jsonDecode(resp.body) as List<dynamic>;
-      List<Media> list = data.map((e) => Media.fromSimkl(e, true)).toList();
-      return list;
+      return data.map((e) => Media.fromSimklSearch(e)).toList();
     }
     return [];
   }
@@ -224,17 +225,72 @@ class SimklService extends GetxController
     final resp = await get(seriesUrl);
     if (resp.statusCode == 200) {
       final data = jsonDecode(resp.body) as List<dynamic>;
-      List<Media> list = data.map((e) => Media.fromSimkl(e, true)).toList();
-      return list;
+      return data.map((e) => Media.fromSimklSearch(e)).toList();
+    }
+    return [];
+  }
+
+  Future<List<Media>> searchAnime(String query, {int page = 1}) async {
+    final animeUrl = Uri.https('api.simkl.com', '/search/anime', {
+      'q': query,
+      'extended': 'full',
+      'page': '$page',
+      'limit': '25',
+      'client_id': '${dotenv.env['SIMKL_CLIENT_ID']}',
+    });
+    final resp = await get(animeUrl);
+    if (resp.statusCode == 200) {
+      final data = jsonDecode(resp.body) as List<dynamic>;
+      return data.map((e) => Media.fromSimklSearch(e)).toList();
     }
     return [];
   }
 
   @override
   Future<List<Media>> search(SearchParams params) async {
-    final movieData = await searchMovies(params.query, page: params.page);
-    final seriesData = await searchSeries(params.query, page: params.page);
-    return [...movieData, ...seriesData];
+    final results = await Future.wait([
+      searchMovies(params.query, page: params.page),
+      searchSeries(params.query, page: params.page),
+      searchAnime(params.query, page: params.page),
+    ]);
+    final movies = results[0];
+    final series = results[1];
+    final anime = results[2];
+
+    final merged = <Media>[];
+    final seen = <String>{};
+    final maxLen = [
+      movies.length,
+      series.length,
+      anime.length,
+    ].reduce((a, b) => a > b ? a : b);
+    for (var i = 0; i < maxLen; i++) {
+      for (final list in [anime, series, movies]) {
+        if (i < list.length) {
+          final m = list[i];
+          final key = m.title.toLowerCase().trim();
+          if (seen.contains(key)) continue;
+          seen.add(key);
+          merged.add(m);
+        }
+      }
+    }
+    return merged;
+  }
+
+  Future<List<Media>> searchByCategory(
+    String query,
+    SimklSearchCategory category, {
+    int page = 1,
+  }) {
+    switch (category) {
+      case SimklSearchCategory.anime:
+        return searchAnime(query, page: page);
+      case SimklSearchCategory.movie:
+        return searchMovies(query, page: page);
+      case SimklSearchCategory.show:
+        return searchSeries(query, page: page);
+    }
   }
 
   @override

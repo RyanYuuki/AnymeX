@@ -6,6 +6,7 @@ import 'package:anymex/controllers/services/storage/anymex_cache_manager.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/track/track_binding_controller.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
@@ -609,20 +610,31 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
             pageNum >= totalPgs - 1 ||
             (pageNum / totalPgs) >= 0.95;
         if (isChapterComplete) {
-          final int currentOnlineProgress = int.tryParse(serviceHandler
-                      .onlineService.currentMedia.value.episodeCount ??
-                  '0') ??
-              0;
-
           final int newProgress = chapter.number!.toInt();
 
-          if (newProgress > currentOnlineProgress) {
-            serviceHandler.onlineService.updateListEntry(UpdateListEntryParams(
-                listId: media.id,
-                status: "CURRENT",
-                progress: newProgress,
-                syncIds: [media.idMal],
-                isAnime: false));
+          final isExtension = media.serviceType == ServicesType.extensions;
+          if (isExtension) {
+            if (Get.isRegistered<TrackBindingController>() &&
+                Get.find<TrackBindingController>().hasAnyBinding(media.id)) {
+              unawaited(Get.find<TrackBindingController>()
+                  .pushProgress(media.id, newProgress,
+                      isAnime: false, status: 'CURRENT')
+                  .catchError((e) =>
+                      Logger.i('Extension manga tracking failed: $e')));
+            }
+          } else {
+            final int currentOnlineProgress = int.tryParse(
+                    serviceHandler.onlineService.currentMedia.value.episodeCount ??
+                        '0') ??
+                0;
+            if (newProgress > currentOnlineProgress) {
+              serviceHandler.onlineService.updateListEntry(UpdateListEntryParams(
+                  listId: media.id,
+                  status: "CURRENT",
+                  progress: newProgress,
+                  syncIds: [media.idMal],
+                  isAnime: false));
+            }
           }
         }
       }
@@ -1378,12 +1390,25 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
     final chapterNumber = chapter.number?.toInt();
     if (chapterNumber != null) {
+      final int newProgress = chapterNumber - 1;
+
+      final isExtension = media.serviceType == ServicesType.extensions;
+      if (isExtension) {
+        if (Get.isRegistered<TrackBindingController>() &&
+            Get.find<TrackBindingController>().hasAnyBinding(media.id)) {
+          unawaited(Get.find<TrackBindingController>()
+              .pushProgress(media.id, newProgress,
+                  isAnime: false, status: 'CURRENT')
+              .catchError((e) =>
+                  Logger.i('Extension manga tracking failed: $e')));
+        }
+        return;
+      }
+
       final int currentOnlineProgress = int.tryParse(
               serviceHandler.onlineService.currentMedia.value.episodeCount ??
                   '0') ??
           0;
-
-      final int newProgress = chapterNumber - 1;
 
       if (newProgress > currentOnlineProgress) {
         serviceHandler.onlineService.updateListEntry(UpdateListEntryParams(
