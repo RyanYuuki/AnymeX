@@ -10,7 +10,7 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconly/iconly.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ProgressSyncSection extends StatelessWidget {

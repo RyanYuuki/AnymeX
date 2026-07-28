@@ -6,6 +6,7 @@ import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 
 class GitHubRepoDialog extends StatefulWidget {
   final ItemType type;
@@ -77,6 +78,10 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
             .map((u) => u.trim())
             .where((u) => u.isNotEmpty)
             .toList();
+
+        if (widget.managerId.toLowerCase().contains('kotatsu')) {
+          snackBar("Adding Kotatsu repository. This will take at least 1-2 minutes, please wait...");
+        }
 
         await Extensions().addRepos(widget.type, urls, widget.managerId);
 
@@ -249,6 +254,29 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
                             _errorMessage!,
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: colorScheme.error,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                  if (widget.managerId.toLowerCase().contains('kotatsu')) ...[
+                    const SizedBox(height: 12),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          HugeIcons.strokeRoundedAlert02,
+                          size: 16,
+                          color: colorScheme.primary,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Note: Adding Kotatsu repository will take at least 1-2 minutes because it needs to download and convert the extension plugin on first load.',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: colorScheme.primary,
                               fontWeight: FontWeight.w500,
                             ),
                           ),

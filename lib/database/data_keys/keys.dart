@@ -25,6 +25,9 @@ enum General {
   communityListViewIsGrid,
   hasJoinedNewDiscord,
   discordRpcEnabled,
+  useHighRefreshRate,
+  preferredDisplayMode,
+  navigationTabOrder,
 }
 
 enum ThemeKeys {
@@ -35,9 +38,10 @@ enum ThemeKeys {
   themeMode,
   customColorIndex,
   logoAnimationType,
+  customHexColor,
 }
 
-enum PlayerKeys { useLibass, useMediaKit }
+enum PlayerKeys { useLibass, useMediaKit, useExternalPlayer, audioChannelLayout }
 
 enum PlayerUiKeys {
   playerExperimentalEnabled,
@@ -90,6 +94,8 @@ enum ReaderKeys {
   displayRefreshInterval,
   displayRefreshColor,
   imageFilterQuality,
+  fitToScreen,
+  navigateByNumber,
 }
 
 enum NovelReaderKeys {
@@ -158,6 +164,7 @@ enum PluginKeys {
   runtimeHostInstalledVersion,
   runtimeHostInstalledReleaseTitle,
   bridgeMode,
+  useInternalExtensionLoading,
 }
 
 enum AuthKeys {
@@ -166,6 +173,7 @@ enum AuthKeys {
   malRefreshToken,
   simklAuthToken,
   malSessionId,
+  mangaBakaAuthToken,
 }
 
 enum SearchKeys { novelSearchedQueries }
@@ -243,6 +251,8 @@ enum PlayerSettingsKeys {
   hardwareDecoder,
   preferredSubtitleLanguage,
   videoOutput,
+  audioOutput,
+  enableHoldToSeek,
 }
 
 enum UISettingsKeys {
@@ -262,6 +272,7 @@ enum UISettingsKeys {
   enableAnimation,
   disableGradient,
   homePageCardsMal,
+  homePageCardsSimkl,
   cardStyle,
   historyCardStyle,
   liquidMode,
@@ -271,6 +282,10 @@ enum UISettingsKeys {
   enablePosterKenBurns,
   carouselStyle,
   showContinueWatchingCard,
+  useLegacyHeader,
+  useGrainTexture,
+  grainIntensity,
+  enableImmersiveMode,
 }
 
 enum DownloadKeys {

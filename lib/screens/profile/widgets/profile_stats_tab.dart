@@ -13,7 +13,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconly/iconly.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 
 enum _StatsSubTab { overview, genres, tags, staff, voiceActors, studios }
 
@@ -290,7 +290,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
     if (items.isEmpty) return [_emptyState('No staff data')];
     return [
       _sectionContainer(
-        icon: IconlyLight.user,
+        icon: IconlyLight.user2,
         title: 'Staff',
         child:
             _rankedList(items, showAvatar: true, onTap: (label, {id, image}) {

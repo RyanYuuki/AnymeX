@@ -34,6 +34,8 @@ class PlayerSettings {
   String hardwareDecoder;
   String preferredSubtitleLanguage;
   String videoOutput;
+  String audioOutput;
+  bool enableHoldToSeek;
 
   PlayerSettings({
     this.speed = 1.0,
@@ -64,11 +66,13 @@ class PlayerSettings {
     this.subtitleBottomMargin = 10.0,
     this.subtitleOutlineType = "Outline",
     this.autoSkipFiller = false,
-    this.enableScreenshot = true,
+    this.enableScreenshot = false,
     this.playerMenuAnimation = true,
-    this.hardwareDecoder = 'hw',
+    this.hardwareDecoder = 'hw+',
     this.preferredSubtitleLanguage = 'none',
     this.videoOutput = 'gpu',
+    this.audioOutput = 'auto',
+    this.enableHoldToSeek = true,
   });
 
   factory PlayerSettings.fromDB() {
@@ -143,6 +147,10 @@ class PlayerSettings {
           .get<String>(defaults.preferredSubtitleLanguage),
       videoOutput: PlayerSettingsKeys.videoOutput
           .get<String>(defaults.videoOutput),
+      audioOutput: PlayerSettingsKeys.audioOutput
+          .get<String>(defaults.audioOutput),
+      enableHoldToSeek: PlayerSettingsKeys.enableHoldToSeek
+          .get<bool>(defaults.enableHoldToSeek),
     );
   }
 }
@@ -154,14 +162,14 @@ String _normalizeHardwareDecoder(String value) {
     case 'sw':
       return value;
     default:
-      return 'hw';
+      return 'hw+';
   }
 }
 
 String _readHardwareDecoder() {
   final stored = PlayerSettingsKeys.hardwareDecoder.get<String>('');
   if (stored.isEmpty) {
-    return 'hw';
+    return 'hw+';
   }
   return _normalizeHardwareDecoder(stored);
 }

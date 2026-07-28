@@ -63,83 +63,82 @@ class _WatchScreenState extends State<WatchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Stack(
-      children: [
-        Obx(() {
-          return KeyedSubtree(
-            key: ValueKey(controller.playerReloadVersion.value),
-            child: controller.videoWidget,
-          );
-        }),
-        PlayerOverlay(controller: controller),
-        BufferingOverlay(controller: controller),
-        Obx(() {
-          controller.playerReloadVersion.value;
-          if (PlayerKeys.useLibass.get<bool>(false)) {
-            return const SizedBox.shrink();
-          }
-          return SubtitleText(controller: controller);
-        }),
-        DoubleTapSeekWidget(
-          controller: controller,
-        ),
-        const Align(
-          alignment: Alignment.center,
-          child: ThemedCenterControls(),
-        ),
-        const Align(
-          alignment: Alignment.topCenter,
-          child: ThemedTopControls(),
-        ),
-        const Align(
-          alignment: Alignment.bottomCenter,
-          child: ThemedBottomControls(),
-        ),
-        MediaIndicatorBuilder(
-          isVolumeIndicator: false,
-          controller: controller,
-        ),
-        MediaIndicatorBuilder(
-          isVolumeIndicator: true,
-          controller: controller,
-        ),
-        ShaderOsd(controller: controller),
-        Positioned(
-          right: 0,
-          top: 0,
-          bottom: 0,
-          left: 0,
-          child: SourcePopup(controller: controller),
-        ),
-        Positioned(
-          right: 0,
-          top: 0,
-          bottom: 0,
-          left: 0,
-          child: TracksPopup(controller: controller),
-        ),
-        Positioned(
-          right: 0,
-          top: 0,
-          bottom: 0,
-          left: 0,
-          child: SyncSubsPopup(controller: controller),
-        ),
-        Positioned(
-          right: 0,
-          top: 0,
-          bottom: 0,
-          left: 0,
-          child: EpisodesPane(controller: controller),
-        ),
-        Positioned(
-          right: 0,
-          top: 0,
-          bottom: 0,
-          left: 0,
-          child: SpeedPopup(controller: controller),
-        ),
-      ],
-    ));
+      body: Obx(() {
+        final isPip = controller.isPipMode.value;
+        return Stack(
+          children: [
+            Obx(() => KeyedSubtree(
+                  key: ValueKey(controller.playerReloadVersion.value),
+                  child: controller.videoWidget,
+                )),
+            if (!PlayerKeys.useLibass.get<bool>(false))
+              SubtitleText(controller: controller),
+            if (!isPip) ...[
+              PlayerOverlay(controller: controller),
+              BufferingOverlay(controller: controller),
+              DoubleTapSeekWidget(
+                controller: controller,
+              ),
+              const Align(
+                alignment: Alignment.center,
+                child: ThemedCenterControls(),
+              ),
+              const Align(
+                alignment: Alignment.topCenter,
+                child: ThemedTopControls(),
+              ),
+              const Align(
+                alignment: Alignment.bottomCenter,
+                child: ThemedBottomControls(),
+              ),
+              MediaIndicatorBuilder(
+                isVolumeIndicator: false,
+                controller: controller,
+              ),
+              MediaIndicatorBuilder(
+                isVolumeIndicator: true,
+                controller: controller,
+              ),
+              ShaderOsd(controller: controller),
+              Positioned(
+                right: 0,
+                top: 0,
+                bottom: 0,
+                left: 0,
+                child: SourcePopup(controller: controller),
+              ),
+              Positioned(
+                right: 0,
+                top: 0,
+                bottom: 0,
+                left: 0,
+                child: TracksPopup(controller: controller),
+              ),
+              Positioned(
+                right: 0,
+                top: 0,
+                bottom: 0,
+                left: 0,
+                child: SyncSubsPopup(controller: controller),
+              ),
+              Positioned(
+                right: 0,
+                top: 0,
+                bottom: 0,
+                left: 0,
+                child: EpisodesPane(controller: controller),
+              ),
+              Positioned(
+                right: 0,
+                top: 0,
+                bottom: 0,
+                left: 0,
+                child: SpeedPopup(controller: controller),
+              ),
+            ],
+          ],
+        );
+      }),
+    );
   }
 }

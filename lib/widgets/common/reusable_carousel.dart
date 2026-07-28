@@ -138,7 +138,7 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
   }
 
   Widget _buildCarouselItem(CarouselData itemData, int index) {
-    final tag = '${itemData.hashCode}-${itemData.id}';
+    final tag = '${widget.title}-${itemData.id}';
 
     return Obx(() {
       final card = settingsController.enableAnimation
@@ -186,20 +186,20 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
       if (mediaType == ItemType.novel || widget.type == ItemType.novel) {
         final source =
             widget.source ?? sourceController.installedNovelExtensions.first;
-        navigate(() => NovelDetailsPage(
+        navigateWithAnimation(() => NovelDetailsPage(
               media: media,
-              tag: media.title,
+              tag: tag,
               source: source,
             ));
       } else if (mediaType == ItemType.manga) {
-        navigate(() => MangaDetailsPage(
+        navigateWithAnimation(() => MangaDetailsPage(
               media: media,
-              tag: media.title,
+              tag: tag,
             ));
       } else {
-        navigate(() => AnimeDetailsPage(
+        navigateWithAnimation(() => AnimeDetailsPage(
               media: media,
-              tag: media.title,
+              tag: tag,
             ));
       }
     }

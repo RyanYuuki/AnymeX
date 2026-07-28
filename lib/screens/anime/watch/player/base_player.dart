@@ -57,6 +57,8 @@ abstract class BasePlayer {
   
   Future<void> setSubtitleDelay(Duration delay);
 
+  Future<void> setAudioChannelLayout(String layout);
+
   Future<void> toggleVideoFit(BoxFit fit);
 
   Future<Uint8List?> screenshot({
@@ -235,6 +237,7 @@ class PlayerConfiguration {
   final bool useLibass;
   final String hwdec;
   final String videoOutput;
+  final String audioOutput;
   final PlayerType playerType;
   final bool enableCache;
   final bool autoPlay;
@@ -246,6 +249,7 @@ class PlayerConfiguration {
     this.useLibass = false,
     this.hwdec = 'no',
     this.videoOutput = 'auto',
+    this.audioOutput = 'auto',
     this.playerType = PlayerType.mediaKit,
     this.enableCache = true,
     this.autoPlay = true,

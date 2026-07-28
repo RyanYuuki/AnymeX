@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 
 class ControlButton extends StatefulWidget {
   final IconData icon;
+  final Widget? customIcon;
+  final double? rotationAngle;
   final VoidCallback? onPressed;
   final VoidCallback? onLongPress;
   final String? tooltip;
@@ -15,6 +17,8 @@ class ControlButton extends StatefulWidget {
     super.key,
     required this.icon,
     required this.onPressed,
+    this.customIcon,
+    this.rotationAngle,
     this.onLongPress,
     this.tooltip,
     this.compact = false,
@@ -153,22 +157,43 @@ class _ControlButtonState extends State<ControlButton>
                 child: Center(
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
-                    child: Icon(
-                      widget.icon,
-                      size: iconSize,
-                      color: enabled
-                          ? (widget.isPrimary
-                              ? (isDark
-                                  ? context.theme.colorScheme.primary
-                                  : context
-                                      .theme.colorScheme.onPrimaryContainer)
-                              : (isDark
-                                  ? (_isHovered
-                                      ? context.theme.colorScheme.primary
-                                      : context.theme.colorScheme.onSurface)
-                                  : context.theme.colorScheme.onSurface))
-                          : context.theme.colorScheme.onSurface.opaque(0.5),
-                    ),
+                    child: widget.customIcon ??
+                        (widget.rotationAngle != null
+                            ? Transform.rotate(
+                                angle: widget.rotationAngle!,
+                                child: Icon(
+                                  widget.icon,
+                                  size: iconSize,
+                                  color: enabled
+                                      ? (widget.isPrimary
+                                          ? (isDark
+                                              ? context.theme.colorScheme.primary
+                                              : context
+                                                  .theme.colorScheme.onPrimaryContainer)
+                                          : (isDark
+                                              ? (_isHovered
+                                                  ? context.theme.colorScheme.primary
+                                                  : context.theme.colorScheme.onSurface)
+                                              : context.theme.colorScheme.onSurface))
+                                      : context.theme.colorScheme.onSurface.opaque(0.5),
+                                ),
+                              )
+                            : Icon(
+                                widget.icon,
+                                size: iconSize,
+                                color: enabled
+                                    ? (widget.isPrimary
+                                        ? (isDark
+                                            ? context.theme.colorScheme.primary
+                                            : context
+                                                .theme.colorScheme.onPrimaryContainer)
+                                        : (isDark
+                                            ? (_isHovered
+                                                ? context.theme.colorScheme.primary
+                                                : context.theme.colorScheme.onSurface)
+                                            : context.theme.colorScheme.onSurface))
+                                    : context.theme.colorScheme.onSurface.opaque(0.5),
+                              )),
                   ),
                 ),
               ),

@@ -5,13 +5,13 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/extensions/ExtensionSettings/ExtensionSettings.dart';
 import 'package:anymex/screens/manga/widgets/chapter_list_builder.dart';
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/utils/language.dart';
+
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/no_source.dart';
 import 'package:anymex/widgets/common/cloudflare_webview.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_dropdown.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/common/source_selector.dart';
+
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
@@ -47,7 +47,7 @@ class ChapterSection extends StatelessWidget {
     required this.showWrongTitleModal,
   });
 
-  String _sourceDropdownValue(Source source) => source.id.toString();
+
 
   Widget _buildListShell({
     required BuildContext context,
@@ -193,13 +193,35 @@ class ChapterSection extends StatelessWidget {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: buildMangaSourceDropdown(),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: buildLanguageDropdown(),
+                child: SourceSelectorWidget(
+                  activeSource: sourceController.activeMangaSource.value,
+                  installedSources: sourceController.installedMangaExtensions,
+                  isManga: true,
+                  onSourceSelected: (source) async {
+                    chapterList.value = [];
+                    try {
+                      sourceController.getMangaExtensionByName(
+                        source.id.toString(),
+                        mediaId: anilistData.id.toString(),
+                      );
+                      await mapToAnilist();
+                    } catch (e) {
+                      Logger.i(e.toString());
+                    }
+                  },
+                  onSubSourceSelected: (sub) {
+                    handleLanguageChange(sub.id.toString());
+                  },
+                  onCloudflareBypass:
+                      sourceController.activeMangaSource.value?.baseUrl != null
+                          ? () => Get.context!.openCloudflareBypass(
+                              sourceController.activeMangaSource.value!.baseUrl!)
+                          : null,
+                  onPreferencesTap:
+                      sourceController.activeMangaSource.value != null
+                          ? () => openSourcePreferences(Get.context!)
+                          : null,
+                ),
               ),
             ),
             const SliverToBoxAdapter(child: SizedBox(height: 20)),
@@ -288,120 +310,7 @@ class ChapterSection extends StatelessWidget {
     );
   }
 
-  Widget buildMangaSourceDropdown() {
-    List<DropdownItem> items = sourceController.installedMangaExtensions.isEmpty
-        ? [
-            const DropdownItem(
-              value: "No Sources Installed",
-              text: "No Manga Sources Available",
-              subtitle: "Install manga extensions to get started",
-              leadingIcon: Icon(
-                Icons.menu_book_outlined,
-                size: 24,
-                color: Colors.grey,
-              ),
-            ),
-          ]
-        : sourceController.installedMangaExtensions.map<DropdownItem>((source) {
-            return DropdownItem(
-              value: _sourceDropdownValue(source),
-              text: source.name?.toUpperCase() ?? 'Unknown Source',
-              subtitle: source.lang?.toUpperCase() ?? 'Unknown',
-              leadingIcon: AnymeXImage(
-                radius: 16,
-                imageUrl: source.managerIcon,
-                height: 24,
-                width: 24,
-              ),
-            );
-          }).toList();
-
-    DropdownItem? selectedItem;
-    if (sourceController.installedMangaExtensions.isEmpty) {
-      selectedItem = items.first;
-    } else {
-      final activeSource = sourceController.activeMangaSource.value;
-      if (activeSource != null) {
-        selectedItem = DropdownItem(
-          value: _sourceDropdownValue(activeSource),
-          text: activeSource.name?.toUpperCase() ?? 'Unknown Source',
-          subtitle: 'Manga • ${activeSource.lang?.toUpperCase() ?? 'Unknown'}',
-          leadingIcon: AnymeXImage(
-            radius: 12,
-            imageUrl: activeSource.managerIcon,
-            height: 20,
-            width: 20,
-          ),
-        );
-      } else if (items.isNotEmpty) {
-        selectedItem = null;
-      }
-    }
-
-    return AnymexDropdown(
-      items: items,
-      selectedItem: selectedItem,
-      label: "SELECT SOURCE",
-      icon: Icons.extension_rounded,
-      actions: selectedItem == null || sourceController.installedMangaExtensions.isEmpty ? null : [
-        Padding(
-          padding: const EdgeInsets.only(left: 8.0),
-          child: Material(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(20),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(20),
-              onTap: () {
-                final activeSource = sourceController.activeMangaSource.value;
-                if (activeSource != null && activeSource.baseUrl != null) {
-                  Get.context!.openCloudflareBypass(activeSource.baseUrl!);
-                }
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(6.0),
-                child: Icon(
-                  Icons.security_rounded,
-                  size: 20,
-                  color: Theme.of(Get.context!).colorScheme.primary.opaque(0.8),
-                ),
-              ),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 8.0),
-          child: Material(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(20),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(20),
-              onTap: () => openSourcePreferences(Get.context!),
-              child: Padding(
-                padding: const EdgeInsets.all(6.0),
-                child: Icon(
-                  Icons.settings_outlined,
-                  size: 20,
-                  color: Theme.of(Get.context!).colorScheme.primary.opaque(0.8),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-      onChanged: (DropdownItem item) async {
-        chapterList.value = [];
-        try {
-          sourceController.getMangaExtensionByName(item.value,
-              mediaId: anilistData.id.toString());
-          await mapToAnilist();
-        } catch (e) {
-          Logger.i(e.toString());
-        }
-      },
-    );
-  }
-
-  void handleLanguageChange(String? value) async {
+  Future<void> handleLanguageChange(String? value) async {
     if (value == null) return;
 
     final activeSource = sourceController.activeMangaSource.value as ASource?;
@@ -409,7 +318,8 @@ class ChapterSection extends StatelessWidget {
 
     final newSubSource =
         activeSource.langs!.firstWhere((s) => s.id.toString() == value);
-    sourceController.setActiveSource(newSubSource, mediaId: anilistData.id.toString());
+    sourceController.setActiveSource(newSubSource,
+        mediaId: anilistData.id.toString());
 
     chapterList.value = [];
     try {
@@ -417,41 +327,5 @@ class ChapterSection extends StatelessWidget {
     } catch (e) {
       Logger.i(e.toString());
     }
-  }
-
-  Widget buildLanguageDropdown() {
-    final activeSource = sourceController.activeMangaSource.value;
-    if (activeSource is! ASource ||
-        activeSource.langs == null ||
-        activeSource.langs!.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    List<DropdownItem> items = activeSource.langs!.map<DropdownItem>((source) {
-      return DropdownItem(
-        value: source.id.toString(),
-        text: extensionLanguageName(source.lang),
-        subtitle: source.name ?? 'Unknown Source',
-        leadingIcon: AnymeXImage(
-          radius: 0,
-          imageUrl: extensionLanguageFlagUrl(source.lang),
-          height: 20,
-          width: 20,
-        ),
-      );
-    }).toList();
-
-    return Padding(
-      padding: const EdgeInsets.only(top: 10),
-      child: AnymexDropdown(
-        items: items,
-        selectedItem: items.firstWhere(
-            (item) => item.value == activeSource.id.toString(),
-            orElse: () => items.first),
-        label: "SELECT SUB-LANGUAGE",
-        icon: Icons.language_rounded,
-        onChanged: (DropdownItem item) => handleLanguageChange(item.value),
-      ),
-    );
   }
 }

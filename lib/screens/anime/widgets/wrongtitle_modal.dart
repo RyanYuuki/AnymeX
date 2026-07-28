@@ -17,11 +17,13 @@ class WrongTitleModal extends StatefulWidget {
     required this.initialText,
     required this.onTap,
     required this.isManga,
+    this.isNovel = false,
     this.mediaId,
   });
   final String initialText;
   final Function(DMedia) onTap;
   final bool isManga;
+  final bool isNovel;
   final String? mediaId;
 
   @override
@@ -43,9 +45,11 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
     searchFuture = performSearch();
 
     _sourceWorker = ever<Source?>(
-        widget.isManga
-            ? sourceController.activeMangaSource
-            : sourceController.activeSource, (_) {
+        widget.isNovel
+            ? sourceController.activeNovelSource
+            : widget.isManga
+                ? sourceController.activeMangaSource
+                : sourceController.activeSource, (_) {
       if (mounted) {
         setState(() {
           searchFuture = performSearch();
@@ -63,9 +67,11 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
 
   Future<List<DMedia?>?> performSearch() async {
     searchStatus.value = "Searching: ${controller.text}";
-    final source = widget.isManga
-        ? sourceController.activeMangaSource.value
-        : sourceController.activeSource.value;
+    final source = widget.isNovel
+        ? sourceController.activeNovelSource.value
+        : widget.isManga
+            ? sourceController.activeMangaSource.value
+            : sourceController.activeSource.value;
     final results = (await source!.methods.search(controller.text, 1, [])).list;
     searchStatus.value = "";
     return results;
@@ -125,23 +131,34 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                       );
                     }
 
+                    final url = Uri.tryParse(
+                      sourceController.activeMangaSource.value?.baseUrl ?? '',
+                    );
+
+                    final origin =
+                        (url != null && url.hasScheme && url.host.isNotEmpty)
+                            ? url.origin
+                            : 'https://google.com';
+
                     return GridView.builder(
                       padding: const EdgeInsets.all(20),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: getResponsiveCrossAxisCount(context,
                               maxColumns: 5, baseColumns: 3),
                           crossAxisSpacing: 20,
-                          mainAxisSpacing: 20,
-                          mainAxisExtent: 210),
+                          childAspectRatio: 0.45,
+                          mainAxisSpacing: 0),
                       itemCount: results.length,
                       itemBuilder: (context, index) {
                         final item = results[index];
                         return AnymexOnTap(
                           onTap: () {
                             SourceMapper.interruptMapping();
-                            final source = widget.isManga
-                                ? sourceController.activeMangaSource.value
-                                : sourceController.activeSource.value;
+                            final source = widget.isNovel
+                                ? sourceController.activeNovelSource.value
+                                : widget.isManga
+                                    ? sourceController.activeMangaSource.value
+                                    : sourceController.activeSource.value;
                             if (source != null && widget.mediaId != null) {
                               sourceController.setActiveSource(source,
                                   mediaId: widget.mediaId);
@@ -156,18 +173,23 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Center(
+                                AspectRatio(
+                                  aspectRatio: 2/ 3,
                                   child: AnymeXImage(
                                     imageUrl: item!.cover ?? "",
-                                    height: 140,
                                     radius: 12,
                                     width: double.infinity,
+                                    headers: {
+                                      'Referer': '$origin/',
+                                      'Origin': origin,
+                                    },
                                   ),
                                 ),
                                 const SizedBox(height: 10),
-                                Text(
-                                  item.title ?? '??',
-                                  maxLines: 3,
+                                AnymexText(
+                                  text:  item.title ?? '??',
+                                  maxLines: 3 ,
+                                  variant: TextVariant.semiBold,
                                 )
                               ],
                             ),
@@ -192,7 +214,7 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
 
 Future<void> showWrongTitleModal(
     BuildContext context, String initialText, Function(DMedia) onTap,
-    {bool isManga = false, String? mediaId}) {
+    {bool isManga = false, bool isNovel = false, String? mediaId}) {
   return showModalBottomSheet(
     context: context,
     backgroundColor: context.colors.surfaceContainer,
@@ -214,6 +236,7 @@ Future<void> showWrongTitleModal(
               initialText: initialText,
               onTap: onTap,
               isManga: isManga,
+              isNovel: isNovel,
               mediaId: mediaId),
         ),
       );

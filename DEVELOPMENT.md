@@ -8,7 +8,7 @@ The bread and butter! Flutter is an open source framework for building beautiful
 Follow the installation guide based on your development platform: [Install | Flutter](https://docs.flutter.dev/get-started/install)
 
 > [!NOTE]  
-> This project currently uses Flutter SDK 3.32.8.  
+> This project currently uses Flutter SDK 3.41.6.  
 > If you'd like to use multiple versions on your machine, a suggestion is to use [fvm](https://fvm.app/) to manage your different versions
 
 ## Java JDK
@@ -67,6 +67,31 @@ You can however create your own API keys and populate the values as necessary.
 | ------------| ----------------- |
 | tbd         | *tbd*             |
 | tbd         | tbd               |
+
+## Windows: First-time libtorrent setup
+
+The `libtorrent_flutter` plugin ships prebuilt native binaries for every
+platform. On Windows, the plugin's auto-download step fails through
+Flutter's `.plugin_symlinks/` junction (`CMake Error: Cannot extract
+through symlink`), which then cascades into a `find_package(LibtorrentRasterbar REQUIRED)`
+failure because libtorrent-rasterbar isn't installed.
+
+To work around this, run **once** after `flutter pub get` and before
+`flutter build windows`:
+
+```powershell
+pwsh ./scripts/setup_libtorrent_windows.ps1
+```
+
+This drops the prebuilt `libtorrent_flutter.dll` into the plugin's
+`prebuilt/windows/x64/` directory in your pub cache, so CMake's
+download block is skipped entirely. Re-run it only when the plugin
+version changes (i.e. after a `flutter pub upgrade` that bumps
+libtorrent_flutter).
+
+> [!NOTE]
+> Linux and macOS don't need this — their plugin CMake/CocoaPods
+> download paths work out of the box.
 
 ## Run the App
 

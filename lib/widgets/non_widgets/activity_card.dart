@@ -9,6 +9,8 @@ import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
+import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/screens/profile/user_profile_page.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/utils/al_about_me.dart';
@@ -21,6 +23,7 @@ import 'package:anymex/screens/anime/widgets/list_editor.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart'
     show ItemType;
+import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
 
 class ActivityCard extends StatefulWidget {
   final AnilistActivity activity;
@@ -73,12 +76,8 @@ class _ActivityCardState extends State<ActivityCard> {
     final animeScore = (double.tryParse(tracked.score ?? '') ?? 0.0).obs;
     final animeProgress = (int.tryParse(tracked.episodeCount ?? '') ?? 0).obs;
 
-    showModalBottomSheet(
-      backgroundColor: Colors.transparent,
-      context: context,
-      isScrollControlled: true,
-      showDragHandle: false,
-      builder: (ctx) => ListEditorModal(
+    AnymexSheet.custom(
+      ListEditorModal(
         animeStatus: animeStatus,
         isManga: isManga,
         animeScore: animeScore,
@@ -112,6 +111,7 @@ class _ActivityCardState extends State<ActivityCard> {
           if (mounted) setState(() {});
         },
       ),
+      context,
     );
   }
 
@@ -1106,7 +1106,11 @@ class _ActivityAnilistCardState extends State<_ActivityAnilistCard> {
           borderRadius: BorderRadius.circular(14),
           onTap: () {
             if (widget.isManga) {
+              if (media.mediaType == ItemType.novel) {
+              navigate(() => NovelDetailsPage(media: media));
+            } else {
               navigate(() => MangaDetailsPage(media: media, tag: title));
+            }
             } else {
               navigate(() => AnimeDetailsPage(media: media, tag: title));
             }

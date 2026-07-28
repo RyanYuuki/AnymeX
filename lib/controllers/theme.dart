@@ -39,7 +39,12 @@ class ThemeProvider extends ChangeNotifier {
       loadDynamicTheme();
     } else {
       int colorIndex = ThemeKeys.customColorIndex.get<int>(0);
-      _seedColor = colorList[colorIndex];
+      if (colorIndex == -1) {
+        final hexStr = ThemeKeys.customHexColor.get<String>("#FFFFFF");
+        _seedColor = Color(int.parse(hexStr.replaceFirst('#', '0xff')));
+      } else {
+        _seedColor = colorList[colorIndex];
+      }
     }
   }
 
@@ -94,11 +99,22 @@ class ThemeProvider extends ChangeNotifier {
     _updateTheme();
   }
 
-  void setCustomSeedColor(int index) {
+  void setCustomSeedColor(int index, {Color? customColor}) {
     currentThemeMode = "custom";
     ThemeKeys.themeMode.set("custom");
     ThemeKeys.customColorIndex.set(index);
-    _seedColor = colorList[index];
+    if (index == -1) {
+      if (customColor != null) {
+        final hexStr = '#${customColor.value.toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}';
+        ThemeKeys.customHexColor.set(hexStr);
+        _seedColor = customColor;
+      } else {
+        final hexStr = ThemeKeys.customHexColor.get<String>("#FFFFFF");
+        _seedColor = Color(int.parse(hexStr.replaceFirst('#', '0xff')));
+      }
+    } else {
+      _seedColor = colorList[index];
+    }
     _updateTheme();
   }
 
@@ -109,7 +125,9 @@ class ThemeProvider extends ChangeNotifier {
   }
 
   void syncStatusBar() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    final enableImmersive = UISettingsKeys.enableImmersiveMode.get<bool>(false);
+    SystemChrome.setEnabledSystemUIMode(
+        enableImmersive ? SystemUiMode.immersiveSticky : SystemUiMode.edgeToEdge);
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
         systemNavigationBarColor: Colors.transparent,
         systemNavigationBarContrastEnforced: false,

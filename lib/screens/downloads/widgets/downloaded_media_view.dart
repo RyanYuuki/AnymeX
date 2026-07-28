@@ -1,5 +1,8 @@
+import 'dart:io';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/track/track_binding_controller.dart';
+import 'package:anymex/widgets/common/marquee_text.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/downloads/controller/download_controller.dart';
@@ -453,18 +456,52 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 12),
-                    Row(
+                    Wrap(
+                      spacing: 2,
+                      runSpacing: 2,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        _buildInfoChip(
-                          theme: theme,
-                          label: '$count ${_isManga ? 'Ch' : 'Eps'}',
-                          useSecondary: false,
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: theme.secondary,
+                            borderRadius: const BorderRadius.horizontal(
+                              left: Radius.circular(8),
+                              right: Radius.circular(5),
+                            ),
+                          ),
+                          child: Text(
+                            '$count ${_isManga ? 'CH' : 'EPS'}',
+                            style: TextStyle(
+                              fontFamily: 'Poppins-SemiBold',
+                              fontSize: 10.0,
+                              color: theme.secondary.computeLuminance() > 0.5
+                                  ? Colors.black
+                                  : Colors.white,
+                            ),
+                          ),
                         ),
-                        const SizedBox(width: 6),
-                        _buildInfoChip(
-                          theme: theme,
-                          label: 'Downloaded',
-                          useSecondary: true,
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: theme.tertiary,
+                            borderRadius: const BorderRadius.horizontal(
+                              left: Radius.circular(5),
+                              right: Radius.circular(8),
+                            ),
+                          ),
+                          child: Text(
+                            'DOWNLOADED',
+                            style: TextStyle(
+                              fontFamily: 'Poppins-SemiBold',
+                              fontSize: 10.0,
+                              color: theme.tertiary.computeLuminance() > 0.5
+                                  ? Colors.black
+                                  : Colors.white,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -687,199 +724,262 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
         (ts != null && dur != null && dur > 0) && ts >= (dur * 0.9);
     final hasProgress = progress > 0 && !isWatched;
 
-    String? timeLeft;
-    if (ts != null && dur != null && dur > 0) {
-      final leftMs = (dur - ts).clamp(0, dur);
-      final minutes = leftMs ~/ 60000;
-      if (minutes > 0) timeLeft = '${minutes}m left';
-    }
-
-    return AnymexOnTap(
-      onTap: onPlay,
-      child: Container(
-        decoration: BoxDecoration(
-          color: theme.surfaceContainer.withOpacity(0.4),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        padding: const EdgeInsets.all(10),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Stack(
-              children: [
-                hasThumbnail
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: AnymeXImage(
-                          imageUrl: episode.thumbnail!,
-                          width: 120,
-                          height: 68,
-                          fit: BoxFit.cover,
-                          radius: 10,
-                        ),
-                      )
-                    : VideoThumbnailWidget(
-                        videoPath: episode.filePath,
-                        width: 120,
-                        height: 68,
-                        borderRadius: BorderRadius.circular(10),
-                        fallback: Container(
-                          width: 120,
-                          height: 68,
-                          decoration: BoxDecoration(
-                            color: theme.surfaceContainer.withOpacity(0.5),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Center(
-                            child: Text(
-                              episode.number,
-                              style: TextStyle(
-                                color: theme.onSurface.withOpacity(0.3),
-                                fontSize: 16,
-                                fontWeight: FontWeight.w800,
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.surfaceContainer.withOpacity(0.4),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: AnymexOnTap(
+                  onTap: onPlay,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Stack(
+                        children: [
+                          hasThumbnail
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: AnymeXImage(
+                                    imageUrl: episode.thumbnail!,
+                                    width: 120,
+                                    height: 68,
+                                    fit: BoxFit.cover,
+                                    radius: 10,
+                                  ),
+                                )
+                              : VideoThumbnailWidget(
+                                  videoPath: episode.filePath,
+                                  width: 120,
+                                  height: 68,
+                                  borderRadius: BorderRadius.circular(10),
+                                  fallback: Container(
+                                    width: 120,
+                                    height: 68,
+                                    decoration: BoxDecoration(
+                                      color: theme.surfaceContainer.withOpacity(0.5),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        episode.number,
+                                        style: TextStyle(
+                                          color: theme.onSurface.withOpacity(0.3),
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w800,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                          Positioned.fill(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.15),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Center(
+                                child: Container(
+                                  padding: const EdgeInsets.all(6),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withOpacity(0.45),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.play_arrow_rounded,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
+                          Positioned(
+                            left: 6,
+                            top: 6,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.75),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                'EP ${episode.number}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 8.5,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ),
+                          ),
+                          if (hasProgress)
+                            Positioned(
+                              left: 0,
+                              right: 0,
+                              bottom: 0,
+                              child: ClipRRect(
+                                borderRadius: const BorderRadius.only(
+                                  bottomLeft: Radius.circular(10),
+                                  bottomRight: Radius.circular(10),
+                                ),
+                                child: LinearProgressIndicator(
+                                  value: progress,
+                                  minHeight: 3,
+                                  backgroundColor: Colors.white.withOpacity(0.2),
+                                  valueColor:
+                                      AlwaysStoppedAnimation<Color>(theme.primary),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              episode.title != null && episode.title!.isNotEmpty
+                                  ? episode.title!
+                                  : 'Episode ${episode.number}',
+                              style: TextStyle(
+                                color: isWatched
+                                    ? theme.onSurface.withOpacity(0.4)
+                                    : theme.onSurface,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: -0.2,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 6),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 3),
+                                        decoration: BoxDecoration(
+                                          color: theme.secondary,
+                                          borderRadius: const BorderRadius.horizontal(
+                                            left: Radius.circular(8),
+                                            right: Radius.circular(5),
+                                          ),
+                                        ),
+                                        child: Text(
+                                          relativeTime.toUpperCase(),
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-SemiBold',
+                                            fontSize: 9.0,
+                                            color: theme.secondary.computeLuminance() > 0.5
+                                                ? Colors.black
+                                                : Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 2),
+                                      Flexible(
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8, vertical: 3),
+                                          decoration: BoxDecoration(
+                                            color: theme.tertiary,
+                                            borderRadius: const BorderRadius.horizontal(
+                                              left: Radius.circular(5),
+                                              right: Radius.circular(8),
+                                            ),
+                                          ),
+                                          child: MarqueeText(
+                                            (episode.quality ?? 'VIDEO').toUpperCase(),
+                                            style: TextStyle(
+                                              fontFamily: 'Poppins-SemiBold',
+                                              fontSize: 9.0,
+                                              color: theme.tertiary.computeLuminance() > 0.5
+                                                  ? Colors.black
+                                                  : Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                if (episode.episode.filler == true) ...[
+                                  const SizedBox(width: 6),
+                                  _buildInfoBadge(theme, 'Filler', theme.secondary),
+                                ],
+                                if (isWatched) ...[
+                                  const SizedBox(width: 6),
+                                  _buildInfoBadge(theme, 'Watched', theme.primary),
+                                ],
+                              ],
+                            ),
+                          ],
                         ),
                       ),
-                Positioned.fill(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Center(
-                      child: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.45),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.play_arrow_rounded,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  left: 6,
-                  top: 6,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.75),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      'EP ${episode.number}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 8.5,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                  ),
-                ),
-                if (hasProgress)
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    child: ClipRRect(
-                      borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(10),
-                        bottomRight: Radius.circular(10),
-                      ),
-                      child: LinearProgressIndicator(
-                        value: progress,
-                        minHeight: 3,
-                        backgroundColor: Colors.white.withOpacity(0.2),
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(theme.primary),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    episode.title != null && episode.title!.isNotEmpty
-                        ? episode.title!
-                        : 'Episode ${episode.number}',
-                    style: TextStyle(
-                      color: isWatched
-                          ? theme.onSurface.withOpacity(0.4)
-                          : theme.onSurface,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: -0.2,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Wrap(
-                    spacing: 6,
-                    runSpacing: 4,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      Text(
-                        relativeTime,
-                        style: TextStyle(
-                          color: theme.onSurface.withOpacity(0.35),
-                          fontSize: 11,
-                        ),
-                      ),
-                      if (episode.quality != null)
-                        _buildInfoBadge(theme, episode.quality!, theme.tertiary),
-                      if (episode.episode.filler == true)
-                        _buildInfoBadge(theme, 'Filler', theme.secondary),
-                      if (isWatched)
-                        _buildInfoBadge(theme, 'Watched', theme.primary),
-                      if (timeLeft != null)
-                        _buildInfoBadge(theme, timeLeft, theme.primary),
                     ],
                   ),
-                  if (episode.episode.desc != null &&
-                      episode.episode.desc!.isNotEmpty) ...[
-                    const SizedBox(height: 6),
-                    Text(
-                      episode.episode.desc!,
-                      style: TextStyle(
-                        color: theme.onSurface.withOpacity(0.45),
-                        fontSize: 11.5,
-                        height: 1.3,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ],
+                ),
               ),
-            ),
-            const SizedBox(width: 8),
-            IconButton(
-              icon: const Icon(Icons.delete_outline_rounded),
-              color: theme.error.withOpacity(0.7),
-              onPressed: onDelete,
-              style: IconButton.styleFrom(
-                backgroundColor: theme.error.withOpacity(0.06),
-                padding: const EdgeInsets.all(8),
-                minimumSize: const Size(36, 36),
+              const SizedBox(width: 8),
+              IconButton(
+                icon: const Icon(Icons.delete_rounded, size: 16),
+                color: theme.error.withOpacity(0.85),
+                onPressed: onDelete,
+                style: IconButton.styleFrom(
+                  backgroundColor: theme.error.withOpacity(0.06),
+                  padding: const EdgeInsets.all(8),
+                  minimumSize: const Size(36, 36),
+                  side: BorderSide(
+                    color: theme.error.withOpacity(0.18),
+                    width: 1,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (episode.episode.desc != null &&
+              episode.episode.desc!.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              decoration: BoxDecoration(
+                color: theme.onSurface.withOpacity(0.04),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                episode.episode.desc!,
+                style: TextStyle(
+                  color: theme.onSurface.withOpacity(0.55),
+                  fontSize: 11.5,
+                  height: 1.3,
+                ),
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
-        ),
+        ],
       ),
     );
   }
@@ -892,125 +992,165 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
     required VoidCallback onPlay,
     required VoidCallback onDelete,
   }) {
-    return AnymexOnTap(
-      onTap: onPlay,
-      child: Container(
-        decoration: BoxDecoration(
-          color: theme.surfaceContainer.withOpacity(0.4),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        padding: const EdgeInsets.all(10),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              width: 76,
-              height: 52,
-              decoration: BoxDecoration(
-                color: theme.surfaceContainer.withOpacity(0.5),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Center(
-                child: Icon(
-                  HugeIcons.strokeRoundedBook02,
-                  size: 24,
-                  color: theme.primary.withOpacity(0.4),
-                ),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    chapter.displayTitle,
-                    style: TextStyle(
-                      color: theme.onSurface,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: -0.2,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 3),
-                  Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
+    File? firstImageFile;
+    if (chapter.imageDir.isNotEmpty) {
+      try {
+        final dir = Directory(chapter.imageDir);
+        if (dir.existsSync()) {
+          final files = dir
+              .listSync()
+              .whereType<File>()
+              .where((f) =>
+                  f.path.endsWith('.jpg') ||
+                  f.path.endsWith('.jpeg') ||
+                  f.path.endsWith('.png') ||
+                  f.path.endsWith('.webp'))
+              .toList();
+          if (files.isNotEmpty) {
+            files.sort((a, b) => a.path.compareTo(b.path));
+            firstImageFile = files.first;
+          }
+        }
+      } catch (_) {}
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.surfaceContainer.withOpacity(0.4),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: AnymexOnTap(
+                  onTap: onPlay,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(
-                        relativeTime,
-                        style: TextStyle(
-                          color: theme.onSurface.withOpacity(0.28),
-                          fontSize: 11,
+                      Container(
+                        width: 52,
+                        height: 76,
+                        decoration: BoxDecoration(
+                          color: theme.surfaceContainer.withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(10),
+                          image: firstImageFile != null
+                              ? DecorationImage(
+                                  image: FileImage(firstImageFile),
+                                  fit: BoxFit.cover,
+                                )
+                              : null,
                         ),
+                        child: firstImageFile == null
+                            ? Center(
+                                child: Icon(
+                                  HugeIcons.strokeRoundedBook02,
+                                  size: 24,
+                                  color: theme.primary.withOpacity(0.4),
+                                ),
+                              )
+                            : null,
                       ),
-                      _buildDot(theme),
-                      Text(
-                        '${chapter.pageCount} pages',
-                        style: TextStyle(
-                          color: theme.tertiary.withOpacity(0.7),
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              chapter.displayTitle,
+                              style: TextStyle(
+                                color: theme.onSurface,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: -0.2,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 6),
+                            Wrap(
+                              spacing: 2,
+                              runSpacing: 2,
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 3),
+                                  decoration: BoxDecoration(
+                                    color: theme.secondary,
+                                    borderRadius: const BorderRadius.horizontal(
+                                      left: Radius.circular(8),
+                                      right: Radius.circular(5),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    relativeTime.toUpperCase(),
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins-SemiBold',
+                                      fontSize: 9.0,
+                                      color: theme.secondary.computeLuminance() > 0.5
+                                          ? Colors.black
+                                          : Colors.white,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 3),
+                                  decoration: BoxDecoration(
+                                    color: theme.tertiary,
+                                    borderRadius: const BorderRadius.horizontal(
+                                      left: Radius.circular(5),
+                                      right: Radius.circular(8),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    '${chapter.pageCount} PAGES',
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins-SemiBold',
+                                      fontSize: 9.0,
+                                      color: theme.tertiary.computeLuminance() > 0.5
+                                          ? Colors.black
+                                          : Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
-            const SizedBox(width: 8),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildTinyBtn(
-                  theme: theme,
-                  icon: HugeIcons.strokeRoundedBookOpen01,
-                  color: theme.primary,
-                  onTap: onPlay,
+              const SizedBox(width: 8),
+              IconButton(
+                icon: const Icon(Icons.delete_rounded, size: 16),
+                color: theme.error.withOpacity(0.85),
+                onPressed: onDelete,
+                style: IconButton.styleFrom(
+                  backgroundColor: theme.error.withOpacity(0.06),
+                  padding: const EdgeInsets.all(8),
+                  minimumSize: const Size(36, 36),
+                  side: BorderSide(
+                    color: theme.error.withOpacity(0.18),
+                    width: 1,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
-                const SizedBox(height: 5),
-                _buildTinyBtn(
-                  theme: theme,
-                  icon: Icons.delete_outline_rounded,
-                  color: theme.error.withOpacity(0.7),
-                  onTap: onDelete,
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDot(ColorScheme theme) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 3),
-        child: Text(
-          '·',
-          style: TextStyle(
-            color: theme.onSurface.withOpacity(0.25),
-            fontSize: 13,
+              ),
+            ],
           ),
-        ),
-      );
-
-  Widget _buildTinyBtn({
-    required ColorScheme theme,
-    required IconData icon,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return AnymexOnTap(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(6),
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.08),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Icon(icon, size: 15, color: color),
+        ],
       ),
     );
   }

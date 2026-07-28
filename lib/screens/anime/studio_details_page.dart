@@ -5,6 +5,7 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/media_items/media_peek_popup.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -439,6 +440,8 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
               aspectRatio: 0.7,
               child: Hero(
                 tag: media.id.toString(),
+                transitionOnUserGestures: true,
+                flightShuttleBuilder: AnymeXImage.heroFlightShuttleBuilder,
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
@@ -449,18 +452,12 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
                     child: Stack(
                       fit: StackFit.expand,
                       children: [
-                        Image.network(
-                          media.poster,
+                        AnymeXImage(
+                          imageUrl: media.poster,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Container(
-                            color: colorScheme.surfaceContainerHighest,
-                            child: Icon(
-                              Icons.movie_outlined,
-                              color:
-                                  colorScheme.onSurface.withValues(alpha: 0.3),
-                              size: 40,
-                            ),
-                          ),
+                          radius: 12,
+                          fadeInDuration: Duration.zero,
+                          fadeOutDuration: Duration.zero,
                         ),
                         // Rating badge
                         if (media.rating != '0.0' && media.rating != '0')

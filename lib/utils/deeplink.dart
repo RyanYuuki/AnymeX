@@ -14,6 +14,12 @@ class Deeplink {
   static Future<void> handleDeepLink(Uri uri) async {
     print("HANDLING DEEEPLIINK => ${uri.toString()}");
 
+    if (uri.host == 'callback' ||
+        uri.path.contains('callback') ||
+        uri.queryParameters.containsKey('code')) {
+      return;
+    }
+
     final extensionManager = Get.find<ExtensionManager>();
     int attempts = 0;
     while (extensionManager.managers.isEmpty && attempts < 25) {
@@ -40,7 +46,11 @@ class Deeplink {
     }
 
     bool isRepoAdded = false;
-    snackBar("Adding repo... please wait.");
+    if (uri.scheme.toLowerCase() == 'kotatsu') {
+      snackBar("Adding Kotatsu repository. This will take at least 1-2 minutes, please wait...");
+    } else {
+      snackBar("Adding repo... please wait.");
+    }
     final manager = extensionManager.managers;
     for (final handler in manager) {
       print('Matching ${uri.scheme} with ${handler.schemes.toString()}');

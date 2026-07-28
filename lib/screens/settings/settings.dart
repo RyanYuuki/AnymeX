@@ -1,4 +1,5 @@
 import 'package:anymex/screens/downloads/download_screen.dart';
+import 'package:anymex/screens/onboarding/welcome_dialog.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/screens/settings/search/settings_registry.dart';
 import 'package:anymex/screens/settings/search/settings_search_icons.dart';
@@ -18,6 +19,7 @@ import 'package:anymex/screens/settings/sub_settings/settings_ui.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
+import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
@@ -27,7 +29,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:iconly/iconly.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 
 class _CategoryItem {
@@ -108,51 +110,22 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Widget _buildSearchBar(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        boxShadow: [lightGlowingShadow(context)],
-      ),
-      child: TextField(
-        controller: _search.textController,
-        style: TextStyle(color: context.colors.onSurface, fontSize: 16),
-        decoration: InputDecoration(
-          hintText: 'Search settings...',
-          filled: true,
-          fillColor: context.colors.secondaryContainer.opaque(0.5),
-          hintStyle: TextStyle(
-            color: context.colors.onSurface.opaque(0.4, iReallyMeanIt: true),
-            fontSize: 16,
-          ),
-          prefixIcon: Icon(IconlyLight.search, color: context.colors.primary),
-          suffixIcon: _isSearching
-              ? IconButton(
-                  icon: Icon(Icons.close_rounded,
-                      color: context.colors.onSurface
-                          .opaque(0.5, iReallyMeanIt: true)),
-                  onPressed: () {
-                    _search.textController.clear();
-                    FocusScope.of(context).unfocus();
-                  },
-                )
-              : null,
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(999),
-            borderSide: BorderSide(
-              color: context.colors.secondaryContainer,
-              width: 1,
-            ),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(999),
-            borderSide: BorderSide(
-              color: context.colors.secondaryContainer,
-              width: 1,
-            ),
-          ),
-        ),
-      ),
+    return CustomSearchBar(
+      controller: _search.textController,
+      hintText: 'Search settings...',
+      onSubmitted: (value) {},
+      onChanged: (value) {
+        setState(() {});
+      },
+      suffixIcon: Icons.close_rounded,
+      onSuffixIconPressed: _isSearching
+          ? () {
+              _search.textController.clear();
+              FocusScope.of(context).unfocus();
+              setState(() {});
+            }
+          : null,
+      padding: EdgeInsets.zero,
     );
   }
 
@@ -300,14 +273,12 @@ class _SettingsPageState extends State<SettingsPage> {
           title: "Download Settings",
           description: "Configure parallel downloads and directory",
           destination: () => const SettingsDownloads()),
-
       _CategoryItem(
           icon: Icons.extension_rounded,
           title: "Extensions",
           description: "Extensions tailored to your needs",
           destination: () => const SettingsExtensions(),
           addDividerAbove: true),
-
       _CategoryItem(
           icon: HugeIcons.strokeRoundedFile01,
           title: "Logs",
@@ -320,25 +291,17 @@ class _SettingsPageState extends State<SettingsPage> {
           description: "About the App",
           destination: () => const AboutPage(),
           addDividerAbove: true),
-      _CategoryItem(
-        icon: HugeIcons.strokeRoundedInformationCircle,
-        title: "Test",
-        description: "Debug extensions",
-        isDebugOnly: true,
-        addDividerAbove: true,
-        customTap: () async {
-          final list = Get.find<ExtensionManager>()
-              .installedAnimeExtensions
-              .whereType<CloudStreamSource>()
-              .toList();
-          for (CloudStreamSource i in list) {
-            debugPrint("${i.id} - ${i.internalName} - ${i.jarUrl}");
-            final search =
-                await i.methods.search("Attack on titan", 1, []);
-            print(search.toJson());
-          }
-        },
-      ),
+      if (kDebugMode)
+        _CategoryItem(
+          icon: HugeIcons.strokeRoundedInformationCircle,
+          title: "Test",
+          description: "Debug extensions",
+          isDebugOnly: true,
+          addDividerAbove: true,
+          customTap: () async {
+            showWelcomeDialogg(context);
+          },
+        ),
     ];
 
     final widgets = <Widget>[];

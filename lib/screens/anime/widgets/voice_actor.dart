@@ -66,12 +66,16 @@ class CharactersCarousel extends StatelessWidget {
                           children: [
                             Hero(
                               tag: tag,
+                              transitionOnUserGestures: true,
+                              flightShuttleBuilder: AnymeXImage.heroFlightShuttleBuilder,
                               child: AnymeXImage(
                                 imageUrl: itemData.image ??
                                     'https://s4.anilist.co/file/anilistcdn/character/large/default.jpg',
                                 radius: 12.multiplyRoundness(),
                                 height: isDesktop ? 210 : 160,
                                 width: double.infinity,
+                                fadeInDuration: Duration.zero,
+                                fadeOutDuration: Duration.zero,
                               ),
                             ),
                             Positioned(
@@ -184,12 +188,16 @@ class CharactersCarousel extends StatelessWidget {
                             children: [
                               Hero(
                                 tag: tag,
+                                transitionOnUserGestures: true,
+                                flightShuttleBuilder: AnymeXImage.heroFlightShuttleBuilder,
                                 child: AnymeXImage(
                                   imageUrl: itemData?.image ??
                                       'https://s4.anilist.co/file/anilistcdn/character/large/default.jpg',
                                   radius: 0,
                                   height: isDesktop ? 210 : 160,
                                   width: double.infinity,
+                                  fadeInDuration: Duration.zero,
+                                  fadeOutDuration: Duration.zero,
                                 ),
                               ),
                               if (itemData != null)
@@ -324,12 +332,16 @@ class StaffCarousel extends StatelessWidget {
                           children: [
                             Hero(
                               tag: tag,
+                              transitionOnUserGestures: true,
+                              flightShuttleBuilder: AnymeXImage.heroFlightShuttleBuilder,
                               child: AnymeXImage(
                                 imageUrl: itemData.image ??
                                     'https://s4.anilist.co/file/anilistcdn/staff/large/default.jpg',
                                 radius: 12.multiplyRoundness(),
                                 height: isDesktop ? 210 : 160,
                                 width: double.infinity,
+                                fadeInDuration: Duration.zero,
+                                fadeOutDuration: Duration.zero,
                               ),
                             ),
                             if (itemData.role != null)
@@ -405,6 +417,5 @@ class StaffCarousel extends StatelessWidget {
 }
 
 String generateTag(String url) {
-  final randomNum = Random().nextInt(10000);
-  return '$url-$randomNum';
+  return url;
 }

@@ -29,7 +29,14 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
+      - name: Enable Git longpaths
+        if: matrix.platform == 'windows'
+        run: |
+          git config --global core.longpaths true
+          git config --system core.longpaths true
+
       
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -170,6 +177,7 @@ jobs:
           COMMENTS_BASE_URL:  ${{ secrets.COMMENTS_BASE_URL }}
           BOT_BASE_URL: ${{ secrets.BOT_BASE_URL }}
           BOT_API_SECRET: ${{ secrets.BOT_API_SECRET }}
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
         run: |
           cat > .env << EOF
           AL_CLIENT_ID=$AL_CLIENT_ID
@@ -186,6 +194,7 @@ jobs:
           COMMENTS_BASE_URL=$COMMENTS_BASE_URL
           BOT_BASE_URL=$BOT_BASE_URL
           BOT_API_SECRET=$BOT_API_SECRET
+          TMDB_API_KEY=$TMDB_API_KEY
           EOF
       
       - name: Build Android
@@ -313,8 +322,11 @@ jobs:
             Write-Error "ISCC.exe not found in PATH"
             exit 1
           }
+          git config --global core.longpaths true
+          git config --system core.longpaths true
           flutter pub get
           dart run jni:setup
+          pwsh ./scripts/setup_libtorrent_windows.ps1 -Arch x64
           dart run inno_bundle:build --release 2>&1 | Select-String -Pattern "Compile aborted" -NotMatch
           $issFile = "build\windows\x64\installer\Release\inno-script.iss"
           if (-not (Test-Path $issFile)) {
@@ -414,7 +426,7 @@ jobs:
         job: [aur, scoop, chocolatey]
     runs-on: ${{ matrix.job == 'chocolatey' && 'windows-latest' || 'ubuntu-latest' }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: ${{ matrix.job == 'chocolatey' && 'main' || github.ref }}
 
@@ -424,38 +436,17 @@ jobs:
         with:
           name: linux
           path: .
-      
-      - name: Update AUR
+
+      - name: Generate PKGBUILD
         if: matrix.job == 'aur'
         env:
           VERSION: ${{ github.ref_name }}
-          AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
         run: |
-          echo "Listing downloaded files..."
-          ls -la
-          
-          # Find the AppImage file
-          APPIMAGE_FILE=$(find . -name "AnymeX-Linux.AppImage" -o -name "*.AppImage" | head -n 1)
-          
-          if [ -z "$APPIMAGE_FILE" ]; then
-            echo "Error: AppImage not found!"
-            echo "All files in current directory:"
-            find . -type f
-            exit 1
-          fi
-          
-          echo "Found AppImage at: $APPIMAGE_FILE"
-          echo "AppImage found from artifact, calculating hash..."
+          APPIMAGE_FILE=$(find . -name "AnymeX-Linux.AppImage" | head -n 1)
           HASH=$(sha256sum "$APPIMAGE_FILE" | awk '{print $1}')
           PKGVER="${VERSION#v}"
           PKGVER="${PKGVER//-/_}"
-          
-          echo "Creating PKGBUILD with version: $PKGVER and hash: $HASH"
-          
-          # Create a temporary directory for the package
-          mkdir -p aur-package
-          cd aur-package
-          
+
           cat > PKGBUILD << EOF
           # Maintainer: jullanggit <jullanggit@proton.me>
           _pkgname=anymex
@@ -475,17 +466,17 @@ jobs:
                   "LICENSE-\${pkgver}.md::https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/tags/${VERSION}/LICENSE.md")
           noextract=(\${_appimage})
           sha256sums=('${HASH}' 'SKIP')
-          
+
           prepare() {
               chmod +x "\${_appimage}"
               ./"\${_appimage}" --appimage-extract >/dev/null
           }
-          
+
           build() {
               chmod -R a-x+rX squashfs-root/usr
               chmod +x squashfs-root/usr/bin/anymex
           }
-          
+
           package() {
               install -dm755 "\${pkgdir}/usr/"
               mv "\${srcdir}"/squashfs-root/usr/* "\${pkgdir}/usr/"
@@ -506,115 +497,19 @@ jobs:
           DESKTOP
           }
           EOF
-          
-          echo "PKGBUILD created successfully"
           cat PKGBUILD
-          
-          # Generate .SRCINFO manually (simpler than installing makepkg on Ubuntu)
-          echo "Generating .SRCINFO..."
-          cat > .SRCINFO << SRCEOF
-          pkgbase = anymex-bin
-            pkgdesc = An Open Source app for Tracking Multi Service (AL, MAL, SIMKL)
-            pkgver = ${PKGVER}
-            pkgrel = 1
-            url = https://github.com/RyanYuuki/AnymeX
-            arch = x86_64
-            license = MIT
-            depends = libepoxy
-            depends = gdk-pixbuf2
-            depends = pango
-            depends = webkit2gtk-4.1
-            depends = harfbuzz
-            depends = libsoup3
-            depends = glibc
-            depends = fontconfig
-            depends = cairo
-            depends = hicolor-icon-theme
-            depends = glib2
-            depends = gcc-libs
-            depends = mpv
-            depends = zlib-ng-compat
-            depends = gtk3
-            depends = at-spi2-core
-            provides = anymex=${PKGVER}
-            conflicts = anymex
-            noextract = AnymeX-${PKGVER}.AppImage
-            source = AnymeX-${PKGVER}.AppImage::https://github.com/RyanYuuki/AnymeX/releases/download/${VERSION}/AnymeX-Linux.AppImage
-            source = LICENSE-${PKGVER}.md::https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/tags/${VERSION}/LICENSE.md
-            sha256sums = ${HASH}
-            sha256sums = SKIP
-          
-          pkgname = anymex-bin
-          SRCEOF
-          
-          echo ".SRCINFO created successfully"
-          cat .SRCINFO
-          
-          # Setup SSH for AUR
-          echo "Setting up SSH for AUR..."
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-          echo "$AUR_SSH_PRIVATE_KEY" > ~/.ssh/aur
-          chmod 600 ~/.ssh/aur
-          
-          # Add SSH host key for AUR
-          ssh-keyscan -H aur.archlinux.org >> ~/.ssh/known_hosts 2>/dev/null
-          chmod 644 ~/.ssh/known_hosts
-          
-          cat > ~/.ssh/config << 'SSHEOF'
-          Host aur.archlinux.org
-           HostName aur.archlinux.org
-           User aur
-           IdentityFile ~/.ssh/aur
-           StrictHostKeyChecking accept-new
-           ConnectTimeout 30
-          SSHEOF
-          chmod 600 ~/.ssh/config
-          
-          # Test SSH connection
-          echo "Testing SSH connection to AUR..."
-          ssh -T aur@aur.archlinux.org -o ConnectTimeout=10 || echo "SSH test completed (this is expected to 'fail')"
-          
-          # Clone AUR repository
-          echo "Cloning AUR repository..."
-          cd ..
-          
-          # Set git timeout
-          export GIT_SSH_COMMAND="ssh -o ConnectTimeout=30"
-          
-          if ! git clone ssh://aur@aur.archlinux.org/anymex-bin.git aur-repo 2>&1; then
-            echo "Failed to clone AUR repository. Check if:"
-            echo "1. The SSH key is correct and has access to AUR"
-            echo "2. The anymex-bin package exists on AUR"
-            echo "3. Network connectivity to aur.archlinux.org is working"
-            exit 1
-          fi
-          
-          cd aur-repo
-          
-          # Copy new files
-          echo "Copying new PKGBUILD and .SRCINFO..."
-          cp ../aur-package/PKGBUILD .
-          cp ../aur-package/.SRCINFO .
-          
-          # Show what changed
-          echo "Changes to be committed:"
-          git diff PKGBUILD || echo "PKGBUILD is new"
-          git diff .SRCINFO || echo ".SRCINFO is new"
-          
-          # Commit and push
-          echo "Committing and pushing to AUR..."
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-          git add PKGBUILD .SRCINFO
-          
-          if git diff-index --quiet HEAD --; then
-            echo "No changes to commit"
-          else
-            git commit -m "Update to version ${VERSION#v}"
-            git push origin master
-            echo "Successfully pushed to AUR!"
-          fi
+
+      - name: Publish AUR package
+        if: matrix.job == 'aur'
+        uses: KSXGitHub/github-actions-deploy-aur@v4.1.1
+        with:
+          pkgname: anymex-bin
+          pkgbuild: ./PKGBUILD
+          commit_username: jullang
+          commit_email: jullanggit@proton.me
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: "Update to ${{ github.ref_name }}"
+          ssh_keyscan_types: rsa,ecdsa,ed25519
       
       - name: Update Scoop
         if: matrix.job == 'scoop'

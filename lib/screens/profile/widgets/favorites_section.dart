@@ -5,6 +5,8 @@ import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/anime/studio_details_page.dart';
 import 'package:anymex/screens/anime/widgets/character_staff_sheet.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
+import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/screens/profile/widgets/stats_overview_cards.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/marquee_text.dart';
@@ -13,7 +15,7 @@ import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconly/iconly.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 
 class FavoritesSection extends StatelessWidget {
   static const double _firstSectionTopGap = 20;
@@ -221,9 +223,13 @@ class FavoritesSection extends StatelessWidget {
       onTap: () {
         if (media != null) {
           if (isAnime) {
-            navigate(() => AnimeDetailsPage(media: media, tag: mediaTag));
+            navigateWithAnimation(() => AnimeDetailsPage(media: media, tag: mediaTag));
           } else {
-            navigate(() => MangaDetailsPage(media: media, tag: mediaTag));
+            if (media.mediaType == ItemType.novel) {
+            navigateWithAnimation(() => NovelDetailsPage(media: media));
+          } else {
+            navigateWithAnimation(() => MangaDetailsPage(media: media, tag: mediaTag));
+          }
           }
         }
       },

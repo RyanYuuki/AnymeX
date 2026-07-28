@@ -2,6 +2,8 @@ import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/custom_button.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:flutter/gestures.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex_extension_runtime_bridge/Services/Aniyomi/Models/Source.dart';
 import 'package:anymex_extension_runtime_bridge/Services/Sora/Models/Source.dart';
@@ -126,8 +128,14 @@ class _ExtensionListState extends State<ExtensionList>
     final targetLang = hasLangFilter ? completeLanguageCode(lang) : '';
 
     return data.where((element) {
-      if (hasLangFilter && (element.lang?.toLowerCase() ?? '') != targetLang) {
-        return false;
+      if (hasLangFilter) {
+        final rawLang = element.lang?.trim().toLowerCase() ?? '';
+        final codeFromName = completeLanguageCode(rawLang).toLowerCase();
+        final matchesAsCode = rawLang == targetLang;
+        final matchesAsName = codeFromName == targetLang;
+        if (!matchesAsCode && !matchesAsName) {
+          return false;
+        }
       }
       if (hasSourceFilter && !_matchesSourceType(element, sourceType)) {
         return false;
@@ -292,6 +300,9 @@ class _ExtensionListState extends State<ExtensionList>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final isDesktop = MediaQuery.of(context).size.width > 600;
+    final bottomScrollPadding =
+        isDesktop ? 20.0 : (MediaQuery.of(context).padding.bottom + 80.0);
 
     return RefreshIndicator(
       onRefresh: _refreshData,
@@ -307,7 +318,7 @@ class _ExtensionListState extends State<ExtensionList>
           final updates = widget.installed
               ? _filterData(
                   installedSources
-                      .where((source) => source.hasUpdate == true)
+                      .where((source) => sourceController.extensionHasUpdate(source))
                       .toList(growable: false),
                 )
               : const <Source>[];
@@ -347,6 +358,9 @@ class _ExtensionListState extends State<ExtensionList>
                             ),
                           ),
                         ),
+                      SliverToBoxAdapter(
+                        child: SizedBox(height: bottomScrollPadding),
+                      ),
                     ],
                   ),
           );
@@ -356,6 +370,9 @@ class _ExtensionListState extends State<ExtensionList>
   }
 
   Widget _buildInstalledView(List<Source> installed, List<Source> updates) {
+    final isDesktop = MediaQuery.of(context).size.width > 600;
+    final bottomScrollPadding =
+        isDesktop ? 20.0 : (MediaQuery.of(context).padding.bottom + 80.0);
     final hasUpdates = updates.isNotEmpty;
     final hasInstalled = installed.isNotEmpty;
 
@@ -371,58 +388,28 @@ class _ExtensionListState extends State<ExtensionList>
       );
     }
 
-    // When there are pending updates we need a shared scroll view so the
-    // update header and the reorderable list scroll together. Use
-    // SliverReorderableList which is the sliver counterpart to
-    // ReorderableListView and natively supports auto-scroll.
-    if (hasUpdates) {
-      return CustomScrollView(
-        controller: _controller,
-        slivers: [
-          _buildUpdateSection(updates),
-          if (hasInstalled) ...[
-            SliverToBoxAdapter(child: _buildInstalledHeader()),
-            SliverReorderableList(
-              itemCount: installed.length,
-              onReorder: _onReorder,
-              proxyDecorator: _proxyDecorator,
-              itemBuilder: (context, index) {
-                final source = installed[index];
-                return _DraggableExtensionTile(
-                  key: ValueKey(source.uniqueId),
-                  index: index,
-                  source: source,
-                  mediaType: widget.itemType,
-                );
-              },
-            ),
-          ],
-        ],
-      );
-    }
-
-    // No updates — let ReorderableListView own the entire scroll so its
-    // built-in auto-scroll logic works without any workarounds.
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildInstalledHeader(),
-        Expanded(
-          child: ReorderableListView.builder(
+    return CustomScrollView(
+      controller: _controller,
+      slivers: [
+        if (hasUpdates) _buildUpdateSection(updates),
+        if (hasInstalled) ...[
+          SliverToBoxAdapter(child: _buildInstalledHeader()),
+          SliverReorderableList(
+            itemCount: installed.length,
             onReorder: _onReorder,
             proxyDecorator: _proxyDecorator,
-            buildDefaultDragHandles: false,
-            itemCount: installed.length,
             itemBuilder: (context, index) {
               final source = installed[index];
-              return _DraggableExtensionTile(
+              return _buildDraggableExtensionTile(
                 key: ValueKey(source.uniqueId),
                 index: index,
                 source: source,
-                mediaType: widget.itemType,
               );
             },
           ),
+        ],
+        SliverToBoxAdapter(
+          child: SizedBox(height: bottomScrollPadding),
         ),
       ],
     );
@@ -430,29 +417,31 @@ class _ExtensionListState extends State<ExtensionList>
 
   Widget _buildInstalledHeader() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      child: Row(
-        children: [
-          const Text(
-            'Installed',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-          ),
-          const SizedBox(width: 8),
-          Icon(
-            Icons.drag_indicator_rounded,
-            size: 14,
-            color: Colors.grey.withValues(alpha: 0.7),
-          ),
-          const SizedBox(width: 4),
-          Text(
-            'Hold to reorder',
-            style: TextStyle(
-              fontSize: 11,
-              color: Colors.grey.withValues(alpha: 0.7),
-              fontStyle: FontStyle.italic,
-            ),
-          ),
-        ],
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+      child: Text(
+        'Hold and drag any item to reorder',
+        style: TextStyle(
+          fontSize: 11,
+          color: Colors.grey.withValues(alpha: 0.55),
+          fontStyle: FontStyle.italic,
+          fontFamily: 'Poppins',
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDraggableExtensionTile({
+    required Key key,
+    required int index,
+    required Source source,
+  }) {
+    return _CustomReorderableDelayedDragStartListener(
+      key: key,
+      index: index,
+      delay: const Duration(milliseconds: 300),
+      child: ExtensionListTileWidget(
+        source: source,
+        mediaType: widget.itemType,
       ),
     );
   }
@@ -481,14 +470,7 @@ class _ExtensionListState extends State<ExtensionList>
       delegate: SliverChildBuilderDelegate(
         (context, index) {
           if (index == 0 && title != null) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Text(
-                title,
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-              ),
-            );
+            return _buildSectionHeader(title);
           }
           final itemIndex = title != null ? index - 1 : index;
           if (itemIndex < 0 || itemIndex >= entries.length) {
@@ -496,7 +478,7 @@ class _ExtensionListState extends State<ExtensionList>
           }
           final source = entries[itemIndex];
           return ExtensionListTileWidget(
-            key: ValueKey(source.uniqueId),
+            key: ValueKey('recommended_${source.uniqueId}'),
             source: source,
             mediaType: widget.itemType,
           );
@@ -511,25 +493,23 @@ class _ExtensionListState extends State<ExtensionList>
       delegate: SliverChildBuilderDelegate(
         (context, index) {
           if (index == 0) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Update Pending',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-                  ),
-                  AnymeXButton(
-                    variant: ButtonVariant.outline,
-                    onTap: () => _updateAllExtensions(updates),
-                    child: const Text(
-                      'Update All',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+            return _buildSectionHeader(
+              'Updates Pending',
+              trailing: InkWell(
+                onTap: () => _updateAllExtensions(updates),
+                child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: context.colors.tertiary,
+                      borderRadius: BorderRadius.circular(30),
                     ),
-                  ),
-                ],
+                    child: AnymexText(
+                      text: 'Update All',
+                      size: 12,
+                      variant: TextVariant.semiBold,
+                      color: context.colors.onTertiary,
+                    )),
               ),
             );
           }
@@ -569,14 +549,7 @@ class _ExtensionListState extends State<ExtensionList>
         (context, index) {
           final item = items[index];
           if (item.isHeader) {
-            return Padding(
-              padding: const EdgeInsets.only(left: 12, top: 8, bottom: 4),
-              child: Text(
-                item.headerTitle!,
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-              ),
-            );
+            return _buildSectionHeader(item.headerTitle!);
           }
           return ExtensionListTileWidget(
             key: ValueKey(item.source!.uniqueId),
@@ -589,12 +562,42 @@ class _ExtensionListState extends State<ExtensionList>
     );
   }
 
+  Widget _buildSectionHeader(String title, {Widget? trailing}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+          ),
+          if (trailing != null) trailing,
+        ],
+      ),
+    );
+  }
+
   Future<void> _updateAllExtensions(List<Source> updateEntries) async {
     if (updateEntries.isEmpty) return;
     try {
-      final futures = updateEntries
-          .map((source) => source.update())
-          .whereType<Future<dynamic>>();
+      final futures = updateEntries.map((source) async {
+        final id = source.id?.toString();
+        if (id != null) {
+          sourceController.updatingSourceIds.add(id);
+        }
+        try {
+          final manager = getSourceManager(source);
+          await manager.updateSource(source);
+          await sourceController.refreshSourceState(source);
+        } catch (e) {
+          debugPrint('Error updating extension ${source.name}: $e');
+        } finally {
+          if (id != null) {
+            sourceController.updatingSourceIds.remove(id);
+          }
+        }
+      });
       await Future.wait(futures);
     } catch (e) {
       debugPrint('Error updating extensions: $e');
@@ -602,40 +605,22 @@ class _ExtensionListState extends State<ExtensionList>
   }
 }
 
-class _DraggableExtensionTile extends StatelessWidget {
-  final int index;
-  final Source source;
-  final ItemType mediaType;
+class _CustomReorderableDelayedDragStartListener
+    extends ReorderableDragStartListener {
+  final Duration delay;
 
-  const _DraggableExtensionTile({
+  const _CustomReorderableDelayedDragStartListener({
     super.key,
-    required this.index,
-    required this.source,
-    required this.mediaType,
+    required super.child,
+    required super.index,
+    required this.delay,
   });
 
   @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        ReorderableDragStartListener(
-          index: index,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4.0),
-            child: Icon(
-              Icons.drag_indicator_rounded,
-              color: context.colors.onSurface.withValues(alpha: 0.35),
-              size: 20,
-            ),
-          ),
-        ),
-        Expanded(
-          child: ExtensionListTileWidget(
-            source: source,
-            mediaType: mediaType,
-          ),
-        ),
-      ],
+  MultiDragGestureRecognizer createRecognizer() {
+    return DelayedMultiDragGestureRecognizer(
+      delay: delay,
+      debugOwner: this,
     );
   }
 }

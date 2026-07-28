@@ -12,14 +12,14 @@ import 'package:anymex/screens/anime/widgets/episode_list_builder.dart';
 import 'package:anymex/screens/anime/widgets/wrongtitle_modal.dart';
 import 'package:anymex/screens/extensions/ExtensionSettings/ExtensionSettings.dart';
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/utils/language.dart';
+
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/cloudflare_webview.dart';
 import 'package:anymex/widgets/common/no_source.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_dropdown.dart';
+import 'package:anymex/widgets/common/source_selector.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_dialog.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
@@ -66,7 +66,7 @@ class _EpisodeSectionState extends State<EpisodeSection> {
   Worker? _episodeListListener;
   bool _fillerFetched = false;
 
-  String _sourceDropdownValue(Source source) => source.id.toString();
+
 
   @override
   void initState() {
@@ -175,111 +175,6 @@ class _EpisodeSectionState extends State<EpisodeSection> {
     );
   }
 
-  Widget buildSourceDropdown() {
-    List<DropdownItem> items = sourceController.installedExtensions.isEmpty
-        ? [
-            const DropdownItem(
-              value: "No Sources Installed",
-              text: "No Sources Available",
-              subtitle: "Install extensions to get started",
-              leadingIcon: Icon(
-                Icons.extension_off,
-                size: 24,
-                color: Colors.grey,
-              ),
-            ),
-          ]
-        : sourceController.installedExtensions.map<DropdownItem>((source) {
-            return DropdownItem(
-              value: _sourceDropdownValue(source),
-              text: source.name?.toUpperCase() ?? 'Unknown Source',
-              subtitle: source.lang?.toUpperCase() ?? 'Unknown',
-              leadingIcon: AnymeXImage(
-                radius: 16,
-                imageUrl: source.managerIcon,
-                height: 24,
-                width: 24,
-              ),
-            );
-          }).toList();
-
-    DropdownItem? selectedItem;
-    if (sourceController.installedExtensions.isEmpty) {
-      selectedItem = items.first;
-    } else {
-      final activeSource = sourceController.activeSource.value;
-      if (activeSource != null) {
-        selectedItem = DropdownItem(
-          value: _sourceDropdownValue(activeSource),
-          text: activeSource.name?.toUpperCase() ?? 'Unknown Source',
-          subtitle: activeSource.lang?.toUpperCase() ?? 'Unknown',
-          leadingIcon: AnymeXImage(
-            radius: 12,
-            imageUrl: activeSource.managerIcon,
-            height: 20,
-            width: 20,
-          ),
-        );
-      }
-    }
-
-    return AnymexDropdown(
-      items: items,
-      selectedItem: selectedItem,
-      label: "SELECT SOURCE",
-      icon: Icons.extension_rounded,
-      onChanged: (DropdownItem item) => handleSourceChange(item.value),
-      actions: selectedItem == null || sourceController.installedExtensions.isEmpty ? null : [
-        Padding(
-          padding: const EdgeInsets.only(left: 8.0),
-          child: Material(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(20),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(20),
-              onTap: () {
-                final activeSource = sourceController.activeSource.value;
-                if (activeSource != null && activeSource.baseUrl != null) {
-                  final uri = Uri.parse(activeSource.baseUrl!);
-                  final origin = '${uri.scheme}://${uri.host}';
-                  print("Opening Cloudflare bypass for $origin");
-                  context.openCloudflareBypass(origin);
-                }
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(6.0),
-                child: Icon(
-                  Icons.security_rounded,
-                  size: 20,
-                  color: Theme.of(context).colorScheme.primary.opaque(0.8),
-                ),
-              ),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 8.0),
-          child: Material(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(20),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(20),
-              onTap: () => openSourcePreferences(context),
-              child: Padding(
-                padding: const EdgeInsets.all(6.0),
-                child: Icon(
-                  Icons.settings_outlined,
-                  size: 20,
-                  color: Theme.of(context).colorScheme.primary.opaque(0.8),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
   void handleLanguageChange(String? value) {
     if (value == null) return;
 
@@ -288,7 +183,8 @@ class _EpisodeSectionState extends State<EpisodeSection> {
 
     final newSubSource =
         activeSource.langs!.firstWhere((s) => s.id.toString() == value);
-    sourceController.setActiveSource(newSubSource, mediaId: widget.anilistData?.id?.toString());
+    sourceController.setActiveSource(newSubSource,
+        mediaId: widget.anilistData?.id?.toString());
 
     widget.episodeError.value = false;
     widget.episodeList?.value = [];
@@ -297,42 +193,6 @@ class _EpisodeSectionState extends State<EpisodeSection> {
     _episodeFuture.value = _fetchEpisodes(currentRequestId);
 
     setState(() {});
-  }
-
-  Widget buildLanguageDropdown() {
-    final activeSource = sourceController.activeSource.value;
-    if (activeSource is! ASource ||
-        activeSource.langs == null ||
-        activeSource.langs!.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    List<DropdownItem> items = activeSource.langs!.map<DropdownItem>((source) {
-      return DropdownItem(
-        value: source.id.toString(),
-        text: extensionLanguageName(source.lang),
-        subtitle: source.name ?? 'Unknown Source',
-        leadingIcon: AnymeXImage(
-          radius: 0,
-          imageUrl: extensionLanguageFlagUrl(source.lang),
-          height: 20,
-          width: 20,
-        ),
-      );
-    }).toList();
-
-    return Padding(
-      padding: const EdgeInsets.only(top: 10),
-      child: AnymexDropdown(
-        items: items,
-        selectedItem: items.firstWhere(
-            (item) => item.value == activeSource.id.toString(),
-            orElse: () => items.first),
-        label: "SELECT SUB-LANGUAGE",
-        icon: Icons.language_rounded,
-        onChanged: (DropdownItem item) => handleLanguageChange(item.value),
-      ),
-    );
   }
 
   Widget buildEpisodeContent() {
@@ -542,15 +402,27 @@ class _EpisodeSectionState extends State<EpisodeSection> {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Row(
-                  children: [Expanded(child: buildSourceDropdown())],
-                ),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: buildLanguageDropdown(),
+                child: Obx(() => SourceSelectorWidget(
+                  activeSource: sourceController.activeSource.value,
+                  installedSources: sourceController.installedExtensions,
+                  isManga: false,
+                  onSourceSelected: (source) {
+                    handleSourceChange(source.id.toString());
+                  },
+                  onSubSourceSelected: (sub) {
+                    handleLanguageChange(sub.id.toString());
+                  },
+                  onCloudflareBypass: sourceController.activeSource.value?.baseUrl != null
+                      ? () {
+                          final uri = Uri.parse(sourceController.activeSource.value!.baseUrl!);
+                          final origin = '${uri.scheme}://${uri.host}';
+                          context.openCloudflareBypass(origin);
+                        }
+                      : null,
+                  onPreferencesTap: sourceController.activeSource.value != null
+                      ? () => openSourcePreferences(context)
+                      : null,
+                )),
               ),
             ),
           ],

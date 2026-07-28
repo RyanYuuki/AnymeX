@@ -27,6 +27,7 @@ import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
 import 'package:anymex/screens/library/online/manga_list.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart' as fb;
 import 'package:anymex/utils/fallback/fallback_manga.dart' as fbm;
@@ -93,6 +94,10 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
 
   void _openHomeButtonMedia(Media media) {
     final tag = 'home-button-${media.serviceType.name}-${media.id}';
+    if (media.mediaType == ItemType.novel) {
+      navigate(() => NovelDetailsPage(media: media));
+      return;
+    }
     if (media.mediaType == ItemType.manga) {
       navigate(() => MangaDetailsPage(media: media, tag: tag));
       return;
@@ -874,7 +879,7 @@ averageScore
 
     final Map<String, dynamic> variables = {
       if (query != null && query.isNotEmpty) 'search': query,
-      'isAdult': isAdult,
+      if (!isAdult) 'isAdult': false,
     };
 
     if (filters != null) {

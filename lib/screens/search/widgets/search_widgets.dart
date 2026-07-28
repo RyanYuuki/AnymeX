@@ -259,12 +259,7 @@ class FuturisticFilterSheet extends StatefulWidget {
   State<FuturisticFilterSheet> createState() => _FuturisticFilterSheetState();
 }
 
-class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
-    with TickerProviderStateMixin {
-  late AnimationController _slideController;
-  late AnimationController _fadeController;
-  late Animation<double> _slideAnimation;
-  late Animation<double> _fadeAnimation;
+class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
 
   bool _isGenreGrid = false;
   bool _isFilterDataLoaded = false;
@@ -433,7 +428,6 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
   @override
   void initState() {
     super.initState();
-    _initializeAnimations();
     _loadCurrentFilters();
     _fetchFilterData();
   }
@@ -521,26 +515,6 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
     }
   }
 
-  void _initializeAnimations() {
-    _slideController = AnimationController(
-      duration: const Duration(milliseconds: 400),
-      vsync: this,
-    );
-    _fadeController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-
-    _slideAnimation = Tween<double>(begin: 1.0, end: 0.0).animate(
-      CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic),
-    );
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _fadeController, curve: Curves.easeIn),
-    );
-
-    _slideController.forward();
-    _fadeController.forward();
-  }
 
   void _loadCurrentFilters() {
     if (widget.currentFilters != null) {
@@ -651,8 +625,6 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
 
   @override
   void dispose() {
-    _slideController.dispose();
-    _fadeController.dispose();
     super.dispose();
   }
 
@@ -661,95 +633,84 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return AnimatedBuilder(
-      animation: _slideAnimation,
-      builder: (context, child) {
-        return Transform.translate(
-          offset: Offset(0, _slideAnimation.value * 100),
-          child: FadeTransition(
-            opacity: _fadeAnimation,
-            child: DraggableScrollableSheet(
-              initialChildSize: 0.5,
-              minChildSize: 0.4,
-              maxChildSize: 0.95,
-              snap: true,
-              snapSizes: const [0.5],
-              expand: false,
-              builder: (context, scrollController) {
-                return Container(
-                  decoration: BoxDecoration(
-                    color: colorScheme.surface,
-                    borderRadius:
-                        const BorderRadius.vertical(top: Radius.circular(24)),
-                    border: Border.all(
-                      color:
-                          colorScheme.primary.opaque(0.2, iReallyMeanIt: true),
-                      width: 1,
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      SingleChildScrollView(
-                        controller: scrollController,
-                        physics: const ClampingScrollPhysics(),
-                        child: _buildHeader(),
-                      ),
-                      Expanded(
-                        child: _isFilterDataLoaded
-                            ? SingleChildScrollView(
-                                physics: const BouncingScrollPhysics(),
-                                padding:
-                                    const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    if (sortOptions.isNotEmpty) ...[
-                                      _buildSortSection(),
-                                      const SizedBox(height: 24),
-                                    ],
-                                    _buildFiltersSection(),
-                                    const SizedBox(height: 24),
-                                    if (cfg.supportsYear) ...[
-                                      _buildYearSection(),
-                                      const SizedBox(height: 24),
-                                    ],
-                                    if (cfg.supportsRanges && !isManga)
-                                      _buildAnimeRangeSection(),
-                                    if (cfg.supportsRanges && isManga)
-                                      _buildMangaRangeSection(),
-                                    if (cfg.supportsRanges)
-                                      const SizedBox(height: 24),
-                                    if (cfg.supportsGenres) ...[
-                                      _buildGenresSection(),
-                                      const SizedBox(height: 24),
-                                    ],
-                                    if (cfg.supportsTags) ...[
-                                      _buildTagsSection(),
-                                      const SizedBox(height: 24),
-                                    ],
-                                    if (cfg.supportsStreaming) ...[
-                                      _buildStreamingSection(),
-                                      const SizedBox(height: 24),
-                                    ],
-                                    if (cfg.supportsAdult ||
-                                        cfg.supportsOnList) ...[
-                                      _buildTogglesSection(),
-                                      const SizedBox(height: 20),
-                                    ],
-                                  ],
-                                ),
-                              )
-                            : const Center(child: CircularProgressIndicator()),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
-                        child: _buildActionButtons(),
-                      ),
-                    ],
-                  ),
-                );
-              },
+    return DraggableScrollableSheet(
+      initialChildSize: 0.5,
+      minChildSize: 0.4,
+      maxChildSize: 0.95,
+      snap: true,
+      snapSizes: const [0.5],
+      expand: false,
+      builder: (context, scrollController) {
+        return Container(
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            borderRadius:
+                const BorderRadius.vertical(top: Radius.circular(24)),
+            border: Border.all(
+              color:
+                  colorScheme.primary.opaque(0.2, iReallyMeanIt: true),
+              width: 1,
             ),
+          ),
+          child: Column(
+            children: [
+              SingleChildScrollView(
+                controller: scrollController,
+                physics: const ClampingScrollPhysics(),
+                child: _buildHeader(),
+              ),
+              Expanded(
+                child: _isFilterDataLoaded
+                    ? SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        padding:
+                            const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (sortOptions.isNotEmpty) ...[
+                              _buildSortSection(),
+                              const SizedBox(height: 24),
+                            ],
+                            _buildFiltersSection(),
+                            const SizedBox(height: 24),
+                            if (cfg.supportsYear) ...[
+                              _buildYearSection(),
+                              const SizedBox(height: 24),
+                            ],
+                            if (cfg.supportsRanges && !isManga)
+                              _buildAnimeRangeSection(),
+                            if (cfg.supportsRanges && isManga)
+                              _buildMangaRangeSection(),
+                            if (cfg.supportsRanges)
+                              const SizedBox(height: 24),
+                            if (cfg.supportsGenres) ...[
+                              _buildGenresSection(),
+                              const SizedBox(height: 24),
+                            ],
+                            if (cfg.supportsTags) ...[
+                              _buildTagsSection(),
+                              const SizedBox(height: 24),
+                            ],
+                            if (cfg.supportsStreaming) ...[
+                              _buildStreamingSection(),
+                              const SizedBox(height: 24),
+                            ],
+                            if (cfg.supportsAdult ||
+                                cfg.supportsOnList) ...[
+                              _buildTogglesSection(),
+                              const SizedBox(height: 20),
+                            ],
+                          ],
+                        ),
+                      )
+                    : const Center(child: CircularProgressIndicator()),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+                child: _buildActionButtons(),
+              ),
+            ],
           ),
         );
       },

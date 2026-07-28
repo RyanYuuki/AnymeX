@@ -1,6 +1,7 @@
 // ignore_for_file: invalid_use_of_protected_member
 
 import 'dart:convert';
+import 'package:anymex/utils/oauth_helper.dart';
 import 'dart:math' as math;
 
 import 'package:anymex/controllers/cacher/cache_controller.dart';
@@ -21,14 +22,15 @@ import 'package:anymex/screens/anime/misc/calendar.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/logger.dart';
-import 'package:anymex/widgets/common/big_carousel.dart';
+import 'package:anymex/utils/media_syncer.dart';
+import 'package:anymex/widgets/common/big_carousel_gate.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart';
 
@@ -61,12 +63,39 @@ class SimklService extends GetxController
     final newId = id.split('*').first;
     final isSeries = id.split('*').last == "SERIES";
     Logger.i(isSeries.toString());
+    final clientId = dotenv.env['SIMKL_CLIENT_ID'];
     final resp = await get(Uri.parse(
-        "https://api.simkl.com/${isSeries ? 'tv' : 'movies'}/$newId?extended=full&client_id=${dotenv.env['SIMKL_CLIENT_ID']}"));
+        "https://api.simkl.com/${isSeries ? 'tv' : 'movies'}/$newId?extended=full&client_id=$clientId"));
     if (resp.statusCode == 200) {
       final data = jsonDecode(resp.body);
       data['id'] = '$newId*${isSeries ? "SERIES" : "MOVIE"}';
       data['__isMovie'] = !isSeries;
+
+      if (isSeries && data['next_episode'] == null && (data['status']?.toString().toLowerCase() == 'airing' || data['status']?.toString().toLowerCase() == 'returning series')) {
+        try {
+          final epResp = await get(Uri.parse("https://api.simkl.com/tv/episodes/$newId?client_id=$clientId"));
+          if (epResp.statusCode == 200) {
+            data['episodes'] = jsonDecode(epResp.body);
+          }
+        } catch (e) {
+          Logger.i("Failed to fetch episodes for Simkl series $newId: $e");
+        }
+      }
+
+      final tmdbId = data['ids']?['tmdb']?.toString();
+      final tmdbApiKey = dotenv.env['TMDB_API_KEY'];
+      if (tmdbId != null && tmdbId.isNotEmpty && tmdbApiKey != null && tmdbApiKey.isNotEmpty) {
+        try {
+          final creditsResp = await get(Uri.parse(
+              "https://api.themoviedb.org/3/${isSeries ? 'tv' : 'movie'}/$tmdbId/credits?api_key=$tmdbApiKey"));
+          if (creditsResp.statusCode == 200) {
+            data['tmdb_credits'] = jsonDecode(creditsResp.body);
+          }
+        } catch (e) {
+          Logger.i("Failed to fetch TMDb credits for $tmdbId: $e");
+        }
+      }
+
       cacheController.addCache(data);
       detailsData.value = Media.fromSimkl(data, !isSeries);
       return detailsData.value;
@@ -266,6 +295,12 @@ class SimklService extends GetxController
 
   @override
   RxList<Widget> homeWidgets(BuildContext context) {
+    final settings = Get.find<Settings>();
+    final acceptedLists = settings.homePageCardsSimkl.entries
+        .where((entry) => entry.value)
+        .map<String>((entry) => entry.key)
+        .toList();
+
     return [
       if (isLoggedIn.value)
         LayoutBuilder(
@@ -347,12 +382,20 @@ class SimklService extends GetxController
         },
       ),
       const SizedBox(height: 25),
-      if (isLoggedIn.value) ...[
-        buildSection("Planned Movies", continueWatchingMovies.value,
-            variant: DataVariant.anilist),
-        buildSection("Continue Watching (SHOWS)", continueWatchingSeries.value,
-            variant: DataVariant.anilist),
-      ],
+      if (isLoggedIn.value)
+        Obx(() => Column(
+              children: acceptedLists.map((e) {
+                final isShowsList = e.contains("Shows") || e.contains("Series");
+                final sourceList = isShowsList ? mangaList : animeList;
+                final filtered = filterListByLabel(sourceList, e);
+                return ReusableCarousel(
+                  data: filtered,
+                  title: e,
+                  variant: DataVariant.anilist,
+                  type: isShowsList ? ItemType.manga : ItemType.anime,
+                );
+              }).toList(),
+            )),
       if (trendingMovies.value.isNotEmpty)
         ReusableCarousel(
             data: trendingMovies.value.sublist(0, 10),
@@ -480,19 +523,21 @@ class SimklService extends GetxController
           if (decoded is! List || decoded.isEmpty) return {};
           final seasons = <int, int>{};
           for (final ep in decoded) {
-            int s = 1;
+            final isSpecial = ep['type'] == 'special';
+            int? s;
             final directSeason = ep['season'];
             if (directSeason != null) {
               s = directSeason is int
                   ? directSeason
-                  : int.tryParse(directSeason.toString()) ?? 1;
+                  : int.tryParse(directSeason.toString());
             } else if (ep['tvdb'] is Map && ep['tvdb']['season'] != null) {
               final tvdbSeason = ep['tvdb']['season'];
               s = tvdbSeason is int
                   ? tvdbSeason
-                  : int.tryParse(tvdbSeason.toString()) ?? 1;
+                  : int.tryParse(tvdbSeason.toString());
             }
-            seasons[s] = (seasons[s] ?? 0) + 1;
+            final finalSeason = (isSpecial || s == null || s <= 0) ? 0 : s;
+            seasons[finalSeason] = (seasons[finalSeason] ?? 0) + 1;
           }
           Logger.i('[Simkl/$endpointType] Season map for $id: $seasons');
           return seasons;
@@ -525,7 +570,6 @@ class SimklService extends GetxController
     final double? score = params.score;
     final String? status = params.status;
     final int? progress = params.progress;
-    final bool isAnime = params.isAnime;
     final int? season = params.season;
     try {
       final isMovie = listId.split('*').last == 'MOVIE';
@@ -649,6 +693,124 @@ class SimklService extends GetxController
     }
   }
 
+  /// Syncs anime progress to Simkl using an external ID (e.g. AniList ID or MAL ID).
+  /// Resolves the external ID to Simkl ID via `MediaSyncer.getSimklIdFromExternal`.
+  Future<void> updateListEntryFromExternalId({
+    String? anilistId,
+    String? malId,
+    double? score,
+    String? status,
+    int? progress,
+    int? season,
+    bool isAnime = true,
+  }) async {
+    if (!isLoggedIn.value) {
+      return;
+    }
+    try {
+      final simklId = await MediaSyncer.getSimklIdFromExternal(
+        anilistId: anilistId,
+        malId: malId,
+      );
+
+      if (simklId != null) {
+        await updateListEntry(UpdateListEntryParams(
+          listId: simklId,
+          score: score,
+          status: status,
+          progress: progress,
+          season: season,
+          isAnime: isAnime,
+        ));
+      } else if (anilistId != null || malId != null) {
+        // Fallback: If redirect resolution yielded no ID, update via external IDs directly in Simkl sync API
+        final token = AuthKeys.simklAuthToken.get<String?>();
+        final apiKey = dotenv.env['SIMKL_CLIENT_ID'];
+        if (token == null || apiKey == null) return;
+
+        final ids = <String, dynamic>{
+          if (anilistId != null) 'anilist': int.tryParse(anilistId) ?? anilistId,
+          if (malId != null) 'mal': int.tryParse(malId) ?? malId,
+        };
+
+        if (status != null) {
+          final url = Uri.parse('https://api.simkl.com/sync/add-to-list');
+          final newStatus = Simkl.alToSimklShow(status);
+          final body = {
+            'shows': [
+              {
+                'to': newStatus,
+                'ids': ids,
+              }
+            ]
+          };
+          await post(
+            url,
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $token',
+              'simkl-api-key': apiKey,
+            },
+            body: jsonEncode(body),
+          );
+        }
+
+        if (progress != null && progress > 0 && status != 'PLANNING') {
+          final historyUrl = Uri.parse('https://api.simkl.com/sync/history');
+          final effectiveSeason = (season != null && season > 0) ? season : 1;
+          final historyBody = {
+            'shows': [
+              {
+                'ids': ids,
+                'seasons': [
+                  {
+                    'number': effectiveSeason,
+                    'episodes': [
+                      for (int i = 1; i <= progress; i++) {'number': i}
+                    ]
+                  }
+                ]
+              }
+            ]
+          };
+          await post(
+            historyUrl,
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $token',
+              'simkl-api-key': apiKey,
+            },
+            body: jsonEncode(historyBody),
+          );
+        }
+
+        if (score != null && score > 0) {
+          final ratingsUrl = Uri.parse('https://api.simkl.com/sync/ratings');
+          final ratingsBody = {
+            'shows': [
+              {
+                'rating': score.toInt(),
+                'ids': ids,
+              }
+            ]
+          };
+          await post(
+            ratingsUrl,
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $token',
+              'simkl-api-key': apiKey,
+            },
+            body: jsonEncode(ratingsBody),
+          );
+        }
+        fetchUserSeriesList();
+      }
+    } catch (e, stack) {
+      Logger.i('Exception in updateListEntryFromExternalId: $e\n$stack');
+    }
+  }
+
   @override
   Future<void> deleteListEntry(String listId, {bool isAnime = true}) async {
     final isMovie = listId.split('*').last == 'MOVIE';
@@ -716,14 +878,18 @@ class SimklService extends GetxController
     final url =
         'https://simkl.com/oauth/authorize?response_type=code&client_id=$clientId&redirect_uri=anymex://callback';
     try {
-      final result = await FlutterWebAuth2.authenticate(
+      final result = await OauthHelper.authenticate(
+        context: context,
         url: url,
         callbackUrlScheme: 'anymex',
+        forceWebAuth: true,
       );
 
-      final code = Uri.parse(result).queryParameters['code'];
-      if (code != null) {
-        await _exchangeCodeForToken(code);
+      if (result != null) {
+        final code = Uri.parse(result).queryParameters['code'];
+        if (code != null) {
+          await _exchangeCodeForToken(code);
+        }
       }
     } catch (e) {
       Logger.i(e.toString());

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/sync/gist_sync_controller.dart';
@@ -23,6 +24,59 @@ class OfflineStorageController extends GetxController {
       ? Get.find<GistSyncController>()
       : null;
 
+  final Map<String, Future<void>> _activeWrites = {};
+
+  @override
+  void onInit() {
+    super.onInit();
+    _cleanupDuplicateOfflineMedias();
+  }
+
+  Future<void> _cleanupDuplicateOfflineMedias() async {
+    try {
+      final allMedias = await isar.offlineMedias.where().findAll();
+      final seenMediaIds = <String>{};
+      final idsToDelete = <int>[];
+
+      for (final media in allMedias) {
+        final mId = media.mediaId;
+        if (mId == null || mId.isEmpty) continue;
+        if (seenMediaIds.contains(mId)) {
+          idsToDelete.add(media.id);
+        } else {
+          seenMediaIds.add(mId);
+        }
+      }
+
+      if (idsToDelete.isNotEmpty) {
+        await isar.writeTxn(() async {
+          await isar.offlineMedias.deleteAll(idsToDelete);
+        });
+        Logger.i('Cleaned up ${idsToDelete.length} duplicate offline media records.');
+      }
+    } catch (e) {
+      Logger.e('Error cleaning up duplicate offline media: $e');
+    }
+  }
+
+  Future<T> _synchronizedWrite<T>(String mediaId, Future<T> Function() action) async {
+    if (mediaId.isEmpty) return action();
+    
+    while (_activeWrites.containsKey(mediaId)) {
+      await _activeWrites[mediaId];
+    }
+    
+    final completer = Completer<void>();
+    _activeWrites[mediaId] = completer.future;
+    
+    try {
+      return await action();
+    } finally {
+      _activeWrites.remove(mediaId);
+      completer.complete();
+    }
+  }
+
   Stream<List<OfflineMedia>> watchAnimeLibrary() {
     return isar.offlineMedias
         .filter()
@@ -42,6 +96,79 @@ class OfflineStorageController extends GetxController {
         .filter()
         .mediaTypeIndexEqualTo(2)
         .watch(fireImmediately: true);
+  }
+
+  void _attemptDatabaseRepair(dynamic error) {
+    try {
+      isar.writeTxnSync(() {
+        final ids = isar.offlineMedias.where().idProperty().findAllSync();
+        final corruptedIds = <int>[];
+        for (final id in ids) {
+          try {
+            final obj = isar.offlineMedias.getSync(id);
+            if (obj != null) {
+              obj.currentEpisode;
+              obj.episodes;
+            }
+          } catch (_) {
+            corruptedIds.add(id);
+          }
+        }
+        if (corruptedIds.isNotEmpty) {
+          for (final id in corruptedIds) {
+            isar.offlineMedias.deleteSync(id);
+          }
+        }
+      });
+    } catch (_) {
+      try {
+        isar.writeTxnSync(() {
+          isar.offlineMedias.clearSync();
+        });
+      } catch (_) {}
+    }
+  }
+
+  List<OfflineMedia> getAnimeLibrarySync() {
+    try {
+      return isar.offlineMedias
+          .filter()
+          .mediaTypeIndexEqualTo(1)
+          .findAllSync();
+    } catch (e) {
+      if (e.toString().contains('RangeError') || e.toString().contains('deserialize')) {
+        _attemptDatabaseRepair(e);
+      }
+      return [];
+    }
+  }
+
+  List<OfflineMedia> getMangaLibrarySync() {
+    try {
+      return isar.offlineMedias
+          .filter()
+          .mediaTypeIndexEqualTo(0)
+          .findAllSync();
+    } catch (e) {
+      if (e.toString().contains('RangeError') || e.toString().contains('deserialize')) {
+        _attemptDatabaseRepair(e);
+      }
+      return [];
+    }
+  }
+
+  List<OfflineMedia> getNovelLibrarySync() {
+    try {
+      return isar.offlineMedias
+          .filter()
+          .mediaTypeIndexEqualTo(2)
+          .findAllSync();
+    } catch (e) {
+      if (e.toString().contains('RangeError') || e.toString().contains('deserialize')) {
+        _attemptDatabaseRepair(e);
+      }
+      return [];
+    }
   }
 
   Stream<OfflineMedia?> watchMediaById(String mediaId) {
@@ -95,7 +222,7 @@ class OfflineStorageController extends GetxController {
   }
 
   Future<List<OfflineMedia>> getAnimeLibrary(
-      {int offset = 0, int limit = 50}) async {
+      {int offset = 0, int limit = 999999}) async {
     return await isar.offlineMedias
         .filter()
         .mediaTypeIndexEqualTo(1)
@@ -105,7 +232,7 @@ class OfflineStorageController extends GetxController {
   }
 
   Future<List<OfflineMedia>> getMangaLibrary(
-      {int offset = 0, int limit = 50}) async {
+      {int offset = 0, int limit = 999999}) async {
     return await isar.offlineMedias
         .filter()
         .mediaTypeIndexEqualTo(0)
@@ -115,7 +242,7 @@ class OfflineStorageController extends GetxController {
   }
 
   Future<List<OfflineMedia>> getNovelLibrary(
-      {int offset = 0, int limit = 50}) async {
+      {int offset = 0, int limit = 999999}) async {
     return await isar.offlineMedias
         .filter()
         .mediaTypeIndexEqualTo(2)
@@ -127,7 +254,7 @@ class OfflineStorageController extends GetxController {
   Future<List<OfflineMedia>> getLibraryFromType(
     ItemType mediaType, {
     int offset = 0,
-    int limit = 50,
+    int limit = 999999,
   }) async {
     return await isar.offlineMedias
         .filter()
@@ -366,26 +493,28 @@ class OfflineStorageController extends GetxController {
   }
 
   Future<void> addMedia(String listName, Media original) async {
-    final type = original.mediaType;
-    final existing = getMediaById(original.id);
+    await _synchronizedWrite(original.id, () async {
+      final type = original.mediaType;
+      final existing = getMediaById(original.id);
 
-    if (existing == null) {
-      await isar.writeTxn(() async {
-        if (type == ItemType.manga || type == ItemType.novel) {
-          final chapter = Chapter(number: 1);
-          await isar.offlineMedias.put(
-            _createOfflineMedia(original, null, null, chapter, null),
-          );
-        } else {
-          final episode = Episode(number: '1');
-          await isar.offlineMedias.put(
-            _createOfflineMedia(original, null, null, null, episode),
-          );
-        }
-      });
-    }
+      if (existing == null) {
+        await isar.writeTxn(() async {
+          if (type == ItemType.manga || type == ItemType.novel) {
+            final chapter = Chapter(number: 1);
+            await isar.offlineMedias.put(
+              _createOfflineMedia(original, null, null, chapter, null),
+            );
+          } else {
+            final episode = Episode(number: '1');
+            await isar.offlineMedias.put(
+              _createOfflineMedia(original, null, null, null, episode),
+            );
+          }
+        });
+      }
 
-    await addMediaToList(listName, original.id, mediaType: type);
+      await addMediaToList(listName, original.id, mediaType: type);
+    });
   }
 
   Future<void> removeMedia(String listName, Media original) async {
@@ -398,26 +527,28 @@ class OfflineStorageController extends GetxController {
     List<Episode>? episodes,
     Episode? currentEpisode,
   ) async {
-    final existingAnime = getAnimeById(original.id);
+    await _synchronizedWrite(original.id, () async {
+      final existingAnime = getAnimeById(original.id);
 
-    await isar.writeTxn(() async {
-      if (existingAnime != null) {
-        existingAnime.episodes = episodes;
-        if (currentEpisode != null) {
-          currentEpisode.source = sourceController.activeSource.value?.name;
+      await isar.writeTxn(() async {
+        if (existingAnime != null) {
+          existingAnime.episodes = episodes;
+          if (currentEpisode != null) {
+            currentEpisode.source = sourceController.activeSource.value?.name;
+          }
+          existingAnime.currentEpisode = currentEpisode;
+          if (existingAnime.idMal == null && original.idMal != '0') {
+            existingAnime.idMal = original.idMal;
+          }
+          await isar.offlineMedias.put(existingAnime);
+          Logger.i('Updated anime: ${existingAnime.name}');
+        } else {
+          await isar.offlineMedias.put(
+            _createOfflineMedia(original, null, episodes, null, currentEpisode),
+          );
+          Logger.i('Added new anime: ${original.title}');
         }
-        existingAnime.currentEpisode = currentEpisode;
-        if (existingAnime.idMal == null && original.idMal != '0') {
-          existingAnime.idMal = original.idMal;
-        }
-        await isar.offlineMedias.put(existingAnime);
-        Logger.i('Updated anime: ${existingAnime.name}');
-      } else {
-        await isar.offlineMedias.put(
-          _createOfflineMedia(original, null, episodes, null, currentEpisode),
-        );
-        Logger.i('Added new anime: ${original.title}');
-      }
+      });
     });
   }
 
@@ -426,24 +557,26 @@ class OfflineStorageController extends GetxController {
     List<Chapter>? chapters,
     Chapter? currentChapter,
   ) async {
-    final existingManga = getMangaById(original.id);
+    await _synchronizedWrite(original.id, () async {
+      final existingManga = getMangaById(original.id);
 
-    await isar.writeTxn(() async {
-      if (existingManga != null) {
-        existingManga.chapters = chapters;
-        if (currentChapter != null) {
-          currentChapter.sourceName =
-              sourceController.activeMangaSource.value?.name;
+      await isar.writeTxn(() async {
+        if (existingManga != null) {
+          existingManga.chapters = chapters;
+          if (currentChapter != null) {
+            currentChapter.sourceName =
+                sourceController.activeMangaSource.value?.name;
+          }
+          existingManga.currentChapter = currentChapter;
+          await isar.offlineMedias.put(existingManga);
+          Logger.i('Updated manga: ${existingManga.name}');
+        } else {
+          await isar.offlineMedias.put(
+            _createOfflineMedia(original, chapters, null, currentChapter, null),
+          );
+          Logger.i('Added new manga: ${original.title}');
         }
-        existingManga.currentChapter = currentChapter;
-        await isar.offlineMedias.put(existingManga);
-        Logger.i('Updated manga: ${existingManga.name}');
-      } else {
-        await isar.offlineMedias.put(
-          _createOfflineMedia(original, chapters, null, currentChapter, null),
-        );
-        Logger.i('Added new manga: ${original.title}');
-      }
+      });
     });
   }
 
@@ -453,23 +586,25 @@ class OfflineStorageController extends GetxController {
     Chapter? currentChapter,
     Source source,
   ) async {
-    final existingNovel = getNovelById(original.id);
+    await _synchronizedWrite(original.id, () async {
+      final existingNovel = getNovelById(original.id);
 
-    await isar.writeTxn(() async {
-      if (existingNovel != null) {
-        existingNovel.chapters = chapters;
-        if (currentChapter != null) {
-          currentChapter.sourceName = source.name;
+      await isar.writeTxn(() async {
+        if (existingNovel != null) {
+          existingNovel.chapters = chapters;
+          if (currentChapter != null) {
+            currentChapter.sourceName = source.name;
+          }
+          existingNovel.currentChapter = currentChapter;
+          await isar.offlineMedias.put(existingNovel);
+          Logger.i('Updated novel: ${existingNovel.name}');
+        } else {
+          await isar.offlineMedias.put(
+            _createOfflineMedia(original, chapters, null, currentChapter, null),
+          );
+          Logger.i('Added new novel: ${original.title}');
         }
-        existingNovel.currentChapter = currentChapter;
-        await isar.offlineMedias.put(existingNovel);
-        Logger.i('Updated novel: ${existingNovel.name}');
-      } else {
-        await isar.offlineMedias.put(
-          _createOfflineMedia(original, chapters, null, currentChapter, null),
-        );
-        Logger.i('Added new novel: ${original.title}');
-      }
+      });
     });
   }
 

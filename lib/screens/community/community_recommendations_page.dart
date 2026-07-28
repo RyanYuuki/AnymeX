@@ -7,6 +7,7 @@ import 'package:anymex/models/models_convertor/carousel_mapper.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/community/user_recommendations_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -422,9 +423,9 @@ class _SeeAllCard extends StatelessWidget {
     final media = item.media;
     final tag = 'community-all-${media.id}';
     if (type == ItemType.manga) {
-      navigate(() => MangaDetailsPage(media: media, tag: tag));
+      navigateWithAnimation(() => MangaDetailsPage(media: media, tag: tag));
     } else {
-      navigate(() => AnimeDetailsPage(media: media, tag: tag));
+      navigateWithAnimation(() => AnimeDetailsPage(media: media, tag: tag));
     }
   }
 
@@ -459,7 +460,7 @@ class _SeeAllCard extends StatelessWidget {
     final author = item.usernameFor(serviceType);
     final avatarUrl = item.avatarFor(serviceType);
     final carouselData = item.toCarouselData(isManga: type == ItemType.manga);
-    final tag = 'community-all-${carouselData.id}-${item.media.hashCode}';
+    final tag = 'community-all-${carouselData.id}';
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -864,9 +865,9 @@ class _SeeAllListTile extends StatelessWidget {
     final media = item.media;
     final tag = 'community-list-${media.id}';
     if (type == ItemType.manga) {
-      navigate(() => MangaDetailsPage(media: media, tag: tag));
+      navigateWithAnimation(() => MangaDetailsPage(media: media, tag: tag));
     } else {
-      navigate(() => AnimeDetailsPage(media: media, tag: tag));
+      navigateWithAnimation(() => AnimeDetailsPage(media: media, tag: tag));
     }
   }
 
@@ -920,10 +921,24 @@ class _SeeAllListTile extends StatelessWidget {
         ),
         child: Row(
           children: [
-            AnymeXImage(
-              imageUrl: item.media.poster,
-              width: 70,
-              height: 100,
+            Hero(
+              tag: 'community-list-${item.media.id}',
+              transitionOnUserGestures: true,
+              flightShuttleBuilder: AnymeXImage.heroFlightShuttleBuilder,
+              child: ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  bottomLeft: Radius.circular(12),
+                ),
+                child: AnymeXImage(
+                  imageUrl: item.media.poster,
+                  width: 70,
+                  height: 100,
+                  radius: 0,
+                  fadeInDuration: Duration.zero,
+                  fadeOutDuration: Duration.zero,
+                ),
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(

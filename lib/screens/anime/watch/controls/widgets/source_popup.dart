@@ -5,7 +5,7 @@ import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:material_symbols_icons/symbols.dart';
+
 
 enum _SourceTab { servers, subtitles }
 
@@ -84,7 +84,7 @@ class _SourcePopupContentState extends State<_SourcePopupContent> {
               color: cs.primary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(Symbols.cloud_rounded, color: cs.primary, size: 20),
+            child: Icon(Icons.cloud_rounded, color: cs.primary, size: 20),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -125,7 +125,7 @@ class _SourcePopupContentState extends State<_SourcePopupContent> {
         children: [
           _buildTab(
             label: 'Servers',
-            icon: Symbols.dns_rounded,
+            icon: Icons.dns_rounded,
             isSelected: _currentTab == _SourceTab.servers,
             onTap: () => setState(() => _currentTab = _SourceTab.servers),
             cs: cs,
@@ -134,7 +134,7 @@ class _SourcePopupContentState extends State<_SourcePopupContent> {
           const SizedBox(width: 4),
           _buildTab(
             label: 'Subtitles',
-            icon: Symbols.subtitles_rounded,
+            icon: Icons.subtitles_rounded,
             isSelected: _currentTab == _SourceTab.subtitles,
             onTap: () => setState(() => _currentTab = _SourceTab.subtitles),
             cs: cs,
@@ -205,7 +205,7 @@ class _SourcePopupContentState extends State<_SourcePopupContent> {
 
       if (servers.isEmpty) {
         return _buildEmpty(
-            cs, theme, Symbols.dns_rounded, 'No servers available');
+            cs, theme, Icons.dns_rounded, 'No servers available');
       }
 
       return ListView.builder(
@@ -221,7 +221,7 @@ class _SourcePopupContentState extends State<_SourcePopupContent> {
             theme: theme,
             title: server.quality ?? 'Auto',
             subtitle: 'Server',
-            icon: Symbols.dns_rounded,
+            icon: Icons.dns_rounded,
             isSelected: isSelected,
             onTap: () {
               widget.controller.setServerTrack(server);

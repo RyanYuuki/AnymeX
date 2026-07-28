@@ -18,7 +18,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:iconly/iconly.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:iconsax/iconsax.dart';
 
 class SettingsSheet extends StatelessWidget {
@@ -498,7 +498,7 @@ class SettingsSheet extends StatelessWidget {
               ),
             ),
             Icon(
-              IconlyLight.arrow_right_2,
+              IconlyLight.arrowRight2,
               size: 14,
               color: theme.onSurface.opaque(0.25),
             ),

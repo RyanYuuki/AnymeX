@@ -1,4 +1,5 @@
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/common/anymex_slider_m3.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/slider_semantics.dart';
 import 'package:anymex/widgets/custom_widgets/custom_icon_wrapper.dart';
@@ -6,7 +7,7 @@ import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:iconly/iconly.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 
 class SettingsHighlightProvider extends InheritedWidget {
   final String highlightTitle;
@@ -274,8 +275,7 @@ class CustomTile extends StatelessWidget {
                     ),
                   ),
                   if (postFix == null)
-                    Icon(IconlyLight.arrow_right_2,
-                        color: context.colors.primary)
+                    Icon(IconlyLight.arrowRight2, color: context.colors.primary)
                   else
                     postFix!
                 ],
@@ -385,7 +385,7 @@ class CustomSliderTile extends StatelessWidget {
                       ),
                       const SizedBox(width: 10),
                       Expanded(
-                        child: CustomSlider(
+                        child: AnymeXSliderM3(
                           focusNode: FocusNode(
                               canRequestFocus: false, skipTraversal: true),
                           value: double.parse(sliderValue.toStringAsFixed(1)),
@@ -393,15 +393,15 @@ class CustomSliderTile extends StatelessWidget {
                           max: max,
                           min: min,
                           label: label ?? sliderValue.toStringAsFixed(1),
-                          onDragEnd: onChangedEnd,
-                          glowBlurMultiplier: 1,
-                          glowSpreadMultiplier: 1,
-                          divisions: divisions?.toInt() ?? (max * 10).toInt(),
-                          customValueIndicatorSize: RoundedSliderValueIndicator(
-                              context.colors,
-                              width: 40,
-                              height: 40,
-                              radius: 50),
+                          onChangeEnd: onChangedEnd,
+                          // glowBlurMultiplier: 1,
+                          // glowSpreadMultiplier: 1,
+                          // divisions: divisions?.toInt() ?? (max * 10).toInt(),
+                          // customValueIndicatorSize: RoundedSliderValueIndicator(
+                          //     context.colors,
+                          //     width: 40,
+                          //     height: 40,
+                          //     radius: 50),
                         ),
                       ),
                       const SizedBox(width: 10),

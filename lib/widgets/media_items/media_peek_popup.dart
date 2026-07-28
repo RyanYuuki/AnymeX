@@ -13,6 +13,8 @@ import 'package:anymex/screens/anime/widgets/custom_list_dialog.dart';
 import 'package:anymex/screens/anime/widgets/list_editor.dart';
 import 'package:anymex/screens/community/user_recommendations_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
+import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -28,6 +30,7 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:anymex/widgets/non_widgets/recommend_button.dart';
 import 'package:anymex/widgets/non_widgets/reasons_sheet.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
 
 class MediaPeekPopup extends StatefulWidget {
   final Media media;
@@ -331,12 +334,8 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
 
     Navigator.of(context).pop();
 
-    showModalBottomSheet(
-      backgroundColor: Colors.transparent,
-      context: rootContext,
-      isScrollControlled: true,
-      showDragHandle: false,
-      builder: (ctx) => ListEditorModal(
+    AnymexSheet.custom(
+      ListEditorModal(
         animeStatus: _animeStatus,
         isManga: isManga,
         animeScore: _animeScore,
@@ -376,13 +375,18 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
           _animeStatus.value = '';
         },
       ),
+      rootContext,
     );
   }
 
   void _openFullView() {
     Navigator.of(context).pop();
     if (widget.type == ItemType.manga) {
+      if (widget.media.mediaType == ItemType.novel) {
+      navigate(() => NovelDetailsPage(media: widget.media));
+    } else {
       navigate(() => MangaDetailsPage(media: widget.media, tag: widget.tag));
+    }
     } else {
       navigate(() => AnimeDetailsPage(media: widget.media, tag: widget.tag));
     }

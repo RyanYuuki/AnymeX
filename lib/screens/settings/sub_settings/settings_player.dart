@@ -31,7 +31,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
+
 import 'package:super_sliver_list/super_sliver_list.dart';
 
 const Map<String, List<String>> fontGroups = {
@@ -86,29 +86,43 @@ class _RendererOption {
   });
 }
 
+class _AudioOption {
+  final String value;
+  final String title;
+  final String description;
+
+  const _AudioOption({
+    required this.value,
+    required this.title,
+    required this.description,
+  });
+}
+
 final List<_BottomControl> _bottomControls = [
   const _BottomControl(
       id: 'playlist',
       name: 'Playlist',
-      icon: Symbols.playlist_play_rounded,
+      icon: Icons.playlist_play_rounded,
       defaultPosition: 'left'),
   const _BottomControl(
-      id: 'shaders', name: 'Shaders', icon: Symbols.tune_rounded),
+      id: 'shaders', name: 'Shaders', icon: Icons.tune_rounded),
   const _BottomControl(
-      id: 'source', name: 'Source', icon: Symbols.cloud_rounded),
+      id: 'source', name: 'Source', icon: Icons.cloud_rounded),
   const _BottomControl(
       id: 'tracks',
       name: 'Tracks (Audio/Subs)',
-      icon: Symbols.library_music_rounded),
+      icon: Icons.library_music_rounded),
   const _BottomControl(
-      id: 'sync_subs', name: 'Sync Subs', icon: Symbols.sync_rounded),
-  const _BottomControl(id: 'speed', name: 'Speed', icon: Symbols.speed_rounded),
+      id: 'sync_subs', name: 'Sync Subs', icon: Icons.sync_rounded),
+  const _BottomControl(id: 'speed', name: 'Speed', icon: Icons.speed_rounded),
   const _BottomControl(
       id: 'orientation',
       name: 'Orientation',
       icon: Icons.screen_rotation_rounded),
   const _BottomControl(
-      id: 'aspect_ratio', name: 'Aspect Ratio', icon: Symbols.fit_screen),
+      id: 'aspect_ratio', name: 'Aspect Ratio', icon: Icons.fit_screen),
+  const _BottomControl(
+      id: 'external_player', name: 'External Player', icon: Icons.launch_rounded),
 ];
 
 class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStateMixin {
@@ -136,6 +150,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
   late Map<String, dynamic> _buttonConfigs;
   bool _shouldApplyResizeModeOnClose = false;
   late bool _useLibass;
+  late bool _useExternalPlayer;
 
   @override
   void initState() {
@@ -148,6 +163,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
     _hiddenButtonIds = [];
     _buttonConfigs = {};
     _useLibass = PlayerKeys.useLibass.get<bool>(false);
+    _useExternalPlayer = PlayerKeys.useExternalPlayer.get<bool>(false);
 
     final String jsonString =
         PlayerUiKeys.bottomControlsSettings.get<String>('{}');
@@ -215,7 +231,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
     deduplicate(_rightButtonIds);
     deduplicate(_hiddenButtonIds);
 
-    final essential = ['source', 'tracks', 'sync_subs'];
+    final essential = ['source', 'tracks', 'sync_subs', 'external_player'];
     for (final id in essential) {
       if (!seen.contains(id)) {
         _rightButtonIds.add(id);
@@ -742,11 +758,6 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
     );
   }
 
-  bool _isUsingMpvEngine() {
-    if (!Platform.isAndroid && !Platform.isIOS) return true;
-    return PlayerKeys.useMediaKit.get<bool>(false);
-  }
-
   bool get _supportsDecoderSelection =>
       Platform.isAndroid ||
       Platform.isIOS ||
@@ -918,6 +929,125 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
     );
   }
 
+  List<_AudioOption> get _audioOptions {
+    final list = <_AudioOption>[];
+    if (Platform.isAndroid) {
+      list.addAll([
+        const _AudioOption(
+          value: 'auto',
+          title: 'Auto (AudioTrack)',
+          description: 'Default Android AudioTrack API',
+        ),
+        const _AudioOption(
+          value: 'audiotrack',
+          title: 'AudioTrack',
+          description: 'Android AudioTrack API',
+        ),
+        const _AudioOption(
+          value: 'opensles',
+          title: 'OpenSL ES',
+          description: 'OpenSL ES native audio engine',
+        ),
+      ]);
+    } else if (Platform.isWindows) {
+      list.addAll([
+        const _AudioOption(
+          value: 'auto',
+          title: 'Auto (WASAPI)',
+          description: 'Default Windows audio driver',
+        ),
+        const _AudioOption(
+          value: 'wasapi',
+          title: 'WASAPI',
+          description: 'Windows Audio Session API',
+        ),
+        const _AudioOption(
+          value: 'sdl',
+          title: 'SDL',
+          description: 'Simple DirectMedia Layer audio output',
+        ),
+      ]);
+    } else if (Platform.isIOS || Platform.isMacOS) {
+      list.addAll([
+        const _AudioOption(
+          value: 'auto',
+          title: 'Auto (CoreAudio)',
+          description: 'Default Apple CoreAudio API',
+        ),
+        const _AudioOption(
+          value: 'coreaudio',
+          title: 'CoreAudio',
+          description: 'Apple CoreAudio API',
+        ),
+      ]);
+    } else if (Platform.isLinux) {
+      list.addAll([
+        const _AudioOption(
+          value: 'auto',
+          title: 'Auto (PulseAudio)',
+          description: 'Default PulseAudio API',
+        ),
+        const _AudioOption(
+          value: 'pulse',
+          title: 'PulseAudio',
+          description: 'PulseAudio sound server',
+        ),
+        const _AudioOption(
+          value: 'alsa',
+          title: 'ALSA',
+          description: 'Advanced Linux Sound Architecture',
+        ),
+        const _AudioOption(
+          value: 'sdl',
+          title: 'SDL',
+          description: 'Simple DirectMedia Layer audio output',
+        ),
+      ]);
+    } else {
+      list.add(
+        const _AudioOption(
+          value: 'auto',
+          title: 'Auto',
+          description: 'Default system audio driver',
+        ),
+      );
+    }
+    return list;
+  }
+
+  String _audioTitle(String value) {
+    final match = _audioOptions.firstWhere(
+      (option) => option.value == value,
+      orElse: () => _audioOptions.first,
+    );
+    return match.title;
+  }
+
+  String _audioDescription(String value) {
+    final match = _audioOptions.firstWhere(
+      (option) => option.value == value,
+      orElse: () => _audioOptions.first,
+    );
+    return match.description;
+  }
+
+  void _showAudioSelectionDialog() {
+    final options = _audioOptions;
+    if (options.isEmpty) return;
+
+    showSelectionDialog<String>(
+      title: 'Audio Engine',
+      items: options.map((option) => option.value).toList(),
+      selectedItem: settings.audioOutput.obs,
+      getTitle: _audioTitle,
+      onItemSelected: (value) {
+        settings.audioOutput = value;
+        setState(() {});
+      },
+      leadingIcon: Icons.audiotrack_rounded,
+    );
+  }
+
   String _decoderTitle(String value) {
     final match = _decoderOptions.firstWhere(
       (option) => option.value == value,
@@ -1025,6 +1155,18 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                   description:
                                       _rendererDescription(settings.videoOutput),
                                   onTap: _showRendererSelectionDialog,
+                                ),
+                                CustomTile(
+                                  padding: 10,
+                                  icon: Icons.audiotrack_rounded,
+                                  title: 'Audio Engine',
+                                  isDescBold: true,
+                                  descColor: Theme.of(context)
+                                      .colorScheme
+                                      .primary,
+                                  description:
+                                      _audioDescription(settings.audioOutput),
+                                  onTap: _showAudioSelectionDialog,
                                 ),
                               ],
                             )),
@@ -1612,7 +1754,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                 if (!experimentalEnabled)
                                   _buildExperimentalGateMessage(
                                       'Core and Visual settings are disabled. Enable Experimental to use them.'),
-                                if (experimentalEnabled && _isUsingMpvEngine())
+                                if (experimentalEnabled)
                                   Column(
                                     children: [
                                       CustomTile(
@@ -1706,7 +1848,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                         sliderValue:
                                             ((mpvCore['demuxerReadaheadSeconds']
                                                         as num?) ??
-                                                    20)
+                                                    30)
                                                 .toDouble(),
                                         min: 0,
                                         max: 120,
@@ -1714,7 +1856,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                         label:
                                             ((mpvCore['demuxerReadaheadSeconds']
                                                         as num?) ??
-                                                    20)
+                                                    30)
                                                 .toInt()
                                                 .toString(),
                                         onChanged: (value) {
@@ -1733,14 +1875,14 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                         sliderValue:
                                             ((mpvCore['demuxerMaxBytesMb']
                                                         as num?) ??
-                                                    64)
+                                                    128)
                                                 .toDouble(),
                                         min: 16,
                                         max: 512,
                                         divisions: 62,
                                         label: ((mpvCore['demuxerMaxBytesMb']
                                                     as num?) ??
-                                                64)
+                                                128)
                                             .toInt()
                                             .toString(),
                                         onChanged: (value) {
@@ -1758,14 +1900,14 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                             '0 means automatic thread count',
                                         sliderValue: ((mpvCore['vdLavcThreads']
                                                     as num?) ??
-                                                0)
+                                                4)
                                             .toDouble(),
                                         min: 0,
                                         max: 16,
                                         divisions: 16,
                                         label: ((mpvCore['vdLavcThreads']
                                                     as num?) ??
-                                                0)
+                                                4)
                                             .toInt()
                                             .toString(),
                                         onChanged: (value) {
@@ -1806,6 +1948,19 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                             .onLibassPreferenceChanged(val);
                                       }
                                     }
+                                  }),
+                              CustomSwitchTile(
+                                  icon: Icons.launch_rounded,
+                                  padding: const EdgeInsets.all(10),
+                                  title: "Use External Player",
+                                  description:
+                                      "Open video stream in external player by default",
+                                  switchValue: _useExternalPlayer,
+                                  onChanged: (val) {
+                                    setState(() {
+                                      _useExternalPlayer = val;
+                                    });
+                                    PlayerKeys.useExternalPlayer.set<bool>(val);
                                   }),
                               CustomTile(
                                 padding: 10,
@@ -1927,6 +2082,15 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                   switchValue: settings.enableSwipeControls,
                                   onChanged: (val) =>
                                       settings.enableSwipeControls = val),
+                              CustomSwitchTile(
+                                  padding: const EdgeInsets.all(10),
+                                  icon: Icons.gesture_rounded,
+                                  title: "Hold to Seek",
+                                  description:
+                                      "Enable holding on player screen to fast forward or speed seek",
+                                  switchValue: settings.enableHoldToSeek,
+                                  onChanged: (val) =>
+                                      settings.enableHoldToSeek = val),
                               CustomSwitchTile(
                                   padding: const EdgeInsets.all(10),
                                   icon: Icons.screenshot_rounded,

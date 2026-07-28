@@ -8,7 +8,7 @@ import 'package:anymex/screens/anime/watch/controls/widgets/decoder_quick_button
 import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
+
 
 class NetflixDesktopPlayerControlTheme extends PlayerControlTheme {
   @override
@@ -160,14 +160,14 @@ class NetflixDesktopPlayerControlTheme extends PlayerControlTheme {
                             )),
                         const SizedBox(width: 20),
                         NFDesktopButton(
-                          icon: Symbols.subtitles_rounded,
+                          icon: Icons.subtitles_rounded,
                           size: 30,
                           onTap: () => controller.isTracksPaneOpened.value =
                               !controller.isTracksPaneOpened.value,
                         ),
                         const SizedBox(width: 20),
                         NFDesktopButton(
-                          icon: Symbols.playlist_play_rounded,
+                          icon: Icons.playlist_play_rounded,
                           size: 34,
                           onTap: () => controller.isEpisodePaneOpened.value =
                               !controller.isEpisodePaneOpened.value,

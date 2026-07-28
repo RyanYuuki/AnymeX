@@ -80,6 +80,7 @@ class MediaDownloader {
             e,
           );
         }
+        await Future.delayed(Duration(milliseconds: 500 * (1 << (attempts - 1))));
       }
     }
   }

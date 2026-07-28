@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 import 'package:anymex/screens/other_features.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'dart:io';
 
 class SettingsCommon extends StatefulWidget {
@@ -257,7 +258,7 @@ class _SettingsCommonState extends State<SettingsCommon> {
                             title: 'Manage Anilist Lists',
                             description:
                                 "Choose which list to show on home page",
-                            onTap: () => _showHomePageCardsDialog(),
+                            onTap: () => _showHomePageCardsDialog(ServicesType.anilist),
                           )),
                       AnymexExpansionTile(
                           initialExpanded: true,
@@ -267,7 +268,17 @@ class _SettingsCommonState extends State<SettingsCommon> {
                             title: 'Manage MyAnimeList Lists',
                             description:
                                 "Choose which list to show on home page",
-                            onTap: () => _showHomePageCardsDialog(),
+                            onTap: () => _showHomePageCardsDialog(ServicesType.mal),
+                          )),
+                      AnymexExpansionTile(
+                          initialExpanded: true,
+                          title: 'Simkl',
+                          content: CustomTile(
+                            icon: Icons.format_list_bulleted_sharp,
+                            title: 'Manage Simkl Lists',
+                            description:
+                                "Choose which list to show on home page",
+                            onTap: () => _showHomePageCardsDialog(ServicesType.simkl),
                           )),
                     ],
                   ),
@@ -280,17 +291,25 @@ class _SettingsCommonState extends State<SettingsCommon> {
     );
   }
 
-  void _showHomePageCardsDialog() {
+  void _showHomePageCardsDialog([ServicesType? serviceType]) {
+    final targetService = serviceType ?? serviceHandler.serviceType.value;
+    final serviceName = targetService == ServicesType.simkl
+        ? 'Simkl'
+        : (targetService == ServicesType.mal ? 'MyAnimeList' : 'Anilist');
+
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Manage Home Page Cards"),
+          title: Text("Manage $serviceName Home Page Cards"),
           content: SizedBox(
             width: double.maxFinite,
             child: Obx(() {
-              final homePageCards =
-                  isMal ? settings.homePageCardsMal : settings.homePageCards;
+              final homePageCards = targetService == ServicesType.simkl
+                  ? settings.homePageCardsSimkl
+                  : (targetService == ServicesType.mal
+                      ? settings.homePageCardsMal
+                      : settings.homePageCards);
               return SuperListView.builder(
                 shrinkWrap: true,
                 itemCount: homePageCards.length,
@@ -303,9 +322,13 @@ class _SettingsCommonState extends State<SettingsCommon> {
                     value: value,
                     onChanged: (bool? newValue) {
                       if (newValue != null) {
-                        isMal
-                            ? settings.updateHomePageCardMal(key, newValue)
-                            : settings.updateHomePageCard(key, newValue);
+                        if (targetService == ServicesType.simkl) {
+                          settings.updateHomePageCardSimkl(key, newValue);
+                        } else if (targetService == ServicesType.mal) {
+                          settings.updateHomePageCardMal(key, newValue);
+                        } else {
+                          settings.updateHomePageCard(key, newValue);
+                        }
                       }
                     },
                   );
@@ -359,6 +382,8 @@ class _SettingsCommonState extends State<SettingsCommon> {
       },
     );
   }
+
+
 }
 
 class _BridgeModeOptionTile extends StatelessWidget {

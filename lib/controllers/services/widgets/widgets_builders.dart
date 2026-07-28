@@ -7,8 +7,9 @@ import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/community/user_recommendations_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/widgets/common/big_carousel.dart';
+import 'package:anymex/widgets/common/big_carousel_gate.dart';
 import 'package:anymex/widgets/common/cards/base_card.dart';
 import 'package:anymex/widgets/common/cards/card_gate.dart';
 import 'package:anymex/widgets/common/future_reusable_carousel.dart';
@@ -258,7 +259,7 @@ class _UnderratedCard extends StatelessWidget {
     final isDesktop = MediaQuery.of(context).size.width > 600;
     final cardWidth = isDesktop ? 160.0 : 118.0;
     final carouselData = item.toCarouselData(isManga: type == ItemType.manga);
-    final tag = 'underrated-${carouselData.id}-${item.media.hashCode}';
+    final tag = 'underrated-${carouselData.id}';
 
     return GestureDetector(
       onTap: () => _navigateToDetails(context),
@@ -404,20 +405,12 @@ class _UnderratedCard extends StatelessWidget {
   void _navigateToDetails(BuildContext context) {
     final media = item.media;
     final tag = 'underrated-${media.id}';
-    if (type == ItemType.manga) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MangaDetailsPage(media: media, tag: tag),
-        ),
-      );
+    if (type == ItemType.novel) {
+      navigateWithAnimation(() => NovelDetailsPage(media: media));
+    } else if (type == ItemType.manga) {
+      navigateWithAnimation(() => MangaDetailsPage(media: media, tag: tag));
     } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => AnimeDetailsPage(media: media, tag: tag),
-        ),
-      );
+      navigateWithAnimation(() => AnimeDetailsPage(media: media, tag: tag));
     }
   }
 }

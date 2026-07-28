@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:get/get.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
+
 
 class JsonThemeParseResult {
   const JsonThemeParseResult({
@@ -732,12 +732,40 @@ class ThemeRenderer {
 
     if (isPlayPause) return _makePlayPauseButton(item, style, enabled);
 
-    final icon = _pickIcon(item.grabString('icon'), id);
-    if (icon == null) return null;
-
     final iconColor = _resolveColor(style.iconColor, fallback: Colors.white);
     final disabledColor = _resolveColor(style.disabledIconColor,
         fallback: Colors.white.withValues(alpha: 0.55));
+
+    if (id == 'orientation') {
+      return Obx(() {
+        final orientation = controller.physicalOrientation.value;
+        double angle = 0.0;
+        if (orientation == DeviceOrientation.landscapeLeft) {
+          angle = -1.57079632679;
+        } else if (orientation == DeviceOrientation.landscapeRight) {
+          angle = 1.57079632679;
+        } else if (orientation == DeviceOrientation.portraitDown) {
+          angle = 3.14159265359;
+        }
+        return _makeButtonShell(
+          style: style,
+          tooltip: item.grabString('tooltip') ?? _tooltipForId(id),
+          enabled: enabled,
+          onTap: enabled ? () => _doAction(id, item) : null,
+          guts: Transform.rotate(
+            angle: angle,
+            child: Icon(
+              Icons.smartphone_rounded,
+              size: style.iconSize,
+              color: enabled ? iconColor : disabledColor,
+            ),
+          ),
+        );
+      });
+    }
+
+    final icon = _pickIcon(item.grabString('icon'), id);
+    if (icon == null) return null;
 
     return _makeButtonShell(
       style: style,
@@ -2198,7 +2226,7 @@ class BottomZone {
           : parsedLocked,
       showProgress: _readBool(json['showProgress'], true),
       progressStyle: _toSliderStyle(_readString(json['progressStyle']),
-          fallback: SliderStyle.ios),
+          fallback: SliderStyle.defaultM3),
       progressPadding: _readEdgeInsets(
           json['progressPadding'], const EdgeInsets.symmetric(horizontal: 4)),
       progressActiveTrackColor: _readString(json['progressActiveTrackColor']),
@@ -2327,15 +2355,15 @@ const Map<String, IconData> _iconMap = {
   'seek_back': Icons.replay_10_rounded,
   'seek_forward': Icons.forward_10_rounded,
   'play_pause': Icons.play_arrow_rounded,
-  'playlist': Symbols.playlist_play_rounded,
-  'shaders': Symbols.tune_rounded,
-  'subtitles': Symbols.subtitles_rounded,
-  'server': Symbols.cloud_rounded,
-  'quality': Symbols.high_quality_rounded,
-  'speed': Symbols.speed_rounded,
-  'audio_track': Symbols.music_note_rounded,
+  'playlist': Icons.playlist_play_rounded,
+  'shaders': Icons.tune_rounded,
+  'subtitles': Icons.subtitles_rounded,
+  'server': Icons.cloud_rounded,
+  'quality': Icons.high_quality_rounded,
+  'speed': Icons.speed_rounded,
+  'audio_track': Icons.music_note_rounded,
   'orientation': Icons.screen_rotation_rounded,
-  'aspect_ratio': Symbols.fit_screen,
+  'aspect_ratio': Icons.fit_screen,
   'mega_seek': Icons.fast_forward_rounded,
   'skip_previous_rounded': Icons.skip_previous_rounded,
   'skip_next_rounded': Icons.skip_next_rounded,
@@ -2650,6 +2678,8 @@ Curve _parseCurve(String? raw, Curve fallback) {
 
 SliderStyle _toSliderStyle(String? raw, {required SliderStyle fallback}) {
   switch (raw) {
+    case 'default':
+      return SliderStyle.defaultM3;
     case 'ios':
       return SliderStyle.ios;
     case 'capsule':

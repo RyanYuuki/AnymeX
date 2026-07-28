@@ -19,18 +19,18 @@ import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:iconly/iconly.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:iconsax/iconsax.dart';
 
 class NovelDetailsPage extends StatefulWidget {
   final Media media;
-  final Source source;
+  final Source? source;
   final String tag;
   const NovelDetailsPage(
       {super.key,
       required this.media,
-      required this.source,
-      required this.tag});
+      this.source,
+      this.tag = ''});
 
   @override
   State<NovelDetailsPage> createState() => _NovelDetailsPageState();
@@ -42,10 +42,15 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
   final RxInt selectedPage = 0.obs;
 
   void _onPageSelected(int index) {
+    final current = selectedPage.value;
     selectedPage.value = index;
     if (pageController.hasClients) {
+      if ((index - current).abs() > 1) {
+        final adjacent = index > current ? index - 1 : index + 1;
+        pageController.jumpToPage(adjacent);
+      }
       pageController.animateToPage(index,
-          duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+          duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
     }
   }
 
@@ -54,7 +59,7 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
     super.initState();
     pageController = PageController();
     controller = Get.put(NovelDetailsController(
-        source: widget.source, initialMedia: widget.media));
+        initialSource: widget.source, initialMedia: widget.media));
 
     final novel =
         controller.offlineStorage.getNovelById(controller.initialMedia.id);
@@ -218,7 +223,7 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
                     Get.back();
                   },
                   selectedIcon: Iconsax.back_square,
-                  unselectedIcon: IconlyBold.arrow_left,
+                  unselectedIcon: IconlyBold.arrowLeft,
                 ),
               ),
               const SizedBox(height: 10),
@@ -252,7 +257,7 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
     return Obx(() => ResponsiveNavBar(
             isDesktop: false,
             currentIndex: selectedPage.value,
-            margin: const EdgeInsets.symmetric(horizontal: 80, vertical: 40),
+            margin: const EdgeInsets.symmetric(horizontal: 60, vertical: 30),
             items: [
               NavItem(
                   onTap: _onPageSelected,

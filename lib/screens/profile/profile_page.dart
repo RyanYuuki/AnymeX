@@ -9,13 +9,14 @@ import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/screens/profile/activity_details_page.dart';
 import 'package:anymex/widgets/non_widgets/activity_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconly/iconly.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:anymex/screens/profile/widgets/widgets.dart';
 import 'dart:developer';
@@ -196,8 +197,8 @@ class _ProfilePageState extends State<ProfilePage>
           onTap: (i) => setState(() => _selectedTab = 2),
         ),
         NavItem(
-          selectedIcon: IconlyBold.user_3,
-          unselectedIcon: IconlyLight.user_1,
+          selectedIcon: IconlyBold.user3,
+          unselectedIcon: IconlyLight.user2,
           label: 'Social',
           onTap: (i) => setState(() => _selectedTab = 3),
         ),
@@ -886,29 +887,58 @@ class _ProfilePageState extends State<ProfilePage>
     }
 
     if (isDesktop) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Left column: About
-            Expanded(flex: 6, child: buildAboutSection(needsPadding: false)),
-            const SizedBox(width: 20),
-            // Right column: Activity + Favourites
-            Expanded(
-              flex: 4,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  buildActivitySection(needsPadding: false),
-                  buildFavouritesSection(needsPadding: false),
-                  const SizedBox(height: 50),
-                ],
+      final hasFavourites = (user.favourites?.anime.isNotEmpty ?? false) ||
+          (user.favourites?.manga.isNotEmpty ?? false) ||
+          (user.favourites?.characters.isNotEmpty ?? false) ||
+          (user.favourites?.staff.isNotEmpty ?? false) ||
+          (user.favourites?.studios.isNotEmpty ?? false);
+      final hasRightColumn = hasActivity || hasFavourites;
+
+      if (hasAbout && hasRightColumn) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                flex: 6,
+                child: buildAboutSection(needsPadding: false),
               ),
-            ),
-          ],
-        ),
-      );
+              const SizedBox(width: 20),
+              Expanded(
+                flex: 4,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    buildActivitySection(needsPadding: false),
+                    buildFavouritesSection(needsPadding: false),
+                    const SizedBox(height: 50),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      } else if (hasAbout) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: buildAboutSection(needsPadding: false),
+        );
+      } else if (hasRightColumn) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              buildActivitySection(needsPadding: false),
+              buildFavouritesSection(needsPadding: false),
+              const SizedBox(height: 50),
+            ],
+          ),
+        );
+      } else {
+        return const SizedBox.shrink();
+      }
     }
 
     return Column(
@@ -947,7 +977,7 @@ class _ProfilePageState extends State<ProfilePage>
                   label: "Minutes Watched",
                   value:
                       user.stats?.animeStats?.minutesWatched?.toString() ?? '0',
-                  icon: IconlyLight.time_circle,
+                  icon: IconlyLight.timeCircle,
                   compact: true,
                 ),
                 const Divider(height: 16, thickness: 0.4),
@@ -999,9 +1029,6 @@ class _ProfilePageState extends State<ProfilePage>
       ],
     );
   }
-
-
-
 
   Widget _buildDesktopTabs(BuildContext context) {
     return ProfileDesktopTabs(

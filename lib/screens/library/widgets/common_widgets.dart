@@ -3,6 +3,8 @@ import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
+import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
@@ -25,7 +27,7 @@ class MediaCard extends StatelessWidget {
       required this.isManga});
   @override
   Widget build(BuildContext context) {
-    final tag = getRandomTag();
+    final tag = '${data.mediaId ?? data.id}-library-card';
     return AnymexOnTap(
       onTap: () => navGate(tag),
       child: Container(
@@ -40,11 +42,15 @@ class MediaCard extends StatelessWidget {
                 children: [
                   Hero(
                     tag: tag,
+                    transitionOnUserGestures: true,
+                    flightShuttleBuilder: AnymeXImage.heroFlightShuttleBuilder,
                     child: AnymeXImage(
                       imageUrl: data.poster ?? '',
                       radius: 12.multiplyRadius(),
                       width: double.infinity,
                       height: double.infinity,
+                      fadeInDuration: Duration.zero,
+                      fadeOutDuration: Duration.zero,
                     ),
                   ),
                   Positioned(
@@ -117,8 +123,12 @@ class MediaCard extends StatelessWidget {
 
   void navGate(tag) {
     if (isManga) {
-      navigate(() => MangaDetailsPage(
-          media: Media.fromOfflineMedia(data, ItemType.manga), tag: tag));
+      final m = Media.fromOfflineMedia(data, ItemType.manga);
+      if (m.mediaType == ItemType.novel) {
+        navigate(() => NovelDetailsPage(media: m));
+      } else {
+        navigate(() => MangaDetailsPage(media: m, tag: tag));
+      }
     } else {
       navigate(() => AnimeDetailsPage(
           media: Media.fromOfflineMedia(data, ItemType.anime), tag: tag));
