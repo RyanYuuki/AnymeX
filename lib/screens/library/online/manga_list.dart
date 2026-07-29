@@ -670,6 +670,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
 
             if (items.isEmpty) {
               return Center(
+                key: ValueKey('empty-$tab-$_sortMode-$_sortAscending-$_searchQuery-${_selectedGenres.join(",")}'),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -690,6 +691,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
             }
 
             return GridView.builder(
+              key: ValueKey('$tab-$_sortMode-$_sortAscending-$_searchQuery-${_selectedGenres.join(",")}'),
               padding: const EdgeInsets.all(10),
               physics: const BouncingScrollPhysics(),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
