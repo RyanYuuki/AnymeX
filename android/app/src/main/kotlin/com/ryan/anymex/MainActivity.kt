@@ -105,6 +105,24 @@ class MainActivity : FlutterActivity() {
                         result.error("INVALID_PATH", "Path cannot be null", null)
                     }
                 }
+                "saveImageToGallery" -> {
+                    val bytes = call.argument<ByteArray>("bytes")
+                    val name = call.argument<String>("name")
+                    if (bytes != null && name != null) {
+                        try {
+                            val saved = saveImageToGallery(name, bytes)
+                            if (saved) {
+                                result.success(true)
+                            } else {
+                                result.error("SAVE_FAILED", "Failed to save image to gallery", null)
+                            }
+                        } catch (e: Exception) {
+                            result.error("SAVE_FAILED", e.message, null)
+                        }
+                    } else {
+                        result.error("INVALID_ARGS", "Bytes or name cannot be null", null)
+                    }
+                }
                 "openOpenByDefaultSettings" -> {
                     try {
                         val packageUri = Uri.parse("package:$packageName")
@@ -428,5 +446,35 @@ class MainActivity : FlutterActivity() {
                 }
             } catch (_: Exception) {}
         }.start()
+    }
+
+    private fun saveImageToGallery(name: String, bytes: ByteArray): Boolean {
+        val resolver = contentResolver
+        val contentValues = android.content.ContentValues().apply {
+            put(android.provider.MediaStore.MediaColumns.DISPLAY_NAME, name)
+            put(android.provider.MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                put(android.provider.MediaStore.MediaColumns.RELATIVE_PATH, "Pictures/AnymeX")
+                put(android.provider.MediaStore.MediaColumns.IS_PENDING, 1)
+            }
+        }
+        val imageUri = resolver.insert(
+            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            contentValues
+        ) ?: return false
+        return try {
+            resolver.openOutputStream(imageUri)?.use { outputStream ->
+                outputStream.write(bytes)
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                contentValues.clear()
+                contentValues.put(android.provider.MediaStore.MediaColumns.IS_PENDING, 0)
+                resolver.update(imageUri, contentValues, null, null)
+            }
+            true
+        } catch (e: Exception) {
+            resolver.delete(imageUri, null, null)
+            throw e
+        }
     }
 }
