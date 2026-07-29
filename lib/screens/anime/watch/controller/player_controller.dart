@@ -1272,7 +1272,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void _loadLocalSubtitles() async {
-    if (offlineVideoPath == null) return;
+    externalSubs.value = [];
+    embeddedSubs.value = [];
+    final videoPath = selectedVideo.value?.url ?? offlineVideoPath;
+    if (videoPath == null) return;
 
     if (selectedVideo.value?.subtitles != null &&
         selectedVideo.value!.subtitles!.isNotEmpty) {
@@ -1301,7 +1304,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
 
     try {
-      final videoFile = File(offlineVideoPath!);
+      final videoFile = File(videoPath);
       final parentDir = videoFile.parent;
       final dirs = await parentDir.list().whereType<Directory>().toList();
       final expectedSubsDirName = 'Episode_${currentEpisode.value.number}_subs';
@@ -1435,8 +1438,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       final videoPath = episode.link;
       if (videoPath == null || videoPath.isEmpty) return;
       _basePlayer.pause();
-      DynamicKeys.offlineVideoProgress
-          .set(offlineVideoPath, currentPosition.value.inMilliseconds);
+      final oldPath = selectedVideo.value?.url ?? offlineVideoPath;
+      if (oldPath != null) {
+        DynamicKeys.offlineVideoProgress
+            .set(oldPath, currentPosition.value.inMilliseconds);
+      }
       resetListeners();
       isEpisodePaneOpened.value = false;
       currentEpisode.value = episode;
@@ -1447,13 +1453,19 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       );
       await _basePlayer.setRate(_sessionSpeed);
       // Update the selected video and offline path tracking
-      selectedVideo.value = model.Video(
-        url: videoPath,
-        quality: 'Offline',
-        originalUrl: videoPath,
-        headerKeys: [],
-        headerValues: [],
-      );
+      final offlineVideo = episode.videoTracks?.firstWhereOrNull((v) => v.url == videoPath) ??
+          model.Video(
+            url: videoPath,
+            quality: 'Offline',
+            originalUrl: videoPath,
+            headerKeys: [],
+            headerValues: [],
+            subtitles: episode.videoTracks?.firstOrNull?.subtitles,
+          );
+      episodeTracks.value = [offlineVideo];
+      selectedVideo.value = offlineVideo;
+      
+      _loadLocalSubtitles();
       applySavedProfile();
       return;
     }

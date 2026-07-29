@@ -123,6 +123,7 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
   final Rx<DiscordProfile?> profile = Rx<DiscordProfile?>(null);
   final _isLoading = false.obs;
   final _enabled = true.obs;
+  final Map<String, String> _assetCache = {};
 
   bool get isConnected => _isConnected.value;
   bool get isMobile => _isMobile.value;
@@ -430,6 +431,9 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<String> urlToDcAsset(String url) async {
+    if (_assetCache.containsKey(url)) {
+      return _assetCache[url]!;
+    }
     try {
       print('Converting URL to Discord asset: $url');
 
@@ -451,6 +455,7 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
       if (resp.statusCode == 200 && resp.data != null && resp.data.isNotEmpty) {
         final assetPath = "mp:${resp.data[0]['external_asset_path']}";
         print('Successfully converted to asset: $assetPath');
+        _assetCache[url] = assetPath;
         return assetPath;
       } else {
         print('Failed to convert asset: ${resp.statusCode} - ${resp.data}');
