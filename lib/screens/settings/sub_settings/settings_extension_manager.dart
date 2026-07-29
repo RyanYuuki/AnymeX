@@ -25,6 +25,8 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
   final _pluginManager = PluginManager();
   bool _isCheckingUpdate = false;
   bool _isSyncingLocalApk = false;
+  bool _needsRestart = false;
+  final RxBool _isLoadedFromStorage = false.obs;
   String get _installedVersion => AnymeXRuntimeBridge.installedVersion;
 
   String get _installedReleaseTitle =>
@@ -35,11 +37,26 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
   @override
   void initState() {
     super.initState();
+    _checkStorageStatus();
+  }
+
+  void _checkStorageStatus() async {
+    final status = await AnymeXRuntimeBridge.isLoadedFromStorage();
+    _isLoadedFromStorage.value = status;
   }
 
   void _showInstallPopup() async {
+    final oldVersion = _installedVersion;
     await _pluginManager.showInstallSheet(context);
-    if (mounted) setState(() {});
+    if (mounted) {
+      if (_installedVersion != oldVersion) {
+        setState(() {
+          _needsRestart = true;
+        });
+      } else {
+        setState(() {});
+      }
+    }
   }
 
   void _showUpdatePopup() async {
@@ -55,12 +72,21 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
       return;
     }
     if (_pluginManager.isNewerVersion(currentVersion, release.tagName)) {
+      final oldVersion = _installedVersion;
       await _pluginManager.showUpdateSheet(
         context,
         release: release,
         installedVersion: currentVersion,
       );
-      if (mounted) setState(() {});
+      if (mounted) {
+        if (_installedVersion != oldVersion) {
+          setState(() {
+            _needsRestart = true;
+          });
+        } else {
+          setState(() {});
+        }
+      }
     } else {
       successSnackBar('Plugin is already up to date.');
     }
@@ -106,8 +132,18 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
 
     setState(() => _isSyncingLocalApk = true);
     try {
+      final oldVersion = _installedVersion;
       final synced = await _pluginManager.syncLocalApk(apkPath);
-      if (mounted && synced) setState(() {});
+      if (mounted && synced) {
+        _checkStorageStatus();
+        if (_installedVersion != oldVersion) {
+          setState(() {
+            _needsRestart = true;
+          });
+        } else {
+          setState(() {});
+        }
+      }
     } finally {
       if (mounted) setState(() => _isSyncingLocalApk = false);
     }
@@ -121,13 +157,116 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
       if (bridge.isReady.value) {
         await Get.find<ExtensionManager>()
             .onRuntimeBridgeInitialization(force: true);
+        _checkStorageStatus();
         if (mounted) {
-          setState(() {});
-          successSnackBar('Plugin re-downloaded successfully.');
+          setState(() {
+            _needsRestart = true;
+          });
+          successSnackBar('Plugin re-downloaded successfully. Please restart to apply.');
         }
       }
     } catch (error) {
       if (mounted) errorSnackBar('Re-download failed: $error');
+    }
+  }
+
+  void _showRollbackDialog() async {
+    setState(() => _isCheckingUpdate = true);
+    final releases = await _pluginManager.fetchReleases();
+    setState(() => _isCheckingUpdate = false);
+    if (releases.isEmpty) {
+      errorSnackBar('No releases found.');
+      return;
+    }
+    if (!mounted) return;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        final colors = Theme.of(context).colorScheme;
+        return Container(
+          decoration: BoxDecoration(
+            color: colors.surface,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: colors.onSurface.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Text(
+                  'Select Version to Rollback',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Flexible(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: releases.length,
+                  itemBuilder: (context, index) {
+                    final release = releases[index];
+                    final isCurrent = release.tagName == _installedVersion;
+                    return ListTile(
+                      title: Text(release.title),
+                      subtitle: Text(release.tagName),
+                      trailing: isCurrent
+                          ? Icon(Icons.check_circle, color: colors.primary)
+                          : null,
+                      onTap: isCurrent
+                          ? null
+                          : () {
+                              Navigator.pop(context);
+                              _performRollback(release);
+                            },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _performRollback(PluginRelease release) async {
+    final bridge = AnymeXRuntimeBridge.controller;
+    if (bridge.isDownloading.value) return;
+    try {
+      await AnymeXRuntimeBridge.setupRuntime(
+        customDownloadUrl: release.asset.downloadUrl,
+        force: true,
+      );
+      if (bridge.isReady.value) {
+        await Get.find<ExtensionManager>()
+            .onRuntimeBridgeInitialization(force: true);
+        _pluginManager.persistInstalledRelease(release);
+        _checkStorageStatus();
+        if (mounted) {
+          setState(() {
+            _needsRestart = true;
+          });
+          successSnackBar('Rollback to ${release.tagName} successful. Restart app to apply.');
+        }
+      }
+    } catch (error) {
+      if (mounted) errorSnackBar('Rollback failed: $error');
     }
   }
 
@@ -182,9 +321,8 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                         ),
                       ),
                       Obx(() {
-                        // Access bridge.isReady.value to trigger reactive rebuilds
                         final _ = bridge.isReady.value;
-                        final isInstalled = _isPluginInstalled;
+                        final isInstalled = bridge.isReady.value || _isLoadedFromStorage.value;
                         return Container(
                           decoration: BoxDecoration(
                             color:
@@ -257,6 +395,17 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                                       'Re-download and reinstall the plugin from scratch',
                                   onTap: _forceReDownload,
                                 ),
+                                Divider(
+                                    height: 1,
+                                    color: colors.outlineVariant
+                                        .withValues(alpha: 0.3)),
+                                CustomTile(
+                                  icon: Icons.history_rounded,
+                                  title: 'Rollback Version',
+                                  description:
+                                      'Downgrade or switch to a specific plugin version',
+                                  onTap: _showRollbackDialog,
+                                ),
                               ],
                             ],
                           ),
@@ -287,6 +436,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
           (status != "Idle" &&
               !isReady &&
               (status.contains("Extracting") || status.contains("Finalizing")));
+      final isActive = isReady || _isPluginInstalled || _isLoadedFromStorage.value;
 
       return Container(
         width: double.infinity,
@@ -308,7 +458,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                   decoration: BoxDecoration(
                     color: isBusy
                         ? colors.tertiaryContainer
-                        : _isPluginInstalled
+                        : isActive
                             ? colors.primaryContainer
                             : colors.errorContainer,
                     borderRadius: BorderRadius.circular(12),
@@ -322,11 +472,11 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                           ),
                         )
                       : Icon(
-                          _isPluginInstalled
+                          isActive
                               ? Icons.check_circle_rounded
                               : Icons.warning_amber_rounded,
                           size: 22,
-                          color: _isPluginInstalled
+                          color: isActive
                               ? colors.onPrimaryContainer
                               : colors.onErrorContainer,
                         ),
@@ -339,8 +489,10 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                       Text(
                         isBusy
                             ? 'Downloading Plugin...'
-                            : _isPluginInstalled
-                                ? 'Plugin Installed'
+                            : isActive
+                                ? (_isLoadedFromStorage.value
+                                    ? 'Loaded from Storage'
+                                    : 'Plugin Installed')
                                 : 'Plugin Not Installed',
                         style: TextStyle(
                           fontSize: 16,
@@ -352,8 +504,10 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                       Text(
                         isBusy
                             ? status
-                            : _isPluginInstalled
-                                ? 'Aniyomi & Cloudstream ready'
+                            : isActive
+                                ? (_isLoadedFromStorage.value
+                                    ? 'Using local storage APK'
+                                    : 'Aniyomi & Cloudstream ready')
                                 : 'Install runtime plugin to unlock Aniyomi & Cloudstream',
                         style: TextStyle(
                           fontSize: 13,
@@ -406,23 +560,55 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                 ),
               ),
             ],
-            if (_isPluginInstalled && !isBusy) ...[
+            if (isActive && !isBusy) ...[
               const SizedBox(height: 16),
               const Divider(height: 1),
               const SizedBox(height: 14),
-              _buildMetaRow(colors, 'Version', _installedVersion),
-              const SizedBox(height: 8),
-              _buildMetaRow(
+              if (!_isLoadedFromStorage.value) ...[
+                _buildMetaRow(colors, 'Version', _installedVersion),
+                const SizedBox(height: 8),
+                _buildMetaRow(
+                    colors,
+                    'Release',
+                    _installedReleaseTitle.isNotEmpty
+                        ? _installedReleaseTitle
+                        : 'Unknown'),
+                const SizedBox(height: 8),
+              ],
+              if (!Platform.isAndroid)
+                _buildMetaRow(
                   colors,
-                  'Release',
-                  _installedReleaseTitle.isNotEmpty
-                      ? _installedReleaseTitle
-                      : 'Unknown'),
-              const SizedBox(height: 8),
-              _buildMetaRow(
-                colors,
-                'Bridge Mode',
-                PluginKeys.bridgeMode.get<String>('sidecar'),
+                  'Bridge Mode',
+                  PluginKeys.bridgeMode.get<String>('sidecar'),
+                ),
+            ],
+            if (isActive && !isBusy && _needsRestart) ...[
+              const SizedBox(height: 14),
+              Container(
+                width: double.infinity,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                decoration: BoxDecoration(
+                  color: colors.tertiaryContainer.withValues(alpha: 0.5),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.restart_alt_rounded,
+                        size: 16, color: colors.onTertiaryContainer),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Please restart the app to apply changes.',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: colors.onTertiaryContainer,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ],

@@ -160,6 +160,45 @@ class PluginManager {
     }
   }
 
+  Future<List<PluginRelease>> fetchReleases() async {
+    try {
+      final response = await http.get(
+        Uri.parse('https://api.github.com/repos/RyanYuuki/AnymeXExtensionRuntimeBridge/releases'),
+        headers: const {'Accept': 'application/vnd.github+json'},
+      );
+      if (response.statusCode != 200) return [];
+      final List<dynamic> jsonList = jsonDecode(response.body) as List<dynamic>;
+      final List<PluginRelease> releases = [];
+      for (final json in jsonList) {
+        final assets = (json['assets'] as List<dynamic>? ?? [])
+            .whereType<Map<String, dynamic>>()
+            .toList();
+        final extension = Platform.isAndroid ? '.apk' : '.jar';
+        final assetJson = assets.firstWhereOrNull(
+          (asset) => (asset['name'] as String? ?? '').toLowerCase().endsWith(extension),
+        );
+        if (assetJson != null) {
+          releases.add(PluginRelease(
+            tagName: (json['tag_name'] as String? ?? '').trim(),
+            title: ((json['name'] as String?)?.trim().isNotEmpty ?? false)
+                ? (json['name'] as String).trim()
+                : (json['tag_name'] as String? ?? 'Plugin Release').trim(),
+            body: (json['body'] as String? ?? '').trim(),
+            publishedAt: DateTime.tryParse(json['published_at'] as String? ?? ''),
+            asset: PluginAsset(
+              name: (assetJson['name'] as String? ?? 'anymex_bridge').trim(),
+              downloadUrl: (assetJson['browser_download_url'] as String? ?? '').trim(),
+              sizeBytes: (assetJson['size'] as num?)?.toInt() ?? 0,
+            ),
+          ));
+        }
+      }
+      return releases;
+    } catch (_) {
+      return [];
+    }
+  }
+
   bool isNewerVersion(String installed, String latest) {
     final installedParts = _normalizeVersion(installed);
     final latestParts = _normalizeVersion(latest);
