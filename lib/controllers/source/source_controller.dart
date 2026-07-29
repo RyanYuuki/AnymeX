@@ -587,6 +587,7 @@ class SourceController extends GetxController implements BaseService {
     final availableList = getAvailableExtensions(type);
     final pkgName = source is ASource ? source.pkgName : null;
     final available = availableList.firstWhereOrNull((s) {
+      if (s.runtimeType != source.runtimeType) return false;
       if (pkgName != null && pkgName.isNotEmpty && s is ASource && s.pkgName == pkgName) {
         return true;
       }
