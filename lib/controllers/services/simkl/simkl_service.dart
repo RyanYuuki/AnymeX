@@ -303,7 +303,7 @@ class SimklService extends GetxController
 
     return [
       if (isLoggedIn.value)
-        LayoutBuilder(
+        Obx(() => LayoutBuilder(
           builder: (context, constraints) {
             final isDesktop = constraints.maxWidth > 600;
             final buttonHeight = !isDesktop ? 70.0 : 90.0;
@@ -357,9 +357,9 @@ class SimklService extends GetxController
               ],
             );
           },
-        ),
+        )),
       const SizedBox(height: 15),
-      LayoutBuilder(
+      Obx(() => LayoutBuilder(
         builder: (context, constraints) {
           final isDesktop = constraints.maxWidth > 600;
           final buttonHeight = !isDesktop ? 70.0 : 90.0;
@@ -380,7 +380,7 @@ class SimklService extends GetxController
             ),
           );
         },
-      ),
+      )),
       const SizedBox(height: 25),
       if (isLoggedIn.value)
         Obx(() => Column(
@@ -396,14 +396,16 @@ class SimklService extends GetxController
                 );
               }).toList(),
             )),
-      if (trendingMovies.value.isNotEmpty)
-        ReusableCarousel(
-            data: trendingMovies.value.sublist(0, 10),
-            title: "Trending Movies"),
-      if (trendingSeries.value.isNotEmpty)
-        ReusableCarousel(
-            data: trendingSeries.value.sublist(0, 10),
-            title: "Trending Series"),
+      Obx(() => trendingMovies.value.isNotEmpty
+          ? ReusableCarousel(
+              data: trendingMovies.value.sublist(0, math.min(10, trendingMovies.length)),
+              title: "Trending Movies")
+          : const SizedBox.shrink()),
+      Obx(() => trendingSeries.value.isNotEmpty
+          ? ReusableCarousel(
+              data: trendingSeries.value.sublist(0, math.min(10, trendingSeries.length)),
+              title: "Trending Series")
+          : const SizedBox.shrink()),
     ].obs;
   }
 

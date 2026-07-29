@@ -295,7 +295,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
         .toList();
     return [
       if (isLoggedIn.value) ...[
-        LayoutBuilder(builder: (context, constraints) {
+        Obx(() => LayoutBuilder(builder: (context, constraints) {
           final width = isDesktop ? 300.0 : constraints.maxWidth / 2 - 40;
           final overflow = constraints.maxWidth < 900;
           final overflowSecond =
@@ -363,7 +363,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
               ),
             ],
           );
-        }),
+        })),
         const SizedBox(height: 10),
         Obx(() => Column(
               children: acceptedLists.map((e) {

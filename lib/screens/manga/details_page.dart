@@ -60,6 +60,7 @@ class MangaDetailsPage extends StatefulWidget {
 }
 
 class _MangaDetailsPageState extends State<MangaDetailsPage> {
+  bool _isTransitionFinished = false;
   // AnilistData
   Media? anilistData;
   Rx<TrackedMedia?> currentManga = TrackedMedia().obs;
@@ -156,6 +157,37 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
     });
 
     _fetchAnilistData();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final route = ModalRoute.of(context);
+      if (route == null || route.animation == null) {
+        if (mounted) {
+          setState(() {
+            _isTransitionFinished = true;
+          });
+        }
+      } else {
+        if (route.animation!.isCompleted) {
+          if (mounted) {
+            setState(() {
+              _isTransitionFinished = true;
+            });
+          }
+        } else {
+          void statusListener(AnimationStatus status) {
+            if (status == AnimationStatus.completed) {
+              route.animation!.removeStatusListener(statusListener);
+              if (mounted) {
+                setState(() {
+                  _isTransitionFinished = true;
+                });
+              }
+            }
+          }
+          route.animation!.addStatusListener(statusListener);
+        }
+      }
+    });
   }
 
   void _checkMangaPresence() {
@@ -333,8 +365,8 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   Widget build(BuildContext context) {
     return PlatformBuilder(
       strictMode: !kDebugMode,
-      androidBuilder: _buildAndroidLayout(context),
-      desktopBuilder: _buildDesktopLayout(context),
+      androidWidgetBuilder: (context) => _buildAndroidLayout(context),
+      desktopWidgetBuilder: (context) => _buildDesktopLayout(context),
     );
   }
 
@@ -512,6 +544,9 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   }
 
   Widget _buildInfoPageBody(BuildContext context) {
+    if (!_isTransitionFinished) {
+      return const Center(child: AnymexProgressIndicator());
+    }
     return SingleChildScrollView(
       padding: const EdgeInsets.only(bottom: 120),
       child: anilistData != null
@@ -521,6 +556,9 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   }
 
   Widget _buildChapterPageBody(BuildContext context) {
+    if (!_isTransitionFinished) {
+      return const Center(child: AnymexProgressIndicator());
+    }
     return CustomScrollView(
       slivers: [
         ChapterSection(
@@ -538,6 +576,9 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   }
 
   Widget _buildCommentsPageBody(BuildContext context) {
+    if (!_isTransitionFinished) {
+      return const Center(child: AnymexProgressIndicator());
+    }
     return SingleChildScrollView(
       padding: const EdgeInsets.only(bottom: 120),
       child: _buildCommentsSection(context),
