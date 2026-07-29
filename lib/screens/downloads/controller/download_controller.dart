@@ -66,6 +66,14 @@ class DownloadController extends GetxController {
       _processMangaScrapeQueue();
     });
 
+    ever(Get.find<Settings>().downloadPath, (val) async {
+      await _loadIndex();
+      activeTasks.clear();
+      await _loadActiveTasks();
+      activeMangaTasks.clear();
+      await _loadMangaActiveTasks();
+    });
+
     final sourceController = Get.find<SourceController>();
 
     _initForegroundTask();
