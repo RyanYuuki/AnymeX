@@ -144,10 +144,15 @@ class _AnymeXImageState extends State<AnymeXImage> {
   }
 
   Widget _networkImage(String imageUrl) {
+    final url = Uri.tryParse(imageUrl);
+    Map<String, String> headers = url != null ? {
+      "Referer": "${url.origin}/",
+      "Origin": url.origin,
+    } : {};
     return CachedNetworkImage(
       cacheManager: AnymeXCacheManager.instance,
       imageUrl: imageUrl,
-      httpHeaders: widget.headers,
+      httpHeaders: widget.headers ?? headers,
       width: widget.width,
       height: widget.height,
       fit: widget.fit,
