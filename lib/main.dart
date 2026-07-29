@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:rhttp/rhttp.dart';
+
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/screens/downloads/controller/download_controller.dart';
 import 'package:anymex/controllers/discord/discord_rpc.dart';
@@ -152,6 +154,9 @@ void main(List<String> args) async {
         errorMessage: 'Failed to load external fonts');
 
     await Logger.init();
+
+    await safeCall(() => Rhttp.init(),
+        errorMessage: 'Failed to initialize Rhttp');
 
     await safeCall(() => dotenv.load(fileName: ".env"),
         errorMessage: 'Failed to load .env file');

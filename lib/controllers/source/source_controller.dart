@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
@@ -9,6 +10,7 @@ import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Service/base_service.dart';
 import 'package:anymex/screens/search/source_search_page.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_extension_manager.dart';
 import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
@@ -599,12 +601,21 @@ class SourceController extends GetxController implements BaseService {
 
   Future<void> checkBridgeUpdate() async {
     try {
+      if (Platform.isAndroid && await AnymeXRuntimeBridge.isLoadedFromStorage()) {
+        return;
+      }
       final manager = PluginManager();
       final latestRelease = await manager.fetchLatestRelease();
       if (latestRelease != null) {
         final installed = manager.installedVersion;
         if (installed.isNotEmpty && manager.isNewerVersion(installed, latestRelease.tagName)) {
-          infoSnackBar("Extension Bridge has an update available (${latestRelease.tagName})", title: "Bridge Update Available");
+          infoSnackBar(
+            "Extension Bridge has an update available (${latestRelease.tagName})",
+            title: "Bridge Update Available",
+            onTap: () {
+              navigate(() => const SettingsExtensionManager());
+            },
+          );
         }
       }
     } catch (e) {
