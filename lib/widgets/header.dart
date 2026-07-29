@@ -10,6 +10,7 @@ import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/screens/search/source_search_page.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
@@ -245,15 +246,17 @@ class Header extends StatelessWidget {
                 ? _buildActionButtons(context, profileData)
                 : _profileIcon(context, profileData),
             const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildHeaderTitle(context, greetingController, profileData),
-                _buildHeaderSubtitle(context, greetingController, profileData),
-              ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildHeaderTitle(context, greetingController, profileData),
+                  _buildHeaderSubtitle(context, greetingController, profileData),
+                ],
+              ),
             ),
-            const Spacer(),
+            const SizedBox(width: 12),
             type == PageType.home
                 ? _profileIcon(context, profileData)
                 : _buildActionButtons(context, profileData),
@@ -270,59 +273,53 @@ class Header extends StatelessWidget {
 
     switch (type) {
       case PageType.home:
-        return Text(
-          "AnymeX",
-          style: TextStyle(
-            fontFamily: "Poppins-Bold",
-            fontSize: 15,
-            fontWeight: FontWeight.bold,
-            color: context.colors.primary,
-          ),
+        return AnymexText(
+          text: "AnymeX",
+          autoResize: true,
+          maxLines: 1,
+          size: 15,
+          variant: TextVariant.bold,
+          color: context.colors.primary,
         );
       case PageType.anime:
-        return Text(
-          isSimkl ? "Movies" : "Anime",
-          style: const TextStyle(
-            fontFamily: "Poppins-Bold",
-            fontSize: 15,
-            fontWeight: FontWeight.bold,
-          ),
+        return AnymexText(
+          text: isSimkl ? "Movies" : "Anime",
+          autoResize: true,
+          maxLines: 1,
+          size: 15,
+          variant: TextVariant.bold,
         );
       case PageType.manga:
-        return Text(
-          isSimkl ? "Series" : "Manga",
-          style: const TextStyle(
-            fontFamily: "Poppins-Bold",
-            fontSize: 15,
-            fontWeight: FontWeight.bold,
-          ),
+        return AnymexText(
+          text: isSimkl ? "Series" : "Manga",
+          autoResize: true,
+          maxLines: 1,
+          size: 15,
+          variant: TextVariant.bold,
         );
       case PageType.novel:
-        return const Text(
-          "Novels",
-          style: TextStyle(
-            fontFamily: "Poppins-Bold",
-            fontSize: 15,
-            fontWeight: FontWeight.bold,
-          ),
+        return const AnymexText(
+          text: "Novels",
+          autoResize: true,
+          maxLines: 1,
+          size: 15,
+          variant: TextVariant.bold,
         );
       case PageType.library:
-        return const Text(
-          "Library",
-          style: TextStyle(
-            fontFamily: "Poppins-Bold",
-            fontSize: 15,
-            fontWeight: FontWeight.bold,
-          ),
+        return const AnymexText(
+          text: "Library",
+          autoResize: true,
+          maxLines: 1,
+          size: 15,
+          variant: TextVariant.bold,
         );
       case PageType.extensions:
-        return const Text(
-          "Extensions",
-          style: TextStyle(
-            fontFamily: "Poppins-Bold",
-            fontSize: 15,
-            fontWeight: FontWeight.bold,
-          ),
+        return const AnymexText(
+          text: "Extensions",
+          autoResize: true,
+          maxLines: 1,
+          size: 15,
+          variant: TextVariant.bold,
         );
     }
   }
@@ -330,31 +327,31 @@ class Header extends StatelessWidget {
   Widget _buildHeaderSubtitle(BuildContext context,
       GreetingController greetingController, ServiceHandler profileData) {
     if (type == PageType.library) {
-      return Text(
-        "All your local shi",
-        style: TextStyle(
-          fontSize: 11,
-          color: context.colors.onSurface.withOpacity(0.55),
-        ),
+      return AnymexText(
+        text: "All your local shi",
+        autoResize: true,
+        maxLines: 1,
+        size: 11,
+        color: context.colors.onSurface.withOpacity(0.55),
       );
     }
     if (type == PageType.extensions) {
-      return Text(
-        "Manage plugins & sources",
-        style: TextStyle(
-          fontSize: 11,
-          color: context.colors.onSurface.withOpacity(0.55),
-        ),
+      return AnymexText(
+        text: "Manage plugins & sources",
+        autoResize: true,
+        maxLines: 1,
+        size: 11,
+        color: context.colors.onSurface.withOpacity(0.55),
       );
     }
 
     final greeting = greetingController.currentGreeting.value;
-    return Text(
-      greeting,
-      style: TextStyle(
-        fontSize: 11,
-        color: context.colors.onSurface.withOpacity(0.55),
-      ),
+    return AnymexText(
+      text: greeting,
+      autoResize: true,
+      maxLines: 1,
+      size: 11,
+      color: context.colors.onSurface.withOpacity(0.55),
     );
   }
 

@@ -54,7 +54,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "07afe581fdbcc8c37080b6894e9c7ecdd316542b"
+      resolved-ref: "0db93a36a4c714c5d2f1d7eff2245efc5465d7dc"
       url: "https://github.com/RyanYuuki/AnymeXExtensionRuntimeBridge.git"
     source: git
     version: "1.6.1"
@@ -892,6 +892,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.15.2"
+  freezed_annotation:
+    dependency: transitive
+    description:
+      name: freezed_annotation
+      sha256: "7294967ff0a6d98638e7acb774aac3af2550777accd8149c90af5b014e6d44d8"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.0"
   frontend_server_client:
     dependency: transitive
     description:
@@ -1076,6 +1084,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.2"
+  http_profile:
+    dependency: transitive
+    description:
+      name: http_profile
+      sha256: "7e679e355b09aaee2ab5010915c932cce3f2d1c11c3b2dc177891687014ffa78"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.0"
   hugeicons:
     dependency: "direct main"
     description:
@@ -1717,6 +1733,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.0"
+  rhttp:
+    dependency: "direct main"
+    description:
+      name: rhttp
+      sha256: b111638045b730f825a85cb045017b5bd3dfb47b38e98eb293b0519ee6050f2e
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.15.1"
   rxdart:
     dependency: "direct main"
     description:

@@ -51,47 +51,55 @@ class Header extends StatelessWidget {
             children: [
               _profileIcon(context, profileData),
               const SizedBox(width: 15),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (type == PageType.library) ...[
-                    const Text(
-                      "Library",
-                    ),
-                    Text(
-                      "All your local shi",
-                      style: TextStyle(
-                        fontFamily: "Poppins-SemiBold",
-                        color: context.colors.primary,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (type == PageType.library) ...[
+                      const AnymexText(
+                        text: "Library",
+                        autoResize: true,
+                        maxLines: 1,
                       ),
-                    ),
-                  ] else if (type == PageType.extensions) ...[
-                    const Text(
-                      "Extensions",
-                    ),
-                    Text(
-                      "Manage plugins & sources",
-                      style: TextStyle(
-                        fontFamily: "Poppins-SemiBold",
+                      AnymexText(
+                        text: "All your local shi",
+                        autoResize: true,
+                        maxLines: 1,
                         color: context.colors.primary,
+                        variant: TextVariant.semiBold,
                       ),
-                    ),
-                  ] else ...[
-                    Obx(() => Text(
-                          "${greetingController.currentGreeting.value},",
-                        )),
-                    Text(
-                      profileData.profileData.value.name ?? 'Guest',
-                      style: TextStyle(
-                        fontFamily: "Poppins-SemiBold",
+                    ] else if (type == PageType.extensions) ...[
+                      const AnymexText(
+                        text: "Extensions",
+                        autoResize: true,
+                        maxLines: 1,
+                      ),
+                      AnymexText(
+                        text: "Manage plugins & sources",
+                        autoResize: true,
+                        maxLines: 1,
                         color: context.colors.primary,
+                        variant: TextVariant.semiBold,
                       ),
-                    ),
+                    ] else ...[
+                      Obx(() => AnymexText(
+                            text: "${greetingController.currentGreeting.value},",
+                            autoResize: true,
+                            maxLines: 1,
+                          )),
+                      AnymexText(
+                        text: profileData.profileData.value.name ?? 'Guest',
+                        autoResize: true,
+                        maxLines: 1,
+                        color: context.colors.primary,
+                        variant: TextVariant.semiBold,
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
-              const Spacer(),
+              const SizedBox(width: 15),
               if (type == PageType.library) ...[
                 Row(
                   children: [
