@@ -303,84 +303,91 @@ class SimklService extends GetxController
 
     return [
       if (isLoggedIn.value)
-        Obx(() => LayoutBuilder(
+        Obx(() {
+          trendingMovies.length;
+          trendingSeries.length;
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              final isDesktop = constraints.maxWidth > 600;
+              final buttonHeight = !isDesktop ? 70.0 : 90.0;
+              final itemWidth = isDesktop
+                  ? math.min(300.0, (constraints.maxWidth - 15) / 2)
+                  : (constraints.maxWidth / 2) - 20;
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ImageButton(
+                    width: itemWidth,
+                    height: buttonHeight,
+                    buttonText: "MOVIES LIST",
+                    backgroundImage: trendingMovies
+                            .firstWhere(
+                              (e) => e.cover != null,
+                              orElse: () => Media(
+                                  cover: '', serviceType: ServicesType.simkl),
+                            )
+                            .cover ??
+                        '',
+                    borderRadius: 16.multiplyRadius(),
+                    onPressed: () {
+                      navigate(() => AnimeList(
+                            title: "Movies",
+                            data: animeList.value,
+                          ));
+                    },
+                  ),
+                  const SizedBox(width: 15),
+                  ImageButton(
+                    width: itemWidth,
+                    height: buttonHeight,
+                    buttonText: "SERIES LIST",
+                    borderRadius: 16.multiplyRadius(),
+                    backgroundImage: trendingSeries
+                            .firstWhere(
+                              (e) => e.cover != null,
+                              orElse: () => Media(
+                                  cover: '', serviceType: ServicesType.simkl),
+                            )
+                            .cover ??
+                        '',
+                    onPressed: () {
+                      navigate(() => AnimeList(
+                            title: "Shows",
+                            data: mangaList.value,
+                          ));
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        }),
+      const SizedBox(height: 15),
+      Obx(() {
+        trendingMovies.length;
+        return LayoutBuilder(
           builder: (context, constraints) {
             final isDesktop = constraints.maxWidth > 600;
             final buttonHeight = !isDesktop ? 70.0 : 90.0;
-            final itemWidth = isDesktop
-                ? math.min(300.0, (constraints.maxWidth - 15) / 2)
-                : (constraints.maxWidth / 2) - 20;
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ImageButton(
-                  width: itemWidth,
-                  height: buttonHeight,
-                  buttonText: "MOVIES LIST",
-                  backgroundImage: trendingMovies
-                          .firstWhere(
-                            (e) => e.cover != null,
-                            orElse: () => Media(
-                                cover: '', serviceType: ServicesType.simkl),
-                          )
-                          .cover ??
-                      '',
-                  borderRadius: 16.multiplyRadius(),
-                  onPressed: () {
-                    navigate(() => AnimeList(
-                          title: "Movies",
-                          data: animeList.value,
-                        ));
-                  },
-                ),
-                const SizedBox(width: 15),
-                ImageButton(
-                  width: itemWidth,
-                  height: buttonHeight,
-                  buttonText: "SERIES LIST",
-                  borderRadius: 16.multiplyRadius(),
-                  backgroundImage: trendingSeries
-                          .firstWhere(
-                            (e) => e.cover != null,
-                            orElse: () => Media(
-                                cover: '', serviceType: ServicesType.simkl),
-                          )
-                          .cover ??
-                      '',
-                  onPressed: () {
-                    navigate(() => AnimeList(
-                          title: "Shows",
-                          data: mangaList.value,
-                        ));
-                  },
-                ),
-              ],
+            final buttonWidth =
+                isDesktop ? 300.0 : math.max(120.0, constraints.maxWidth - 40);
+            return Center(
+              child: ImageButton(
+                width: buttonWidth,
+                height: buttonHeight,
+                buttonText: "CALENDAR",
+                borderRadius: 16.multiplyRadius(),
+                backgroundImage: trendingMovies.isNotEmpty
+                    ? trendingMovies[0].cover ?? ''
+                    : '',
+                onPressed: () {
+                  navigate(() => const Calendar());
+                },
+              ),
             );
           },
-        )),
-      const SizedBox(height: 15),
-      Obx(() => LayoutBuilder(
-        builder: (context, constraints) {
-          final isDesktop = constraints.maxWidth > 600;
-          final buttonHeight = !isDesktop ? 70.0 : 90.0;
-          final buttonWidth =
-              isDesktop ? 300.0 : math.max(120.0, constraints.maxWidth - 40);
-          return Center(
-            child: ImageButton(
-              width: buttonWidth,
-              height: buttonHeight,
-              buttonText: "CALENDAR",
-              borderRadius: 16.multiplyRadius(),
-              backgroundImage: trendingMovies.isNotEmpty
-                  ? trendingMovies[0].cover ?? ''
-                  : '',
-              onPressed: () {
-                navigate(() => const Calendar());
-              },
-            ),
-          );
-        },
-      )),
+        );
+      }),
       const SizedBox(height: 25),
       if (isLoggedIn.value)
         Obx(() => Column(

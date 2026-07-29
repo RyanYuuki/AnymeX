@@ -2076,27 +2076,27 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                               CustomSwitchTile(
                                   padding: const EdgeInsets.all(10),
                                   icon: Icons.play_disabled_rounded,
-                                  title: "Enable Swipe Controls",
+                                  title: "Gesture for Brightness & Volume",
                                   description:
-                                      "Enable if you want to use brightness and volume controls",
+                                      "Enable vertical swiping on the left/right sides of the player screen to adjust brightness and volume",
                                   switchValue: settings.enableSwipeControls,
                                   onChanged: (val) =>
                                       settings.enableSwipeControls = val),
                               CustomSwitchTile(
                                   padding: const EdgeInsets.all(10),
                                   icon: Icons.gesture_rounded,
-                                  title: "Hold to Seek",
+                                  title: "Hold to Speed Up",
                                   description:
-                                      "Enable holding on player screen to fast forward or speed seek",
+                                      "Enable holding on player screen to temporarily speed up video playback",
                                   switchValue: settings.enableHoldToSeek,
                                   onChanged: (val) =>
                                       settings.enableHoldToSeek = val),
                               CustomSwitchTile(
                                   padding: const EdgeInsets.all(10),
                                   icon: Icons.swap_horiz_rounded,
-                                  title: "Slide to Seek",
+                                  title: "Swipe to Seek",
                                   description:
-                                      "Enable horizontal swipe on player to seek through video",
+                                      "Enable horizontal swiping on player screen to seek through video",
                                   switchValue: settings.enableSlideToSeek,
                                   onChanged: (val) =>
                                       settings.enableSlideToSeek = val),

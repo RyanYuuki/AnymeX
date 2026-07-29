@@ -6,9 +6,11 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/AnymeXBridge.dart';
 import 'package:anymex_extension_runtime_bridge/ExtensionManager.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -179,70 +181,106 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
       return;
     }
     if (!mounted) return;
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        final colors = Theme.of(context).colorScheme;
-        return Container(
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-          ),
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 16),
+    final theme = Theme.of(context);
+    AnymexSheet(
+      title: 'Select Version to Rollback',
+      showDragHandle: true,
+      contentWidget: Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.5,
+        ),
+        child: ListView.builder(
+          physics: const BouncingScrollPhysics(),
+          shrinkWrap: true,
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          itemCount: releases.length,
+          itemBuilder: (context, index) {
+            final release = releases[index];
+            final isCurrent = release.tagName == _installedVersion;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: AnymexOnTap(
+                onTap: isCurrent
+                    ? null
+                    : () {
+                        Navigator.pop(context);
+                        _performRollback(release);
+                      },
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: colors.onSurface.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(2),
+                    color: isCurrent
+                        ? theme.colorScheme.primaryContainer.opaque(0.35, iReallyMeanIt: true)
+                        : theme.colorScheme.surfaceContainer.opaque(0.3, iReallyMeanIt: true),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: isCurrent
+                          ? theme.colorScheme.primary.opaque(0.5, iReallyMeanIt: true)
+                          : theme.colorScheme.outline.opaque(0.15, iReallyMeanIt: true),
+                      width: isCurrent ? 1.5 : 1,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 180),
+                        width: 22,
+                        height: 22,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: isCurrent
+                              ? theme.colorScheme.primary
+                              : Colors.transparent,
+                          border: Border.all(
+                            color: isCurrent
+                                ? theme.colorScheme.primary
+                                : theme.colorScheme.outline.opaque(0.4, iReallyMeanIt: true),
+                            width: 2,
+                          ),
+                        ),
+                        child: isCurrent
+                            ? Icon(Icons.check_rounded,
+                                size: 14, color: theme.colorScheme.onPrimary)
+                            : null,
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              release.title,
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 14,
+                                fontWeight: isCurrent
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                                color: theme.colorScheme.onSurface,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              release.tagName,
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 12,
+                                color: theme.colorScheme.onSurface.withOpacity(0.6),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text(
-                  'Select Version to Rollback',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              Flexible(
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: releases.length,
-                  itemBuilder: (context, index) {
-                    final release = releases[index];
-                    final isCurrent = release.tagName == _installedVersion;
-                    return ListTile(
-                      title: Text(release.title),
-                      subtitle: Text(release.tagName),
-                      trailing: isCurrent
-                          ? Icon(Icons.check_circle, color: colors.primary)
-                          : null,
-                      onTap: isCurrent
-                          ? null
-                          : () {
-                              Navigator.pop(context);
-                              _performRollback(release);
-                            },
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
+            );
+          },
+        ),
+      ),
+    ).show(context);
   }
 
   void _performRollback(PluginRelease release) async {

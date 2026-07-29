@@ -114,11 +114,16 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
         .toList();
     return [
       if (anilistAuth.isLoggedIn.value) ...[
-        Obx(() => LayoutBuilder(
-          builder: (context, constraints) {
-            final isDesktop = constraints.maxWidth > 600;
-            final buttonHeight = !isDesktop ? 70.0 : 90.0;
-            final animeButtonMedia = _firstMediaWithCover(trendingAnimes);
+        Obx(() {
+          trendingAnimes.length;
+          trendingMangas.length;
+          popularAnimes.length;
+          popularMangas.length;
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              final isDesktop = constraints.maxWidth > 600;
+              final buttonHeight = !isDesktop ? 70.0 : 90.0;
+              final animeButtonMedia = _firstMediaWithCover(trendingAnimes);
             final mangaButtonMedia = _firstMediaWithCover(trendingMangas);
             final otherButtonMedia = _lastMediaWithCover([
               ...popularAnimes,
@@ -188,8 +193,9 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                 ],
               ),
             );
-          },
-        )),
+          }
+          );
+        }),
         const SizedBox(height: 10),
         Obx(() {
           anilistAuth.isLoggedIn.value;
