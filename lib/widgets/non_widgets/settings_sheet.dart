@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/screens/downloads/download_screen.dart';
 import 'package:anymex/screens/extensions/ExtensionScreen.dart';
+import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/screens/local_source/local_source_view.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/screens/settings/settings.dart';
@@ -460,6 +461,36 @@ class SettingsSheet extends StatelessWidget {
     required bool isFirst,
     required bool isLast,
   }) {
+    final iconWidget = Container(
+      width: 32,
+      height: 32,
+      decoration: BoxDecoration(
+        color: theme.primaryContainer.opaque(0.3),
+        borderRadius: BorderRadius.circular(9),
+      ),
+      child: Icon(
+        item.icon,
+        size: 16,
+        color: theme.primary,
+      ),
+    );
+
+    final finalIcon = item.label == 'Extensions'
+        ? Obx(() {
+            final count =
+                Get.find<SourceController>().extensionUpdatesCount.value;
+            if (count > 0) {
+              return Badge(
+                label: Text(count.toString()),
+                backgroundColor: theme.primary,
+                textColor: theme.onPrimary,
+                child: iconWidget,
+              );
+            }
+            return iconWidget;
+          })
+        : iconWidget;
+
     return AnymexOnTap(
       onTap: item.onTap,
       child: Container(
@@ -476,19 +507,7 @@ class SettingsSheet extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: theme.primaryContainer.opaque(0.3),
-                borderRadius: BorderRadius.circular(9),
-              ),
-              child: Icon(
-                item.icon,
-                size: 16,
-                color: theme.primary,
-              ),
-            ),
+            finalIcon,
             const SizedBox(width: 12),
             Expanded(
               child: AnymexText(
