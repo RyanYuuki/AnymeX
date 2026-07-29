@@ -9,7 +9,6 @@ import android.view.KeyEvent
 import android.view.KeyEvent.ACTION_DOWN
 import android.view.KeyEvent.KEYCODE_VOLUME_DOWN
 import android.view.KeyEvent.KEYCODE_VOLUME_UP
-import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
@@ -27,16 +26,16 @@ import java.io.FileOutputStream
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicBoolean
 
-class MainActivity : FlutterActivity() {
+class MainActivity : FlutterAppCompatActivity() {
     private val CHANNEL = "app/architecture"
     private val VOLUME_CHANNEL = "com.ryan.anymex/volume"
     private val VOLUME_EVENTS = "com.ryan.anymex/volume_events"
     private val PIP_CHANNEL = "com.ryan.anymex/pip"
+    private var volumeKeysEnabled = false
+    private var volumeEventsSink: EventChannel.EventSink? = null
     private val THUMBNAIL_CHANNEL = "com.anymex.app/thumbnail"
     private val THUMBNAIL_TIMEOUT_MS = 8000L
     private val THUMBNAIL_MAX_AGE_MS = 24 * 60 * 60 * 1000L
-    private var volumeKeysEnabled = false
-    private var volumeEventsSink: EventChannel.EventSink? = null
 
     private var pipAutoEnterEnabled = false
 
@@ -205,7 +204,6 @@ class MainActivity : FlutterActivity() {
                 else -> result.notImplemented()
             }
         }
-
         cleanupOldThumbnails()
 
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, THUMBNAIL_CHANNEL).setMethodCallHandler { call, result ->
@@ -271,7 +269,7 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean, newConfig: android.content.res.Configuration?) {
+    override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean, newConfig: android.content.res.Configuration) {
         super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
         val engine = flutterEngine
         if (engine != null) {
