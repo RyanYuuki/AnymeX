@@ -635,6 +635,12 @@ class Settings extends GetxController {
     PlayerSettingsKeys.enableHoldToSeek.set(value);
   }
 
+  bool get enableSlideToSeek => _getPlayerSetting((s) => s.enableSlideToSeek);
+  set enableSlideToSeek(bool value) {
+    playerSettings.update((s) => s?.enableSlideToSeek = value);
+    PlayerSettingsKeys.enableSlideToSeek.set(value);
+  }
+
   bool get playerMenuAnimation =>
       _getPlayerSetting((s) => s.playerMenuAnimation);
   set playerMenuAnimation(bool value) {

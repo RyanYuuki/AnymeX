@@ -286,6 +286,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
   void _onHorizontalDragStart(DragStartDetails details) {
     if (widget.controller.isLocked.value) return;
     if (_isHolding || _longPressStarted) return;
+    if (!Get.find<Settings>().enableSlideToSeek) return;
 
     _isHorizontalDragging = true;
     _dragStartPlayerPosition = widget.controller.currentPosition.value;
@@ -306,6 +307,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
   void _onHorizontalDragUpdate(DragUpdateDetails details) {
     if (!_isHorizontalDragging) return;
     if (widget.controller.isLocked.value) return;
+    if (!Get.find<Settings>().enableSlideToSeek) return;
 
     final screenWidth = MediaQuery.of(context).size.width;
     const sensitivity = 0.80;
@@ -330,6 +332,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
 
   void _onHorizontalDragEnd(DragEndDetails details) {
     if (!_isHorizontalDragging) return;
+    if (!Get.find<Settings>().enableSlideToSeek) return;
 
     _isHorizontalDragging = false;
 
