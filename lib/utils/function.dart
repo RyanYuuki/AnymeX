@@ -247,7 +247,6 @@ String dateFormatHour(String timestamp) {
 
 List<Chapter> DEpisodeToChapter(List<DEpisode> chapters, String title) {
   return chapters.map((e) {
-    print(e.toJson());
     return Chapter(
       title: e.name,
       link: e.url,
