@@ -1,3 +1,6 @@
+import 'package:anymex/database/isar_models/track.dart';
+import 'package:anymex/database/isar_models/video.dart' show Video;
+
 class WatchiumUser {
   final String id;
   final String username;
@@ -24,12 +27,23 @@ class WatchiumAnimeServer {
   final String serverName;
   final String? quality;
   final String type;
+  // Full stream data (from host, so joiners can play directly)
+  final String? url;
+  final String? originalUrl;
+  final Map<String, String>? headers;
+  final List<WatchiumTrack>? subtitles;
+  final List<WatchiumTrack>? audios;
 
   WatchiumAnimeServer({
     required this.serverId,
     required this.serverName,
     this.quality,
     required this.type,
+    this.url,
+    this.originalUrl,
+    this.headers,
+    this.subtitles,
+    this.audios,
   });
 
   factory WatchiumAnimeServer.fromJson(Map<String, dynamic> json) =>
@@ -37,7 +51,17 @@ class WatchiumAnimeServer {
         serverId: json['serverId'] as String,
         serverName: json['serverName'] as String,
         quality: json['quality'] as String?,
-        type: json['type'] as String,
+        type: json['type'] as String? ?? 'other',
+        url: json['url'] as String?,
+        originalUrl: json['originalUrl'] as String?,
+        headers: (json['headers'] as Map<String, dynamic>?)
+            ?.map((k, v) => MapEntry(k, v.toString())),
+        subtitles: (json['subtitles'] as List?)
+            ?.map((e) => WatchiumTrack.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        audios: (json['audios'] as List?)
+            ?.map((e) => WatchiumTrack.fromJson(e as Map<String, dynamic>))
+            .toList(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -45,7 +69,36 @@ class WatchiumAnimeServer {
         'serverName': serverName,
         'quality': quality,
         'type': type,
+        'url': url,
+        'originalUrl': originalUrl,
+        'headers': headers,
+        'subtitles': subtitles?.map((e) => e.toJson()).toList(),
+        'audios': audios?.map((e) => e.toJson()).toList(),
       };
+
+  /// Convert to a Video model for the player
+  Video toVideo() {
+    return Video(
+      url: url,
+      quality: serverName,
+      originalUrl: originalUrl ?? url,
+      headerKeys: headers?.keys.toList(),
+      headerValues: headers?.values.toList(),
+      subtitles: subtitles?.map((e) => Track(file: e.file, label: e.label)).toList(),
+      audios: audios?.map((e) => Track(file: e.file, label: e.label)).toList(),
+    );
+  }
+}
+
+class WatchiumTrack {
+  final String file;
+  final String label;
+  WatchiumTrack({required this.file, required this.label});
+  factory WatchiumTrack.fromJson(Map<String, dynamic> json) => WatchiumTrack(
+        file: json['file'] as String,
+        label: json['label'] as String,
+      );
+  Map<String, dynamic> toJson() => {'file': file, 'label': label};
 }
 
 class WatchiumAnimeContent {

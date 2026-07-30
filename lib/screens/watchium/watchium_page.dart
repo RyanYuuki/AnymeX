@@ -7,6 +7,7 @@ import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:anymex/widgets/watchium/watchium_server_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -66,7 +67,16 @@ class _WatchiumPageState extends State<WatchiumPage> {
     if (ok) {
       Logger.i('Join by code $code succeeded', 'WATCHIUM_UI');
       if (mounted) {
-        snackBar('Joined room! Open the anime to start watching.');
+        snackBar('Joined room!');
+        // Wait a moment for room state to populate from socket
+        await Future.delayed(const Duration(milliseconds: 1500));
+        final roomState = _watchium.roomState.value;
+        final content = roomState?.content;
+        if (content != null && content.availableServers.isNotEmpty) {
+          if (mounted) {
+            showWatchiumServerSheet(context: context, content: content);
+          }
+        }
       }
     } else {
       final err = _watchium.error.value;
@@ -284,6 +294,21 @@ class _WatchiumPageState extends State<WatchiumPage> {
                   color: theme.colorScheme.onSurface.opaque(0.6),
                 ),
                 const Spacer(),
+                if (roomState.content != null &&
+                    roomState.content!.availableServers.isNotEmpty &&
+                    !_watchium.isHost.value)
+                  TextButton.icon(
+                    onPressed: () {
+                      showWatchiumServerSheet(
+                          context: context,
+                          content: roomState.content!);
+                    },
+                    icon: const Icon(Icons.play_arrow, size: 16),
+                    label: const Text('Play'),
+                    style: TextButton.styleFrom(
+                      foregroundColor: theme.colorScheme.primary,
+                    ),
+                  ),
                 TextButton.icon(
                   onPressed: () {
                     _watchium.leaveRoom();
@@ -372,6 +397,13 @@ class _WatchiumPageState extends State<WatchiumPage> {
                   setState(() => _isLoading = false);
                   if (ok) {
                     snackBar('Joined room ${room.code}!');
+                    // Wait for room state, then show server sheet
+                    await Future.delayed(const Duration(milliseconds: 1500));
+                    final rs = _watchium.roomState.value;
+                    final c = rs?.content;
+                    if (c != null && c.availableServers.isNotEmpty && mounted) {
+                      showWatchiumServerSheet(context: context, content: c);
+                    }
                   } else {
                     errorSnackBar(_watchium.error.value);
                   }
@@ -462,6 +494,13 @@ class _WatchiumPageState extends State<WatchiumPage> {
                             setState(() => _isLoading = false);
                             if (ok) {
                               snackBar('Joined room ${room.code}!');
+                              // Wait for room state, then show server sheet
+                              await Future.delayed(const Duration(milliseconds: 1500));
+                              final rs = _watchium.roomState.value;
+                              final c = rs?.content;
+                              if (c != null && c.availableServers.isNotEmpty && mounted) {
+                                showWatchiumServerSheet(context: context, content: c);
+                              }
                             } else {
                               errorSnackBar(_watchium.error.value);
                             }

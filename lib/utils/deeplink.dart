@@ -9,6 +9,7 @@ import 'package:anymex/screens/watchium/watchium_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:anymex/widgets/watchium/watchium_server_sheet.dart';
 import 'package:anymex_extension_runtime_bridge/ExtensionManager.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:get/get.dart';
@@ -431,6 +432,13 @@ class Deeplink {
     } else {
       Logger.i('Watchium deep link: joined room $code successfully', 'DEEPLINK');
       successSnackBar('Joined room $code!');
+      // Wait for room state to populate from socket
+      await Future.delayed(const Duration(milliseconds: 1500));
+      final rs = watchium.roomState.value;
+      final content = rs?.content;
+      if (content != null && content.availableServers.isNotEmpty && Get.context != null) {
+        showWatchiumServerSheet(context: Get.context!, content: content);
+      }
     }
   }
 }
