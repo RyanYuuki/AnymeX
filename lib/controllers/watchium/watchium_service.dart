@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class WatchiumService extends GetxController {
-  static const _defaultServerUrl = 'https://anymex.duckdns.org:3001';
+  static const _defaultServerUrl = 'http://anymex.duckdns.org:3001';
 
   IO.Socket? _socket;
   String? _token;
