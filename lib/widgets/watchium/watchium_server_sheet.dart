@@ -5,8 +5,11 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/watch/watch_view.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 /// Shows a bottom sheet with servers from the room's content data.
 /// When the user picks a server, the player opens directly.
@@ -22,86 +25,83 @@ void showWatchiumServerSheet({
     return;
   }
 
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: context.colors.surface,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
-    ),
-    builder: (_) => _WatchiumServerSheet(content: content),
+  AnymexSheet.custom(
+    _WatchiumServerSheetContent(content: content),
+    context,
+    showDragHandle: true,
   );
 }
 
-class _WatchiumServerSheet extends StatelessWidget {
+class _WatchiumServerSheetContent extends StatelessWidget {
   final WatchiumAnimeContent content;
-  const _WatchiumServerSheet({required this.content});
+  const _WatchiumServerSheetContent({required this.content});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = context.colors;
     final servers = content.availableServers;
 
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _buildHeader(context, theme),
+        const Divider(height: 1, thickness: 0.5),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+          child: Column(
+            children: servers
+                .map(
+                  (server) => _ServerTile(
+                    server: server,
+                    onTap: () {
+                      Navigator.pop(context);
+                      _openPlayer(context, server);
+                    },
+                  ),
+                )
+                .toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHeader(BuildContext context, ColorScheme theme) {
     return Padding(
-      padding: EdgeInsets.only(
-        left: 16,
-        right: 16,
-        top: 12,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 16,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+      padding: const EdgeInsets.fromLTRB(20, 4, 20, 14),
+      child: Row(
         children: [
-          // Handle bar
           Container(
-            width: 40,
-            height: 4,
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: theme.colorScheme.onSurface.opaque(0.2),
-              borderRadius: BorderRadius.circular(2),
+              color: theme.primaryContainer.opaque(0.3),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(HugeIcons.strokeRoundedPlay,
+                size: 20, color: theme.primary),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const AnymexText(
+                    text: 'Choose Quality',
+                    variant: TextVariant.bold,
+                    size: 16),
+                AnymexText(
+                  text: 'Select streaming server quality to watch',
+                  size: 12,
+                  color: theme.onSurface.opaque(0.5),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 16),
-
-          // Title
-          AnymexText(
-            text: content.animeTitle,
-            size: 16,
-            variant: TextVariant.semiBold,
-            maxLines: 1,
+          AnymexOnTap(
+            onTap: () => Navigator.pop(context),
+            child:
+                Icon(Icons.close_rounded, color: theme.onSurface.opaque(0.5)),
           ),
-          const SizedBox(height: 4),
-          AnymexText(
-            text: 'Episode ${content.episodeNumber}',
-            size: 13,
-            color: theme.colorScheme.onSurface.opaque(0.6),
-          ),
-          const SizedBox(height: 16),
-
-          // Servers header
-          Align(
-            alignment: Alignment.centerLeft,
-            child: AnymexText(
-              text: 'Select Server',
-              size: 13,
-              variant: TextVariant.semiBold,
-              color: theme.colorScheme.onSurface.opaque(0.7),
-            ),
-          ),
-          const SizedBox(height: 8),
-
-          // Server list
-          ...servers.map(
-            (server) => _ServerTile(
-              server: server,
-              content: content,
-              onTap: () {
-                Navigator.pop(context);
-                _openPlayer(context, server);
-              },
-            ),
-          ),
-          const SizedBox(height: 8),
         ],
       ),
     );
@@ -116,19 +116,16 @@ class _WatchiumServerSheet extends StatelessWidget {
       return;
     }
 
-    // Build all video tracks from available servers
     final allTracks = content.availableServers
         .where((s) => s.url != null && s.url!.isNotEmpty)
         .map((s) => s.toVideo())
         .toList();
 
-    // Create a minimal Episode object
     final episode = Episode(
       number: content.episodeNumber.toString(),
       title: 'Episode ${content.episodeNumber}',
     );
 
-    // Create a minimal Media object for the player
     final media = Media(
       id: content.anilistId?.toString() ??
           content.malId?.toString() ??
@@ -156,103 +153,111 @@ class _WatchiumServerSheet extends StatelessWidget {
 
 class _ServerTile extends StatelessWidget {
   final WatchiumAnimeServer server;
-  final WatchiumAnimeContent content;
   final VoidCallback onTap;
 
   const _ServerTile({
     required this.server,
-    required this.content,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = context.colors;
     final hasUrl = server.url != null && server.url!.isNotEmpty;
+    final isHls = server.type.toLowerCase() == 'hls';
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(12),
-          onTap: hasUrl ? onTap : null,
+      padding: const EdgeInsets.only(bottom: 8),
+      child: AnymexOnTap(
+        onTap: hasUrl ? onTap : null,
+        child: Opacity(
+          opacity: hasUrl ? 1.0 : 0.5,
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
+              color: theme.surfaceContainer.opaque(0.3),
+              borderRadius: BorderRadius.circular(14),
               border: Border.all(
-                color: theme.colorScheme.outline.opaque(0.15),
+                color: theme.outline.opaque(0.15),
+                width: 1,
               ),
             ),
             child: Row(
               children: [
-                // Server icon based on type
                 Container(
-                  width: 36,
-                  height: 36,
+                  width: 28,
+                  height: 28,
                   decoration: BoxDecoration(
+                    shape: BoxShape.circle,
                     color: hasUrl
-                        ? theme.colorScheme.primaryContainer
-                        : theme.colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(8),
+                        ? theme.primaryContainer.opaque(0.3)
+                        : theme.surfaceContainerHighest,
                   ),
                   child: Icon(
-                    _typeIcon(server.type),
-                    size: 18,
+                    hasUrl
+                        ? Icons.play_arrow_rounded
+                        : Icons.block,
+                    size: 16,
                     color: hasUrl
-                        ? theme.colorScheme.primary
-                        : theme.colorScheme.onSurface.opaque(0.3),
+                        ? theme.primary
+                        : theme.onSurface.opaque(0.3),
                   ),
                 ),
-                const SizedBox(width: 12),
-                // Server info
+                const SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AnymexText(
-                        text: server.serverName,
+                        text: (server.quality ?? server.serverName)
+                            .toUpperCase(),
+                        variant: TextVariant.bold,
                         size: 14,
-                        variant: TextVariant.semiBold,
+                        maxLines: 10,
                       ),
                       if (server.quality != null) ...[
                         const SizedBox(height: 2),
                         AnymexText(
-                          text: server.quality!,
+                          text: server.serverName.toUpperCase(),
+                          variant: TextVariant.semiBold,
                           size: 11,
-                          color: theme.colorScheme.onSurface.opaque(0.5),
+                          color: theme.onSurface.opaque(0.6),
                         ),
                       ],
                     ],
                   ),
                 ),
-                // Type badge
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: AnymexText(
-                    text: server.type.toUpperCase(),
-                    size: 10,
-                    color: theme.colorScheme.onSurface.opaque(0.5),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                if (!hasUrl)
-                  Icon(
-                    Icons.block,
-                    size: 16,
-                    color: theme.colorScheme.error.opaque(0.6),
+                if (isHls)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 7, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(6),
+                      border:
+                          Border.all(color: Colors.orange.withOpacity(0.3)),
+                    ),
+                    child: const Text('HLS',
+                        style: TextStyle(
+                            fontSize: 10,
+                            color: Colors.orange,
+                            fontWeight: FontWeight.w600)),
                   )
                 else
-                  Icon(
-                    Icons.play_arrow,
-                    size: 20,
-                    color: theme.colorScheme.primary,
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 7, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: Colors.green.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(6),
+                      border:
+                          Border.all(color: Colors.green.withOpacity(0.3)),
+                    ),
+                    child: const Text('Direct',
+                        style: TextStyle(
+                            fontSize: 10,
+                            color: Colors.green,
+                            fontWeight: FontWeight.w600)),
                   ),
               ],
             ),
@@ -260,20 +265,5 @@ class _ServerTile extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  IconData _typeIcon(String type) {
-    switch (type.toLowerCase()) {
-      case 'hls':
-        return Icons.stream;
-      case 'mp4':
-        return Icons.video_file;
-      case 'dash':
-        return Icons.dns;
-      case 'embedded':
-        return Icons.web;
-      default:
-        return Icons.tv;
-    }
   }
 }
