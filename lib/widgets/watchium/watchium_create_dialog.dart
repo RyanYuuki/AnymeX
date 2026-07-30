@@ -1,9 +1,4 @@
-import 'dart:io';
-
-import 'package:anymex/controllers/watchium/watchium_models.dart';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
-import 'package:anymex/database/isar_models/video.dart' as anymex_model;
-import 'package:anymex/models/Media/media.dart' as anymex;
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,12 +6,10 @@ import 'package:get/get.dart';
 
 class WatchiumCreateDialog extends StatefulWidget {
   final PlayerController playerController;
-  final anymex.Media anilistData;
 
   const WatchiumCreateDialog({
     super.key,
     required this.playerController,
-    required this.anilistData,
   });
 
   @override
@@ -31,6 +24,9 @@ class _WatchiumCreateDialogState extends State<WatchiumCreateDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final animeTitle = widget.playerController.anilistData.title;
+
     return Dialog(
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -41,13 +37,12 @@ class _WatchiumCreateDialogState extends State<WatchiumCreateDialog> {
             const SizedBox(height: 12),
             Text(
               'Watch Together',
-              style: Theme.of(context).textTheme.titleLarge
-                  ?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 4),
             Text(
-              widget.anilistData.title?.userPreferred ?? 'Unknown Anime',
-              style: Theme.of(context).textTheme.bodySmall,
+              animeTitle,
+              style: theme.textTheme.bodySmall,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -109,29 +104,20 @@ class _WatchiumCreateDialogState extends State<WatchiumCreateDialog> {
                 ),
               ),
             ] else ...[
-              // Show room will be created info
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .surfaceContainerHighest,
+                  color: theme.colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Row(
+                child: const Row(
                   children: [
-                    const Icon(Icons.info_outline, size: 18),
-                    const SizedBox(width: 8),
+                    Icon(Icons.info_outline, size: 18),
+                    SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'A room will be created. Share the code with friends.',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withValues(alpha: 0.7),
-                        ),
+                        'A room will be created. Share the code or link with friends.',
+                        style: TextStyle(fontSize: 12),
                       ),
                     ),
                   ],
@@ -186,28 +172,14 @@ class _WatchiumCreateDialogState extends State<WatchiumCreateDialog> {
     try {
       final watchium = Get.find<WatchiumService>();
       final episode = widget.playerController.currentEpisode.value;
-
-      // Build available servers from video tracks
-      final servers = widget.videoTracks.map((v) {
-        return WatchiumAnimeServer(
-          serverId: v.quality?.replaceAll(' ', '-') ?? 'server-${v.quality ?? "0"}',
-          serverName: v.quality ?? 'Server',
-          quality: v.quality,
-          type: 'hls', // default
-        );
-      }).toList();
+      final anilistData = widget.playerController.anilistData;
 
       final code = await watchium.createRoom(
-        animeTitle:
-            widget.anilistData.title?.userPreferred ?? 'Unknown',
+        animeTitle: anilistData.title,
         episodeNumber: int.tryParse(episode.number) ?? 1,
-        anilistId: widget.anilistData.id is int
-            ? widget.anilistData.id as int
-            : int.tryParse(widget.anilistData.id?.toString() ?? ''),
-        malId: widget.anilistData.idMal,
-        animeCoverImage: widget.anilistData.cover?.extraLarge ??
-            widget.anilistData.cover?.large,
-        availableServers: servers,
+        anilistId: int.tryParse(anilistData.id),
+        malId: int.tryParse(anilistData.idMal),
+        animeCoverImage: anilistData.cover,
       );
 
       if (code != null) {
@@ -250,6 +222,8 @@ class _WatchiumCreateDialogState extends State<WatchiumCreateDialog> {
   }
 
   void _showCodeDialog(String code) {
+    final deepLink = 'anymex://watchium/join/$code';
+
     Get.dialog(
       Dialog(
         child: Padding(
@@ -261,19 +235,18 @@ class _WatchiumCreateDialogState extends State<WatchiumCreateDialog> {
               const SizedBox(height: 12),
               const Text(
                 'Room Created!',
-                style: TextStyle(
-                    fontWeight: FontWeight.bold, fontSize: 18),
+                style:
+                    TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
               const SizedBox(height: 16),
-              Text(
+              const Text(
                 'Share this code with friends:',
-                style: TextStyle(
-                    color: Colors.grey, fontSize: 13),
+                style: TextStyle(color: Colors.grey, fontSize: 13),
               ),
               const SizedBox(height: 8),
               Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 24, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 decoration: BoxDecoration(
                   color: Theme.of(Get.context!)
                       .colorScheme
@@ -288,14 +261,32 @@ class _WatchiumCreateDialogState extends State<WatchiumCreateDialog> {
                       letterSpacing: 4),
                 ),
               ),
-              const SizedBox(height: 12),
-              FilledButton.icon(
-                onPressed: () {
-                  Clipboard.setData(ClipboardData(text: code));
-                  Get.snackbar('Copied', 'Room code copied to clipboard');
-                },
-                icon: const Icon(Icons.copy),
-                label: const Text('Copy Code'),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: code));
+                        Get.snackbar('Copied', 'Room code copied to clipboard');
+                      },
+                      icon: const Icon(Icons.copy, size: 18),
+                      label: const Text('Copy Code'),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: FilledButton.icon(
+                      onPressed: () {
+                        Clipboard.setData(
+                            ClipboardData(text: deepLink));
+                        Get.snackbar('Copied', 'Invite link copied!');
+                      },
+                      icon: const Icon(Icons.share, size: 18),
+                      label: const Text('Copy Link'),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 8),
               TextButton(
@@ -326,9 +317,7 @@ class _TabButton extends StatelessWidget {
     return Material(
       color: selected
           ? Theme.of(context).colorScheme.primary
-          : Theme.of(context)
-              .colorScheme
-              .surfaceContainerHighest,
+          : Theme.of(context).colorScheme.surfaceContainerHighest,
       borderRadius: BorderRadius.circular(8),
       child: InkWell(
         onTap: onTap,
@@ -341,9 +330,7 @@ class _TabButton extends StatelessWidget {
               style: TextStyle(
                 color: selected
                     ? Theme.of(context).colorScheme.onPrimary
-                    : Theme.of(context)
-                        .colorScheme
-                        .onSurface,
+                    : Theme.of(context).colorScheme.onSurface,
                 fontWeight: selected ? FontWeight.w600 : null,
                 fontSize: 13,
               ),

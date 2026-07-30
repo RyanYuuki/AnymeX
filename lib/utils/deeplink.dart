@@ -1,9 +1,11 @@
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/anime/watch/controls/themes/setup/player_control_theme_registry.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex/screens/watchium/watchium_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/ExtensionManager.dart';
@@ -32,6 +34,11 @@ class Deeplink {
 
     if (_isThemeDeepLink(uri)) {
       _handleThemeDeepLink(uri);
+      return;
+    }
+
+    if (_isWatchiumDeepLink(uri)) {
+      _handleWatchiumDeepLink(uri);
       return;
     }
 
@@ -356,6 +363,63 @@ class Deeplink {
 
   static String? _extractNumericId(String raw) {
     return RegExp(r'\d+').firstMatch(raw)?.group(0);
+  }
+
+  // ---- Watchium Deep Link ----
+
+  static bool _isWatchiumDeepLink(Uri uri) {
+    if (uri.host.toLowerCase() != 'watchium') return false;
+    final segments = _compactSegments(uri.pathSegments);
+    return segments.isNotEmpty && segments.first.toLowerCase() == 'join';
+  }
+
+  static Future<void> _handleWatchiumDeepLink(Uri uri) async {
+    final segments = _compactSegments(uri.pathSegments);
+    // URI: anymex://watchium/join/ABC123
+    if (segments.length < 2) {
+      errorSnackBar('Invalid Watch Together link');
+      return;
+    }
+
+    final code = segments[1].toUpperCase();
+    if (code.length != 6) {
+      errorSnackBar('Invalid room code in link');
+      return;
+    }
+
+    // Wait for services to be ready
+    int attempts = 0;
+    while (!Get.isRegistered<WatchiumService>() && attempts < 50) {
+      await Future.delayed(const Duration(milliseconds: 200));
+      attempts++;
+    }
+
+    if (!Get.isRegistered<WatchiumService>()) {
+      errorSnackBar('App is still loading, try again shortly.');
+      return;
+    }
+
+    final watchium = Get.find<WatchiumService>();
+    successSnackBar('Joining room $code...');
+
+    // First get room info to navigate to the anime
+    final roomInfo = await watchium.getRoomInfo(code);
+
+    if (roomInfo == null) {
+      errorSnackBar('Room not found or expired');
+      return;
+    }
+
+    // Navigate to Watch Together page which shows the joined room
+    navigate(() => const WatchiumPage());
+
+    // Join the room
+    final ok = await watchium.handleDeepLinkJoin(code);
+    if (!ok) {
+      errorSnackBar('Failed to join room: ${watchium.error.value}');
+    } else {
+      successSnackBar('Joined room $code!');
+    }
   }
 }
 

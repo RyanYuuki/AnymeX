@@ -1,11 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/watchium/watchium_models.dart';
 import 'package:anymex/database/data_keys/keys.dart';
-import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -56,7 +54,7 @@ class WatchiumService extends GetxController {
 
       if (serviceHandler.serviceType.value == ServicesType.anilist) {
         provider = 'anilist';
-      } else if (serviceHandler.serviceType.value == ServicesType.myanimelist) {
+      } else if (serviceHandler.serviceType.value == ServicesType.mal) {
         provider = 'mal';
       } else if (serviceHandler.serviceType.value == ServicesType.simkl) {
         provider = 'simkl';
@@ -391,6 +389,68 @@ class WatchiumService extends GetxController {
       'emoji': emoji,
       'clientId': _lastClientId,
     });
+  }
+
+  // ---- List Rooms ----
+
+  final RxList<WatchiumRoomState> publicRooms = RxList();
+  final RxBool isLoadingRooms = false.obs;
+
+  Future<List<WatchiumRoomState>> listRooms() async {
+    try {
+      final ok = await login();
+      if (!ok) return [];
+
+      final response = await http.get(
+        Uri.parse('$serverUrl/api/watch-party'),
+        headers: {
+          'Authorization': 'Bearer $_token',
+        },
+      );
+
+      if (response.statusCode != 200) return [];
+
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      final rooms = (data['rooms'] as List)
+          .map((e) => WatchiumRoomState.fromJson(e as Map<String, dynamic>))
+          .toList();
+      publicRooms.assignAll(rooms);
+      return rooms;
+    } catch (e) {
+      error.value = 'Failed to list rooms: $e';
+      return [];
+    }
+  }
+
+  // ---- Get Room Info (for deep link join) ----
+
+  Future<WatchiumRoomState?> getRoomInfo(String code) async {
+    try {
+      final ok = await login();
+      if (!ok) return null;
+
+      final response = await http.get(
+        Uri.parse('$serverUrl/api/watch-party/$code'),
+        headers: {
+          'Authorization': 'Bearer $_token',
+        },
+      );
+
+      if (response.statusCode != 200) return null;
+
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      return WatchiumRoomState.fromJson(data);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // ---- Deep Link Join ----
+
+  Future<bool> handleDeepLinkJoin(String code) async {
+    final ok = await joinRoom(code);
+    if (!ok) return false;
+    return true;
   }
 
   @override

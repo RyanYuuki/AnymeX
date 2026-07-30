@@ -123,6 +123,11 @@ final List<_BottomControl> _bottomControls = [
       id: 'aspect_ratio', name: 'Aspect Ratio', icon: Icons.fit_screen),
   const _BottomControl(
       id: 'external_player', name: 'External Player', icon: Icons.launch_rounded),
+  const _BottomControl(
+      id: 'watch_together',
+      name: 'Watch Together',
+      icon: Icons.people_outline_rounded,
+      defaultPosition: 'right'),
 ];
 
 class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStateMixin {

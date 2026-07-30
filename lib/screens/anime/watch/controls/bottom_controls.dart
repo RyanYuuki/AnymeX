@@ -5,6 +5,8 @@ import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart';
+import 'package:anymex/controllers/watchium/watchium_service.dart';
+import 'package:anymex/widgets/watchium/watchium_create_dialog.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -328,6 +330,22 @@ class BottomControls extends StatelessWidget {
         tooltip: 'External Player',
         compact: true,
       ),
+      'watch_together': Obx(() {
+        final watchium = Get.find<WatchiumService>();
+        return ControlButton(
+          icon: watchium.inRoom ? Icons.people_rounded : Icons.people_outline_rounded,
+          onPressed: () {
+            showDialog(
+              context: Get.context!,
+              builder: (ctx) => WatchiumCreateDialog(
+                playerController: controller,
+              ),
+            );
+          },
+          tooltip: 'Watch Together',
+          compact: true,
+        );
+      }),
     };
 
     List<Widget> buildButtonList(List<String> ids) {
