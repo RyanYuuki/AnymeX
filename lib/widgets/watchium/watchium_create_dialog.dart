@@ -336,7 +336,7 @@ class _WatchiumCreateDialogState extends State<WatchiumCreateDialog> {
               ),
               const SizedBox(height: 8),
               TextButton(
-                onPressed: () => Get.back(closeOverlays: true),
+                onPressed: () => Get.back(),
                 child: const Text('Close'),
               ),
             ],

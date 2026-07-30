@@ -208,11 +208,9 @@ class WatchiumService extends GetxController {
 
     _socket!.on('party:chat', (data) {
       final msg = WatchiumChatMessage.fromJson(data as Map<String, dynamic>);
-      if (msg.clientId != _lastClientId) {
-        chatMessages.add(msg);
-        if (chatMessages.length > 100) chatMessages.removeAt(0);
-        Logger.d('party:chat from ${msg.username}: "${msg.text}"', 'WATCHIUM');
-      }
+      chatMessages.add(msg);
+      if (chatMessages.length > 100) chatMessages.removeAt(0);
+      Logger.d('party:chat from ${msg.username}: "${msg.text}"', 'WATCHIUM');
     });
 
     _socket!.on('party:reaction', (data) {
