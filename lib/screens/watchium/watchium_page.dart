@@ -96,7 +96,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
 
             // Current room status
             Obx(() {
-              if (_watchium.inRoom) {
+              if (_watchium.inRoom.value) {
                 return _buildCurrentRoomSection(theme);
               }
               return const SizedBox.shrink();

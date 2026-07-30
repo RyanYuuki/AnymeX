@@ -333,7 +333,7 @@ class BottomControls extends StatelessWidget {
       'watch_together': Obx(() {
         final watchium = Get.find<WatchiumService>();
         return ControlButton(
-          icon: watchium.inRoom ? Icons.people_rounded : Icons.people_outline_rounded,
+          icon: watchium.inRoom.value ? Icons.people_rounded : Icons.people_outline_rounded,
           onPressed: () {
             showDialog(
               context: Get.context!,

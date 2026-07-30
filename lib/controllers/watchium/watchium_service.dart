@@ -32,7 +32,11 @@ class WatchiumService extends GetxController {
   String get serverUrl =>
       WatchiumKeys.serverUrl.get<String>(_defaultServerUrl);
 
-  bool get inRoom => _currentRoomCode != null && _socket?.connected == true;
+  final RxBool inRoom = false.obs;
+
+  void _updateInRoom() {
+    inRoom.value = _currentRoomCode != null && _socket?.connected == true;
+  }
 
   // ---- Auth ----
 
@@ -107,17 +111,20 @@ class WatchiumService extends GetxController {
       isConnected.value = true;
       isConnecting.value = false;
       error.value = '';
+      _updateInRoom();
     });
 
     _socket!.on('disconnect', (_) {
       isConnected.value = false;
       _stopHeartbeat();
+      _updateInRoom();
     });
 
     _socket!.on('connect_error', (err) {
       isConnected.value = false;
       isConnecting.value = false;
       error.value = 'Connection failed';
+      _updateInRoom();
     });
 
     _socket!.on('party:state', (data) {
@@ -264,6 +271,7 @@ class WatchiumService extends GetxController {
       await Future.delayed(const Duration(seconds: 1));
       _socket?.emitWithAck('party:join', {'code': code});
       _currentRoomCode = code;
+      _updateInRoom();
       return code;
     } catch (e) {
       error.value = 'Failed to create room: $e';
@@ -282,6 +290,7 @@ class WatchiumService extends GetxController {
       await Future.delayed(const Duration(seconds: 1));
       _socket?.emitWithAck('party:join', {'code': code});
       _currentRoomCode = code;
+      _updateInRoom();
       return true;
     } catch (e) {
       error.value = 'Failed to join room: $e';
@@ -300,6 +309,7 @@ class WatchiumService extends GetxController {
     _currentRoomCode = null;
     _isHost = false;
     isHost.value = false;
+    inRoom.value = false;
     roomState.value = null;
     chatMessages.clear();
     reactions.clear();
@@ -310,6 +320,7 @@ class WatchiumService extends GetxController {
     _socket?.dispose();
     _socket = null;
     isConnected.value = false;
+    inRoom.value = false;
     _token = null;
     _userId = null;
   }

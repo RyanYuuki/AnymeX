@@ -10,7 +10,7 @@ class WatchiumOverlay extends StatelessWidget {
     final watchium = Get.find<WatchiumService>();
 
     return Obx(() {
-      if (!watchium.inRoom) return const SizedBox.shrink();
+      if (!watchium.inRoom.value) return const SizedBox.shrink();
       final state = watchium.roomState.value;
       if (state == null) return const SizedBox.shrink();
 
