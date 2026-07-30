@@ -17,7 +17,7 @@ class WatchiumService extends GetxController {
   String? _userId;
   String? _currentRoomCode;
   bool _isHost = false;
-  Timer? _heartbeatTimer;
+  Timer? _heartbeatTimer; // kept for backwards compatibility; sync controller manages its own timer
   String? _lastClientId;
 
   // Reactive state
@@ -388,14 +388,17 @@ class WatchiumService extends GetxController {
     sendControl('rate', rate: rate);
   }
 
-  void startHeartbeat() {
-    Logger.d('Heartbeat started', 'WATCHIUM');
-    _stopHeartbeat();
-    _heartbeatTimer = Timer.periodic(const Duration(seconds: 3), (_) {
-      if (_currentRoomCode == null || !_isHost) return;
-      _socket?.emit('party:heartbeat', {
-        'code': _currentRoomCode,
-      });
+  /// Sends a single heartbeat with the current playback position and state.
+  /// Called by [WatchiumSyncController] on a 3-second periodic timer.
+  void sendHeartbeat(double positionSec, bool isPlaying) {
+    if (_currentRoomCode == null || !_isHost) {
+      Logger.w('sendHeartbeat skipped: not in room or not host', 'WATCHIUM');
+      return;
+    }
+    _socket?.emit('party:heartbeat', {
+      'code': _currentRoomCode,
+      'positionSec': positionSec,
+      'isPlaying': isPlaying,
     });
   }
 

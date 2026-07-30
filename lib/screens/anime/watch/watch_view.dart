@@ -1,3 +1,5 @@
+import 'package:anymex/controllers/watchium/watchium_service.dart';
+import 'package:anymex/controllers/watchium/watchium_sync_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/database/isar_models/video.dart' as model;
@@ -53,10 +55,27 @@ class _WatchScreenState extends State<WatchScreen> {
         widget.anilistData,
         widget.episodeTracks,
         shouldTrack: widget.shouldTrack));
+    _initWatchiumSync();
+  }
+
+  void _initWatchiumSync() {
+    try {
+      final watchium = Get.find<WatchiumService>();
+      if (watchium.inRoom.value) {
+        Get.put(WatchiumSyncController(playerController: controller));
+      }
+    } catch (_) {
+      // WatchiumService not registered — not in a watch-together session
+    }
   }
 
   @override
   void dispose() {
+    try {
+      Get.delete<WatchiumSyncController>();
+    } catch (_) {
+      // Not registered — nothing to clean up
+    }
     Get.delete<PlayerController>();
     super.dispose();
   }
