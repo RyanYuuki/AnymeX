@@ -31,7 +31,9 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
   final em = Get.find<ExtensionManager>();
   final controller = Get.find<SourceController>();
 
-  bool get _isPluginInstalled => AnymeXRuntimeBridge.isPluginInstalled;
+  bool get _isPluginInstalled =>
+      AnymeXRuntimeBridge.isPluginInstalled ||
+      AnymeXRuntimeBridge.controller.isReady.value;
 
   int _managerIndex = 0;
   ItemType _tab = ItemType.anime;

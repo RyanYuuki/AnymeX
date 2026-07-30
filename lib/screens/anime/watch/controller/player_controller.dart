@@ -10,8 +10,10 @@ import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/controllers/track/track_binding_controller.dart';
 import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/episode.dart';
@@ -1270,7 +1272,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void _loadLocalSubtitles() async {
-    if (offlineVideoPath == null) return;
+    externalSubs.value = [];
+    embeddedSubs.value = [];
+    final videoPath = selectedVideo.value?.url ?? offlineVideoPath;
+    if (videoPath == null) return;
 
     if (selectedVideo.value?.subtitles != null &&
         selectedVideo.value!.subtitles!.isNotEmpty) {
@@ -1299,7 +1304,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
 
     try {
-      final videoFile = File(offlineVideoPath!);
+      final videoFile = File(videoPath);
       final parentDir = videoFile.parent;
       final dirs = await parentDir.list().whereType<Directory>().toList();
       final expectedSubsDirName = 'Episode_${currentEpisode.value.number}_subs';
@@ -1433,8 +1438,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       final videoPath = episode.link;
       if (videoPath == null || videoPath.isEmpty) return;
       _basePlayer.pause();
-      DynamicKeys.offlineVideoProgress
-          .set(offlineVideoPath, currentPosition.value.inMilliseconds);
+      final oldPath = selectedVideo.value?.url ?? offlineVideoPath;
+      if (oldPath != null) {
+        DynamicKeys.offlineVideoProgress
+            .set(oldPath, currentPosition.value.inMilliseconds);
+      }
       resetListeners();
       isEpisodePaneOpened.value = false;
       currentEpisode.value = episode;
@@ -1445,13 +1453,19 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       );
       await _basePlayer.setRate(_sessionSpeed);
       // Update the selected video and offline path tracking
-      selectedVideo.value = model.Video(
-        url: videoPath,
-        quality: 'Offline',
-        originalUrl: videoPath,
-        headerKeys: [],
-        headerValues: [],
-      );
+      final offlineVideo = episode.videoTracks?.firstWhereOrNull((v) => v.url == videoPath) ??
+          model.Video(
+            url: videoPath,
+            quality: 'Offline',
+            originalUrl: videoPath,
+            headerKeys: [],
+            headerValues: [],
+            subtitles: episode.videoTracks?.firstOrNull?.subtitles,
+          );
+      episodeTracks.value = [offlineVideo];
+      selectedVideo.value = offlineVideo;
+      
+      _loadLocalSubtitles();
       applySavedProfile();
       return;
     }
@@ -2534,6 +2548,33 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     if (!shouldTrack) return;
     if (isOffline.value) {
       Logger.i('Offline mode: skipping online tracking');
+      return;
+    }
+
+    final isExtension =
+        anilistData.serviceType == ServicesType.extensions;
+    if (isExtension) {
+      try {
+        if (!Get.isRegistered<TrackBindingController>()) return;
+        final trackCtrl = Get.find<TrackBindingController>();
+        final mediaId = anilistData.id;
+        if (!trackCtrl.hasAnyBinding(mediaId)) return;
+
+        final currEpisodeNum = currentEpisode.value.number.toInt();
+        final newProgress =
+            hasCrossedLimit ? currEpisodeNum : currEpisodeNum - 1;
+        if (newProgress <= 0) return;
+
+        await trackCtrl.pushProgress(mediaId, newProgress,
+            isAnime: true,
+            status: hasCrossedLimit && !hasNextEpisode
+                ? 'COMPLETED'
+                : null);
+        Logger.i(
+            'Extension tracking completed for episode $currEpisodeNum, progress: $newProgress');
+      } catch (e) {
+        Logger.i('Failed to track extension media: $e');
+      }
       return;
     }
 

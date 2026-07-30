@@ -18,6 +18,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/widgets/anime_stats.dart';
 import 'package:anymex/screens/anime/widgets/comments/comments_section.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
+import 'package:anymex/screens/downloads/widgets/track_sheet.dart';
 import 'package:anymex/screens/anime/widgets/custom_list_dialog.dart';
 import 'package:anymex/screens/anime/widgets/episode_section.dart';
 import 'package:anymex/screens/anime/widgets/list_editor.dart';
@@ -64,6 +65,7 @@ class AnimeDetailsPage extends StatefulWidget {
 }
 
 class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
+  bool _isTransitionFinished = false;
   Media? anilistData;
   Rxn<TrackedMedia> currentAnime = Rxn<TrackedMedia>();
   final anilist = Get.find<AnilistAuth>();
@@ -169,6 +171,37 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     });
 
     _fetchAnilistData();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final route = ModalRoute.of(context);
+      if (route == null || route.animation == null) {
+        if (mounted) {
+          setState(() {
+            _isTransitionFinished = true;
+          });
+        }
+      } else {
+        if (route.animation!.isCompleted) {
+          if (mounted) {
+            setState(() {
+              _isTransitionFinished = true;
+            });
+          }
+        } else {
+          void statusListener(AnimationStatus status) {
+            if (status == AnimationStatus.completed) {
+              route.animation!.removeStatusListener(statusListener);
+              if (mounted) {
+                setState(() {
+                  _isTransitionFinished = true;
+                });
+              }
+            }
+          }
+          route.animation!.addStatusListener(statusListener);
+        }
+      }
+    });
   }
 
   Future<void> _syncMediaIds() async {
@@ -569,8 +602,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   Widget build(BuildContext context) {
     return PlatformBuilder(
       strictMode: !kDebugMode,
-      androidBuilder: _buildAndroidLayout(context),
-      desktopBuilder: _buildDesktopLayout(context),
+      androidWidgetBuilder: (context) => _buildAndroidLayout(context),
+      desktopWidgetBuilder: (context) => _buildDesktopLayout(context),
     );
   }
 
@@ -705,6 +738,18 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                                 const SizedBox(width: 7),
                                 _buildActionIconButton(
                                   context: context,
+                                  icon: Icons.track_changes_rounded,
+                                  onTap: () => showTrackSheetForMedia(
+                                    context,
+                                    mediaId: widget.media.id,
+                                    title: widget.media.title,
+                                    poster: widget.media.poster,
+                                    isManga: false,
+                                  ),
+                                ),
+                                const SizedBox(width: 7),
+                                _buildActionIconButton(
+                                  context: context,
                                   icon: Icons.share_rounded,
                                   onTap: _showShareOptions,
                                 ),
@@ -744,6 +789,9 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   }
 
   Widget _buildInfoPageBody(BuildContext context) {
+    if (!_isTransitionFinished) {
+      return const Center(child: AnymexProgressIndicator());
+    }
     return SingleChildScrollView(
       padding: const EdgeInsets.only(bottom: 120),
       child: anilistData != null
@@ -753,6 +801,9 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   }
 
   Widget _buildEpisodePageBody(BuildContext context) {
+    if (!_isTransitionFinished) {
+      return const Center(child: AnymexProgressIndicator());
+    }
     return CustomScrollView(
       slivers: [
         EpisodeSection(
@@ -772,6 +823,9 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   }
 
   Widget _buildCommentsPageBody(BuildContext context) {
+    if (!_isTransitionFinished) {
+      return const Center(child: AnymexProgressIndicator());
+    }
     return SingleChildScrollView(
       padding: const EdgeInsets.only(bottom: 120),
       child: _buildCommentsSection(context),

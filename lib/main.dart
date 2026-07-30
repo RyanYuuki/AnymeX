@@ -2,11 +2,14 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:rhttp/rhttp.dart';
+
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/screens/downloads/controller/download_controller.dart';
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/track/track_binding_controller.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/controllers/services/mal/mal_service.dart';
@@ -152,6 +155,9 @@ void main(List<String> args) async {
 
     await Logger.init();
 
+    await safeCall(() => Rhttp.init(),
+        errorMessage: 'Failed to initialize Rhttp');
+
     await safeCall(() => dotenv.load(fileName: ".env"),
         errorMessage: 'Failed to load .env file');
 
@@ -250,6 +256,7 @@ void _initializeGetxController() async {
       Get.put(SourceController());
     }
     Get.put(ServiceHandler());
+    Get.put(TrackBindingController());
     Get.put(GreetingController());
     Get.put(CommentumService());
     Get.put(CommentPreloader());

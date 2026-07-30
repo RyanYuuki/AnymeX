@@ -7,6 +7,7 @@ import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/community/user_recommendations_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/big_carousel_gate.dart';
 import 'package:anymex/widgets/common/cards/base_card.dart';
@@ -404,7 +405,9 @@ class _UnderratedCard extends StatelessWidget {
   void _navigateToDetails(BuildContext context) {
     final media = item.media;
     final tag = 'underrated-${media.id}';
-    if (type == ItemType.manga) {
+    if (type == ItemType.novel) {
+      navigateWithAnimation(() => NovelDetailsPage(media: media));
+    } else if (type == ItemType.manga) {
       navigateWithAnimation(() => MangaDetailsPage(media: media, tag: tag));
     } else {
       navigateWithAnimation(() => AnimeDetailsPage(media: media, tag: tag));

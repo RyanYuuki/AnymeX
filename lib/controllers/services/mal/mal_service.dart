@@ -23,6 +23,7 @@ import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
 import 'package:anymex/screens/library/online/manga_list.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/fallback/fallback_manga.dart';
 import 'package:anymex/utils/function.dart';
@@ -64,6 +65,10 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
   void _openHomeButtonMedia(Media media) {
     final tag = 'home-button-${media.serviceType.name}-${media.id}';
+    if (media.mediaType == ItemType.novel) {
+      navigate(() => NovelDetailsPage(media: media));
+      return;
+    }
     if (media.mediaType == ItemType.manga) {
       navigate(() => MangaDetailsPage(media: media, tag: tag));
       return;
@@ -290,74 +295,82 @@ class MalService extends GetxController implements BaseService, OnlineService {
         .toList();
     return [
       if (isLoggedIn.value) ...[
-        LayoutBuilder(builder: (context, constraints) {
-          final width = isDesktop ? 300.0 : constraints.maxWidth / 2 - 40;
-          final overflow = constraints.maxWidth < 900;
-          final overflowSecond =
-              !isDesktop ? false : constraints.maxWidth < 600;
-          final animeButtonMedia = _firstMediaWithCover(trendingAnimes);
-          final mangaButtonMedia = _firstMediaWithCover(
-            trendingManga.isNotEmpty ? trendingManga : trendingMangas,
-          );
-          final otherButtonMedia = _lastMediaWithCover([
-            ...popularAnimes,
-            ...(topManga.isNotEmpty ? topManga : popularMangas),
-            ...(trendingManga.isNotEmpty ? trendingManga : trendingMangas),
-            ...trendingAnimes,
-          ]);
-          return Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 15,
-            children: [
-              ImageButton(
-                width: width,
-                height: !isDesktop ? 70 : 90,
-                buttonText: "ANIME LIST",
-                backgroundImage: animeButtonMedia?.cover ?? '',
-                borderRadius: 16.multiplyRadius(),
-                onPressed: () {
-                  navigate(() => const AnimeList());
-                },
-                onLongPress: animeButtonMedia == null
-                    ? null
-                    : () => _openHomeButtonMedia(animeButtonMedia),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: overflowSecond ? 8.0 : 0),
-                child: ImageButton(
+        Obx(() {
+          trendingAnimes.length;
+          trendingMangas.length;
+          popularAnimes.length;
+          popularMangas.length;
+          trendingManga.length;
+          topManga.length;
+          return LayoutBuilder(builder: (context, constraints) {
+            final width = isDesktop ? 300.0 : constraints.maxWidth / 2 - 40;
+            final overflow = constraints.maxWidth < 900;
+            final overflowSecond =
+                !isDesktop ? false : constraints.maxWidth < 600;
+            final animeButtonMedia = _firstMediaWithCover(trendingAnimes);
+            final mangaButtonMedia = _firstMediaWithCover(
+              trendingManga.isNotEmpty ? trendingManga : trendingMangas,
+            );
+            final otherButtonMedia = _lastMediaWithCover([
+              ...popularAnimes,
+              ...(topManga.isNotEmpty ? topManga : popularMangas),
+              ...(trendingManga.isNotEmpty ? trendingManga : trendingMangas),
+              ...trendingAnimes,
+            ]);
+            return Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 15,
+              children: [
+                ImageButton(
                   width: width,
                   height: !isDesktop ? 70 : 90,
-                  buttonText: "MANGA LIST",
+                  buttonText: "ANIME LIST",
+                  backgroundImage: animeButtonMedia?.cover ?? '',
                   borderRadius: 16.multiplyRadius(),
-                  backgroundImage: mangaButtonMedia?.cover ?? '',
                   onPressed: () {
-                    navigate(() => const AnilistMangaList());
+                    navigate(() => const AnimeList());
                   },
-                  onLongPress: mangaButtonMedia == null
+                  onLongPress: animeButtonMedia == null
                       ? null
-                      : () => _openHomeButtonMedia(mangaButtonMedia),
+                      : () => _openHomeButtonMedia(animeButtonMedia),
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: overflow ? 8.0 : 0),
-                child: ImageButton(
-                  width: constraints.maxWidth > (width * 3)
-                      ? width
-                      : width * 2 + 15,
-                  height: !isDesktop ? 70 : 90,
-                  buttonText: "OTHER",
-                  borderRadius: 16.multiplyRadius(),
-                  backgroundImage: otherButtonMedia?.cover ?? '',
-                  onPressed: () {
-                    navigate(() => const OtherFeaturesPage());
-                  },
-                  onLongPress: otherButtonMedia == null
-                      ? null
-                      : () => _openHomeButtonMedia(otherButtonMedia),
+                Padding(
+                  padding: EdgeInsets.only(top: overflowSecond ? 8.0 : 0),
+                  child: ImageButton(
+                    width: width,
+                    height: !isDesktop ? 70 : 90,
+                    buttonText: "MANGA LIST",
+                    borderRadius: 16.multiplyRadius(),
+                    backgroundImage: mangaButtonMedia?.cover ?? '',
+                    onPressed: () {
+                      navigate(() => const AnilistMangaList());
+                    },
+                    onLongPress: mangaButtonMedia == null
+                        ? null
+                        : () => _openHomeButtonMedia(mangaButtonMedia),
+                  ),
                 ),
-              ),
-            ],
-          );
+                Padding(
+                  padding: EdgeInsets.only(top: overflow ? 8.0 : 0),
+                  child: ImageButton(
+                    width: constraints.maxWidth > (width * 3)
+                        ? width
+                        : width * 2 + 15,
+                    height: !isDesktop ? 70 : 90,
+                    buttonText: "OTHER",
+                    borderRadius: 16.multiplyRadius(),
+                    backgroundImage: otherButtonMedia?.cover ?? '',
+                    onPressed: () {
+                      navigate(() => const OtherFeaturesPage());
+                    },
+                    onLongPress: otherButtonMedia == null
+                        ? null
+                        : () => _openHomeButtonMedia(otherButtonMedia),
+                  ),
+                ),
+              ],
+            );
+          });
         }),
         const SizedBox(height: 10),
         Obx(() => Column(

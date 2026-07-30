@@ -66,18 +66,12 @@ class AnymeXImage extends StatefulWidget {
   ) {
     final fromHero = fromHeroContext.widget as Hero;
     final toHero = toHeroContext.widget as Hero;
-    final heroContext = flightDirection == HeroFlightDirection.push
-        ? fromHeroContext
-        : toHeroContext;
     final hero =
         flightDirection == HeroFlightDirection.push ? fromHero : toHero;
 
-    return InheritedTheme.captureAll(
-      heroContext,
-      Material(
-        type: MaterialType.transparency,
-        child: hero.child,
-      ),
+    return Material(
+      type: MaterialType.transparency,
+      child: hero.child,
     );
   }
 
@@ -144,10 +138,15 @@ class _AnymeXImageState extends State<AnymeXImage> {
   }
 
   Widget _networkImage(String imageUrl) {
+    final url = Uri.tryParse(imageUrl);
+    Map<String, String> headers = url != null ? {
+      "Referer": "${url.origin}/",
+      "Origin": url.origin,
+    } : {};
     return CachedNetworkImage(
       cacheManager: AnymeXCacheManager.instance,
       imageUrl: imageUrl,
-      httpHeaders: widget.headers,
+      httpHeaders: widget.headers ?? headers,
       width: widget.width,
       height: widget.height,
       fit: widget.fit,

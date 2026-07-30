@@ -7,6 +7,9 @@ import 'package:anymex/utils/logger.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart'
     hide isar;
 import 'package:isar_community/isar.dart';
+import 'package:http/http.dart';
+import 'package:get/get.dart';
+import 'package:anymex/controllers/network/network_manager.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -87,8 +90,10 @@ class Database {
     }
 
     try {
+      final networkManager = Get.put(NetworkManager());
       await AnymeXExtensionBridge.init(
         isarInstance: isar,
+        http: networkManager.compatibleClient,
         getDirectory: ({
           String? subPath,
           bool useCustomPath = false,

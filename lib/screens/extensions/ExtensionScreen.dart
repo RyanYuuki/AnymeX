@@ -1,25 +1,28 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:anymex/database/database.dart';
+import 'package:anymex_extension_runtime_bridge/Services/Aniyomi/Models/Source.dart';
+import 'package:anymex_extension_runtime_bridge/Services/Sora/Models/Source.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/screens/extensions/ExtensionList.dart';
 import 'package:anymex/screens/extensions/ExtensionTesting/extension_test_page.dart';
 import 'package:anymex/screens/other_features.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_extension_manager.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_extensions.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_tabbar.dart';
-import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:iconsax/iconsax.dart';
 
 class ExtensionScreen extends StatefulWidget {
   const ExtensionScreen({
@@ -141,9 +144,9 @@ class _ExtensionScreenState extends State<ExtensionScreen>
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: _buildStatusBar(),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 10),
         _buildSearchRow(),
-        const SizedBox(height: 4),
+        _buildSourceTypeChips(),
         Expanded(child: _buildView()),
       ],
     );
@@ -281,7 +284,7 @@ class _ExtensionScreenState extends State<ExtensionScreen>
           ),
           const SizedBox(width: 8),
           Obx(() {
-            final active = _hasActiveFilters;
+            final active = _selectedLanguage.value != 'all';
             return Stack(
               clipBehavior: Clip.none,
               children: [
@@ -301,15 +304,15 @@ class _ExtensionScreenState extends State<ExtensionScreen>
                     ),
                   ),
                   child: IconButton(
-                    onPressed: () => _showFilterSheet(context),
+                    onPressed: () => _showLanguageSelector(context),
                     icon: Icon(
-                      Iconsax.setting_4,
+                      Icons.translate_rounded,
                       size: 20,
                       color: active
                           ? context.colors.primary
                           : context.colors.onSurface.withOpacity(0.55),
                     ),
-                    tooltip: 'Filter',
+                    tooltip: 'Select Language',
                     padding: EdgeInsets.zero,
                   ),
                 ),
@@ -334,228 +337,276 @@ class _ExtensionScreenState extends State<ExtensionScreen>
     );
   }
 
-  void _showFilterSheet(BuildContext context) {
+  void _showLanguageSelector(BuildContext context) {
     final languages = sortedLanguagesMap.keys.toList();
-    final sourceTypes = Platform.isIOS
-        ? ['all', 'Mangayomi', 'Sora']
-        : ['all', 'Mangayomi', 'Aniyomi', 'Cloudstream', 'Sora', 'Kotatsu'];
+    final theme = Theme.of(context);
 
-    AnymexSheet(
-      title: 'Filter Options',
-      showDragHandle: true,
-      contentWidget: SizedBox(
-        height: MediaQuery.of(context).size.height * 0.65,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(8, 0, 8, 24),
-          child: Obx(() {
-            final selSource = _selectedSourceType.value;
-            final selLang = _selectedLanguage.value;
-            final hasActive = selSource != 'all' || selLang != 'all';
-
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withOpacity(0.6),
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          surfaceTintColor: Colors.transparent,
+          child: Container(
+            width: double.infinity,
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.75,
+              maxWidth: 400,
+            ),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface,
+              borderRadius: BorderRadius.circular(28),
+              border: Border.all(
+                color: theme.colorScheme.outline.withOpacity(0.12),
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                if (hasActive) ...[
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () {
-                        _selectedSourceType.value = 'all';
-                        _selectedLanguage.value = 'all';
-                      },
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 4),
-                        minimumSize: Size.zero,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 20, 24, 10),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.language_rounded,
+                        color: theme.colorScheme.primary,
+                        size: 24,
                       ),
-                      child: Text(
-                        'Clear all',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: context.colors.primary,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                ],
-                AnymexExpansionTile(
-                  title: 'Source Type',
-                  initialExpanded: true,
-                  content: GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 3.8,
-                      crossAxisSpacing: 8,
-                      mainAxisSpacing: 8,
-                    ),
-                    itemCount: sourceTypes.length,
-                    itemBuilder: (context, index) {
-                      final type = sourceTypes[index];
-                      final needsPlugin = _typeRequiresPlugin(type) &&
-                          !_isPluginInstalled;
-                      final isSelected = !needsPlugin && selSource == type;
-                      final label = type == 'all' ? 'All Sources' : type;
-                  
-                      return InkWell(
-                        onTap: needsPlugin
-                            ? null
-                            : () {
-                                _selectedSourceType.value = type;
-                              },
-                        borderRadius: BorderRadius.circular(12),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 155),
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? context.colors.primaryContainer
-                                    .withOpacity(0.25)
-                                : context.colors.surfaceContainerHighest
-                                    .withOpacity(0.3),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: isSelected
-                                  ? Colors.transparent
-                                  : context.colors.outline.withOpacity(0.12),
-                              width: 1.0,
-                            ),
-                          ),
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              if (isSelected) ...[
-                                Icon(Icons.check_circle_rounded,
-                                    size: 14,
-                                    color: context.colors.primary),
-                                const SizedBox(width: 6),
-                              ] else if (needsPlugin) ...[
-                                Icon(Icons.lock_outline_rounded,
-                                    size: 14,
-                                    color: context.colors.onSurface
-                                        .withOpacity(0.4)),
-                                const SizedBox(width: 6),
-                              ],
-                              Flexible(
-                                child: Text(
-                                  label,
-                                  style: TextStyle(
-                                    fontFamily: 'Poppins',
-                                    fontSize: 12,
-                                    fontWeight: isSelected
-                                        ? FontWeight.w600
-                                        : FontWeight.w400,
-                                    color: isSelected
-                                        ? context.colors.primary
-                                        : context.colors.onSurface
-                                            .withOpacity(0.85),
-                                  ),
-                                  textAlign: TextAlign.center,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Select Language',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: theme.colorScheme.onSurface,
                           ),
                         ),
-                      );
-                    },
+                      ),
+                      IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: const Icon(Icons.close_rounded),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 16),
-                AnymexExpansionTile(
-                  title: 'Language',
-                  initialExpanded: true,
-                  content: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: 3.8,
-                        crossAxisSpacing: 8,
-                        mainAxisSpacing: 8,
-                      ),
+                const Divider(height: 1),
+                Expanded(
+                  child: Obx(() {
+                    final selLang = _selectedLanguage.value;
+                    return ListView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                       itemCount: languages.length,
                       itemBuilder: (context, index) {
                         final lang = languages[index];
                         final label = lang == 'all' ? 'All Languages' : lang;
                         final isSelected = selLang == lang;
 
-                        return InkWell(
-                          onTap: () {
-                            _selectedLanguage.value = lang;
-                          },
-                          borderRadius: BorderRadius.circular(12),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 155),
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? context.colors.primaryContainer
-                                      .withOpacity(0.25)
-                                  : context.colors.surfaceContainerHighest
-                                      .withOpacity(0.3),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: AnymexOnTap(
+                            onTap: () {
+                              _selectedLanguage.value = lang;
+                              Navigator.pop(context);
+                            },
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 180),
+                              padding: const EdgeInsets.all(14),
+                              decoration: BoxDecoration(
                                 color: isSelected
-                                    ? Colors.transparent
-                                    : context.colors.outline.withOpacity(0.12),
-                                width: 1.0,
-                              ),
-                            ),
-                            alignment: Alignment.center,
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                if (isSelected) ...[
-                                  Icon(Icons.check_circle_rounded,
-                                      size: 14,
-                                      color: context.colors.primary),
-                                  const SizedBox(width: 6),
-                                ],
-                                Flexible(
-                                  child: Text(
-                                    label,
-                                    style: TextStyle(
-                                      fontFamily: 'Poppins',
-                                      fontSize: 12,
-                                      fontWeight: isSelected
-                                          ? FontWeight.w600
-                                          : FontWeight.w400,
-                                      color: isSelected
-                                          ? context.colors.primary
-                                          : context.colors.onSurface
-                                              .withOpacity(0.85),
-                                    ),
-                                    textAlign: TextAlign.center,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
+                                    ? theme.colorScheme.primaryContainer.opaque(0.35, iReallyMeanIt: true)
+                                    : theme.colorScheme.surfaceContainer.opaque(0.3, iReallyMeanIt: true),
+                                borderRadius: BorderRadius.circular(14),
+                                border: Border.all(
+                                  color: isSelected
+                                      ? theme.colorScheme.primary.opaque(0.5, iReallyMeanIt: true)
+                                      : theme.colorScheme.outline.opaque(0.15, iReallyMeanIt: true),
+                                  width: isSelected ? 1.5 : 1,
                                 ),
-                              ],
+                              ),
+                              child: Row(
+                                children: [
+                                  AnimatedContainer(
+                                    duration: const Duration(milliseconds: 180),
+                                    width: 22,
+                                    height: 22,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: isSelected
+                                          ? theme.colorScheme.primary
+                                          : Colors.transparent,
+                                      border: Border.all(
+                                        color: isSelected
+                                            ? theme.colorScheme.primary
+                                            : theme.colorScheme.outline.opaque(0.4, iReallyMeanIt: true),
+                                        width: 2,
+                                      ),
+                                    ),
+                                    child: isSelected
+                                        ? Icon(Icons.check_rounded,
+                                            size: 14, color: theme.colorScheme.onPrimary)
+                                        : null,
+                                  ),
+                                  const SizedBox(width: 14),
+                                  Expanded(
+                                    child: Text(
+                                      label,
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins',
+                                        fontSize: 14,
+                                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                        color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurface,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         );
                       },
-                    ),
-                  ),
+                    );
+                  }),
                 ),
               ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  String? _getManagerIcon(String type) {
+    switch (type) {
+      case 'Mangayomi':
+        return MSource(id: '', name: '', lang: '').managerIcon;
+      case 'Aniyomi':
+        return ASource(id: '', name: '', lang: '').managerIcon;
+      case 'Cloudstream':
+        return CloudStreamSource(id: '', name: '', lang: '').managerIcon;
+      case 'Sora':
+        return SSource(id: '', name: '', lang: '').managerIcon;
+      case 'Kotatsu':
+        return KotatsuSource(id: '', name: '', lang: '').managerIcon;
+      default:
+        return null;
+    }
+  }
+
+  Widget _buildSourceTypeChips() {
+    final sourceTypes = Platform.isIOS
+        ? ['all', 'Mangayomi', 'Sora']
+        : ['all', 'Mangayomi', 'Aniyomi', 'Cloudstream', 'Sora', 'Kotatsu'];
+
+    return Obx(() {
+      final selectedType = _selectedSourceType.value;
+      return Container(
+        height: 38,
+        margin: const EdgeInsets.only(top: 8, bottom: 8),
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          itemCount: sourceTypes.length,
+          itemBuilder: (context, index) {
+            final type = sourceTypes[index];
+            final needsPlugin = _typeRequiresPlugin(type) && !_isPluginInstalled;
+            final isSelected = !needsPlugin && selectedType == type;
+            final label = type == 'all' ? 'All' : type;
+            final iconUrl = _getManagerIcon(type);
+
+            return Opacity(
+              opacity: needsPlugin ? 0.5 : 1.0,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: _buildSourceChip(
+                  label: label,
+                  iconUrl: iconUrl,
+                  isSelected: isSelected,
+                  onTap: needsPlugin
+                      ? () {
+                          Get.to(() => const SettingsExtensionManager());
+                        }
+                      : () {
+                          _selectedSourceType.value = type;
+                        },
+                ),
+              ),
             );
-          }),
+          },
+        ),
+      );
+    });
+  }
+
+  Widget _buildSourceChip({
+    required String label,
+    String? iconUrl,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    final theme = Theme.of(context);
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? theme.colorScheme.primary.opaque(0.15, iReallyMeanIt: true)
+              : theme.colorScheme.surfaceContainerHighest
+                  .opaque(0.3, iReallyMeanIt: true),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected
+                ? theme.colorScheme.primary.opaque(0.4, iReallyMeanIt: true)
+                : theme.colorScheme.onSurface.opaque(0.08, iReallyMeanIt: true),
+            width: isSelected ? 1.2 : 0.5,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (iconUrl != null && iconUrl.isNotEmpty) ...[
+              ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: AnymeXImage(
+                  width: 16,
+                  height: 16,
+                  imageUrl: iconUrl,
+                ),
+              ),
+              const SizedBox(width: 6),
+            ] else ...[
+              Icon(
+                Icons.all_inclusive_rounded,
+                size: 14,
+                color: isSelected
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSurfaceVariant,
+              ),
+              const SizedBox(width: 6),
+            ],
+            Text(
+              label,
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                color: isSelected
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSurface,
+              ),
+            ),
+          ],
         ),
       ),
-    ).show(context);
+    );
   }
 
   Widget _buildView() {
@@ -578,7 +629,9 @@ class _ExtensionScreenState extends State<ExtensionScreen>
     });
   }
 
-  bool get _isPluginInstalled => AnymeXRuntimeBridge.isPluginInstalled;
+  bool get _isPluginInstalled =>
+      AnymeXRuntimeBridge.isPluginInstalled ||
+      AnymeXRuntimeBridge.controller.isReady.value;
 
   bool _typeRequiresPlugin(String type) {
     if (type == 'all') return false;

@@ -27,6 +27,7 @@ import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
 import 'package:anymex/screens/library/online/manga_list.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart' as fb;
 import 'package:anymex/utils/fallback/fallback_manga.dart' as fbm;
@@ -93,6 +94,10 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
 
   void _openHomeButtonMedia(Media media) {
     final tag = 'home-button-${media.serviceType.name}-${media.id}';
+    if (media.mediaType == ItemType.novel) {
+      navigate(() => NovelDetailsPage(media: media));
+      return;
+    }
     if (media.mediaType == ItemType.manga) {
       navigate(() => MangaDetailsPage(media: media, tag: tag));
       return;
@@ -107,21 +112,18 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
         .where((entry) => entry.value)
         .map<String>((entry) => entry.key)
         .toList();
-    final recAnimes =
-        (popularAnimes + trendingAnimes + latestAnimes).removeDupes();
-    final recMangas =
-        (popularMangas + topOngoingMangas + topRatedMangas).removeDupes();
-    final ids = [
-      animeList.map((e) => e.id).toSet(),
-      mangaList.map((e) => e.id).toSet()
-    ];
     return [
       if (anilistAuth.isLoggedIn.value) ...[
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final isDesktop = constraints.maxWidth > 600;
-            final buttonHeight = !isDesktop ? 70.0 : 90.0;
-            final animeButtonMedia = _firstMediaWithCover(trendingAnimes);
+        Obx(() {
+          trendingAnimes.length;
+          trendingMangas.length;
+          popularAnimes.length;
+          popularMangas.length;
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              final isDesktop = constraints.maxWidth > 600;
+              final buttonHeight = !isDesktop ? 70.0 : 90.0;
+              final animeButtonMedia = _firstMediaWithCover(trendingAnimes);
             final mangaButtonMedia = _firstMediaWithCover(trendingMangas);
             final otherButtonMedia = _lastMediaWithCover([
               ...popularAnimes,
@@ -191,8 +193,9 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                 ],
               ),
             );
-          },
-        ),
+          }
+          );
+        }),
         const SizedBox(height: 10),
         Obx(() {
           anilistAuth.isLoggedIn.value;
@@ -217,24 +220,40 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
       ],
       Column(
         children: [
-          if (acceptedLists.contains("Recommended Animes") &&
-              settings.homePageCards.keys.contains('Recommended Animes'))
-            ReusableCarousel(
+          Obx(() {
+            if (!acceptedLists.contains("Recommended Animes") ||
+                !settings.homePageCards.keys.contains('Recommended Animes')) {
+              return const SizedBox.shrink();
+            }
+            final recAnimes =
+                [...popularAnimes, ...trendingAnimes, ...latestAnimes].removeDupes();
+            final ids = animeList.map((e) => e.id).toSet();
+            final data = isLoggedIn.value
+                ? recAnimes.where((e) => !ids.contains(e.id)).toList()
+                : recAnimes;
+            return ReusableCarousel(
               title: "Recommended Anime",
-              data: isLoggedIn.value
-                  ? recAnimes.where((e) => !ids[0].contains(e.id)).toList()
-                  : recAnimes,
+              data: data,
               type: ItemType.anime,
-            ),
-          if (acceptedLists.contains("Recommended Mangas") &&
-              settings.homePageCards.keys.contains('Recommended Mangas'))
-            ReusableCarousel(
+            );
+          }),
+          Obx(() {
+            if (!acceptedLists.contains("Recommended Mangas") ||
+                !settings.homePageCards.keys.contains('Recommended Mangas')) {
+              return const SizedBox.shrink();
+            }
+            final recMangas =
+                [...popularMangas, ...topOngoingMangas, ...topRatedMangas].removeDupes();
+            final ids = mangaList.map((e) => e.id).toSet();
+            final data = isLoggedIn.value
+                ? recMangas.where((e) => !ids.contains(e.id)).toList()
+                : recMangas;
+            return ReusableCarousel(
               title: "Recommended Manga",
-              data: isLoggedIn.value
-                  ? recMangas.where((e) => !ids[1].contains(e.id)).toList()
-                  : recMangas,
+              data: data,
               type: ItemType.manga,
-            )
+            );
+          }),
         ],
       )
     ].obs;

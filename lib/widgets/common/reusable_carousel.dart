@@ -119,41 +119,41 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
   }
 
   Widget _buildCarouselList() {
-    final List<CarouselData> processedData =
-        convertData(widget.data, variant: widget.variant);
-
     return Obx(() {
+      final List<CarouselData> processedData =
+          convertData(widget.data, variant: widget.variant);
+      final enableAnimation = settingsController.enableAnimation;
+      final cardStyleIndex = settingsController.cardStyle;
+
       return SizedBox(
-        height: getCardHeight(CardStyle.values[settingsController.cardStyle],
+        height: getCardHeight(CardStyle.values[cardStyleIndex],
             getPlatform(context)),
         child: SuperListView.builder(
           itemCount: processedData.length,
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.only(left: 15, top: 5, bottom: 10),
           itemBuilder: (context, index) =>
-              _buildCarouselItem(processedData[index], index),
+              _buildCarouselItem(processedData[index], enableAnimation, cardStyleIndex),
         ),
       );
     });
   }
 
-  Widget _buildCarouselItem(CarouselData itemData, int index) {
+  Widget _buildCarouselItem(CarouselData itemData, bool enableAnimation, int cardStyleIndex) {
     final tag = '${widget.title}-${itemData.id}';
 
-    return Obx(() {
-      final card = settingsController.enableAnimation
-          ? SlideAndScaleAnimation(child: _buildCard(itemData, tag))
-          : _buildCard(itemData, tag);
+    final card = enableAnimation
+        ? SlideAndScaleAnimation(child: _buildCard(itemData, tag, cardStyleIndex))
+        : _buildCard(itemData, tag, cardStyleIndex);
 
-      final child = AnymexOnTap(
-        onTap: () => _navigateToDetailsPage(itemData, tag),
-        child: GestureDetector(
-          onLongPress: () => widget.type == ItemType.novel ? {} : _showPeekPopup(context, itemData, tag),
-          child: card,
-        ),
-      );
-      return child;
-    });
+    final child = AnymexOnTap(
+      onTap: () => _navigateToDetailsPage(itemData, tag),
+      child: GestureDetector(
+        onLongPress: () => widget.type == ItemType.novel ? {} : _showPeekPopup(context, itemData, tag),
+        child: card,
+      ),
+    );
+    return child;
   }
 
   void _showPeekPopup(BuildContext context, CarouselData itemData, String tag) {
@@ -164,13 +164,13 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
     MediaPeekPopup.show(context, media, mediaType, tag);
   }
 
-  MediaCardGate _buildCard(CarouselData itemData, String tag) {
+  MediaCardGate _buildCard(CarouselData itemData, String tag, int cardStyleIndex) {
     return MediaCardGate(
         itemData: itemData,
         tag: tag,
         variant: widget.variant,
         type: widget.type,
-        cardStyle: CardStyle.values[settingsController.cardStyle]);
+        cardStyle: CardStyle.values[cardStyleIndex]);
   }
 
   void _navigateToDetailsPage(CarouselData itemData, String tag) {

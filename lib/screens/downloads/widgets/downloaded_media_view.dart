@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/controllers/track/track_binding_controller.dart';
 import 'package:anymex/widgets/common/marquee_text.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
@@ -6,6 +8,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/downloads/controller/download_controller.dart';
 import 'package:anymex/screens/downloads/model/download_models.dart';
 import 'package:anymex/screens/downloads/widgets/downloaded_watch_page.dart';
+import 'package:anymex/screens/downloads/widgets/track_sheet.dart';
 import 'package:anymex/screens/downloads/widgets/video_thumbnail_widget.dart';
 import 'package:anymex/screens/manga/reading_page.dart';
 import 'package:anymex/utils/function.dart';
@@ -227,7 +230,9 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
           meta: _meta!,
           summary: widget.summary,
         ));
+    await Future.delayed(const Duration(milliseconds: 300));
     await _refresh();
+    await _syncBoundTrackersAfterPlay();
   }
 
   Future<void> _playChapter(DownloadedChapterMeta ch) async {
@@ -255,7 +260,46 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
           currentChapter: currentChapter,
           shouldTrack: false,
         ));
+    await Future.delayed(const Duration(milliseconds: 300));
     await _refresh();
+    await _syncBoundTrackersAfterPlay();
+  }
+
+  Future<void> _syncBoundTrackersAfterPlay() async {
+    try {
+      final trackCtrl = Get.find<TrackBindingController>();
+      final mediaId = widget.summary.folderName;
+      if (!trackCtrl.hasAnyBinding(mediaId)) return;
+
+      int progress = 0;
+      final threshold = settingsController.markAsCompleted; // user-configured % (default 90)
+      if (!_isManga && _meta != null) {
+        for (final e in _meta!.episodes) {
+          final n = int.tryParse(e.number) ?? 0;
+          if (n == 0) continue;
+          final ts = e.episode.timeStampInMilliseconds ?? 0;
+          final dur = e.episode.durationInMilliseconds ?? 0;
+          final watched = dur > 0 && ts >= dur * (threshold / 100);
+          if (watched && n > progress) progress = n;
+        }
+      } else if (_isManga && _mangaMeta != null) {
+        for (final c in _mangaMeta!.chapters) {
+          final num = c.chapter.number;
+          if (num == null) continue;
+          final isRead = (c.chapter.lastReadTime ?? 0) > 0 ||
+              (c.chapter.totalPages != null &&
+                  c.chapter.pageNumber != null &&
+                  c.chapter.totalPages! > 0 &&
+                  c.chapter.pageNumber! >= c.chapter.totalPages!);
+          if (isRead && num.toInt() > progress) progress = num.toInt();
+        }
+      }
+
+      if (progress <= 0) return;
+      await trackCtrl.pushProgress(mediaId, progress, isAnime: !_isManga);
+    } catch (e) {
+      debugPrint('post-play track sync skipped: $e');
+    }
   }
 
   List<Widget> _buildEpisodeList(ColorScheme theme) {
@@ -331,6 +375,8 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                 onTap: () => Navigator.pop(context),
               ),
               const Spacer(),
+              _buildTrackBtn(context: context, theme: theme),
+              const SizedBox(width: 8),
               _buildNavBtn(
                 context: context,
                 theme: theme,
@@ -548,7 +594,96 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
     );
   }
 
+  Widget _buildTrackBtn({
+    required BuildContext context,
+    required ColorScheme theme,
+  }) {
+    final trackCtrl = Get.find<TrackBindingController>();
+    final mediaId = widget.summary.folderName;
 
+    return AnymexOnTap(
+      onTap: () async {
+        await showTrackSheet(context, summary: widget.summary);
+        if (mounted) setState(() {});
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+        decoration: BoxDecoration(
+          color: theme.primary.withOpacity(0.12),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: theme.primary.withOpacity(0.3)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.track_changes_rounded,
+                size: 15, color: theme.primary),
+            const SizedBox(width: 6),
+            Text(
+              'Track',
+              style: TextStyle(
+                color: theme.primary,
+                fontSize: 12,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(width: 6),
+            Obx(() {
+              trackCtrl.bindingsVersion.value;
+              trackCtrl.loggedInTrackers();
+              final bound = trackCtrl.bindingCount(mediaId);
+              final total = trackCtrl.loggedInTrackers().length;
+              return Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                decoration: BoxDecoration(
+                  color: bound > 0
+                      ? theme.primary.withOpacity(0.25)
+                      : theme.surfaceContainer.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  total == 0 ? '0' : '$bound/$total',
+                  style: TextStyle(
+                    color: bound > 0
+                        ? theme.primary
+                        : theme.onSurface.withOpacity(0.5),
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              );
+            }),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoChip({
+    required ColorScheme theme,
+    required String label,
+    required bool useSecondary,
+  }) {
+    final color = useSecondary ? theme.tertiary : theme.primary;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withOpacity(0.2)),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: color.withOpacity(0.85),
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.1,
+        ),
+      ),
+    );
+  }
 
   Widget _buildInfoBadge(ColorScheme theme, String text, Color color) {
     return Container(

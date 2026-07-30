@@ -9,7 +9,6 @@ import android.view.KeyEvent
 import android.view.KeyEvent.ACTION_DOWN
 import android.view.KeyEvent.KEYCODE_VOLUME_DOWN
 import android.view.KeyEvent.KEYCODE_VOLUME_UP
-import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
@@ -27,16 +26,16 @@ import java.io.FileOutputStream
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicBoolean
 
-class MainActivity : FlutterActivity() {
+class MainActivity : FlutterAppCompatActivity() {
     private val CHANNEL = "app/architecture"
     private val VOLUME_CHANNEL = "com.ryan.anymex/volume"
     private val VOLUME_EVENTS = "com.ryan.anymex/volume_events"
     private val PIP_CHANNEL = "com.ryan.anymex/pip"
+    private var volumeKeysEnabled = false
+    private var volumeEventsSink: EventChannel.EventSink? = null
     private val THUMBNAIL_CHANNEL = "com.anymex.app/thumbnail"
     private val THUMBNAIL_TIMEOUT_MS = 8000L
     private val THUMBNAIL_MAX_AGE_MS = 24 * 60 * 60 * 1000L
-    private var volumeKeysEnabled = false
-    private var volumeEventsSink: EventChannel.EventSink? = null
 
     private var pipAutoEnterEnabled = false
 
@@ -103,6 +102,24 @@ class MainActivity : FlutterActivity() {
                         }
                     } else {
                         result.error("INVALID_PATH", "Path cannot be null", null)
+                    }
+                }
+                "saveImageToGallery" -> {
+                    val bytes = call.argument<ByteArray>("bytes")
+                    val name = call.argument<String>("name")
+                    if (bytes != null && name != null) {
+                        try {
+                            val saved = saveImageToGallery(name, bytes)
+                            if (saved) {
+                                result.success(true)
+                            } else {
+                                result.error("SAVE_FAILED", "Failed to save image to gallery", null)
+                            }
+                        } catch (e: Exception) {
+                            result.error("SAVE_FAILED", e.message, null)
+                        }
+                    } else {
+                        result.error("INVALID_ARGS", "Bytes or name cannot be null", null)
                     }
                 }
                 "openOpenByDefaultSettings" -> {
@@ -187,7 +204,6 @@ class MainActivity : FlutterActivity() {
                 else -> result.notImplemented()
             }
         }
-
         cleanupOldThumbnails()
 
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, THUMBNAIL_CHANNEL).setMethodCallHandler { call, result ->
@@ -253,7 +269,7 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean, newConfig: android.content.res.Configuration?) {
+    override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean, newConfig: android.content.res.Configuration) {
         super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
         val engine = flutterEngine
         if (engine != null) {
@@ -428,5 +444,35 @@ class MainActivity : FlutterActivity() {
                 }
             } catch (_: Exception) {}
         }.start()
+    }
+
+    private fun saveImageToGallery(name: String, bytes: ByteArray): Boolean {
+        val resolver = contentResolver
+        val contentValues = android.content.ContentValues().apply {
+            put(android.provider.MediaStore.MediaColumns.DISPLAY_NAME, name)
+            put(android.provider.MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                put(android.provider.MediaStore.MediaColumns.RELATIVE_PATH, "Pictures/AnymeX")
+                put(android.provider.MediaStore.MediaColumns.IS_PENDING, 1)
+            }
+        }
+        val imageUri = resolver.insert(
+            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            contentValues
+        ) ?: return false
+        return try {
+            resolver.openOutputStream(imageUri)?.use { outputStream ->
+                outputStream.write(bytes)
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                contentValues.clear()
+                contentValues.put(android.provider.MediaStore.MediaColumns.IS_PENDING, 0)
+                resolver.update(imageUri, contentValues, null, null)
+            }
+            true
+        } catch (e: Exception) {
+            resolver.delete(imageUri, null, null)
+            throw e
+        }
     }
 }

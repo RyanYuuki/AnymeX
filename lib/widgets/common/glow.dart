@@ -87,10 +87,10 @@ class Glow extends StatelessWidget {
 
       final useGrain = settings.useGrainTexture;
       final intensity = settings.grainIntensity;
-      if (useGrain && intensity > 0) {
-        return Stack(
-          children: [
-            content,
+      return Stack(
+        children: [
+          content,
+          if (useGrain && intensity > 0)
             Positioned.fill(
               child: IgnorePointer(
                 child: GrainTexture(
@@ -99,10 +99,8 @@ class Glow extends StatelessWidget {
                 ),
               ),
             ),
-          ],
-        );
-      }
-      return content;
+        ],
+      );
     });
   }
 }

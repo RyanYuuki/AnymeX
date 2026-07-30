@@ -85,6 +85,14 @@ class MediaDownloader {
     }
   }
 
+  static String getSubtitleExtension(String url) {
+    final lower = url.toLowerCase().split('?').first;
+    for (final ext in ['.vtt', '.srt', '.ass', '.ssa']) {
+      if (lower.endsWith(ext)) return ext;
+    }
+    return '.srt';
+  }
+
   Future<void> download(void Function(DownloadProgress) onProgress) async {
     try {
       if (itemType == ItemType.anime &&
@@ -104,15 +112,16 @@ class MediaDownloader {
         }
         final subFolder =
             path.join(subDownloadDir!, 'Episode_${episodeNumber}_subs');
+        final ext = getSubtitleExtension(element.file!);
         final subtitleFile = File(
-          path.join(subFolder, '${element.label}.srt'),
+          path.join(subFolder, '${element.label}$ext'),
         );
         if (subtitleFile.existsSync()) {
           continue;
         }
         subtitleFile.createSync(recursive: true);
         final response = await _withRetryStatic(
-          () => httpClient.get(Uri.parse(element.file!)),
+          () => httpClient.get(Uri.parse(element.file!), headers: headers ?? {}),
           3,
         );
         if (response.statusCode != 200) {

@@ -22,6 +22,7 @@ import 'package:anymex/screens/anime/misc/calendar.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/media_syncer.dart';
 import 'package:anymex/widgets/common/big_carousel_gate.dart';
@@ -32,6 +33,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart';
+
+enum SimklSearchCategory { anime, movie, show }
 
 class SimklService extends GetxController
     implements BaseService, OnlineService {
@@ -60,12 +63,39 @@ class SimklService extends GetxController
     final newId = id.split('*').first;
     final isSeries = id.split('*').last == "SERIES";
     Logger.i(isSeries.toString());
+    final clientId = dotenv.env['SIMKL_CLIENT_ID'];
     final resp = await get(Uri.parse(
-        "https://api.simkl.com/${isSeries ? 'tv' : 'movies'}/$newId?extended=full&client_id=${dotenv.env['SIMKL_CLIENT_ID']}"));
+        "https://api.simkl.com/${isSeries ? 'tv' : 'movies'}/$newId?extended=full&client_id=$clientId"));
     if (resp.statusCode == 200) {
       final data = jsonDecode(resp.body);
       data['id'] = '$newId*${isSeries ? "SERIES" : "MOVIE"}';
       data['__isMovie'] = !isSeries;
+
+      if (isSeries && data['next_episode'] == null && (data['status']?.toString().toLowerCase() == 'airing' || data['status']?.toString().toLowerCase() == 'returning series')) {
+        try {
+          final epResp = await get(Uri.parse("https://api.simkl.com/tv/episodes/$newId?client_id=$clientId"));
+          if (epResp.statusCode == 200) {
+            data['episodes'] = jsonDecode(epResp.body);
+          }
+        } catch (e) {
+          Logger.i("Failed to fetch episodes for Simkl series $newId: $e");
+        }
+      }
+
+      final tmdbId = data['ids']?['tmdb']?.toString();
+      final tmdbApiKey = dotenv.env['TMDB_API_KEY'];
+      if (tmdbId != null && tmdbId.isNotEmpty && tmdbApiKey != null && tmdbApiKey.isNotEmpty) {
+        try {
+          final creditsResp = await get(Uri.parse(
+              "https://api.themoviedb.org/3/${isSeries ? 'tv' : 'movie'}/$tmdbId/credits?api_key=$tmdbApiKey"));
+          if (creditsResp.statusCode == 200) {
+            data['tmdb_credits'] = jsonDecode(creditsResp.body);
+          }
+        } catch (e) {
+          Logger.i("Failed to fetch TMDb credits for $tmdbId: $e");
+        }
+      }
+
       cacheController.addCache(data);
       detailsData.value = Media.fromSimkl(data, !isSeries);
       return detailsData.value;
@@ -179,8 +209,7 @@ class SimklService extends GetxController
     final resp = await get(movieUrl);
     if (resp.statusCode == 200) {
       final data = jsonDecode(resp.body) as List<dynamic>;
-      List<Media> list = data.map((e) => Media.fromSimkl(e, true)).toList();
-      return list;
+      return data.map((e) => Media.fromSimklSearch(e)).toList();
     }
     return [];
   }
@@ -196,116 +225,194 @@ class SimklService extends GetxController
     final resp = await get(seriesUrl);
     if (resp.statusCode == 200) {
       final data = jsonDecode(resp.body) as List<dynamic>;
-      List<Media> list = data.map((e) => Media.fromSimkl(e, true)).toList();
-      return list;
+      return data.map((e) => Media.fromSimklSearch(e)).toList();
+    }
+    return [];
+  }
+
+  Future<List<Media>> searchAnime(String query, {int page = 1}) async {
+    final animeUrl = Uri.https('api.simkl.com', '/search/anime', {
+      'q': query,
+      'extended': 'full',
+      'page': '$page',
+      'limit': '25',
+      'client_id': '${dotenv.env['SIMKL_CLIENT_ID']}',
+    });
+    final resp = await get(animeUrl);
+    if (resp.statusCode == 200) {
+      final data = jsonDecode(resp.body) as List<dynamic>;
+      return data.map((e) => Media.fromSimklSearch(e)).toList();
     }
     return [];
   }
 
   @override
   Future<List<Media>> search(SearchParams params) async {
-    final movieData = await searchMovies(params.query, page: params.page);
-    final seriesData = await searchSeries(params.query, page: params.page);
-    return [...movieData, ...seriesData];
+    final results = await Future.wait([
+      searchMovies(params.query, page: params.page),
+      searchSeries(params.query, page: params.page),
+      searchAnime(params.query, page: params.page),
+    ]);
+    final movies = results[0];
+    final series = results[1];
+    final anime = results[2];
+
+    final merged = <Media>[];
+    final seen = <String>{};
+    final maxLen = [
+      movies.length,
+      series.length,
+      anime.length,
+    ].reduce((a, b) => a > b ? a : b);
+    for (var i = 0; i < maxLen; i++) {
+      for (final list in [anime, series, movies]) {
+        if (i < list.length) {
+          final m = list[i];
+          final key = m.title.toLowerCase().trim();
+          if (seen.contains(key)) continue;
+          seen.add(key);
+          merged.add(m);
+        }
+      }
+    }
+    return merged;
+  }
+
+  Future<List<Media>> searchByCategory(
+    String query,
+    SimklSearchCategory category, {
+    int page = 1,
+  }) {
+    switch (category) {
+      case SimklSearchCategory.anime:
+        return searchAnime(query, page: page);
+      case SimklSearchCategory.movie:
+        return searchMovies(query, page: page);
+      case SimklSearchCategory.show:
+        return searchSeries(query, page: page);
+    }
   }
 
   @override
   RxList<Widget> homeWidgets(BuildContext context) {
+    final settings = Get.find<Settings>();
+    final acceptedLists = settings.homePageCardsSimkl.entries
+        .where((entry) => entry.value)
+        .map<String>((entry) => entry.key)
+        .toList();
+
     return [
       if (isLoggedIn.value)
-        LayoutBuilder(
+        Obx(() {
+          trendingMovies.length;
+          trendingSeries.length;
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              final isDesktop = constraints.maxWidth > 600;
+              final buttonHeight = !isDesktop ? 70.0 : 90.0;
+              final itemWidth = isDesktop
+                  ? math.min(300.0, (constraints.maxWidth - 15) / 2)
+                  : (constraints.maxWidth / 2) - 20;
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ImageButton(
+                    width: itemWidth,
+                    height: buttonHeight,
+                    buttonText: "MOVIES LIST",
+                    backgroundImage: trendingMovies
+                            .firstWhere(
+                              (e) => e.cover != null,
+                              orElse: () => Media(
+                                  cover: '', serviceType: ServicesType.simkl),
+                            )
+                            .cover ??
+                        '',
+                    borderRadius: 16.multiplyRadius(),
+                    onPressed: () {
+                      navigate(() => AnimeList(
+                            title: "Movies",
+                            data: animeList.value,
+                          ));
+                    },
+                  ),
+                  const SizedBox(width: 15),
+                  ImageButton(
+                    width: itemWidth,
+                    height: buttonHeight,
+                    buttonText: "SERIES LIST",
+                    borderRadius: 16.multiplyRadius(),
+                    backgroundImage: trendingSeries
+                            .firstWhere(
+                              (e) => e.cover != null,
+                              orElse: () => Media(
+                                  cover: '', serviceType: ServicesType.simkl),
+                            )
+                            .cover ??
+                        '',
+                    onPressed: () {
+                      navigate(() => AnimeList(
+                            title: "Shows",
+                            data: mangaList.value,
+                          ));
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        }),
+      const SizedBox(height: 15),
+      Obx(() {
+        trendingMovies.length;
+        return LayoutBuilder(
           builder: (context, constraints) {
             final isDesktop = constraints.maxWidth > 600;
             final buttonHeight = !isDesktop ? 70.0 : 90.0;
-            final itemWidth = isDesktop
-                ? math.min(300.0, (constraints.maxWidth - 15) / 2)
-                : (constraints.maxWidth / 2) - 20;
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ImageButton(
-                  width: itemWidth,
-                  height: buttonHeight,
-                  buttonText: "MOVIES LIST",
-                  backgroundImage: trendingMovies
-                          .firstWhere(
-                            (e) => e.cover != null,
-                            orElse: () => Media(
-                                cover: '', serviceType: ServicesType.simkl),
-                          )
-                          .cover ??
-                      '',
-                  borderRadius: 16.multiplyRadius(),
-                  onPressed: () {
-                    navigate(() => AnimeList(
-                          title: "Movies",
-                          data: animeList.value,
-                        ));
-                  },
-                ),
-                const SizedBox(width: 15),
-                ImageButton(
-                  width: itemWidth,
-                  height: buttonHeight,
-                  buttonText: "SERIES LIST",
-                  borderRadius: 16.multiplyRadius(),
-                  backgroundImage: trendingSeries
-                          .firstWhere(
-                            (e) => e.cover != null,
-                            orElse: () => Media(
-                                cover: '', serviceType: ServicesType.simkl),
-                          )
-                          .cover ??
-                      '',
-                  onPressed: () {
-                    navigate(() => AnimeList(
-                          title: "Shows",
-                          data: mangaList.value,
-                        ));
-                  },
-                ),
-              ],
+            final buttonWidth =
+                isDesktop ? 300.0 : math.max(120.0, constraints.maxWidth - 40);
+            return Center(
+              child: ImageButton(
+                width: buttonWidth,
+                height: buttonHeight,
+                buttonText: "CALENDAR",
+                borderRadius: 16.multiplyRadius(),
+                backgroundImage: trendingMovies.isNotEmpty
+                    ? trendingMovies[0].cover ?? ''
+                    : '',
+                onPressed: () {
+                  navigate(() => const Calendar());
+                },
+              ),
             );
           },
-        ),
-      const SizedBox(height: 15),
-      LayoutBuilder(
-        builder: (context, constraints) {
-          final isDesktop = constraints.maxWidth > 600;
-          final buttonHeight = !isDesktop ? 70.0 : 90.0;
-          final buttonWidth =
-              isDesktop ? 300.0 : math.max(120.0, constraints.maxWidth - 40);
-          return Center(
-            child: ImageButton(
-              width: buttonWidth,
-              height: buttonHeight,
-              buttonText: "CALENDAR",
-              borderRadius: 16.multiplyRadius(),
-              backgroundImage: trendingMovies.isNotEmpty
-                  ? trendingMovies[0].cover ?? ''
-                  : '',
-              onPressed: () {
-                navigate(() => const Calendar());
-              },
-            ),
-          );
-        },
-      ),
+        );
+      }),
       const SizedBox(height: 25),
-      if (isLoggedIn.value) ...[
-        buildSection("Planned Movies", continueWatchingMovies.value,
-            variant: DataVariant.anilist),
-        buildSection("Continue Watching (SHOWS)", continueWatchingSeries.value,
-            variant: DataVariant.anilist),
-      ],
-      if (trendingMovies.value.isNotEmpty)
-        ReusableCarousel(
-            data: trendingMovies.value.sublist(0, 10),
-            title: "Trending Movies"),
-      if (trendingSeries.value.isNotEmpty)
-        ReusableCarousel(
-            data: trendingSeries.value.sublist(0, 10),
-            title: "Trending Series"),
+      if (isLoggedIn.value)
+        Obx(() => Column(
+              children: acceptedLists.map((e) {
+                final isShowsList = e.contains("Shows") || e.contains("Series");
+                final sourceList = isShowsList ? mangaList : animeList;
+                final filtered = filterListByLabel(sourceList, e);
+                return ReusableCarousel(
+                  data: filtered,
+                  title: e,
+                  variant: DataVariant.anilist,
+                  type: isShowsList ? ItemType.manga : ItemType.anime,
+                );
+              }).toList(),
+            )),
+      Obx(() => trendingMovies.value.isNotEmpty
+          ? ReusableCarousel(
+              data: trendingMovies.value.sublist(0, math.min(10, trendingMovies.length)),
+              title: "Trending Movies")
+          : const SizedBox.shrink()),
+      Obx(() => trendingSeries.value.isNotEmpty
+          ? ReusableCarousel(
+              data: trendingSeries.value.sublist(0, math.min(10, trendingSeries.length)),
+              title: "Trending Series")
+          : const SizedBox.shrink()),
     ].obs;
   }
 

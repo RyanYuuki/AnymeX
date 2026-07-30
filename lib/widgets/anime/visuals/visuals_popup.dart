@@ -189,41 +189,50 @@ class _VisualsPopupState extends State<VisualsPopup> {
           "anymex_${DateTime.now().millisecondsSinceEpoch}.$extension";
 
       if (Platform.isAndroid) {
-        Future<bool> check(Permission p) async {
-          var status = await p.status;
-          if (!status.isGranted) {
-            status = await p.request();
-          }
-          return status.isGranted;
-        }
-
-        await check(Permission.storage);
-        await check(Permission.photos);
-        await check(Permission.manageExternalStorage);
-
         try {
-          final directory = Directory('/storage/emulated/0/Download/AnymeX');
-          if (!await directory.exists()) {
-            await directory.create(recursive: true);
+          const platform = MethodChannel('com.ryan.anymex/utils');
+          await platform.invokeMethod('saveImageToGallery', {
+            'bytes': bytes,
+            'name': fileName,
+          });
+          if (!mounted) return;
+          snackBar("Saved to Pictures/AnymeX/$fileName");
+        } catch (_) {
+          Future<bool> check(Permission p) async {
+            var status = await p.status;
+            if (!status.isGranted) {
+              status = await p.request();
+            }
+            return status.isGranted;
           }
 
-          final file = File('${directory.path}/$fileName');
-          await file.writeAsBytes(bytes);
+          await check(Permission.storage);
+          await check(Permission.photos);
+          await check(Permission.manageExternalStorage);
 
           try {
-            const platform = MethodChannel('com.ryan.anymex/utils');
-            await platform.invokeMethod('scanFile', {'path': file.path});
-          } catch (_) {}
+            final directory = Directory('/storage/emulated/0/Download/AnymeX');
+            if (!await directory.exists()) {
+              await directory.create(recursive: true);
+            }
 
-          if (!mounted) return;
-          snackBar("Saved to Downloads/AnymeX/$fileName");
-        } catch (e) {
-          // Fallback
-          final tempDir = await getTemporaryDirectory();
-          final file = File('${tempDir.path}/$fileName');
-          await file.writeAsBytes(bytes);
-          await Share.shareXFiles([XFile(file.path)],
-              text: "Visual from AnymeX");
+            final file = File('${directory.path}/$fileName');
+            await file.writeAsBytes(bytes);
+
+            try {
+              const platform = MethodChannel('com.ryan.anymex/utils');
+              await platform.invokeMethod('scanFile', {'path': file.path});
+            } catch (_) {}
+
+            if (!mounted) return;
+            snackBar("Saved to Downloads/AnymeX/$fileName");
+          } catch (e) {
+            final tempDir = await getTemporaryDirectory();
+            final file = File('${tempDir.path}/$fileName');
+            await file.writeAsBytes(bytes);
+            await Share.shareXFiles([XFile(file.path)],
+                text: "Visual from AnymeX");
+          }
         }
       } else if (Platform.isIOS) {
         final tempDir = await getTemporaryDirectory();

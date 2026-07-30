@@ -1,6 +1,8 @@
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
+import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/carousel/carousel_types.dart';
@@ -62,7 +64,11 @@ class BigCarouselClassicState extends State<BigCarouselClassic> {
 
   void navigateToDetailsPage(Media media, String tag) {
     if (widget.carouselType == CarouselType.manga) {
+      if (media.mediaType == ItemType.novel) {
+      navigate(() => NovelDetailsPage(media: media));
+    } else {
       navigate(() => MangaDetailsPage(media: media, tag: tag));
+    }
     } else {
       navigate(() => AnimeDetailsPage(media: media, tag: tag));
     }

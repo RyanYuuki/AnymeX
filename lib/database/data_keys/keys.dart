@@ -173,6 +173,7 @@ enum AuthKeys {
   malRefreshToken,
   simklAuthToken,
   malSessionId,
+  mangaBakaAuthToken,
 }
 
 enum SearchKeys { novelSearchedQueries }
@@ -200,7 +201,8 @@ enum DynamicKeys {
   libraryGridSize,
   mappedMediaTitle,
   offlineVideoProgress,
-  stickySource;
+  stickySource,
+  trackBindings;
 
   T get<T>(dynamic id, [T? defaultValue]) {
     return KvHelper.get<T>('${name}_$id', defaultVal: defaultValue);
@@ -251,6 +253,7 @@ enum PlayerSettingsKeys {
   videoOutput,
   audioOutput,
   enableHoldToSeek,
+  enableSlideToSeek,
 }
 
 enum UISettingsKeys {
@@ -270,6 +273,7 @@ enum UISettingsKeys {
   enableAnimation,
   disableGradient,
   homePageCardsMal,
+  homePageCardsSimkl,
   cardStyle,
   historyCardStyle,
   liquidMode,

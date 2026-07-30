@@ -26,6 +26,7 @@ void snackBar(
   Color? iconColor,
   bool showCloseButton = false,
   bool showDurationAnimation = true,
+  VoidCallback? onTap,
 }) {
   final navigatorContext = Get.key.currentContext ?? Get.context;
   final theme = navigatorContext != null
@@ -85,6 +86,7 @@ void snackBar(
       onDismiss: () {
         _removeSnackBarEntry(entry);
       },
+      onTap: onTap,
     ),
   );
   _currentSnackBar = entry;
@@ -106,6 +108,7 @@ class _SnackBarWidget extends StatefulWidget {
     required this.duration,
     required this.theme,
     required this.onDismiss,
+    this.onTap,
   });
 
   final String message;
@@ -120,6 +123,7 @@ class _SnackBarWidget extends StatefulWidget {
   final Duration duration;
   final ThemeData theme;
   final VoidCallback onDismiss;
+  final VoidCallback? onTap;
 
   @override
   State<_SnackBarWidget> createState() => _SnackBarWidgetState();
@@ -283,7 +287,12 @@ class _SnackBarWidgetState extends State<_SnackBarWidget>
     final cs = widget.theme.colorScheme;
 
     return GestureDetector(
-      onTap: _dismiss,
+      onTap: () {
+        if (widget.onTap != null) {
+          widget.onTap!();
+        }
+        _dismiss();
+      },
       onHorizontalDragStart: (_) {
         _isDragging = true;
         _progressController.stop();
@@ -589,6 +598,7 @@ void infoSnackBar(
   String? title,
   int duration = 2500,
   bool showDurationAnimation = true,
+  VoidCallback? onTap,
 }) {
   snackBar(
     message,
@@ -597,6 +607,7 @@ void infoSnackBar(
     icon: Icons.info_outline_rounded,
     iconColor: const Color(0xFF42A5F5),
     showDurationAnimation: showDurationAnimation,
+    onTap: onTap,
   );
 }
 

@@ -23,6 +23,7 @@ import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:get/get.dart';
 
 class AnimeStats extends StatelessWidget {
@@ -143,6 +144,20 @@ class AnimeStats extends StatelessWidget {
                                 'tags': [t.name]
                               },
                             )),
+                      ))
+                  .toList(),
+            ),
+          ],
+          if (data.externalLinks != null && data.externalLinks!.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            _buildChipSection(
+              context,
+              title: 'External & Streaming Links',
+              icon: Icons.open_in_new_rounded,
+              chips: data.externalLinks!
+                  .map((link) => _ChipData(
+                        label: link.site,
+                        onTap: () => launchUrlString(link.url, mode: LaunchMode.externalApplication),
                       ))
                   .toList(),
             ),
@@ -757,6 +772,10 @@ class AnimeStats extends StatelessWidget {
 
   Widget _buildStatsGrid(BuildContext context) {
     final colorScheme = context.colors;
+    final ratingValue = (data.rating.isNotEmpty && data.rating != 'N/A' && data.rating != '?')
+        ? '${data.rating}/10'
+        : 'N/A';
+
     final stats = [
       {
         'label': 'Type',
@@ -765,7 +784,7 @@ class AnimeStats extends StatelessWidget {
       },
       {
         'label': 'Rating',
-        'value': '${data.rating}/10',
+        'value': ratingValue,
         'icon': Icons.star_outline_rounded
       },
       {'label': 'Format', 'value': data.format, 'icon': Icons.style_outlined},
@@ -784,11 +803,12 @@ class AnimeStats extends StatelessWidget {
         'value': data.totalEpisodes,
         'icon': Icons.movie_outlined
       },
-      {
-        'label': 'Season',
-        'value': data.season,
-        'icon': Icons.calendar_today_outlined
-      },
+      if (data.season != 'N/A' && data.season != '?' && data.season.isNotEmpty)
+        {
+          'label': 'Season',
+          'value': data.season,
+          'icon': Icons.calendar_today_outlined
+        },
       {
         'label': 'Duration',
         'value': data.duration,

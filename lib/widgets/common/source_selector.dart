@@ -38,6 +38,8 @@ class SourceSelectorWidget extends StatelessWidget {
 
   final bool isManga;
 
+  final String? label;
+
   const SourceSelectorWidget({
     super.key,
     required this.activeSource,
@@ -47,6 +49,7 @@ class SourceSelectorWidget extends StatelessWidget {
     this.onCloudflareBypass,
     this.onPreferencesTap,
     this.isManga = false,
+    this.label,
   });
 
   void _openSheet(BuildContext context) {
@@ -58,6 +61,7 @@ class SourceSelectorWidget extends StatelessWidget {
         activeSource: activeSource,
         installedSources: installedSources,
         isManga: isManga,
+        label: label,
         onSourceSelected: (source) {
           Navigator.of(context, rootNavigator: true).pop();
           onSourceSelected(source);
@@ -77,7 +81,7 @@ class SourceSelectorWidget extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
 
     if (installedSources.isEmpty) {
-      return _EmptySourceState(isManga: isManga);
+      return _EmptySourceState(isManga: isManga, label: label);
     }
 
     final hasSource = activeSource != null;
@@ -322,7 +326,8 @@ class _ActionIconButton extends StatelessWidget {
 
 class _EmptySourceState extends StatelessWidget {
   final bool isManga;
-  const _EmptySourceState({required this.isManga});
+  final String? label;
+  const _EmptySourceState({required this.isManga, this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -348,9 +353,10 @@ class _EmptySourceState extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  isManga
-                      ? 'No Manga Sources Installed'
-                      : 'No Anime Sources Installed',
+                  label ??
+                      (isManga
+                          ? 'No Manga Sources Installed'
+                          : 'No Anime Sources Installed'),
                   style: TextStyle(
                     fontSize: 13,
                     fontFamily: 'Poppins',
@@ -380,6 +386,7 @@ class _SourceSheetContent extends StatefulWidget {
   final Source? activeSource;
   final List<Source> installedSources;
   final bool isManga;
+  final String? label;
   final void Function(Source) onSourceSelected;
   final void Function(Source)? onSubSourceSelected;
 
@@ -389,6 +396,7 @@ class _SourceSheetContent extends StatefulWidget {
     required this.isManga,
     required this.onSourceSelected,
     this.onSubSourceSelected,
+    this.label,
   });
 
   @override
@@ -474,9 +482,10 @@ class _SourceSheetContentState extends State<_SourceSheetContent> {
                       size: 20, color: colors.primary),
                   const SizedBox(width: 10),
                   AnymexText(
-                    text: widget.isManga
-                        ? 'Select Manga Source'
-                        : 'Select Anime Source',
+                    text: widget.label ??
+                        (widget.isManga
+                            ? 'Select Manga Source'
+                            : 'Select Anime Source'),
                     size: 16,
                     variant: TextVariant.bold,
                   ),

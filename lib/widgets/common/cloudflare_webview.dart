@@ -209,6 +209,9 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
                   loadWithOverviewMode: true,
                   thirdPartyCookiesEnabled: true,
                   limitsNavigationsToAppBoundDomains: false,
+                  userAgent: AnymeXRuntimeBridge.userAgentMap[_parsedUri.host] ?? 
+                             AnymeXRuntimeBridge.userAgentMap[_parsedUri.host.replaceFirst('www.', '')] ?? 
+                             "",
                 ),
                 onWebViewCreated: (controller) {
                   _controller = controller;

@@ -512,6 +512,7 @@ class _SearchPageState extends State<SearchPage>
   Widget build(BuildContext context) {
     return Glow(
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         body: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

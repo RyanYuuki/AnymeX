@@ -5,6 +5,8 @@ import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/anime/studio_details_page.dart';
 import 'package:anymex/screens/anime/widgets/character_staff_sheet.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
+import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/screens/profile/widgets/stats_overview_cards.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/marquee_text.dart';
@@ -223,7 +225,11 @@ class FavoritesSection extends StatelessWidget {
           if (isAnime) {
             navigateWithAnimation(() => AnimeDetailsPage(media: media, tag: mediaTag));
           } else {
+            if (media.mediaType == ItemType.novel) {
+            navigateWithAnimation(() => NovelDetailsPage(media: media));
+          } else {
             navigateWithAnimation(() => MangaDetailsPage(media: media, tag: mediaTag));
+          }
           }
         }
       },

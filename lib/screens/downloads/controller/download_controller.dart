@@ -66,6 +66,14 @@ class DownloadController extends GetxController {
       _processMangaScrapeQueue();
     });
 
+    ever(Get.find<Settings>().downloadPath, (val) async {
+      await _loadIndex();
+      activeTasks.clear();
+      await _loadActiveTasks();
+      activeMangaTasks.clear();
+      await _loadMangaActiveTasks();
+    });
+
     final sourceController = Get.find<SourceController>();
 
     _initForegroundTask();
@@ -641,10 +649,13 @@ class DownloadController extends GetxController {
       );
 
       final subFolder = p.join(fullDirPath, 'Episode_${task.episode.number}_subs');
-      final localSubs = task.subtitles?.map((s) => hive.Track(
-        file: p.join(subFolder, '${s.label}.srt'),
-        label: s.label,
-      )).toList();
+      final localSubs = task.subtitles?.map((s) {
+        final ext = MediaDownloader.getSubtitleExtension(s.file ?? '');
+        return hive.Track(
+          file: p.join(subFolder, '${s.label}$ext'),
+          label: s.label,
+        );
+      }).toList();
       task.subtitles = localSubs;
 
       _activeFileTasks.add(task.taskId);
@@ -811,9 +822,13 @@ class DownloadController extends GetxController {
         final ext = _imageExtension(page.url);
         final idx = pages.indexOf(page);
         final fileName = 'page_${(idx + 1).toString().padLeft(3, '0')}$ext';
+        final Map<String, String> headers = page.headers?.map((k, v) => MapEntry(k, v.toString())) ?? {};
+        if (!headers.containsKey('Referer') && source.baseUrl != null) {
+          headers['Referer'] = source.baseUrl!;
+        }
         return dl.PageUrl(
           url: page.url,
-          headers: page.headers?.map((k, v) => MapEntry(k, v.toString())),
+          headers: headers,
           fileName: p.join(chapterDir.path, fileName),
         );
       }).toList();

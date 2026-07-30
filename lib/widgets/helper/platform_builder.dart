@@ -118,48 +118,60 @@ int getResponsiveCrossAxisCount(
 }
 
 class PlatformBuilder extends StatelessWidget {
-  final Widget androidBuilder;
-  final Widget desktopBuilder;
+  final Widget? androidBuilder;
+  final Widget? desktopBuilder;
+  final WidgetBuilder? androidWidgetBuilder;
+  final WidgetBuilder? desktopWidgetBuilder;
   final bool strictMode;
-  const PlatformBuilder(
-      {super.key,
-      required this.androidBuilder,
-      required this.desktopBuilder,
-      this.strictMode = false});
+
+  const PlatformBuilder({
+    super.key,
+    this.androidBuilder,
+    this.desktopBuilder,
+    this.androidWidgetBuilder,
+    this.desktopWidgetBuilder,
+    this.strictMode = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
-      if (strictMode) {
-        if (!Platform.isAndroid && !Platform.isIOS) {
-          return desktopBuilder;
-        } else {
-          return androidBuilder;
-        }
+      final isDesktop = strictMode
+          ? (!Platform.isAndroid && !Platform.isIOS)
+          : (constraints.maxWidth > maxMobileWidth);
+
+      if (isDesktop) {
+        return desktopWidgetBuilder != null
+            ? desktopWidgetBuilder!(context)
+            : (desktopBuilder ?? const SizedBox.shrink());
       } else {
-        if (constraints.maxWidth > maxMobileWidth) {
-          return desktopBuilder;
-        } else {
-          return androidBuilder;
-        }
+        return androidWidgetBuilder != null
+            ? androidWidgetBuilder!(context)
+            : (androidBuilder ?? const SizedBox.shrink());
       }
     });
   }
 }
 
 class PlatformBuilderWithTablet extends StatelessWidget {
-  final Widget androidBuilder;
-  final Widget tabletBuilder;
-  final Widget desktopBuilder;
+  final Widget? androidBuilder;
+  final Widget? tabletBuilder;
+  final Widget? desktopBuilder;
+  final WidgetBuilder? androidWidgetBuilder;
+  final WidgetBuilder? tabletWidgetBuilder;
+  final WidgetBuilder? desktopWidgetBuilder;
   final bool strictMode;
   static const double maxMobileWidth = 500;
   static const double maxTabletWidth = 1024;
 
   const PlatformBuilderWithTablet({
     super.key,
-    required this.androidBuilder,
-    required this.tabletBuilder,
-    required this.desktopBuilder,
+    this.androidBuilder,
+    this.tabletBuilder,
+    this.desktopBuilder,
+    this.androidWidgetBuilder,
+    this.tabletWidgetBuilder,
+    this.desktopWidgetBuilder,
     this.strictMode = false,
   });
 
@@ -169,19 +181,31 @@ class PlatformBuilderWithTablet extends StatelessWidget {
       builder: (context, constraints) {
         if (strictMode) {
           if (!Platform.isAndroid && !Platform.isIOS) {
-            return desktopBuilder;
+            return desktopWidgetBuilder != null
+                ? desktopWidgetBuilder!(context)
+                : (desktopBuilder ?? const SizedBox.shrink());
           } else if (constraints.maxWidth > maxMobileWidth) {
-            return tabletBuilder;
+            return tabletWidgetBuilder != null
+                ? tabletWidgetBuilder!(context)
+                : (tabletBuilder ?? const SizedBox.shrink());
           } else {
-            return androidBuilder;
+            return androidWidgetBuilder != null
+                ? androidWidgetBuilder!(context)
+                : (androidBuilder ?? const SizedBox.shrink());
           }
         } else {
           if (constraints.maxWidth > maxTabletWidth) {
-            return desktopBuilder;
+            return desktopWidgetBuilder != null
+                ? desktopWidgetBuilder!(context)
+                : (desktopBuilder ?? const SizedBox.shrink());
           } else if (constraints.maxWidth > maxMobileWidth) {
-            return tabletBuilder;
+            return tabletWidgetBuilder != null
+                ? tabletWidgetBuilder!(context)
+                : (tabletBuilder ?? const SizedBox.shrink());
           } else {
-            return androidBuilder;
+            return androidWidgetBuilder != null
+                ? androidWidgetBuilder!(context)
+                : (androidBuilder ?? const SizedBox.shrink());
           }
         }
       },

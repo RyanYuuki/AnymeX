@@ -367,6 +367,8 @@ class Settings extends GetxController {
   Map<String, bool> get homePageCards => _getUISetting((s) => s.homePageCards);
   Map<String, bool> get homePageCardsMal =>
       _getUISetting((s) => s.homePageCardsMal);
+  Map<String, bool> get homePageCardsSimkl =>
+      _getUISetting((s) => s.homePageCardsSimkl);
 
   String get _currentTabOrderKey {
     final service = Get.isRegistered<ServiceHandler>()
@@ -633,6 +635,12 @@ class Settings extends GetxController {
     PlayerSettingsKeys.enableHoldToSeek.set(value);
   }
 
+  bool get enableSlideToSeek => _getPlayerSetting((s) => s.enableSlideToSeek);
+  set enableSlideToSeek(bool value) {
+    playerSettings.update((s) => s?.enableSlideToSeek = value);
+    PlayerSettingsKeys.enableSlideToSeek.set(value);
+  }
+
   bool get playerMenuAnimation =>
       _getPlayerSetting((s) => s.playerMenuAnimation);
   set playerMenuAnimation(bool value) {
@@ -713,5 +721,13 @@ class Settings extends GetxController {
     currentCards[key] = value;
     uiSettings.update((s) => s?.homePageCardsMal = currentCards);
     UISettingsKeys.homePageCardsMal.set(jsonEncode(currentCards));
+  }
+
+  void updateHomePageCardSimkl(String key, bool value) {
+    final currentCards =
+        Map<String, bool>.from(uiSettings.value.homePageCardsSimkl);
+    currentCards[key] = value;
+    uiSettings.update((s) => s?.homePageCardsSimkl = currentCards);
+    UISettingsKeys.homePageCardsSimkl.set(jsonEncode(currentCards));
   }
 }

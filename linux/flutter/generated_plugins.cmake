@@ -22,6 +22,7 @@ list(APPEND FLUTTER_FFI_PLUGIN_LIST
   flutter_discord_rpc_fork
   jni
   libtorrent_flutter
+  rhttp
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)

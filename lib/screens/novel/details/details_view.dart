@@ -2,6 +2,7 @@ import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/widgets/comments/comments_section.dart';
 import 'package:anymex/screens/anime/widgets/custom_list_dialog.dart';
+import 'package:anymex/screens/downloads/widgets/track_sheet.dart';
 import 'package:anymex/screens/novel/details/controller/details_controller.dart';
 import 'package:anymex/screens/novel/details/widgets/chapters_section.dart';
 import 'package:anymex/screens/novel/details/widgets/novel_stats.dart';
@@ -23,13 +24,13 @@ import 'package:iconsax/iconsax.dart';
 
 class NovelDetailsPage extends StatefulWidget {
   final Media media;
-  final Source source;
+  final Source? source;
   final String tag;
   const NovelDetailsPage(
       {super.key,
       required this.media,
-      required this.source,
-      required this.tag});
+      this.source,
+      this.tag = ''});
 
   @override
   State<NovelDetailsPage> createState() => _NovelDetailsPageState();
@@ -58,7 +59,7 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
     super.initState();
     pageController = PageController();
     controller = Get.put(NovelDetailsController(
-        source: widget.source, initialMedia: widget.media));
+        initialSource: widget.source, initialMedia: widget.media));
 
     final novel =
         controller.offlineStorage.getNovelById(controller.initialMedia.id);
@@ -315,6 +316,39 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
                     ),
                   ],
                 ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Container(
+          height: 56,
+          width: 56,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: context.colors.primary.opaque(0.3),
+            ),
+            color: context.colors.primary.opaque(0.1),
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () {
+                final media = controller.media.value;
+                showTrackSheetForMedia(
+                  context,
+                  mediaId: media.id,
+                  title: media.title,
+                  poster: media.poster,
+                  isManga: true,
+                );
+              },
+              borderRadius: BorderRadius.circular(16),
+              child: Icon(
+                Icons.track_changes_rounded,
+                color: context.colors.primary,
+                size: 22,
               ),
             ),
           ),

@@ -52,6 +52,7 @@ class Media {
   int? seasonYear;
   List<String> synonyms;
   List<MediaTag> tags;
+  List<ExternalLink>? externalLinks;
 
   // String get uniqueId => "$id-${serviceType.name}";
   String get uniqueId => id.split('*').first;
@@ -97,6 +98,7 @@ class Media {
       this.characterRole,
       this.synonyms = const [],
       this.tags = const [],
+      this.externalLinks,
       DateTime? createdAt})
       : createdAt = DateTime.now();
 
@@ -109,7 +111,9 @@ class Media {
       final t = mediaTypeStr.toLowerCase();
       if (t == 'tv' || t == 'ova' || t == 'movie' || t == 'special' || t == 'ona' || t == 'music') {
         determinedType = ItemType.anime;
-      } else if (t == 'manga' || t == 'novel' || t == 'one_shot' || t == 'doujinshi' || t == 'manhwa' || t == 'manhua' || t == 'oel') {
+      } else if (t == 'novel' || t == 'light_novel') {
+        determinedType = ItemType.novel;
+      } else if (t == 'manga' || t == 'one_shot' || t == 'doujinshi' || t == 'manhwa' || t == 'manhua' || t == 'oel') {
         determinedType = ItemType.manga;
       } else {
         determinedType = isManga ? ItemType.manga : ItemType.anime;
@@ -214,7 +218,9 @@ class Media {
       final t = mediaTypeStr.toLowerCase();
       if (t == 'tv' || t == 'ova' || t == 'movie' || t == 'special' || t == 'ona' || t == 'music') {
         determinedType = ItemType.anime;
-      } else if (t == 'manga' || t == 'novel' || t == 'one_shot' || t == 'doujinshi' || t == 'manhwa' || t == 'manhua' || t == 'oel') {
+      } else if (t == 'novel' || t == 'light_novel') {
+        determinedType = ItemType.novel;
+      } else if (t == 'manga' || t == 'one_shot' || t == 'doujinshi' || t == 'manhwa' || t == 'manhua' || t == 'oel') {
         determinedType = ItemType.manga;
       } else {
         determinedType = isManga ? ItemType.manga : ItemType.anime;
@@ -270,6 +276,265 @@ class Media {
   factory Media.fromSimkl(Map<String?, dynamic> json, bool isMovie) {
     ItemType type = ItemType.anime;
 
+    String formatStatus(String? rawStatus) {
+      if (rawStatus == null || rawStatus.isEmpty) return 'Unknown';
+      final s = rawStatus.toLowerCase().trim();
+      switch (s) {
+        case 'airing':
+        case 'returning series':
+          return 'Releasing';
+        case 'ended':
+          return 'Finished';
+        case 'released':
+          return 'Released';
+        case 'canceled':
+        case 'cancelled':
+          return 'Cancelled';
+        case 'in production':
+          return 'In Production';
+        case 'post production':
+          return 'Post Production';
+        case 'pilot':
+          return 'Pilot';
+        default:
+          return s.split(' ').map((w) => w.isNotEmpty ? w[0].toUpperCase() + w.substring(1) : '').join(' ');
+      }
+    }
+
+    String formatDate(String? rawDate) {
+      if (rawDate == null || rawDate.trim().isEmpty) return 'Unknown release';
+      final cleanStr = rawDate.trim();
+      final match = RegExp(r'^(\d{4})-(\d{2})-(\d{2})').firstMatch(cleanStr);
+      if (match != null) {
+        final year = match.group(1);
+        final month = match.group(2);
+        final day = match.group(3);
+        return '$day-$month-$year';
+      }
+      try {
+        final parsed = DateTime.tryParse(cleanStr);
+        if (parsed != null) {
+          final day = parsed.day.toString().padLeft(2, '0');
+          final month = parsed.month.toString().padLeft(2, '0');
+          return '$day-$month-${parsed.year}';
+        }
+      } catch (_) {}
+      return rawDate;
+    }
+
+    String parseSeasons() {
+      if (isMovie) return 'N/A';
+      final seasons = json['seasons'] as List?;
+      if (seasons != null && seasons.isNotEmpty) {
+        final regularSeasons = seasons.where((s) => s is Map && s['number'] != 0).length;
+        final totalCount = regularSeasons > 0 ? regularSeasons : seasons.length;
+        return '$totalCount Season${totalCount > 1 ? "s" : ""}';
+      }
+      return 'N/A';
+    }
+
+    String parseFormat() {
+      if (isMovie) {
+        final showType = json['show_type']?.toString();
+        if (showType != null && showType.isNotEmpty) {
+          return showType.split('_').map((w) => w.isNotEmpty ? w[0].toUpperCase() + w.substring(1) : '').join(' ');
+        }
+        return 'Movie';
+      } else {
+        final showType = json['show_type']?.toString() ?? json['anime_type']?.toString();
+        if (showType != null && showType.isNotEmpty) {
+          if (showType.toLowerCase() == 'scripted') return 'TV';
+          return showType.split('_').map((w) => w.isNotEmpty ? w[0].toUpperCase() + w.substring(1) : '').join(' ');
+        }
+        return 'TV';
+      }
+    }
+
+    String parseDuration() {
+      final runtime = json['runtime'];
+      if (runtime != null && runtime.toString().isNotEmpty && runtime.toString() != '0') {
+        final rStr = runtime.toString();
+        return rStr.contains('min') ? rStr : '$rStr minutes';
+      }
+      return 'Unknown';
+    }
+
+    NextAiringEpisode? parseNextAiringEpisode() {
+      if (isMovie) return null;
+      final nextEp = json['next_episode'];
+      if (nextEp is Map && nextEp['date'] != null) {
+        try {
+          final dt = DateTime.tryParse(nextEp['date'].toString());
+          if (dt != null) {
+            final now = DateTime.now();
+            final airingAtSeconds = dt.millisecondsSinceEpoch ~/ 1000;
+            final timeUntil = (dt.millisecondsSinceEpoch - now.millisecondsSinceEpoch) ~/ 1000;
+            final epNum = (nextEp['episode'] as num?)?.toInt() ?? 1;
+            return NextAiringEpisode(
+              airingAt: airingAtSeconds,
+              timeUntilAiring: timeUntil > 0 ? timeUntil : 0,
+              episode: epNum,
+            );
+          }
+        } catch (_) {}
+      }
+      if (json['episodes'] is List) {
+        final now = DateTime.now();
+        for (final ep in (json['episodes'] as List)) {
+          if (ep is Map) {
+            final isAired = ep['aired'] == true;
+            final dateStr = ep['date']?.toString();
+            if (!isAired && dateStr != null) {
+              final dt = DateTime.tryParse(dateStr);
+              if (dt != null && dt.isAfter(now)) {
+                final airingAtSeconds = dt.millisecondsSinceEpoch ~/ 1000;
+                final timeUntil = (dt.millisecondsSinceEpoch - now.millisecondsSinceEpoch) ~/ 1000;
+                final epNum = (ep['episode'] as num?)?.toInt() ?? 1;
+                return NextAiringEpisode(
+                  airingAt: airingAtSeconds,
+                  timeUntilAiring: timeUntil,
+                  episode: epNum,
+                );
+              }
+            }
+          }
+        }
+      }
+      return null;
+    }
+
+    final rawRank = json['rank'];
+    final popularityStr = (rawRank != null && rawRank.toString().isNotEmpty && rawRank.toString() != '0')
+        ? rawRank.toString()
+        : 'N/A';
+
+    final simklRating = json['ratings']?['simkl']?['rating'];
+    final imdbRating = json['ratings']?['imdb']?['rating'];
+    final ratingStr = (simklRating != null && simklRating.toString().isNotEmpty)
+        ? simklRating.toString()
+        : (imdbRating != null && imdbRating.toString().isNotEmpty)
+            ? imdbRating.toString()
+            : 'N/A';
+
+    final releasedDateStr = formatDate(json['released'] ?? json['first_aired']);
+
+    List<String>? studiosList;
+    if (!isMovie && json['network'] != null && json['network'].toString().isNotEmpty) {
+      studiosList = [json['network'].toString()];
+    } else if (isMovie && json['director'] != null && json['director'].toString().isNotEmpty) {
+      studiosList = ['Director: ${json['director']}'];
+    }
+
+    final synonymsSet = <String>{};
+    if (json['en_title'] != null) synonymsSet.add(json['en_title'].toString());
+    if (json['alt_titles'] is List) {
+      for (final item in (json['alt_titles'] as List)) {
+        if (item is Map && item['name'] != null) {
+          synonymsSet.add(item['name'].toString());
+        } else if (item is String) {
+          synonymsSet.add(item);
+        }
+      }
+    }
+    final synonymsList = synonymsSet.where((s) => s.isNotEmpty && s != json['title']).toList();
+
+    final tagsList = <MediaTag>[];
+    if (json['certification'] != null && json['certification'].toString().isNotEmpty) {
+      tagsList.add(MediaTag(name: json['certification'].toString(), rank: 100));
+    }
+    if (json['country'] != null && json['country'].toString().isNotEmpty) {
+      tagsList.add(MediaTag(name: json['country'].toString().toUpperCase(), rank: 90));
+    }
+    if (json['language'] != null && json['language'].toString().isNotEmpty) {
+      tagsList.add(MediaTag(name: json['language'].toString().toUpperCase(), rank: 80));
+    }
+
+    List<Relation>? relationsList;
+    if (json['relations'] is List) {
+      relationsList = (json['relations'] as List).map((r) {
+        if (r is Map) {
+          final rTitle = r['title']?.toString() ?? 'Unknown Title';
+          final relType = (r['relation_type']?.toString() ?? 'RELATED').replaceAll('_', ' ').toUpperCase();
+          final rIds = r['ids'] as Map?;
+          final rSimklId = rIds?['simkl']?.toString() ?? rIds?['simkl_id']?.toString() ?? '0';
+          final rType = (r['anime_type']?.toString() ?? r['type']?.toString() ?? 'ANIME').toUpperCase();
+          return Relation(
+            id: int.tryParse(rSimklId) ?? 0,
+            title: rTitle,
+            poster: '',
+            cover: '',
+            type: rType,
+            averageScore: '0',
+            relationType: relType,
+            status: '',
+          );
+        }
+        return null;
+      }).whereType<Relation>().toList();
+    }
+
+    final linksList = <ExternalLink>[];
+    final ids = json['ids'] as Map?;
+    if (ids != null) {
+      final simklId = ids['simkl_id']?.toString() ?? ids['simkl']?.toString() ?? '';
+      final slug = ids['slug']?.toString() ?? '';
+      final imdbId = ids['imdb']?.toString() ?? '';
+      final tmdbId = ids['tmdb']?.toString() ?? '';
+      final netflixId = ids['netflix']?.toString() ?? '';
+      final huluId = ids['hulu']?.toString() ?? '';
+      final crunchyId = ids['crunchyroll']?.toString() ?? '';
+
+      if (simklId.isNotEmpty) {
+        linksList.add(ExternalLink(
+          site: 'Simkl',
+          url: 'https://simkl.com/${isMovie ? "movies" : "tv"}/$simklId${slug.isNotEmpty ? "/$slug" : ""}',
+        ));
+      }
+      if (imdbId.isNotEmpty) {
+        linksList.add(ExternalLink(
+          site: 'IMDb',
+          url: 'https://www.imdb.com/title/$imdbId',
+        ));
+      }
+      if (tmdbId.isNotEmpty) {
+        linksList.add(ExternalLink(
+          site: 'TMDb',
+          url: 'https://www.themoviedb.org/${isMovie ? "movie" : "tv"}/$tmdbId',
+        ));
+      }
+      if (netflixId.isNotEmpty) {
+        linksList.add(ExternalLink(
+          site: 'Netflix',
+          url: 'https://www.netflix.com/title/$netflixId',
+        ));
+      }
+      if (huluId.isNotEmpty) {
+        linksList.add(ExternalLink(
+          site: 'Hulu',
+          url: 'https://www.hulu.com/series/$huluId',
+        ));
+      }
+      if (crunchyId.isNotEmpty) {
+        linksList.add(ExternalLink(
+          site: 'Crunchyroll',
+          url: 'https://www.crunchyroll.com/series/$crunchyId',
+        ));
+      }
+    }
+
+    if (json['trailers'] is List) {
+      for (final t in (json['trailers'] as List)) {
+        if (t is Map && t['youtube'] != null && t['youtube'].toString().isNotEmpty) {
+          final ytId = t['youtube'].toString();
+          final tName = t['name']?.toString() ?? 'Trailer';
+          linksList.add(ExternalLink(
+            site: 'Trailer ($tName)',
+            url: 'https://www.youtube.com/watch?v=$ytId',
+          ));
+        }
+      }
+    }
+
     return Media(
       id: '${json['ids']?['simkl_id']?.toString() ?? json['ids']?['simkl']?.toString()}*${isMovie ? "MOVIE" : "SERIES"}',
       title: json['title'] ?? 'Unknown Title',
@@ -287,21 +552,27 @@ class Media {
               json['episodes'])
           ?.toString() ??
           (isMovie ? '1' : '??'),
-      type: json['country']?.toUpperCase() ?? 'UNKNOWN',
-      premiered: json['released'] ?? 'Unknown release date',
-      duration: json['runtime'] != null
-          ? '${json['runtime']} minutes'
-          : 'Unknown runtime',
-      status: json['type']?.toUpperCase() ?? 'UNKNOWN',
-      rating: json['ratings']?['simkl']?['rating']?.toString() ?? 'N/A',
-      popularity: json['rank']?.toString() ?? '0',
+      type: isMovie ? 'Movie' : 'Show',
+      format: parseFormat(),
+      season: parseSeasons(),
+      premiered: releasedDateStr,
+      duration: parseDuration(),
+      status: formatStatus(json['status']),
+      rating: ratingStr,
+      popularity: popularityStr,
       mediaType: type,
-      aired: json['released'] ?? 'Unknown air date',
+      aired: releasedDateStr,
       totalChapters: '0',
       genres: (json['genres'] as List<dynamic>?)
               ?.map((genre) => genre.toString())
               .toList() ??
           [],
+      studios: studiosList,
+      synonyms: synonymsList,
+      tags: tagsList,
+      relations: relationsList,
+      externalLinks: linksList.isNotEmpty ? linksList : null,
+      nextAiringEpisode: parseNextAiringEpisode(),
       recommendations: (json['users_recommendations'] as List<dynamic>?)
               ?.map((e) {
                 try {
@@ -319,6 +590,53 @@ class Media {
     );
   }
 
+  factory Media.fromSimklSearch(Map<String?, dynamic> json) {
+    final endpointType = json['endpoint_type']?.toString() ?? 'anime';
+    final isMovie = endpointType == 'movies';
+    final simklId = json['ids']?['simkl_id']?.toString() ??
+        json['ids']?['simkl']?.toString() ??
+        DateTime.now().millisecondsSinceEpoch.toString();
+    final posterPath = json['poster']?.toString();
+    final posterUrl = (posterPath != null && posterPath.isNotEmpty)
+        ? 'https://wsrv.nl/?url=https://simkl.in/posters/${posterPath}_m.jpg'
+        : '';
+    final epCount = json['ep_count']?.toString();
+    final year = json['year']?.toString();
+    final status = json['status']?.toString();
+    final rating = json['ratings']?['simkl']?['rating']?.toString();
+    final rank = json['rank']?.toString();
+    final title = json['title']?.toString() ?? 'Unknown Title';
+    final romaji = json['title_romaji']?.toString() ?? title;
+
+    return Media(
+      id: '$simklId*${isMovie ? "MOVIE" : "SERIES"}',
+      title: title,
+      romajiTitle: romaji,
+      description: json['overview']?.toString() ?? '',
+      poster: posterUrl,
+      largePoster: posterUrl,
+      cover: posterUrl,
+      totalEpisodes: (epCount != null && epCount.isNotEmpty) ? epCount : '?',
+      type: endpointType.toUpperCase(),
+      season: '?',
+      premiered: year ?? '?',
+      duration: '?',
+      status: (status != null && status.isNotEmpty)
+          ? status[0].toUpperCase() + status.substring(1)
+          : '?',
+      rating: rating ?? '?',
+      popularity: rank ?? '0',
+      format: json['type']?.toString() ?? '?',
+      aired: year ?? '?',
+      totalChapters: '0',
+      genres: const [],
+      recommendations: const [],
+      mediaType: ItemType.anime,
+      serviceType: ServicesType.simkl,
+      seasonYear: year != null ? int.tryParse(year) : null,
+    );
+  }
+
   factory Media.fromSmallSimkl(Map<String?, dynamic> json, bool isMovie) {
     ItemType type = ItemType.anime;
     String posterUrl = '';
@@ -330,7 +648,24 @@ class Media {
       }
     }
 
-    String releaseDate = json['release_date'] ?? json['date'] ?? '';
+    String rawReleaseDate = json['release_date'] ?? json['date'] ?? json['released'] ?? '';
+    String releaseDate = rawReleaseDate;
+    if (rawReleaseDate.isNotEmpty) {
+      final match = RegExp(r'^(\d{4})-(\d{2})-(\d{2})').firstMatch(rawReleaseDate.trim());
+      if (match != null) {
+        releaseDate = '${match.group(3)}-${match.group(2)}-${match.group(1)}';
+      }
+    }
+
+    final rawRank = json['rank'];
+    final popularityStr = (rawRank != null && rawRank.toString().isNotEmpty && rawRank.toString() != '0')
+        ? rawRank.toString()
+        : 'N/A';
+
+    final rawRating = json['ratings']?['simkl']?['rating'];
+    final ratingStr = (rawRating != null && rawRating.toString().isNotEmpty)
+        ? rawRating.toString()
+        : '0.0';
 
     return Media(
       id: '${json['ids']?['simkl_id']?.toString() ?? json['ids']?['simkl']?.toString() ?? DateTime.now().millisecondsSinceEpoch.toString()}*${isMovie ? "MOVIE" : "SERIES"}',
@@ -349,9 +684,10 @@ class Media {
               json['episodes'])
           ?.toString() ??
           (isMovie ? '1' : '??'),
-      type: isMovie ? 'MOVIE' : 'TV',
-      rating: json['ratings']?['simkl']?['rating']?.toString() ?? '0.0',
-      popularity: json['rank']?.toString() ?? '0',
+      type: isMovie ? 'Movie' : 'Show',
+      format: isMovie ? 'Movie' : 'TV',
+      rating: ratingStr,
+      popularity: popularityStr,
       mediaType: type,
       serviceType: ServicesType.simkl,
       aired: releaseDate,
@@ -412,11 +748,16 @@ class Media {
 
   factory Media.fromJson(Map<String, dynamic> json,
       {Map<String, dynamic>? pageJson}) {
-    ItemType type = json['type'] == "ANIME"
+    final isAnime = json['type'] == "ANIME";
+    final isNovel = json['type'] == "MANGA" &&
+        (json['format'] ?? '').toUpperCase() == 'NOVEL';
+    ItemType type = isAnime
         ? ItemType.anime
-        : json['type'] == "MANGA"
-            ? ItemType.manga
-            : ItemType.novel;
+        : isNovel
+            ? ItemType.novel
+            : json['type'] == "MANGA"
+                ? ItemType.manga
+                : ItemType.novel;
 
     List<Media> recs = [];
     final recsJson = json['recommendations'];
@@ -767,4 +1108,16 @@ extension RemoveDupesOnTM on List<TrackedMedia> {
     final seen = <String>{};
     return where((media) => seen.add(media.id!)).toList();
   }
+}
+
+class ExternalLink {
+  final String site;
+  final String url;
+  final String? icon;
+
+  ExternalLink({
+    required this.site,
+    required this.url,
+    this.icon,
+  });
 }

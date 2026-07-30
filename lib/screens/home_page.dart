@@ -46,105 +46,119 @@ class _HomePageState extends State<HomePage> {
   late final Stream<List<OfflineMedia>> _animeLibraryStream;
 
   Widget _buildRecentlyOpenedSection(CacheController cacheController) {
-    final data = cacheController.getStoredAnime();
-    if (data.isEmpty) {
-      return const SizedBox.shrink();
-    }
+    return Obx(() {
+      final data = cacheController.getStoredAnime();
+      if (data.isEmpty) {
+        return const SizedBox.shrink();
+      }
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: SizedBox(
-        height: 100,
-        child: RepaintBoundary(
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: data.length,
-            itemBuilder: (context, i) =>
-                RecentlyOpenedAnimeCard(media: data[i]),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildContinueWatchingSection(
-      OfflineStorageController offlineStorageController) {
-    return StreamBuilder<List<OfflineMedia>>(
-      initialData: offlineStorageController.getAnimeLibrarySync(),
-      stream: _animeLibraryStream,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return const SizedBox.shrink();
-        }
-        final historyData = (snapshot.data ?? const <OfflineMedia>[])
-            .where((e) => e.currentEpisode?.currentTrack != null)
-            .toList()
-          ..sort((a, b) => (b.currentEpisode?.lastWatchedTime ?? 0)
-              .compareTo(a.currentEpisode?.lastWatchedTime ?? 0));
-        final visibleHistory = historyData.take(20).toList(growable: false);
-
-        if (visibleHistory.isEmpty) {
-          return const SizedBox.shrink();
-        }
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Local History",
-                    style: TextStyle(
-                      fontFamily: "Poppins-SemiBold",
-                      fontSize: 17,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () => _showClearAllHistoryDialog(
-                        context, offlineStorageController, visibleHistory),
-                    child: Text(
-                      "Clear All",
-                      style: TextStyle(
-                        fontFamily: "Poppins-SemiBold",
-                        fontSize: 13,
-                        color: Theme.of(context).colorScheme.error,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              height: 228,
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: SizedBox(
+              height: 100,
               child: RepaintBoundary(
                 child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
                   scrollDirection: Axis.horizontal,
-                  itemCount: visibleHistory.length,
-                  itemBuilder: (context, i) => _RemovableHistoryCard(
-                    key: ValueKey(visibleHistory[i].mediaId),
-                    media: HistoryModel.fromOfflineMedia(
-                        visibleHistory[i], ItemType.anime),
-                    snapAll: _snapAll,
-                    onRemoved: () {
-                      offlineStorageController.clearMediaHistory(
-                        visibleHistory[i].mediaId ?? '',
-                        mediaType: ItemType.anime,
-                      );
-                    },
-                  ),
+                  itemCount: data.length,
+                  itemBuilder: (context, i) =>
+                      RecentlyOpenedAnimeCard(media: data[i]),
                 ),
               ),
             ),
-          ],
-        );
-      },
-    );
+          ),
+        ],
+      );
+    });
+  }
+
+  Widget _buildContinueWatchingSection(
+      OfflineStorageController offlineStorageController, Settings settings) {
+    return Obx(() {
+      if (!settings.showContinueWatchingCard) {
+        return const SizedBox.shrink();
+      }
+      return StreamBuilder<List<OfflineMedia>>(
+        initialData: offlineStorageController.getAnimeLibrarySync(),
+        stream: _animeLibraryStream,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return const SizedBox.shrink();
+          }
+          final historyData = (snapshot.data ?? const <OfflineMedia>[])
+              .where((e) => e.currentEpisode?.currentTrack != null)
+              .toList()
+            ..sort((a, b) => (b.currentEpisode?.lastWatchedTime ?? 0)
+                .compareTo(a.currentEpisode?.lastWatchedTime ?? 0));
+          final visibleHistory = historyData.take(20).toList(growable: false);
+
+          if (visibleHistory.isEmpty) {
+            return const SizedBox.shrink();
+          }
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 12),
+              Padding(
+                padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Local History",
+                      style: TextStyle(
+                        fontFamily: "Poppins-SemiBold",
+                        fontSize: 17,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => _showClearAllHistoryDialog(
+                          context, offlineStorageController, visibleHistory),
+                      child: Text(
+                        "Clear All",
+                        style: TextStyle(
+                          fontFamily: "Poppins-SemiBold",
+                          fontSize: 13,
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 228,
+                child: RepaintBoundary(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: visibleHistory.length,
+                    itemBuilder: (context, i) => _RemovableHistoryCard(
+                      key: ValueKey(visibleHistory[i].mediaId),
+                      media: HistoryModel.fromOfflineMedia(
+                          visibleHistory[i], ItemType.anime),
+                      snapAll: _snapAll,
+                      onRemoved: () {
+                        offlineStorageController.clearMediaHistory(
+                          visibleHistory[i].mediaId ?? '',
+                          mediaType: ItemType.anime,
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    });
   }
 
   void _showClearAllHistoryDialog(BuildContext context,
@@ -181,18 +195,9 @@ class _HomePageState extends State<HomePage> {
     required Settings settings,
   }) {
     final baseWidgets = serviceHandler.homeWidgets(context);
-    final hasRecentSection = cacheController.getStoredAnime().isNotEmpty;
-    final shouldShowContinueSection = settings.showContinueWatchingCard;
-
-    if (!hasRecentSection && !shouldShowContinueSection) {
-      return List<Widget>.from(baseWidgets);
-    }
     final localSections = <Widget>[
-      const SizedBox(height: 12),
-      if (hasRecentSection) _buildRecentlyOpenedSection(cacheController),
-      const SizedBox(height: 12),
-      if (shouldShowContinueSection)
-        _buildContinueWatchingSection(offlineStorageController),
+      _buildRecentlyOpenedSection(cacheController),
+      _buildContinueWatchingSection(offlineStorageController, settings),
     ];
 
     int insertionIndex;
@@ -319,7 +324,8 @@ class _HomePageState extends State<HomePage> {
                       ),
                       const SizedBox(height: 30),
                       Obx(() {
-                        cacheController.currentPool.length;
+                        serviceHandler.serviceType.value;
+                        serviceHandler.isLoggedIn.value;
                         final children = _buildHomeWidgets(
                           context: context,
                           serviceHandler: serviceHandler,

@@ -10,6 +10,7 @@ import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/screens/search/source_search_page.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
@@ -419,17 +420,20 @@ class Header extends StatelessWidget {
       );
     } else if (type == PageType.home) {
       list.add(
-        Container(
-          width: 36,
-          height: 36,
-          decoration: BoxDecoration(
-            color: context.colors.secondaryContainer.opaque(0.5),
-            shape: BoxShape.circle,
-          ),
-          child: Center(
-            child: AnymeXAnimatedLogo(
-              size: 36,
-              color: context.colors.primary,
+        AnymexOnTap(
+          onTap: () => SettingsSheet().showServiceSelector(context),
+          child: Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: context.colors.secondaryContainer.opaque(0.5),
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: AnymeXAnimatedLogo(
+                size: 36,
+                color: context.colors.primary,
+              ),
             ),
           ),
         ),

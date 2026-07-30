@@ -5,6 +5,8 @@ import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
+import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/media_items/media_item.dart';
@@ -282,7 +284,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
 
     final media = CardData.fromTrackedMedia(random);
     navigate(() => isManga
-        ? MangaDetailsPage(media: media.data, tag: media.title)
+        ? (media.data.mediaType == ItemType.novel ? NovelDetailsPage(media: media.data) : MangaDetailsPage(media: media.data, tag: media.title))
         : AnimeDetailsPage(media: media.data, tag: media.title));
   }
 

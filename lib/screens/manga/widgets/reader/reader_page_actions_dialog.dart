@@ -116,29 +116,38 @@ class _ReaderPageActionsSheet extends StatelessWidget {
       final fileName = 'anymex_${DateTime.now().millisecondsSinceEpoch}.jpg';
 
       if (Platform.isAndroid) {
-        Future<bool> check(Permission p) async {
-          var status = await p.status;
-          if (!status.isGranted) status = await p.request();
-          return status.isGranted;
-        }
-
-        await check(Permission.storage);
-        await check(Permission.photos);
-        await check(Permission.manageExternalStorage);
-
-        final directory = Directory('/storage/emulated/0/Pictures/AnymeX');
-        if (!await directory.exists()) {
-          await directory.create(recursive: true);
-        }
-        final file = File('${directory.path}/$fileName');
-        await file.writeAsBytes(bytes);
-
         try {
           const platform = MethodChannel('com.ryan.anymex/utils');
-          await platform.invokeMethod('scanFile', {'path': file.path});
-        } catch (_) {}
+          await platform.invokeMethod('saveImageToGallery', {
+            'bytes': bytes,
+            'name': fileName,
+          });
+          snackBar('Page saved to Pictures/AnymeX', duration: 2500);
+        } catch (_) {
+          Future<bool> check(Permission p) async {
+            var status = await p.status;
+            if (!status.isGranted) status = await p.request();
+            return status.isGranted;
+          }
 
-        snackBar('Page saved to Pictures/AnymeX', duration: 2500);
+          await check(Permission.storage);
+          await check(Permission.photos);
+          await check(Permission.manageExternalStorage);
+
+          final directory = Directory('/storage/emulated/0/Pictures/AnymeX');
+          if (!await directory.exists()) {
+            await directory.create(recursive: true);
+          }
+          final file = File('${directory.path}/$fileName');
+          await file.writeAsBytes(bytes);
+
+          try {
+            const platform = MethodChannel('com.ryan.anymex/utils');
+            await platform.invokeMethod('scanFile', {'path': file.path});
+          } catch (_) {}
+
+          snackBar('Page saved to Pictures/AnymeX', duration: 2500);
+        }
       } else if (Platform.isIOS) {
         final dir = await getTemporaryDirectory();
         final file = File('${dir.path}/$fileName');
