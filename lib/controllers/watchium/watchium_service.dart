@@ -193,16 +193,24 @@ class WatchiumService extends GetxController {
       final members = (memberData['members'] as List)
           .map((e) => WatchiumMember.fromJson(e as Map<String, dynamic>))
           .toList();
+      final newHostUserId = memberData['hostUserId'] as String? ??
+          current.hostUserId;
       roomState.value = WatchiumRoomState(
         code: current.code,
-        hostUserId: memberData['hostUserId'] as String? ??
-            current.hostUserId,
+        hostUserId: newHostUserId,
         members: members,
         content: current.content,
         playback: current.playback,
         onlyHostControls: current.onlyHostControls,
         maxMembers: current.maxMembers,
       );
+      // Update isHost in case host was transferred
+      final nowHost = newHostUserId == _userId;
+      if (nowHost != _isHost) {
+        _isHost = nowHost;
+        isHost.value = nowHost;
+        Logger.i('Host role changed: isHost=$nowHost', 'WATCHIUM');
+      }
       Logger.d('party:member received, ${members.length} members', 'WATCHIUM');
     });
 

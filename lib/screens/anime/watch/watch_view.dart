@@ -44,6 +44,7 @@ class WatchScreen extends StatefulWidget {
 
 class _WatchScreenState extends State<WatchScreen> {
   late PlayerController controller;
+  Worker? _inRoomWorker;
 
   @override
   initState() {
@@ -61,21 +62,49 @@ class _WatchScreenState extends State<WatchScreen> {
   void _initWatchiumSync() {
     try {
       final watchium = Get.find<WatchiumService>();
+
+      // React to inRoom changes — create/destroy sync controller dynamically
+      // This handles both: opening player while already in room AND
+      // creating/joining a room from within the player
+      _inRoomWorker = ever(watchium.inRoom, (inRoom) {
+        if (inRoom) {
+          _ensureSyncController();
+        } else {
+          _disposeSyncController();
+        }
+      });
+
+      // Handle initial state (player opened while already in room)
       if (watchium.inRoom.value) {
-        Get.put(WatchiumSyncController(playerController: controller));
+        _ensureSyncController();
       }
     } catch (_) {
       // WatchiumService not registered — not in a watch-together session
     }
   }
 
+  void _ensureSyncController() {
+    try {
+      // Use Get.put with tag to avoid conflicts if somehow called twice
+      Get.put(WatchiumSyncController(playerController: controller),
+          tag: 'watchiumSync');
+    } catch (_) {
+      // Already registered — safe to ignore
+    }
+  }
+
+  void _disposeSyncController() {
+    try {
+      Get.delete<WatchiumSyncController>(tag: 'watchiumSync');
+    } catch (_) {
+      // Not registered — safe to ignore
+    }
+  }
+
   @override
   void dispose() {
-    try {
-      Get.delete<WatchiumSyncController>();
-    } catch (_) {
-      // Not registered — nothing to clean up
-    }
+    _inRoomWorker?.dispose();
+    _disposeSyncController();
     Get.delete<PlayerController>();
     super.dispose();
   }

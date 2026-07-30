@@ -19,9 +19,11 @@ class WatchiumSyncController extends GetxController {
   Worker? _episodeWorker;
   Worker? _seekWorker;
   Worker? _roomStateWorker;
+  Worker? _isHostWorker;
 
   String _lastSyncedEpisodeNumber = '';
   double _lastHostPositionSec = 0.0;
+  bool _listenersSetupForHost = false;
 
   @override
   void onInit() {
@@ -31,10 +33,29 @@ class WatchiumSyncController extends GetxController {
   }
 
   void _setupListeners() {
+    // Watch for host role changes — the role may arrive AFTER this controller
+    // is created (party:state event is async), so we must react to it.
+    _isHostWorker = ever(_watchium.isHost, (isHost) {
+      if (isHost && !_listenersSetupForHost) {
+        Logger.i('WatchiumSync: Role changed to HOST, setting up host listeners', 'WATCHIUM_SYNC');
+        _teardownRoleListeners();
+        _setupHostListeners();
+        _listenersSetupForHost = true;
+      } else if (!isHost && _listenersSetupForHost) {
+        Logger.i('WatchiumSync: Role changed to MEMBER, switching to joiner listeners', 'WATCHIUM_SYNC');
+        _teardownRoleListeners();
+        _setupJoinerListeners();
+        _listenersSetupForHost = false;
+      }
+    });
+
+    // Initial setup based on current role
     if (_watchium.isHost.value) {
       _setupHostListeners();
+      _listenersSetupForHost = true;
     } else {
       _setupJoinerListeners();
+      _listenersSetupForHost = false;
     }
   }
 
@@ -76,8 +97,6 @@ class WatchiumSyncController extends GetxController {
     _episodeWorker = ever(playerController.currentEpisode, (episode) {
       if (_applyingSync) return;
       Logger.i('WatchiumSync: Episode changed to ${episode.number}', 'WATCHIUM_SYNC');
-      // Build new content from the player's updated episodeTracks
-      // (episodeTracks get refreshed when changeEpisode fetches new data)
       _sendContentForCurrentEpisode();
     });
   }
@@ -109,8 +128,6 @@ class WatchiumSyncController extends GetxController {
         if (epKey != _lastSyncedEpisodeNumber) {
           _lastSyncedEpisodeNumber = epKey;
           Logger.i('WatchiumSync: Host changed content to ep ${content.episodeNumber}', 'WATCHIUM_SYNC');
-          // Content changed — update player's episode tracks so the joiner
-          // can pick a server from the new list.
           _updateJoinerTracks(content);
         }
       }
@@ -157,6 +174,21 @@ class WatchiumSyncController extends GetxController {
     Logger.i('WatchiumSync: Updated joiner tracks with ${videos.length} servers', 'WATCHIUM_SYNC');
   }
 
+  // ---- Teardown ----
+
+  void _teardownRoleListeners() {
+    _heartbeatTimer?.cancel();
+    _heartbeatTimer = null;
+    _playbackWorker?.dispose();
+    _playbackWorker = null;
+    _episodeWorker?.dispose();
+    _episodeWorker = null;
+    _seekWorker?.dispose();
+    _seekWorker = null;
+    _roomStateWorker?.dispose();
+    _roomStateWorker = null;
+  }
+
   // ---- Helpers ----
 
   WatchiumAnimeContent _buildContentFromPlayer(PlayerController pc) {
@@ -201,12 +233,8 @@ class WatchiumSyncController extends GetxController {
 
   @override
   void onClose() {
-    _heartbeatTimer?.cancel();
-    _heartbeatTimer = null;
-    _playbackWorker?.dispose();
-    _episodeWorker?.dispose();
-    _seekWorker?.dispose();
-    _roomStateWorker?.dispose();
+    _isHostWorker?.dispose();
+    _teardownRoleListeners();
     Logger.d('WatchiumSync: onClose', 'WATCHIUM_SYNC');
     super.onClose();
   }
