@@ -1,5 +1,6 @@
 import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -164,6 +165,7 @@ class _WatchiumCreateDialogState extends State<WatchiumCreateDialog> {
   }
 
   Future<void> _createRoom() async {
+    Logger.i('Create room from dialog', 'WATCHIUM_UI');
     setState(() {
       _isCreating = true;
       _error = null;
@@ -183,12 +185,16 @@ class _WatchiumCreateDialogState extends State<WatchiumCreateDialog> {
       );
 
       if (code != null) {
+        Logger.i('Room created: $code', 'WATCHIUM_UI');
         if (mounted) Navigator.pop(context);
         _showCodeDialog(code);
       } else {
-        setState(() => _error = watchium.error.value);
+        final err = watchium.error.value;
+        Logger.w('Room creation failed: $err', 'WATCHIUM_UI');
+        setState(() => _error = err);
       }
     } catch (e) {
+      Logger.e('Room creation exception', error: e, loggerName: 'WATCHIUM_UI');
       setState(() => _error = e.toString());
     } finally {
       setState(() => _isCreating = false);
@@ -197,10 +203,12 @@ class _WatchiumCreateDialogState extends State<WatchiumCreateDialog> {
 
   Future<void> _joinRoom() async {
     if (_joinCode.length != 6) {
+      Logger.w('Join room from dialog: invalid code length ${_joinCode.length}', 'WATCHIUM_UI');
       setState(() => _error = 'Room code must be 6 characters');
       return;
     }
 
+    Logger.i('Join room from dialog: $_joinCode', 'WATCHIUM_UI');
     setState(() {
       _isCreating = true;
       _error = null;
@@ -210,11 +218,15 @@ class _WatchiumCreateDialogState extends State<WatchiumCreateDialog> {
       final watchium = Get.find<WatchiumService>();
       final ok = await watchium.joinRoom(_joinCode);
       if (ok && mounted) {
+        Logger.i('Join room succeeded', 'WATCHIUM_UI');
         Navigator.pop(context);
       } else {
-        setState(() => _error = watchium.error.value);
+        final err = watchium.error.value;
+        Logger.w('Join room failed: $err', 'WATCHIUM_UI');
+        setState(() => _error = err);
       }
     } catch (e) {
+      Logger.e('Join room exception', error: e, loggerName: 'WATCHIUM_UI');
       setState(() => _error = e.toString());
     } finally {
       setState(() => _isCreating = false);

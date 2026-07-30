@@ -1,6 +1,7 @@
 import 'package:anymex/controllers/watchium/watchium_models.dart';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/screens/other_features.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
@@ -36,6 +37,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
   }
 
   Future<void> _loadRooms() async {
+    Logger.d('Loading public rooms', 'WATCHIUM_UI');
     setState(() {
       _isLoading = true;
       _error = null;
@@ -46,8 +48,10 @@ class _WatchiumPageState extends State<WatchiumPage> {
 
   Future<void> _joinByCode() async {
     final code = _joinCodeController.text.trim().toUpperCase();
+    Logger.i('Join by code: $code', 'WATCHIUM_UI');
     if (code.length != 6) {
       setState(() => _error = 'Room code must be 6 characters');
+      Logger.w('Join by code: invalid length ${code.length}', 'WATCHIUM_UI');
       return;
     }
 
@@ -60,16 +64,14 @@ class _WatchiumPageState extends State<WatchiumPage> {
     setState(() => _isLoading = false);
 
     if (ok) {
+      Logger.i('Join by code $code succeeded', 'WATCHIUM_UI');
       if (mounted) {
         snackBar('Joined room! Open the anime to start watching.');
-        // Navigate to the anime details page if we have content info
-        final roomState = _watchium.roomState.value;
-        if (roomState?.content?.anilistId != null) {
-          // Could navigate to the anime page here
-        }
       }
     } else {
-      setState(() => _error = _watchium.error.value);
+      final err = _watchium.error.value;
+      Logger.w('Join by code $code failed: $err', 'WATCHIUM_UI');
+      setState(() => _error = err);
     }
   }
 
@@ -364,6 +366,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
           borderRadius: BorderRadius.circular(12),
           onTap: isJoinable
               ? () async {
+                  Logger.i('Join room from card: ${room.code}', 'WATCHIUM_UI');
                   setState(() => _isLoading = true);
                   final ok = await _watchium.joinRoom(room.code);
                   setState(() => _isLoading = false);
@@ -452,6 +455,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                     onPressed: _isLoading
                         ? null
                         : () async {
+                            Logger.i('Join room from button: ${room.code}', 'WATCHIUM_UI');
                             setState(() => _isLoading = true);
                             final ok =
                                 await _watchium.joinRoom(room.code);

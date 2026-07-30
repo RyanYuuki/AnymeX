@@ -1,4 +1,5 @@
 import 'package:anymex/controllers/watchium/watchium_service.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -70,6 +71,7 @@ class WatchiumOverlay extends StatelessWidget {
   }
 
   void _showPartyPanel(BuildContext context, WatchiumService watchium) {
+    Logger.d('Opening party panel', 'WATCHIUM_UI');
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -161,6 +163,7 @@ class _PartyPanel extends StatelessWidget {
         ),
         FilledButton.icon(
           onPressed: () {
+            Logger.i('Leave room from party panel', 'WATCHIUM_UI');
             watchium.leaveRoom();
             Navigator.pop(context);
           },

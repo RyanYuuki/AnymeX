@@ -7,6 +7,7 @@ import 'package:anymex/screens/anime/watch/controls/themes/setup/player_control_
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/watchium/watchium_page.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/ExtensionManager.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
@@ -375,17 +376,22 @@ class Deeplink {
 
   static Future<void> _handleWatchiumDeepLink(Uri uri) async {
     final segments = _compactSegments(uri.pathSegments);
+    Logger.i('Watchium deep link: $uri', 'DEEPLINK');
     // URI: anymex://watchium/join/ABC123
     if (segments.length < 2) {
+      Logger.w('Watchium deep link: invalid segments $segments', 'DEEPLINK');
       errorSnackBar('Invalid Watch Together link');
       return;
     }
 
     final code = segments[1].toUpperCase();
     if (code.length != 6) {
+      Logger.w('Watchium deep link: invalid code length ${code.length}', 'DEEPLINK');
       errorSnackBar('Invalid room code in link');
       return;
     }
+
+    Logger.d('Watchium deep link: parsed code=$code', 'DEEPLINK');
 
     // Wait for services to be ready
     int attempts = 0;
@@ -395,6 +401,7 @@ class Deeplink {
     }
 
     if (!Get.isRegistered<WatchiumService>()) {
+      Logger.w('Watchium deep link: WatchiumService not registered after waiting', 'DEEPLINK');
       errorSnackBar('App is still loading, try again shortly.');
       return;
     }
@@ -404,8 +411,10 @@ class Deeplink {
 
     // First get room info to navigate to the anime
     final roomInfo = await watchium.getRoomInfo(code);
+    Logger.d('Watchium deep link: roomInfo=${roomInfo != null ? "found" : "null"}', 'DEEPLINK');
 
     if (roomInfo == null) {
+      Logger.w('Watchium deep link: room not found or expired', 'DEEPLINK');
       errorSnackBar('Room not found or expired');
       return;
     }
@@ -416,8 +425,11 @@ class Deeplink {
     // Join the room
     final ok = await watchium.handleDeepLinkJoin(code);
     if (!ok) {
-      errorSnackBar('Failed to join room: ${watchium.error.value}');
+      final err = watchium.error.value;
+      Logger.w('Watchium deep link: join failed: $err', 'DEEPLINK');
+      errorSnackBar('Failed to join room: $err');
     } else {
+      Logger.i('Watchium deep link: joined room $code successfully', 'DEEPLINK');
       successSnackBar('Joined room $code!');
     }
   }
