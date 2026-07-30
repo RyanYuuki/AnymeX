@@ -1,4 +1,6 @@
+import 'package:anymex/controllers/watchium/watchium_models.dart';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
+import 'package:anymex/database/isar_models/video.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -173,6 +175,29 @@ class _WatchiumCreateDialogState extends State<WatchiumCreateDialog> {
       final watchium = Get.find<WatchiumService>();
       final episode = widget.playerController.currentEpisode.value;
       final anilistData = widget.playerController.anilistData;
+      final episodeTracks = widget.playerController.episodeTracks;
+
+      // Build server list with full video data
+      final servers = episodeTracks.asMap().entries.map((entry) {
+        final video = entry.value;
+        return WatchiumAnimeServer(
+          serverId: entry.key.toString(),
+          serverName: video.quality ?? 'Server ${entry.key + 1}',
+          quality: video.quality,
+          type: _detectVideoType(video),
+          url: video.url,
+          originalUrl: video.originalUrl,
+          headers: video.headers,
+          subtitles: video.subtitles
+              ?.where((t) => t.file != null && t.label != null)
+              .map((t) => WatchiumTrack(file: t.file!, label: t.label!))
+              .toList(),
+          audios: video.audios
+              ?.where((t) => t.file != null && t.label != null)
+              .map((t) => WatchiumTrack(file: t.file!, label: t.label!))
+              .toList(),
+        );
+      }).toList();
 
       final code = await watchium.createRoom(
         animeTitle: anilistData.title,
@@ -180,6 +205,7 @@ class _WatchiumCreateDialogState extends State<WatchiumCreateDialog> {
         anilistId: int.tryParse(anilistData.id),
         malId: int.tryParse(anilistData.idMal),
         animeCoverImage: anilistData.cover,
+        availableServers: servers,
       );
 
       if (code != null) {
@@ -193,6 +219,14 @@ class _WatchiumCreateDialogState extends State<WatchiumCreateDialog> {
     } finally {
       setState(() => _isCreating = false);
     }
+  }
+
+  String _detectVideoType(dynamic video) {
+    final url = (video.url ?? '').toString().toLowerCase();
+    if (url.contains('.m3u8')) return 'hls';
+    if (url.contains('.mpd')) return 'dash';
+    if (url.contains('.mp4') || url.contains('.mkv')) return 'mp4';
+    return 'other';
   }
 
   Future<void> _joinRoom() async {

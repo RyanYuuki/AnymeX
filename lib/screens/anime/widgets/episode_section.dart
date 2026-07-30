@@ -39,8 +39,6 @@ class EpisodeSection extends StatefulWidget {
   final RxBool disableAnifyForCurrentSource;
   final Future<void> Function() mapToAnilist;
   final Future<void> Function(Media) getDetailsFromSource;
-  // final List<SourcePreference> Function({required Source source})
-  //     getSourcePreference;
 
   const EpisodeSection({
     super.key,

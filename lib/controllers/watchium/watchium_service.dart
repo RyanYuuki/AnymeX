@@ -244,16 +244,19 @@ class WatchiumService extends GetxController {
           'Authorization': 'Bearer $_token',
         },
         body: jsonEncode({
-          'animeTitle': animeTitle,
-          'episodeNumber': episodeNumber,
-          'anilistId': anilistId,
-          'malId': malId,
-          'simklId': simklId,
-          'animeCoverImage': animeCoverImage,
-          'seasonNumber': seasonNumber,
-          'totalEpisodes': totalEpisodes,
-          'availableServers':
-              availableServers?.map((e) => e.toJson()).toList() ?? [],
+          'content': {
+            'animeId': anilistId?.toString() ?? malId?.toString() ?? '',
+            'animeTitle': animeTitle,
+            'episodeNumber': episodeNumber,
+            'anilistId': anilistId,
+            'malId': malId,
+            'simklId': simklId,
+            'animeCoverImage': animeCoverImage,
+            'seasonNumber': seasonNumber,
+            'totalEpisodes': totalEpisodes,
+            'availableServers':
+                availableServers?.map((e) => e.toJson()).toList() ?? [],
+          },
         }),
       );
 
