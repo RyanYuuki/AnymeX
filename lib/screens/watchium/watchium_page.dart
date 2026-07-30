@@ -1,6 +1,8 @@
 import 'package:anymex/controllers/watchium/watchium_models.dart';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
+import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -75,66 +77,64 @@ class _WatchiumPageState extends State<WatchiumPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Watch Together'),
-        actions: [
-          IconButton(
-            onPressed: _loadRooms,
-            icon: const Icon(Icons.refresh),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return Glow(
+      child: Scaffold(
+        body: Column(
           children: [
-            // Join by code section
-            _buildJoinByCodeSection(theme),
-            const SizedBox(height: 24),
-
-            // Current room status
-            Obx(() {
-              if (_watchium.inRoom.value) {
-                return _buildCurrentRoomSection(theme);
-              }
-              return const SizedBox.shrink();
-            }),
-
-            const SizedBox(height: 16),
-
-            // Active rooms header
-            Row(
-              children: [
-                AnymexText(
-                  text: 'Active Rooms',
-                  size: 16,
-                  variant: TextVariant.semiBold,
-                ),
-                const SizedBox(width: 8),
-                Obx(() {
-                  final count = _watchium.publicRooms.length;
-                  return Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.primaryContainer,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: AnymexText(
-                      text: '$count',
-                      size: 12,
-                      color: theme.colorScheme.onPrimaryContainer,
-                    ),
-                  );
-                }),
-              ],
+            NestedHeader(
+              title: 'Watch Together',
+              action: IconButton(
+                onPressed: _loadRooms,
+                icon: const Icon(Icons.refresh),
+              ),
             ),
-            const SizedBox(height: 12),
-
-            // Rooms list
-            _buildRoomsList(theme),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildJoinByCodeSection(theme),
+                    const SizedBox(height: 24),
+                    Obx(() {
+                      if (_watchium.inRoom.value) {
+                        return _buildCurrentRoomSection(theme);
+                      }
+                      return const SizedBox.shrink();
+                    }),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        AnymexText(
+                          text: 'Active Rooms',
+                          size: 16,
+                          variant: TextVariant.semiBold,
+                        ),
+                        const SizedBox(width: 8),
+                        Obx(() {
+                          final count = _watchium.publicRooms.length;
+                          return Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.primaryContainer,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: AnymexText(
+                              text: '$count',
+                              size: 12,
+                              color: theme.colorScheme.onPrimaryContainer,
+                            ),
+                          );
+                        }),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    _buildRoomsList(theme),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
