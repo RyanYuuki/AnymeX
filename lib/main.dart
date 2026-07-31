@@ -629,21 +629,35 @@ class _FilterScreenState extends State<FilterScreen> {
       ];
       final validIndex = _mobileSelectedIndex.clamp(0, mobileRoutes.length - 1);
 
-      return Scaffold(
-          body: IndexedStack(
-            index: validIndex,
-            children: mobileRoutes,
-          ),
-          extendBody: true,
-          bottomNavigationBar: ResponsiveNavBar(
-            isDesktop: false,
-            currentIndex: validIndex,
-            margin: const EdgeInsets.symmetric(vertical: 30, horizontal: 32),
-            items: [
-              for (final tab in navTabs)
-                _getNavItemForTab(tab, isSimkl, _onMobileItemTapped),
-            ],
-          ));
+      return PopScope(
+        canPop: false,
+        onPopInvoked: (bool didPop) async {
+          if (didPop) return;
+          final homeIndex = navTabs.indexOf('Home');
+          if (validIndex != homeIndex && homeIndex != -1) {
+            setState(() {
+              _mobileSelectedIndex = homeIndex;
+            });
+          } else {
+            const MethodChannel("com.ryan.anymex/utils").invokeMethod("exitApp");
+          }
+        },
+        child: Scaffold(
+            body: IndexedStack(
+              index: validIndex,
+              children: mobileRoutes,
+            ),
+            extendBody: true,
+            bottomNavigationBar: ResponsiveNavBar(
+              isDesktop: false,
+              currentIndex: validIndex,
+              margin: const EdgeInsets.symmetric(vertical: 30, horizontal: 32),
+              items: [
+                for (final tab in navTabs)
+                  _getNavItemForTab(tab, isSimkl, _onMobileItemTapped),
+              ],
+            )),
+      );
     });
   }
 }
