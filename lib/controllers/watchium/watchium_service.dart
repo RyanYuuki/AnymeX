@@ -11,14 +11,19 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class WatchiumService extends GetxController {
   static const _defaultServerUrl = 'http://anymex.duckdns.org:3001';
+  static const _joinTimeout = Duration(seconds: 10);
 
   IO.Socket? _socket;
   String? _token;
   String? _userId;
   String? _currentRoomCode;
   bool _isHost = false;
-  Timer? _heartbeatTimer; // kept for backwards compatibility; sync controller manages its own timer
+  Timer? _heartbeatTimer;
   String? _lastClientId;
+
+  /// Completer for awaiting join confirmation (party:state or party:error).
+  /// Completes true on party:state, false on party:error with JOIN_FAILED, or timeout.
+  Completer<bool>? _joinCompleter;
 
   // Reactive state
   final Rx<WatchiumRoomState?> roomState = Rx(null);
@@ -33,7 +38,11 @@ class WatchiumService extends GetxController {
   String get serverUrl =>
       WatchiumKeys.serverUrl.get<String>(_defaultServerUrl);
 
+  /// True when we have a confirmed room (party:state received and we're connected).
   final RxBool inRoom = false.obs;
+
+  /// True when a join request is in-flight (waiting for party:state or party:error).
+  final RxBool isJoining = false.obs;
 
   void _updateInRoom() {
     inRoom.value = _currentRoomCode != null && _socket?.connected == true;
@@ -137,6 +146,8 @@ class WatchiumService extends GetxController {
       isConnected.value = false;
       isConnecting.value = false;
       error.value = 'Connection failed';
+      // Fail any pending join
+      _failJoinCompleter('Connection failed');
       _updateInRoom();
       Logger.e('Socket connect error', error: err, loggerName: 'WATCHIUM');
     });
@@ -146,7 +157,13 @@ class WatchiumService extends GetxController {
       roomState.value = state;
       _isHost = state.hostUserId == _userId;
       isHost.value = _isHost;
+      _currentRoomCode = state.code;
+      _updateInRoom();
       Logger.d('party:state received, host=${state.hostUserId}, members=${state.members.length}, code=${state.code}', 'WATCHIUM');
+      // Complete the pending join completer with success
+      _joinCompleter?.complete(true);
+      _joinCompleter = null;
+      isJoining.value = false;
     });
 
     _socket!.on('party:sync', (data) {
@@ -246,8 +263,15 @@ class WatchiumService extends GetxController {
 
     _socket!.on('party:error', (data) {
       final errData = data as Map<String, dynamic>;
-      error.value = errData['message'] as String? ?? 'Unknown error';
-      Logger.w('party:error received: ${error.value}', 'WATCHIUM');
+      final errCode = errData['code'] as String? ?? '';
+      final errMsg = errData['message'] as String? ?? 'Unknown error';
+      error.value = errMsg;
+      Logger.w('party:error received: code=$errCode, message=$errMsg', 'WATCHIUM');
+
+      // If this is a join rejection, fail the completer and clear stale state
+      if (errCode == 'JOIN_FAILED') {
+        _failJoinCompleter(errMsg);
+      }
     });
 
     _socket!.on('party:closed', (data) {
@@ -260,6 +284,20 @@ class WatchiumService extends GetxController {
 
     _socket!.connect();
     Logger.d('Socket connect() called', 'WATCHIUM');
+  }
+
+  /// Fail the current join completer (if any) and clean up pending join state.
+  void _failJoinCompleter(String message) {
+    if (_joinCompleter != null && !_joinCompleter!.isCompleted) {
+      _joinCompleter!.complete(false);
+    }
+    _joinCompleter = null;
+    isJoining.value = false;
+    // Clear any stale room state from a failed join
+    if (roomState.value == null) {
+      _currentRoomCode = null;
+      _updateInRoom();
+    }
   }
 
   // ---- Room Actions ----
@@ -313,12 +351,15 @@ class WatchiumService extends GetxController {
       final code = data['code'] as String;
       roomCode.value = code;
       Logger.i('Room created, code=$code', 'WATCHIUM');
-      _connectSocket();
 
-      await Future.delayed(const Duration(seconds: 1));
-      _socket?.emitWithAck('party:join', {'code': code});
-      _currentRoomCode = code;
-      _updateInRoom();
+      // Connect socket and wait for join confirmation
+      _connectSocket();
+      final joined = await _waitForJoin(code);
+      if (!joined) {
+        Logger.w('Failed to join created room $code: ${error.value}', 'WATCHIUM');
+        return null;
+      }
+
       Logger.i('Joined room $code as host', 'WATCHIUM');
       return code;
     } catch (e) {
@@ -334,13 +375,29 @@ class WatchiumService extends GetxController {
       final ok = await login();
       if (!ok) return false;
 
+      // If already in this room, do nothing
+      if (_currentRoomCode == code && inRoom.value && roomState.value != null) {
+        Logger.d('Already in room $code', 'WATCHIUM');
+        return true;
+      }
+
+      // Leave any existing room first
+      if (_currentRoomCode != null) {
+        Logger.i('Leaving existing room $_currentRoomCode before joining $code', 'WATCHIUM');
+        leaveRoom();
+        await Future.delayed(const Duration(milliseconds: 300));
+      }
+
       roomCode.value = code;
       _connectSocket();
 
-      await Future.delayed(const Duration(seconds: 1));
-      _socket?.emitWithAck('party:join', {'code': code});
-      _currentRoomCode = code;
-      _updateInRoom();
+      // Wait for join confirmation (party:state) or rejection (party:error)
+      final joined = await _waitForJoin(code);
+      if (!joined) {
+        Logger.w('Join room $code failed: ${error.value}', 'WATCHIUM');
+        return false;
+      }
+
       Logger.i('Join room $code successful', 'WATCHIUM');
       return true;
     } catch (e) {
@@ -349,11 +406,68 @@ class WatchiumService extends GetxController {
       return false;
     }
   }
+  /// Emit party:join and wait for party:state (success) or party:error (failure).
+  /// Returns true if join was confirmed, false otherwise.
+  Future<bool> _waitForJoin(String code) async {
+    // Wait for socket to connect first
+    if (_socket?.connected != true) {
+      Logger.d('Waiting for socket to connect...', 'WATCHIUM');
+      for (int i = 0; i < 50; i++) {
+        await Future.delayed(const Duration(milliseconds: 200));
+        if (_socket?.connected == true) break;
+        if (error.value == 'Connection failed') {
+          error.value = 'Failed to connect to server';
+          return false;
+        }
+      }
+      if (_socket?.connected != true) {
+        error.value = 'Failed to connect to server';
+        return false;
+      }
+    }
 
+    // Set up the completer
+    _joinCompleter = Completer<bool>();
+    isJoining.value = true;
+    error.value = '';
+
+    // Emit the join
+    Logger.d('Emitting party:join for code=$code', 'WATCHIUM');
+    _socket!.emitWithAck('party:join', {'code': code});
+
+    // Wait with timeout
+    final result = await _joinCompleter!.future
+        .timeout(_joinTimeout, onTimeout: () {
+      Logger.w('Join timed out for code=$code', 'WATCHIUM');
+      return false;
+    });
+
+    if (!result) {
+      // Join was rejected or timed out — clean up
+      isJoining.value = false;
+      // If no state was received, the room is invalid
+      if (roomState.value == null || roomState.value!.code != code) {
+        _currentRoomCode = null;
+        _updateInRoom();
+      }
+    }
+
+    return result;
+  }
   void leaveRoom() {
     Logger.i('Leaving room $_currentRoomCode', 'WATCHIUM');
     if (_currentRoomCode == null) return;
     _socket?.emit('party:leave', {'code': _currentRoomCode});
+    _leaveRoomInternal();
+  }
+
+  /// Force-leave locally without sending to server.
+  /// Used when the user is stuck in a ghost/broken room state.
+  void forceLeaveRoom() {
+    Logger.w('Force leaving room $_currentRoomCode (local only)', 'WATCHIUM');
+    _joinCompleter?.complete(false);
+    _joinCompleter = null;
+    isJoining.value = false;
     _leaveRoomInternal();
   }
 

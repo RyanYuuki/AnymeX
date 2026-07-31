@@ -44,7 +44,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
       _error = null;
     });
     await _watchium.listRooms();
-    setState(() => _isLoading = false);
+    if (mounted) setState(() => _isLoading = false);
   }
 
   Future<void> _joinByCode() async {
@@ -62,26 +62,25 @@ class _WatchiumPageState extends State<WatchiumPage> {
     });
 
     final ok = await _watchium.joinRoom(code);
-    setState(() => _isLoading = false);
+    if (mounted) setState(() => _isLoading = false);
 
     if (ok) {
       Logger.i('Join by code $code succeeded', 'WATCHIUM_UI');
       if (mounted) {
         snackBar('Joined room!');
-        // Wait a moment for room state to populate from socket
-        await Future.delayed(const Duration(milliseconds: 1500));
         final roomState = _watchium.roomState.value;
         final content = roomState?.content;
         if (content != null && content.availableServers.isNotEmpty) {
-          if (mounted) {
-            showWatchiumServerSheet(context: context, content: content);
-          }
+          showWatchiumServerSheet(context: context, content: content);
         }
       }
     } else {
       final err = _watchium.error.value;
       Logger.w('Join by code $code failed: $err', 'WATCHIUM_UI');
-      setState(() => _error = err);
+      if (mounted) {
+        setState(() => _error = err);
+        errorSnackBar(err.isEmpty ? 'Failed to join room' : err);
+      }
     }
   }
 
@@ -108,8 +107,10 @@ class _WatchiumPageState extends State<WatchiumPage> {
                   children: [
                     _buildJoinByCodeSection(theme),
                     const SizedBox(height: 24),
+                    // Show current room section: either active room OR stuck/joining state
                     Obx(() {
-                      if (_watchium.inRoom.value) {
+                      if (_watchium.inRoom.value ||
+                          _watchium.isJoining.value) {
                         return _buildCurrentRoomSection(theme);
                       }
                       return const SizedBox.shrink();
@@ -234,8 +235,73 @@ class _WatchiumPageState extends State<WatchiumPage> {
   Widget _buildCurrentRoomSection(ThemeData theme) {
     return Obx(() {
       final roomState = _watchium.roomState.value;
-      if (roomState == null) return const SizedBox.shrink();
+      final isJoining = _watchium.isJoining.value;
+      final roomCode = _watchium.roomCode.value;
+      final errorMsg = _watchium.error.value;
 
+      // Stuck state: inRoom is true or isJoining, but no roomState
+      if (roomState == null) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 8),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.errorContainer.opaque(0.3),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: theme.colorScheme.error.opaque(0.3),
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.error_outline_rounded,
+                      color: theme.colorScheme.error, size: 18),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: AnymexText(
+                      text: isJoining
+                          ? 'Joining room $roomCode...'
+                          : 'Failed to join room $roomCode',
+                      size: 14,
+                      variant: TextVariant.semiBold,
+                      color: theme.colorScheme.error,
+                    ),
+                  ),
+                ],
+              ),
+              if (errorMsg.isNotEmpty && !isJoining) ...[
+                const SizedBox(height: 4),
+                AnymexText(
+                  text: errorMsg,
+                  size: 12,
+                  color: theme.colorScheme.error.opaque(0.8),
+                ),
+              ],
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: () {
+                    Logger.i('Force leaving from stuck state', 'WATCHIUM_UI');
+                    _watchium.forceLeaveRoom();
+                    setState(() => _error = null);
+                    snackBar('Left room');
+                  },
+                  icon: const Icon(Icons.exit_to_app, size: 16),
+                  label: Text(isJoining ? 'Cancel' : 'Leave / Reset'),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: theme.colorScheme.error,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+
+      // Normal active room state
       return Container(
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.all(16),
@@ -394,18 +460,21 @@ class _WatchiumPageState extends State<WatchiumPage> {
                   Logger.i('Join room from card: ${room.code}', 'WATCHIUM_UI');
                   setState(() => _isLoading = true);
                   final ok = await _watchium.joinRoom(room.code);
-                  setState(() => _isLoading = false);
+                  if (mounted) setState(() => _isLoading = false);
                   if (ok) {
                     snackBar('Joined room ${room.code}!');
-                    // Wait for room state, then show server sheet
-                    await Future.delayed(const Duration(milliseconds: 1500));
                     final rs = _watchium.roomState.value;
                     final c = rs?.content;
-                    if (c != null && c.availableServers.isNotEmpty && mounted) {
+                    if (c != null &&
+                        c.availableServers.isNotEmpty &&
+                        mounted) {
                       showWatchiumServerSheet(context: context, content: c);
                     }
                   } else {
-                    errorSnackBar(_watchium.error.value);
+                    errorSnackBar(
+                        _watchium.error.value.isEmpty
+                            ? 'Failed to join room'
+                            : _watchium.error.value);
                   }
                 }
               : null,
@@ -453,7 +522,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                       if (room.content != null)
                         AnymexText(
                           text:
-                              'Episode ${room.content!.episodeNumber}  •  Room ${room.code}',
+                              'Episode ${room.content!.episodeNumber}  \u2022  Room ${room.code}',
                           size: 11,
                           color: theme.colorScheme.onSurface.opaque(0.6),
                         )
@@ -487,22 +556,28 @@ class _WatchiumPageState extends State<WatchiumPage> {
                     onPressed: _isLoading
                         ? null
                         : () async {
-                            Logger.i('Join room from button: ${room.code}', 'WATCHIUM_UI');
+                            Logger.i(
+                                'Join room from button: ${room.code}',
+                                'WATCHIUM_UI');
                             setState(() => _isLoading = true);
                             final ok =
                                 await _watchium.joinRoom(room.code);
-                            setState(() => _isLoading = false);
+                            if (mounted) setState(() => _isLoading = false);
                             if (ok) {
                               snackBar('Joined room ${room.code}!');
-                              // Wait for room state, then show server sheet
-                              await Future.delayed(const Duration(milliseconds: 1500));
                               final rs = _watchium.roomState.value;
                               final c = rs?.content;
-                              if (c != null && c.availableServers.isNotEmpty && mounted) {
-                                showWatchiumServerSheet(context: context, content: c);
+                              if (c != null &&
+                                  c.availableServers.isNotEmpty &&
+                                  mounted) {
+                                showWatchiumServerSheet(
+                                    context: context, content: c);
                               }
                             } else {
-                              errorSnackBar(_watchium.error.value);
+                              errorSnackBar(
+                                  _watchium.error.value.isEmpty
+                                      ? 'Failed to join room'
+                                      : _watchium.error.value);
                             }
                           },
                     child: const Text('Join'),
