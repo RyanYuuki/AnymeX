@@ -323,6 +323,15 @@ class WatchiumService extends GetxController {
       error.value = errMsg;
       Logger.w('party:error received: code=$errCode, message=$errMsg', 'WATCHIUM');
 
+      // If the server rate limited us, surface it to the user.
+      if (errCode == 'RATE_LIMITED') {
+        warningSnackBar(
+          errMsg,
+          title: 'Rate limited',
+          duration: 4000,
+        );
+      }
+
       // If this is a join rejection, fail the completer and clear stale state
       if (errCode == 'JOIN_FAILED') {
         _failJoinCompleter(errMsg);
