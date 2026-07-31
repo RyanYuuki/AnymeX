@@ -450,7 +450,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
               decoration: BoxDecoration(
                 color: canDownload ? theme.primary : theme.surfaceContainer,
                 borderRadius: BorderRadius.circular(16),
@@ -464,15 +464,19 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                           ? theme.onPrimary
                           : theme.onSurface.opaque(0.4)),
                   const SizedBox(width: 8),
-                  AnymexText(
-                    text: canDownload
-                        ? 'Download (${widget.episodes.length} ep${widget.episodes.length != 1 ? 's' : ''}) · ${_selectedQuality.value}'
-                        : 'Loading servers...',
-                    size: 14,
-                    variant: TextVariant.semiBold,
-                    color: canDownload
-                        ? theme.onPrimary
-                        : theme.onSurface.opaque(0.4),
+                  Expanded(
+                    child: AnymexText(
+                      text: canDownload
+                          ? 'Download (${widget.episodes.length} ep${widget.episodes.length != 1 ? 's' : ''}) · ${_selectedQuality.value}'
+                          : 'Loading servers...',
+                      size: 14,
+                      variant: TextVariant.semiBold,
+                      isMarquee: true,
+                      textAlign: TextAlign.center,
+                      color: canDownload
+                          ? theme.onPrimary
+                          : theme.onSurface.opaque(0.4),
+                    ),
                   ),
                 ],
               ),
