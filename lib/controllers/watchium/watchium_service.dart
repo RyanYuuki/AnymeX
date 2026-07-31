@@ -214,6 +214,19 @@ class WatchiumService extends GetxController {
       Logger.d('party:member received, ${members.length} members', 'WATCHIUM');
     });
 
+    _socket!.on('party:history', (data) {
+      final messages = (data as Map<String, dynamic>)['messages'] as List;
+      if (messages.isNotEmpty) {
+        chatMessages.clear();
+        for (final m in messages) {
+          chatMessages.add(WatchiumChatMessage.fromJson(m as Map<String, dynamic>));
+        }
+        // Keep max 100
+        while (chatMessages.length > 100) chatMessages.removeAt(0);
+        Logger.i('party:history: loaded ${messages.length} messages', 'WATCHIUM');
+      }
+    });
+
     _socket!.on('party:chat', (data) {
       final msg = WatchiumChatMessage.fromJson(data as Map<String, dynamic>);
       chatMessages.add(msg);

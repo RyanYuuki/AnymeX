@@ -15,6 +15,7 @@ class WatchiumPartyPanel extends StatefulWidget {
 class _WatchiumPartyPanelState extends State<WatchiumPartyPanel> {
   late final TextEditingController _chatController;
   final ScrollController _chatScrollController = ScrollController();
+  static const _quickReactions = ['😂', '💀', '🔥', '👍', '❤️', '😮', '👏', '😭'];
 
   @override
   void initState() {
@@ -246,52 +247,58 @@ class _WatchiumPartyPanelState extends State<WatchiumPartyPanel> {
               itemCount: messages.length,
               itemBuilder: (context, index) {
                 final msg = messages[index];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 2),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (msg.avatarUrl != null)
-                        CircleAvatar(
-                          radius: 12,
-                          backgroundImage:
-                              NetworkImage(msg.avatarUrl!),
-                        )
-                      else
-                        const CircleAvatar(
-                          radius: 12,
-                          child: Icon(Icons.person, size: 14),
-                        ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              msg.username,
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .primary,
+                return GestureDetector(
+                  onLongPress: () => _showReactionPicker(context),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 2),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (msg.avatarUrl != null)
+                          CircleAvatar(
+                            radius: 12,
+                            backgroundImage:
+                                NetworkImage(msg.avatarUrl!),
+                          )
+                        else
+                          const CircleAvatar(
+                            radius: 12,
+                            child: Icon(Icons.person, size: 14),
+                          ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                msg.username,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .primary,
+                                ),
                               ),
-                            ),
-                            Text(
-                              msg.text,
-                              style: const TextStyle(fontSize: 13),
-                            ),
-                          ],
+                              Text(
+                                msg.text,
+                                style: const TextStyle(fontSize: 13),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 );
               },
             ),
           );
         }),
+        const SizedBox(height: 8),
+        // Quick reaction bar
+        _buildQuickReactionBar(context),
         const SizedBox(height: 8),
         Row(
           children: [
@@ -323,5 +330,63 @@ class _WatchiumPartyPanelState extends State<WatchiumPartyPanel> {
         ),
       ],
     );
+  }
+
+  Widget _buildQuickReactionBar(BuildContext context) {
+    return SizedBox(
+      height: 36,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: _quickReactions.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 4),
+        itemBuilder: (context, index) {
+          final emoji = _quickReactions[index];
+          return GestureDetector(
+            onTap: () {
+              widget.watchium.sendReaction(emoji);
+            },
+            child: Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(18),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                emoji,
+                style: const TextStyle(fontSize: 18),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _showReactionPicker(BuildContext context) {
+    final RenderBox? overlay = context.findRenderObject() as RenderBox?;
+    showMenu<String>(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        overlay?.localToGlobal(Offset.zero).dx ?? 0,
+        (overlay?.localToGlobal(Offset.zero).dy ?? 0) - 50,
+        0,
+        0,
+      ),
+      items: _quickReactions.map((emoji) {
+        return PopupMenuItem<String>(
+          value: emoji,
+          height: 40,
+          child: Center(
+            child: Text(emoji, style: const TextStyle(fontSize: 24)),
+          ),
+        );
+      }).toList(),
+    ).then((selected) {
+      if (selected != null) {
+        widget.watchium.sendReaction(selected);
+      }
+    });
   }
 }
