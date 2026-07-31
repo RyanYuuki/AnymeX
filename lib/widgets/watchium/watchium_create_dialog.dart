@@ -268,7 +268,7 @@ class _WatchiumCreateDialogState extends State<WatchiumCreateDialog> {
   }
 
   void _showCodeDialog(String code) {
-    final shareUrl = 'https://anymex.duckdns.org:3001/join/$code';
+    final shareUrl = 'http://anymex.duckdns.org:3001/join/$code';
 
     Get.dialog(
       Dialog(
