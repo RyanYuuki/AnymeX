@@ -4,6 +4,8 @@ import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:get/get.dart';
+import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 
 enum CardStyle { saikou, exotic, minimalExotic, modern, blur }
 
@@ -39,6 +41,19 @@ abstract class CarouselCard extends StatelessWidget {
     );
   }
 
+  String getBadgeText(DataVariant variant, ItemType type) {
+    final text = itemData.extraData ?? '';
+    final icon = getIconForVariant(text, variant, type);
+    if (icon == Iconsax.star5) {
+      final parsed = double.tryParse(text);
+      if (parsed != null && parsed > 0) {
+        final auth = Get.find<AnilistAuth>();
+        return auth.formatScore(parsed);
+      }
+    }
+    return text.replaceAll('_', ' ');
+  }
+
   Widget buildCardBadgeV2(
       BuildContext context, DataVariant variant, ItemType type) {
     final theme = Theme.of(context);
@@ -62,7 +77,7 @@ abstract class CarouselCard extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             AnymexText(
-              text: itemData.extraData ?? '',
+              text: getBadgeText(variant, type),
               color: theme.colorScheme.onPrimary,
               size: 11,
               variant: TextVariant.bold,
@@ -99,7 +114,7 @@ abstract class CarouselCard extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             AnymexText(
-              text: itemData.extraData ?? '',
+              text: getBadgeText(variant, type),
               color: theme.colorScheme.onPrimary,
               size: 12,
               variant: TextVariant.bold,

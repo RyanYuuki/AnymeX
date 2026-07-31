@@ -1,5 +1,6 @@
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
+import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
@@ -247,21 +248,15 @@ class GridAnimeCard extends StatelessWidget {
 
   Widget _buildEpisodeChip(BuildContext context, CardData media) {
     String displayScore = '0.0';
-    if (media.score != null && media.score != '0' && media.score != '0.0') {
-      final parsedScore = double.tryParse(media.score!);
-      if (parsedScore != null) {
-        if (parsedScore > 10) {
-          displayScore = (parsedScore / 10).toStringAsFixed(1);
-        } else {
-          displayScore = parsedScore.toStringAsFixed(1);
-        }
-      } else {
-        displayScore = media.score!;
+    final auth = Get.find<AnilistAuth>();
+    final parsedScore = double.tryParse(media.score ?? '');
+    if (parsedScore != null && parsedScore > 0) {
+      displayScore = auth.formatScore(parsedScore);
+    } else {
+      final parsedRating = double.tryParse(media.rating ?? '');
+      if (parsedRating != null && parsedRating > 0) {
+        displayScore = auth.formatScore(parsedRating * 10.0);
       }
-    } else if (media.rating != null &&
-        media.rating != '0' &&
-        media.rating != '0.0') {
-      displayScore = media.rating!;
     }
 
     return Container(

@@ -563,7 +563,7 @@ class BlurCard extends CarouselCard {
                 ),
                 const SizedBox(width: 4),
                 AnymexText(
-                  text: itemData.extraData ?? '',
+                  text: getBadgeText(variant, type),
                   color: theme.colorScheme.primary,
                   size: 12,
                   variant: TextVariant.bold,

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:flutter/material.dart';
@@ -61,14 +62,125 @@ class _ListEditorModalState extends State<ListEditorModal> {
     ('DROPPED', 'Dropped'),
   ];
 
+  bool get _isAnilist {
+    final activeService = Get.find<ServiceHandler>().serviceType;
+    return activeService.value == ServicesType.anilist ||
+        widget.currentAnime.value?.servicesType == ServicesType.anilist;
+  }
+
+  String get _scoreFormat {
+    if (_isAnilist && Get.find<AnilistAuth>().isLoggedIn.value) {
+      return Get.find<AnilistAuth>().cachedSettings?.scoreFormat ?? 'POINT_10';
+    }
+    return 'POINT_10_DECIMAL';
+  }
+
+  double get _minScore => _scoreFormat == 'POINT_3' ? 1.0 : 0.0;
+
+  double get _maxScore {
+    switch (_scoreFormat) {
+      case 'POINT_100':
+        return 100.0;
+      case 'POINT_10_DECIMAL':
+      case 'POINT_10':
+        return 10.0;
+      case 'POINT_5':
+        return 5.0;
+      case 'POINT_3':
+        return 3.0;
+      default:
+        return 10.0;
+    }
+  }
+
+  int get _divisions {
+    switch (_scoreFormat) {
+      case 'POINT_100':
+        return 100;
+      case 'POINT_10_DECIMAL':
+        return 100;
+      case 'POINT_10':
+        return 10;
+      case 'POINT_5':
+        return 5;
+      case 'POINT_3':
+        return 2;
+      default:
+        return 100;
+    }
+  }
+
+  String _getScoreDisplayLabel(double score) {
+    switch (_scoreFormat) {
+      case 'POINT_100':
+        return '${score.round()} / 100';
+      case 'POINT_10_DECIMAL':
+        return '${score.toStringAsFixed(1)} / 10';
+      case 'POINT_10':
+        return '${score.round()} / 10';
+      case 'POINT_5':
+        return '${score.round()} / 5';
+      case 'POINT_3':
+        final val = score.round();
+        if (val == 3) return ':)';
+        if (val == 2) return ':|';
+        return ':(';
+      default:
+        return '${score.toStringAsFixed(1)} / 10';
+    }
+  }
+
+  double _getNormalizedScore(double formatScore) {
+    switch (_scoreFormat) {
+      case 'POINT_100':
+        return formatScore;
+      case 'POINT_10_DECIMAL':
+      case 'POINT_10':
+        return formatScore * 10.0;
+      case 'POINT_5':
+        return formatScore * 20.0;
+      case 'POINT_3':
+        if (formatScore == 3.0) return 100.0;
+        if (formatScore == 2.0) return 50.0;
+        return 10.0;
+      default:
+        return formatScore * 10.0;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     _localStatus =
         widget.animeStatus.value.isEmpty ? 'CURRENT' : widget.animeStatus.value;
-    _localScore = widget.animeScore.value;
     _localProgress = widget.animeProgress.value;
     _localSeason = 1;
+
+    final scoreMin = _minScore;
+    final scoreMax = _maxScore;
+    
+    final rawVal = widget.animeScore.value;
+    double initialVal;
+    if (_scoreFormat == 'POINT_3') {
+      if (rawVal >= 75.0) {
+        initialVal = 3.0;
+      } else if (rawVal >= 35.0) {
+        initialVal = 2.0;
+      } else {
+        initialVal = 1.0;
+      }
+    } else {
+      initialVal = _isAnilist
+          ? Get.find<AnilistAuth>().convertNormalizedToFormat(rawVal)
+          : rawVal / 10.0;
+    }
+
+    _localScore = initialVal;
+    if (_localScore < scoreMin) {
+      _localScore = scoreMin;
+    } else if (_localScore > scoreMax) {
+      _localScore = scoreMax;
+    }
 
     _progressController = TextEditingController(text: _localProgress.toString());
     _seasonController = TextEditingController(text: _localSeason.toString());
@@ -82,7 +194,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
 
     final activeService = Get.find<ServiceHandler>().serviceType;
     final isSimklMedia = widget.media.serviceType == ServicesType.simkl ||
-        activeService == ServicesType.simkl ||
+        activeService.value == ServicesType.simkl ||
         widget.currentAnime.value?.servicesType == ServicesType.simkl;
 
     if (isSimklMedia && !widget.isManga) {
@@ -660,6 +772,17 @@ class _ListEditorModalState extends State<ListEditorModal> {
 
   Widget _buildScoreRow(BuildContext context) {
     final colors = context.colors;
+    final minVal = _minScore;
+    final maxVal = _maxScore;
+    final divVal = _divisions;
+    
+    double currentVal = _localScore;
+    if (currentVal < minVal) {
+      currentVal = minVal;
+    } else if (currentVal > maxVal) {
+      currentVal = maxVal;
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -673,7 +796,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
                   ),
             ),
             Text(
-              '${_localScore.toStringAsFixed(1)} / 10',
+              _getScoreDisplayLabel(currentVal),
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     color: colors.onSurface,
                     fontWeight: FontWeight.w600,
@@ -684,10 +807,10 @@ class _ListEditorModalState extends State<ListEditorModal> {
         const SizedBox(height: 10),
         Slider(
           year2023: false,
-          value: _localScore,
-          min: 0.0,
-          max: 10.0,
-          divisions: 100,
+          value: currentVal,
+          min: minVal,
+          max: maxVal,
+          divisions: divVal,
           activeColor: colors.primary,
           inactiveColor: colors.surfaceContainerHighest,
           onChanged: (v) => setState(() => _localScore = v),
@@ -847,9 +970,10 @@ class _ListEditorModalState extends State<ListEditorModal> {
                       if (actionsDisabled) return;
                       setState(() => _isSaving = true);
                       try {
+                        final normalizedScore = _getNormalizedScore(_localScore);
                         await widget.onUpdate(
                           widget.media.id,
-                          _localScore,
+                          normalizedScore,
                           _localStatus,
                           _localProgress,
                           _localSeason,

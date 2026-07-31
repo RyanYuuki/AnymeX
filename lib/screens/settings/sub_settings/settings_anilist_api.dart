@@ -10,6 +10,7 @@ import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/custom_widgets/custom_icon_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/helper/scroll_wrapper.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -70,7 +71,7 @@ const _animeCompletedFormats = ['TV', 'MOVIE', 'OVA', 'ONA', 'TV_SHORT', 'SPECIA
 const _mangaCompletedFormats = ['MANGA', 'NOVEL', 'ONE_SHOT'];
 
 const _legacyTimezoneMap = <String, String>{
-  'Etc/UTC': '00:00', 'Asia/Kolkata': '05:30', 'Asia/Tokyo': '09:00',
+  'Etc/UTC': '00:00', 'UTC': '00:00', 'Asia/Kolkata': '05:30', 'Asia/Tokyo': '09:00',
   'Asia/Seoul': '09:00', 'Asia/Shanghai': '08:00', 'Asia/Bangkok': '07:00',
   'Asia/Singapore': '08:00', 'Asia/Dubai': '04:00', 'Europe/London': '00:00',
   'Europe/Paris': '01:00', 'Europe/Berlin': '01:00', 'Europe/Moscow': '03:00',
@@ -79,19 +80,56 @@ const _legacyTimezoneMap = <String, String>{
   'America/Toronto': '-05:00', 'America/Sao_Paulo': '-03:00',
   'Australia/Sydney': '11:00', 'Australia/Melbourne': '11:00',
   'Pacific/Auckland': '13:00',
+  'Asia/Hong_Kong': '08:00', 'Asia/Manila': '08:00', 'Asia/Taipei': '08:00',
+  'Asia/Jakarta': '07:00', 'Asia/Kuala_Lumpur': '08:00', 'Asia/Karachi': '05:00',
+  'Asia/Dhaka': '06:00', 'Europe/Rome': '01:00', 'Europe/Madrid': '01:00',
+  'Europe/Athens': '02:00', 'Europe/Istanbul': '03:00', 'America/Mexico_City': '-06:00',
+  'America/Bogota': '-05:00', 'America/Argentina/Buenos_Aires': '-03:00',
+  'America/Phoenix': '-07:00', 'Australia/Brisbane': '10:00', 'Australia/Perth': '08:00',
+  'Pacific/Honolulu': '-10:00',
 };
 
 String _normalizeTimezoneValue(String? value) {
   final raw = (value ?? '').trim();
-  if (raw.isEmpty) return '00:00';
+  if (raw.isEmpty) {
+    final minutes = DateTime.now().timeZoneOffset.inMinutes;
+    final sign = minutes < 0 ? '-' : '';
+    final abs = minutes.abs();
+    return '$sign${(abs ~/ 60).toString().padLeft(2, '0')}:${(abs % 60).toString().padLeft(2, '0')}';
+  }
+  
+  if (raw.startsWith('Etc/GMT') || raw.startsWith('GMT')) {
+    final signMatch = RegExp(r'GMT([+-]?)(\d+)').firstMatch(raw);
+    if (signMatch != null) {
+      final sign = signMatch.group(1) ?? '';
+      final hours = int.tryParse(signMatch.group(2) ?? '0') ?? 0;
+      final offsetSign = (sign == '-') ? '' : '-';
+      return '$offsetSign${hours.toString().padLeft(2, '0')}:00';
+    }
+  }
+
   final converted = _legacyTimezoneMap[raw] ?? raw;
   final normalized = converted.startsWith('+') ? converted.substring(1) : converted;
   return RegExp(r'^-?\d{2}:\d{2}$').hasMatch(normalized) ? normalized : '00:00';
 }
 
 String _timezoneLabel(String value) {
+  final names = <String>[];
+  for (final entry in _legacyTimezoneMap.entries) {
+    if (entry.value == value) {
+      final parts = entry.key.split('/');
+      names.add(parts.last.replaceAll('_', ' '));
+    }
+  }
+
   final sign = value.startsWith('-') ? '' : '+';
-  return '(GMT$sign$value)';
+  final offsetLabel = '(GMT$sign$value)';
+  
+  if (names.isNotEmpty) {
+    final namesStr = names.take(2).join(', ');
+    return '$namesStr $offsetLabel';
+  }
+  return offsetLabel;
 }
 
 String _formatOffset(int minutes) {
@@ -255,10 +293,10 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
       anilistData.fetchAnilistMangaPage();
       _auth.fetchUserAnimeList();
       _auth.fetchUserMangaList();
-      if (mounted) Get.snackbar('AniList Settings', 'Settings saved successfully.', snackPosition: SnackPosition.BOTTOM);
+      if (mounted) snackBar('Settings saved successfully.', snackPosition: SnackPosition.BOTTOM);
     } catch (e) {
       setState(() { _saving = false; _error = e.toString().replaceFirst('Exception: ', ''); });
-      if (mounted) Get.snackbar('AniList Settings', _error ?? 'Failed to save.', snackPosition: SnackPosition.BOTTOM);
+      if (mounted) snackBar(_error ?? 'Failed to save.', snackPosition: SnackPosition.BOTTOM);
     }
   }
 
