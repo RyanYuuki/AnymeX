@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/controllers/watchium/watchium_sync_controller.dart';
+import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_titlebar.dart';
 import 'package:flutter/foundation.dart';
@@ -64,6 +65,10 @@ class WatchiumOverlay extends StatelessWidget {
                     // Sync to host button (joiners only, when out of sync)
                     if (!watchium.isHost.value)
                       GetBuilder<WatchiumSyncController>(
+                        tag: 'watchiumSync',
+                        init: WatchiumSyncController(
+                          playerController: Get.find<PlayerController>(),
+                        ),
                         builder: (syncCtrl) {
                           if (!syncCtrl.isOutOfSync.value) {
                             return const SizedBox.shrink();
