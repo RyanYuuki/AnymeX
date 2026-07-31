@@ -370,6 +370,7 @@ class _WatchiumPartyPopupContentState
   Widget _buildChat(ColorScheme cs, ThemeData theme) {
     return Column(
       children: [
+        Obx(() => _buildChatModerationBanner(cs)),
         Expanded(
           child: Obx(() {
             final messages = widget.watchium.chatMessages;
@@ -632,55 +633,163 @@ class _WatchiumPartyPopupContentState
     );
   }
 
-  Widget _buildChatInput(ColorScheme cs) {
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            clipBehavior: Clip.antiAlias,
-            decoration: BoxDecoration(
-              color: cs.surfaceContainer.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: TextField(
-              controller: _chatController,
-              focusNode: _chatFocusNode,
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 13,
-                color: cs.onSurface,
+  /// Shows a banner when chat is disabled or in announcement mode.
+  Widget _buildChatModerationBanner(ColorScheme cs) {
+    final state = widget.watchium.roomState.value;
+    if (state == null) return const SizedBox.shrink();
+
+    if (state.chatDisabled) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        color: Colors.red.withValues(alpha: 0.1),
+        child: Row(
+          children: [
+            Icon(Icons.voice_over_off, size: 14, color: Colors.red.withValues(alpha: 0.8)),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'Chat has been disabled by the host',
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 11,
+                  color: Colors.red.withValues(alpha: 0.8),
+                ),
               ),
-              decoration: InputDecoration(
-                hintText: 'Type a message...',
-                hintStyle: TextStyle(
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (state.announcementMode && !widget.watchium.canModerateChat) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        color: Colors.amber.withValues(alpha: 0.1),
+        child: Row(
+          children: [
+            Icon(Icons.campaign_outlined, size: 14, color: Colors.amber.withValues(alpha: 0.8)),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'Announcement mode — only host and co-hosts can send messages',
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 11,
+                  color: Colors.amber.withValues(alpha: 0.8),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (state.announcementMode && widget.watchium.canModerateChat) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        color: Colors.amber.withValues(alpha: 0.08),
+        child: Row(
+          children: [
+            Icon(Icons.campaign_outlined, size: 14, color: Colors.amber.withValues(alpha: 0.6)),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'Announcement mode active — members can only read',
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 11,
+                  color: Colors.amber.withValues(alpha: 0.6),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return const SizedBox.shrink();
+  }
+
+  Widget _buildChatInput(ColorScheme cs) {
+    return Obx(() {
+      final state = widget.watchium.roomState.value;
+      final chatDisabled = state?.chatDisabled ?? false;
+      final announcementMode = state?.announcementMode ?? false;
+      final isModerator = widget.watchium.canModerateChat;
+      final isMuted = chatDisabled || (announcementMode && !isModerator);
+
+      String hintText = 'Type a message...';
+      if (chatDisabled) {
+        hintText = 'Chat is disabled by host';
+      } else if (announcementMode && !isModerator) {
+        hintText = 'Announcement mode — only staff can chat';
+      }
+
+      return Row(
+        children: [
+          Expanded(
+            child: Container(
+              clipBehavior: Clip.antiAlias,
+              decoration: BoxDecoration(
+                color: cs.surfaceContainer.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: TextField(
+                controller: _chatController,
+                focusNode: _chatFocusNode,
+                enabled: !isMuted,
+                style: TextStyle(
                   fontFamily: 'Poppins',
                   fontSize: 13,
-                  color: cs.onSurface.withValues(alpha: 0.4),
+                  color: isMuted
+                      ? cs.onSurface.withValues(alpha: 0.4)
+                      : cs.onSurface,
                 ),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 13),
+                decoration: InputDecoration(
+                  hintText: hintText,
+                  hintStyle: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 13,
+                    color: isMuted
+                        ? cs.onSurface.withValues(alpha: 0.3)
+                        : cs.onSurface.withValues(alpha: 0.4),
+                  ),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16, vertical: 13),
+                ),
+                textInputAction: TextInputAction.send,
+                onSubmitted: isMuted ? null : (_) => _sendChat(),
               ),
-              textInputAction: TextInputAction.send,
-              onSubmitted: (_) => _sendChat(),
             ),
           ),
-        ),
-        const SizedBox(width: 8),
-        GestureDetector(
-          onTap: _sendChat,
-          child: Container(
-            width: 46,
-            height: 46,
-            decoration: BoxDecoration(
-              color: cs.primary.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(12),
+          const SizedBox(width: 8),
+          GestureDetector(
+            onTap: isMuted ? null : _sendChat,
+            child: Container(
+              width: 46,
+              height: 46,
+              decoration: BoxDecoration(
+                color: isMuted
+                    ? cs.onSurface.withValues(alpha: 0.1)
+                    : cs.primary.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                Icons.send_rounded,
+                color: isMuted
+                    ? cs.onSurface.withValues(alpha: 0.3)
+                    : cs.primary,
+                size: 20,
+              ),
             ),
-            child: Icon(Icons.send_rounded, color: cs.primary, size: 20),
           ),
-        ),
-      ],
-    );
+        ],
+      );
+    });
   }
 
   Widget _buildReactionBubble(ColorScheme cs, WatchiumReaction r) {
@@ -747,6 +856,7 @@ class _WatchiumPartyPopupContentState
   void _sendChat() {
     final text = _chatController.text.trim();
     if (text.isEmpty) return;
+    if (!widget.watchium.canSendChat) return;
     widget.watchium.sendChat(text);
     _chatController.clear();
     _chatFocusNode.requestFocus();

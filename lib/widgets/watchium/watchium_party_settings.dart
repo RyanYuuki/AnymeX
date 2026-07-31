@@ -1,9 +1,11 @@
+import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 
 import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class WatchiumPartySettings extends StatefulWidget {
   final VoidCallback onBack;
@@ -133,8 +135,62 @@ class _WatchiumPartySettingsState extends State<WatchiumPartySettings> {
         ),
         const SizedBox(height: 8),
         _buildPositionPicker(cs, theme),
+
+        const SizedBox(height: 20),
+
+        // ── Chat Moderation section (host + cohost only) ──
+        _buildChatModerationSection(cs, theme),
       ],
     );
+  }
+
+  Widget _buildChatModerationSection(ColorScheme cs, ThemeData theme) {
+    final watchium = Get.find<WatchiumService>();
+
+    return Obx(() {
+      if (!watchium.canModerateChat) return const SizedBox.shrink();
+      final state = watchium.roomState.value;
+      if (state == null) return const SizedBox.shrink();
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _sectionHeader(cs, 'Chat Moderation'),
+          const SizedBox(height: 8),
+          _buildSettingsToggle(
+            cs,
+            icon: Icons.voice_over_off,
+            iconColor: Colors.red,
+            title: 'Disable Chat',
+            subtitle: 'No one can send messages in the chat',
+            value: state.chatDisabled,
+            onChanged: (v) {
+              // Turn off announcement mode when disabling chat
+              if (v && state.announcementMode) {
+                watchium.toggleChatSetting('announcementMode', false);
+              }
+              watchium.toggleChatSetting('chatDisabled', v);
+            },
+          ),
+          const SizedBox(height: 8),
+          _buildSettingsToggle(
+            cs,
+            icon: Icons.campaign_outlined,
+            iconColor: Colors.amber,
+            title: 'Announcement Mode',
+            subtitle: 'Only host and co-hosts can send messages',
+            value: state.announcementMode,
+            onChanged: (v) {
+              // Turn off chat disabled when enabling announcement mode
+              if (v && state.chatDisabled) {
+                watchium.toggleChatSetting('chatDisabled', false);
+              }
+              watchium.toggleChatSetting('announcementMode', v);
+            },
+          ),
+        ],
+      );
+    });
   }
 
   Widget _sectionHeader(ColorScheme cs, String title) {

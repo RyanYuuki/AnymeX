@@ -58,6 +58,26 @@ class WatchiumService extends GetxController {
   /// Id of the locally logged-in user, or null when not authenticated.
   String? get currentUserId => _userId;
 
+  /// True if the current user is a co-host (not host).
+  bool get isCohost {
+    if (_userId == null) return false;
+    final me = roomState.value?.members
+        .where((m) => m.userId == _userId && m.role == 'cohost');
+    return me != null && me.isNotEmpty;
+  }
+
+  /// True if the user can manage chat settings (host or cohost).
+  bool get canModerateChat => isHost.value || isCohost;
+
+  /// True if the user can send chat (not disabled, not announcement mode as member).
+  bool get canSendChat {
+    final state = roomState.value;
+    if (state == null) return false;
+    if (state.chatDisabled) return false;
+    if (state.announcementMode && !isHost.value && !isCohost) return false;
+    return true;
+  }
+
   void _updateInRoom() {
     inRoom.value = _currentRoomCode != null && _socket?.connected == true;
   }
@@ -206,6 +226,8 @@ class WatchiumService extends GetxController {
         content: current.content,
         playback: WatchiumPlayback.fromJson(pb),
         onlyHostControls: current.onlyHostControls,
+        chatDisabled: current.chatDisabled,
+        announcementMode: current.announcementMode,
         maxMembers: current.maxMembers,
       );
       Logger.d('party:sync received, positionSec=${pb['positionSec']}, isPlaying=${pb['isPlaying']}', 'WATCHIUM');
@@ -226,6 +248,8 @@ class WatchiumService extends GetxController {
         content: content,
         playback: playback,
         onlyHostControls: current.onlyHostControls,
+        chatDisabled: current.chatDisabled,
+        announcementMode: current.announcementMode,
         maxMembers: current.maxMembers,
       );
       Logger.d('party:content received, anime=${content.animeTitle}, episode=${content.episodeNumber}', 'WATCHIUM');
@@ -247,6 +271,8 @@ class WatchiumService extends GetxController {
         content: current.content,
         playback: current.playback,
         onlyHostControls: current.onlyHostControls,
+        chatDisabled: current.chatDisabled,
+        announcementMode: current.announcementMode,
         maxMembers: current.maxMembers,
       );
       // Update isHost in case host was transferred
@@ -301,6 +327,29 @@ class WatchiumService extends GetxController {
       if (errCode == 'JOIN_FAILED') {
         _failJoinCompleter(errMsg);
       }
+    });
+
+    _socket!.on('party:settings', (data) {
+      final settingsData = data as Map<String, dynamic>;
+      final settings = settingsData['settings'] as Map<String, dynamic>;
+      final current = roomState.value;
+      if (current == null) return;
+      final changedByKey = settingsData['changedByKey'] as String?;
+      final changedBy = settingsData['changedBy'] as String?;
+      final newChatDisabled = settings['chatDisabled'] as bool? ?? current.chatDisabled;
+      final newAnnouncementMode = settings['announcementMode'] as bool? ?? current.announcementMode;
+      roomState.value = WatchiumRoomState(
+        code: current.code,
+        hostUserId: current.hostUserId,
+        members: current.members,
+        content: current.content,
+        playback: current.playback,
+        onlyHostControls: settings['onlyHostControls'] as bool? ?? current.onlyHostControls,
+        chatDisabled: newChatDisabled,
+        announcementMode: newAnnouncementMode,
+        maxMembers: current.maxMembers,
+      );
+      Logger.i('party:settings: chatDisabled=$newChatDisabled, announcementMode=$newAnnouncementMode (changedBy=$changedBy, key=$changedByKey)', 'WATCHIUM');
     });
 
     _socket!.on('party:closed', (data) {
@@ -701,6 +750,18 @@ class WatchiumService extends GetxController {
       'code': _currentRoomCode,
       'text': text,
       'clientId': _lastClientId,
+    });
+  }
+
+  /// Toggle a chat moderation setting (host/cohost only).
+  /// [key] is 'chatDisabled' or 'announcementMode'.
+  void toggleChatSetting(String key, bool value) {
+    if (_currentRoomCode == null) return;
+    Logger.i('toggleChatSetting: $key=$value', 'WATCHIUM');
+    _socket?.emit('party:toggle-chat', {
+      'code': _currentRoomCode,
+      'key': key,
+      'value': value,
     });
   }
 
