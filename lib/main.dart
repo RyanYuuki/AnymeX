@@ -13,6 +13,7 @@ import 'package:anymex/controllers/track/track_binding_controller.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/controllers/services/mal/mal_service.dart';
+import 'package:anymex/controllers/services/mangabaka/mangabaka_service.dart';
 import 'package:anymex/controllers/services/simkl/simkl_service.dart';
 import 'package:anymex/controllers/services/storage/storage_manager_service.dart';
 import 'package:anymex/controllers/services/community_service.dart';
@@ -44,6 +45,8 @@ import 'package:anymex/widgets/custom_widgets/anymex_titlebar.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart'
+    hide isar;
 import 'package:app_links/app_links.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -251,6 +254,7 @@ void _initializeGetxController() async {
     Get.put(AnilistData());
     Get.put(SimklService());
     Get.put(MalService());
+    Get.put(MangaBakaService());
     Get.put(DiscordRPCController());
     if (!Get.isRegistered<SourceController>()) {
       Get.put(SourceController());
@@ -267,6 +271,14 @@ void _initializeGetxController() async {
 
   await safeCall(() => StorageManagerService().enforceImageCacheLimit(),
       errorMessage: 'Failed to enforce image cache limit');
+
+  await safeCall(() {
+    TorrentStreamResolver.initialize().then((_) {
+      debugPrint('Torrent engine initialized');
+    }).catchError((e) {
+      debugPrint('Torrent engine init failed (non-critical): $e');
+    });
+  }, errorMessage: 'Failed to initialize torrent engine');
 }
 
 class MainApp extends StatefulWidget {
