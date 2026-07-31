@@ -52,13 +52,13 @@ open class FlutterAppCompatActivity : AppCompatActivity(),
         }
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-    override fun handleOnBackPressed() {
-        flutterFragment?.onBackPressed() ?: run {
-            isEnabled = false
-            onBackPressedDispatcher.onBackPressed()
-        }
-    }
-})
+            override fun handleOnBackPressed() {
+                flutterFragment?.onBackPressed() ?: run {
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                }
+            }
+        })
     }
 
     override fun onPostResume() {
