@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/controllers/watchium/watchium_sync_controller.dart';
-import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_titlebar.dart';
 import 'package:flutter/foundation.dart';
@@ -64,44 +63,7 @@ class WatchiumOverlay extends StatelessWidget {
                     const SizedBox(width: 8),
                     // Sync to host button (joiners only, when out of sync)
                     if (!watchium.isHost.value)
-                      GetBuilder<WatchiumSyncController>(
-                        tag: 'watchiumSync',
-                        init: WatchiumSyncController(
-                          playerController: Get.find<PlayerController>(),
-                        ),
-                        builder: (syncCtrl) {
-                          if (!syncCtrl.isOutOfSync.value) {
-                            return const SizedBox.shrink();
-                          }
-                          return GestureDetector(
-                            onTap: () => syncCtrl.syncToHost(),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: Colors.orange.withValues(alpha: 0.3),
-                                borderRadius: BorderRadius.circular(6),
-                                border: Border.all(
-                                    color: Colors.orange.withValues(alpha: 0.6),
-                                    width: 1),
-                              ),
-                              child: const Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.sync_problem,
-                                      color: Colors.orange, size: 14),
-                                  SizedBox(width: 4),
-                                  Text(
-                                    'Sync',
-                                    style: TextStyle(
-                                        color: Colors.orange, fontSize: 11),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      )
+                      _SyncToHostButton()
                     else
                       const SizedBox.shrink(),
                     const SizedBox(width: 4),
@@ -133,5 +95,45 @@ class WatchiumOverlay extends StatelessWidget {
   void _togglePartyPanel(BuildContext context, WatchiumService watchium) {
     Logger.d('Toggling party panel', 'WATCHIUM_UI');
     watchium.isPartyPaneOpened.value = !watchium.isPartyPaneOpened.value;
+  }
+}
+
+/// Sync-to-host button for joiners.
+/// Uses the [WatchiumSyncController] already registered by [WatchScreen]
+/// (tag: 'watchiumSync'). Falls back to [SizedBox.shrink] if the controller
+/// isn't registered yet (race-safe).
+class _SyncToHostButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    if (!Get.isRegistered<WatchiumSyncController>(tag: 'watchiumSync')) {
+      return const SizedBox.shrink();
+    }
+    final syncCtrl = Get.find<WatchiumSyncController>(tag: 'watchiumSync');
+    return Obx(() {
+      if (!syncCtrl.isOutOfSync.value) return const SizedBox.shrink();
+      return GestureDetector(
+        onTap: () => syncCtrl.syncToHost(),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          decoration: BoxDecoration(
+            color: Colors.orange.withValues(alpha: 0.3),
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(
+                color: Colors.orange.withValues(alpha: 0.6), width: 1),
+          ),
+          child: const Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.sync_problem, color: Colors.orange, size: 14),
+              SizedBox(width: 4),
+              Text(
+                'Sync',
+                style: TextStyle(color: Colors.orange, fontSize: 11),
+              ),
+            ],
+          ),
+        ),
+      );
+    });
   }
 }

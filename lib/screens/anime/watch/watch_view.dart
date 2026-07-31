@@ -28,18 +28,20 @@ class _WatchiumOverlays extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    try {
-      final watchium = Get.find<WatchiumService>();
-      if (!watchium.inRoom.value) return const SizedBox.shrink();
-    } catch (_) {
-      return const SizedBox.shrink();
-    }
-    return const Stack(
-      children: [
-        WatchiumCommentOverlay(),
-        WatchiumReactionOverlay(),
-      ],
-    );
+    return Obx(() {
+      try {
+        final watchium = Get.find<WatchiumService>();
+        if (!watchium.inRoom.value) return const SizedBox.shrink();
+      } catch (_) {
+        return const SizedBox.shrink();
+      }
+      return const Stack(
+        children: [
+          WatchiumCommentOverlay(),
+          WatchiumReactionOverlay(),
+        ],
+      );
+    });
   }
 }
 
