@@ -4,6 +4,7 @@ export 'package:anymex/database/kv_helper.dart';
 enum General {
   shouldAskForTrack,
   hideAdultContent,
+  searchIsAdult,
   uiScaler,
   isFirstTime,
   hasAcceptedCommentRules,

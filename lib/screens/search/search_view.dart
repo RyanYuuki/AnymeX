@@ -105,7 +105,9 @@ class _SearchPageState extends State<SearchPage>
   @override
   void initState() {
     super.initState();
-    isAdult = !General.hideAdultContent.get(true);
+    isAdult = General.hideAdultContent.get(true)
+        ? false
+        : General.searchIsAdult.get(false);
     _selectedSource = widget.source is Source ? widget.source as Source : null;
     _initializeAnimations();
     _initializeData();
@@ -682,6 +684,7 @@ class _SearchPageState extends State<SearchPage>
                   onTap: () {
                     setState(() {
                       isAdult = !isAdult;
+                      General.searchIsAdult.set(isAdult);
                     });
                     _performSearch();
                   },
