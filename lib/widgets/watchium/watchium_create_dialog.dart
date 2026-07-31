@@ -268,7 +268,7 @@ class _WatchiumCreateDialogState extends State<WatchiumCreateDialog> {
   }
 
   void _showCodeDialog(String code) {
-    final deepLink = 'anymex://watchium/join/$code';
+    final shareUrl = 'https://anymex.duckdns.org:3001/join/$code';
 
     Get.dialog(
       Dialog(
@@ -325,7 +325,7 @@ class _WatchiumCreateDialogState extends State<WatchiumCreateDialog> {
                     child: FilledButton.icon(
                       onPressed: () {
                         Clipboard.setData(
-                            ClipboardData(text: deepLink));
+                            ClipboardData(text: shareUrl));
                         Get.snackbar('Copied', 'Invite link copied!');
                       },
                       icon: const Icon(Icons.share, size: 18),
