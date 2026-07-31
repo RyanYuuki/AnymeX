@@ -901,7 +901,7 @@ class _WatchiumPartyPopupContentState
                           value: 'transfer',
                           child: const Row(
                             children: [
-                              Icon(Icons.crown, color: Colors.amber, size: 18),
+                              Icon(Icons.workspace_premium, color: Colors.amber, size: 18),
                               SizedBox(width: 10),
                               Text('Transfer Host'),
                             ],

@@ -47,7 +47,6 @@ class _WatchiumPageState extends State<WatchiumPage> {
     if (mounted) setState(() => _isLoading = false);
   }
 
-  String _password = '';
 
   Future<void> _joinByCode({String? password}) async {
     final code = _joinCodeController.text.trim().toUpperCase();
@@ -414,7 +413,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
             ],
             const SizedBox(height: 8),
             // Members list with kick buttons
-            if (roomState.members.length > 0) ...[
+            if (roomState.members.isNotEmpty) ...[
               const SizedBox(height: 8),
               ...roomState.members.map((m) {
                 final isSelf = m.userId == _watchium.roomState.value?.hostUserId;

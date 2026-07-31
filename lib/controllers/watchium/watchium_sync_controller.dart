@@ -178,33 +178,6 @@ class WatchiumSyncController extends GetxController {
     }
   }
 
-  void _applyPlaybackSync(WatchiumPlayback playback) {
-    _applyingSync = true;
-    try {
-      final hostPlaying = playback.isPlaying;
-      final localPlaying = playerController.isPlaying.value;
-
-      if (hostPlaying && !localPlaying) {
-        Logger.d('WatchiumSync: Host played — resuming', 'WATCHIUM_SYNC');
-        playerController.play();
-      } else if (!hostPlaying && localPlaying) {
-        Logger.d('WatchiumSync: Host paused — pausing', 'WATCHIUM_SYNC');
-        playerController.pause();
-      }
-
-      // Position sync: seek if off by more than 3 seconds
-      final hostPos = playback.positionSec;
-      final localPos = playerController.currentPosition.value.inSeconds;
-      final diff = (hostPos - localPos).abs();
-      if (diff > 3) {
-        Logger.d('WatchiumSync: Seeking from ${localPos}s to ${hostPos}s (diff=${diff.toStringAsFixed(1)}s)', 'WATCHIUM_SYNC');
-        playerController.seekTo(Duration(seconds: hostPos.round()));
-      }
-    } finally {
-      Future.microtask(() => _applyingSync = false);
-    }
-  }
-
   void _updateJoinerTracks(WatchiumAnimeContent content) {
     if (content.availableServers.isEmpty) return;
 
