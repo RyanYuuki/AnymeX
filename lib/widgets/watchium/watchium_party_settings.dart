@@ -154,8 +154,9 @@ class _WatchiumPartySettingsState extends State<WatchiumPartySettings> {
   }
 
   Widget _buildPositionPicker(ColorScheme cs, ThemeData theme) {
-    final current = WatchiumOverlayPosition.fromString(
-        WatchiumKeys.overlayPosition.get<String>());
+    final current = WatchiumOverlayPosition.fromString(WatchiumKeys
+        .overlayPosition
+        .get<String>(WatchiumOverlayPosition.bottomRight.name));
 
     final icons = {
       WatchiumOverlayPosition.topLeft: Icons.north_west,
@@ -185,7 +186,7 @@ class _WatchiumPartySettingsState extends State<WatchiumPartySettings> {
                   color: Colors.purple.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(Icons.picture_in_picture_alt_rounded,
+                child: const Icon(Icons.picture_in_picture_alt_rounded,
                     size: 20, color: Colors.purple),
               ),
               const SizedBox(width: 12),

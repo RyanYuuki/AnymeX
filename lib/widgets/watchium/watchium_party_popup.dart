@@ -10,6 +10,7 @@ import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:iconsax/iconsax.dart';
 
 class WatchiumPartyPopup extends StatelessWidget {
   const WatchiumPartyPopup({super.key});
@@ -825,6 +826,14 @@ class _WatchiumPartyPopupContentState
                       children: [
                         Row(
                           children: [
+                            if (member.role == 'host') ...[
+                              const Icon(
+                                Iconsax.crown5,
+                                color: Colors.amber,
+                                size: 18,
+                              ),
+                              const SizedBox(width: 6),
+                            ],
                             Flexible(
                               child: Text(
                                 isSelf
@@ -838,23 +847,21 @@ class _WatchiumPartyPopupContentState
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                            if (member.role == 'host' || isCohost) ...[
+                            if (isCohost) ...[
                               const SizedBox(width: 6),
                               Container(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 6, vertical: 2),
                                 decoration: BoxDecoration(
-                                  color: isCohost
-                                      ? Colors.orange
-                                      : cs.primary,
+                                  color: Colors.orange,
                                   borderRadius: BorderRadius.circular(6),
                                 ),
-                                child: Text(
-                                  isCohost ? 'CO-HOST' : 'HOST',
+                                child: const Text(
+                                  'CO-HOST',
                                   style: TextStyle(
                                     fontFamily: 'Poppins-SemiBold',
                                     fontSize: 10,
-                                    color: isCohost ? Colors.orange : cs.primary,
+                                    color: Colors.orange,
                                   ),
                                 ),
                               ),
@@ -887,9 +894,9 @@ class _WatchiumPartyPopupContentState
                         child: Icon(Icons.more_vert, size: 18, color: cs.onSurface),
                       ),
                       itemBuilder: (context) => [
-                        PopupMenuItem(
+                        const PopupMenuItem(
                           value: 'kick',
-                          child: const Row(
+                          child: Row(
                             children: [
                               Icon(Icons.person_remove_rounded, color: Colors.red, size: 18),
                               SizedBox(width: 10),
@@ -897,9 +904,9 @@ class _WatchiumPartyPopupContentState
                             ],
                           ),
                         ),
-                        PopupMenuItem(
+                        const PopupMenuItem(
                           value: 'transfer',
-                          child: const Row(
+                          child: Row(
                             children: [
                               Icon(Icons.workspace_premium, color: Colors.amber, size: 18),
                               SizedBox(width: 10),
@@ -918,7 +925,7 @@ class _WatchiumPartyPopupContentState
                                 color: Colors.orange,
                                 size: 18,
                               ),
-                              SizedBox(width: 10),
+                              const SizedBox(width: 10),
                               Text(
                                 member.role == 'cohost' ? 'Remove Co-host' : 'Make Co-host',
                               ),

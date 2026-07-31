@@ -98,8 +98,9 @@ class _WatchiumCommentOverlayState extends State<WatchiumCommentOverlay>
     }
     if (_items.isEmpty) return const SizedBox.shrink();
 
-    final position = WatchiumOverlayPosition.fromString(
-        WatchiumKeys.overlayPosition.get<String>());
+    final position = WatchiumOverlayPosition.fromString(WatchiumKeys
+        .overlayPosition
+        .get<String>(WatchiumOverlayPosition.bottomRight.name));
 
     final isLeft = position == WatchiumOverlayPosition.topLeft ||
         position == WatchiumOverlayPosition.bottomLeft;
