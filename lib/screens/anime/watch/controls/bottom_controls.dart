@@ -340,12 +340,10 @@ class BottomControls extends StatelessWidget {
               watchium.isPartyPaneOpened.value =
                   !watchium.isPartyPaneOpened.value;
             } else {
-              // Not in a room — show create/join dialog
-              showDialog(
+              // Not in a room — show create/join sheet
+              showWatchiumCreateSheet(
                 context: Get.context!,
-                builder: (ctx) => WatchiumCreateDialog(
-                  playerController: controller,
-                ),
+                playerController: controller,
               );
             }
           },

@@ -3,23 +3,40 @@ import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/database/isar_models/video.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/utils/logger.dart';
+import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_tabbar.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
-class WatchiumCreateDialog extends StatefulWidget {
+/// Shows the create/join watch party sheet from inside the player.
+Future<void> showWatchiumCreateSheet({
+  required BuildContext context,
+  required PlayerController playerController,
+}) {
+  return AnymexSheet.custom(
+    WatchiumCreateSheet(playerController: playerController),
+    context,
+    showDragHandle: true,
+  );
+}
+
+class WatchiumCreateSheet extends StatefulWidget {
   final PlayerController playerController;
 
-  const WatchiumCreateDialog({
+  const WatchiumCreateSheet({
     super.key,
     required this.playerController,
   });
 
   @override
-  State<WatchiumCreateDialog> createState() => _WatchiumCreateDialogState();
+  State<WatchiumCreateSheet> createState() => _WatchiumCreateSheetState();
 }
 
-class _WatchiumCreateDialogState extends State<WatchiumCreateDialog> {
+class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
   bool _isCreating = false;
   String? _error;
   String _joinCode = '';
@@ -32,211 +49,420 @@ class _WatchiumCreateDialogState extends State<WatchiumCreateDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final cs = context.colors;
     final animeTitle = widget.playerController.anilistData.title;
 
-    return Dialog(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.live_tv, size: 40, color: Colors.red),
-            const SizedBox(height: 12),
-            Text(
-              'Watch Together',
-              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              animeTitle,
-              style: theme.textTheme.bodySmall,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 20),
-
-            // Tab switch
-            Row(
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _buildHeader(cs, animeTitle),
+        const Divider(height: 1, thickness: 0.5),
+        ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.62,
+          ),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: _TabButton(
-                    label: 'Create Room',
-                    selected: !_joinMode,
-                    onTap: () => setState(() => _joinMode = false),
-                  ),
+                _buildTabBar(cs),
+                const SizedBox(height: 16),
+                if (_joinMode) _buildJoinFields(cs) else _buildCreateFields(cs),
+                if (_error != null) ...[
+                  const SizedBox(height: 12),
+                  _buildErrorBox(cs, _error!),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHeader(ColorScheme cs, String animeTitle) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(4, 0, 4, 12),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: cs.primaryContainer.opaque(0.3),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(Icons.live_tv_rounded, size: 20, color: cs.primary),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const AnymexText(
+                  text: 'Watch Together',
+                  variant: TextVariant.bold,
+                  size: 16,
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _TabButton(
-                    label: 'Join Room',
-                    selected: _joinMode,
-                    onTap: () => setState(() => _joinMode = true),
-                  ),
+                AnymexText(
+                  text: animeTitle,
+                  size: 12,
+                  color: cs.onSurface.opaque(0.5),
+                  maxLines: 1,
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+          ),
+          AnymexOnTap(
+            onTap: () => Navigator.pop(context),
+            child:
+                Icon(Icons.close_rounded, color: cs.onSurface.opaque(0.5)),
+          ),
+        ],
+      ),
+    );
+  }
 
-            if (_joinMode) ...[
-              TextField(
-                onChanged: (v) => _joinCode = v.toUpperCase(),
-                decoration: InputDecoration(
-                  labelText: 'Room Code',
-                  hintText: 'e.g. ABC123',
-                  prefixIcon: const Icon(Icons.vpn_key),
-                  border: const OutlineInputBorder(),
-                ),
-                textCapitalization: TextCapitalization.characters,
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'[A-Z0-9]')),
-                  LengthLimitingTextInputFormatter(6),
-                ],
+  Widget _buildTabBar(ColorScheme cs) {
+    return AnymeXTabBar(
+      selectTabs: const ['Create Room', 'Join Room'],
+      selectedIndex: _joinMode ? 1 : 0,
+      icons: const [Icons.add_rounded, Icons.login_rounded],
+      height: 46,
+      activeColor: cs.primary,
+      activeTextColor: cs.onPrimary,
+      inactiveTextColor: cs.onSurfaceVariant,
+      onTabSelected: (index) => setState(() => _joinMode = index == 1),
+    );
+  }
+
+  Widget _buildJoinFields(ColorScheme cs) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildField(
+          cs,
+          controller: null,
+          label: 'Room Code',
+          hint: 'e.g. ABC123',
+          prefixIcon: Icons.vpn_key_rounded,
+          letterSpacing: 2,
+          onChanged: (v) => _joinCode = v.toUpperCase(),
+          textCapitalization: TextCapitalization.characters,
+          formatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'[A-Z0-9]')),
+            LengthLimitingTextInputFormatter(6),
+          ],
+          onSubmitted: (_) => _joinRoom(),
+        ),
+        const SizedBox(height: 12),
+        _buildField(
+          cs,
+          controller: null,
+          label: 'Password (if required)',
+          prefixIcon: Icons.lock_outline_rounded,
+          obscureText: _obscurePassword,
+          suffixIcon: _buildVisibilityToggle(cs),
+          onChanged: (v) => _joinPassword = v,
+        ),
+        const SizedBox(height: 16),
+        SizedBox(
+          width: double.infinity,
+          child: FilledButton.icon(
+            onPressed: _isCreating ? null : _joinRoom,
+            style: FilledButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
               ),
-              const SizedBox(height: 12),
-              TextField(
-                onChanged: (v) => _joinPassword = v,
-                decoration: InputDecoration(
-                  labelText: 'Password (if required)',
-                  prefixIcon: const Icon(Icons.lock_outline),
-                  border: const OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, size: 18),
-                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                  ),
-                ),
-                obscureText: _obscurePassword,
-              ),
-              const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton.icon(
-                  onPressed: _isCreating ? null : _joinRoom,
-                  icon: _isCreating
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : const Icon(Icons.login),
-                  label: Text(_isCreating ? 'Joining...' : 'Join Room'),
-                ),
-              ),
-            ] else ...[
-              // Max members slider
-              Row(
-                children: [
-                  const Icon(Icons.people_outline, size: 18),
-                  const SizedBox(width: 8),
-                  Text('Max members: ${_maxMembers.toInt()}', style: const TextStyle(fontSize: 13)),
-                ],
-              ),
-              Slider(
-                value: _maxMembers,
-                min: 2,
-                max: 50,
-                divisions: 48,
-                label: '${_maxMembers.toInt()}',
-                onChanged: (v) => setState(() => _maxMembers = v),
-              ),
-              const SizedBox(height: 8),
-              // Private room toggle
-              SwitchListTile(
-                contentPadding: EdgeInsets.zero,
-                dense: true,
-                title: const Row(
-                  children: [
-                    Icon(Icons.lock_outline, size: 18),
-                    SizedBox(width: 8),
-                    Text('Private Room'),
-                  ],
-                ),
-                value: _isPrivate,
-                onChanged: (v) => setState(() {
-                  _isPrivate = v;
-                  if (!v) _password = '';
-                }),
-              ),
-              // Password field — only when private toggle is ON
-              if (_isPrivate) ...[
-                const SizedBox(height: 4),
-                AnimatedSize(
-                  duration: const Duration(milliseconds: 200),
-                  child: TextField(
-                    onChanged: (v) => _password = v,
-                    decoration: InputDecoration(
-                      labelText: 'Room Password',
-                      hintText: 'Set a password for your room',
-                      prefixIcon: const Icon(Icons.password, size: 18),
-                      border: const OutlineInputBorder(),
-                      suffixIcon: IconButton(
-                        icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, size: 18),
-                        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                      ),
+            ),
+            icon: _isCreating
+                ? SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: cs.onPrimary,
                     ),
-                    obscureText: _obscurePassword,
-                  ),
-                ),
-              ],
-              const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Row(
-                  children: [
-                    Icon(Icons.info_outline, size: 18),
-                    SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'Share the code or link with friends.',
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton.icon(
-                  onPressed: _isCreating ? null : _createRoom,
-                  icon: _isCreating
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : const Icon(Icons.add),
-                  label: Text(_isCreating ? 'Creating...' : 'Create Room'),
-                ),
-              ),
-            ],
+                  )
+                : const Icon(Icons.login_rounded, size: 18),
+            label: AnymexText(
+              text: _isCreating ? 'Joining...' : 'Join Room',
+              variant: TextVariant.semiBold,
+              size: 14,
+              color: cs.onPrimary,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
-            if (_error != null) ...[
-              const SizedBox(height: 12),
-              Text(
-                _error!,
-                style: const TextStyle(color: Colors.red, fontSize: 12),
-                textAlign: TextAlign.center,
+  Widget _buildCreateFields(ColorScheme cs) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(Icons.people_alt_rounded,
+                size: 18, color: cs.onSurface.opaque(0.7)),
+            const SizedBox(width: 8),
+            const AnymexText(
+              text: 'Max Members',
+              variant: TextVariant.semiBold,
+              size: 13,
+            ),
+            const Spacer(),
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+              decoration: BoxDecoration(
+                color: cs.primary.opaque(0.15),
+                borderRadius: BorderRadius.circular(8),
               ),
-            ],
-
-            const SizedBox(height: 8),
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              child: AnymexText(
+                text: '${_maxMembers.toInt()}',
+                variant: TextVariant.bold,
+                size: 12,
+                color: cs.primary,
+              ),
             ),
           ],
         ),
+        SliderTheme(
+          data: SliderTheme.of(context).copyWith(
+            activeTrackColor: cs.primary,
+            inactiveTrackColor: cs.surfaceContainerHighest,
+            thumbColor: cs.primary,
+            overlayColor: cs.primary.withValues(alpha: 0.15),
+            trackHeight: 4,
+          ),
+          child: Slider(
+            value: _maxMembers,
+            min: 2,
+            max: 50,
+            divisions: 48,
+            label: '${_maxMembers.toInt()}',
+            onChanged: (v) => setState(() => _maxMembers = v),
+          ),
+        ),
+        const SizedBox(height: 8),
+        AnymexOnTap(
+          onTap: () => setState(() {
+            _isPrivate = !_isPrivate;
+            if (!_isPrivate) _password = '';
+          }),
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: cs.surfaceContainerLow,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: cs.outline.opaque(0.2)),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.lock_outline_rounded,
+                    size: 18, color: cs.onSurface.opaque(0.7)),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const AnymexText(
+                        text: 'Private Room',
+                        variant: TextVariant.semiBold,
+                        size: 13,
+                      ),
+                      AnymexText(
+                        text: 'Friends need a password to join',
+                        size: 11,
+                        color: cs.onSurface.opaque(0.4),
+                      ),
+                    ],
+                  ),
+                ),
+                Switch(
+                  value: _isPrivate,
+                  onChanged: (v) => setState(() {
+                    _isPrivate = v;
+                    if (!v) _password = '';
+                  }),
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (_isPrivate) ...[
+          const SizedBox(height: 12),
+          AnimatedSize(
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOut,
+            child: _buildField(
+              cs,
+              controller: null,
+              label: 'Room Password',
+              hint: 'Set a password for your room',
+              prefixIcon: Icons.password_rounded,
+              obscureText: _obscurePassword,
+              suffixIcon: _buildVisibilityToggle(cs),
+              onChanged: (v) => _password = v,
+            ),
+          ),
+        ],
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: cs.primary.opaque(0.08),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: cs.primary.opaque(0.15)),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.info_outline_rounded,
+                  size: 16, color: cs.primary),
+              const SizedBox(width: 10),
+              Expanded(
+                child: AnymexText(
+                  text: 'Share the code or invite link with friends.',
+                  size: 12,
+                  color: cs.onSurface.opaque(0.6),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        SizedBox(
+          width: double.infinity,
+          child: FilledButton.icon(
+            onPressed: _isCreating ? null : _createRoom,
+            style: FilledButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ),
+            icon: _isCreating
+                ? SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: cs.onPrimary,
+                    ),
+                  )
+                : const Icon(Icons.add_rounded, size: 18),
+            label: AnymexText(
+              text: _isCreating ? 'Creating...' : 'Create Room',
+              variant: TextVariant.semiBold,
+              size: 14,
+              color: cs.onPrimary,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildField(
+    ColorScheme cs, {
+    required TextEditingController? controller,
+    required String label,
+    String? hint,
+    IconData? prefixIcon,
+    Widget? suffixIcon,
+    ValueChanged<String>? onChanged,
+    ValueChanged<String>? onSubmitted,
+    TextCapitalization textCapitalization = TextCapitalization.none,
+    List<TextInputFormatter>? formatters,
+    bool obscureText = false,
+    double letterSpacing = 0,
+  }) {
+    return TextField(
+      controller: controller,
+      onChanged: onChanged,
+      onSubmitted: onSubmitted,
+      obscureText: obscureText,
+      textCapitalization: textCapitalization,
+      inputFormatters: formatters,
+      style: TextStyle(
+        fontFamily: 'Poppins',
+        fontSize: 14,
+        color: cs.onSurface,
+        letterSpacing: letterSpacing,
+      ),
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hint,
+        labelStyle: TextStyle(
+          fontFamily: 'Poppins',
+          fontSize: 13,
+          color: cs.onSurfaceVariant,
+        ),
+        hintStyle: TextStyle(
+          fontFamily: 'Poppins',
+          fontSize: 13,
+          color: cs.onSurface.opaque(0.35),
+          letterSpacing: letterSpacing,
+        ),
+        prefixIcon: prefixIcon != null
+            ? Icon(prefixIcon, size: 18, color: cs.onSurface.opaque(0.5))
+            : null,
+        suffixIcon: suffixIcon,
+        filled: true,
+        fillColor: cs.surfaceContainerLow,
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: cs.outlineVariant),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: cs.primary, width: 1.5),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVisibilityToggle(ColorScheme cs) {
+    return IconButton(
+      icon: Icon(
+        _obscurePassword ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+        size: 18,
+        color: cs.onSurface.opaque(0.5),
+      ),
+      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+    );
+  }
+
+  Widget _buildErrorBox(ColorScheme cs, String message) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: cs.error.opaque(0.1),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.error_outline_rounded, size: 16, color: cs.error),
+          const SizedBox(width: 8),
+          Expanded(
+            child: AnymexText(
+              text: message,
+              size: 12,
+              color: cs.error,
+              maxLines: 3,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -290,17 +516,17 @@ class _WatchiumCreateDialogState extends State<WatchiumCreateDialog> {
       if (code != null) {
         Logger.i('Room created: $code', 'WATCHIUM_UI');
         if (mounted) Navigator.pop(context);
-        _showCodeDialog(code);
-      } else {
+        _showCodeSheet(code);
+      } else if (mounted) {
         final err = watchium.error.value;
         Logger.w('Room creation failed: $err', 'WATCHIUM_UI');
         setState(() => _error = err);
       }
     } catch (e) {
       Logger.e('Room creation exception', error: e, loggerName: 'WATCHIUM_UI');
-      setState(() => _error = e.toString());
+      if (mounted) setState(() => _error = e.toString());
     } finally {
-      setState(() => _isCreating = false);
+      if (mounted) setState(() => _isCreating = false);
     }
   }
 
@@ -314,7 +540,9 @@ class _WatchiumCreateDialogState extends State<WatchiumCreateDialog> {
 
   Future<void> _joinRoom() async {
     if (_joinCode.length != 6) {
-      Logger.w('Join room from dialog: invalid code length ${_joinCode.length}', 'WATCHIUM_UI');
+      Logger.w(
+          'Join room from dialog: invalid code length ${_joinCode.length}',
+          'WATCHIUM_UI');
       setState(() => _error = 'Room code must be 6 characters');
       return;
     }
@@ -334,150 +562,157 @@ class _WatchiumCreateDialogState extends State<WatchiumCreateDialog> {
       if (ok && mounted) {
         Logger.i('Join room succeeded', 'WATCHIUM_UI');
         Navigator.pop(context);
-      } else {
+      } else if (mounted) {
         final err = watchium.error.value;
         Logger.w('Join room failed: $err', 'WATCHIUM_UI');
         setState(() => _error = err);
       }
     } catch (e) {
       Logger.e('Join room exception', error: e, loggerName: 'WATCHIUM_UI');
-      setState(() => _error = e.toString());
+      if (mounted) setState(() => _error = e.toString());
     } finally {
-      setState(() => _isCreating = false);
+      if (mounted) setState(() => _isCreating = false);
     }
   }
 
-  void _showCodeDialog(String code) {
+  void _showCodeSheet(String code) {
     final shareUrl = 'http://anymex.duckdns.org:3001/join/$code';
+    final cs = Theme.of(Get.context!).colorScheme;
 
-    Get.dialog(
-      Dialog(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.check_circle, color: Colors.green, size: 48),
-              const SizedBox(height: 12),
-              const Text(
-                'Room Created!',
-                style:
-                    TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-              ),
-              if (_password.isNotEmpty) ...[
-                const SizedBox(height: 4),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.lock, size: 14, color: Colors.orange),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Private room',
-                      style: TextStyle(color: Colors.orange, fontSize: 12),
-                    ),
-                  ],
+    AnymexSheet.custom(
+      Padding(
+        padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.green.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.check_rounded,
+                      color: Colors.green, size: 22),
                 ),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: AnymexText(
+                    text: 'Room Created!',
+                    variant: TextVariant.bold,
+                    size: 16,
+                  ),
+                ),
+                if (_password.isNotEmpty)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(8),
+                      border:
+                          Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.lock_rounded,
+                            size: 12, color: Colors.orange),
+                        SizedBox(width: 4),
+                        Text(
+                          'Private',
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Colors.orange,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
               ],
-              const SizedBox(height: 16),
-              const Text(
-                'Share this code with friends:',
-                style: TextStyle(color: Colors.grey, fontSize: 13),
+            ),
+            const SizedBox(height: 14),
+            AnymexText(
+              text: 'Share this code with friends:',
+              size: 12,
+              color: cs.onSurface.opaque(0.5),
+            ),
+            const SizedBox(height: 10),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              decoration: BoxDecoration(
+                color: cs.surfaceContainerLow,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: cs.outline.opaque(0.15)),
               ),
-              const SizedBox(height: 8),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                decoration: BoxDecoration(
-                  color: Theme.of(Get.context!)
-                      .colorScheme
-                      .surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(12),
+              child: SelectableText(
+                code,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'Poppins-Bold',
+                  fontSize: 30,
+                  letterSpacing: 6,
+                  color: cs.primary,
                 ),
-                child: SelectableText(
-                  code,
-                  style: const TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 4),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () {
-                        Clipboard.setData(ClipboardData(text: code));
-                        Get.snackbar('Copied', 'Room code copied to clipboard');
-                      },
-                      icon: const Icon(Icons.copy, size: 18),
-                      label: const Text('Copy Code'),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: FilledButton.icon(
-                      onPressed: () {
-                        Clipboard.setData(
-                            ClipboardData(text: shareUrl));
-                        Get.snackbar('Copied', 'Invite link copied!');
-                      },
-                      icon: const Icon(Icons.share, size: 18),
-                      label: const Text('Copy Link'),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              TextButton(
-                onPressed: () => Get.back(),
-                child: const Text('Close'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _TabButton extends StatelessWidget {
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _TabButton({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: selected
-          ? Theme.of(context).colorScheme.primary
-          : Theme.of(context).colorScheme.surfaceContainerHighest,
-      borderRadius: BorderRadius.circular(8),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Center(
-            child: Text(
-              label,
-              style: TextStyle(
-                color: selected
-                    ? Theme.of(context).colorScheme.onPrimary
-                    : Theme.of(context).colorScheme.onSurface,
-                fontWeight: selected ? FontWeight.w600 : null,
-                fontSize: 13,
               ),
             ),
-          ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      Clipboard.setData(ClipboardData(text: code));
+                      Get.snackbar('Copied', 'Room code copied to clipboard');
+                    },
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: cs.primary,
+                      side: BorderSide(color: cs.primary.opaque(0.4)),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    icon: const Icon(Icons.copy_rounded, size: 16),
+                    label: const AnymexText(
+                      text: 'Copy Code',
+                      variant: TextVariant.semiBold,
+                      size: 13,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: FilledButton.icon(
+                    onPressed: () {
+                      Clipboard.setData(ClipboardData(text: shareUrl));
+                      Get.snackbar('Copied', 'Invite link copied!');
+                    },
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    icon: const Icon(Icons.link_rounded, size: 16),
+                    label: const AnymexText(
+                      text: 'Copy Link',
+                      variant: TextVariant.semiBold,
+                      size: 13,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
+      Get.context!,
+      showDragHandle: true,
     );
   }
 }
