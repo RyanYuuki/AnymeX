@@ -29,6 +29,9 @@ class WatchiumService extends GetxController {
   /// Password to use for the next join attempt.
   String? _pendingPassword;
 
+  /// Password of the currently joined room (for auto-rejoin after disconnect).
+  String? _roomPassword;
+
   // Reactive state
   final Rx<WatchiumRoomState?> roomState = Rx(null);
   final RxList<WatchiumChatMessage> chatMessages = RxList();
@@ -142,8 +145,21 @@ class WatchiumService extends GetxController {
       isConnected.value = true;
       isConnecting.value = false;
       error.value = '';
-      _updateInRoom();
       Logger.i('Socket connected (id=${_socket?.id})', 'WATCHIUM');
+
+      // Auto-rejoin if we were in a room before the disconnect.
+      // The server loses socket mapping on disconnect, so we must
+      // re-emit party:join to get back into the room.
+      final pendingRoom = _currentRoomCode;
+      if (pendingRoom != null && roomState.value != null) {
+        Logger.i('Auto-rejoining room $pendingRoom after reconnect', 'WATCHIUM');
+        _socket!.emit('party:join', {
+          'code': pendingRoom,
+          if (_roomPassword != null) 'password': _roomPassword,
+        });
+      }
+
+      _updateInRoom();
     });
 
     _socket!.on('disconnect', (_) {
@@ -481,6 +497,8 @@ class WatchiumService extends GetxController {
       'code': code,
       if (_pendingPassword != null) 'password': _pendingPassword,
     });
+    // Store password for auto-rejoin after disconnect
+    _roomPassword = _pendingPassword;
     _pendingPassword = null;
 
     // Wait with timeout
@@ -522,6 +540,7 @@ class WatchiumService extends GetxController {
   void _leaveRoomInternal() {
     _stopHeartbeat();
     _currentRoomCode = null;
+    _roomPassword = null;
     _isHost = false;
     isHost.value = false;
     inRoom.value = false;
