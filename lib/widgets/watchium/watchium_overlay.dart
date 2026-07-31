@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_titlebar.dart';
-import 'package:anymex/widgets/watchium/watchium_party_panel.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -62,7 +61,7 @@ class WatchiumOverlay extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     GestureDetector(
-                      onTap: () => _showPartyPanel(context, watchium),
+                      onTap: () => _togglePartyPanel(context, watchium),
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 2),
@@ -86,13 +85,8 @@ class WatchiumOverlay extends StatelessWidget {
     });
   }
 
-  void _showPartyPanel(BuildContext context, WatchiumService watchium) {
-    Logger.d('Opening party panel', 'WATCHIUM_UI');
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => WatchiumPartyPanel(watchium: watchium),
-    );
+  void _togglePartyPanel(BuildContext context, WatchiumService watchium) {
+    Logger.d('Toggling party panel', 'WATCHIUM_UI');
+    watchium.isPartyPaneOpened.value = !watchium.isPartyPaneOpened.value;
   }
 }

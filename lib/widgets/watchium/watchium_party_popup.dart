@@ -1,0 +1,788 @@
+import 'package:anymex/controllers/watchium/watchium_models.dart';
+import 'package:anymex/controllers/watchium/watchium_service.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
+import 'package:anymex/utils/logger.dart';
+import 'package:anymex/utils/theme_extensions.dart';
+
+import 'dart:io' show Platform;
+
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+
+class WatchiumPartyPopup extends StatelessWidget {
+  const WatchiumPartyPopup({super.key});
+
+  void _closePane() {
+    Get.find<WatchiumService>().isPartyPaneOpened.value = false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final watchium = Get.find<WatchiumService>();
+
+    return Obx(() {
+      if (!watchium.inRoom.value) return const SizedBox.shrink();
+      return EpisodeSidePane(
+        isVisible: watchium.isPartyPaneOpened.value,
+        onOverlayTap: _closePane,
+        child: _WatchiumPartyPopupContent(
+          watchium: watchium,
+          onClose: _closePane,
+        ),
+      );
+    });
+  }
+}
+
+enum _PartyTab { chat, members }
+
+class _WatchiumPartyPopupContent extends StatefulWidget {
+  final WatchiumService watchium;
+  final VoidCallback onClose;
+
+  const _WatchiumPartyPopupContent({
+    required this.watchium,
+    required this.onClose,
+  });
+
+  @override
+  State<_WatchiumPartyPopupContent> createState() =>
+      _WatchiumPartyPopupContentState();
+}
+
+class _WatchiumPartyPopupContentState
+    extends State<_WatchiumPartyPopupContent> {
+  _PartyTab _currentTab = _PartyTab.chat;
+  late final TextEditingController _chatController;
+  final FocusNode _chatFocusNode = FocusNode();
+  final ScrollController _chatScrollController = ScrollController();
+  Worker? _chatWorker;
+  static const _quickReactions = ['😂', '💀', '🔥', '👍', '❤️', '😮', '👏', '😭'];
+
+  @override
+  void initState() {
+    super.initState();
+    _chatController = TextEditingController();
+    // Scroll to bottom when new messages arrive
+    _chatWorker = ever(widget.watchium.chatMessages, (_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_chatScrollController.hasClients) {
+          _chatScrollController.animateTo(
+            _chatScrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOut,
+          );
+        }
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _chatWorker?.dispose();
+    _chatController.dispose();
+    _chatFocusNode.dispose();
+    _chatScrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = context.theme;
+    final cs = theme.colorScheme;
+
+    return Column(
+      children: [
+        _buildHeader(cs, theme),
+        _buildTabBar(cs, theme),
+        Expanded(
+          child: _currentTab == _PartyTab.chat
+              ? _buildChat(cs, theme)
+              : _buildMembersList(cs, theme),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHeader(ColorScheme cs, ThemeData theme) {
+    final state = widget.watchium.roomState.value;
+    final isDesktop = !Platform.isAndroid && !Platform.isIOS;
+
+    return Container(
+      padding: EdgeInsets.fromLTRB(16, isDesktop ? 16 + 40 : 16, 16, 16),
+      decoration: BoxDecoration(
+        color: cs.surfaceContainerHighest.withOpacity(0.3),
+        border: Border(
+          bottom: BorderSide(color: cs.outline.withOpacity(0.15)),
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: cs.primary.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(Icons.live_tv_rounded, color: cs.primary, size: 20),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Watch Party',
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontFamily: 'Poppins-SemiBold',
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                if (state != null)
+                  Text(
+                    'Room ${state.code}  ·  ${state.members.where((m) => m.online).length} online',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      fontFamily: 'Poppins',
+                      color: cs.onSurface.withOpacity(0.6),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          GestureDetector(
+            onTap: _leaveRoom,
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: cs.error.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: cs.error.withOpacity(0.2)),
+              ),
+              child: Icon(Icons.exit_to_app, size: 20, color: cs.error),
+            ),
+          ),
+          const SizedBox(width: 8),
+          GestureDetector(
+            onTap: widget.onClose,
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: cs.surfaceContainerHighest.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(Icons.close,
+                  size: 20, color: cs.onSurface.withOpacity(0.7)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _leaveRoom() {
+    Logger.i('Leave room from party popup', 'WATCHIUM_UI');
+    widget.watchium.leaveRoom();
+  }
+
+  Widget _buildTabBar(ColorScheme cs, ThemeData theme) {
+    const tabs = [
+      (
+        label: 'Chat',
+        icon: Icons.chat_bubble_rounded,
+        tab: _PartyTab.chat
+      ),
+      (
+        label: 'Members',
+        icon: Icons.people_rounded,
+        tab: _PartyTab.members
+      ),
+    ];
+    final total = tabs.length;
+    final currentIndex = tabs.indexWhere((t) => t.tab == _currentTab);
+    final alignX = -1.0 + (2.0 * currentIndex / (total - 1));
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+      child: SizedBox(
+        height: 54,
+        child: Container(
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            color: cs.surfaceContainerHighest.withOpacity(0.4),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: cs.outline.withOpacity(0.1)),
+          ),
+          child: Stack(
+            children: [
+              AnimatedAlign(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOutQuint,
+                alignment: Alignment(alignX, 0),
+                child: FractionallySizedBox(
+                  widthFactor: 1 / total,
+                  heightFactor: 1,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: cs.primary,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: cs.primary.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Row(
+                children: [
+                  for (final t in tabs)
+                    Expanded(
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          if (_currentTab != t.tab) {
+                            HapticFeedback.lightImpact();
+                            setState(() => _currentTab = t.tab);
+                          }
+                        },
+                        child: AnimatedScale(
+                          scale: _currentTab == t.tab ? 1.05 : 1.0,
+                          duration: const Duration(milliseconds: 250),
+                          curve: Curves.easeInOut,
+                          child: AnimatedOpacity(
+                            opacity: _currentTab == t.tab ? 1.0 : 0.7,
+                            duration: const Duration(milliseconds: 200),
+                            child: SizedBox.expand(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    t.icon,
+                                    size: 16,
+                                    color: _currentTab == t.tab
+                                        ? cs.onPrimary
+                                        : cs.onSurfaceVariant,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Flexible(
+                                    child: AnimatedDefaultTextStyle(
+                                      duration:
+                                          const Duration(milliseconds: 200),
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins-SemiBold',
+                                        fontSize: 14,
+                                        color: _currentTab == t.tab
+                                            ? cs.onPrimary
+                                            : cs.onSurfaceVariant,
+                                      ),
+                                      child: Text(
+                                        t.label,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildChat(ColorScheme cs, ThemeData theme) {
+    return Column(
+      children: [
+        Expanded(
+          child: Obx(() {
+            final messages = widget.watchium.chatMessages;
+            if (messages.isEmpty) {
+              return Container(
+                margin: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: cs.surfaceContainer.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.chat_bubble_outline_rounded,
+                          size: 48, color: cs.onSurface.withValues(alpha: 0.3)),
+                      const SizedBox(height: 16),
+                      Text(
+                        'No messages yet',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          color: cs.onSurface.withValues(alpha: 0.6),
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Be the first to say something!',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          color: cs.onSurface.withValues(alpha: 0.4),
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+            return ListView.builder(
+              controller: _chatScrollController,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              itemCount: messages.length,
+              itemBuilder: (context, index) {
+                final msg = messages[index];
+                final isSelf = msg.userId == widget.watchium.currentUserId;
+                final isFirstInGroup = index == 0 ||
+                    messages[index - 1].userId != msg.userId;
+                final isLastInGroup = index == messages.length - 1 ||
+                    messages[index + 1].userId != msg.userId;
+                final isSingle = isFirstInGroup && isLastInGroup;
+                return GestureDetector(
+                  onLongPress: () => _showReactionPicker(context),
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                        top: isFirstInGroup ? 8 : 1, bottom: 1),
+                    child: Align(
+                      alignment: isSelf
+                          ? Alignment.centerRight
+                          : Alignment.centerLeft,
+                      child: Column(
+                        crossAxisAlignment: isSelf
+                            ? CrossAxisAlignment.end
+                            : CrossAxisAlignment.start,
+                        children: [
+                          if (!isSelf && isFirstInGroup)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 4),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  CircleAvatar(
+                                    radius: 10,
+                                    backgroundColor: cs.surfaceContainer
+                                        .withValues(alpha: 0.4),
+                                    backgroundImage: msg.avatarUrl != null
+                                        ? NetworkImage(msg.avatarUrl!)
+                                        : null,
+                                    child: msg.avatarUrl == null
+                                        ? Icon(Icons.person,
+                                            size: 12,
+                                            color: cs.onSurface
+                                                .withOpacity(0.6))
+                                        : null,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    msg.username,
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins-SemiBold',
+                                      fontSize: 10,
+                                      color: cs.primary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          Container(
+                            constraints: BoxConstraints(
+                              maxWidth:
+                                  MediaQuery.of(context).size.width * 0.45,
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 10),
+                            decoration: BoxDecoration(
+                              color: isSelf
+                                  ? cs.primary.withValues(alpha: 0.2)
+                                  : cs.surfaceContainerHighest
+                                      .opaque(0.35, iReallyMeanIt: true),
+                              borderRadius: _bubbleRadius(
+                                isSelf: isSelf,
+                                isFirst: isFirstInGroup,
+                                isLast: isLastInGroup,
+                                isSingle: isSingle,
+                              ),
+                              border: Border.all(
+                                color: isSelf
+                                    ? cs.primary.withValues(alpha: 0.35)
+                                    : cs.onSurface
+                                        .opaque(0.08, iReallyMeanIt: true),
+                                width: 0.5,
+                              ),
+                            ),
+                            child: Text(
+                              msg.text,
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 13,
+                                color: cs.onSurface,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            );
+          }),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: _buildQuickReactionBar(cs),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          child: _buildChatInput(cs),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildQuickReactionBar(ColorScheme cs) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'QUICK REACTIONS',
+          style: TextStyle(
+            fontFamily: 'Poppins-SemiBold',
+            fontSize: 10,
+            letterSpacing: 1.2,
+            color: cs.onSurface.withValues(alpha: 0.4),
+          ),
+        ),
+        const SizedBox(height: 8),
+        SizedBox(
+          height: 40,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: _quickReactions.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 8),
+            itemBuilder: (context, index) {
+              final emoji = _quickReactions[index];
+              return GestureDetector(
+                onTap: () {
+                  widget.watchium.sendReaction(emoji);
+                },
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: cs.surfaceContainer.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                        color: cs.outline.withValues(alpha: 0.3)),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    emoji,
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildChatInput(ColorScheme cs) {
+    return Row(
+      children: [
+        Expanded(
+          child: Container(
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(
+              color: cs.surfaceContainer.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: TextField(
+              controller: _chatController,
+              focusNode: _chatFocusNode,
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 13,
+                color: cs.onSurface,
+              ),
+              decoration: InputDecoration(
+                hintText: 'Type a message...',
+                hintStyle: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 13,
+                  color: cs.onSurface.withValues(alpha: 0.4),
+                ),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16, vertical: 13),
+              ),
+              textInputAction: TextInputAction.send,
+              onSubmitted: (_) => _sendChat(),
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+        GestureDetector(
+          onTap: _sendChat,
+          child: Container(
+            width: 46,
+            height: 46,
+            decoration: BoxDecoration(
+              color: cs.primary.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(Icons.send_rounded, color: cs.primary, size: 20),
+          ),
+        ),
+      ],
+    );
+  }
+
+  BorderRadius _bubbleRadius({
+    required bool isSelf,
+    required bool isFirst,
+    required bool isLast,
+    required bool isSingle,
+  }) {
+    const large = Radius.circular(16);
+    const small = Radius.circular(4);
+
+    if (isSelf) {
+      return BorderRadius.only(
+        topLeft: large,
+        bottomLeft: large,
+        topRight: isSingle || isFirst ? large : small,
+        bottomRight: isSingle || isLast ? large : small,
+      );
+    }
+    return BorderRadius.only(
+      topRight: large,
+      bottomRight: large,
+      topLeft: isSingle || isFirst ? large : small,
+      bottomLeft: isSingle || isLast ? large : small,
+    );
+  }
+
+  void _sendChat() {
+    final text = _chatController.text.trim();
+    if (text.isEmpty) return;
+    widget.watchium.sendChat(text);
+    _chatController.clear();
+    _chatFocusNode.requestFocus();
+  }
+
+  Widget _buildMembersList(ColorScheme cs, ThemeData theme) {
+    return Obx(() {
+      final state = widget.watchium.roomState.value;
+      if (state == null) return const SizedBox.shrink();
+
+      final isHost = widget.watchium.isHost.value;
+
+      return ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: state.members.length,
+        itemBuilder: (context, index) {
+          final member = state.members[index];
+          final isSelf = member.userId == widget.watchium.currentUserId;
+          final canKick = isHost && !isSelf;
+
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: cs.surfaceContainerHighest
+                    .opaque(0.35, iReallyMeanIt: true),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: cs.onSurface.opaque(0.08, iReallyMeanIt: true),
+                  width: 0.5,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      CircleAvatar(
+                        radius: 18,
+                        backgroundColor: cs.primary.withValues(alpha: 0.15),
+                        backgroundImage: member.avatarUrl != null
+                            ? NetworkImage(member.avatarUrl!)
+                            : null,
+                        child: member.avatarUrl == null
+                            ? Icon(Icons.person,
+                                size: 18,
+                                color: cs.primary.withValues(alpha: 0.7))
+                            : null,
+                      ),
+                      Positioned(
+                        right: -2,
+                        bottom: -2,
+                        child: Container(
+                          width: 10,
+                          height: 10,
+                          decoration: BoxDecoration(
+                            color: member.online
+                                ? Colors.green
+                                : cs.onSurface.withValues(alpha: 0.4),
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                                color: cs.surfaceContainerHighest,
+                                width: 2),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                isSelf
+                                    ? '${member.username} (You)'
+                                    : member.username,
+                                style: TextStyle(
+                                  fontFamily: 'Poppins-SemiBold',
+                                  fontSize: 14,
+                                  color: cs.onSurface,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            if (member.role == 'host') ...[
+                              const SizedBox(width: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: cs.primary
+                                      .opaque(0.15, iReallyMeanIt: true),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  'HOST',
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins-SemiBold',
+                                    fontSize: 10,
+                                    color: cs.primary,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          member.online ? 'Online' : 'Offline',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 11,
+                            color: member.online
+                                ? Colors.green.withValues(alpha: 0.8)
+                                : cs.onSurface.withValues(alpha: 0.4),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (canKick)
+                    GestureDetector(
+                      onTap: () => _confirmKick(member),
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: cs.error.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(Icons.person_remove_rounded,
+                            size: 18, color: cs.error),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    });
+  }
+
+  Future<void> _confirmKick(WatchiumMember member) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Remove member'),
+        content: Text('Remove ${member.username} from this watch party?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: ctx.theme.colorScheme.error,
+            ),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Remove'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      widget.watchium.kickMember(member.userId);
+    }
+  }
+
+  void _showReactionPicker(BuildContext context) {
+    final RenderBox? overlay = context.findRenderObject() as RenderBox?;
+    showMenu<String>(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        overlay?.localToGlobal(Offset.zero).dx ?? 0,
+        (overlay?.localToGlobal(Offset.zero).dy ?? 0) - 50,
+        0,
+        0,
+      ),
+      items: _quickReactions.map((emoji) {
+        return PopupMenuItem<String>(
+          value: emoji,
+          height: 40,
+          child: Center(
+            child: Text(emoji, style: const TextStyle(fontSize: 24)),
+          ),
+        );
+      }).toList(),
+    ).then((selected) {
+      if (selected != null) {
+        widget.watchium.sendReaction(selected);
+      }
+    });
+  }
+}

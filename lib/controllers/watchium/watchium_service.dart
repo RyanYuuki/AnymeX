@@ -48,6 +48,12 @@ class WatchiumService extends GetxController {
   /// True when a join request is in-flight (waiting for party:state or party:error).
   final RxBool isJoining = false.obs;
 
+  /// True when the in-player watch party side pane is open.
+  final RxBool isPartyPaneOpened = false.obs;
+
+  /// Id of the locally logged-in user, or null when not authenticated.
+  String? get currentUserId => _userId;
+
   void _updateInRoom() {
     inRoom.value = _currentRoomCode != null && _socket?.connected == true;
   }
@@ -491,6 +497,7 @@ class WatchiumService extends GetxController {
     _isHost = false;
     isHost.value = false;
     inRoom.value = false;
+    isPartyPaneOpened.value = false;
     roomState.value = null;
     chatMessages.clear();
     reactions.clear();
