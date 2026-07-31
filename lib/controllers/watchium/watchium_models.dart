@@ -213,6 +213,8 @@ class WatchiumRoomState {
   final WatchiumAnimeContent? content;
   final WatchiumPlayback? playback;
   final bool onlyHostControls;
+  final bool chatDisabled;
+  final bool announcementMode;
   final int maxMembers;
 
   WatchiumRoomState({
@@ -222,11 +224,14 @@ class WatchiumRoomState {
     this.content,
     this.playback,
     required this.onlyHostControls,
+    required this.chatDisabled,
+    required this.announcementMode,
     required this.maxMembers,
   });
 
-  factory WatchiumRoomState.fromJson(Map<String, dynamic> json) =>
-      WatchiumRoomState(
+  factory WatchiumRoomState.fromJson(Map<String, dynamic> json) {
+    final settings = json['settings'] as Map<String, dynamic>?;
+    return WatchiumRoomState(
         code: json['code'] as String,
         hostUserId: json['hostUserId'] as String,
         members: (json['members'] as List?)
@@ -242,10 +247,12 @@ class WatchiumRoomState {
             ? WatchiumPlayback.fromJson(
                 json['playback'] as Map<String, dynamic>)
             : null,
-        onlyHostControls: json['settings']?['onlyHostControls'] as bool? ??
-            true,
+        onlyHostControls: settings?['onlyHostControls'] as bool? ?? true,
+        chatDisabled: settings?['chatDisabled'] as bool? ?? false,
+        announcementMode: settings?['announcementMode'] as bool? ?? false,
         maxMembers: json['maxMembers'] as int? ?? 10,
       );
+  }
 }
 
 class WatchiumChatMessage {
