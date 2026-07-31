@@ -24,6 +24,7 @@ import 'package:provider/provider.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/screens/extensions/ExtensionTesting/extension_test_page.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_extensions.dart';
+import 'package:anymex/screens/novel/search/search_page.dart';
 
 enum PageType { manga, anime, home, novel, library, extensions }
 
@@ -205,6 +206,10 @@ class Header extends StatelessWidget {
                               .installedNovelExtensions.isNotEmpty;
                           final isSimkl = profileData.serviceType.value ==
                               ServicesType.simkl;
+                          if (type == PageType.novel) {
+                            navigate(() => const NovelSearchPage());
+                            return;
+                          }
                           if (type == PageType.manga) {
                             if (isSimkl) {
                               navigate(() => const SearchPage(
@@ -248,14 +253,17 @@ class Header extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(
-                    width: 50,
-                    height: 70,
-                    child: AnymeXAnimatedLogo(
-                      size: 50,
-                      autoPlay: true,
-                      color: context.colors.inverseSurface,
-                    )),
+                AnymexOnTap(
+                   onTap: () => SettingsSheet().showServiceSelector(context),
+                   child: SizedBox(
+                       width: 50,
+                       height: 70,
+                       child: AnymeXAnimatedLogo(
+                         size: 50,
+                         autoPlay: true,
+                         color: context.colors.inverseSurface,
+                       )),
+                 ),
                 const Spacer(),
                 _profileIcon(context, profileData)
               ],
@@ -300,14 +308,17 @@ class Header extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 20),
-                CircleAvatar(
-                    radius: 28,
-                    backgroundColor: Colors.transparent,
-                    child: AnymeXAnimatedLogo(
-                      size: 56,
-                      autoPlay: true,
-                      color: context.colors.inverseSurface,
-                    )),
+                 AnymexOnTap(
+                   onTap: () => SettingsSheet().showServiceSelector(context),
+                   child: CircleAvatar(
+                       radius: 28,
+                       backgroundColor: Colors.transparent,
+                       child: AnymeXAnimatedLogo(
+                         size: 56,
+                         autoPlay: true,
+                         color: context.colors.inverseSurface,
+                       )),
+                 ),
               ],
             ),
           ),

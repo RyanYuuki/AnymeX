@@ -30,6 +30,7 @@ import 'package:anymex/widgets/legacy_header.dart' as legacy;
 import 'package:anymex/widgets/custom_widgets/anymex_tabbar.dart';
 import 'package:anymex/screens/extensions/ExtensionTesting/extension_test_page.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_extensions.dart';
+import 'package:anymex/screens/novel/search/search_page.dart';
 
 enum PageType { manga, anime, home, novel, library, extensions }
 
@@ -452,6 +453,11 @@ class Header extends StatelessWidget {
   void _handleSearchPress(BuildContext context, ServiceHandler profileData) {
     final hasNovelExts = sourceController.installedNovelExtensions.isNotEmpty;
     final isSimkl = profileData.serviceType.value == ServicesType.simkl;
+
+    if (type == PageType.novel) {
+      navigate(() => const NovelSearchPage());
+      return;
+    }
 
     if (type == PageType.manga) {
       if (isSimkl) {

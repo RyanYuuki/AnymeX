@@ -113,11 +113,16 @@ class GridAnimeCard extends StatelessWidget {
     final itemType = type ?? (isManga ? ItemType.manga : ItemType.anime);
     final cardStyle = CardStyle.values[settingsController.cardStyle];
 
+    final isOnlineList = variant == CardVariant.onlinelist;
+    final extraData = isOnlineList
+        ? "${media.episodeCount ?? '??'} | ${media.totalEpisodes ?? '??'}"
+        : (media.score ?? media.rating ?? '');
+
     final carouselData = CarouselData(
       id: media.id,
       title: media.title,
       poster: media.poster,
-      extraData: media.score ?? media.rating ?? '',
+      extraData: extraData,
       source: media.episodeCount ?? '?',
       releasing: media.mediaStatus == "RELEASING",
       servicesType: media.data.serviceType,
@@ -129,7 +134,9 @@ class GridAnimeCard extends StatelessWidget {
       cardStyle: cardStyle,
       itemData: carouselData,
       tag: heroTag,
-      variant: variant == CardVariant.search ? DataVariant.regular : DataVariant.library,
+      variant: variant == CardVariant.search
+          ? DataVariant.regular
+          : (isOnlineList ? DataVariant.anilist : DataVariant.library),
       type: itemType,
     );
 
