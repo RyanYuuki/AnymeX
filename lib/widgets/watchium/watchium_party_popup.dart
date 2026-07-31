@@ -58,29 +58,67 @@ class _WatchiumPartyPopupContentState
   final FocusNode _chatFocusNode = FocusNode();
   final ScrollController _chatScrollController = ScrollController();
   Worker? _chatWorker;
+  Worker? _reactionWorker;
+  bool _showJumpToBottom = false;
   static const _quickReactions = ['😂', '💀', '🔥', '👍', '❤️', '😮', '👏', '😭'];
 
   @override
   void initState() {
     super.initState();
     _chatController = TextEditingController();
-    // Scroll to bottom when new messages arrive
-    _chatWorker = ever(widget.watchium.chatMessages, (_) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (_chatScrollController.hasClients) {
-          _chatScrollController.animateTo(
-            _chatScrollController.position.maxScrollExtent,
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeOut,
-          );
-        }
-      });
+    // Scroll to bottom when new messages/reactions arrive
+    _chatWorker = ever(widget.watchium.chatMessages, _scrollChatToBottom);
+    _reactionWorker = ever(widget.watchium.reactions, _scrollChatToBottom);
+    _chatScrollController.addListener(_onChatScroll);
+    _jumpToBottomAfterFrame();
+  }
+
+  void _scrollChatToBottom(_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) => _jumpToBottom());
+  }
+
+  void _jumpToBottom({bool animate = true}) {
+    if (!_chatScrollController.hasClients) return;
+    final pos = _chatScrollController.position;
+    if (!pos.hasContentDimensions) return;
+    if (animate) {
+      _chatScrollController.animateTo(
+        pos.maxScrollExtent,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOut,
+      );
+    } else {
+      pos.jumpTo(pos.maxScrollExtent);
+    }
+  }
+
+  void _jumpToBottomAfterFrame() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_chatScrollController.hasClients) return;
+      if (_chatScrollController.position.hasContentDimensions) {
+        _jumpToBottom(animate: false);
+      } else {
+        _jumpToBottomAfterFrame();
+      }
     });
+  }
+
+  void _onChatScroll() {
+    if (!_chatScrollController.hasClients) return;
+    final pos = _chatScrollController.position;
+    final show = pos.hasContentDimensions &&
+        pos.maxScrollExtent > 0 &&
+        pos.pixels < pos.maxScrollExtent - 80;
+    if (show != _showJumpToBottom) {
+      setState(() => _showJumpToBottom = show);
+    }
   }
 
   @override
   void dispose() {
     _chatWorker?.dispose();
+    _reactionWorker?.dispose();
+    _chatScrollController.removeListener(_onChatScroll);
     _chatController.dispose();
     _chatFocusNode.dispose();
     _chatScrollController.dispose();
@@ -247,6 +285,9 @@ class _WatchiumPartyPopupContentState
                           if (_currentTab != t.tab) {
                             HapticFeedback.lightImpact();
                             setState(() => _currentTab = t.tab);
+                            if (t.tab == _PartyTab.chat) {
+                              _jumpToBottomAfterFrame();
+                            }
                           }
                         },
                         child: AnimatedScale(
@@ -307,7 +348,16 @@ class _WatchiumPartyPopupContentState
         Expanded(
           child: Obx(() {
             final messages = widget.watchium.chatMessages;
-            if (messages.isEmpty) {
+            final reactions = widget.watchium.reactions;
+            final items = <Object>[
+              ...messages,
+              ...reactions,
+            ]..sort((a, b) {
+              final aTs = a is WatchiumChatMessage ? a.ts : (a as WatchiumReaction).ts;
+              final bTs = b is WatchiumChatMessage ? b.ts : (b as WatchiumReaction).ts;
+              return aTs.compareTo(bTs);
+            });
+            if (items.isEmpty) {
               return Container(
                 margin: const EdgeInsets.all(16),
                 padding: const EdgeInsets.all(24),
@@ -344,105 +394,155 @@ class _WatchiumPartyPopupContentState
                 ),
               );
             }
-            return ListView.builder(
-              controller: _chatScrollController,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              itemCount: messages.length,
-              itemBuilder: (context, index) {
-                final msg = messages[index];
-                final isSelf = msg.userId == widget.watchium.currentUserId;
-                final isFirstInGroup = index == 0 ||
-                    messages[index - 1].userId != msg.userId;
-                final isLastInGroup = index == messages.length - 1 ||
-                    messages[index + 1].userId != msg.userId;
-                final isSingle = isFirstInGroup && isLastInGroup;
-                return GestureDetector(
-                  onLongPress: () => _showReactionPicker(context),
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                        top: isFirstInGroup ? 8 : 1, bottom: 1),
-                    child: Align(
-                      alignment: isSelf
-                          ? Alignment.centerRight
-                          : Alignment.centerLeft,
-                      child: Column(
-                        crossAxisAlignment: isSelf
-                            ? CrossAxisAlignment.end
-                            : CrossAxisAlignment.start,
-                        children: [
-                          if (!isSelf && isFirstInGroup)
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 4),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  CircleAvatar(
-                                    radius: 10,
-                                    backgroundColor: cs.surfaceContainer
-                                        .withValues(alpha: 0.4),
-                                    backgroundImage: msg.avatarUrl != null
-                                        ? NetworkImage(msg.avatarUrl!)
-                                        : null,
-                                    child: msg.avatarUrl == null
-                                        ? Icon(Icons.person,
-                                            size: 12,
-                                            color: cs.onSurface
-                                                .withOpacity(0.6))
-                                        : null,
+            return Stack(
+              children: [
+                ListView.builder(
+                  controller: _chatScrollController,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  itemCount: items.length,
+                  itemBuilder: (context, index) {
+                    final item = items[index];
+                    if (item is WatchiumReaction) {
+                      return _buildReactionBubble(cs, item);
+                    }
+                    final msg = item as WatchiumChatMessage;
+                    final isSelf = msg.userId == widget.watchium.currentUserId;
+                    final prevIsSameUser = index > 0 &&
+                        items[index - 1] is WatchiumChatMessage &&
+                        (items[index - 1] as WatchiumChatMessage).userId ==
+                            msg.userId;
+                    final nextIsSameUser =
+                        index < items.length - 1 &&
+                            items[index + 1] is WatchiumChatMessage &&
+                            (items[index + 1] as WatchiumChatMessage).userId ==
+                                msg.userId;
+                    final isFirstInGroup = !prevIsSameUser;
+                    final isLastInGroup = !nextIsSameUser;
+                    final isSingle = isFirstInGroup && isLastInGroup;
+                    return GestureDetector(
+                      onLongPress: () => _showReactionPicker(context),
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                            top: isFirstInGroup ? 8 : 1, bottom: 1),
+                        child: Align(
+                          alignment: isSelf
+                              ? Alignment.centerRight
+                              : Alignment.centerLeft,
+                          child: Column(
+                            crossAxisAlignment: isSelf
+                                ? CrossAxisAlignment.end
+                                : CrossAxisAlignment.start,
+                            children: [
+                              if (!isSelf && isFirstInGroup)
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 4),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 10,
+                                        backgroundColor: cs.surfaceContainer
+                                            .withValues(alpha: 0.4),
+                                        backgroundImage: msg.avatarUrl != null
+                                            ? NetworkImage(msg.avatarUrl!)
+                                            : null,
+                                        child: msg.avatarUrl == null
+                                            ? Icon(Icons.person,
+                                                size: 12,
+                                                color: cs.onSurface
+                                                    .withOpacity(0.6))
+                                            : null,
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        msg.username,
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins-SemiBold',
+                                          fontSize: 10,
+                                          color: cs.primary,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(width: 6),
-                                  Text(
-                                    msg.username,
-                                    style: TextStyle(
-                                      fontFamily: 'Poppins-SemiBold',
-                                      fontSize: 10,
-                                      color: cs.primary,
-                                    ),
+                                ),
+                              Container(
+                                constraints: BoxConstraints(
+                                  maxWidth:
+                                      MediaQuery.of(context).size.width * 0.45,
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 14, vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: isSelf
+                                      ? cs.primary.withValues(alpha: 0.2)
+                                      : cs.surfaceContainerHighest
+                                          .opaque(0.35, iReallyMeanIt: true),
+                                  borderRadius: _bubbleRadius(
+                                    isSelf: isSelf,
+                                    isFirst: isFirstInGroup,
+                                    isLast: isLastInGroup,
+                                    isSingle: isSingle,
                                   ),
-                                ],
+                                  border: Border.all(
+                                    color: isSelf
+                                        ? cs.primary.withValues(alpha: 0.35)
+                                        : cs.onSurface
+                                            .opaque(0.08, iReallyMeanIt: true),
+                                    width: 0.5,
+                                  ),
+                                ),
+                                child: Text(
+                                  msg.text,
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    fontSize: 13,
+                                    color: cs.onSurface,
+                                  ),
+                                ),
                               ),
-                            ),
-                          Container(
-                            constraints: BoxConstraints(
-                              maxWidth:
-                                  MediaQuery.of(context).size.width * 0.45,
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 14, vertical: 10),
-                            decoration: BoxDecoration(
-                              color: isSelf
-                                  ? cs.primary.withValues(alpha: 0.2)
-                                  : cs.surfaceContainerHighest
-                                      .opaque(0.35, iReallyMeanIt: true),
-                              borderRadius: _bubbleRadius(
-                                isSelf: isSelf,
-                                isFirst: isFirstInGroup,
-                                isLast: isLastInGroup,
-                                isSingle: isSingle,
-                              ),
-                              border: Border.all(
-                                color: isSelf
-                                    ? cs.primary.withValues(alpha: 0.35)
-                                    : cs.onSurface
-                                        .opaque(0.08, iReallyMeanIt: true),
-                                width: 0.5,
-                              ),
-                            ),
-                            child: Text(
-                              msg.text,
-                              style: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontSize: 13,
-                                color: cs.onSurface,
-                              ),
-                            ),
+                            ],
                           ),
-                        ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 8,
+                  child: IgnorePointer(
+                    ignoring: !_showJumpToBottom,
+                    child: AnimatedOpacity(
+                      opacity: _showJumpToBottom ? 1.0 : 0.0,
+                      duration: const Duration(milliseconds: 150),
+                      child: Center(
+                        child: GestureDetector(
+                          onTap: _jumpToBottom,
+                          child: Container(
+                            width: 36,
+                            height: 36,
+                            decoration: BoxDecoration(
+                              color: cs.primary,
+                              borderRadius: BorderRadius.circular(18),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.3),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Icon(Icons.keyboard_arrow_down_rounded,
+                                color: cs.onPrimary, size: 22),
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                );
-              },
+                ),
+              ],
             );
           }),
         ),
@@ -555,6 +655,42 @@ class _WatchiumPartyPopupContentState
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildReactionBubble(ColorScheme cs, WatchiumReaction r) {
+    final isSelf = r.userId == widget.watchium.currentUserId;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Align(
+        alignment: isSelf ? Alignment.centerRight : Alignment.centerLeft,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: cs.primary.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: cs.primary.withValues(alpha: 0.25),
+              width: 0.5,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(r.emoji, style: const TextStyle(fontSize: 18)),
+              const SizedBox(width: 6),
+              Text(
+                r.username,
+                style: TextStyle(
+                  fontFamily: 'Poppins-SemiBold',
+                  fontSize: 11,
+                  color: cs.primary,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
