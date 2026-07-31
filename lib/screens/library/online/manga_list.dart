@@ -10,6 +10,7 @@ import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/media_items/media_item.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/common/cards/card_gate.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:anymex/database/kv_helper.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
@@ -690,16 +691,23 @@ class _AnilistMangaListState extends State<AnilistMangaList>
               );
             }
 
+            final crossAxisCount = getResponsiveCrossAxisVal(
+                MediaQuery.of(context).size.width,
+                itemWidth: 115);
+
             return GridView.builder(
               key: ValueKey('$tab-$_sortMode-$_sortAscending-$_searchQuery-${_selectedGenres.join(",")}'),
               padding: const EdgeInsets.all(10),
               physics: const BouncingScrollPhysics(),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: getResponsiveCrossAxisVal(
-                      MediaQuery.of(context).size.width,
-                      itemWidth: 108),
-                  mainAxisExtent: 250,
-                  crossAxisSpacing: 10),
+                  crossAxisCount: crossAxisCount,
+                  childAspectRatio: getGridCardAspectRatio(
+                    context: context,
+                    crossAxisCount: crossAxisCount,
+                    spacing: 10,
+                    padding: 20,
+                  ),
+                  mainAxisSpacing: 10),
               itemCount: items.length,
               itemBuilder: (context, index) {
                 final item = items[index];

@@ -8,6 +8,7 @@ import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/media_items/media_item.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/common/cards/card_gate.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:anymex/database/kv_helper.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
@@ -87,9 +88,11 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    final savedSortModeIndex = KvHelper.get<int>('online_anime_sort_mode', defaultVal: _SortMode.lastUpdated.index);
+    final savedSortModeIndex = KvHelper.get<int>('online_anime_sort_mode',
+        defaultVal: _SortMode.lastUpdated.index);
     _sortMode = _SortMode.values[savedSortModeIndex];
-    _sortAscending = KvHelper.get<bool>('online_anime_sort_ascending', defaultVal: false);
+    _sortAscending =
+        KvHelper.get<bool>('online_anime_sort_ascending', defaultVal: false);
     if (widget.initialGenres != null) {
       _selectedGenres = Set.from(widget.initialGenres!);
     }
@@ -303,7 +306,8 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
                       onPressed: () {
                         setState(() {
                           _sortAscending = !_sortAscending;
-                          KvHelper.set('online_anime_sort_ascending', _sortAscending);
+                          KvHelper.set(
+                              'online_anime_sort_ascending', _sortAscending);
                         });
                         Navigator.pop(context);
                       },
@@ -377,8 +381,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
           mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
               child: Row(
                 children: [
                   Icon(Iconsax.filter, color: colors.primary, size: 20),
@@ -395,8 +398,8 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
                     TextButton(
                       onPressed: () =>
                           setSheetState(() => tempSelected.clear()),
-                      child: const Text('Clear',
-                          style: TextStyle(fontSize: 12)),
+                      child:
+                          const Text('Clear', style: TextStyle(fontSize: 12)),
                     ),
                 ],
               ),
@@ -447,14 +450,12 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
               ),
             ),
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
               child: SizedBox(
                 width: double.infinity,
                 child: FilledButton(
                   onPressed: () {
-                    setState(
-                        () => _selectedGenres = Set.from(tempSelected));
+                    setState(() => _selectedGenres = Set.from(tempSelected));
                     Navigator.pop(ctx);
                   },
                   style: FilledButton.styleFrom(
@@ -680,7 +681,8 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
 
             if (items.isEmpty) {
               return Center(
-                key: ValueKey('empty-$tab-$_sortMode-$_sortAscending-$_searchQuery-${_selectedGenres.join(",")}'),
+                key: ValueKey(
+                    'empty-$tab-$_sortMode-$_sortAscending-$_searchQuery-${_selectedGenres.join(",")}'),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -700,16 +702,24 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
               );
             }
 
+            final crossAxisCount = getResponsiveCrossAxisVal(
+                MediaQuery.of(context).size.width,
+                itemWidth: 115);
+
             return GridView.builder(
-              key: ValueKey('$tab-$_sortMode-$_sortAscending-$_searchQuery-${_selectedGenres.join(",")}'),
+              key: ValueKey(
+                  '$tab-$_sortMode-$_sortAscending-$_searchQuery-${_selectedGenres.join(",")}'),
               padding: const EdgeInsets.all(10),
               physics: const BouncingScrollPhysics(),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: getResponsiveCrossAxisVal(
-                      MediaQuery.of(context).size.width,
-                      itemWidth: 108),
-                  mainAxisExtent: 250,
-                  crossAxisSpacing: 10),
+                  crossAxisCount: crossAxisCount,
+                  mainAxisSpacing: 10,
+                  childAspectRatio: getGridCardAspectRatio(
+                    context: context,
+                    crossAxisCount: crossAxisCount,
+                    spacing: 10,
+                    padding: 20,
+                  )),
               itemCount: items.length,
               itemBuilder: (context, index) {
                 final item = items[index];

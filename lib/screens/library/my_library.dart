@@ -296,15 +296,26 @@ class _LibraryContent extends StatelessWidget {
         crossAxisCount: crossAxisCount,
         crossAxisSpacing: crossAxisSpacing,
         mainAxisSpacing: 20,
-        childAspectRatio: 2 / 3,
+        childAspectRatio: getGridCardAspectRatio(
+          context: context,
+          crossAxisCount: crossAxisCount,
+          spacing: crossAxisSpacing,
+          padding: horizontalPadding,
+        ),
       );
     }
 
+    final crossCount = math.max(1, controller.gridCount.value);
     return SliverGridDelegateWithFixedCrossAxisCount(
-      crossAxisCount: math.max(1, controller.gridCount.value),
+      crossAxisCount: crossCount,
       crossAxisSpacing: 0,
       mainAxisSpacing: 10,
-      childAspectRatio: 2 / 3,
+      childAspectRatio: getGridCardAspectRatio(
+        context: context,
+        crossAxisCount: crossCount,
+        spacing: 0,
+        padding: 32.0,
+      ),
     );
   }
 

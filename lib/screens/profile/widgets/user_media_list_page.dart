@@ -13,6 +13,7 @@ import 'package:anymex/widgets/media_items/media_item.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/common/cards/card_gate.dart';
 import 'package:iconsax/iconsax.dart';
 
 const _animeStandardOrder = [
@@ -771,16 +772,23 @@ class _UserMediaListPageState extends State<UserMediaListPage>
               );
             }
 
+            final crossAxisCount = getResponsiveCrossAxisVal(
+                MediaQuery.of(context).size.width,
+                itemWidth: 115);
+
             return GridView.builder(
               padding: const EdgeInsets.all(10),
               physics: const BouncingScrollPhysics(),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: getResponsiveCrossAxisVal(
-                  MediaQuery.of(context).size.width,
-                  itemWidth: 108,
+                crossAxisCount: crossAxisCount,
+                childAspectRatio: getGridCardAspectRatio(
+                  context: context,
+                  crossAxisCount: crossAxisCount,
+                  spacing: 10,
+                  padding: 20,
                 ),
-                mainAxisExtent: 250,
                 crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
               ),
               itemCount: items.length,
               itemBuilder: (context, index) {
