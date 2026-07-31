@@ -46,7 +46,7 @@ double getGridCardAspectRatio({
   final columnWidth = (screenWidth - padding - (spacing * (crossAxisCount - 1))) / crossAxisCount;
   final extraHeight = MediaCardRegistry.getExtraHeightByIndex(style.index, desktop);
   
-  final cellHeight = columnWidth * 1.5 + extraHeight;
+  final cellHeight = columnWidth * 1.4 + extraHeight;
   return columnWidth / cellHeight;
 }
 

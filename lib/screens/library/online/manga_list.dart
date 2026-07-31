@@ -701,6 +701,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
               physics: const BouncingScrollPhysics(),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: crossAxisCount,
+                  crossAxisSpacing: 5,
                   childAspectRatio: getGridCardAspectRatio(
                     context: context,
                     crossAxisCount: crossAxisCount,
@@ -711,7 +712,11 @@ class _AnilistMangaListState extends State<AnilistMangaList>
               itemCount: items.length,
               itemBuilder: (context, index) {
                 final item = items[index];
-                return GridAnimeCard(data: item, isManga: true);
+                return GridAnimeCard(
+                  data: item,
+                  isManga: true,
+                  variant: CardVariant.onlinelist,
+                );
               },
             );
           }).toList(),

@@ -714,6 +714,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: crossAxisCount,
                   mainAxisSpacing: 10,
+                  crossAxisSpacing: 5,
                   childAspectRatio: getGridCardAspectRatio(
                     context: context,
                     crossAxisCount: crossAxisCount,
@@ -723,7 +724,11 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
               itemCount: items.length,
               itemBuilder: (context, index) {
                 final item = items[index];
-                return GridAnimeCard(data: item, isManga: false);
+                return GridAnimeCard(
+                  data: item,
+                  isManga: false,
+                  variant: CardVariant.onlinelist,
+                );
               },
             );
           }).toList(),
