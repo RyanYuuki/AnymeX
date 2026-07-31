@@ -20,6 +20,16 @@ class Chapter {
   List<String>? headerKeys;
   List<String>? headerValues;
 
+  String get formattedNumber {
+    if (number == null) return '-';
+    if (number! % 1 == 0) return number!.toInt().toString();
+    String str = number!.toStringAsFixed(4);
+    while (str.contains('.') && (str.endsWith('0') || str.endsWith('.'))) {
+      str = str.substring(0, str.length - 1);
+    }
+    return str;
+  }
+
   Chapter(
       {this.link,
       this.title,

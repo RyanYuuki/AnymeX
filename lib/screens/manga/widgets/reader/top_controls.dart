@@ -95,7 +95,11 @@ class ReaderTopControls extends StatelessWidget {
   String _formatNumber(double? number) {
     if (number == null) return '-';
     if (number % 1 == 0) return number.toInt().toString();
-    return number.toString();
+    String str = number.toStringAsFixed(4);
+    while (str.contains('.') && (str.endsWith('0') || str.endsWith('.'))) {
+      str = str.substring(0, str.length - 1);
+    }
+    return str;
   }
 
   Widget _buildChapterInfo(BuildContext context) {
@@ -222,7 +226,11 @@ class ReaderTopControls extends StatelessWidget {
               ? 'Loading...'
               : controller.loadingState.value == LoadingState.error
                   ? 'Error loading pages'
-                  : 'Page ${controller.currentPageIndex.value} of ${controller.pageList.length}',
+                  : (controller.currentSpreadIndex.value >= 0 &&
+                          controller.currentSpreadIndex.value < controller.spreads.length &&
+                          controller.spreads[controller.currentSpreadIndex.value].isTransition)
+                      ? 'Chapter Transition'
+                      : 'Page ${controller.currentPageIndex.value} of ${controller.pageList.length}',
           style: TextStyle(
             color: context.colors.onSurface.opaque(0.9),
             fontSize: 11,
@@ -282,7 +290,11 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
   String _formatNumber(double? number) {
     if (number == null) return '-';
     if (number % 1 == 0) return number.toInt().toString();
-    return number.toString();
+    String str = number.toStringAsFixed(4);
+    while (str.contains('.') && (str.endsWith('0') || str.endsWith('.'))) {
+      str = str.substring(0, str.length - 1);
+    }
+    return str;
   }
 
   @override
