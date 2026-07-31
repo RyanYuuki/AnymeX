@@ -206,7 +206,7 @@ class _WatchiumCreateDialogState extends State<WatchiumCreateDialog> {
         episodeNumber: int.tryParse(episode.number) ?? 1,
         anilistId: int.tryParse(anilistData.id),
         malId: int.tryParse(anilistData.idMal),
-        animeCoverImage: anilistData.cover ?? anilistData.poster,
+        animeCoverImage: anilistData.largePoster != '?' ? anilistData.largePoster : anilistData.poster,
         availableServers: servers,
       );
 
