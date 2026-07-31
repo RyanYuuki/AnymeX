@@ -14,6 +14,7 @@ import 'package:anymex/screens/anime/watch/controls/widgets/subtitle_text.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/tracks_popup.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/source_popup.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/speed_popup.dart';
+import 'package:anymex/widgets/watchium/watchium_live_overlays.dart';
 import 'package:anymex/widgets/watchium/watchium_overlay.dart';
 import 'package:anymex/widgets/watchium/watchium_party_popup.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/sync_subs_popup.dart';
@@ -193,6 +194,8 @@ class _WatchScreenState extends State<WatchScreen> {
                 child: WatchiumPartyPopup(),
               ),
               const WatchiumOverlay(),
+              const WatchiumCommentOverlay(),
+              const WatchiumReactionOverlay(),
             ],
           ],
         );
