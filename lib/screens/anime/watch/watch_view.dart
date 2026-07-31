@@ -23,6 +23,26 @@ import 'package:anymex/screens/anime/watch/controls/widgets/shader_osd.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+class _WatchiumOverlays extends StatelessWidget {
+  const _WatchiumOverlays();
+
+  @override
+  Widget build(BuildContext context) {
+    try {
+      final watchium = Get.find<WatchiumService>();
+      if (!watchium.inRoom.value) return const SizedBox.shrink();
+    } catch (_) {
+      return const SizedBox.shrink();
+    }
+    return const Stack(
+      children: [
+        WatchiumCommentOverlay(),
+        WatchiumReactionOverlay(),
+      ],
+    );
+  }
+}
+
 class WatchScreen extends StatefulWidget {
   final model.Video episodeSrc;
   final Episode currentEpisode;
@@ -194,8 +214,7 @@ class _WatchScreenState extends State<WatchScreen> {
                 child: WatchiumPartyPopup(),
               ),
               const WatchiumOverlay(),
-              const WatchiumCommentOverlay(),
-              const WatchiumReactionOverlay(),
+              const _WatchiumOverlays(),
             ],
           ],
         );
