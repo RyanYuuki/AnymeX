@@ -32,6 +32,7 @@ class _WatchiumOverlays extends StatelessWidget {
       try {
         final watchium = Get.find<WatchiumService>();
         if (!watchium.inRoom.value) return const SizedBox.shrink();
+        if (watchium.isPartyPaneOpened.value) return const SizedBox.shrink();
       } catch (_) {
         return const SizedBox.shrink();
       }
