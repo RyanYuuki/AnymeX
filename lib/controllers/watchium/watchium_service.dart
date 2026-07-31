@@ -326,6 +326,12 @@ class WatchiumService extends GetxController {
       // If this is a join rejection, fail the completer and clear stale state
       if (errCode == 'JOIN_FAILED') {
         _failJoinCompleter(errMsg);
+        // If no completer was pending, this was an auto-rejoin after reconnect.
+        // The room is gone — clear all stale state so the UI reflects reality.
+        if (_joinCompleter == null && roomState.value != null) {
+          Logger.w('Auto-rejoin failed, clearing stale room state', 'WATCHIUM');
+          _leaveRoomInternal();
+        }
       }
     });
 
