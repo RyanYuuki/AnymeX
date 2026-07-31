@@ -8,6 +8,7 @@ import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_tabbar.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -666,7 +667,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
                   child: OutlinedButton.icon(
                     onPressed: () {
                       Clipboard.setData(ClipboardData(text: code));
-                      Get.snackbar('Copied', 'Room code copied to clipboard');
+                      successSnackBar('Room code copied to clipboard', title: 'Copied');
                     },
                     style: OutlinedButton.styleFrom(
                       foregroundColor: cs.primary,
@@ -689,7 +690,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
                   child: FilledButton.icon(
                     onPressed: () {
                       Clipboard.setData(ClipboardData(text: shareUrl));
-                      Get.snackbar('Copied', 'Invite link copied!');
+                      successSnackBar('Invite link copied!', title: 'Copied');
                     },
                     style: FilledButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 12),
