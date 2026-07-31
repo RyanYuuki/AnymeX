@@ -26,6 +26,7 @@ import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex_extension_runtime_bridge/Services/Aniyomi/Models/Source.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
+import 'package:anymex_extension_runtime_bridge/Services/CloudStream/CloudStreamSourceMethods.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -167,10 +168,18 @@ class _EpisodeSectionState extends State<EpisodeSection> {
     }
   }
 
-  void openSourcePreferences(BuildContext context) {
+  void openSourcePreferences(BuildContext context) async {
+    final active = sourceController.activeSource.value;
+    if (active == null) return;
+    if (active is CloudStreamSource) {
+      if (active.hasSettings) {
+        await CloudStreamSourceMethods(active).openNativeSettings();
+      }
+      return;
+    }
     navigate(
       () => SourcePreferenceScreen(
-        source: sourceController.activeSource.value!,
+        source: active,
       ),
     );
   }

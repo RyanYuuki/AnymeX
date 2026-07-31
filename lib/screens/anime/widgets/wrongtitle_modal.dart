@@ -2,7 +2,6 @@ import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/source/source_mapper.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
@@ -10,6 +9,11 @@ import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
+import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/widgets/common/cards/card_gate.dart';
+import 'package:anymex/models/models_convertor/carousel_mapper.dart';
+import 'package:anymex/utils/function.dart';
+import 'package:anymex/widgets/common/cards/base_card.dart';
 
 class WrongTitleModal extends StatefulWidget {
   const WrongTitleModal({
@@ -131,26 +135,28 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                       );
                     }
 
-                    final url = Uri.tryParse(
-                      sourceController.activeMangaSource.value?.baseUrl ?? '',
-                    );
-
-                    final origin =
-                        (url != null && url.hasScheme && url.host.isNotEmpty)
-                            ? url.origin
-                            : 'https://google.com';
-
+                    final crossAxisCount = getResponsiveCrossAxisCount(context,
+                        maxColumns: 5, baseColumns: 3);
                     return GridView.builder(
                       padding: const EdgeInsets.all(20),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: getResponsiveCrossAxisCount(context,
-                              maxColumns: 5, baseColumns: 3),
-                          crossAxisSpacing: 20,
-                          childAspectRatio: 0.45,
-                          mainAxisSpacing: 0),
+                          crossAxisCount: crossAxisCount,
+                          crossAxisSpacing: 10,
+                          childAspectRatio: getGridCardAspectRatio(
+                            context: context,
+                            crossAxisCount: crossAxisCount,
+                            spacing: 10,
+                            padding: 40,
+                          ),
+                          mainAxisSpacing: 10),
                       itemCount: results.length,
                       itemBuilder: (context, index) {
                         final item = results[index];
+                        if (item == null) return const SizedBox.shrink();
+                        final carouselData = item.toCarouselData();
+                        final itemType = widget.isNovel ? ItemType.novel : (widget.isManga ? ItemType.manga : ItemType.anime);
+                        final heroTag = '${item.url}-$index-wrong-title';
+
                         return AnymexOnTap(
                           onTap: () {
                             SourceMapper.interruptMapping();
@@ -166,33 +172,12 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                             widget.onTap(item);
                             Get.back();
                           },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                AspectRatio(
-                                  aspectRatio: 2/ 3,
-                                  child: AnymeXImage(
-                                    imageUrl: item!.cover ?? "",
-                                    radius: 12,
-                                    width: double.infinity,
-                                    headers: {
-                                      'Referer': '$origin/',
-                                      'Origin': origin,
-                                    },
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                AnymexText(
-                                  text:  item.title ?? '??',
-                                  maxLines: 3 ,
-                                  variant: TextVariant.semiBold,
-                                )
-                              ],
-                            ),
+                          child: MediaCardGate(
+                            itemData: carouselData,
+                            tag: heroTag,
+                            variant: DataVariant.regular,
+                            type: itemType,
+                            cardStyle: CardStyle.values[settingsController.cardStyle],
                           ),
                         );
                       },
