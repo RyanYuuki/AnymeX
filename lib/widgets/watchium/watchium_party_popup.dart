@@ -3,6 +3,7 @@ import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/watchium/watchium_party_settings.dart';
 
 import 'dart:io' show Platform;
 
@@ -54,6 +55,7 @@ class _WatchiumPartyPopupContent extends StatefulWidget {
 class _WatchiumPartyPopupContentState
     extends State<_WatchiumPartyPopupContent> {
   _PartyTab _currentTab = _PartyTab.chat;
+  bool _showSettings = false;
   late final TextEditingController _chatController;
   final FocusNode _chatFocusNode = FocusNode();
   final ScrollController _chatScrollController = ScrollController();
@@ -131,15 +133,23 @@ class _WatchiumPartyPopupContentState
     final cs = theme.colorScheme;
 
     return Column(
-      children: [
-        _buildHeader(cs, theme),
-        _buildTabBar(cs, theme),
-        Expanded(
-          child: _currentTab == _PartyTab.chat
-              ? _buildChat(cs, theme)
-              : _buildMembersList(cs, theme),
-        ),
-      ],
+      children: _showSettings
+          ? [
+              Expanded(
+                child: WatchiumPartySettings(
+                  onBack: () => setState(() => _showSettings = false),
+                ),
+              ),
+            ]
+          : [
+              _buildHeader(cs, theme),
+              _buildTabBar(cs, theme),
+              Expanded(
+                child: _currentTab == _PartyTab.chat
+                    ? _buildChat(cs, theme)
+                    : _buildMembersList(cs, theme),
+              ),
+            ],
     );
   }
 
@@ -198,6 +208,20 @@ class _WatchiumPartyPopupContentState
                 border: Border.all(color: cs.error.withOpacity(0.2)),
               ),
               child: Icon(Icons.exit_to_app, size: 20, color: cs.error),
+            ),
+          ),
+          const SizedBox(width: 8),
+          GestureDetector(
+            onTap: () => setState(() => _showSettings = true),
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: cs.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: cs.primary.withOpacity(0.2)),
+              ),
+              child: Icon(Icons.settings_rounded,
+                  size: 20, color: cs.primary),
             ),
           ),
           const SizedBox(width: 8),

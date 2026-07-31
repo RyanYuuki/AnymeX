@@ -5,6 +5,7 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/watchium/watchium_models.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/logger.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -239,6 +240,7 @@ class WatchiumService extends GetxController {
         isHost.value = nowHost;
         Logger.i('Host role changed: isHost=$nowHost', 'WATCHIUM');
       }
+      _handleMemberChanges(current.members, members);
       Logger.d('party:member received, ${members.length} members', 'WATCHIUM');
     });
 
@@ -295,6 +297,32 @@ class WatchiumService extends GetxController {
 
     _socket!.connect();
     Logger.d('Socket connect() called', 'WATCHIUM');
+  }
+
+  /// Notify (via snackbar) when a member joins or leaves the room,
+  /// depending on the user's notification settings.
+  void _handleMemberChanges(
+      List<WatchiumMember> oldMembers, List<WatchiumMember> newMembers) {
+    if (oldMembers.isEmpty || newMembers.isEmpty) return;
+    final oldIds = oldMembers.map((m) => m.userId).toSet();
+    final newIds = newMembers.map((m) => m.userId).toSet();
+
+    if (WatchiumKeys.notifyOnMemberJoin.get<bool>(true)) {
+      for (final m in newMembers) {
+        if (!oldIds.contains(m.userId) && m.userId != _userId) {
+          infoSnackBar('${m.username} joined the party',
+              title: 'New member');
+        }
+      }
+    }
+
+    if (WatchiumKeys.notifyOnMemberLeave.get<bool>(true)) {
+      for (final m in oldMembers) {
+        if (!newIds.contains(m.userId) && m.userId != _userId) {
+          infoSnackBar('${m.username} left the party', title: 'Member left');
+        }
+      }
+    }
   }
 
   /// Fail the current join completer (if any) and clean up pending join state.
