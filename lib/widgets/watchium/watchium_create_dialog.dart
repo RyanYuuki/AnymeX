@@ -27,6 +27,7 @@ class _WatchiumCreateDialogState extends State<WatchiumCreateDialog> {
   bool _joinMode = false;
   double _maxMembers = 10;
   String _password = '';
+  bool _isPrivate = false;
   bool _obscurePassword = true;
 
   @override
@@ -142,21 +143,44 @@ class _WatchiumCreateDialogState extends State<WatchiumCreateDialog> {
                 onChanged: (v) => setState(() => _maxMembers = v),
               ),
               const SizedBox(height: 8),
-              // Password field
-              TextField(
-                onChanged: (v) => _password = v,
-                decoration: InputDecoration(
-                  labelText: 'Password (optional)',
-                  hintText: 'Leave empty for public room',
-                  prefixIcon: const Icon(Icons.lock_outline),
-                  border: const OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, size: 18),
-                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+              // Private room toggle
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                dense: true,
+                title: const Row(
+                  children: [
+                    Icon(Icons.lock_outline, size: 18),
+                    SizedBox(width: 8),
+                    Text('Private Room'),
+                  ],
+                ),
+                value: _isPrivate,
+                onChanged: (v) => setState(() {
+                  _isPrivate = v;
+                  if (!v) _password = '';
+                }),
+              ),
+              // Password field — only when private toggle is ON
+              if (_isPrivate) ...[
+                const SizedBox(height: 4),
+                AnimatedSize(
+                  duration: const Duration(milliseconds: 200),
+                  child: TextField(
+                    onChanged: (v) => _password = v,
+                    decoration: InputDecoration(
+                      labelText: 'Room Password',
+                      hintText: 'Set a password for your room',
+                      prefixIcon: const Icon(Icons.password, size: 18),
+                      border: const OutlineInputBorder(),
+                      suffixIcon: IconButton(
+                        icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, size: 18),
+                        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                      ),
+                    ),
+                    obscureText: _obscurePassword,
                   ),
                 ),
-                obscureText: _obscurePassword,
-              ),
+              ],
               const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(12),
