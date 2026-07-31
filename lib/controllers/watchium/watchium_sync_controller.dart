@@ -7,6 +7,9 @@ import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:get/get.dart';
 
+/// How far off (seconds) before showing the "not synced" indicator.
+const _syncDriftThreshold = 5.0;
+
 class WatchiumSyncController extends GetxController {
   final PlayerController playerController;
 
@@ -24,6 +27,9 @@ class WatchiumSyncController extends GetxController {
   String _lastSyncedEpisodeNumber = '';
   double _lastHostPositionSec = 0.0;
   bool _listenersSetupForHost = false;
+
+  /// Whether the user is currently out of sync with the host.
+  final RxBool isOutOfSync = false.obs;
 
   @override
   void onInit() {
@@ -114,12 +120,9 @@ class WatchiumSyncController extends GetxController {
     // Watch roomState for playback sync
     _roomStateWorker = ever(_watchium.roomState, (state) {
       if (state == null) return;
-      if (!state.onlyHostControls) return;
 
       final playback = state.playback;
       if (playback == null) return;
-
-      _applyPlaybackSync(playback);
 
       // Detect content (episode) change from host
       final content = state.content;
@@ -131,7 +134,48 @@ class WatchiumSyncController extends GetxController {
           _updateJoinerTracks(content);
         }
       }
+
+      // Free-watch mode: show indicator if out of sync, don't auto-correct
+      _checkSyncStatus(playback);
     });
+  }
+
+  /// Free-watch: check if local playback has drifted from host position.
+  /// Sets [isOutOfSync] but does NOT auto-correct.
+  void _checkSyncStatus(WatchiumPlayback playback) {
+    if (_applyingSync) return;
+    final hostPos = playback.positionSec;
+    final localPos = playerController.currentPosition.value.inSeconds;
+    final diff = (hostPos - localPos).abs();
+    final wasOutOfSync = isOutOfSync.value;
+    isOutOfSync.value = diff > _syncDriftThreshold;
+    if (isOutOfSync.value && !wasOutOfSync) {
+      Logger.d('WatchiumSync: Out of sync (diff=${diff.toStringAsFixed(1)}s)', 'WATCHIUM_SYNC');
+    }
+  }
+
+  /// Called when the user taps "Sync to Host".
+  /// Seeks to the host's current position and clears the out-of-sync flag.
+  void syncToHost() {
+    final playback = _watchium.roomState.value?.playback;
+    if (playback == null) {
+      Logger.w('syncToHost: no playback data', 'WATCHIUM_SYNC');
+      return;
+    }
+    _applyingSync = true;
+    try {
+      final hostPos = playback.positionSec;
+      Logger.i('WatchiumSync: Manual sync to host at ${hostPos.toStringAsFixed(1)}s', 'WATCHIUM_SYNC');
+      playerController.seekTo(Duration(seconds: hostPos.round()));
+      if (playback.isPlaying && !playerController.isPlaying.value) {
+        playerController.play();
+      } else if (!playback.isPlaying && playerController.isPlaying.value) {
+        playerController.pause();
+      }
+      isOutOfSync.value = false;
+    } finally {
+      Future.microtask(() => _applyingSync = false);
+    }
   }
 
   void _applyPlaybackSync(WatchiumPlayback playback) {
@@ -157,8 +201,6 @@ class WatchiumSyncController extends GetxController {
         playerController.seekTo(Duration(seconds: hostPos.round()));
       }
     } finally {
-      // Use a microtask to reset the flag after the current event loop tick
-      // so the player state changes triggered above don't cause re-emission
       Future.microtask(() => _applyingSync = false);
     }
   }
@@ -233,6 +275,7 @@ class WatchiumSyncController extends GetxController {
 
   @override
   void onClose() {
+    isOutOfSync.close();
     _isHostWorker?.dispose();
     _teardownRoleListeners();
     Logger.d('WatchiumSync: onClose', 'WATCHIUM_SYNC');

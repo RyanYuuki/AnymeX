@@ -764,7 +764,9 @@ class _WatchiumPartyPopupContentState
         itemBuilder: (context, index) {
           final member = state.members[index];
           final isSelf = member.userId == widget.watchium.currentUserId;
-          final canKick = isHost && !isSelf;
+          final isCohost = member.role == 'cohost';
+          final canKick = (isHost || isCohost) && !isSelf && member.role != 'host';
+          final canManage = isHost && !isSelf && member.role != 'host';
 
           return Padding(
             padding: const EdgeInsets.only(bottom: 8),
@@ -836,22 +838,23 @@ class _WatchiumPartyPopupContentState
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                            if (member.role == 'host') ...[
+                            if (member.role == 'host' || isCohost) ...[
                               const SizedBox(width: 6),
                               Container(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 6, vertical: 2),
                                 decoration: BoxDecoration(
-                                  color: cs.primary
-                                      .opaque(0.15, iReallyMeanIt: true),
+                                  color: isCohost
+                                      ? Colors.orange
+                                      : cs.primary,
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
-                                  'HOST',
+                                  isCohost ? 'CO-HOST' : 'HOST',
                                   style: TextStyle(
                                     fontFamily: 'Poppins-SemiBold',
                                     fontSize: 10,
-                                    color: cs.primary,
+                                    color: isCohost ? Colors.orange : cs.primary,
                                   ),
                                 ),
                               ),
@@ -872,7 +875,60 @@ class _WatchiumPartyPopupContentState
                       ],
                     ),
                   ),
-                  if (canKick)
+                  if (canManage)
+                    PopupMenuButton<String>(
+                      icon: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: cs.surfaceContainerHighest
+                              .opaque(0.5, iReallyMeanIt: true),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(Icons.more_vert, size: 18, color: cs.onSurface),
+                      ),
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          value: 'kick',
+                          child: const Row(
+                            children: [
+                              Icon(Icons.person_remove_rounded, color: Colors.red, size: 18),
+                              SizedBox(width: 10),
+                              Text('Remove Member'),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: 'transfer',
+                          child: const Row(
+                            children: [
+                              Icon(Icons.crown, color: Colors.amber, size: 18),
+                              SizedBox(width: 10),
+                              Text('Transfer Host'),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: member.role == 'cohost' ? 'demote' : 'promote',
+                          child: Row(
+                            children: [
+                              Icon(
+                                member.role == 'cohost'
+                                    ? Icons.remove_circle_outline
+                                    : Icons.shield,
+                                color: Colors.orange,
+                                size: 18,
+                              ),
+                              SizedBox(width: 10),
+                              Text(
+                                member.role == 'cohost' ? 'Remove Co-host' : 'Make Co-host',
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+ onSelected: (value) => _handleMemberAction(value, member),
+                    )
+                  else if (canKick)
                     GestureDetector(
                       onTap: () => _confirmKick(member),
                       child: Container(
@@ -892,6 +948,49 @@ class _WatchiumPartyPopupContentState
         },
       );
     });
+  }
+
+  void _handleMemberAction(String action, WatchiumMember member) {
+    switch (action) {
+      case 'kick':
+        _confirmKick(member);
+        break;
+      case 'transfer':
+        _confirmTransferHost(member);
+        break;
+      case 'promote':
+        widget.watchium.promoteCohost(member.userId);
+        break;
+      case 'demote':
+        widget.watchium.demoteCohost(member.userId);
+        break;
+    }
+  }
+
+  Future<void> _confirmTransferHost(WatchiumMember member) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Transfer host'),
+        content: Text('Make ${member.username} the new host? You\'ll become a regular member.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.amber.shade700,
+            ),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Transfer'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      widget.watchium.transferHost(member.userId);
+    }
   }
 
   Future<void> _confirmKick(WatchiumMember member) async {

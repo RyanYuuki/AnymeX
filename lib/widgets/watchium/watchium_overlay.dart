@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:anymex/controllers/watchium/watchium_service.dart';
+import 'package:anymex/controllers/watchium/watchium_sync_controller.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_titlebar.dart';
 import 'package:flutter/foundation.dart';
@@ -60,6 +61,45 @@ class WatchiumOverlay extends StatelessWidget {
                           const TextStyle(color: Colors.white70, fontSize: 12),
                     ),
                     const SizedBox(width: 8),
+                    // Sync to host button (joiners only, when out of sync)
+                    if (!watchium.isHost.value)
+                      GetBuilder<WatchiumSyncController>(
+                        builder: (syncCtrl) {
+                          if (!syncCtrl.isOutOfSync.value) {
+                            return const SizedBox.shrink();
+                          }
+                          return GestureDetector(
+                            onTap: () => syncCtrl.syncToHost(),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: Colors.orange.withValues(alpha: 0.3),
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(
+                                    color: Colors.orange.withValues(alpha: 0.6),
+                                    width: 1),
+                              ),
+                              child: const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.sync_problem,
+                                      color: Colors.orange, size: 14),
+                                  SizedBox(width: 4),
+                                  Text(
+                                    'Sync',
+                                    style: TextStyle(
+                                        color: Colors.orange, fontSize: 11),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      )
+                    else
+                      const SizedBox.shrink(),
+                    const SizedBox(width: 4),
                     GestureDetector(
                       onTap: () => _togglePartyPanel(context, watchium),
                       child: Container(

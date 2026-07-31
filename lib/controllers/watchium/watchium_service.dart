@@ -604,6 +604,46 @@ class WatchiumService extends GetxController {
     });
   }
 
+  // ---- Transfer Host ----
+
+  void transferHost(String targetUserId) {
+    if (_currentRoomCode == null || !_isHost) {
+      Logger.w('transferHost skipped: not in room or not host', 'WATCHIUM');
+      return;
+    }
+    Logger.i('transferHost: target=$targetUserId', 'WATCHIUM');
+    _socket?.emit('party:transfer-host', {
+      'code': _currentRoomCode,
+      'targetUserId': targetUserId,
+    });
+  }
+
+  // ---- Co-host ----
+
+  void promoteCohost(String targetUserId) {
+    if (_currentRoomCode == null || !_isHost) {
+      Logger.w('promoteCohost skipped: not in room or not host', 'WATCHIUM');
+      return;
+    }
+    Logger.i('promoteCohost: target=$targetUserId', 'WATCHIUM');
+    _socket?.emit('party:promote-cohost', {
+      'code': _currentRoomCode,
+      'targetUserId': targetUserId,
+    });
+  }
+
+  void demoteCohost(String targetUserId) {
+    if (_currentRoomCode == null || !_isHost) {
+      Logger.w('demoteCohost skipped: not in room or not host', 'WATCHIUM');
+      return;
+    }
+    Logger.i('demoteCohost: target=$targetUserId', 'WATCHIUM');
+    _socket?.emit('party:demote-cohost', {
+      'code': _currentRoomCode,
+      'targetUserId': targetUserId,
+    });
+  }
+
   // ---- Content (Host sets anime) ----
 
   void setContent(WatchiumAnimeContent content) {
