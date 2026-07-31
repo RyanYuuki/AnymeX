@@ -23,7 +23,11 @@ class _WatchiumCreateDialogState extends State<WatchiumCreateDialog> {
   bool _isCreating = false;
   String? _error;
   String _joinCode = '';
+  String _joinPassword = '';
   bool _joinMode = false;
+  double _maxMembers = 10;
+  String _password = '';
+  bool _obscurePassword = true;
 
   @override
   Widget build(BuildContext context) {
@@ -89,6 +93,20 @@ class _WatchiumCreateDialogState extends State<WatchiumCreateDialog> {
                 ],
               ),
               const SizedBox(height: 12),
+              TextField(
+                onChanged: (v) => _joinPassword = v,
+                decoration: InputDecoration(
+                  labelText: 'Password (if required)',
+                  prefixIcon: const Icon(Icons.lock_outline),
+                  border: const OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, size: 18),
+                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                  ),
+                ),
+                obscureText: _obscurePassword,
+              ),
+              const SizedBox(height: 12),
               SizedBox(
                 width: double.infinity,
                 child: FilledButton.icon(
@@ -107,6 +125,39 @@ class _WatchiumCreateDialogState extends State<WatchiumCreateDialog> {
                 ),
               ),
             ] else ...[
+              // Max members slider
+              Row(
+                children: [
+                  const Icon(Icons.people_outline, size: 18),
+                  const SizedBox(width: 8),
+                  Text('Max members: ${_maxMembers.toInt()}', style: const TextStyle(fontSize: 13)),
+                ],
+              ),
+              Slider(
+                value: _maxMembers,
+                min: 2,
+                max: 50,
+                divisions: 48,
+                label: '${_maxMembers.toInt()}',
+                onChanged: (v) => setState(() => _maxMembers = v),
+              ),
+              const SizedBox(height: 8),
+              // Password field
+              TextField(
+                onChanged: (v) => _password = v,
+                decoration: InputDecoration(
+                  labelText: 'Password (optional)',
+                  hintText: 'Leave empty for public room',
+                  prefixIcon: const Icon(Icons.lock_outline),
+                  border: const OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, size: 18),
+                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                  ),
+                ),
+                obscureText: _obscurePassword,
+              ),
+              const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
@@ -119,7 +170,7 @@ class _WatchiumCreateDialogState extends State<WatchiumCreateDialog> {
                     SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'A room will be created. Share the code or link with friends.',
+                        'Share the code or link with friends.',
                         style: TextStyle(fontSize: 12),
                       ),
                     ),
@@ -208,6 +259,8 @@ class _WatchiumCreateDialogState extends State<WatchiumCreateDialog> {
         malId: int.tryParse(anilistData.idMal),
         animeCoverImage: anilistData.poster,
         availableServers: servers,
+        maxMembers: _maxMembers.toInt(),
+        password: _password.isEmpty ? null : _password,
       );
 
       if (code != null) {
@@ -250,7 +303,10 @@ class _WatchiumCreateDialogState extends State<WatchiumCreateDialog> {
 
     try {
       final watchium = Get.find<WatchiumService>();
-      final ok = await watchium.joinRoom(_joinCode);
+      final ok = await watchium.joinRoom(
+        _joinCode,
+        password: _joinPassword.isEmpty ? null : _joinPassword,
+      );
       if (ok && mounted) {
         Logger.i('Join room succeeded', 'WATCHIUM_UI');
         Navigator.pop(context);
@@ -284,6 +340,20 @@ class _WatchiumCreateDialogState extends State<WatchiumCreateDialog> {
                 style:
                     TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
+              if (_password.isNotEmpty) ...[
+                const SizedBox(height: 4),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.lock, size: 14, color: Colors.orange),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Private room',
+                      style: TextStyle(color: Colors.orange, fontSize: 12),
+                    ),
+                  ],
+                ),
+              ],
               const SizedBox(height: 16),
               const Text(
                 'Share this code with friends:',

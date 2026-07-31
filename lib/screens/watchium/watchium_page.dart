@@ -47,7 +47,9 @@ class _WatchiumPageState extends State<WatchiumPage> {
     if (mounted) setState(() => _isLoading = false);
   }
 
-  Future<void> _joinByCode() async {
+  String _password = '';
+
+  Future<void> _joinByCode({String? password}) async {
     final code = _joinCodeController.text.trim().toUpperCase();
     Logger.i('Join by code: $code', 'WATCHIUM_UI');
     if (code.length != 6) {
@@ -61,7 +63,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
       _error = null;
     });
 
-    final ok = await _watchium.joinRoom(code);
+    final ok = await _watchium.joinRoom(code, password: password);
     if (mounted) setState(() => _isLoading = false);
 
     if (ok) {
@@ -77,11 +79,70 @@ class _WatchiumPageState extends State<WatchiumPage> {
     } else {
       final err = _watchium.error.value;
       Logger.w('Join by code $code failed: $err', 'WATCHIUM_UI');
+      // If password incorrect, show password dialog
+      if (err == 'Incorrect password' && mounted) {
+        _showPasswordDialog(code);
+        return;
+      }
       if (mounted) {
         setState(() => _error = err);
         errorSnackBar(err.isEmpty ? 'Failed to join room' : err);
       }
     }
+  }
+
+  void _showPasswordDialog(String code) {
+    final pwController = TextEditingController();
+    Get.dialog(
+      Dialog(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.lock, size: 40),
+              const SizedBox(height: 12),
+              const Text('This room requires a password',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+              const SizedBox(height: 16),
+              TextField(
+                controller: pwController,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  labelText: 'Password',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.lock_outline),
+                ),
+                onSubmitted: (v) {
+                  Get.back();
+                  _joinByCode(password: v);
+                },
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Get.back(),
+                      child: const Text('Cancel'),
+                    ),
+                  ),
+                  Expanded(
+                    child: FilledButton(
+                      onPressed: () {
+                        Get.back();
+                        _joinByCode(password: pwController.text);
+                      },
+                      child: const Text('Join'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -352,13 +413,72 @@ class _WatchiumPageState extends State<WatchiumPage> {
               ),
             ],
             const SizedBox(height: 8),
+            // Members list with kick buttons
+            if (roomState.members.length > 0) ...[
+              const SizedBox(height: 8),
+              ...roomState.members.map((m) {
+                final isSelf = m.userId == _watchium.roomState.value?.hostUserId;
+                final canKick = _watchium.isHost.value && !isSelf;
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 2),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 12,
+                        backgroundImage: m.avatarUrl != null
+                            ? NetworkImage(m.avatarUrl!)
+                            : null,
+                        child: m.avatarUrl == null
+                            ? Text(m.username[0].toUpperCase(),
+                                style: const TextStyle(fontSize: 12))
+                            : null,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(m.username,
+                            style: const TextStyle(fontSize: 12),
+                            overflow: TextOverflow.ellipsis),
+                      ),
+                      if (m.role == 'host')
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primary,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text('HOST',
+                              style: TextStyle(
+                                  fontSize: 9,
+                                  color: theme.colorScheme.onPrimary,
+                                  fontWeight: FontWeight.bold)),
+                        ),
+                      if (canKick)
+                        IconButton(
+                          icon: const Icon(Icons.person_remove, size: 16, color: Colors.red),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          onPressed: () {
+                            _watchium.kickMember(m.userId);
+                            snackBar('Kicked ${m.username}');
+                          },
+                        ),
+                    ],
+                  ),
+                );
+              }),
+            ],
+            const SizedBox(height: 4),
             Row(
               children: [
                 AnymexText(
-                  text: '${roomState.members.length} member(s)',
+                  text: '${roomState.members.length}/${roomState.maxMembers} members',
                   size: 12,
                   color: theme.colorScheme.onSurface.opaque(0.6),
                 ),
+                if (_watchium.hasPassword.value) ...[
+                  const SizedBox(width: 8),
+                  const Icon(Icons.lock, size: 12, color: Colors.orange),
+                ],
                 const Spacer(),
                 if (roomState.content != null &&
                     roomState.content!.availableServers.isNotEmpty &&

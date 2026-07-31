@@ -25,6 +25,9 @@ class WatchiumService extends GetxController {
   /// Completes true on party:state, false on party:error with JOIN_FAILED, or timeout.
   Completer<bool>? _joinCompleter;
 
+  /// Password to use for the next join attempt.
+  String? _pendingPassword;
+
   // Reactive state
   final Rx<WatchiumRoomState?> roomState = Rx(null);
   final RxList<WatchiumChatMessage> chatMessages = RxList();
@@ -34,6 +37,7 @@ class WatchiumService extends GetxController {
   final RxString error = ''.obs;
   final RxBool isHost = false.obs;
   final RxString roomCode = ''.obs;
+  final RxBool hasPassword = false.obs;
 
   String get serverUrl =>
       WatchiumKeys.serverUrl.get<String>(_defaultServerUrl);
@@ -155,6 +159,7 @@ class WatchiumService extends GetxController {
     _socket!.on('party:state', (data) {
       final state = WatchiumRoomState.fromJson(data as Map<String, dynamic>);
       roomState.value = state;
+      hasPassword.value = (data as Map<String, dynamic>)['hasPassword'] as bool? ?? false;
       _isHost = state.hostUserId == _userId;
       isHost.value = _isHost;
       _currentRoomCode = state.code;
@@ -312,6 +317,8 @@ class WatchiumService extends GetxController {
     int? seasonNumber,
     int? totalEpisodes,
     List<WatchiumAnimeServer>? availableServers,
+    int maxMembers = 10,
+    String? password,
   }) async {
     Logger.i('Creating room: anime="$animeTitle", episode=$episodeNumber', 'WATCHIUM');
     try {
@@ -338,6 +345,8 @@ class WatchiumService extends GetxController {
             'availableServers':
                 availableServers?.map((e) => e.toJson()).toList() ?? [],
           },
+          'maxMembers': maxMembers,
+          if (password != null && password!.isNotEmpty) 'password': password,
         }),
       );
 
@@ -369,7 +378,7 @@ class WatchiumService extends GetxController {
     }
   }
 
-  Future<bool> joinRoom(String code) async {
+  Future<bool> joinRoom(String code, {String? password}) async {
     Logger.i('Joining room: code=$code', 'WATCHIUM');
     try {
       final ok = await login();
@@ -389,6 +398,7 @@ class WatchiumService extends GetxController {
       }
 
       roomCode.value = code;
+      _pendingPassword = password;
       _connectSocket();
 
       // Wait for join confirmation (party:state) or rejection (party:error)
@@ -433,7 +443,11 @@ class WatchiumService extends GetxController {
 
     // Emit the join
     Logger.d('Emitting party:join for code=$code', 'WATCHIUM');
-    _socket!.emitWithAck('party:join', {'code': code});
+    _socket!.emitWithAck('party:join', {
+      'code': code,
+      if (_pendingPassword != null) 'password': _pendingPassword,
+    });
+    _pendingPassword = null;
 
     // Wait with timeout
     final result = await _joinCompleter!.future
@@ -539,6 +553,20 @@ class WatchiumService extends GetxController {
     _heartbeatTimer?.cancel();
     _heartbeatTimer = null;
     Logger.d('Heartbeat stopped', 'WATCHIUM');
+  }
+
+  // ---- Kick ----
+
+  void kickMember(String targetUserId) {
+    if (_currentRoomCode == null || !_isHost) {
+      Logger.w('kickMember skipped: not in room or not host', 'WATCHIUM');
+      return;
+    }
+    Logger.i('kickMember: target=$targetUserId', 'WATCHIUM');
+    _socket?.emit('party:kick', {
+      'code': _currentRoomCode,
+      'targetUserId': targetUserId,
+    });
   }
 
   // ---- Content (Host sets anime) ----
@@ -663,9 +691,9 @@ class WatchiumService extends GetxController {
 
   // ---- Deep Link Join ----
 
-  Future<bool> handleDeepLinkJoin(String code) async {
+  Future<bool> handleDeepLinkJoin(String code, {String? password}) async {
     Logger.i('Deep link join: code=$code', 'WATCHIUM');
-    final ok = await joinRoom(code);
+    final ok = await joinRoom(code, password: password);
     if (!ok) return false;
     return true;
   }
