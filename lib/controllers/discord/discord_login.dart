@@ -282,6 +282,7 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
                     ),
                   ]),
                   initialSettings: InAppWebViewSettings(
+                    useHybridComposition: false,
                     javaScriptEnabled: true,
                     domStorageEnabled: true,
                     databaseEnabled: true,

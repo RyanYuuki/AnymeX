@@ -708,6 +708,7 @@ class _SmartImageWidgetState extends State<_SmartImageWidget> {
 ''',
         ),
         initialSettings: InAppWebViewSettings(
+          useHybridComposition: false,
           transparentBackground: true,
           disableVerticalScroll: true,
           disableHorizontalScroll: true,

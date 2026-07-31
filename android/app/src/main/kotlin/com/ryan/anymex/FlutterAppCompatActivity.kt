@@ -3,9 +3,6 @@ package com.ryan.anymex
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.FrameLayout
-import android.view.View
-import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import io.flutter.embedding.android.FlutterFragment
@@ -19,7 +16,6 @@ open class FlutterAppCompatActivity : AppCompatActivity(),
     FlutterEngineConfigurator {
 
     companion object {
-        private val FRAGMENT_CONTAINER_ID = View.generateViewId()
         private const val TAG_FLUTTER_FRAGMENT = "flutter_fragment"
     }
 
@@ -35,20 +31,11 @@ open class FlutterAppCompatActivity : AppCompatActivity(),
 
         super.onCreate(savedInstanceState)
 
-        val container = FrameLayout(this).apply {
-            id = FRAGMENT_CONTAINER_ID
-            layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
-        }
-        setContentView(container)
-
         if (flutterFragment == null) {
             flutterFragment = FlutterFragment.createDefault()
             supportFragmentManager.beginTransaction()
-                .add(FRAGMENT_CONTAINER_ID, flutterFragment!!, TAG_FLUTTER_FRAGMENT)
-                .commit()
+                .add(android.R.id.content, flutterFragment!!, TAG_FLUTTER_FRAGMENT)
+                .commitNow()
         }
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {

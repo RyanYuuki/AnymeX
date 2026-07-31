@@ -141,6 +141,7 @@ class _AnilistYouTubePlayerState extends State<AnilistYouTubePlayer> {
 ''',
                 ),
                 initialSettings: InAppWebViewSettings(
+                  useHybridComposition: false,
                   mediaPlaybackRequiresUserGesture: false,
                   allowsInlineMediaPlayback: true,
                   iframeAllowFullscreen: true,
@@ -357,6 +358,7 @@ class _AnilistWebmPlayerState extends State<AnilistWebmPlayer> {
                   encoding: 'utf-8',
                 ),
                 initialSettings: InAppWebViewSettings(
+                  useHybridComposition: false,
                   transparentBackground: true,
                   mediaPlaybackRequiresUserGesture: false,
                   allowsInlineMediaPlayback: true,

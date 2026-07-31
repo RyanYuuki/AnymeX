@@ -29,9 +29,7 @@ class OauthHelper {
             fullscreenDialog: true,
           ),
         );
-        if (result != null) {
-          return result;
-        }
+        return result;
       } catch (e) {
         debugPrint('WebView login error: $e');
       }
@@ -96,6 +94,7 @@ class _OauthWebViewPageState extends State<OauthWebViewPage> {
       body: InAppWebView(
         initialUrlRequest: URLRequest(url: WebUri(widget.url)),
         initialSettings: InAppWebViewSettings(
+          useHybridComposition: false,
           javaScriptEnabled: true,
           domStorageEnabled: true,
           databaseEnabled: true,
