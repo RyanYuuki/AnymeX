@@ -394,7 +394,7 @@ class Deeplink {
 
     Logger.d('Watchium deep link: parsed code=$code', 'DEEPLINK');
 
-    // Wait for services to be ready
+    // Wait for WatchiumService to be registered
     int attempts = 0;
     while (!Get.isRegistered<WatchiumService>() && attempts < 50) {
       await Future.delayed(const Duration(milliseconds: 200));
@@ -404,6 +404,27 @@ class Deeplink {
     if (!Get.isRegistered<WatchiumService>()) {
       Logger.w('Watchium deep link: WatchiumService not registered after waiting', 'DEEPLINK');
       errorSnackBar('App is still loading, try again shortly.');
+      return;
+    }
+
+    // On cold start, auth services may not have loaded saved login state yet.
+    // Wait for the user to be authenticated before attempting login/join.
+    if (!Get.isRegistered<ServiceHandler>()) {
+      Logger.w('Watchium deep link: ServiceHandler not registered', 'DEEPLINK');
+      errorSnackBar('App is still loading, try again shortly.');
+      return;
+    }
+
+    final serviceHandler = Get.find<ServiceHandler>();
+    attempts = 0;
+    while (!serviceHandler.isLoggedIn.value && attempts < 75) {
+      await Future.delayed(const Duration(milliseconds: 200));
+      attempts++;
+    }
+
+    if (!serviceHandler.isLoggedIn.value) {
+      Logger.w('Watchium deep link: user not logged in after waiting', 'DEEPLINK');
+      errorSnackBar('Please log in first, then try the link again.');
       return;
     }
 
