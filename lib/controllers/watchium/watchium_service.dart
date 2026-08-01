@@ -558,17 +558,18 @@ class WatchiumService extends GetxController {
       final ok = await login();
       if (!ok) return false;
 
-      // If already in this room, do nothing
+      // If already in this room
       if (_currentRoomCode == code && inRoom.value && roomState.value != null) {
         Logger.d('Already in room $code', 'WATCHIUM');
-        return true;
+        error.value = 'You are already in this room';
+        return false;
       }
 
-      // Leave any existing room first
-      if (_currentRoomCode != null) {
-        Logger.i('Leaving existing room $_currentRoomCode before joining $code', 'WATCHIUM');
-        leaveRoom();
-        await Future.delayed(const Duration(milliseconds: 300));
+      // If in a different room, don't auto-leave — let caller decide
+      if (_currentRoomCode != null && _currentRoomCode != code) {
+        Logger.i('Already in room $_currentRoomCode, cannot join $code', 'WATCHIUM');
+        error.value = 'You are already in another room. Leave it first.';
+        return false;
       }
 
       roomCode.value = code;
