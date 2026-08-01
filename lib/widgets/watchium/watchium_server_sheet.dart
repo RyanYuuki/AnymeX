@@ -134,6 +134,7 @@ class _WatchiumServerSheetContent extends StatelessWidget {
         content.animeId;
     final media = Media(
       id: animeId,
+      idMal: content.malId?.toString() ?? '0',
       title: content.animeTitle,
       romajiTitle: content.animeTitle,
       poster: content.animeCoverImage ?? '?',
