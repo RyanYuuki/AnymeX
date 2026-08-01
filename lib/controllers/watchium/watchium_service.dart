@@ -221,7 +221,7 @@ class WatchiumService extends GetxController {
     _socket!.on('party:state', (data) {
       final state = WatchiumRoomState.fromJson(data as Map<String, dynamic>);
       roomState.value = state;
-      hasPassword.value = (data as Map<String, dynamic>)['hasPassword'] as bool? ?? false;
+      hasPassword.value = data['hasPassword'] as bool? ?? false;
       _isHost = state.hostUserId == _userId;
       isHost.value = _isHost;
       _currentRoomCode = state.code;
@@ -484,7 +484,7 @@ class WatchiumService extends GetxController {
                 availableServers?.map((e) => e.toJson()).toList() ?? [],
           },
           'maxMembers': maxMembers,
-          if (password != null && password!.isNotEmpty) 'password': password,
+          if (password != null && password.isNotEmpty) 'password': password,
         }),
       );
 
