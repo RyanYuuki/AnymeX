@@ -7,35 +7,71 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$localPath = Resolve-Path (Join-Path $scriptDir "../../AnymeXExtensionRuntimeBridge/packages/libtorrent_flutter") -ErrorAction SilentlyContinue
-
 $ltDirFullName = ""
 $ltVersion = ""
 
-if ($localPath -and (Test-Path $localPath)) {
-    $ltDirFullName = $localPath.Path
-    $pubspecPath = Join-Path $ltDirFullName "pubspec.yaml"
-    if (Test-Path $pubspecPath) {
-        $versionLine = Get-Content $pubspecPath | Select-String "^version:"
-        if ($versionLine) {
-            $ltVersion = ($versionLine -split ' ')[1].Trim()
-            Write-Host "Found local libtorrent_flutter package at $ltDirFullName (version $ltVersion)" -ForegroundColor Cyan
+$packageConfigPath = Resolve-Path (Join-Path $scriptDir "../.dart_tool/package_config.json") -ErrorAction SilentlyContinue
+if ($packageConfigPath -and (Test-Path $packageConfigPath)) {
+    $json = Get-Content $packageConfigPath -Raw | ConvertFrom-Json
+    $pkg = $json.packages | Where-Object { $_.name -eq "libtorrent_flutter" }
+    if ($pkg) {
+        $uri = $pkg.rootUri
+        if ($uri.StartsWith("file://")) {
+            $ltPath = $uri -replace '^file:///', '' -replace '^file://', ''
+            $ltDirFullName = [uri]::UnescapeDataString($ltPath) -replace '/', '\'
+        } else {
+            $ltDirFullName = Resolve-Path (Join-Path $scriptDir "../.dart_tool/$uri") -ErrorAction SilentlyContinue
+        }
+        
+        if ($ltDirFullName -and (Test-Path $ltDirFullName)) {
+            $pubspecPath = Join-Path $ltDirFullName "pubspec.yaml"
+            if (Test-Path $pubspecPath) {
+                $versionLine = Get-Content $pubspecPath | Select-String "^version:"
+                if ($versionLine) {
+                    $ltVersion = ($versionLine -split ' ')[1].Trim()
+                    Write-Host "Resolved libtorrent_flutter via package_config.json to $ltDirFullName (version $ltVersion)" -ForegroundColor Cyan
+                }
+            }
+        }
+    }
+}
+
+if (-not $ltVersion) {
+    $localPath = Resolve-Path (Join-Path $scriptDir "../../AnymeXExtensionRuntimeBridge/packages/libtorrent_flutter") -ErrorAction SilentlyContinue
+    if ($localPath -and (Test-Path $localPath)) {
+        $ltDirFullName = $localPath.Path
+        $pubspecPath = Join-Path $ltDirFullName "pubspec.yaml"
+        if (Test-Path $pubspecPath) {
+            $versionLine = Get-Content $pubspecPath | Select-String "^version:"
+            if ($versionLine) {
+                $ltVersion = ($versionLine -split ' ')[1].Trim()
+                Write-Host "Found local libtorrent_flutter package at $ltDirFullName (version $ltVersion)" -ForegroundColor Cyan
+            }
         }
     }
 }
 
 if (-not $ltVersion) {
     $pubCache = if ($env:PUB_CACHE) { $env:PUB_CACHE } else { Join-Path $env:LOCALAPPDATA 'Pub\Cache' }
-    $ltDir = Get-ChildItem -Path "$pubCache\hosted\pub.dev" -Directory -Filter 'libtorrent_flutter-*' -ErrorAction SilentlyContinue |
-        Select-Object -First 1
-
-    if (-not $ltDir) {
-        Write-Error "libtorrent_flutter not found locally or in pub cache at $pubCache\hosted\pub.dev. Did you run 'flutter pub get' first?"
-        exit 1
+    $hostedDirs = @("pub.dev", "pub.dartlang.org")
+    foreach ($dir in $hostedDirs) {
+        $path = Join-Path $pubCache "hosted\$dir"
+        if (Test-Path $path) {
+            $ltDir = Get-ChildItem -Path $path -Directory -Filter 'libtorrent_flutter-*' -ErrorAction SilentlyContinue |
+                Select-Object -First 1
+            if ($ltDir) {
+                $ltDirFullName = $ltDir.FullName
+                $ltVersion = $ltDir.Name -replace '^libtorrent_flutter-', ''
+                Write-Host "Found pub cache libtorrent_flutter $ltVersion at $ltDirFullName" -ForegroundColor Cyan
+                break
+            }
+        }
     }
-    $ltDirFullName = $ltDir.FullName
-    $ltVersion = $ltDir.Name -replace '^libtorrent_flutter-', ''
-    Write-Host "Found pub cache libtorrent_flutter $ltVersion at $ltDirFullName" -ForegroundColor Cyan
+}
+
+if (-not $ltVersion) {
+    Write-Error "libtorrent_flutter not found locally, in package_config.json, or in pub cache. Did you run 'flutter pub get' first?"
+    exit 1
 }
 
 $prebuiltBase = Join-Path $ltDirFullName "prebuilt\windows"
