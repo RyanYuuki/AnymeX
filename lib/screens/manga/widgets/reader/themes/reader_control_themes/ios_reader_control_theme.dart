@@ -245,7 +245,6 @@ class _LiquidBottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-
       final w = MediaQuery.of(context).size.width;
       final pillW = w > 900 ? w * 0.5 : double.infinity;
       final show = controller.showControls.value;
@@ -406,7 +405,6 @@ class _NavBubble extends StatelessWidget {
   }
 }
 
-
 class _LiquidSurface extends StatelessWidget {
   const _LiquidSurface({
     required this.child,
@@ -414,6 +412,9 @@ class _LiquidSurface extends StatelessWidget {
     this.height,
     this.padding,
     this.radius = 20,
+    this.blurSigma = 0,
+    this.tintAlpha = 0,
+    this.edgeAlpha = 0,
   });
 
   final Widget child;
