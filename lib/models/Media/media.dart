@@ -139,7 +139,9 @@ class Media {
       popularity: node['popularity']?.toString() ?? '??',
       format: node['media_type'] ?? '??',
       aired: node['start_date'] ?? '??',
-      totalChapters: node['num_chapters']?.toString() ?? '??',
+      totalChapters: (mediaTypeStr?.toLowerCase() == 'one_shot')
+          ? '1'
+          : (node['num_chapters']?.toString() ?? '??'),
       genres: (node['genres'] as List<dynamic>?)
               ?.map((genre) => genre['name']?.toString() ?? '??')
               .toList() ??
@@ -175,7 +177,9 @@ class Media {
           json['images']?['jpg']?['image_url'] ??
           '??',
       totalEpisodes: json['episodes']?.toString() ?? '??',
-      totalChapters: json['chapters']?.toString() ?? '??',
+      totalChapters: (json['type']?.toString().toLowerCase().replaceAll('-', '_') == 'one_shot')
+          ? '1'
+          : (json['chapters']?.toString() ?? '??'),
       type: json['type'] ?? '??',
       season: json['season'] ?? '??',
       premiered: json['aired']?['from'] ?? json['published']?['from'] ?? '??',
@@ -246,7 +250,9 @@ class Media {
       popularity: node['popularity']?.toString() ?? '??',
       format: node['media_type'] ?? '??',
       aired: node['start_date'] ?? '??',
-      totalChapters: node['num_chapters']?.toString() ?? '??',
+      totalChapters: (mediaTypeStr?.toLowerCase() == 'one_shot')
+          ? '1'
+          : (node['num_chapters']?.toString() ?? '??'),
       genres: (node['genres'] as List<dynamic>?)
               ?.map((genre) => genre['name']?.toString() ?? '??')
               .toList() ??
@@ -797,7 +803,9 @@ class Media {
       format: json['format'] ?? '?',
       aired: _parseDateRange(json['startDate'], json['endDate']),
       seasonYear: json['seasonYear'] ?? json['startDate']?['year'],
-      totalChapters: json['chapters']?.toString() ?? '?',
+      totalChapters: (json['format']?.toString().toLowerCase().replaceAll('-', '_') == 'one_shot')
+          ? '1'
+          : (json['chapters']?.toString() ?? '?'),
       genres: List<String>.from(json['genres'] ?? []),
       studios: (json['studios']?['nodes'] as List?)
               ?.map((el) => el['name'].toString())
@@ -1009,7 +1017,9 @@ class Media {
       cover: json['bannerImage'],
       color: json['coverImage']?['color'] ?? '',
       totalEpisodes: json['episodes']?.toString() ?? '?',
-      totalChapters: json['chapters']?.toString() ?? '?',
+      totalChapters: (json['format']?.toString().toLowerCase().replaceAll('-', '_') == 'one_shot')
+          ? '1'
+          : (json['chapters']?.toString() ?? '?'),
       rating: ((json['averageScore'] ?? 0) / 10).toStringAsFixed(1),
       popularity: json['popularity']?.toString() ?? '0',
       type: json['type'] ?? (isManga ? 'MANGA' : 'ANIME'),
