@@ -229,6 +229,7 @@ class WatchiumService extends GetxController {
         chatDisabled: current.chatDisabled,
         announcementMode: current.announcementMode,
         maxMembers: current.maxMembers,
+        createdAt: current.createdAt,
       );
       Logger.d('party:sync received, positionSec=${pb['positionSec']}, isPlaying=${pb['isPlaying']}', 'WATCHIUM');
     });
@@ -251,6 +252,7 @@ class WatchiumService extends GetxController {
         chatDisabled: current.chatDisabled,
         announcementMode: current.announcementMode,
         maxMembers: current.maxMembers,
+        createdAt: current.createdAt,
       );
       Logger.d('party:content received, anime=${content.animeTitle}, episode=${content.episodeNumber}', 'WATCHIUM');
     });
@@ -274,6 +276,7 @@ class WatchiumService extends GetxController {
         chatDisabled: current.chatDisabled,
         announcementMode: current.announcementMode,
         maxMembers: current.maxMembers,
+        createdAt: current.createdAt,
       );
       // Update isHost in case host was transferred
       final nowHost = newHostUserId == _userId;
@@ -363,6 +366,7 @@ class WatchiumService extends GetxController {
         chatDisabled: newChatDisabled,
         announcementMode: newAnnouncementMode,
         maxMembers: current.maxMembers,
+        createdAt: current.createdAt,
       );
       Logger.i('party:settings: chatDisabled=$newChatDisabled, announcementMode=$newAnnouncementMode (changedBy=$changedBy, key=$changedByKey)', 'WATCHIUM');
     });

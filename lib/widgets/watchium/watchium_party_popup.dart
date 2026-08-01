@@ -37,7 +37,7 @@ class WatchiumPartyPopup extends StatelessWidget {
   }
 }
 
-enum _PartyTab { chat, members }
+enum _PartyTab { chat, members, info }
 
 class _WatchiumPartyPopupContent extends StatefulWidget {
   final WatchiumService watchium;
@@ -148,7 +148,9 @@ class _WatchiumPartyPopupContentState
               Expanded(
                 child: _currentTab == _PartyTab.chat
                     ? _buildChat(cs, theme)
-                    : _buildMembersList(cs, theme),
+                    : _currentTab == _PartyTab.members
+                        ? _buildMembersList(cs, theme)
+                        : _buildInfo(cs, theme),
               ),
             ],
     );
@@ -259,6 +261,11 @@ class _WatchiumPartyPopupContentState
         label: 'Members',
         icon: Icons.people_rounded,
         tab: _PartyTab.members
+      ),
+      (
+        label: 'Info',
+        icon: Icons.info_outline_rounded,
+        tab: _PartyTab.info
       ),
     ];
     final total = tabs.length;
@@ -1160,5 +1167,216 @@ class _WatchiumPartyPopupContentState
         widget.watchium.sendReaction(selected);
       }
     });
+  }
+
+  Widget _buildInfo(ColorScheme cs, ThemeData theme) {
+    final state = widget.watchium.roomState.value;
+    if (state == null) return const SizedBox.shrink();
+
+    final createdAt = DateTime.fromMillisecondsSinceEpoch(state.createdAt);
+    final now = DateTime.now();
+    final duration = now.difference(createdAt);
+    final durationStr = _formatDuration(duration);
+    final code = state.code;
+    final inviteUrl = 'http://anymex.duckdns.org:3001/join/$code';
+    final memberCount = state.members.where((m) => m.online).length;
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+      children: [
+        // Room code
+        _InfoSection(
+          icon: Icons.vpn_key_rounded,
+          iconColor: cs.primary,
+          children: [
+            Text('Room Code', style: TextStyle(color: cs.outline, fontSize: 12)),
+            const SizedBox(height: 6),
+            _CopyableRow(
+              label: code,
+              onTap: () => _copyToClipboard(code, 'Room code'),
+              cs: cs,
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+
+        // Invite link
+        _InfoSection(
+          icon: Icons.link_rounded,
+          iconColor: cs.tertiary,
+          children: [
+            Text('Invite Link', style: TextStyle(color: cs.outline, fontSize: 12)),
+            const SizedBox(height: 6),
+            _CopyableRow(
+              label: inviteUrl,
+              onTap: () => _copyToClipboard(inviteUrl, 'Invite link'),
+              cs: cs,
+              isLink: true,
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+
+        // Duration
+        _InfoSection(
+          icon: Icons.schedule_rounded,
+          iconColor: cs.secondary,
+          children: [
+            Text('Room Duration', style: TextStyle(color: cs.outline, fontSize: 12)),
+            const SizedBox(height: 6),
+            Text(
+              durationStr,
+              style: TextStyle(
+                color: cs.onSurface,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+
+        // Members count
+        _InfoSection(
+          icon: Icons.people_rounded,
+          iconColor: cs.primaryContainer,
+          children: [
+            Text('Watching Now', style: TextStyle(color: cs.outline, fontSize: 12)),
+            const SizedBox(height: 6),
+            Text(
+              '$memberCount / ${state.maxMembers} members',
+              style: TextStyle(
+                color: cs.onSurface,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+
+        // Created at
+        _InfoSection(
+          icon: Icons.calendar_today_rounded,
+          iconColor: cs.outline,
+          children: [
+            Text('Created', style: TextStyle(color: cs.outline, fontSize: 12)),
+            const SizedBox(height: 6),
+            Text(
+              _formatDateTime(createdAt),
+              style: TextStyle(
+                color: cs.onSurface,
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  String _formatDuration(Duration d) {
+    final h = d.inHours;
+    final m = d.inMinutes.remainder(60);
+    final s = d.inSeconds.remainder(60);
+    if (h > 0) return '${h}h ${m}m ${s}s';
+    if (m > 0) return '${m}m ${s}s';
+    return '${s}s';
+  }
+
+  String _formatDateTime(DateTime dt) {
+    return '${dt.day}/${dt.month}/${dt.year} ${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
+  }
+
+  void _copyToClipboard(String text, String label) {
+    Clipboard.setData(ClipboardData(text: text));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('$label copied'),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+}
+
+class _InfoSection extends StatelessWidget {
+  final IconData icon;
+  final Color iconColor;
+  final List<Widget> children;
+
+  const _InfoSection({
+    required this.icon,
+    required this.iconColor,
+    required this.children,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            color: iconColor.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(icon, color: iconColor, size: 18),
+        ),
+        const SizedBox(width: 14),
+        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: children)),
+      ],
+    );
+  }
+}
+
+class _CopyableRow extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+  final ColorScheme cs;
+  final bool isLink;
+
+  const _CopyableRow({
+    required this.label,
+    required this.onTap,
+    required this.cs,
+    this.isLink = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: cs.surfaceContainerHighest.withOpacity(0.5),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: cs.outline.withOpacity(0.15)),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  color: isLink ? cs.primary : cs.onSurface,
+                  fontSize: isLink ? 11 : 15,
+                  fontWeight: isLink ? FontWeight.w400 : FontWeight.w600,
+                  letterSpacing: isLink ? 0 : 2,
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Icon(Icons.copy_rounded, size: 16, color: cs.outline),
+          ],
+        ),
+      ),
+    );
   }
 }

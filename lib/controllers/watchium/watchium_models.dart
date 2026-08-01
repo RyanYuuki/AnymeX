@@ -216,6 +216,7 @@ class WatchiumRoomState {
   final bool chatDisabled;
   final bool announcementMode;
   final int maxMembers;
+  final int createdAt; // ms timestamp
 
   WatchiumRoomState({
     required this.code,
@@ -227,6 +228,7 @@ class WatchiumRoomState {
     required this.chatDisabled,
     required this.announcementMode,
     required this.maxMembers,
+    required this.createdAt,
   });
 
   factory WatchiumRoomState.fromJson(Map<String, dynamic> json) {
@@ -251,6 +253,7 @@ class WatchiumRoomState {
         chatDisabled: settings?['chatDisabled'] as bool? ?? false,
         announcementMode: settings?['announcementMode'] as bool? ?? false,
         maxMembers: json['maxMembers'] as int? ?? 10,
+        createdAt: json['createdAt'] as int? ?? 0,
       );
   }
 }
