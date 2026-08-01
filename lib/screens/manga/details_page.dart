@@ -216,16 +216,20 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
 
   Future<void> _fetchAnilistData() async {
     try {
-      Media tempData;
-      try {
-        tempData = await mediaService.service.fetchDetails(FetchDetailsParams(
-            id: widget.media.id.toString(), type: ItemType.manga));
-      } catch (e) {
-        if (!e.toString().contains("dynamic")) rethrow;
-        tempData = await mediaService.service.fetchDetails(FetchDetailsParams(
-            id: widget.media.id.toString(), type: ItemType.manga));
-      }
       final isExtensions = mediaService == ServicesType.extensions;
+      Media tempData;
+      if (isExtensions && widget.media.mediaContent != null && widget.media.mediaContent!.isNotEmpty) {
+        tempData = widget.media;
+      } else {
+        try {
+          tempData = await mediaService.service.fetchDetails(FetchDetailsParams(
+              id: widget.media.id.toString(), type: ItemType.manga));
+        } catch (e) {
+          if (!e.toString().contains("dynamic")) rethrow;
+          tempData = await mediaService.service.fetchDetails(FetchDetailsParams(
+              id: widget.media.id.toString(), type: ItemType.manga));
+        }
+      }
 
       setState(() {
         if (isExtensions) {

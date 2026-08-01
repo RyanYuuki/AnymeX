@@ -305,11 +305,12 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
           "Fetch Initiated for Media => ${widget.media.id} with type -> ${widget.media.mediaType}");
 
       final service = widget.media.serviceType.service;
-
-      final tempData = await service.fetchDetails(FetchDetailsParams(
-          id: widget.media.id.toString(), type: ItemType.anime));
-
       final isExtensions = widget.media.serviceType == ServicesType.extensions;
+
+      final tempData = (isExtensions && widget.media.mediaContent != null && widget.media.mediaContent!.isNotEmpty)
+          ? widget.media
+          : await service.fetchDetails(FetchDetailsParams(
+              id: widget.media.id.toString(), type: ItemType.anime));
 
       setState(() {
         if (isExtensions) {

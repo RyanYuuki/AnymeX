@@ -674,7 +674,9 @@ class ChapterListItem extends StatelessWidget {
         boxShadow: [glowingShadow(context)],
       ),
       child: AnymexText(
-        text: chapter.number?.toStringAsFixed(0) ?? '',
+        text: (chapter.number != null && chapter.number! % 1 == 0)
+            ? chapter.number!.toInt().toString()
+            : chapter.number?.toString() ?? '',
         variant: TextVariant.bold,
         color: context.colors.onPrimary,
       ),
