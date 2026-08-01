@@ -10,17 +10,23 @@ $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ltDirFullName = ""
 $ltVersion = ""
 
-$packageConfigPath = Resolve-Path (Join-Path $scriptDir "../.dart_tool/package_config.json") -ErrorAction SilentlyContinue
+$packageConfigPath = Resolve-Path (Join-Path (Get-Location).Path ".dart_tool/package_config.json") -ErrorAction SilentlyContinue
+if (-not $packageConfigPath) {
+    $packageConfigPath = Resolve-Path (Join-Path $scriptDir "../.dart_tool/package_config.json") -ErrorAction SilentlyContinue
+}
+
 if ($packageConfigPath -and (Test-Path $packageConfigPath)) {
     $json = Get-Content $packageConfigPath -Raw | ConvertFrom-Json
     $pkg = $json.packages | Where-Object { $_.name -eq "libtorrent_flutter" }
     if ($pkg) {
         $uri = $pkg.rootUri
+        $configDir = Split-Path -Parent $packageConfigPath
         if ($uri.StartsWith("file://")) {
             $ltPath = $uri -replace '^file:///', '' -replace '^file://', ''
             $ltDirFullName = [uri]::UnescapeDataString($ltPath) -replace '/', '\'
         } else {
-            $ltDirFullName = Resolve-Path (Join-Path $scriptDir "../.dart_tool/$uri") -ErrorAction SilentlyContinue
+            $relPath = [uri]::UnescapeDataString($uri) -replace '/', '\'
+            $ltDirFullName = Resolve-Path (Join-Path $configDir $relPath) -ErrorAction SilentlyContinue
         }
         
         if ($ltDirFullName -and (Test-Path $ltDirFullName)) {
@@ -46,6 +52,29 @@ if (-not $ltVersion) {
             if ($versionLine) {
                 $ltVersion = ($versionLine -split ' ')[1].Trim()
                 Write-Host "Found local libtorrent_flutter package at $ltDirFullName (version $ltVersion)" -ForegroundColor Cyan
+            }
+        }
+    }
+}
+
+if (-not $ltVersion) {
+    $pubCache = if ($env:PUB_CACHE) { $env:PUB_CACHE } else { Join-Path $env:LOCALAPPDATA 'Pub\Cache' }
+    $gitPath = Join-Path $pubCache "git"
+    if (Test-Path $gitPath) {
+        $gitDirs = Get-ChildItem -Path $gitPath -Directory -Filter "AnymeXExtensionRuntimeBridge-*" -ErrorAction SilentlyContinue
+        foreach ($gitDir in $gitDirs) {
+            $candidate = Join-Path $gitDir.FullName "packages\libtorrent_flutter"
+            if (Test-Path $candidate) {
+                $ltDirFullName = $candidate
+                $pubspecPath = Join-Path $ltDirFullName "pubspec.yaml"
+                if (Test-Path $pubspecPath) {
+                    $versionLine = Get-Content $pubspecPath | Select-String "^version:"
+                    if ($versionLine) {
+                        $ltVersion = ($versionLine -split ' ')[1].Trim()
+                        Write-Host "Found libtorrent_flutter in git cache: $ltDirFullName (version $ltVersion)" -ForegroundColor Cyan
+                        break
+                    }
+                }
             }
         }
     }
