@@ -5,7 +5,6 @@ import 'dart:ui' as ui;
 import 'package:anymex/controllers/services/storage/anymex_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:palette_generator/palette_generator.dart';
 
 final Map<String, Color> _colorCache = {};
@@ -114,7 +113,7 @@ class ImageColorExtractor {
     final pixels = byteData.buffer.asUint8List();
     final Map<int, int> colorCount = {};
 
-    final step = 10;
+    const step = 10;
 
     for (int i = 0; i < pixels.length; i += 4 * step) {
       final r = pixels[i];

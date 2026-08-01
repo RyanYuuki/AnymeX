@@ -764,8 +764,9 @@ class _ContributorsPageState extends State<ContributorsPage> {
 
   Widget _buildStaffSection(BuildContext context) {
     final colors = context.colors;
-    if (staff.isEmpty)
+    if (staff.isEmpty) {
       return const SliverToBoxAdapter(child: SizedBox.shrink());
+    }
 
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 16),

@@ -893,14 +893,14 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
   Widget _buildProgressContainer(BuildContext context) {
     final int totalEps =
-        int.tryParse(anilistData?.totalEpisodes?.toString() ?? '0') ?? 0;
+        int.tryParse(anilistData?.totalEpisodes.toString() ?? '0') ?? 0;
     final int airedEps = (anilistData?.nextAiringEpisode?.episode ?? 1) - 1;
     final int displayTotal = totalEps > 0 ? totalEps : airedEps;
     final int watchedEps =
         int.tryParse(currentAnime.value?.episodeCount?.toString() ?? '0') ?? 0;
     final int remainingEps = (displayTotal - watchedEps).clamp(0, displayTotal);
     final int? epDuration = int.tryParse(
-        (anilistData?.duration?.toString() ?? '')
+        (anilistData?.duration.toString() ?? '')
             .replaceAll(RegExp(r'[^0-9]'), ''));
     final int totalMins = displayTotal * (epDuration ?? 0);
     final int watchedMins = watchedEps * (epDuration ?? 0);
@@ -940,7 +940,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                       color: context.colors.onSurface.opaque(0.7),
                     ),
                     AnymexTextSpan(
-                      text: anilistData?.totalEpisodes?.toString() ?? '??',
+                      text: anilistData?.totalEpisodes.toString() ?? '??',
                       variant: TextVariant.bold,
                       color: context.colors.primary,
                     ),

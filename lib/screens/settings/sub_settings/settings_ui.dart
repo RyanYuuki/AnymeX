@@ -16,7 +16,6 @@ import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 
 class SettingsUi extends StatefulWidget {
   const SettingsUi({super.key});

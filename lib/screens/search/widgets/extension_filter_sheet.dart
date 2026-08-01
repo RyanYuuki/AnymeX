@@ -1,34 +1,7 @@
-import 'package:anymex/controllers/service_handler/params.dart';
-import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/database/data_keys/keys.dart';
-import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/screens/anime/details_page.dart';
-import 'package:anymex/screens/manga/details_page.dart';
-import 'package:anymex/screens/novel/details/details_view.dart';
-import 'package:anymex/screens/search/widgets/inline_search_history.dart';
-import 'package:anymex/screens/search/widgets/search_widgets.dart';
-import 'package:anymex/screens/settings/misc/sauce_finder_view.dart';
-import 'package:anymex/utils/extension_utils.dart';
-import 'package:anymex/utils/function.dart';
-import 'package:anymex/utils/logger.dart';
-import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/future_reusable_carousel.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/helper/platform_builder.dart';
-import 'package:anymex/widgets/media_items/media_item.dart';
-import 'package:anymex/widgets/media_items/media_peek_popup.dart';
-import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex_extension_runtime_bridge/Services/Mangayomi/Eval/dart/model/filter.dart';
-import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/widgets/common/cards/card_gate.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
-import 'package:get/get.dart';
-import 'package:iconsax/iconsax.dart';
 
 
 class ExtensionFilterSheet extends StatefulWidget {

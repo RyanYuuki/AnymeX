@@ -18,7 +18,6 @@ import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
-import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 
 class MangaStats extends StatefulWidget {
   final Media data;

@@ -1,7 +1,5 @@
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 
 Future<bool?> showTrackingDialog(BuildContext context, {String? dbId}) {
   return showDialog<bool>(

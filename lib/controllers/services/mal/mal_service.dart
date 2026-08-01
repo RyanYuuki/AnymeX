@@ -136,7 +136,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                     return buildUnderratedSection(
                         'Community Recommendations', filteredList,
                         onSeeAll: () =>
-                            navigate(() => CommunityRecommendationsPage(
+                            navigate(() => const CommunityRecommendationsPage(
                                   category: 'anime',
                                   type: ItemType.anime,
                                 )));
@@ -170,7 +170,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                     return buildUnderratedMangaSection(
                         'Community Recommendations', filteredList,
                         onSeeAll: () =>
-                            navigate(() => CommunityRecommendationsPage(
+                            navigate(() => const CommunityRecommendationsPage(
                                   category: 'manga',
                                   type: ItemType.manga,
                                 )));
@@ -267,7 +267,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
     final offset = (params.page - 1) * 25;
     final token = AuthKeys.malAuthToken.get<String?>();
     final isLoggedIn = token != null && token.isNotEmpty;
-    final fields = 'id,title,main_picture,alternative_titles,start_date,end_date,synopsis,mean,rank,popularity,num_episodes,status,genres,num_chapters,num_volumes,media_type,start_season,average_episode_duration,studios';
+    const fields = 'id,title,main_picture,alternative_titles,start_date,end_date,synopsis,mean,rank,popularity,num_episodes,status,genres,num_chapters,num_volumes,media_type,start_season,average_episode_duration,studios';
     final showNsfw = params.args == true;
     final url = 'https://api.myanimelist.net/v2/$mediaType?q=${Uri.encodeComponent(params.query)}&limit=25&offset=$offset&fields=$fields${showNsfw ? '&nsfw=true' : ''}';
     
@@ -737,7 +737,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
     final url = Uri.parse(
         'https://api.myanimelist.net/v2/${isAnime ? 'anime' : 'manga'}/$listId/my_list_status');
 
-    String _formatMalDate(DateTime d) =>
+    String formatMalDate(DateTime d) =>
         '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
     final body = {
@@ -748,8 +748,8 @@ class MalService extends GetxController implements BaseService, OnlineService {
         'num_watched_episodes': progress.toString(),
       if (progress != null && !isAnime)
         'num_chapters_read': progress.toString(),
-      if (startedAt != null) 'start_date': _formatMalDate(startedAt),
-      if (completedAt != null) 'finish_date': _formatMalDate(completedAt),
+      if (startedAt != null) 'start_date': formatMalDate(startedAt),
+      if (completedAt != null) 'finish_date': formatMalDate(completedAt),
     };
 
     final req = await http.put(
@@ -859,7 +859,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
               totalEpisodes: savedManga?.chapters?.length.toString() ?? '??'));
     } else {
       final savedAnime = offlineStorage.getAnimeById(id);
-      final number = savedAnime?.currentEpisode?.number?.toInt() ?? 0;
+      final number = savedAnime?.currentEpisode?.number.toInt() ?? 0;
       currentMedia.value = animeList.firstWhere((el) => el.id == id,
           orElse: () => TrackedMedia(
               episodeCount: number.toString(),

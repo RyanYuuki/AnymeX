@@ -414,9 +414,6 @@ class _LiquidSurface extends StatelessWidget {
     this.height,
     this.padding,
     this.radius = 20,
-    this.blurSigma = 28,
-    this.tintAlpha = 0.18,
-    this.edgeAlpha = 0.32,
   });
 
   final Widget child;

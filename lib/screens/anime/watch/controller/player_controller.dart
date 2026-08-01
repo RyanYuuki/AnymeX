@@ -1183,7 +1183,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     _playerSubscriptions.add(_basePlayer.errorStream.listen((e) {
       if (_isReloadingPlayer.value) return;
-      Logger.i('${e} => ${selectedVideo.value?.headers}');
+      Logger.i('$e => ${selectedVideo.value?.headers}');
       final errorStr = e.toString();
       if (errorStr.contains('Failed to open') &&
           !errorStr.contains('.glsl') &&
@@ -1646,8 +1646,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   bool _matchesPreferredLanguage(String? label, String preferredLangCode) {
-    if (label == null || label.isEmpty || preferredLangCode == 'none')
+    if (label == null || label.isEmpty || preferredLangCode == 'none') {
       return false;
+    }
     final normLabel = label.toLowerCase();
     final normCode = preferredLangCode.toLowerCase();
     final fullName =

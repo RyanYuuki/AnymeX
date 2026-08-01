@@ -548,7 +548,7 @@ class _EpisodeSectionState extends State<EpisodeSection> {
 
       if (widget.episodeError.value &&
           (widget.episodeList?.isEmpty ?? true)) {
-        return SliverToBoxAdapter(
+        return const SliverToBoxAdapter(
           child: SizedBox(
             height: 300,
             child: Center(

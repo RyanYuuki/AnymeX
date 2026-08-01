@@ -1,4 +1,3 @@
-import 'dart:math' show Random;
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Media/character.dart';
 import 'package:anymex/models/Media/staff.dart';

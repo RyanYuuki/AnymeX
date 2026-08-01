@@ -1177,13 +1177,15 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   }
 
   void _onPositionChanged() {
-    if (itemPositionsListener == null || spreads.isEmpty || _isNavigating)
+    if (itemPositionsListener == null || spreads.isEmpty || _isNavigating) {
       return;
+    }
 
     _positionDebounceTimer?.cancel();
     _positionDebounceTimer = Timer(const Duration(milliseconds: 50), () {
-      if (_isNavigating || itemPositionsListener == null || spreads.isEmpty)
+      if (_isNavigating || itemPositionsListener == null || spreads.isEmpty) {
         return;
+      }
 
       final positions = itemPositionsListener!.itemPositions.value;
       if (positions.isEmpty) return;

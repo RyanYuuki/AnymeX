@@ -13,7 +13,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 import 'package:anymex/screens/other_features.dart';
-import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'dart:io';
 
 class SettingsCommon extends StatefulWidget {

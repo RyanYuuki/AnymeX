@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:get/get.dart';
 
@@ -400,7 +399,7 @@ class UserInfoCard extends StatelessWidget {
                         fit: BoxFit.cover,
                         radius: 0,
                       )
-                    : DefaultAvatar(),
+                    : const DefaultAvatar(),
               ),
             ),
             const SizedBox(width: 16),

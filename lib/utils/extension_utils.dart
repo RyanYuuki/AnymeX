@@ -1,7 +1,6 @@
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 extension ExtensionCarousel on Future<List<DMedia>> {}

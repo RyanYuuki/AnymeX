@@ -128,13 +128,19 @@ class ReasonUserProfile {
     if (simklId != null && simklId! > 0 && simklId == other.simklId) return true;
     if (anilistUsername != null &&
         anilistUsername!.isNotEmpty &&
-        anilistUsername == other.anilistUsername) return true;
+        anilistUsername == other.anilistUsername) {
+      return true;
+    }
     if (malUsername != null &&
         malUsername!.isNotEmpty &&
-        malUsername == other.malUsername) return true;
+        malUsername == other.malUsername) {
+      return true;
+    }
     if (simklUsername != null &&
         simklUsername!.isNotEmpty &&
-        simklUsername == other.simklUsername) return true;
+        simklUsername == other.simklUsername) {
+      return true;
+    }
     return false;
   }
 
@@ -749,6 +755,7 @@ class CommunityService extends GetxController {
     }
   }
 
+  @override
   Future<void> refresh() async {
     communityAnimes.clear();
     communityMangas.clear();
@@ -928,8 +935,9 @@ class CommunityService extends GetxController {
           await http.post(url, headers: _authHeaders, body: jsonEncode(body));
 
       if (resp.statusCode == 201) return null; // new entry created
-      if (resp.statusCode == 200)
+      if (resp.statusCode == 200) {
         return null; // reason appended to existing entry
+      }
       if (resp.statusCode == 409) {
         return 'You already have a reason on this entry. Use edit instead.';
       }

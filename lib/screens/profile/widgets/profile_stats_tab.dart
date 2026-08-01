@@ -526,30 +526,34 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
   }
 
   int _getVal(dynamic s) {
-    if (s is TypeStat)
+    if (s is TypeStat) {
       return _metric == _StatMetric.count
           ? s.count
           : _metric == _StatMetric.time
               ? s.amount
               : s.meanScore.round();
-    if (s is ScoreStat)
+    }
+    if (s is ScoreStat) {
       return _metric == _StatMetric.count
           ? s.count
           : _metric == _StatMetric.time
               ? s.amount
               : s.meanScore.round();
-    if (s is LengthStat)
+    }
+    if (s is LengthStat) {
       return _metric == _StatMetric.count
           ? s.count
           : _metric == _StatMetric.time
               ? s.amount
               : s.meanScore.round();
-    if (s is YearStat)
+    }
+    if (s is YearStat) {
       return _metric == _StatMetric.count
           ? s.count
           : _metric == _StatMetric.time
               ? s.amount
               : s.meanScore.round();
+    }
     return 0;
   }
 
@@ -557,8 +561,9 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
     if (s is TypeStat) return _fmtLabel(s.type);
     if (s is ScoreStat) return s.score.toString();
     if (s is LengthStat) return s.length;
-    if (s is YearStat)
+    if (s is YearStat) {
       return "'${s.year.toString().substring(s.year.toString().length >= 2 ? s.year.toString().length - 2 : 0)}";
+    }
     return '';
   }
 

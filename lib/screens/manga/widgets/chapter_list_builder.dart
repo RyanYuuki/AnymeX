@@ -439,10 +439,8 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
     var targetChapter = filteredFullChapters
         .firstWhereOrNull((e) => e.link == continueChapter.link);
 
-    if (targetChapter == null) {
-      targetChapter = filteredFullChapters
+    targetChapter ??= filteredFullChapters
           .firstWhereOrNull((e) => e.number == continueChapter.number);
-    }
 
     if (targetChapter == null) {
       return const SizedBox.shrink();
@@ -612,16 +610,16 @@ class ChapterListItem extends StatelessWidget {
     final savedChaps = savedChapter;
     final currentChapterLink = continueChapter?.link ?? '';
     final isSelected = chapter.link == currentChapterLink;
-    final _savedPage = savedChaps?.pageNumber;
-    final _savedTotal = savedChaps?.totalPages;
-    final _isPageComplete = _savedPage != null &&
-        _savedTotal != null &&
-        _savedTotal > 0 &&
-        (_savedPage >= _savedTotal ||
-            _savedPage >= _savedTotal - 1 ||
-            (_savedPage / _savedTotal) >= 0.95);
+    final savedPage = savedChaps?.pageNumber;
+    final savedTotal = savedChaps?.totalPages;
+    final isPageComplete = savedPage != null &&
+        savedTotal != null &&
+        savedTotal > 0 &&
+        (savedPage >= savedTotal ||
+            savedPage >= savedTotal - 1 ||
+            (savedPage / savedTotal) >= 0.95);
     final alreadyRead =
-        chapter.number! < (readChapter?.number ?? 0.0) || _isPageComplete;
+        chapter.number! < (readChapter?.number ?? 0.0) || isPageComplete;
     return StaggeredAnimatedItemWrapper(
       child: AnymexOnTap(
           onTap: onTap,
@@ -886,10 +884,10 @@ class ContinueChapterButton extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Continue: ${this.chapter.title}'.toUpperCase(),
-              style: this.textStyle ??
+              'Continue: ${chapter.title}'.toUpperCase(),
+              style: textStyle ??
                   TextStyle(
-                    color: this.textColor,
+                    color: textColor,
                     fontFamily: 'Poppins-SemiBold',
                   ),
             ),
@@ -898,7 +896,7 @@ class ContinueChapterButton extends StatelessWidget {
               color: context.colors.primary,
               height: 2,
               width: 6 *
-                  'Chapter ${this.chapter.number}: ${this.chapter.title}'
+                  'Chapter ${chapter.number}: ${chapter.title}'
                       .length
                       .toDouble(),
             ),

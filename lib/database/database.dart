@@ -7,7 +7,6 @@ import 'package:anymex/utils/logger.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart'
     hide isar;
 import 'package:isar_community/isar.dart';
-import 'package:http/http.dart';
 import 'package:get/get.dart';
 import 'package:anymex/controllers/network/network_manager.dart';
 import 'package:path/path.dart' as path;

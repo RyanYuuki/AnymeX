@@ -39,16 +39,16 @@ class ChapterListItem extends StatelessWidget {
         offlineStorage.getReadChapter(anilistData.id, chapter.number!);
     final currentChapterLink = continueChapter?.link ?? '';
     final isSelected = chapter.link == currentChapterLink;
-    final _novSavedPage = savedChaps?.pageNumber;
-    final _novSavedTotal = savedChaps?.totalPages;
-    final _isPageComplete = _novSavedPage != null &&
-        _novSavedTotal != null &&
-        _novSavedTotal > 0 &&
-        (_novSavedPage >= _novSavedTotal ||
-            _novSavedPage >= _novSavedTotal - 1 ||
-            (_novSavedPage / _novSavedTotal) >= 0.95);
+    final novSavedPage = savedChaps?.pageNumber;
+    final novSavedTotal = savedChaps?.totalPages;
+    final isPageComplete = novSavedPage != null &&
+        novSavedTotal != null &&
+        novSavedTotal > 0 &&
+        (novSavedPage >= novSavedTotal ||
+            novSavedPage >= novSavedTotal - 1 ||
+            (novSavedPage / novSavedTotal) >= 0.95);
     final alreadyRead = chapter.number! < (readChapter?.number ?? 0.0) ||
-        _isPageComplete ||
+        isPageComplete ||
         (savedChaps != null &&
             savedChaps.currentOffset != null &&
             savedChaps.maxOffset != null &&

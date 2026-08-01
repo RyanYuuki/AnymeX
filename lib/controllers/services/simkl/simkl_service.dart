@@ -452,7 +452,7 @@ class SimklService extends GetxController
           Obx(() {
             final list = communityService.getFilteredCommunityMovies();
             return buildUnderratedSection('Community Recommendations', list,
-                onSeeAll: () => navigate(() => CommunityRecommendationsPage(
+                onSeeAll: () => navigate(() => const CommunityRecommendationsPage(
                       category: 'movies',
                       type: ItemType.anime,
                     )));
@@ -497,7 +497,7 @@ class SimklService extends GetxController
           Obx(() {
             final list = communityService.getFilteredCommunityShows();
             return buildUnderratedSection('Community Recommendations', list,
-                onSeeAll: () => navigate(() => CommunityRecommendationsPage(
+                onSeeAll: () => navigate(() => const CommunityRecommendationsPage(
                       category: 'shows',
                       type: ItemType.anime,
                     )));

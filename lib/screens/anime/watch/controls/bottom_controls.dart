@@ -336,11 +336,14 @@ class BottomControls extends StatelessWidget {
 
       for (var id in ids) {
         if (!isVisible(id)) continue;
-        if (id == 'source' && controller.isOffline.value)
+        if (id == 'source' && controller.isOffline.value) {
           continue;
+        }
         if (id == 'tracks' &&
             (controller.embeddedAudioTracks.value.isEmpty &&
-                controller.embeddedSubs.value.isEmpty)) continue;
+                controller.embeddedSubs.value.isEmpty)) {
+          continue;
+        }
         if (id == 'orientation' && !(Platform.isAndroid || Platform.isIOS)) {
           continue;
         }

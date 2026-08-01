@@ -13,7 +13,6 @@ import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
@@ -480,7 +479,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
                                       child: s.name
                                               .toLowerCase()
                                               .contains('apple')
-                                          ? AnymeXImage(
+                                          ? const AnymeXImage(
                                               imageUrl:
                                                   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVCJpAHzn91VMfwirwAbAmV-ONO02UjmCj2w&s",
                                               height: 20,

@@ -1,6 +1,5 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/community_service.dart';
-import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/screens/community/user_recommendations_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';

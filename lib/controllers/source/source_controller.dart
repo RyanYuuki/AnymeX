@@ -14,7 +14,6 @@ import 'package:anymex/screens/settings/sub_settings/settings_extension_manager.
 import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
-import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex/screens/extensions/widgets/plugin_manager.dart';

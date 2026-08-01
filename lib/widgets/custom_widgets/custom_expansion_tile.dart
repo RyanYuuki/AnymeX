@@ -31,9 +31,9 @@ class AnymexExpansionTile extends StatelessWidget {
         collapsedShape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
-            top: const Radius.circular(16),
+            top: Radius.circular(16),
           ),
         ),
         leading: leading,
