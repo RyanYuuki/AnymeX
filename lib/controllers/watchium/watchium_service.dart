@@ -650,6 +650,9 @@ class WatchiumService extends GetxController {
     if (_currentRoomCode == null) return;
     _socket?.emit('party:leave', {'code': _currentRoomCode});
     _leaveRoomInternal();
+    // Disconnect socket to guarantee backend cleanup.
+    // Reconnects automatically on next join.
+    _socket?.disconnect();
   }
 
   /// Leave the room and close the player screen.
@@ -675,10 +678,13 @@ class WatchiumService extends GetxController {
     _isHost = false;
     isHost.value = false;
     inRoom.value = false;
+    isJoining.value = false;
     isPartyPaneOpened.value = false;
+    roomCode.value = '';
     roomState.value = null;
     chatMessages.clear();
     reactions.clear();
+    error.value = '';
     Logger.d('Room state cleared (leave internal)', 'WATCHIUM');
   }
 
