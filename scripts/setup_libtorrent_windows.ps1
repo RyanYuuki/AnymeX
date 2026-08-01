@@ -6,17 +6,39 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-$pubCache = if ($env:PUB_CACHE) { $env:PUB_CACHE } else { Join-Path $env:LOCALAPPDATA 'Pub\Cache' }
-$ltDir = Get-ChildItem -Path "$pubCache\hosted\pub.dev" -Directory -Filter 'libtorrent_flutter-*' -ErrorAction SilentlyContinue |
-    Select-Object -First 1
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$localPath = Resolve-Path (Join-Path $scriptDir "../../AnymeXExtensionRuntimeBridge/packages/libtorrent_flutter") -ErrorAction SilentlyContinue
 
-if (-not $ltDir) {
-    Write-Error "libtorrent_flutter not found in pub cache at $pubCache\hosted\pub.dev. Did you run 'flutter pub get' first?"
-    exit 1
+$ltDirFullName = ""
+$ltVersion = ""
+
+if ($localPath -and (Test-Path $localPath)) {
+    $ltDirFullName = $localPath.Path
+    $pubspecPath = Join-Path $ltDirFullName "pubspec.yaml"
+    if (Test-Path $pubspecPath) {
+        $versionLine = Get-Content $pubspecPath | Select-String "^version:"
+        if ($versionLine) {
+            $ltVersion = ($versionLine -split ' ')[1].Trim()
+            Write-Host "Found local libtorrent_flutter package at $ltDirFullName (version $ltVersion)" -ForegroundColor Cyan
+        }
+    }
 }
 
-$ltVersion = $ltDir.Name -replace '^libtorrent_flutter-', ''
-$prebuiltBase = Join-Path $ltDir.FullName "prebuilt\windows"
+if (-not $ltVersion) {
+    $pubCache = if ($env:PUB_CACHE) { $env:PUB_CACHE } else { Join-Path $env:LOCALAPPDATA 'Pub\Cache' }
+    $ltDir = Get-ChildItem -Path "$pubCache\hosted\pub.dev" -Directory -Filter 'libtorrent_flutter-*' -ErrorAction SilentlyContinue |
+        Select-Object -First 1
+
+    if (-not $ltDir) {
+        Write-Error "libtorrent_flutter not found locally or in pub cache at $pubCache\hosted\pub.dev. Did you run 'flutter pub get' first?"
+        exit 1
+    }
+    $ltDirFullName = $ltDir.FullName
+    $ltVersion = $ltDir.Name -replace '^libtorrent_flutter-', ''
+    Write-Host "Found pub cache libtorrent_flutter $ltVersion at $ltDirFullName" -ForegroundColor Cyan
+}
+
+$prebuiltBase = Join-Path $ltDirFullName "prebuilt\windows"
 $prebuiltDll  = Join-Path $prebuiltBase "$Arch\libtorrent_flutter.dll"
 
 if (Test-Path $prebuiltDll) {
@@ -24,7 +46,7 @@ if (Test-Path $prebuiltDll) {
     exit 0
 }
 
-Write-Host "Found libtorrent_flutter $ltVersion at $($ltDir.FullName)"
+Write-Host "Setting up prebuilt binaries for libtorrent_flutter v$ltVersion..."
 New-Item -ItemType Directory -Path $prebuiltBase -Force | Out-Null
 
 $zipUrl  = "https://github.com/ayman708-UX/libtorrent_flutter/releases/download/v$ltVersion/windows-native-lib-$Arch.zip"
