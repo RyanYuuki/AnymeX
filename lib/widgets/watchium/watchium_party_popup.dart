@@ -5,6 +5,7 @@ import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/watchium/watchium_party_settings.dart';
 
+import 'dart:async';
 import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
@@ -62,6 +63,7 @@ class _WatchiumPartyPopupContentState
   final ScrollController _chatScrollController = ScrollController();
   Worker? _chatWorker;
   Worker? _reactionWorker;
+  Timer? _durationTicker;
   bool _showJumpToBottom = false;
   static const _quickReactions = ['😂', '💀', '🔥', '👍', '❤️', '😮', '👏', '😭'];
 
@@ -74,6 +76,11 @@ class _WatchiumPartyPopupContentState
     _reactionWorker = ever(widget.watchium.reactions, _scrollChatToBottom);
     _chatScrollController.addListener(_onChatScroll);
     _jumpToBottomAfterFrame();
+    _durationTicker = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted && _currentTab == _PartyTab.info) {
+        setState(() {});
+      }
+    });
   }
 
   void _scrollChatToBottom(_) {
@@ -119,6 +126,7 @@ class _WatchiumPartyPopupContentState
 
   @override
   void dispose() {
+    _durationTicker?.cancel();
     _chatWorker?.dispose();
     _reactionWorker?.dispose();
     _chatScrollController.removeListener(_onChatScroll);
