@@ -197,11 +197,11 @@ class WatchiumSyncController extends GetxController {
 
       if (matched != null) {
         Logger.i('WatchiumSync: Auto-switching to ep ${content.episodeNumber}, server: ${matched.quality ?? matched.originalUrl}', 'WATCHIUM_SYNC');
-        playerController.selectedVideo.value = matched;
+        playerController.setServerTrack(matched);
       } else {
-        // No matching server — open server selector for the user
-        Logger.i('WatchiumSync: No matching server for ep ${content.episodeNumber}, opening selector', 'WATCHIUM_SYNC');
-        playerController.isEpisodePaneOpened.value = true;
+        // No servers at all — open source selector so user can see there are none
+        Logger.i('WatchiumSync: No servers for ep ${content.episodeNumber}, opening source selector', 'WATCHIUM_SYNC');
+        playerController.isSourcePaneOpened.value = true;
       }
     } finally {
       Future.microtask(() => _applyingSync = false);
