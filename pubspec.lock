@@ -1287,9 +1287,11 @@ packages:
   libtorrent_flutter:
     dependency: "direct overridden"
     description:
-      path: "../AnymeXExtensionRuntimeBridge/packages/libtorrent_flutter"
-      relative: true
-    source: path
+      path: "packages/libtorrent_flutter"
+      ref: main
+      resolved-ref: fcf1d503156b3f9144095345d0dc673366329953
+      url: "https://github.com/RyanYuuki/AnymeXExtensionRuntimeBridge.git"
+    source: git
     version: "1.8.5"
   lints:
     dependency: transitive

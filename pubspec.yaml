@@ -142,7 +142,10 @@ dev_dependencies:
 
 dependency_overrides:
   libtorrent_flutter:
-    path: ../AnymeXExtensionRuntimeBridge/packages/libtorrent_flutter
+    git:
+      url: https://github.com/RyanYuuki/AnymeXExtensionRuntimeBridge.git
+      ref: main
+      path: packages/libtorrent_flutter
   flutter_inappwebview: 6.2.0-beta.3
   media_kit:
     git:
