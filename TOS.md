@@ -47,6 +47,9 @@ AnymeX uses the following services to retrieve supplementary metadata and enrich
 - [**Google Books**](https://books.google.com): Used in the barcode scanner feature to look up books and novels
 - [**OpenLibrary**](https://openlibrary.org): Used in the barcode scanner feature as a supplementary book data source
 
+### Novel Reader
+- [**Dictionary API**](https://api.dictionaryapi.dev/api/v2/entries/en/): Used in the novel reader to retrieve word definitions and linguistic information
+
 ### Social Features
 - [**Watch Together (Watchium)**](https://github.com/Shebyyy/AnymeX): Real-time synchronized watching feature powered by **Watchium**. Used to coordinate playback, episode sync, and in-room chat among users. See the **Watch Together (Watchium)** section below for details.
 - [**Comments (Commentum v2)**](https://github.com/Shebyyy/AnymeX): Built-in comments system powered by a third-party backend service. See the **Comments System & Comment Policy** section below for details.
