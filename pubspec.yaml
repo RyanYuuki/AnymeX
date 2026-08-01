@@ -146,7 +146,7 @@ dependency_overrides:
       url: https://github.com/RyanYuuki/AnymeXExtensionRuntimeBridge.git
       ref: main
       path: packages/libtorrent_flutter
-  flutter_inappwebview: 6.2.0-beta.3
+  flutter_inappwebview: 6.1.5
   media_kit:
     git:
       url: https://github.com/Predidit/media-kit.git
