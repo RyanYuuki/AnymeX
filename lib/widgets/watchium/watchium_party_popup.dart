@@ -255,7 +255,32 @@ class _WatchiumPartyPopupContentState
 
   void _leaveRoom() {
     Logger.i('Leave room from party popup', 'WATCHIUM_UI');
-    widget.watchium.leaveRoom();
+    _showLeaveConfirmDialog();
+  }
+
+  Future<void> _showLeaveConfirmDialog() async {
+    final ctx = context;
+    if (!ctx.mounted) return;
+    final result = await showDialog<bool>(
+      context: ctx,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Leave Watch Together?'),
+        content: const Text('You will leave the room and stop watching with everyone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Leave'),
+          ),
+        ],
+      ),
+    );
+    if (result == true) {
+      widget.watchium.leaveRoomAndClosePlayer();
+    }
   }
 
   Widget _buildTabBar(ColorScheme cs, ThemeData theme) {

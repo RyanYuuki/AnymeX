@@ -5,6 +5,8 @@ import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/database/isar_models/video.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/utils/logger.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 /// How far off (seconds) before showing the "not synced" indicator.
@@ -132,7 +134,7 @@ class WatchiumSyncController extends GetxController {
         if (epKey != _lastSyncedEpisodeNumber) {
           _lastSyncedEpisodeNumber = epKey;
           Logger.i('WatchiumSync: Host changed content to ep ${content.episodeNumber}', 'WATCHIUM_SYNC');
-          _updateJoinerTracks(content);
+          _onHostEpisodeChange(content);
         }
       }
 
@@ -148,16 +150,87 @@ class WatchiumSyncController extends GetxController {
     // Watch for followHost mode changes while in room
     _followModeWorker = ever(_watchium.followHost, (isFollowing) {
       if (isFollowing) {
-        // Switched to follow mode — immediately sync to host
-        final playback = _watchium.roomState.value?.playback;
-        if (playback != null) {
-          _applyHostSync(playback);
+        // Switched to follow mode — immediately sync to host (including episode)
+        final state = _watchium.roomState.value;
+        if (state != null) {
+          final content = state.content;
+          if (content != null) {
+            _lastSyncedEpisodeNumber = '';
+            _onHostEpisodeChange(content);
+          }
+          final playback = state.playback;
+          if (playback != null) {
+            _applyHostSync(playback);
+          }
         }
       } else {
         // Switched to freedom mode — clear out-of-sync flag
         isOutOfSync.value = false;
       }
     });
+  }
+
+  /// Handle host episode change — different behavior based on sync mode.
+  void _onHostEpisodeChange(WatchiumAnimeContent content) {
+    if (content.availableServers.isEmpty) return;
+
+    if (_watchium.followHost.value) {
+      // Follow mode: auto-switch to host's episode
+      _applyHostEpisodeChange(content);
+    } else {
+      // Freedom mode: just notify, don't auto-switch
+      _showHostEpisodeSnackbar(content);
+    }
+  }
+
+  /// Follow mode: switch to the host's episode.
+  /// Updates tracks and loads the best matching server.
+  void _applyHostEpisodeChange(WatchiumAnimeContent content) {
+    _applyingSync = true;
+    try {
+      final videos = content.availableServers.map((s) => s.toVideo()).toList();
+      playerController.episodeTracks.value = videos;
+
+      // Try to find the best matching server (same quality/name as current)
+      final previousTrack = playerController.selectedVideo.value;
+      final matched = _findBestMatchingTrack(videos, previousTrack);
+
+      if (matched != null) {
+        Logger.i('WatchiumSync: Auto-switching to ep ${content.episodeNumber}, server: ${matched.quality ?? matched.originalUrl}', 'WATCHIUM_SYNC');
+        playerController.selectedVideo.value = matched;
+      } else {
+        // No matching server — open server selector for the user
+        Logger.i('WatchiumSync: No matching server for ep ${content.episodeNumber}, opening selector', 'WATCHIUM_SYNC');
+        playerController.isEpisodePaneOpened.value = true;
+      }
+    } finally {
+      Future.microtask(() => _applyingSync = false);
+    }
+  }
+
+  /// Find the best matching video track based on the previous selection.
+  Video? _findBestMatchingTrack(List<Video> tracks, Video? previous) {
+    if (previous == null || tracks.isEmpty) return tracks.isNotEmpty ? tracks.first : null;
+
+    // Try exact URL match
+    final exactMatch = tracks.where((t) => t.url == previous.url || t.originalUrl == previous.originalUrl);
+    if (exactMatch.isNotEmpty) return exactMatch.first;
+
+    // Try quality match
+    if (previous.quality != null) {
+      final qualityMatch = tracks.where((t) => t.quality == previous.quality);
+      if (qualityMatch.isNotEmpty) return qualityMatch.first;
+    }
+
+    // Fall back to first track
+    return tracks.first;
+  }
+
+  /// Freedom mode: show a snackbar informing the member that host changed episode.
+  void _showHostEpisodeSnackbar(WatchiumAnimeContent content) {
+    final title = content.animeTitle.isNotEmpty ? content.animeTitle : 'the anime';
+    snackBar('Host switched to Episode ${content.episodeNumber} of $title');
+    isOutOfSync.value = true;
   }
 
   /// Free-watch: check if local playback has drifted from host position.
@@ -203,15 +276,32 @@ class WatchiumSyncController extends GetxController {
   }
 
   /// Called when the user taps "Sync to Host".
-  /// Seeks to the host's current position and clears the out-of-sync flag.
+  /// Handles both episode change and position sync.
   void syncToHost() {
-    final playback = _watchium.roomState.value?.playback;
+    final state = _watchium.roomState.value;
+    if (state == null) {
+      Logger.w('syncToHost: no room state', 'WATCHIUM_SYNC');
+      return;
+    }
+    final playback = state.playback;
     if (playback == null) {
       Logger.w('syncToHost: no playback data', 'WATCHIUM_SYNC');
       return;
     }
     _applyingSync = true;
     try {
+      // If host is on a different episode, switch first
+      final content = state.content;
+      if (content != null) {
+        final epKey = '${content.animeId}-${content.episodeNumber}';
+        if (epKey != _lastSyncedEpisodeNumber) {
+          _lastSyncedEpisodeNumber = epKey;
+          _applyHostEpisodeChange(content);
+          // After episode switch, position sync will happen via roomState watcher
+          return;
+        }
+      }
+
       final hostPos = playback.positionSec;
       Logger.i('WatchiumSync: Manual sync to host at ${hostPos.toStringAsFixed(1)}s', 'WATCHIUM_SYNC');
       playerController.seekTo(Duration(seconds: hostPos.round()));
@@ -224,17 +314,6 @@ class WatchiumSyncController extends GetxController {
     } finally {
       Future.microtask(() => _applyingSync = false);
     }
-  }
-
-  void _updateJoinerTracks(WatchiumAnimeContent content) {
-    if (content.availableServers.isEmpty) return;
-
-    // Convert WatchiumAnimeServers to Video models and update the player's
-    // episodeTracks so the joiner can pick from them.
-    final videos = content.availableServers.map((s) => s.toVideo()).toList();
-    playerController.episodeTracks.value = videos;
-
-    Logger.i('WatchiumSync: Updated joiner tracks with ${videos.length} servers', 'WATCHIUM_SYNC');
   }
 
   // ---- Teardown ----

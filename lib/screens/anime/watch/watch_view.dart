@@ -89,8 +89,6 @@ class _WatchScreenState extends State<WatchScreen> {
       final watchium = Get.find<WatchiumService>();
 
       // React to inRoom changes — create/destroy sync controller dynamically
-      // This handles both: opening player while already in room AND
-      // creating/joining a room from within the player
       _inRoomWorker = ever(watchium.inRoom, (inRoom) {
         if (inRoom) {
           _ensureSyncController();
@@ -110,7 +108,6 @@ class _WatchScreenState extends State<WatchScreen> {
 
   void _ensureSyncController() {
     try {
-      // Use Get.put with tag to avoid conflicts if somehow called twice
       Get.put(WatchiumSyncController(playerController: controller),
           tag: 'watchiumSync');
     } catch (_) {
@@ -126,6 +123,44 @@ class _WatchScreenState extends State<WatchScreen> {
     }
   }
 
+  Future<bool> _onWillPop() async {
+    try {
+      final watchium = Get.find<WatchiumService>();
+      if (watchium.inRoom.value) {
+        return await _showLeaveConfirmDialog();
+      }
+    } catch (_) {}
+    return true;
+  }
+
+  Future<bool> _showLeaveConfirmDialog() async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Leave Watch Together?'),
+        content: const Text('You will leave the room and stop watching with everyone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Leave'),
+          ),
+        ],
+      ),
+    );
+    if (result == true) {
+      try {
+        final watchium = Get.find<WatchiumService>();
+        watchium.leaveRoom();
+      } catch (_) {}
+      return true;
+    }
+    return false;
+  }
+
   @override
   void dispose() {
     _inRoomWorker?.dispose();
@@ -136,92 +171,102 @@ class _WatchScreenState extends State<WatchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Obx(() {
-        final isPip = controller.isPipMode.value;
-        return Stack(
-          children: [
-            Obx(() => KeyedSubtree(
-                  key: ValueKey(controller.playerReloadVersion.value),
-                  child: controller.videoWidget,
-                )),
-            if (!PlayerKeys.useLibass.get<bool>(false))
-              SubtitleText(controller: controller),
-            if (!isPip) ...[
-              PlayerOverlay(controller: controller),
-              BufferingOverlay(controller: controller),
-              DoubleTapSeekWidget(
-                controller: controller,
-              ),
-              const Align(
-                alignment: Alignment.center,
-                child: ThemedCenterControls(),
-              ),
-              const Align(
-                alignment: Alignment.topCenter,
-                child: ThemedTopControls(),
-              ),
-              const Align(
-                alignment: Alignment.bottomCenter,
-                child: ThemedBottomControls(),
-              ),
-              MediaIndicatorBuilder(
-                isVolumeIndicator: false,
-                controller: controller,
-              ),
-              MediaIndicatorBuilder(
-                isVolumeIndicator: true,
-                controller: controller,
-              ),
-              ShaderOsd(controller: controller),
-              Positioned(
-                right: 0,
-                top: 0,
-                bottom: 0,
-                left: 0,
-                child: SourcePopup(controller: controller),
-              ),
-              Positioned(
-                right: 0,
-                top: 0,
-                bottom: 0,
-                left: 0,
-                child: TracksPopup(controller: controller),
-              ),
-              Positioned(
-                right: 0,
-                top: 0,
-                bottom: 0,
-                left: 0,
-                child: SyncSubsPopup(controller: controller),
-              ),
-              Positioned(
-                right: 0,
-                top: 0,
-                bottom: 0,
-                left: 0,
-                child: EpisodesPane(controller: controller),
-              ),
-              Positioned(
-                right: 0,
-                top: 0,
-                bottom: 0,
-                left: 0,
-                child: SpeedPopup(controller: controller),
-              ),
-              const Positioned(
-                right: 0,
-                top: 0,
-                bottom: 0,
-                left: 0,
-                child: WatchiumPartyPopup(),
-              ),
-              const WatchiumOverlay(),
-              const _WatchiumOverlays(),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) async {
+        if (didPop) return;
+        final shouldPop = await _onWillPop();
+        if (shouldPop && mounted) {
+          Navigator.of(context).pop();
+        }
+      },
+      child: Scaffold(
+        body: Obx(() {
+          final isPip = controller.isPipMode.value;
+          return Stack(
+            children: [
+              Obx(() => KeyedSubtree(
+                    key: ValueKey(controller.playerReloadVersion.value),
+                    child: controller.videoWidget,
+                  )),
+              if (!PlayerKeys.useLibass.get<bool>(false))
+                SubtitleText(controller: controller),
+              if (!isPip) ...[
+                PlayerOverlay(controller: controller),
+                BufferingOverlay(controller: controller),
+                DoubleTapSeekWidget(
+                  controller: controller,
+                ),
+                const Align(
+                  alignment: Alignment.center,
+                  child: ThemedCenterControls(),
+                ),
+                const Align(
+                  alignment: Alignment.topCenter,
+                  child: ThemedTopControls(),
+                ),
+                const Align(
+                  alignment: Alignment.bottomCenter,
+                  child: ThemedBottomControls(),
+                ),
+                MediaIndicatorBuilder(
+                  isVolumeIndicator: false,
+                  controller: controller,
+                ),
+                MediaIndicatorBuilder(
+                  isVolumeIndicator: true,
+                  controller: controller,
+                ),
+                ShaderOsd(controller: controller),
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  bottom: 0,
+                  left: 0,
+                  child: SourcePopup(controller: controller),
+                ),
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  bottom: 0,
+                  left: 0,
+                  child: TracksPopup(controller: controller),
+                ),
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  bottom: 0,
+                  left: 0,
+                  child: SyncSubsPopup(controller: controller),
+                ),
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  bottom: 0,
+                  left: 0,
+                  child: EpisodesPane(controller: controller),
+                ),
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  bottom: 0,
+                  left: 0,
+                  child: SpeedPopup(controller: controller),
+                ),
+                const Positioned(
+                  right: 0,
+                  top: 0,
+                  bottom: 0,
+                  left: 0,
+                  child: WatchiumPartyPopup(),
+                ),
+                const WatchiumOverlay(),
+                const _WatchiumOverlays(),
+              ],
             ],
-          ],
-        );
-      }),
+          );
+        }),
+      ),
     );
   }
 }
