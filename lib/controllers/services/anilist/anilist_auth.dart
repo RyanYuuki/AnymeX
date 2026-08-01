@@ -2,6 +2,7 @@
 
 import 'package:anymex/utils/oauth_helper.dart';
 import 'dart:convert';
+import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
 
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
@@ -194,19 +195,24 @@ class AnilistAuth extends GetxController {
   }
 
   Future<void> login(BuildContext context) async {
-    final selectedMethod = await showModalBottomSheet<String>(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (context) => _buildLoginBottomSheet(context),
+    final selectedMethod = await AnymexSheet.custom<String>(
+      loginSheetHelper(
+        context: context,
+        title: 'Login to AniList',
+        serviceName: 'AniList',
+        showTokenOption: true,
+      ),
+      context,
+      showDragHandle: true,
     );
 
-    if (selectedMethod == null) return;
+    if (selectedMethod == null || !context.mounted) return;
 
     String clientId = dotenv.env['AL_CLIENT_ID'] ?? '';
     String clientSecret = dotenv.env['AL_CLIENT_SECRET'] ?? '';
 
-    if (selectedMethod == 'browser') {
+    if (selectedMethod.startsWith('browser')) {
+      final forceWebAuth = selectedMethod == 'browser_external';
       final url =
           'https://anilist.co/api/v2/oauth/authorize?client_id=$clientId&redirect_uri=anymex://callback&response_type=code';
       try {
@@ -214,6 +220,7 @@ class AnilistAuth extends GetxController {
           context: context,
           url: url,
           callbackUrlScheme: 'anymex',
+          forceWebAuth: forceWebAuth,
         );
         if (result != null) {
           final code = Uri.parse(result).queryParameters['code'];
@@ -228,124 +235,6 @@ class AnilistAuth extends GetxController {
     } else if (selectedMethod == 'token') {
       _showTokenInputDialog(context);
     }
-  }
-
-  Widget _buildLoginBottomSheet(BuildContext context) {
-    final theme = context.colors;
-
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.surface,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(28),
-          topRight: Radius.circular(28),
-        ),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Center(
-            child: Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: theme.onSurface.opaque(0.3),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            'Login to AniList',
-            style: TextStyle(
-              fontFamily: 'Poppins',
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: theme.onSurface,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 38),
-          _buildButton(
-            context,
-            onPressed: () => Navigator.pop(context, 'browser'),
-            icon: Icons.language,
-            label: 'Login from Browser',
-          ),
-          const SizedBox(height: 16),
-          _buildButton(
-            context,
-            onPressed: () => Navigator.pop(context, 'token'),
-            icon: Icons.vpn_key,
-            label: 'Login with Token',
-          ),
-          const SizedBox(height: 24),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildButton(
-    BuildContext context, {
-    required VoidCallback onPressed,
-    required IconData icon,
-    required String label,
-  }) {
-    final theme = context.colors;
-
-    return Material(
-      color: theme.surfaceContainer,
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        onTap: onPressed,
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: theme.primary.opaque(0.2),
-              width: 1,
-            ),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: theme.primary.opaque(0.15),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  icon,
-                  size: 24,
-                  color: theme.primary,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Text(
-                  label,
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: theme.onPrimaryContainer,
-                  ),
-                ),
-              ),
-              Icon(
-                Icons.arrow_forward_ios,
-                size: 18,
-                color: theme.onPrimaryContainer.opaque(0.5),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 
   void _showTokenInputDialog(BuildContext context) async {
@@ -2573,3 +2462,4 @@ class AnilistAuth extends GetxController {
     isLoggedIn.value = false;
   }
 }
+

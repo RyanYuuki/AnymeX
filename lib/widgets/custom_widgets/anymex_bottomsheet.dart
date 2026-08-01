@@ -1,4 +1,5 @@
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
 
 class AnymexSheet extends StatelessWidget {
@@ -96,4 +97,204 @@ class AnymexSheet extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget loginSheetHelper({
+  required BuildContext context,
+  required String title,
+  required String serviceName,
+  bool showTokenOption = false,
+}) {
+  final theme = Theme.of(context);
+  final colors = theme.colorScheme;
+
+  return Column(
+    mainAxisSize: MainAxisSize.min,
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        child: Row(
+          children: [
+            Icon(
+              Icons.login_rounded,
+              color: colors.primary,
+              size: 24,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.close_rounded),
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+            ),
+          ],
+        ),
+      ),
+      const Divider(height: 20, thickness: 1),
+      const SizedBox(height: 8),
+      AnymexOnTap(
+        onTap: () => Navigator.pop(context, 'browser_internal'),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: colors.surfaceContainer.withOpacity(0.3),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: colors.outline.withOpacity(0.12),
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                Icons.open_in_new_rounded,
+                color: colors.primary,
+                size: 22,
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Internal Browser',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Login inside the app (Recommended)',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: colors.onSurface.withOpacity(0.55),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: colors.onSurface.withOpacity(0.4),
+              ),
+            ],
+          ),
+        ),
+      ),
+      const SizedBox(height: 12),
+      AnymexOnTap(
+        onTap: () => Navigator.pop(context, 'browser_external'),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: colors.surfaceContainer.withOpacity(0.3),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: colors.outline.withOpacity(0.12),
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                Icons.explore_outlined,
+                color: colors.primary,
+                size: 22,
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'External Browser',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Login using your default browser',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: colors.onSurface.withOpacity(0.55),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: colors.onSurface.withOpacity(0.4),
+              ),
+            ],
+          ),
+        ),
+      ),
+      if (showTokenOption) ...[
+        const SizedBox(height: 12),
+        AnymexOnTap(
+          onTap: () => Navigator.pop(context, 'token'),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: colors.surfaceContainer.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: colors.outline.withOpacity(0.12),
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.vpn_key_rounded,
+                  color: colors.primary,
+                  size: 22,
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Login with Token',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Manually paste OAuth access token',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: colors.onSurface.withOpacity(0.55),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: colors.onSurface.withOpacity(0.4),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+      const SizedBox(height: 8),
+    ],
+  );
 }

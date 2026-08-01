@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math' show Random;
 import 'package:anymex/utils/oauth_helper.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
 
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
@@ -513,6 +514,21 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
   @override
   Future<void> login(BuildContext context) async {
+    final selectedMethod = await AnymexSheet.custom<String>(
+      loginSheetHelper(
+        context: context,
+        title: 'Login to MyAnimeList',
+        serviceName: 'MyAnimeList',
+        showTokenOption: false,
+      ),
+      context,
+      showDragHandle: true,
+    );
+
+    if (selectedMethod == null || !context.mounted) return;
+
+    final forceWebAuth = selectedMethod == 'browser_external';
+
     String clientId = dotenv.env['MAL_CLIENT_ID'] ?? '';
     String secret = dotenv.env['MAL_CLIENT_SECRET'] ?? '';
     final secureRandom = Random.secure();
@@ -532,6 +548,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
         context: context,
         url: url,
         callbackUrlScheme: 'anymex',
+        forceWebAuth: forceWebAuth,
       );
 
       if (result != null) {
@@ -871,3 +888,4 @@ class MalService extends GetxController implements BaseService, OnlineService {
     ]);
   }
 }
+
