@@ -171,6 +171,7 @@ class CenterControls extends StatelessWidget {
                   ),
                 ),
               ),
+            ),
           );
         }),
         const SizedBox(width: 32),

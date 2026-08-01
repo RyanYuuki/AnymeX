@@ -6,7 +6,6 @@ import 'package:anymex/database/isar_models/video.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 /// How far off (seconds) before showing the "not synced" indicator.
