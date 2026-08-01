@@ -2,12 +2,21 @@ import 'dart:io';
 
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart';
+import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class CenterControls extends StatelessWidget {
   const CenterControls({super.key});
+
+  bool _isFollowMode() {
+    try {
+      return Get.find<WatchiumService>().followHost.value;
+    } catch (_) {
+      return false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +63,11 @@ class CenterControls extends StatelessWidget {
           tooltip: 'Previous Episode',
         ),
         const SizedBox(width: 32),
-        Obx(() => GestureDetector(
+        Obx(() {
+          final isFollow = _isFollowMode();
+          return IgnorePointer(
+            ignoring: isFollow,
+            child: GestureDetector(
               onTap: controller.togglePlayPause,
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
@@ -80,7 +93,9 @@ class CenterControls extends StatelessWidget {
                         ),
                 ),
               ),
-            )),
+            ),
+          );
+        }),
         const SizedBox(width: 32),
         ControlButton(
           icon: Icons.skip_next_rounded,
@@ -109,15 +124,21 @@ class CenterControls extends StatelessWidget {
         const SizedBox(width: 28),
         ControlButton(
           icon: Icons.replay_30_rounded,
-          onPressed: () {
-            final currentPos = controller.currentPosition.value;
-            final newPos = currentPos - const Duration(seconds: 30);
-            controller.seekTo(newPos.isNegative ? Duration.zero : newPos);
-          },
+          onPressed: _isFollowMode()
+              ? null
+              : () {
+                  final currentPos = controller.currentPosition.value;
+                  final newPos = currentPos - const Duration(seconds: 30);
+                  controller.seekTo(newPos.isNegative ? Duration.zero : newPos);
+                },
           tooltip: 'Replay 30s',
         ),
         const SizedBox(width: 32),
-        Obx(() => MouseRegion(
+        Obx(() {
+          final isFollow = _isFollowMode();
+          return IgnorePointer(
+            ignoring: isFollow,
+            child: MouseRegion(
               cursor: SystemMouseCursors.click,
               child: GestureDetector(
                 onTap: controller.togglePlayPause,
@@ -150,16 +171,19 @@ class CenterControls extends StatelessWidget {
                   ),
                 ),
               ),
-            )),
+          );
+        }),
         const SizedBox(width: 32),
         ControlButton(
           icon: Icons.forward_30_rounded,
-          onPressed: () {
-            final currentPos = controller.currentPosition.value;
-            final duration = controller.episodeDuration.value;
-            final newPos = currentPos + const Duration(seconds: 30);
-            controller.seekTo(newPos > duration ? duration : newPos);
-          },
+          onPressed: _isFollowMode()
+              ? null
+              : () {
+                  final currentPos = controller.currentPosition.value;
+                  final duration = controller.episodeDuration.value;
+                  final newPos = currentPos + const Duration(seconds: 30);
+                  controller.seekTo(newPos > duration ? duration : newPos);
+                },
           tooltip: 'Forward 30s',
         ),
         const SizedBox(width: 28),

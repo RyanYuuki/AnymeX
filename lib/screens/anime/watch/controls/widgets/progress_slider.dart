@@ -1,5 +1,6 @@
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controller/player_utils.dart';
+import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/utils/aniskip.dart' as aniskip;
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/anymex_slider_m3.dart';
@@ -56,11 +57,21 @@ class _ProgressSliderState extends State<ProgressSlider> {
       final containerHeight = isDefaultStyle ? 27.0 : 27.0;
       final markerSize = isDefaultStyle ? 15.0 : 4.0;
 
-      return SizedBox(
-        height: containerHeight,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
+      bool _isFollowMode() {
+        try {
+          return Get.find<WatchiumService>().followHost.value;
+        } catch (_) {
+          return false;
+        }
+      }
+
+      return IgnorePointer(
+        ignoring: _isFollowMode(),
+        child: SizedBox(
+          height: containerHeight,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
             if (isDefaultStyle)
               AnymeXSliderM3(
                 theme: AnymeXSliderM3Theme(
@@ -124,6 +135,7 @@ class _ProgressSliderState extends State<ProgressSlider> {
               ),
           ],
         ),
+      ),
       );
     });
   }

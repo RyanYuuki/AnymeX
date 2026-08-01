@@ -73,6 +73,15 @@ class WatchiumService extends GetxController {
   /// True if the user can manage chat settings (host or cohost).
   bool get canModerateChat => isHost.value || isCohost;
 
+  /// Whether the member is following the host's playback (seek/play/pause locked).
+  /// Stored locally — each member chooses their own mode. Default true.
+  final RxBool followHost = (WatchiumKeys.followHost.get<bool>(true)).obs;
+
+  void setFollowHost(bool value) {
+    followHost.value = value;
+    WatchiumKeys.followHost.set(value);
+  }
+
   /// True if the user can send chat (not disabled, not announcement mode as member).
   bool get canSendChat {
     final state = roomState.value;

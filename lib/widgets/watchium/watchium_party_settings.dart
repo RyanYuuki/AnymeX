@@ -138,6 +138,11 @@ class _WatchiumPartySettingsState extends State<WatchiumPartySettings> {
 
         const SizedBox(height: 20),
 
+        // ── Sync Mode section (members only) ──
+        _buildSyncModeSection(cs, theme),
+
+        const SizedBox(height: 20),
+
         // ── Chat Moderation section (host + cohost only) ──
         _buildChatModerationSection(cs, theme),
       ],
@@ -186,6 +191,49 @@ class _WatchiumPartySettingsState extends State<WatchiumPartySettings> {
                 watchium.toggleChatSetting('chatDisabled', false);
               }
               watchium.toggleChatSetting('announcementMode', v);
+            },
+          ),
+        ],
+      );
+    });
+  }
+
+  Widget _buildSyncModeSection(ColorScheme cs, ThemeData theme) {
+    final watchium = Get.find<WatchiumService>();
+
+    return Obx(() {
+      // Only show for members (not host)
+      if (watchium.isHost.value) return const SizedBox.shrink();
+      if (!watchium.inRoom.value) return const SizedBox.shrink();
+
+      final isFollowing = watchium.followHost.value;
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _sectionHeader(cs, 'Sync Mode'),
+          const SizedBox(height: 8),
+          _buildSettingsToggle(
+            cs,
+            icon: Icons.link_rounded,
+            iconColor: Colors.purple,
+            title: 'Follow Host',
+            subtitle: 'Playback is locked to the host',
+            value: isFollowing,
+            onChanged: (v) {
+              watchium.setFollowHost(v);
+            },
+          ),
+          const SizedBox(height: 8),
+          _buildSettingsToggle(
+            cs,
+            icon: Icons.lock_open_rounded,
+            iconColor: Colors.teal,
+            title: 'Freedom Seek',
+            subtitle: 'Seek and control playback freely',
+            value: !isFollowing,
+            onChanged: (v) {
+              watchium.setFollowHost(!v);
             },
           ),
         ],

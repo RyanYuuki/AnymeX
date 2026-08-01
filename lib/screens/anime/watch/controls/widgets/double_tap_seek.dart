@@ -9,6 +9,7 @@ import 'package:anymex/screens/anime/watch/controller/player_utils.dart';
 import 'dart:async';
 
 import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:get/get.dart';
 
 class DoubleTapSeekWidget extends StatefulWidget {
@@ -102,20 +103,32 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
     super.dispose();
   }
 
+  bool _isFollowMode() {
+    try {
+      final watchium = Get.find<WatchiumService>();
+      return watchium.followHost.value;
+    } catch (_) {
+      return false;
+    }
+  }
+
   void _handleLeftSeek() {
     if (widget.controller.isLocked.value) return;
+    if (_isFollowMode()) return;
     HapticFeedback.lightImpact();
     _performSeek(isLeft: true);
   }
 
   void _handleRightSeek() {
     if (widget.controller.isLocked.value) return;
+    if (_isFollowMode()) return;
     HapticFeedback.lightImpact();
     _performSeek(isLeft: false);
   }
 
   void _performSeek({required bool isLeft}) {
     if (widget.controller.isLocked.value) return;
+    if (_isFollowMode()) return;
 
     setState(() {
       if (isLeft) {
@@ -285,6 +298,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
 
   void _onHorizontalDragStart(DragStartDetails details) {
     if (widget.controller.isLocked.value) return;
+    if (_isFollowMode()) return;
     if (_isHolding || _longPressStarted) return;
     if (!Get.find<Settings>().enableSlideToSeek) return;
 
@@ -307,6 +321,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
   void _onHorizontalDragUpdate(DragUpdateDetails details) {
     if (!_isHorizontalDragging) return;
     if (widget.controller.isLocked.value) return;
+    if (_isFollowMode()) return;
     if (!Get.find<Settings>().enableSlideToSeek) return;
 
     final screenWidth = MediaQuery.of(context).size.width;

@@ -23,6 +23,7 @@ class WatchiumSyncController extends GetxController {
   Worker? _seekWorker;
   Worker? _roomStateWorker;
   Worker? _isHostWorker;
+  Worker? _followModeWorker;
 
   String _lastSyncedEpisodeNumber = '';
   double _lastHostPositionSec = 0.0;
@@ -135,8 +136,27 @@ class WatchiumSyncController extends GetxController {
         }
       }
 
-      // Free-watch mode: show indicator if out of sync, don't auto-correct
-      _checkSyncStatus(playback);
+      if (_watchium.followHost.value) {
+        // Follow mode: auto-seek and auto play/pause
+        _applyHostSync(playback);
+      } else {
+        // Freedom mode: show indicator if out of sync, don't auto-correct
+        _checkSyncStatus(playback);
+      }
+    });
+
+    // Watch for followHost mode changes while in room
+    _followModeWorker = ever(_watchium.followHost, (isFollowing) {
+      if (isFollowing) {
+        // Switched to follow mode — immediately sync to host
+        final playback = _watchium.roomState.value?.playback;
+        if (playback != null) {
+          _applyHostSync(playback);
+        }
+      } else {
+        // Switched to freedom mode — clear out-of-sync flag
+        isOutOfSync.value = false;
+      }
     });
   }
 
@@ -152,6 +172,34 @@ class WatchiumSyncController extends GetxController {
     if (isOutOfSync.value && !wasOutOfSync) {
       Logger.d('WatchiumSync: Out of sync (diff=${diff.toStringAsFixed(1)}s)', 'WATCHIUM_SYNC');
     }
+  }
+
+  /// Follow mode: auto-seek and auto play/pause to match host.
+  void _applyHostSync(WatchiumPlayback playback) {
+    if (_applyingSync) return;
+    final hostPos = playback.positionSec;
+    final localPos = playerController.currentPosition.value.inSeconds;
+    final diff = (hostPos - localPos).abs();
+
+    // Auto-seek if drift > 1.5s
+    if (diff > 1.5) {
+      _applyingSync = true;
+      try {
+        Logger.d('WatchiumSync: Auto-sync to host (${localPos}s → ${hostPos.toStringAsFixed(1)}s)', 'WATCHIUM_SYNC');
+        playerController.seekTo(Duration(milliseconds: (hostPos * 1000).round()));
+      } finally {
+        Future.microtask(() => _applyingSync = false);
+      }
+    }
+
+    // Auto play/pause
+    if (playback.isPlaying && !playerController.isPlaying.value) {
+      playerController.play();
+    } else if (!playback.isPlaying && playerController.isPlaying.value) {
+      playerController.pause();
+    }
+
+    isOutOfSync.value = false;
   }
 
   /// Called when the user taps "Sync to Host".
@@ -202,6 +250,8 @@ class WatchiumSyncController extends GetxController {
     _seekWorker = null;
     _roomStateWorker?.dispose();
     _roomStateWorker = null;
+    _followModeWorker?.dispose();
+    _followModeWorker = null;
   }
 
   // ---- Helpers ----

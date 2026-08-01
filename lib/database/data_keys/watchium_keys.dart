@@ -4,6 +4,7 @@ enum WatchiumKeys {
   notifyOnMemberJoin,
   notifyOnMemberLeave,
   commentOverlay,
+  followHost,
   reactionOverlay,
   overlayPosition,
 }
