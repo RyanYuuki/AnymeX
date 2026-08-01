@@ -103,6 +103,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   String posterColor = '';
   int _sourceRequestVersion = 0;
   Worker? _activeSourceWorker;
+  Worker? _isAnifyWorker;
 
   int _beginSourceRequest() => ++_sourceRequestVersion;
   bool _isStaleSourceRequest(int requestId) =>
@@ -165,6 +166,14 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     _updateAnifyAvailabilityForSource();
     _activeSourceWorker = ever<Source?>(sourceController.activeSource, (_) {
       _updateAnifyAvailabilityForSource();
+    });
+    _isAnifyWorker = ever<bool>(isAnify, (useAnify) {
+      if (useAnify) {
+        applyAnifyCovers(customBaseEpisodes: _renewEpisodeData(_cloneEpisodes(rawEpisodes)));
+      } else {
+        episodeList.assignAll(_renewEpisodeData(_cloneEpisodes(rawEpisodes)));
+        _applyFillerInfo();
+      }
     });
     Future.delayed(const Duration(milliseconds: 500), () {
       _checkAnimePresence();
@@ -257,6 +266,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     _countdownTimer?.cancel();
     controller.dispose();
     _activeSourceWorker?.dispose();
+    _isAnifyWorker?.dispose();
 
     CommentPreloader.to.removePreloadedController(widget.media.id.toString());
     DiscordRPCController.instance.updateBrowsingPresence();
@@ -464,7 +474,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         setState(() {});
       }
       _updateAnifyAvailabilityForSource();
-      if (disableAnifyForCurrentSource.value) {
+      if (disableAnifyForCurrentSource.value || !isAnify.value) {
         return;
       }
       await applyAnifyCovers(requestId: activeRequestId);
@@ -477,9 +487,10 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     }
   }
 
-  Future<void> applyAnifyCovers({int? requestId}) async {
+  Future<void> applyAnifyCovers({int? requestId, List<Episode>? customBaseEpisodes}) async {
     final activeRequestId = requestId ?? _sourceRequestVersion;
-    final baseEpisodes = List<Episode>.from(episodeList);
+    final baseEpisodes = customBaseEpisodes ?? List<Episode>.from(episodeList);
+    if (baseEpisodes.isEmpty) return;
     final newEps = await AnilistData.fetchEpisodesFromAnify(
       widget.media.id.toString(),
       baseEpisodes,
