@@ -1187,7 +1187,7 @@ class _WatchiumPartyPopupContentState
     final durationStr = _formatDuration(duration);
     final code = state.code;
     final watchium = widget.watchium;
-    final inviteUrl = '${watchium.serverUrl}/join/$code?AnymeX';
+    final inviteUrl = '${watchium.serverUrl}/join/$code?anymex';
     final memberCount = state.members.where((m) => m.online).length;
 
     return ListView(
