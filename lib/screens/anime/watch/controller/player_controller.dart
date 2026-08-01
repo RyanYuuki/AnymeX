@@ -31,6 +31,7 @@ import 'package:flutter_media_session/flutter_media_session.dart';
 import 'package:flutter_media_session/flutter_media_session_platform_interface.dart';
 
 import 'package:anymex/utils/aniskip.dart' as aniskip;
+import 'package:anymex/utils/media_syncer.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/color_profiler.dart';
 import 'package:anymex/utils/sub_parser.dart';
@@ -979,19 +980,36 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     await _basePlayer.setRate(_sessionSpeed);
   }
 
-  void _initializeAniSkip() {
+  void _initializeAniSkip() async {
     isOPSkippedOnce.value = false;
     isEDSkippedOnce.value = false;
     isRecapSkippedOnce.value = false;
     currentSkipInterval.value = null;
     _cancelAutoSkipTimer();
     _autoSkipCancelledForCurrentSegment = false;
+    String malId = anilistData.idMal;
+    final serviceType = anilistData.serviceType;
+
+    if (serviceType.isMal) {
+      malId = anilistData.id;
+    } else if (malId.isEmpty || malId == '0') {
+      final aniId = anilistData.id;
+      if (aniId.isNotEmpty && aniId != '0' && serviceType.isAL && int.tryParse(aniId) != null) {
+        try {
+          final mappedId = await MediaSyncer.getMappedAnimeId(aniId, MappingType.anilist);
+          if (mappedId != null && mappedId.isNotEmpty) {
+            malId = mappedId;
+            anilistData.idMal = mappedId;
+          }
+        } catch (_) {}
+      }
+    }
 
     final episodeLengthSec =
         (currentEpisode.value.durationInMilliseconds ?? 0) ~/ 1000;
 
     final skipQuery = aniskip.SkipSearchQuery(
-      idMAL: anilistData.idMal,
+      idMAL: malId,
       episodeNumber: currentEpisode.value.number,
       episodeLength: episodeLengthSec,
     );
