@@ -1,8 +1,11 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/watchium/watchium_models.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/watch/watch_view.dart';
+import 'package:anymex/screens/anime/widgets/track_dialog.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
@@ -107,7 +110,7 @@ class _WatchiumServerSheetContent extends StatelessWidget {
     );
   }
 
-  void _openPlayer(BuildContext context, WatchiumAnimeServer server) {
+  void _openPlayer(BuildContext context, WatchiumAnimeServer server) async {
     final video = server.toVideo();
     if (video.url == null || video.url!.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -126,10 +129,11 @@ class _WatchiumServerSheetContent extends StatelessWidget {
       title: 'Episode ${content.episodeNumber}',
     );
 
+    final animeId = content.anilistId?.toString() ??
+        content.malId?.toString() ??
+        content.animeId;
     final media = Media(
-      id: content.anilistId?.toString() ??
-          content.malId?.toString() ??
-          content.animeId,
+      id: animeId,
       title: content.animeTitle,
       romajiTitle: content.animeTitle,
       poster: content.animeCoverImage ?? '?',
@@ -138,6 +142,16 @@ class _WatchiumServerSheetContent extends StatelessWidget {
       serviceType: ServicesType.anilist,
     );
 
+    final dbId = '${animeId}_${ServicesType.anilist.name}_anime';
+    final savedTracking = DynamicKeys.trackingPermission.get<bool?>(dbId);
+    bool shouldTrack = false;
+
+    if (savedTracking != null) {
+      shouldTrack = savedTracking;
+    } else if (General.shouldAskForTrack.get(true)) {
+      shouldTrack = await showTrackingDialog(context, dbId: dbId) ?? false;
+    }
+
     navigate(
       () => WatchScreen(
         episodeSrc: video,
@@ -145,7 +159,7 @@ class _WatchiumServerSheetContent extends StatelessWidget {
         episodeList: [episode],
         anilistData: media,
         episodeTracks: allTracks,
-        shouldTrack: false,
+        shouldTrack: shouldTrack,
       ),
     );
   }
