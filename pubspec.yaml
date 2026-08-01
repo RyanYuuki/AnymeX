@@ -24,7 +24,7 @@ dependencies:
         sdk: flutter
     flutter_dotenv: ^5.2.1
     flutter_html: ^3.0.0
-    flutter_inappwebview: 6.1.5
+    flutter_inappwebview: ^6.2.0-beta.2
     flutter_svg: ^2.0.10
     flutter_foreground_task: ^6.3.0
     flutter_markdown: ^0.7.6
@@ -146,7 +146,11 @@ dependency_overrides:
       url: https://github.com/RyanYuuki/AnymeXExtensionRuntimeBridge.git
       ref: main
       path: packages/libtorrent_flutter
-  flutter_inappwebview: 6.1.5
+  flutter_inappwebview:
+    git:
+      url: https://github.com/roshancodespace/flutter_inappwebview.git
+      ref: 928133d
+      path: flutter_inappwebview
   media_kit:
     git:
       url: https://github.com/Predidit/media-kit.git
