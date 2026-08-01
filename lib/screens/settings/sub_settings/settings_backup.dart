@@ -3,6 +3,7 @@ import 'package:anymex/controllers/sync/progress_sync_section.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/screens/settings/sub_settings/widgets/backup_and_restore_widgets.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
@@ -120,7 +121,8 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                 restoreAuthTokens: restoreAuthTokens,
               );
               if (mounted) {
-                snackBar("Backup restored successfully! Please restart the app.");
+                snackBar(
+                    "Backup restored successfully! Please restart the app.");
               }
             } catch (e) {
               if (mounted) {
@@ -164,8 +166,8 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                 const NestedHeader(title: 'Data Management'),
                 Expanded(
                   child: SingleChildScrollView(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -189,20 +191,32 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                         const SizedBox(height: 32),
                         const _SectionHeader(title: "Actions"),
                         const SizedBox(height: 16),
-                        ActionCard(
-                          title: "Create Backup",
-                          subtitle: "Secure your library to local storage",
-                          icon: Icons.backup_rounded,
-                          color: theme.colorScheme.primary,
-                          onTap: _handleBackup,
-                        ),
-                        const SizedBox(height: 16),
-                        ActionCard(
-                          title: "Restore Data",
-                          subtitle: "Import your .anymex backup file",
-                          icon: Icons.settings_backup_restore_rounded,
-                          color: theme.colorScheme.tertiary,
-                          onTap: () => _handleRestore(context),
+                        Container(
+                          decoration: BoxDecoration(
+                            color:
+                                theme.colorScheme.surfaceContainer.opaque(0.4),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 4, vertical: 8),
+                          child: Column(
+                            children: [
+                              CustomTile(
+                                title: "Create Backup",
+                                description:
+                                    "Secure your library to local storage",
+                                icon: Icons.backup_rounded,
+                                onTap: _handleBackup,
+                              ),
+                              const SizedBox(height: 16),
+                              CustomTile(
+                                title: "Restore Data",
+                                description: "Import your .anymex backup file",
+                                icon: Icons.settings_backup_restore_rounded,
+                                onTap: () => _handleRestore(context),
+                              ),
+                            ],
+                          ),
                         ),
                         const SizedBox(height: 32),
                         const _SectionHeader(title: "Cloud Sync"),
@@ -215,7 +229,8 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
               ],
             ),
             Obx(() {
-              if (controller.isBackingUp.value || controller.isRestoring.value) {
+              if (controller.isBackingUp.value ||
+                  controller.isRestoring.value) {
                 return Container(
                   color: Colors.black.withOpacity(0.55),
                   child: Center(

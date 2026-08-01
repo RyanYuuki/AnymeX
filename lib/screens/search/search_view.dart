@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
@@ -8,6 +6,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/novel/details/details_view.dart';
+import 'package:anymex/screens/search/widgets/extension_filter_sheet.dart';
 import 'package:anymex/screens/search/widgets/inline_search_history.dart';
 import 'package:anymex/screens/search/widgets/search_widgets.dart';
 import 'package:anymex/screens/settings/misc/sauce_finder_view.dart';
@@ -21,18 +20,22 @@ import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/media_items/media_item.dart';
 import 'package:anymex/widgets/media_items/media_peek_popup.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
+import 'package:anymex_extension_runtime_bridge/Services/Mangayomi/Eval/dart/model/filter.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/widgets/common/cards/card_gate.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
 enum ViewMode { grid, list }
 
 enum SearchState { initial, loading, success, error, empty }
+
+enum _ExtensionBrowseMode { search, popular, latest }
 
 class ExtensionSearchItem {
   final Source source;
@@ -68,8 +71,7 @@ class SearchPage extends StatefulWidget {
   State<SearchPage> createState() => _SearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage>
-    with TickerProviderStateMixin {
+class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
   final ServiceHandler _serviceHandler = Get.find<ServiceHandler>();
   final SourceController _sourceController = Get.find<SourceController>();
@@ -90,6 +92,11 @@ class _SearchPageState extends State<SearchPage>
   bool _hasMoreResults = false;
   String _lastSearchQuery = '';
   Map<String, dynamic> _lastApiFilters = {};
+
+  _ExtensionBrowseMode _extensionBrowseMode = _ExtensionBrowseMode.search;
+  List<dynamic> _extensionFilterList = [];
+  List<dynamic> _extensionActiveFilters = [];
+  bool _extensionFiltersLoaded = false;
 
   final FocusNode _searchFocusNode = FocusNode();
 
@@ -112,6 +119,10 @@ class _SearchPageState extends State<SearchPage>
     _selectedSource = widget.source is Source ? widget.source as Source : null;
     _initializeAnimations();
     _initializeData();
+
+    if (_selectedSource != null) {
+      _loadExtensionFilters(_selectedSource!);
+    }
   }
 
   void _initializeAnimations() {
@@ -206,7 +217,15 @@ class _SearchPageState extends State<SearchPage>
     Map<String, dynamic> currentFilters = filters ?? _activeFilters;
     bool hasActiveContent = currentFilters.isNotEmpty;
 
-    if (searchQuery.isEmpty && !isAdult && !hasActiveContent) {
+    if (searchQuery.isNotEmpty && isExtensionMode && _selectedSource != null) {
+      _extensionBrowseMode = _ExtensionBrowseMode.search;
+    }
+
+    final isExtBrowse = isExtensionMode &&
+        _selectedSource != null &&
+        _extensionBrowseMode != _ExtensionBrowseMode.search;
+
+    if (searchQuery.isEmpty && !isAdult && !hasActiveContent && !isExtBrowse) {
       setState(() {
         _searchState = SearchState.initial;
         _searchResults = null;
@@ -242,7 +261,13 @@ class _SearchPageState extends State<SearchPage>
 
     if (isExtensionMode) {
       if (_selectedSource != null) {
-        await _performSingleSourceSearch(searchQuery);
+        if (_extensionBrowseMode == _ExtensionBrowseMode.popular) {
+          await _performPopularBrowse();
+        } else if (_extensionBrowseMode == _ExtensionBrowseMode.latest) {
+          await _performLatestBrowse();
+        } else {
+          await _performSingleSourceSearch(searchQuery);
+        }
       } else {
         _performAllSourcesSearch(searchQuery);
       }
@@ -300,7 +325,8 @@ class _SearchPageState extends State<SearchPage>
 
   Future<void> _performSingleSourceSearch(String searchQuery) async {
     final queryKey = searchQuery.toLowerCase().trim();
-    final cacheKey = '${_selectedSource!.id}|$queryKey';
+    final filterKey = _extensionActiveFilters.hashCode.toString();
+    final cacheKey = '${_selectedSource!.id}|$queryKey|$filterKey';
 
     if (_singleSourceCache.containsKey(cacheKey)) {
       final cachedList = _singleSourceCache[cacheKey]!;
@@ -318,16 +344,16 @@ class _SearchPageState extends State<SearchPage>
       return;
     }
 
-    if (_allSourcesCache.containsKey(queryKey)) {
+    if (_extensionActiveFilters.isEmpty &&
+        _allSourcesCache.containsKey(queryKey)) {
       final allItems = _allSourcesCache[queryKey]!;
-      final match = allItems
-          .firstWhereOrNull((e) => e.source.id == _selectedSource!.id);
+      final match =
+          allItems.firstWhereOrNull((e) => e.source.id == _selectedSource!.id);
       if (match != null) {
         try {
           final rawList = await match.future;
-          final mediaList = rawList
-              .map((e) => Media.froDMedia(e, effectiveType))
-              .toList();
+          final mediaList =
+              rawList.map((e) => Media.froDMedia(e, effectiveType)).toList();
           _singleSourceCache[cacheKey] = mediaList;
           setState(() {
             _searchResults = List<Media>.from(mediaList);
@@ -346,7 +372,8 @@ class _SearchPageState extends State<SearchPage>
     }
 
     try {
-      final res = await _selectedSource!.methods.search(searchQuery, 1, []);
+      final res = await _selectedSource!.methods
+          .search(searchQuery, 1, _extensionActiveFilters);
       final rawList = res.list;
       if (!mounted) return;
 
@@ -374,6 +401,105 @@ class _SearchPageState extends State<SearchPage>
         _hasMoreResults = false;
       });
     }
+  }
+
+  Future<void> _performPopularBrowse() async {
+    try {
+      final pages = await _selectedSource!.methods.getPopular(1);
+      if (!mounted) return;
+      final mediaList =
+          pages.list.map((e) => Media.froDMedia(e, effectiveType)).toList();
+      setState(() {
+        _searchResults = mediaList;
+        _currentPage = 1;
+        _hasMoreResults = mediaList.isNotEmpty;
+        _lastSearchQuery = '';
+        _searchState =
+            mediaList.isEmpty ? SearchState.empty : SearchState.success;
+      });
+      if (_resultsScrollController.hasClients) {
+        _resultsScrollController.jumpTo(0);
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _searchState = SearchState.error;
+        _errorMessage = e.toString();
+        _hasMoreResults = false;
+      });
+    }
+  }
+
+  Future<void> _performLatestBrowse() async {
+    try {
+      final pages = await _selectedSource!.methods.getLatestUpdates(1);
+      if (!mounted) return;
+      final mediaList =
+          pages.list.map((e) => Media.froDMedia(e, effectiveType)).toList();
+      setState(() {
+        _searchResults = mediaList;
+        _currentPage = 1;
+        _hasMoreResults = mediaList.isNotEmpty;
+        _lastSearchQuery = '';
+        _searchState =
+            mediaList.isEmpty ? SearchState.empty : SearchState.success;
+      });
+      if (_resultsScrollController.hasClients) {
+        _resultsScrollController.jumpTo(0);
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _searchState = SearchState.error;
+        _errorMessage = e.toString();
+        _hasMoreResults = false;
+      });
+    }
+  }
+
+  Future<void> _loadExtensionFilters(Source source) async {
+    if (_extensionFiltersLoaded) return;
+    try {
+      final filters = await source.methods.getFilterList();
+      if (!mounted) return;
+      setState(() {
+        _extensionFilterList = filters;
+        _extensionFiltersLoaded = true;
+      });
+    } catch (_) {
+      if (mounted) {
+        setState(() => _extensionFiltersLoaded = true);
+      }
+    }
+  }
+
+  void _showExtensionFilterSheet() {
+    if (_extensionFilterList.isEmpty) return;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) => ExtensionFilterSheet(
+        filterList: _extensionFilterList,
+        activeFilters: List.from(_extensionActiveFilters),
+        onReset: () async {
+          final fresh = await _selectedSource!.methods.getFilterList();
+          if (mounted) {
+            setState(() {
+              _extensionFilterList = fresh;
+            });
+          }
+          return fresh;
+        },
+        onApply: (applied) {
+          setState(() {
+            _extensionActiveFilters = applied;
+            _singleSourceCache.clear();
+          });
+          _performSearch();
+        },
+      ),
+    );
   }
 
   void _performAllSourcesSearch(String searchQuery) {
@@ -428,11 +554,21 @@ class _SearchPageState extends State<SearchPage>
     try {
       List<Media> results = [];
       if (_selectedSource != null) {
-        final res = await _selectedSource!.methods
-            .search(_lastSearchQuery, nextPage, []);
-        results = res.list
-            .map((e) => Media.froDMedia(e, effectiveType))
-            .toList();
+        if (_extensionBrowseMode == _ExtensionBrowseMode.popular) {
+          final pages = await _selectedSource!.methods.getPopular(nextPage);
+          results =
+              pages.list.map((e) => Media.froDMedia(e, effectiveType)).toList();
+        } else if (_extensionBrowseMode == _ExtensionBrowseMode.latest) {
+          final pages =
+              await _selectedSource!.methods.getLatestUpdates(nextPage);
+          results =
+              pages.list.map((e) => Media.froDMedia(e, effectiveType)).toList();
+        } else {
+          final res = await _selectedSource!.methods
+              .search(_lastSearchQuery, nextPage, _extensionActiveFilters);
+          results =
+              res.list.map((e) => Media.froDMedia(e, effectiveType)).toList();
+        }
       } else {
         results = (await _serviceHandler.search(SearchParams(
               query: _lastSearchQuery,
@@ -633,47 +769,55 @@ class _SearchPageState extends State<SearchPage>
       child: Row(
         children: [
           if (isExtensionMode) ...[
-            Expanded(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Row(
-                  children: [
-                    _buildSourceChip(
-                      label: 'All Sources',
-                      isSelected: _selectedSource == null,
-                      onTap: () {
-                        setState(() {
-                          _selectedSource = null;
-                        });
-                        _performSearch();
-                      },
-                    ),
-                    const SizedBox(width: 8),
-                    for (final src in installedSources) ...[
+            if (_selectedSource != null) ...[
+              Expanded(child: _buildExtensionSingleSourceControls()),
+              const SizedBox(width: 8),
+              _buildViewModeToggle(),
+            ] else ...[
+              Expanded(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
+                    children: [
                       _buildSourceChip(
-                        label:
-                            '${src.name ?? "Src"} (${src.lang?.toUpperCase() ?? "ALL"})',
-                        iconUrl: src.iconUrl,
-                        isSelected: _selectedSource?.id == src.id,
+                        label: 'All Sources',
+                        isSelected: _selectedSource == null,
                         onTap: () {
                           setState(() {
-                            _selectedSource = src;
-                            _sourceController.setActiveSource(src);
+                            _selectedSource = null;
                           });
                           _performSearch();
                         },
                       ),
                       const SizedBox(width: 8),
+                      for (final src in installedSources) ...[
+                        _buildSourceChip(
+                          label:
+                              '${src.name ?? "Src"} (${src.lang?.toUpperCase() ?? "ALL"})',
+                          iconUrl: src.iconUrl,
+                          isSelected: _selectedSource?.id == src.id,
+                          onTap: () {
+                            setState(() {
+                              _selectedSource = src;
+                              _sourceController.setActiveSource(src);
+                              _extensionBrowseMode =
+                                  _ExtensionBrowseMode.search;
+                              _extensionActiveFilters = [];
+                              _extensionFiltersLoaded = false;
+                              _extensionFilterList = [];
+                            });
+                            _loadExtensionFilters(src);
+                            _performSearch();
+                          },
+                        ),
+                        const SizedBox(width: 8),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
               ),
-            ),
-            if (_selectedSource != null) ...[
-              const SizedBox(width: 12),
-              _buildViewModeToggle(),
             ],
           ] else ...[
             if (serviceHandler.serviceType.value == ServicesType.anilist ||
@@ -711,9 +855,82 @@ class _SearchPageState extends State<SearchPage>
     );
   }
 
+  Widget _buildExtensionSingleSourceControls() {
+    final src = _selectedSource!;
+    final hasLatest = src.supportsLatest == true;
+    final hasPopular = src.supportsPopular == true;
+    final hasFilters = _extensionFilterList.isNotEmpty;
+    final hasActiveFilters = _extensionActiveFilters.isNotEmpty;
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          if (widget.source == null) ...[
+            _buildSourceChip(
+              label: '← All',
+              isSelected: false,
+              onTap: () {
+                setState(() {
+                  _selectedSource = null;
+                  _extensionBrowseMode = _ExtensionBrowseMode.search;
+                  _extensionActiveFilters = [];
+                  _extensionFilterList = [];
+                  _extensionFiltersLoaded = false;
+                  _searchResults = null;
+                  _searchState = SearchState.initial;
+                });
+              },
+            ),
+            const SizedBox(width: 8),
+          ],
+          if (hasPopular) ...[
+            _buildSourceChip(
+              label: 'Popular',
+              isSelected: _extensionBrowseMode == _ExtensionBrowseMode.popular,
+              onTap: () {
+                _searchController.clear();
+                setState(() {
+                  _extensionBrowseMode = _ExtensionBrowseMode.popular;
+                });
+                _performSearch();
+              },
+            ),
+          ],
+          if (hasLatest) ...[
+            const SizedBox(width: 8),
+            _buildSourceChip(
+              label: 'Latest',
+              isSelected: _extensionBrowseMode == _ExtensionBrowseMode.latest,
+              onTap: () {
+                _searchController.clear();
+                setState(() {
+                  _extensionBrowseMode = _ExtensionBrowseMode.latest;
+                });
+                _performSearch();
+              },
+            ),
+          ],
+          if (hasFilters) ...[
+            const SizedBox(width: 8),
+            _buildSourceChip(
+              label: 'Filter',
+              isSelected: hasActiveFilters,
+              icon: Icons.tune_rounded,
+              onTap: _showExtensionFilterSheet,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
   Widget _buildSourceChip({
     required String label,
     String? iconUrl,
+    IconData? icon,
     required bool isSelected,
     required VoidCallback onTap,
   }) {
@@ -732,15 +949,23 @@ class _SearchPageState extends State<SearchPage>
           border: Border.all(
             color: isSelected
                 ? theme.colorScheme.primary.opaque(0.4, iReallyMeanIt: true)
-                : theme.colorScheme.onSurface
-                    .opaque(0.08, iReallyMeanIt: true),
+                : theme.colorScheme.onSurface.opaque(0.08, iReallyMeanIt: true),
             width: isSelected ? 1.2 : 0.5,
           ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (iconUrl != null && iconUrl.isNotEmpty) ...[
+            if (icon != null) ...[
+              Icon(
+                icon,
+                size: 14,
+                color: isSelected
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSurface.opaque(0.7),
+              ),
+              const SizedBox(width: 4),
+            ] else if (iconUrl != null && iconUrl.isNotEmpty) ...[
               ClipRRect(
                 borderRadius: BorderRadius.circular(6),
                 child: AnymeXImage(
@@ -1185,8 +1410,7 @@ class _SearchPageState extends State<SearchPage>
             style: ElevatedButton.styleFrom(
               backgroundColor: context.colors.primary,
               foregroundColor: context.colors.onPrimary,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -1491,3 +1715,4 @@ class _SearchPageState extends State<SearchPage>
     }
   }
 }
+

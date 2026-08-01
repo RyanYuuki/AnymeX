@@ -682,52 +682,6 @@ class CategoryRow extends StatelessWidget {
   }
 }
 
-class ActionCard extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final IconData icon;
-  final Color color;
-  final VoidCallback onTap;
-
-  const ActionCard({
-    super.key,
-    required this.title,
-    required this.subtitle,
-    required this.icon,
-    required this.color,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return HighlightDecorator(
-      title: title,
-      child: GlassContainer(
-        child: ListTile(
-          onTap: onTap,
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-          leading: Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: color.opaque(0.1),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(icon, color: color),
-          ),
-          title:
-              Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-          subtitle: Text(subtitle,
-              style: TextStyle(
-                  color: theme.colorScheme.onSurfaceVariant, fontSize: 12)),
-          trailing:
-              Icon(Icons.chevron_right, color: theme.colorScheme.outline),
-        ),
-      ),
-    );
-  }
-}
 
 class LibraryDashboard extends StatelessWidget {
   final Map<String, dynamic> stats;
