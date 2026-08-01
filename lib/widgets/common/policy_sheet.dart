@@ -5,14 +5,16 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 
-enum PolicyType { tos, commentPolicy, commentRules }
+enum PolicyType { tos, commentPolicy, commentRules, watchTogetherPolicy }
 
 Future<void> showPolicySheet(BuildContext context, PolicyType type) async {
   final String title = type == PolicyType.tos
       ? "Terms of Service"
       : type == PolicyType.commentPolicy
           ? "Comment Policy"
-          : "Comment Rules";
+          : type == PolicyType.watchTogetherPolicy
+              ? "Watch Together Policy"
+              : "Comment Rules";
 
   snackBar('Fetching $title...');
 
@@ -31,6 +33,18 @@ Future<void> showPolicySheet(BuildContext context, PolicyType type) async {
 
         final startIndex = content.indexOf(startMarker);
         final endIndex = content.indexOf(endMarker);
+
+        if (startIndex != -1 && endIndex != -1) {
+          content = content.substring(startIndex, endIndex + endMarker.length);
+        }
+      } else if (type == PolicyType.watchTogetherPolicy) {
+        const startMarker = '## Watch Together (Watchium)';
+        const endMarker = 'All moderation decisions are final.';
+
+        final startIndex = content.indexOf(startMarker);
+        // Find the LAST occurrence of endMarker (Watch Together section's one)
+        final firstEnd = content.indexOf(endMarker);
+        final endIndex = content.indexOf(endMarker, firstEnd + endMarker.length);
 
         if (startIndex != -1 && endIndex != -1) {
           content = content.substring(startIndex, endIndex + endMarker.length);
