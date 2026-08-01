@@ -1,6 +1,6 @@
 # AnymeX Terms of Service and Disclaimer
 
-**Last Updated: March 12, 2026**
+**Last Updated: August 01, 2026**
 
 ## Introduction
 Welcome to **AnymeX**, a multiservice tracking client designed exclusively for managing and tracking anime, manga, novels, movies, and series through integration with the official APIs of **AniList**, **MyAnimeList (MAL)**, and **Simkl**. These Terms of Service ("ToS") and Disclaimer govern your use of AnymeX. By using AnymeX, you agree to comply with these terms and conditions. If you disagree, please do not use the app.
