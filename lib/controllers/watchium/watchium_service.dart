@@ -6,6 +6,7 @@ import 'package:anymex/controllers/watchium/watchium_models.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -80,6 +81,41 @@ class WatchiumService extends GetxController {
   void setFollowHost(bool value) {
     followHost.value = value;
     WatchiumKeys.followHost.set(value);
+  }
+
+  /// Shows a leave-room confirmation dialog if the user is in a room.
+  /// Returns true if the player should close (no room / user confirmed leave).
+  /// Returns false if the user cancelled.
+  static Future<bool> confirmAndLeave(BuildContext context) async {
+    try {
+      final watchium = Get.find<WatchiumService>();
+      if (watchium.inRoom.value) {
+        final result = await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Leave Watch Together?'),
+            content: const Text(
+                'You will leave the room and stop watching with everyone.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                child: const Text('Leave'),
+              ),
+            ],
+          ),
+        );
+        if (result == true) {
+          watchium.leaveRoom();
+          return true;
+        }
+        return false;
+      }
+    } catch (_) {}
+    return true;
   }
 
   /// True if the user can send chat (not disabled, not announcement mode as member).

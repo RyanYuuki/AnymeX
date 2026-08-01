@@ -124,42 +124,8 @@ class _WatchScreenState extends State<WatchScreen> {
     }
   }
 
-  Future<bool> _onWillPop() async {
-    try {
-      final watchium = Get.find<WatchiumService>();
-      if (watchium.inRoom.value) {
-        return await _showLeaveConfirmDialog();
-      }
-    } catch (_) {}
-    return true;
-  }
-
-  Future<bool> _showLeaveConfirmDialog() async {
-    final result = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Leave Watch Together?'),
-        content: const Text('You will leave the room and stop watching with everyone.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Leave'),
-          ),
-        ],
-      ),
-    );
-    if (result == true) {
-      try {
-        final watchium = Get.find<WatchiumService>();
-        watchium.leaveRoom();
-      } catch (_) {}
-      return true;
-    }
-    return false;
+  Future<bool> _onWillPop() {
+    return WatchiumService.confirmAndLeave(context);
   }
 
   @override
