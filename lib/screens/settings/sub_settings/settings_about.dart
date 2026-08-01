@@ -299,7 +299,7 @@ class AboutPage extends StatelessWidget {
                             await showPolicySheet(
                                 context, PolicyType.watchTogetherPolicy);
                           },
-                          leading: const Icon(HugeIcons.strokeRoundedLink01),
+                          leading: const Icon(Icons.people_rounded),
                           title: "Watch Together Policy",
                         ),
                         CustomListTile(
