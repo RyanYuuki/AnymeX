@@ -1186,7 +1186,8 @@ class _WatchiumPartyPopupContentState
     final duration = now.difference(createdAt);
     final durationStr = _formatDuration(duration);
     final code = state.code;
-    final inviteUrl = 'http://anymex.duckdns.org:3001/join/$code';
+    final watchium = widget.watchium;
+    final inviteUrl = '${watchium.serverUrl}/join/$code';
     final memberCount = state.members.where((m) => m.online).length;
 
     return ListView(

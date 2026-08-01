@@ -6,12 +6,12 @@ import 'package:anymex/controllers/watchium/watchium_models.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class WatchiumService extends GetxController {
-  static const _defaultServerUrl = 'http://anymex.duckdns.org:3001';
   static const _joinTimeout = Duration(seconds: 10);
 
   IO.Socket? _socket;
@@ -44,7 +44,11 @@ class WatchiumService extends GetxController {
   final RxBool hasPassword = false.obs;
 
   String get serverUrl =>
-      WatchiumKeys.serverUrl.get<String>(_defaultServerUrl);
+      dotenv.env['WATCHIUM_SERVER_URL'] ??
+          WatchiumKeys.serverUrl.get<String>('');
+
+  String get _apiToken =>
+      dotenv.env['WATCHIUM_API_TOKEN'] ?? '';
 
   /// True when we have a confirmed room (party:state received and we're connected).
   final RxBool inRoom = false.obs;
@@ -113,7 +117,10 @@ class WatchiumService extends GetxController {
 
       final response = await http.post(
         Uri.parse('$serverUrl/api/auth/login'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          if (_apiToken.isNotEmpty) 'X-API-Token': _apiToken,
+        },
         body: jsonEncode({
           'provider': provider,
           'providerUserId': providerUserId,
@@ -157,7 +164,10 @@ class WatchiumService extends GetxController {
       IO.OptionBuilder()
           .setTransports(['websocket'])
           .disableAutoConnect()
-          .setAuth({'token': _token})
+          .setAuth({
+            'token': _token,
+            if (_apiToken.isNotEmpty) 'apiToken': _apiToken,
+          })
           .build(),
     );
 
@@ -448,6 +458,7 @@ class WatchiumService extends GetxController {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $_token',
+          if (_apiToken.isNotEmpty) 'X-API-Token': _apiToken,
         },
         body: jsonEncode({
           'content': {
@@ -812,6 +823,7 @@ class WatchiumService extends GetxController {
         Uri.parse('$serverUrl/api/watch-party'),
         headers: {
           'Authorization': 'Bearer $_token',
+          if (_apiToken.isNotEmpty) 'X-API-Token': _apiToken,
         },
       );
 
@@ -846,6 +858,7 @@ class WatchiumService extends GetxController {
         Uri.parse('$serverUrl/api/watch-party/$code'),
         headers: {
           'Authorization': 'Bearer $_token',
+          if (_apiToken.isNotEmpty) 'X-API-Token': _apiToken,
         },
       );
 

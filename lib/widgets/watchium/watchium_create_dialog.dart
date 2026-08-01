@@ -577,7 +577,8 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
   }
 
   void _showCodeSheet(String code) {
-    final shareUrl = 'http://anymex.duckdns.org:3001/join/$code';
+    final watchium = Get.find<WatchiumService>();
+    final shareUrl = '${watchium.serverUrl}/join/$code';
     final cs = Theme.of(Get.context!).colorScheme;
 
     AnymexSheet.custom(
