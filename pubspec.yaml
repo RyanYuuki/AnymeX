@@ -127,9 +127,9 @@ dependencies:
     hooks: ^2.0.2
     native_toolchain_c: ^0.19.2
     crypto: any
+    flutter_cache_manager: any
+    encrypt: any
 
-  flutter_cache_manager: any
-  encrypt: any
 dev_dependencies:
     build_runner: ^2.4.11
     change_app_package_name: ^1.4.0
