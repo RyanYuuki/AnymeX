@@ -6,6 +6,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
+import 'package:anymex_extension_runtime_bridge/Services/Aniyomi/Models/Source.dart';
 
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
@@ -1786,6 +1787,15 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _revertOrientations();
     if (!isOffline.value) {
       DiscordRPCController.instance.updateMediaPresence(media: anilistData);
+    }
+
+    final active = sourceController.activeSource.value;
+    if (active != null && active is ASource) {
+      try {
+        await active.methods.stopHttpServer();
+      } catch (e) {
+        Logger.e('Error stopping http server: $e');
+      }
     }
 
     await _basePlayer.dispose();
