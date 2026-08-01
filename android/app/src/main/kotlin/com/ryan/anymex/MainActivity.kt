@@ -91,6 +91,10 @@ class MainActivity : FlutterAppCompatActivity() {
 
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.ryan.anymex/utils").setMethodCallHandler { call, result ->
             when (call.method) {
+                "exitApp" -> {
+                    finish()
+                    result.success(true)
+                }
                 "scanFile" -> {
                     val path = call.argument<String>("path")
                     if (path != null) {

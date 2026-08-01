@@ -44,6 +44,7 @@ class _HomePageState extends State<HomePage> {
       ValueNotifier<bool>(true);
   bool _snapAll = false;
   late final Stream<List<OfflineMedia>> _animeLibraryStream;
+  final List<Worker> _workers = [];
 
   Widget _buildRecentlyOpenedSection(CacheController cacheController) {
     return Obx(() {
@@ -223,12 +224,23 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _animeLibraryStream = Get.find<OfflineStorageController>().watchAnimeLibrary().asBroadcastStream();
     _scrollController = ScrollController();
+    final serviceHandler = Get.find<ServiceHandler>();
+    _workers.add(ever(serviceHandler.serviceType, (_) {
+      if (mounted) setState(() {});
+    }));
+    _workers.add(ever(serviceHandler.isLoggedIn, (_) {
+      if (mounted) setState(() {});
+    }));
   }
 
   ScrollController get scrollController => _scrollController;
 
   @override
   void dispose() {
+    for (final w in _workers) {
+      w.dispose();
+    }
+    _workers.clear();
     _scrollController.dispose();
     _isAppBarVisibleExternally.dispose();
     super.dispose();
@@ -323,18 +335,15 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       const SizedBox(height: 30),
-                      Obx(() {
-                        serviceHandler.serviceType.value;
-                        serviceHandler.isLoggedIn.value;
-                        final children = _buildHomeWidgets(
+                      Column(
+                        children: _buildHomeWidgets(
                           context: context,
                           serviceHandler: serviceHandler,
                           cacheController: cacheController,
                           offlineStorageController: offlineStorageController,
                           settings: settings,
-                        );
-                        return Column(children: children);
-                      }),
+                        ),
+                      ),
                       if (novelData.isNotEmpty)
                         ReusableCarousel(
                           title: "Recommended Novels",

@@ -108,6 +108,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   final OfflineStorageController offlineStorageController =
       Get.find<OfflineStorageController>();
   final RxInt currentPageIndex = 1.obs;
+  final RxInt currentSpreadIndex = 0.obs;
   final RxDouble pageWidthMultiplier = 1.0.obs;
   final RxDouble scrollSpeedMultiplier = 1.0.obs;
   final Map<String, double> pageAspectRatios = {};
@@ -1221,6 +1222,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
       final index = mostVisibleItem.index;
       if (index < 0 || index >= spreads.length) return;
+      currentSpreadIndex.value = index;
 
       if (index >= spreads.length - 2) {
         loadNextChapterInline();
@@ -1293,6 +1295,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
   void onPageChanged(int index) {
     if (index < 0 || index >= spreads.length) return;
+    currentSpreadIndex.value = index;
 
     if (index >= spreads.length - 2) {
       loadNextChapterInline();

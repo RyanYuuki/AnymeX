@@ -14,13 +14,13 @@ ThemeData lightMode = ThemeData(
     seedColor: seedColor,
     brightness: Brightness.light,
   ),
-  pageTransitionsTheme: PageTransitionsTheme(
-    builders: {
-      for (var platform in TargetPlatform.values)
-        if (platform != TargetPlatform.iOS)
-          platform: const SharedAxisTransition(),
-    },
-  ),
+  // pageTransitionsTheme: PageTransitionsTheme(
+  //   builders: {
+  //     for (var platform in TargetPlatform.values)
+  //       if (platform != TargetPlatform.iOS)
+  //         platform: const SharedAxisTransition(),
+  //   },
+  // ),
   textTheme: const TextTheme(
     bodyLarge: TextStyle(color: Colors.black),
     bodyMedium: TextStyle(color: Colors.black),
@@ -80,13 +80,13 @@ ThemeData darkMode = ThemeData(
     bodySmall: TextStyle(
         color: Colors.grey, fontSize: 12), // Updated to a lighter color
   ),
-  pageTransitionsTheme: PageTransitionsTheme(
-    builders: {
-      for (var platform in TargetPlatform.values)
-        if (platform != TargetPlatform.iOS)
-          platform: const SharedAxisTransition(),
-    },
-  ),
+  // pageTransitionsTheme: PageTransitionsTheme(
+  //   builders: {
+  //     for (var platform in TargetPlatform.values)
+  //       if (platform != TargetPlatform.iOS)
+  //         platform: const SharedAxisTransition(),
+  //   },
+  // ),
   inputDecorationTheme: InputDecorationTheme(
     filled: true,
     fillColor: Colors.grey.shade900,

@@ -236,7 +236,7 @@ class SettingsSheet extends StatelessWidget {
           borderRadius: BorderRadius.circular(24),
           border: Border.all(color: theme.outline.opaque(0.1)),
         ),
-        padding: const EdgeInsets.fromLTRB(14, 16, 14, 10),
+        padding: const EdgeInsets.fromLTRB(14, 16, 14, 0),
         child: SafeArea(
           top: false,
           child: Column(

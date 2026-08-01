@@ -1,4 +1,5 @@
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
+import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/screens/profile/user_profile_page.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -120,7 +121,9 @@ class SocialSection extends StatelessWidget {
                               size: 12, color: theme.onPrimary),
                           const SizedBox(width: 4),
                           AnymexText(
-                            text: (user.userScore!).toStringAsFixed(1),
+                            text: Get.find<AnilistAuth>().isLoggedIn.value
+                                ? Get.find<AnilistAuth>().formatScore(user.userScore)
+                                : (user.userScore! > 10.0 ? user.userScore! / 10.0 : user.userScore!).toStringAsFixed(1),
                             size: 11,
                             color: theme.onPrimary,
                             variant: TextVariant.bold,

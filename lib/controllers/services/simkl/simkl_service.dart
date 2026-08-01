@@ -399,7 +399,7 @@ class SimklService extends GetxController
                   data: filtered,
                   title: e,
                   variant: DataVariant.anilist,
-                  type: isShowsList ? ItemType.manga : ItemType.anime,
+                  type:  ItemType.anime,
                 );
               }).toList(),
             )),

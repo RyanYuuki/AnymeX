@@ -23,6 +23,7 @@ import 'package:anymex/widgets/media_items/media_peek_popup.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/widgets/common/cards/card_gate.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
@@ -105,7 +106,9 @@ class _SearchPageState extends State<SearchPage>
   @override
   void initState() {
     super.initState();
-    isAdult = !General.hideAdultContent.get(true);
+    isAdult = General.hideAdultContent.get(true)
+        ? false
+        : General.searchIsAdult.get(false);
     _selectedSource = widget.source is Source ? widget.source as Source : null;
     _initializeAnimations();
     _initializeData();
@@ -682,6 +685,7 @@ class _SearchPageState extends State<SearchPage>
                   onTap: () {
                     setState(() {
                       isAdult = !isAdult;
+                      General.searchIsAdult.set(isAdult);
                     });
                     _performSearch();
                   },
@@ -1237,6 +1241,11 @@ class _SearchPageState extends State<SearchPage>
     }
 
     final itemCount = _searchResults!.length + (_isLoadingMore ? 1 : 0);
+    final crossAxisCount = getResponsiveValue(context,
+        mobileValue: 3,
+        desktopValue: getResponsiveCrossAxisVal(
+            MediaQuery.of(context).size.width,
+            itemWidth: 115));
 
     return GridView.builder(
       controller: _resultsScrollController,
@@ -1248,14 +1257,15 @@ class _SearchPageState extends State<SearchPage>
               mainAxisExtent: 120,
             )
           : SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: getResponsiveValue(context,
-                  mobileValue: 3,
-                  desktopValue: getResponsiveCrossAxisVal(
-                      MediaQuery.of(context).size.width,
-                      itemWidth: 108)),
+              crossAxisCount: crossAxisCount,
               crossAxisSpacing: 12.0,
               mainAxisSpacing: 12.0,
-              mainAxisExtent: 240,
+              childAspectRatio: getGridCardAspectRatio(
+                context: context,
+                crossAxisCount: crossAxisCount,
+                spacing: 12.0,
+                padding: 40.0,
+              ),
             ),
       itemCount: itemCount,
       itemBuilder: (context, index) {

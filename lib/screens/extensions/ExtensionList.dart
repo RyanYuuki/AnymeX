@@ -154,6 +154,7 @@ class _ExtensionListState extends State<ExtensionList>
       'Aniyomi' => source is ASource,
       'Cloudstream' => source is CloudStreamSource,
       'Sora' => source is SSource,
+      'Kotatsu' => source is KotatsuSource,
       _ => true,
     };
   }

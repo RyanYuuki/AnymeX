@@ -127,123 +127,59 @@ class _LibraryContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
+      if (controller.isLoading.value && controller.rawItems.isEmpty) {
+        return const SliverToBoxAdapter(
+          child: Padding(
+            padding: EdgeInsets.only(top: 80),
+            child: Center(child: CircularProgressIndicator()),
+          ),
+        );
+      }
+
+      final data = controller.processedItems;
+      if (data.isEmpty) {
+        return const SliverToBoxAdapter(child: EmptyLibrary());
+      }
+
       if (controller.selectedListIndex.value == -1) {
-        return _buildHistoryView(context);
+        return _buildHistoryView(context, data);
       } else {
-        return _buildCustomListView(context);
+        return _buildGridView(context, data);
       }
     });
   }
 
-  Widget _buildCustomListView(BuildContext context) {
-    return FutureBuilder<List<String>>(
-      future: controller.getCustomListNames(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return const SliverToBoxAdapter(
-            child: Center(child: CircularProgressIndicator()),
-          );
-        }
-
-        final listNames = snapshot.data!;
-        if (listNames.isEmpty ||
-            controller.selectedListIndex.value >= listNames.length) {
-          return const SliverToBoxAdapter(child: EmptyLibrary());
-        }
-
-        final selectedListName = listNames[controller.selectedListIndex.value];
-
-        return StreamBuilder<List<OfflineMedia>>(
-          stream: controller.getCustomListStream(
-              selectedListName, controller.type.value),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return const SliverToBoxAdapter(
-                child: Center(child: CircularProgressIndicator()),
-              );
-            }
-
-            return Obx(() {
-              final rawItems = snapshot.data!;
-              final searched = controller.applySearch(
-                  rawItems, controller.searchQuery.value);
-              final sortedItems = controller.applySorting(searched);
-
-              if (sortedItems.isEmpty) {
-                return const SliverToBoxAdapter(child: EmptyLibrary());
-              }
-
-              return _buildGridView(context, sortedItems);
-            });
+  Widget _buildHistoryView(BuildContext context, List<OfflineMedia> data) {
+    return SliverPadding(
+      padding: const EdgeInsets.fromLTRB(10, 20, 10, 130),
+      sliver: SliverGrid(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: getResponsiveCrossAxisVal(
+            MediaQuery.of(context).size.width - 120,
+            itemWidth: 400,
+          ),
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 0,
+          mainAxisExtent: getHistoryCardHeight(
+            HistoryCardStyle.values[settingsController.historyCardStyle],
+            context,
+          ),
+        ),
+        delegate: SliverChildBuilderDelegate(
+          (context, i) {
+            final historyModel = HistoryModel.fromOfflineMedia(
+              data[i],
+              controller.type.value,
+            );
+            return HistoryCardGate(
+              data: historyModel,
+              cardStyle: HistoryCardStyle
+                  .values[settingsController.historyCardStyle],
+            );
           },
-        );
-      },
-    );
-  }
-
-  Widget _buildHistoryView(BuildContext context) {
-    return StreamBuilder<List<OfflineMedia>>(
-      stream: controller.getLibraryStream(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return const SliverToBoxAdapter(
-            child: Center(child: CircularProgressIndicator()),
-          );
-        }
-
-        return Obx(() {
-          final items = snapshot.data!;
-          List<OfflineMedia> filtered;
-          if (controller.type.value.isAnime) {
-            filtered = items
-                .where((e) => e.currentEpisode?.currentTrack != null)
-                .toList();
-          } else {
-            filtered =
-                items.where((e) => e.currentChapter?.link != null).toList();
-          }
-
-          final searched =
-              controller.applySearch(filtered, controller.searchQuery.value);
-          final data = controller.applySorting(searched);
-
-          if (data.isEmpty) {
-            return const SliverToBoxAdapter(child: EmptyLibrary());
-          }
-
-          return SliverPadding(
-            padding: const EdgeInsets.fromLTRB(10, 20, 10, 130),
-            sliver: SliverGrid(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: getResponsiveCrossAxisVal(
-                  MediaQuery.of(context).size.width - 120,
-                  itemWidth: 400,
-                ),
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 0,
-                mainAxisExtent: getHistoryCardHeight(
-                  HistoryCardStyle.values[settingsController.historyCardStyle],
-                  context,
-                ),
-              ),
-              delegate: SliverChildBuilderDelegate(
-                (context, i) {
-                  final historyModel = HistoryModel.fromOfflineMedia(
-                    data[i],
-                    controller.type.value,
-                  );
-                  return HistoryCardGate(
-                    data: historyModel,
-                    cardStyle: HistoryCardStyle
-                        .values[settingsController.historyCardStyle],
-                  );
-                },
-                childCount: data.length,
-              ),
-            ),
-          );
-        });
-      },
+          childCount: data.length,
+        ),
+      ),
     );
   }
 
@@ -296,15 +232,26 @@ class _LibraryContent extends StatelessWidget {
         crossAxisCount: crossAxisCount,
         crossAxisSpacing: crossAxisSpacing,
         mainAxisSpacing: 20,
-        childAspectRatio: 2 / 3,
+        childAspectRatio: getGridCardAspectRatio(
+          context: context,
+          crossAxisCount: crossAxisCount,
+          spacing: crossAxisSpacing,
+          padding: horizontalPadding,
+        ),
       );
     }
 
+    final crossCount = math.max(1, controller.gridCount.value);
     return SliverGridDelegateWithFixedCrossAxisCount(
-      crossAxisCount: math.max(1, controller.gridCount.value),
+      crossAxisCount: crossCount,
       crossAxisSpacing: 0,
       mainAxisSpacing: 10,
-      childAspectRatio: 2 / 3,
+      childAspectRatio: getGridCardAspectRatio(
+        context: context,
+        crossAxisCount: crossCount,
+        spacing: 0,
+        padding: 32.0,
+      ),
     );
   }
 

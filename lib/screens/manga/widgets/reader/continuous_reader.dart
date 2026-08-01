@@ -363,13 +363,25 @@ class _ContinuousReaderViewState extends State<ContinuousReaderView>
       final ctrl = widget.controller;
       final sourceController = Get.find<SourceController>();
 
-      int relativePageNum = index + 1;
-      if (chapter != null && chapter.link != null) {
-        final pages = ctrl.loadedChapterPages[chapter.link!] ?? ctrl.pageList;
-        final pageIdx = pages.indexWhere((p) => p.url == page.url);
-        if (pageIdx != -1) {
-          relativePageNum = pageIdx + 1;
+      int relativePageNum = 1;
+      if (chapter != null) {
+        int pageCountInChapter = 0;
+        for (int i = 0; i < ctrl.spreads.length; i++) {
+          final spread = ctrl.spreads[i];
+          if (spread.chapter == chapter && !spread.isTransition) {
+            if (spread.page1?.url == page.url) {
+              relativePageNum = pageCountInChapter + 1;
+              break;
+            }
+            if (spread.page2?.url == page.url) {
+              relativePageNum = pageCountInChapter + 2;
+              break;
+            }
+            pageCountInChapter += spread.pageCount;
+          }
         }
+      } else {
+        relativePageNum = index + 1;
       }
 
       final screenWidth = MediaQuery.sizeOf(context).width;

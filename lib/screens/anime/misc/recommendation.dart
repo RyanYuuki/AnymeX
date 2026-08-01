@@ -14,6 +14,7 @@ import 'package:anymex/widgets/media_items/media_item.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/common/cards/card_gate.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
 
@@ -240,10 +241,21 @@ class _AIRecommendationState extends State<AIRecommendation> {
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: getResponsiveCrossAxisVal(
                 MediaQuery.of(context).size.width,
-                itemWidth: isGrid.value ? 120 : 400,
+                itemWidth: isGrid.value ? 115 : 400,
               ),
               crossAxisSpacing: 10,
-              mainAxisExtent: isGrid.value ? 250 : 200,
+              mainAxisSpacing: 10,
+              childAspectRatio: isGrid.value
+                  ? getGridCardAspectRatio(
+                      context: context,
+                      crossAxisCount: getResponsiveCrossAxisVal(
+                        MediaQuery.of(context).size.width,
+                        itemWidth: 115,
+                      ),
+                      spacing: 10,
+                      padding: 20,
+                    )
+                  : 2.0,
             ),
           ),
         ),

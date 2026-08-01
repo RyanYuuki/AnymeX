@@ -208,6 +208,7 @@ class _ExtensionScreenState extends State<ExtensionScreen>
         onTabSelected: (index) {
           final t = tabs[index];
           _selectedContentType.value = t.type;
+          _selectedSourceType.value = 'all';
           _textEditingController.clear();
           _searchQuery.value = '';
         },
@@ -498,13 +499,51 @@ class _ExtensionScreenState extends State<ExtensionScreen>
     }
   }
 
+  bool _supportsContentType(String type, ItemType contentType) {
+    if (type == 'all') return true;
+    final activeManager =
+        Get.find<ExtensionManager>().managers.firstWhereOrNull(
+              (m) => m.name.toLowerCase().contains(type.toLowerCase()),
+            );
+    if (activeManager != null) {
+      switch (contentType) {
+        case ItemType.anime:
+          return activeManager.supportsAnime;
+        case ItemType.manga:
+          return activeManager.supportsManga;
+        case ItemType.novel:
+          return activeManager.supportsNovel;
+      }
+    }
+    final lowerType = type.toLowerCase();
+    switch (contentType) {
+      case ItemType.anime:
+        return lowerType == 'mangayomi' ||
+            lowerType == 'aniyomi' ||
+            lowerType == 'cloudstream' ||
+            lowerType == 'sora';
+      case ItemType.manga:
+        return lowerType == 'mangayomi' ||
+            lowerType == 'aniyomi' ||
+            lowerType == 'sora' ||
+            lowerType == 'kotatsu';
+      case ItemType.novel:
+        return lowerType == 'mangayomi' || lowerType == 'sora';
+    }
+  }
+
   Widget _buildSourceTypeChips() {
-    final sourceTypes = Platform.isIOS
+    final allSourceTypes = Platform.isIOS
         ? ['all', 'Mangayomi', 'Sora']
         : ['all', 'Mangayomi', 'Aniyomi', 'Cloudstream', 'Sora', 'Kotatsu'];
 
     return Obx(() {
       final selectedType = _selectedSourceType.value;
+      final contentType = _selectedContentType.value;
+      final filteredSourceTypes = allSourceTypes
+          .where((type) => _supportsContentType(type, contentType))
+          .toList();
+
       return Container(
         height: 38,
         margin: const EdgeInsets.only(top: 8, bottom: 8),
@@ -512,9 +551,9 @@ class _ExtensionScreenState extends State<ExtensionScreen>
           scrollDirection: Axis.horizontal,
           physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          itemCount: sourceTypes.length,
+          itemCount: filteredSourceTypes.length,
           itemBuilder: (context, index) {
-            final type = sourceTypes[index];
+            final type = filteredSourceTypes[index];
             final needsPlugin = _typeRequiresPlugin(type) && !_isPluginInstalled;
             final isSelected = !needsPlugin && selectedType == type;
             final label = type == 'all' ? 'All' : type;

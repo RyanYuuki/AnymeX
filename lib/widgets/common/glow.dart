@@ -77,12 +77,17 @@ class Glow extends StatelessWidget {
           child: ch,
         );
       } else {
-        if (settings.disableGradient || isOled) {
-          content = Container(
-              color: isOled ? Colors.black : theme.surface, child: ch);
-        } else {
-          content = LightweightGlow(begin: begin, end: end, child: ch);
-        }
+        content = Stack(
+          children: [
+            if (settings.disableGradient || isOled)
+              Container(
+                color: isOled ? Colors.black : theme.surface,
+              )
+            else
+              LightweightGlow(begin: begin, end: end, child: const SizedBox.expand()),
+            ch
+          ],
+        );
       }
 
       final useGrain = settings.useGrainTexture;

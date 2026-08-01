@@ -39,6 +39,7 @@
         android:icon="@mipmap/ic_launcher"
         android:banner="@mipmap/tv_banner" 
         android:requestLegacyExternalStorage="true" 
+        android:largeHeap="true"
         android:enableOnBackInvokedCallback="true">
         
         <activity android:name=".MainActivity" 

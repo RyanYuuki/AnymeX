@@ -134,7 +134,7 @@ class TrackedMedia {
       mediaStatus:
           json['not_aired_episodes_count'] == 0 ? "completed" : "airing",
       rating: null,
-      score: json['user_rating']?.toString(),
+      score: json['user_rating'] != null ? (json['user_rating'] * 10).toString() : null,
       format: null,
       mediaListId: '${ids['simkl']}*SERIES',
     );
@@ -158,7 +158,7 @@ class TrackedMedia {
       mediaStatus:
           json['not_aired_episodes_count'] == 0 ? "COMPLETED" : "AIRING",
       rating: null,
-      score: json['user_rating']?.toString(),
+      score: json['user_rating'] != null ? (json['user_rating'] * 10).toString() : null,
       format: null,
       mediaListId: '${ids['simkl']}*MOVIE',
     );
@@ -182,7 +182,9 @@ class TrackedMedia {
           '?',
       rating: json['node']?['mean']?.toString() ?? '?',
       watchingStatus: returnConvertedStatus(json['list_status']['status']),
-      score: json['list_status']['score']?.toString(),
+      score: json['list_status']['score'] != null
+          ? (json['list_status']['score'] * 10).toString()
+          : null,
       type: isMangaResolved ? 'MANGA' : 'ANIME',
       mediaListId: json['node']['id']?.toString(),
       startedAt: _parseMalDate(json['list_status']?['start_date']),

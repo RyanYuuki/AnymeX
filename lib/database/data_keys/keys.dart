@@ -5,6 +5,7 @@ export 'watchium_keys.dart';
 enum General {
   shouldAskForTrack,
   hideAdultContent,
+  searchIsAdult,
   uiScaler,
   isFirstTime,
   hasAcceptedCommentRules,

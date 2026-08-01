@@ -1,3 +1,4 @@
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
@@ -202,6 +203,7 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
                 initialUrlRequest: URLRequest(url: WebUri(widget.url)),
                 initialUserScripts: null,
                 initialSettings: InAppWebViewSettings(
+                  useHybridComposition: false,
                   javaScriptEnabled: true,
                   domStorageEnabled: true,
                   databaseEnabled: true,
@@ -209,9 +211,11 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
                   loadWithOverviewMode: true,
                   thirdPartyCookiesEnabled: true,
                   limitsNavigationsToAppBoundDomains: false,
-                  userAgent: AnymeXRuntimeBridge.userAgentMap[_parsedUri.host] ?? 
-                             AnymeXRuntimeBridge.userAgentMap[_parsedUri.host.replaceFirst('www.', '')] ?? 
-                             "",
+                  userAgent:
+                      AnymeXRuntimeBridge.userAgentMap[_parsedUri.host] ??
+                          AnymeXRuntimeBridge.userAgentMap[
+                              _parsedUri.host.replaceFirst('www.', '')] ??
+                          "",
                 ),
                 onWebViewCreated: (controller) {
                   _controller = controller;
@@ -248,11 +252,8 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
 
 extension CloudflareBypassNavigation on BuildContext {
   Future<void> openCloudflareBypass(String url) async {
-    await Navigator.of(this).push(
-      MaterialPageRoute(
-        builder: (_) => CloudflareBypassWebView(url: url),
-        fullscreenDialog: true,
-      ),
+    navigate(
+      () => CloudflareBypassWebView(url: url),
     );
   }
 }

@@ -41,6 +41,52 @@ class AnilistAuth extends GetxController {
   AnilistUserSettings? cachedSettings;
   AnilistSettingsMetadata? cachedMetadata;
 
+  String formatScore(double? rawScore) {
+    if (rawScore == null || rawScore == 0) return '0.0';
+    final format = (isLoggedIn.value ? cachedSettings?.scoreFormat : null) ?? 'POINT_10_DECIMAL';
+    switch (format) {
+      case 'POINT_100':
+        final val = rawScore <= 10.0 ? rawScore * 10.0 : rawScore;
+        return val.round().toString();
+      case 'POINT_10_DECIMAL':
+        final val = rawScore > 10.0 ? rawScore / 10.0 : rawScore;
+        return val.toStringAsFixed(1);
+      case 'POINT_10':
+        final val = rawScore > 10.0 ? rawScore / 10.0 : rawScore;
+        return val.round().toString();
+      case 'POINT_5':
+        final val = rawScore > 10.0 ? rawScore / 20.0 : rawScore / 2.0;
+        return val.round().toString();
+      case 'POINT_3':
+        final val = rawScore > 10.0 ? rawScore : rawScore * 10.0;
+        if (val >= 75) return ':)';
+        if (val >= 35) return ':|';
+        return ':(';
+      default:
+        final val = rawScore > 10.0 ? rawScore / 10.0 : rawScore;
+        return val.toStringAsFixed(1);
+    }
+  }
+
+  double convertNormalizedToFormat(double normalizedScore) {
+    final format = (isLoggedIn.value ? cachedSettings?.scoreFormat : null) ?? 'POINT_10_DECIMAL';
+    switch (format) {
+      case 'POINT_100':
+        return normalizedScore;
+      case 'POINT_10_DECIMAL':
+      case 'POINT_10':
+        return normalizedScore / 10.0;
+      case 'POINT_5':
+        return normalizedScore / 20.0;
+      case 'POINT_3':
+        if (normalizedScore >= 75.0) return 3.0;
+        if (normalizedScore >= 35.0) return 2.0;
+        return 1.0;
+      default:
+        return normalizedScore / 10.0;
+    }
+  }
+
   void _handle403(http.Response response) {
     dynamic errorJson;
     try {
@@ -741,8 +787,7 @@ class AnilistAuth extends GetxController {
     $animeSectionOrder: [String],
     $mangaSectionOrder: [String],
     $animeTheme: String,
-    $mangaTheme: String,
-    $timezone: String
+    $mangaTheme: String
   ) {
     UpdateUser(
       about: $about,
@@ -754,7 +799,6 @@ class AnilistAuth extends GetxController {
       restrictMessagesToFollowing: $restrictMessagesToFollowing,
       scoreFormat: $scoreFormat,
       rowOrder: $rowOrder,
-      timezone: $timezone,
       animeListOptions: {
         splitCompletedSectionByFormat: $splitCompletedAnime,
         sectionOrder: $animeSectionOrder,
@@ -805,11 +849,14 @@ class AnilistAuth extends GetxController {
     try {
       final token = _requireAuthToken();
 
+      final variables = settings.toGraphQlVariables();
+      Logger.i('updateUserSettings variables: $variables');
+
       final response = await _anilistPost(
         headers: _anilistAuthHeaders(token),
         body: {
           'query': mutation,
-          'variables': settings.toGraphQlVariables(),
+          'variables': variables,
         },
       );
 
@@ -819,7 +866,9 @@ class AnilistAuth extends GetxController {
 
         final updated = data['data']?['UpdateUser'] as Map<String, dynamic>?;
         if (updated == null) return null;
-        return AnilistUserSettings.fromJson(updated);
+        final saved = AnilistUserSettings.fromJson(updated);
+        cachedSettings = saved;
+        return saved;
       }
 
       if (response.statusCode == 403) {
@@ -827,7 +876,7 @@ class AnilistAuth extends GetxController {
       }
 
       throw Exception(
-          'Failed to update AniList settings (${response.statusCode})');
+          'Failed to update AniList settings (${response.statusCode} : ${response.body})');
     } catch (e) {
       Logger.e('Error updating AniList settings: $e');
       rethrow;
@@ -1945,7 +1994,7 @@ class AnilistAuth extends GetxController {
           }
           progress
           status
-          score
+          score(format: POINT_100)
           updatedAt
           startedAt { year month day }
           completedAt { year month day }
@@ -2104,7 +2153,7 @@ class AnilistAuth extends GetxController {
       id
       status
       progress
-      score
+      score(format: POINT_100)
       startedAt { year month day }
       completedAt { year month day }
     }
@@ -2127,7 +2176,7 @@ class AnilistAuth extends GetxController {
       };
 
       if (score != null) {
-        variables['score'] = score;
+        variables['score'] = convertNormalizedToFormat(score);
       }
       if (status != null) {
         variables['status'] = status;
@@ -2169,7 +2218,7 @@ class AnilistAuth extends GetxController {
       if (malId != null) {
         serviceHandler.malService.updateListEntry(UpdateListEntryParams(
             listId: malId,
-            score: score,
+            score: score != null ? score / 10.0 : null,
             status: status,
             progress: progress,
             isAnime: isAnime,
@@ -2181,7 +2230,7 @@ class AnilistAuth extends GetxController {
         serviceHandler.simklService.updateListEntryFromExternalId(
           anilistId: listId,
           malId: malId,
-          score: score,
+          score: score != null ? score / 10.0 : null,
           status: status,
           progress: progress,
           isAnime: isAnime,
@@ -2250,7 +2299,7 @@ class AnilistAuth extends GetxController {
             }
             progress
             status
-            score
+            score(format: POINT_100)
             updatedAt
           }
         }
@@ -2342,7 +2391,7 @@ class AnilistAuth extends GetxController {
       id
       status
       progress
-      score
+      score(format: POINT_100)
     }
   }
   ''';
@@ -2361,7 +2410,7 @@ class AnilistAuth extends GetxController {
             'mediaId': animeId.toInt(),
             'status': status,
             'progress': progress,
-            'score': score,
+            'score': convertNormalizedToFormat(score),
           },
         }),
       );
@@ -2397,7 +2446,7 @@ class AnilistAuth extends GetxController {
       id
       status
       progress
-      score
+      score(format: POINT_100)
     }
   }
   ''';
@@ -2416,7 +2465,7 @@ class AnilistAuth extends GetxController {
             'mediaId': mangaId,
             'status': status,
             'progress': progress,
-            'score': score,
+            'score': score != null ? convertNormalizedToFormat(score) : null,
           },
         }),
       );
