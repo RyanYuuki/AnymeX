@@ -3,9 +3,102 @@ import 'dart:math';
 
 import 'package:anymex/controllers/watchium/watchium_models.dart';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
+import 'package:anymex/controllers/watchium/watchium_sync_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
+import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+/// Out-of-sync banner shown in Freedom Seek mode.
+/// Appears when the member's playback drifts from the host.
+class WatchiumSyncBanner extends StatelessWidget {
+  const WatchiumSyncBanner({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      try {
+        final watchium = Get.find<WatchiumService>();
+        final syncCtrl = Get.find<WatchiumSyncController>(tag: 'watchiumSync');
+
+        // Only show in Freedom mode (not following host)
+        if (watchium.followHost.value) return const SizedBox.shrink();
+        // Only show when out of sync
+        if (!syncCtrl.isOutOfSync.value) return const SizedBox.shrink();
+        // Don't show while controls are hidden (too intrusive)
+        final playerController =
+            Get.find<PlayerController>();
+        if (!playerController.showControls.value) {
+          return const SizedBox.shrink();
+        }
+      } catch (_) {
+        return const SizedBox.shrink();
+      }
+
+      return Positioned(
+        bottom: 100,
+        left: 16,
+        right: 16,
+        child: GestureDetector(
+          onTap: () {
+            try {
+              Get.find<WatchiumSyncController>(tag: 'watchiumSync')
+                  .syncToHost();
+            } catch (_) {}
+          },
+          child: Container(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.75),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: Colors.orange.withValues(alpha: 0.5),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.sync_problem_rounded,
+                  color: Colors.orange.shade300,
+                  size: 18,
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  'Out of sync with host',
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.9),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    'Sync',
+                    style: TextStyle(
+                      color: Colors.orange.shade300,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    });
+  }
+}
 
 /// On-screen live comment overlay.
 /// Shows recent chat messages (excluding own) as animated cards that

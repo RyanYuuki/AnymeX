@@ -38,6 +38,7 @@ class _WatchiumOverlays extends StatelessWidget {
       }
       return const Stack(
         children: [
+          WatchiumSyncBanner(),
           WatchiumCommentOverlay(),
           WatchiumReactionOverlay(),
         ],
