@@ -2,6 +2,7 @@ import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/screens/novel/details/controller/details_controller.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/animation/animations.dart';
 import 'package:anymex/widgets/common/glow.dart';
@@ -37,8 +38,13 @@ class ChapterListItem extends StatelessWidget {
 
     final savedChaps =
         offlineStorage.getReadChapter(anilistData.id, chapter.number!);
-    final currentChapterLink = continueChapter?.link ?? '';
-    final isSelected = chapter.link == currentChapterLink;
+    final isSelected = (chapter.link != null &&
+            chapter.link!.isNotEmpty &&
+            continueChapter?.link != null &&
+            continueChapter!.link!.isNotEmpty)
+        ? chapter.link == continueChapter!.link
+        : (chapter.number == continueChapter?.number &&
+            chapter.scanlator == continueChapter?.scanlator);
     final novSavedPage = savedChaps?.pageNumber;
     final novSavedTotal = savedChaps?.totalPages;
     final isPageComplete = novSavedPage != null &&
@@ -47,13 +53,26 @@ class ChapterListItem extends StatelessWidget {
         (novSavedPage >= novSavedTotal ||
             novSavedPage >= novSavedTotal - 1 ||
             (novSavedPage / novSavedTotal) >= 0.95);
-    final alreadyRead = chapter.number! < (readChapter?.number ?? 0.0) ||
-        isPageComplete ||
-        (savedChaps != null &&
-            savedChaps.currentOffset != null &&
-            savedChaps.maxOffset != null &&
-            savedChaps.maxOffset! > 0 &&
-            (savedChaps.currentOffset! / savedChaps.maxOffset!) >= 0.95);
+    final isOffsetComplete = savedChaps != null &&
+        savedChaps.currentOffset != null &&
+        savedChaps.maxOffset != null &&
+        savedChaps.maxOffset! > 0 &&
+        (savedChaps.currentOffset! / savedChaps.maxOffset!) >= 0.95;
+
+    final bool alreadyRead;
+    final auth = Get.find<ServiceHandler>();
+    if (auth.isLoggedIn.value &&
+        auth.serviceType.value != ServicesType.extensions) {
+      final userProgress = auth.onlineService.mangaList
+          .firstWhereOrNull((e) => e.id == anilistData.id)
+          ?.episodeCount;
+      final progressNum = double.tryParse(userProgress ?? '')?.toInt() ?? 0;
+      alreadyRead = (chapter.number != null && chapter.number! <= progressNum) ||
+          isPageComplete ||
+          isOffsetComplete;
+    } else {
+      alreadyRead = isPageComplete || isOffsetComplete;
+    }
 
     return StaggeredAnimatedItemWrapper(
       child: AnymexOnTap(
@@ -107,7 +126,7 @@ class ChapterListItem extends StatelessWidget {
         boxShadow: [glowingShadow(context)],
       ),
       child: AnymexText(
-        text: chapter.number?.toStringAsFixed(0) ?? '',
+        text: chapter.formattedNumber,
         variant: TextVariant.bold,
         color: context.colors.onPrimary,
       ),

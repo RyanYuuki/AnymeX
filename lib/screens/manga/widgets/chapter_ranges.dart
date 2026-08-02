@@ -1,6 +1,6 @@
 import 'package:anymex/database/isar_models/chapter.dart';
+import 'package:anymex/widgets/common/anymex_pills.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 class ChapterRanges extends StatelessWidget {
@@ -17,64 +17,24 @@ class ChapterRanges extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = context.colors;
-
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      physics: const BouncingScrollPhysics(),
-      child: Row(
-        children: List.generate(
-          chunks.length,
-          (index) {
-            return Padding(
-              padding: const EdgeInsets.fromLTRB(0, 10, 10, 5),
-              child: Obx(() {
-                final isSelected = selectedChunkIndex.value == index;
-
-                return InkWell(
-                  onTap: () {
-                    selectedChunkIndex.value = index;
-                    onChunkSelected(index);
-                  },
-                  borderRadius: BorderRadius.circular(12),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 10,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? colorScheme.primary.opaque(0.4)
-                          : colorScheme.surfaceContainerHigh.opaque(0.4),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: isSelected
-                            ? colorScheme.primary.opaque(0.4)
-                            : colorScheme.outline.opaque(0.4),
-                        width: 1.5,
-                      ),
-                    ),
-                    child: Text(
-                      index == 0
-                          ? "All"
-                          : '${chunks[index].first.number} - ${chunks[index].last.number}',
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontWeight: FontWeight.bold,
-                        color: isSelected
-                            ? colorScheme.primary
-                            : colorScheme.onSurface,
-                      ),
-                    ),
-                  ),
-                );
-              }),
-            );
-          },
-        ),
-      ),
-    );
+    return Obx(() {
+      final selected = selectedChunkIndex.value;
+      return AnymeXPills(
+        scrollPadding: const EdgeInsets.fromLTRB(0, 10, 0, 5),
+        items: List.generate(chunks.length, (index) {
+          final label = index == 0
+              ? 'All'
+              : '${chunks[index].first.formattedNumber} - ${chunks[index].last.formattedNumber}';
+          return PillItem(
+            label: label,
+            isSelected: selected == index,
+            onTap: () {
+              selectedChunkIndex.value = index;
+              onChunkSelected(index);
+            },
+          );
+        }),
+      );
+    });
   }
 }
