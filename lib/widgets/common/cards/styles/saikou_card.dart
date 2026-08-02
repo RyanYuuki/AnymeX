@@ -59,6 +59,8 @@ class SaikouCard extends CarouselCard {
                   imageUrl: itemData.poster ?? '',
                   heroTag: tag,
                   radius: 12,
+                  sourceId: itemData.source,
+                  isAnime: type == ItemType.anime,
                 ),
                 buildCardBadge(context, variant, type),
                 if (variant == DataVariant.library)

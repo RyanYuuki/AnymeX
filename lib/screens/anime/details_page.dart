@@ -623,6 +623,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     return Glow(
       color: posterColor,
       child: Scaffold(
+          resizeToAvoidBottomInset: false,
           extendBody: true,
           bottomNavigationBar: sourceController.shouldShowExtensions.value
               ? _buildMobiledNav()

@@ -76,6 +76,8 @@ class ExoticCard extends CarouselCard {
                 color: primaryColor.opaque(0.3, iReallyMeanIt: true),
                 width: 2,
               ),
+              sourceId: itemData.source,
+              isAnime: type == ItemType.anime,
             ),
           ),
           if (shouldShowTitle()) ...[

@@ -351,7 +351,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         try {
           final rawList = await match.future;
           final mediaList =
-              rawList.map((e) => Media.froDMedia(e, effectiveType)).toList();
+              rawList.map((e) => Media.froDMedia(e, effectiveType)..sourceId = _selectedSource!.id).toList();
           _singleSourceCache[cacheKey] = mediaList;
           setState(() {
             _searchResults = List<Media>.from(mediaList);
@@ -376,7 +376,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       if (!mounted) return;
 
       final mediaList =
-          rawList.map((e) => Media.froDMedia(e, effectiveType)).toList();
+          rawList.map((e) => Media.froDMedia(e, effectiveType)..sourceId = _selectedSource!.id).toList();
       _singleSourceCache[cacheKey] = mediaList;
 
       setState(() {
@@ -406,7 +406,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       final pages = await _selectedSource!.methods.getPopular(1);
       if (!mounted) return;
       final mediaList =
-          pages.list.map((e) => Media.froDMedia(e, effectiveType)).toList();
+          pages.list.map((e) => Media.froDMedia(e, effectiveType)..sourceId = _selectedSource!.id).toList();
       setState(() {
         _searchResults = mediaList;
         _currentPage = 1;
@@ -433,7 +433,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       final pages = await _selectedSource!.methods.getLatestUpdates(1);
       if (!mounted) return;
       final mediaList =
-          pages.list.map((e) => Media.froDMedia(e, effectiveType)).toList();
+          pages.list.map((e) => Media.froDMedia(e, effectiveType)..sourceId = _selectedSource!.id).toList();
       setState(() {
         _searchResults = mediaList;
         _currentPage = 1;
@@ -555,17 +555,17 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         if (_extensionBrowseMode == _ExtensionBrowseMode.popular) {
           final pages = await _selectedSource!.methods.getPopular(nextPage);
           results =
-              pages.list.map((e) => Media.froDMedia(e, effectiveType)).toList();
+              pages.list.map((e) => Media.froDMedia(e, effectiveType)..sourceId = _selectedSource!.id).toList();
         } else if (_extensionBrowseMode == _ExtensionBrowseMode.latest) {
           final pages =
               await _selectedSource!.methods.getLatestUpdates(nextPage);
           results =
-              pages.list.map((e) => Media.froDMedia(e, effectiveType)).toList();
+              pages.list.map((e) => Media.froDMedia(e, effectiveType)..sourceId = _selectedSource!.id).toList();
         } else {
           final res = await _selectedSource!.methods
               .search(_lastSearchQuery, nextPage, _extensionActiveFilters);
           results =
-              res.list.map((e) => Media.froDMedia(e, effectiveType)).toList();
+              res.list.map((e) => Media.froDMedia(e, effectiveType)..sourceId = _selectedSource!.id).toList();
         }
       } else {
         results = (await _serviceHandler.search(SearchParams(
@@ -1550,6 +1550,8 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                     radius: 0,
                     fadeInDuration: Duration.zero,
                     fadeOutDuration: Duration.zero,
+                    sourceId: media.sourceId,
+                    isAnime: media.mediaType == ItemType.anime,
                   ),
                 ),
               ),

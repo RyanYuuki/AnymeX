@@ -46,6 +46,7 @@ class Media {
   DateTime? createdAt;
   bool? isAdult;
   String? sourceName;
+  String? sourceId;
   List<TrackedMedia>? friendsWatching;
   String? userStatus;
   String? characterRole;
@@ -93,6 +94,7 @@ class Media {
       this.mediaContent,
       required this.serviceType,
       this.sourceName,
+      this.sourceId,
       this.friendsWatching,
       this.userStatus,
       this.characterRole,

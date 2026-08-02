@@ -47,6 +47,8 @@ class MediaPoster extends StatelessWidget {
   final String heroTag;
   final double radius;
   final BoxBorder? border;
+  final String? sourceId;
+  final bool? isAnime;
 
   const MediaPoster({
     super.key,
@@ -54,6 +56,8 @@ class MediaPoster extends StatelessWidget {
     required this.heroTag,
     this.radius = 12,
     this.border,
+    this.sourceId,
+    this.isAnime,
   });
 
   @override
@@ -69,6 +73,8 @@ class MediaPoster extends StatelessWidget {
         width: double.infinity,
         fadeInDuration: Duration.zero,
         fadeOutDuration: Duration.zero,
+        sourceId: sourceId,
+        isAnime: isAnime,
       ),
     );
 

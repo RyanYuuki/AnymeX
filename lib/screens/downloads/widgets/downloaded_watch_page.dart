@@ -95,12 +95,13 @@ class _DownloadedWatchPageState extends State<DownloadedWatchPage> {
     final savedTs = epMeta.episode.timeStampInMilliseconds ?? 0;
 
     _controller = Get.put(PlayerController.offline(
-      folderName: widget.summary.extensionName,
+      folderName: widget.summary.title,
       itemName: widget.summary.folderName,
       videoPath: epMeta.filePath,
       episode: epMeta.episode..timeStampInMilliseconds = savedTs,
       episodeList: _episodeList,
-      anilistData: anymex.Media(serviceType: ServicesType.simkl),
+      anilistData: anymex.Media(serviceType: ServicesType.simkl)
+        ..title = widget.summary.title,
       subtitles: epMeta.subtitles,
     ));
   }

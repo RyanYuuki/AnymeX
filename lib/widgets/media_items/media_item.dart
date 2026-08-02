@@ -123,7 +123,9 @@ class GridAnimeCard extends StatelessWidget {
       title: media.title,
       poster: media.poster,
       extraData: extraData,
-      source: media.episodeCount ?? '?',
+      source: (media.data.sourceId != null && media.data.sourceId != 'N/A')
+          ? media.data.sourceId
+          : (media.episodeCount ?? '?'),
       releasing: media.mediaStatus == "RELEASING",
       servicesType: media.data.serviceType,
     );

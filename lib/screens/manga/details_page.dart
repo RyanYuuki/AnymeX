@@ -734,6 +734,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
     return Glow(
       color: posterColor,
       child: Scaffold(
+          resizeToAvoidBottomInset: false,
           extendBody: true,
           bottomNavigationBar: sourceController.shouldShowExtensions.value
               ? _buildMobiledNav()

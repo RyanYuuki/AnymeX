@@ -538,7 +538,8 @@ class SourceController extends GetxController implements BaseService {
     if (serviceHandler.serviceType.value != ServicesType.extensions) {
       cacheController.addCache(data.toJson());
     }
-    return Media.froDMedia(data, isAnime ? ItemType.anime : ItemType.manga);
+    return Media.froDMedia(data, isAnime ? ItemType.anime : ItemType.manga)
+      ..sourceId = source.id;
   }
 
   @override
@@ -548,7 +549,7 @@ class SourceController extends GetxController implements BaseService {
     final type = params.isManga ? ItemType.manga : ItemType.anime;
     return (await source!.methods.search(params.query, params.page, []))
         .list
-        .map((e) => Media.froDMedia(e, type))
+        .map((e) => Media.froDMedia(e, type)..sourceId = source.id)
         .toList();
   }
 

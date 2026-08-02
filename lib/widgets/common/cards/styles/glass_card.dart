@@ -74,6 +74,8 @@ class GlassCard extends CarouselCard {
               imageUrl: itemData.poster ?? '',
               heroTag: tag,
               radius: 11,
+              sourceId: itemData.source,
+              isAnime: type == ItemType.anime,
             ),
             if (shouldShowTitle()) ...[
               Positioned(
