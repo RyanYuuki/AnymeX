@@ -298,12 +298,11 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
                           color: theme.colorScheme.primary,
                         ),
                         const SizedBox(width: 8),
-                        if (_lists.length != 1)
-                          _buildActionButton(
-                            icon: Icons.delete_outline_rounded,
-                            onTap: () => _showDeleteDialog(index),
-                            color: theme.colorScheme.error,
-                          ),
+                        _buildActionButton(
+                          icon: Icons.delete_outline_rounded,
+                          onTap: () => _showDeleteDialog(index),
+                          color: theme.colorScheme.error,
+                        ),
                         const SizedBox(width: 8),
                       ],
                       AnimatedRotation(
