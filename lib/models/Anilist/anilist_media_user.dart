@@ -1,4 +1,6 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/settings/settings.dart';
+import 'package:get/get.dart';
 
 class TrackedMedia {
   String? id;
@@ -29,10 +31,25 @@ class TrackedMedia {
   int? startYear;
   int? updatedAt;
 
+  String? romajiTitle;
+
+  String get displayTitle {
+    if (Get.isRegistered<Settings>() &&
+        Get.find<Settings>().useAlternateTitle.value) {
+      if (romajiTitle != null &&
+          romajiTitle!.trim().isNotEmpty &&
+          romajiTitle != '?') {
+        return romajiTitle!;
+      }
+    }
+    return title ?? '?';
+  }
+
   TrackedMedia({
     this.id,
     this.idMal,
     this.title,
+    this.romajiTitle,
     this.poster,
     this.episodeCount,
     this.chapterCount,
@@ -60,13 +77,17 @@ class TrackedMedia {
   });
 
   factory TrackedMedia.fromJson(Map<String, dynamic> json) {
+    final titleMap = json['media']?['title'];
     return TrackedMedia(
       id: json['media']['id']?.toString(),
       idMal: json['media']['idMal']?.toString(),
-      title: json['media']['title']['userPreferred'] ??
-          json['media']['title']['english'] ??
-          json['media']['title']['romaji'] ??
-          json['media']['title']['native'],
+      title: titleMap?['userPreferred'] ??
+          titleMap?['english'] ??
+          titleMap?['romaji'] ??
+          titleMap?['native'],
+      romajiTitle: titleMap?['romaji'] ??
+          titleMap?['userPreferred'] ??
+          titleMap?['english'],
       poster: json['media']['coverImage']['large'],
       episodeCount: json['progress']?.toString(),
       chapterCount: json['media']['chapters']?.toString(),

@@ -72,7 +72,7 @@ class CardData {
   factory CardData.fromMedia(Media data) {
     return CardData(
       id: data.id,
-      title: data.title,
+      title: data.displayTitle,
       poster: data.poster,
       rating: data.rating,
       episodeCount: 'N/A',

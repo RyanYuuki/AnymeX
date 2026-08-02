@@ -29,6 +29,7 @@ enum General {
   useHighRefreshRate,
   preferredDisplayMode,
   navigationTabOrder,
+  useAlternateTitle,
 }
 
 enum ThemeKeys {

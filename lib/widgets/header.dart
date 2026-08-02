@@ -27,6 +27,8 @@ import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:anymex/widgets/legacy_header.dart' as legacy;
 import 'package:anymex/widgets/custom_widgets/anymex_tabbar.dart';
 import 'package:anymex/screens/extensions/ExtensionTesting/extension_test_page.dart';
+import 'package:anymex/database/data_keys/keys.dart';
+import 'package:anymex/widgets/common/custom_tiles.dart' hide CustomSliderTile;
 import 'package:anymex/screens/settings/sub_settings/settings_extensions.dart';
 import 'package:anymex/screens/novel/search/search_page.dart';
 
@@ -760,6 +762,7 @@ class LibrarySettingsSheetState extends State<LibrarySettingsSheet>
   }
 
   Widget _buildLayoutTab() {
+    final settings = Get.find<Settings>();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -774,6 +777,20 @@ class LibrarySettingsSheetState extends State<LibrarySettingsSheet>
               widget.controller.savePreferences();
             },
             max: 10,
+          );
+        }),
+        const SizedBox(height: 12),
+        Obx(() {
+          return CustomSwitchTile(
+            icon: Icons.translate_rounded,
+            title: 'Use Alternate Title',
+            description:
+                'Switch between default title and romaji/alternate title across library & cards',
+            switchValue: settings.useAlternateTitle.value,
+            onChanged: (e) {
+              settings.useAlternateTitle.value = e;
+              General.useAlternateTitle.set(e);
+            },
           );
         }),
       ],

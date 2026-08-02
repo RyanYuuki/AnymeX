@@ -10,11 +10,24 @@ import 'package:anymex/screens/novel/details/widgets/chapters_section.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 
+import 'package:anymex/controllers/settings/settings.dart';
+import 'package:get/get.dart';
+
 class Media {
   String id;
   String idMal;
   String title;
   String romajiTitle;
+
+  String get displayTitle {
+    if (Get.isRegistered<Settings>() &&
+        Get.find<Settings>().useAlternateTitle.value) {
+      if (romajiTitle.isNotEmpty && romajiTitle != '?') {
+        return romajiTitle;
+      }
+    }
+    return title;
+  }
   String description;
   String poster;
   String largePoster;

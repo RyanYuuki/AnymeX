@@ -32,6 +32,7 @@ class Settings extends GetxController {
   final mediaIndicatorThemeRx = 'default'.obs;
   final readerControlThemeRx = 'default'.obs;
 
+  RxBool useAlternateTitle = false.obs;
   RxBool enableBetaUpdates = false.obs;
   RxBool writeLogToFile = false.obs;
   Rxn<DisplayMode> preferredDisplayMode = Rxn<DisplayMode>();
@@ -87,6 +88,7 @@ class Settings extends GetxController {
     readerControlThemeRx.value =
         ReaderKeys.readerControlTheme.get<String>('default');
 
+    useAlternateTitle.value = General.useAlternateTitle.get<bool>(false);
     enableBetaUpdates.value = General.enableBetaUpdates.get<bool>(false);
     writeLogToFile.value = General.writeLogToFile.get<bool>(false);
     customLogDirectory.value = General.customLogDirectory.get<String>("");
