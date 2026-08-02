@@ -6,12 +6,15 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/novel/details/details_view.dart';
+import 'package:anymex/screens/extensions/ExtensionSettings/ExtensionSettings.dart';
 import 'package:anymex/screens/search/widgets/extension_filter_sheet.dart';
 import 'package:anymex/screens/search/widgets/inline_search_history.dart';
 import 'package:anymex/screens/search/widgets/search_widgets.dart';
 import 'package:anymex/screens/settings/misc/sauce_finder_view.dart';
 import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/widgets/common/cloudflare_webview.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/future_reusable_carousel.dart';
@@ -27,6 +30,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:get/get.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:iconsax/iconsax.dart';
 
 enum ViewMode { grid, list }
@@ -651,17 +655,42 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         body: SafeArea(
+          bottom: false,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
                 child: Row(
                   children: [
-                    IconButton(
-                      onPressed: () => Get.back(),
-                      icon: const Icon(Icons.arrow_back_ios_new),
+                    Material(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.circular(50),
+                      child: InkWell(
+                        onTap: () => Get.back(),
+                        borderRadius: BorderRadius.circular(50),
+                        child: Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: context.colors.surfaceContainerHighest
+                                .opaque(0.35, iReallyMeanIt: true),
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: context.colors.onSurface
+                                  .opaque(0.08, iReallyMeanIt: true),
+                              width: 0.5,
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.arrow_back_ios_new_rounded,
+                            size: 18,
+                            color: context.colors.onSurface,
+                          ),
+                        ),
+                      ),
                     ),
+                    const SizedBox(width: 10),
                     Expanded(child: _buildModernSearchBar()),
                   ],
                 ),
@@ -682,38 +711,34 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         ? 'Search ${_selectedSource!.name}...'
         : 'Search ${effectiveType.name.capitalizeFirst}...';
 
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
-        boxShadow: _searchFocusNode.hasFocus
-            ? [
-                BoxShadow(
-                  color: context.colors.primary.opaque(0.1),
-                  blurRadius: 20,
-                  spreadRadius: 2,
-                ),
-              ]
-            : null,
-      ),
+    final colors = Theme.of(context).colorScheme;
+
+    return SizedBox(
+      height: 44,
       child: TextField(
         controller: _searchController,
         focusNode: _searchFocusNode,
-        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              fontWeight: FontWeight.w500,
-            ),
+        style: TextStyle(
+          fontSize: 14,
+          fontFamily: 'Poppins',
+          fontWeight: FontWeight.w500,
+          color: colors.onSurface,
+        ),
         decoration: InputDecoration(
           filled: true,
-          fillColor: context.colors.surfaceContainer.opaque(.5),
+          fillColor: colors.surfaceContainerHighest.withOpacity(0.35),
           hintText: hintText,
-          hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: context.colors.onSurface.opaque(0.5),
-              ),
+          hintStyle: TextStyle(
+            fontSize: 13,
+            fontFamily: 'Poppins',
+            color: colors.onSurface.withOpacity(0.45),
+          ),
           prefixIcon: Icon(
-            Iconsax.search_normal,
+            IconlyLight.search,
+            size: 18,
             color: _searchFocusNode.hasFocus
-                ? context.colors.primary
-                : context.colors.onSurface.opaque(0.5),
+                ? colors.primary
+                : colors.onSurface.withOpacity(0.5),
           ),
           suffixIcon: _searchController.text.isNotEmpty
               ? IconButton(
@@ -731,8 +756,9 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                     });
                   },
                   icon: Icon(
-                    Iconsax.close_circle,
-                    color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
+                    Icons.cancel_rounded,
+                    size: 18,
+                    color: colors.onSurface.withOpacity(0.5),
                   ),
                 )
               : (!isExtensionMode &&
@@ -740,18 +766,30 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                   ? IconButton(
                       onPressed: _showFilterBottomSheet,
                       icon: Icon(
-                        Iconsax.setting_4,
+                        Icons.tune_rounded,
+                        size: 18,
                         color: _activeFilters.isNotEmpty
-                            ? context.colors.primary
-                            : Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .opaque(0.7),
+                            ? colors.primary
+                            : colors.onSurface.withOpacity(0.5),
                       ),
                     )
                   : null,
           contentPadding:
-              const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(22),
+            borderSide: BorderSide(
+              color: colors.onSurface.withOpacity(0.08),
+              width: 0.5,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(22),
+            borderSide: BorderSide(
+              color: colors.primary.withOpacity(0.4),
+              width: 1.2,
+            ),
+          ),
         ),
         onSubmitted: (query) => _performSearch(query: query),
         onChanged: (value) => setState(() {}),
@@ -759,8 +797,37 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     );
   }
 
+  BorderRadius _getSegmentedBorderRadius({
+    required bool isFirst,
+    required bool isLast,
+    double outerRadius = 16.0,
+    double innerRadius = 7.0,
+  }) {
+    if (isFirst && isLast) {
+      return BorderRadius.circular(outerRadius);
+    }
+    if (isFirst) {
+      return BorderRadius.only(
+        topLeft: Radius.circular(outerRadius),
+        bottomLeft: Radius.circular(outerRadius),
+        topRight: Radius.circular(innerRadius),
+        bottomRight: Radius.circular(innerRadius),
+      );
+    }
+    if (isLast) {
+      return BorderRadius.only(
+        topRight: Radius.circular(outerRadius),
+        bottomRight: Radius.circular(outerRadius),
+        topLeft: Radius.circular(innerRadius),
+        bottomLeft: Radius.circular(innerRadius),
+      );
+    }
+    return BorderRadius.circular(innerRadius);
+  }
+
   Widget _buildControlsSection() {
     final installedSources = effectiveType.extensions;
+    final totalSources = 1 + installedSources.length;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -782,6 +849,10 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                       _buildSourceChip(
                         label: 'All Sources',
                         isSelected: _selectedSource == null,
+                        borderRadius: _getSegmentedBorderRadius(
+                          isFirst: true,
+                          isLast: totalSources == 1,
+                        ),
                         onTap: () {
                           setState(() {
                             _selectedSource = null;
@@ -789,14 +860,19 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                           _performSearch();
                         },
                       ),
-                      const SizedBox(width: 8),
-                      for (final src in installedSources) ...[
+                      for (int i = 0; i < installedSources.length; i++) ...[
+                        const SizedBox(width: 3),
                         _buildSourceChip(
                           label:
-                              '${src.name ?? "Src"} (${src.lang?.toUpperCase() ?? "ALL"})',
-                          iconUrl: src.iconUrl,
-                          isSelected: _selectedSource?.id == src.id,
+                              '${installedSources[i].name ?? "Src"} (${installedSources[i].lang?.toUpperCase() ?? "ALL"})',
+                          iconUrl: installedSources[i].iconUrl,
+                          isSelected: _selectedSource?.id == installedSources[i].id,
+                          borderRadius: _getSegmentedBorderRadius(
+                            isFirst: false,
+                            isLast: i == installedSources.length - 1,
+                          ),
                           onTap: () {
+                            final src = installedSources[i];
                             setState(() {
                               _selectedSource = src;
                               _sourceController.setActiveSource(src);
@@ -810,7 +886,6 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                             _performSearch();
                           },
                         ),
-                        const SizedBox(width: 8),
                       ],
                     ],
                   ),
@@ -860,67 +935,185 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     final hasFilters = _extensionFilterList.isNotEmpty;
     final hasActiveFilters = _extensionActiveFilters.isNotEmpty;
 
+    final List<Widget Function({required bool isFirst, required bool isLast})> items = [];
+
+    if (widget.source == null) {
+      items.add(({required isFirst, required isLast}) => _buildSourceChip(
+            label: '← All',
+            isSelected: false,
+            borderRadius: _getSegmentedBorderRadius(isFirst: isFirst, isLast: isLast),
+            onTap: () {
+              setState(() {
+                _selectedSource = null;
+                _extensionBrowseMode = _ExtensionBrowseMode.search;
+                _extensionActiveFilters = [];
+                _extensionFilterList = [];
+                _extensionFiltersLoaded = false;
+                _searchResults = null;
+                _searchState = SearchState.initial;
+              });
+            },
+          ));
+    }
+
+    if (hasPopular) {
+      items.add(({required isFirst, required isLast}) => _buildSourceChip(
+            label: 'Popular',
+            isSelected: _extensionBrowseMode == _ExtensionBrowseMode.popular,
+            borderRadius: _getSegmentedBorderRadius(isFirst: isFirst, isLast: isLast),
+            onTap: () {
+              _searchController.clear();
+              setState(() {
+                _extensionBrowseMode = _ExtensionBrowseMode.popular;
+              });
+              _performSearch();
+            },
+          ));
+    }
+
+    if (hasLatest) {
+      items.add(({required isFirst, required isLast}) => _buildSourceChip(
+            label: 'Latest',
+            isSelected: _extensionBrowseMode == _ExtensionBrowseMode.latest,
+            borderRadius: _getSegmentedBorderRadius(isFirst: isFirst, isLast: isLast),
+            onTap: () {
+              _searchController.clear();
+              setState(() {
+                _extensionBrowseMode = _ExtensionBrowseMode.latest;
+              });
+              _performSearch();
+            },
+          ));
+    }
+
+    if (hasFilters) {
+      items.add(({required isFirst, required isLast}) => _buildSourceChip(
+            label: 'Filter',
+            isSelected: hasActiveFilters,
+            icon: Icons.tune_rounded,
+            borderRadius: _getSegmentedBorderRadius(isFirst: isFirst, isLast: isLast),
+            onTap: _showExtensionFilterSheet,
+          ));
+    }
+
+    items.add(({required isFirst, required isLast}) => _buildSourceMoreOptionsMenu(
+          src,
+          borderRadius: _getSegmentedBorderRadius(isFirst: isFirst, isLast: isLast),
+        ));
+        
+
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          if (widget.source == null) ...[
-            _buildSourceChip(
-              label: '← All',
-              isSelected: false,
-              onTap: () {
-                setState(() {
-                  _selectedSource = null;
-                  _extensionBrowseMode = _ExtensionBrowseMode.search;
-                  _extensionActiveFilters = [];
-                  _extensionFilterList = [];
-                  _extensionFiltersLoaded = false;
-                  _searchResults = null;
-                  _searchState = SearchState.initial;
-                });
-              },
-            ),
-            const SizedBox(width: 8),
-          ],
-          if (hasPopular) ...[
-            _buildSourceChip(
-              label: 'Popular',
-              isSelected: _extensionBrowseMode == _ExtensionBrowseMode.popular,
-              onTap: () {
-                _searchController.clear();
-                setState(() {
-                  _extensionBrowseMode = _ExtensionBrowseMode.popular;
-                });
-                _performSearch();
-              },
-            ),
-          ],
-          if (hasLatest) ...[
-            const SizedBox(width: 8),
-            _buildSourceChip(
-              label: 'Latest',
-              isSelected: _extensionBrowseMode == _ExtensionBrowseMode.latest,
-              onTap: () {
-                _searchController.clear();
-                setState(() {
-                  _extensionBrowseMode = _ExtensionBrowseMode.latest;
-                });
-                _performSearch();
-              },
-            ),
-          ],
-          if (hasFilters) ...[
-            const SizedBox(width: 8),
-            _buildSourceChip(
-              label: 'Filter',
-              isSelected: hasActiveFilters,
-              icon: Icons.tune_rounded,
-              onTap: _showExtensionFilterSheet,
+          for (int i = 0; i < items.length; i++) ...[
+            if (i > 0) const SizedBox(width: 3),
+            items[i](
+              isFirst: i == 0,
+              isLast: i == items.length - 1,
             ),
           ],
         ],
+      ),
+    );
+  }
+
+  Widget _buildSourceMoreOptionsMenu(Source src, {BorderRadius? borderRadius}) {
+    final colors = Theme.of(context).colorScheme;
+    final r = borderRadius ?? BorderRadius.circular(16);
+
+    return Material(
+      color: Colors.transparent,
+      borderRadius: r,
+      child: InkWell(
+        borderRadius: r,
+        onTapDown: (details) {
+          final position = details.globalPosition;
+          showMenu<String>(
+            context: context,
+            position: RelativeRect.fromLTRB(
+              position.dx,
+              position.dy + 10,
+              position.dx + 40,
+              position.dy + 100,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+              side: BorderSide(color: colors.outline.withOpacity(0.12)),
+            ),
+            color: colors.surface,
+            elevation: 6,
+            items: [
+              PopupMenuItem<String>(
+                value: 'settings',
+                height: 40,
+                child: Row(
+                  children: [
+                    Icon(Icons.settings_outlined, size: 18, color: colors.primary),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Extension Settings',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w500,
+                        color: colors.onSurface,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              PopupMenuItem<String>(
+                value: 'webview',
+                height: 40,
+                child: Row(
+                  children: [
+                    Icon(Icons.public_rounded, size: 18, color: colors.primary),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Open Webview',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w500,
+                        color: colors.onSurface,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ).then((value) {
+            if (value == 'settings') {
+              navigate(() => SourcePreferenceScreen(source: src));
+            } else if (value == 'webview') {
+              if (src.baseUrl != null && src.baseUrl!.isNotEmpty) {
+                navigate(() => CloudflareBypassWebView(url: src.baseUrl!));
+              } else {
+                snackBar('Base URL not available for this source');
+              }
+            }
+          });
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: colors.surfaceContainerHighest.withOpacity(0.3),
+            borderRadius: r,
+            border: Border.all(
+              color: colors.onSurface.withOpacity(0.08),
+              width: 0.5,
+            ),
+          ),
+          child: Icon(
+            Icons.more_vert_rounded,
+            size: 16,
+            color: colors.onSurface,
+          ),
+        ),
       ),
     );
   }
@@ -931,8 +1124,10 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     IconData? icon,
     required bool isSelected,
     required VoidCallback onTap,
+    BorderRadius? borderRadius,
   }) {
     final theme = Theme.of(context);
+    final r = borderRadius ?? BorderRadius.circular(16);
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -943,7 +1138,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
               ? theme.colorScheme.primary.opaque(0.15, iReallyMeanIt: true)
               : theme.colorScheme.surfaceContainerHighest
                   .opaque(0.3, iReallyMeanIt: true),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: r,
           border: Border.all(
             color: isSelected
                 ? theme.colorScheme.primary.opaque(0.4, iReallyMeanIt: true)
@@ -1302,9 +1497,11 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       return _buildInitialState();
     }
 
+    final bottomPadding = MediaQuery.of(context).padding.bottom + 32.0;
+
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.only(top: 8, bottom: 24),
+      padding: EdgeInsets.fromLTRB(16, 8, 16, bottomPadding),
       child: Column(
         children: [
           for (final item in _extensionSearchItems)
@@ -1469,9 +1666,11 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
             MediaQuery.of(context).size.width,
             itemWidth: 115));
 
+    final bottomPadding = MediaQuery.of(context).padding.bottom + 32.0;
+
     return GridView.builder(
       controller: _resultsScrollController,
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.fromLTRB(16, 12, 16, bottomPadding),
       physics: const BouncingScrollPhysics(),
       gridDelegate: _currentViewMode == ViewMode.list
           ? const SliverGridDelegateWithFixedCrossAxisCount(
