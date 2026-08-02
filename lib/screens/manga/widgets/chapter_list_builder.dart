@@ -60,6 +60,18 @@ class ChapterService {
     return scanlators.toList();
   }
 
+  bool isChapterCompleted(Chapter? chapter) {
+    if (chapter == null) return false;
+    final pageNum = chapter.pageNumber;
+    final totalPgs = chapter.totalPages;
+    if (pageNum != null && totalPgs != null && totalPgs > 0) {
+      return pageNum >= totalPgs ||
+          pageNum >= totalPgs - 1 ||
+          (pageNum / totalPgs) >= 0.95;
+    }
+    return false;
+  }
+
   ChapterState buildChapterState(
     List<Chapter> chapters,
     Media anilistData, {
@@ -85,11 +97,11 @@ class ChapterService {
     final userProgress = _getUserProgress(anilistData, savedManga);
     final readChaptersList = savedManga?.readChapters ?? <Chapter>[];
 
-    final readChapter = readChaptersList.firstWhereOrNull(
-      (c) => c.number == userProgress.toDouble(),
-    );
-    final continueChapter =
-        _findContinueChapter(chapters, userProgress, readChapter);
+    final readChapter = savedManga?.currentChapter ??
+        readChaptersList.firstWhereOrNull(
+          (c) => c.number == userProgress.toDouble(),
+        );
+    final continueChapter = _findContinueChapter(chapters, savedManga);
 
     return ChapterState(
       userProgress: userProgress,
@@ -111,20 +123,7 @@ class ChapterService {
       final currentChapter = savedManga?.currentChapter;
       final progress = currentChapter?.number?.toInt();
 
-      bool isCompleted = false;
-      if (currentChapter != null) {
-        final pageNum = currentChapter.pageNumber;
-        final totalPgs = currentChapter.totalPages;
-        if (pageNum != null && totalPgs != null && totalPgs > 0) {
-          isCompleted = pageNum >= totalPgs ||
-              pageNum >= totalPgs - 1 ||
-              (pageNum / totalPgs) >= 0.95;
-        }
-      }
-
-      return progress != null
-          ? (isCompleted ? progress : progress - 1)
-          : 0;
+      return progress ?? 0;
     }
   }
 
@@ -150,18 +149,60 @@ class ChapterService {
   }
 
   Chapter? _findContinueChapter(
-      List<Chapter> chapters, int userProgress, Chapter? readChapter) {
+    List<Chapter> chapters,
+    OfflineMedia? savedManga,
+  ) {
+    if (chapters.isEmpty) return null;
+
     if (_auth.isLoggedIn.value &&
         _auth.serviceType.value != ServicesType.extensions) {
-      final candidate =
-          chapters.firstWhereOrNull((e) => e.number?.toInt() == userProgress + 1);
+      final temp = _auth.onlineService.mangaList
+          .firstWhereOrNull((e) => e.id.toString() == savedManga?.id.toString());
+      final userProgress =
+          double.tryParse(temp?.episodeCount ?? '')?.toInt() ?? 0;
 
-      return candidate ?? chapters.firstWhereOrNull((e) => e.number?.toInt() == userProgress);
-    } else {
-      return chapters.firstWhereOrNull((e) => e.number?.toInt() == userProgress + 1) ??
-          readChapter ??
-          (chapters.isNotEmpty ? chapters.first : null);
+      final lastRead = savedManga?.currentChapter;
+      if (lastRead != null && !isChapterCompleted(lastRead)) {
+        final matching = chapters.firstWhereOrNull(
+          (c) =>
+              (c.link != null && c.link == lastRead.link) ||
+              c.number == lastRead.number,
+        );
+        if (matching != null) return matching;
+      }
+
+      final candidate = chapters
+          .firstWhereOrNull((e) => e.number?.toInt() == userProgress + 1);
+      return candidate ??
+          chapters
+              .firstWhereOrNull((e) => e.number?.toInt() == userProgress) ??
+          chapters.first;
     }
+
+    final lastRead = savedManga?.currentChapter;
+    if (lastRead == null) {
+      return chapters.first;
+    }
+
+    final matchingIndex = chapters.indexWhere(
+      (c) =>
+          (c.link != null && c.link == lastRead.link) ||
+          c.number == lastRead.number,
+    );
+
+    if (matchingIndex != -1) {
+      if (isChapterCompleted(lastRead)) {
+        if (matchingIndex + 1 < chapters.length) {
+          return chapters[matchingIndex + 1];
+        } else {
+          return chapters[matchingIndex];
+        }
+      } else {
+        return chapters[matchingIndex];
+      }
+    }
+
+    return chapters.first;
   }
 
   List<Chapter> filterChaptersByScanlator(
@@ -608,8 +649,13 @@ class ChapterListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final savedChaps = savedChapter;
-    final currentChapterLink = continueChapter?.link ?? '';
-    final isSelected = chapter.link == currentChapterLink;
+    final isSelected = (chapter.link != null &&
+            chapter.link!.isNotEmpty &&
+            continueChapter?.link != null &&
+            continueChapter!.link!.isNotEmpty)
+        ? chapter.link == continueChapter!.link
+        : (chapter.number == continueChapter?.number &&
+            chapter.scanlator == continueChapter?.scanlator);
     final savedPage = savedChaps?.pageNumber;
     final savedTotal = savedChaps?.totalPages;
     final isPageComplete = savedPage != null &&
@@ -618,8 +664,21 @@ class ChapterListItem extends StatelessWidget {
         (savedPage >= savedTotal ||
             savedPage >= savedTotal - 1 ||
             (savedPage / savedTotal) >= 0.95);
-    final alreadyRead =
-        chapter.number! < (readChapter?.number ?? 0.0) || isPageComplete;
+
+    final bool alreadyRead;
+    final auth = Get.find<ServiceHandler>();
+    if (auth.isLoggedIn.value &&
+        auth.serviceType.value != ServicesType.extensions) {
+      final userProgress = auth.onlineService.mangaList
+          .firstWhereOrNull((e) => e.id == anilistData.id)
+          ?.episodeCount;
+      final progressNum = double.tryParse(userProgress ?? '')?.toInt() ?? 0;
+      alreadyRead =
+          (chapter.number != null && chapter.number! <= progressNum) ||
+              isPageComplete;
+    } else {
+      alreadyRead = isPageComplete;
+    }
     return StaggeredAnimatedItemWrapper(
       child: AnymexOnTap(
           onTap: onTap,
@@ -672,9 +731,7 @@ class ChapterListItem extends StatelessWidget {
         boxShadow: [glowingShadow(context)],
       ),
       child: AnymexText(
-        text: (chapter.number != null && chapter.number! % 1 == 0)
-            ? chapter.number!.toInt().toString()
-            : chapter.number?.toString() ?? '',
+        text: chapter.formattedNumber ,
         variant: TextVariant.bold,
         color: context.colors.onPrimary,
       ),
