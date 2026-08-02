@@ -66,7 +66,7 @@ class _InstalledExtensionsGridViewState
     final title = widget.itemType.name.capitalizeFirst ?? '';
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 40.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

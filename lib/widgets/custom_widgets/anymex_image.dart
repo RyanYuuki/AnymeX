@@ -113,45 +113,47 @@ class _AnymeXImageState extends State<AnymeXImage> {
     }
   }
 
+  bool _isAniyomiSource(String? sourceId) {
+    if (sourceId == null || sourceId.isEmpty || sourceId == 'N/A') return false;
+    if (_isAniyomiCache.containsKey(sourceId)) {
+      return _isAniyomiCache[sourceId]!;
+    }
+    if (Get.isRegistered<SourceController>()) {
+      final sourceController = Get.find<SourceController>();
+      Source? source;
+      for (final type in ItemType.values) {
+        source = sourceController.findSourceById(sourceId, type);
+        if (source != null) break;
+      }
+      final isAniyomi = source is ASource;
+      _isAniyomiCache[sourceId] = isAniyomi;
+      return isAniyomi;
+    }
+    return false;
+  }
+
   Future<void> _resolveHeaders() async {
     if (!Platform.isAndroid) return;
-    if (widget.sourceId != null && widget.sourceId != 'N/A' && widget.sourceId!.isNotEmpty) {
-      final sourceId = widget.sourceId!;
-      bool isAniyomi = _isAniyomiCache[sourceId] ?? false;
-
-      if (!_isAniyomiCache.containsKey(sourceId)) {
-        if (Get.isRegistered<SourceController>()) {
-          final sourceController = Get.find<SourceController>();
-          Source? source;
-          for (final type in ItemType.values) {
-            source = sourceController.findSourceById(sourceId, type);
-            if (source != null) break;
-          }
-          isAniyomi = source is ASource;
-          _isAniyomiCache[sourceId] = isAniyomi;
-        }
+    final sourceId = widget.sourceId;
+    if (_isAniyomiSource(sourceId)) {
+      if (mounted) {
+        setState(() {
+          _loadFailed = false;
+        });
       }
-
-      if (isAniyomi) {
-        if (mounted) {
-          setState(() {
-            _loadFailed = false;
-          });
-        }
-        final bytes = await AnymeXRuntimeBridge.getImageBytes(
-          sourceId,
-          widget.isAnime ?? true,
-          widget.imageUrl,
-        );
-        if (mounted) {
-          setState(() {
-            if (bytes != null) {
-              _cachedBytes = bytes;
-            } else {
-              _loadFailed = true;
-            }
-          });
-        }
+      final bytes = await AnymeXRuntimeBridge.getImageBytes(
+        sourceId!,
+        widget.isAnime ?? true,
+        widget.imageUrl,
+      );
+      if (mounted) {
+        setState(() {
+          if (bytes != null) {
+            _cachedBytes = bytes;
+          } else {
+            _loadFailed = true;
+          }
+        });
       }
     }
   }
@@ -182,41 +184,52 @@ class _AnymeXImageState extends State<AnymeXImage> {
   Widget build(BuildContext context) {
     final isBase64 = _cachedBytes != null;
     final isNetworkImage = isNetworkImageUrl(widget.imageUrl);
-    final useNativeLoading = Platform.isAndroid &&
-        widget.sourceId != null &&
-        widget.sourceId != 'N/A' &&
-        widget.sourceId!.isNotEmpty;
+    final isAniyomi = Platform.isAndroid && _isAniyomiSource(widget.sourceId);
+
+    Widget imageContent;
+
+    if (isAniyomi) {
+      if (isBase64) {
+        imageContent = Image.memory(
+          _cachedBytes!,
+          width: widget.width,
+          height: widget.height,
+          fit: widget.fit,
+          alignment: widget.alignment,
+          color: widget.color,
+          colorBlendMode: widget.color != null ? BlendMode.color : null,
+          errorBuilder: (_, __, ___) => _errorWidget(),
+        );
+      } else if (_loadFailed) {
+        imageContent = isNetworkImage
+            ? _networkImage(widget.imageUrl)
+            : _errorWidget();
+      } else {
+        imageContent = _placeholder(context);
+      }
+    } else {
+      if (isBase64) {
+        imageContent = Image.memory(
+          _cachedBytes!,
+          width: widget.width,
+          height: widget.height,
+          fit: widget.fit,
+          alignment: widget.alignment,
+          color: widget.color,
+          colorBlendMode: widget.color != null ? BlendMode.color : null,
+          errorBuilder: (_, __, ___) => _fallback(context),
+        );
+      } else if (isNetworkImage) {
+        imageContent = _networkImage(widget.imageUrl);
+      } else {
+        imageContent = _fileImage(widget.imageUrl);
+      }
+    }
 
     return RepaintBoundary(
       child: ClipRRect(
         borderRadius: BorderRadius.circular(widget.radius),
-        child: useNativeLoading
-            ? (isBase64
-                ? Image.memory(
-                    _cachedBytes!,
-                    width: widget.width,
-                    height: widget.height,
-                    fit: widget.fit,
-                    alignment: widget.alignment,
-                    color: widget.color,
-                    colorBlendMode: widget.color != null ? BlendMode.color : null,
-                    errorBuilder: (_, __, ___) => _errorWidget(),
-                  )
-                : (_loadFailed ? _errorWidget() : _placeholder(context)))
-            : (isBase64
-                ? Image.memory(
-                    _cachedBytes!,
-                    width: widget.width,
-                    height: widget.height,
-                    fit: widget.fit,
-                    alignment: widget.alignment,
-                    color: widget.color,
-                    colorBlendMode: widget.color != null ? BlendMode.color : null,
-                    errorBuilder: (_, __, ___) => _fallback(context),
-                  )
-                : (isNetworkImage
-                    ? _networkImage(widget.imageUrl)
-                    : _fileImage(widget.imageUrl))),
+        child: imageContent,
       ),
     );
   }
