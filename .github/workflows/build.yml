@@ -502,6 +502,7 @@ jobs:
 
       - name: Publish AUR package
         if: matrix.job == 'aur'
+        continue-on-error: true
         uses: KSXGitHub/github-actions-deploy-aur@v4.1.1
         with:
           pkgname: anymex-bin
@@ -512,6 +513,7 @@ jobs:
           commit_message: "Update to ${{ github.ref_name }}"
           ssh_keyscan_types: rsa,ecdsa,ed25519
       
+
       - name: Update Scoop
         if: matrix.job == 'scoop'
         continue-on-error: true
