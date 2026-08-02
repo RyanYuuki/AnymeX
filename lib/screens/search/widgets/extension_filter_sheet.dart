@@ -2,6 +2,7 @@ import 'package:anymex_extension_runtime_bridge/Services/Mangayomi/Eval/dart/mod
 import 'package:flutter/material.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 
 
 class ExtensionFilterSheet extends StatefulWidget {
@@ -190,7 +191,7 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
   Widget _buildFilter(int index) {
     final f = _filters[index];
     if (f is HeaderFilter) return _buildHeader(f);
-    if (f is SeparatorFilter) return const Divider(height: 24);
+    if (f is SeparatorFilter) return const SizedBox(height: 8);
     if (f is CheckBoxFilter) return _buildCheckbox(index, f);
     if (f is TriStateFilter) return _buildTriState(index, f);
     if (f is SelectFilter) return _buildSelect(index, f);
@@ -239,11 +240,30 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
 
   Widget _buildTriState(int i, TriStateFilter f) {
     final labels = ['Off', 'Include', 'Exclude'];
-    final colors = [
-      Colors.grey,
-      Theme.of(context).colorScheme.primary,
-      Theme.of(context).colorScheme.error,
-    ];
+    final theme = Theme.of(context);
+    Color bgColor;
+    Color borderColor;
+    Color textColor;
+
+    switch (f.state) {
+      case 1:
+        bgColor = theme.colorScheme.primary.withOpacity(0.15);
+        borderColor = theme.colorScheme.primary.withOpacity(0.4);
+        textColor = theme.colorScheme.primary;
+        break;
+      case 2:
+        bgColor = theme.colorScheme.error.withOpacity(0.15);
+        borderColor = theme.colorScheme.error.withOpacity(0.4);
+        textColor = theme.colorScheme.error;
+        break;
+      case 0:
+      default:
+        bgColor = theme.colorScheme.surfaceContainerHighest.withOpacity(0.3);
+        borderColor = theme.colorScheme.onSurface.withOpacity(0.1);
+        textColor = theme.colorScheme.onSurface;
+        break;
+    }
+
     return ListTile(
       dense: true,
       title: AnymexText(text: f.name, size: 14),
@@ -260,17 +280,18 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
             );
           });
         },
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(
-            color: colors[f.state].withOpacity(0.15),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: colors[f.state].withOpacity(0.5)),
+            color: bgColor,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: borderColor),
           ),
           child: AnymexText.semiBold(
             text: labels[f.state],
             size: 12,
-            color: colors[f.state],
+            color: textColor,
           ),
         ),
       ),
@@ -281,6 +302,7 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
     return AnymexExpansionTile(
       title: f.name,
       content: Wrap(
+        alignment: WrapAlignment.start,
         spacing: 8,
         runSpacing: 6,
         children: [
@@ -311,6 +333,7 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
     return AnymexExpansionTile(
       title: f.name,
       content: Wrap(
+        alignment: WrapAlignment.start,
         spacing: 8,
         runSpacing: 6,
         children: [
@@ -385,16 +408,37 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
   }
 
   Widget _buildText(int i, TextFilter f) {
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
       child: TextField(
         controller: TextEditingController(text: f.state)
           ..selection = TextSelection.collapsed(offset: f.state.length),
+        style: theme.textTheme.bodyMedium?.copyWith(
+          fontSize: 13,
+          color: theme.colorScheme.onSurface,
+        ),
         decoration: InputDecoration(
           labelText: f.name,
+          labelStyle: TextStyle(
+            color: theme.colorScheme.onSurface.withOpacity(0.6),
+            fontSize: 13,
+          ),
           isDense: true,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+          filled: true,
+          fillColor: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide(
+              color: theme.colorScheme.onSurface.withOpacity(0.1),
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide(
+              color: theme.colorScheme.primary.withOpacity(0.4),
+            ),
           ),
         ),
         onChanged: (v) {
@@ -502,23 +546,33 @@ class _GroupFilterWidgetState extends State<_GroupFilterWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
             child: SizedBox(
-              height: 36,
+              height: 40,
               child: TextField(
                 controller: _searchController,
-                style: theme.textTheme.bodyMedium,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontSize: 13,
+                  color: theme.colorScheme.onSurface,
+                ),
                 decoration: InputDecoration(
                   hintText: 'Search ${group.name.toLowerCase()}...',
                   hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurface.withOpacity(0.5),
+                    fontSize: 13,
+                    color: theme.colorScheme.onSurface.withOpacity(0.45),
                   ),
-                  prefixIcon: Icon(Icons.search,
-                      size: 16,
-                      color: theme.colorScheme.onSurface.withOpacity(0.5)),
+                  prefixIcon: Icon(
+                    IconlyLight.search,
+                    size: 18,
+                    color: theme.colorScheme.primary,
+                  ),
                   suffixIcon: _searchController.text.isNotEmpty
                       ? IconButton(
-                          icon: const Icon(Icons.clear, size: 14),
+                          icon: Icon(
+                            Icons.cancel_rounded,
+                            size: 16,
+                            color: theme.colorScheme.onSurface.withOpacity(0.5),
+                          ),
                           onPressed: () {
                             _searchController.clear();
                             setState(() {
@@ -527,13 +581,22 @@ class _GroupFilterWidgetState extends State<_GroupFilterWidget> {
                           },
                         )
                       : null,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   filled: true,
                   fillColor: theme.colorScheme.surfaceContainerHighest
-                      .withOpacity(0.3),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide.none,
+                      .withOpacity(0.35),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(
+                      color: theme.colorScheme.onSurface.withOpacity(0.08),
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(
+                      color: theme.colorScheme.primary.withOpacity(0.4),
+                    ),
                   ),
                 ),
                 onChanged: (val) {
@@ -572,6 +635,7 @@ class _GroupFilterWidgetState extends State<_GroupFilterWidget> {
               )
             else
               Wrap(
+                alignment: WrapAlignment.start,
                 spacing: 8,
                 runSpacing: 6,
                 children: [
@@ -642,6 +706,7 @@ class _GroupFilterWidgetState extends State<_GroupFilterWidget> {
               )
             else
               Wrap(
+                alignment: WrapAlignment.start,
                 spacing: 8,
                 runSpacing: 6,
                 children: [
@@ -673,11 +738,30 @@ class _GroupFilterWidgetState extends State<_GroupFilterWidget> {
   }
 
   Widget _buildGroupTriStateChip(TriStateFilter tri) {
-    final colors = [
-      Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-      Theme.of(context).colorScheme.primary,
-      Theme.of(context).colorScheme.error,
-    ];
+    final theme = Theme.of(context);
+    Color bgColor;
+    Color borderColor;
+    Color textColor;
+
+    switch (tri.state) {
+      case 1:
+        bgColor = theme.colorScheme.primary.withOpacity(0.15);
+        borderColor = theme.colorScheme.primary.withOpacity(0.4);
+        textColor = theme.colorScheme.primary;
+        break;
+      case 2:
+        bgColor = theme.colorScheme.error.withOpacity(0.15);
+        borderColor = theme.colorScheme.error.withOpacity(0.4);
+        textColor = theme.colorScheme.error;
+        break;
+      case 0:
+      default:
+        bgColor = theme.colorScheme.surfaceContainerHighest.withOpacity(0.3);
+        borderColor = theme.colorScheme.onSurface.withOpacity(0.1);
+        textColor = theme.colorScheme.onSurface;
+        break;
+    }
+
     return GestureDetector(
       onTap: () {
         widget.parentSetState(() {
@@ -689,14 +773,14 @@ class _GroupFilterWidgetState extends State<_GroupFilterWidget> {
         duration: const Duration(milliseconds: 180),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: colors[tri.state].withOpacity(0.12),
+          color: bgColor,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: colors[tri.state].withOpacity(0.4)),
+          border: Border.all(color: borderColor),
         ),
         child: AnymexText(
           text: tri.name,
           size: 12,
-          color: colors[tri.state],
+          color: textColor,
         ),
       ),
     );
@@ -722,33 +806,7 @@ class _GroupFilterWidgetState extends State<_GroupFilterWidget> {
     GroupFilter subGroup,
     TriStateFilter tri,
   ) {
-    final colors = [
-      Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-      Theme.of(context).colorScheme.primary,
-      Theme.of(context).colorScheme.error,
-    ];
-    return GestureDetector(
-      onTap: () {
-        widget.parentSetState(() {
-          tri.state = (tri.state + 1) % 3;
-        });
-        setState(() {});
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
-          color: colors[tri.state].withOpacity(0.12),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: colors[tri.state].withOpacity(0.4)),
-        ),
-        child: AnymexText(
-          text: tri.name,
-          size: 12,
-          color: colors[tri.state],
-        ),
-      ),
-    );
+    return _buildGroupTriStateChip(tri);
   }
 
   Widget _buildChipOption({
