@@ -1209,6 +1209,60 @@ class DownloadController extends GetxController {
     );
   }
 
+  Future<DownloadedMediaSummary?> updateDownloadedMediaMetadata(
+    String folderName, {
+    String? newTitle,
+    String? newPoster,
+  }) async {
+    final root = await _getRootDir();
+    if (!await root.exists()) return null;
+    final indexFile = File(p.join(root.path, 'metadata.json'));
+    if (!await indexFile.exists()) return null;
+
+    try {
+      final raw =
+          jsonDecode(await indexFile.readAsString()) as Map<String, dynamic>;
+      final itemsRaw = raw['items'] as List<dynamic>? ?? [];
+      final items = itemsRaw
+          .map((e) =>
+              DownloadedMediaSummary.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+      final index = items.indexWhere((i) => i.folderName == folderName);
+      if (index != -1) {
+        final existing = items[index];
+        final updated = DownloadedMediaSummary(
+          title: (newTitle != null && newTitle.trim().isNotEmpty)
+              ? newTitle.trim()
+              : existing.title,
+          poster: (newPoster != null && newPoster.trim().isNotEmpty)
+              ? newPoster.trim()
+              : existing.poster,
+          extensionName: existing.extensionName,
+          folderName: existing.folderName,
+          mediaType: existing.mediaType,
+        );
+        items[index] = updated;
+
+        await indexFile.writeAsString(
+          jsonEncode({'items': items.map((i) => i.toJson()).toList()}),
+          flush: true,
+        );
+
+        final rxIndex =
+            downloadedMedia.indexWhere((i) => i.folderName == folderName);
+        if (rxIndex != -1) {
+          downloadedMedia[rxIndex] = updated;
+          downloadedMedia.refresh();
+        }
+        return updated;
+      }
+    } catch (e) {
+      debugPrint('DownloadController: error updating metadata: $e');
+    }
+    return null;
+  }
+
   Future<void> _loadIndex() async {
     try {
       final root = await _getRootDir();
