@@ -197,63 +197,59 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
           );
         }),
         const SizedBox(height: 10),
-        Obx(() {
-          anilistAuth.isLoggedIn.value;
-          if (acceptedLists.isEmpty) return const SizedBox.shrink();
-          return Column(
-            children: acceptedLists.map((e) {
-              return ReusableCarousel(
-                data: filterListByLabel(
-                    e.contains("Manga") || e.contains("Reading")
-                        ? anilistAuth.mangaList.removeDupes()
-                        : anilistAuth.animeList.removeDupes(),
-                    e),
-                title: e,
-                variant: DataVariant.anilist,
-                type: e.contains("Manga") || e.contains("Reading")
-                    ? ItemType.manga
-                    : ItemType.anime,
-              );
-            }).toList(),
-          );
-        }),
+        if (acceptedLists.isNotEmpty)
+          Obx(() {
+            anilistAuth.isLoggedIn.value;
+            return Column(
+              children: acceptedLists.map((e) {
+                return ReusableCarousel(
+                  data: filterListByLabel(
+                      e.contains("Manga") || e.contains("Reading")
+                          ? anilistAuth.mangaList.removeDupes()
+                          : anilistAuth.animeList.removeDupes(),
+                      e),
+                  title: e,
+                  variant: DataVariant.anilist,
+                  type: e.contains("Manga") || e.contains("Reading")
+                      ? ItemType.manga
+                      : ItemType.anime,
+                );
+              }).toList(),
+            );
+          }),
       ],
       Column(
         children: [
-          Obx(() {
-            if (!acceptedLists.contains("Recommended Animes") ||
-                !settings.homePageCards.keys.contains('Recommended Animes')) {
-              return const SizedBox.shrink();
-            }
-            final recAnimes =
-                [...popularAnimes, ...trendingAnimes, ...latestAnimes].removeDupes();
-            final ids = animeList.map((e) => e.id).toSet();
-            final data = isLoggedIn.value
-                ? recAnimes.where((e) => !ids.contains(e.id)).toList()
-                : recAnimes;
-            return ReusableCarousel(
-              title: "Recommended Anime",
-              data: data,
-              type: ItemType.anime,
-            );
-          }),
-          Obx(() {
-            if (!acceptedLists.contains("Recommended Mangas") ||
-                !settings.homePageCards.keys.contains('Recommended Mangas')) {
-              return const SizedBox.shrink();
-            }
-            final recMangas =
-                [...popularMangas, ...topOngoingMangas, ...topRatedMangas].removeDupes();
-            final ids = mangaList.map((e) => e.id).toSet();
-            final data = isLoggedIn.value
-                ? recMangas.where((e) => !ids.contains(e.id)).toList()
-                : recMangas;
-            return ReusableCarousel(
-              title: "Recommended Manga",
-              data: data,
-              type: ItemType.manga,
-            );
-          }),
+          if (acceptedLists.contains("Recommended Animes") &&
+              settings.homePageCards.keys.contains('Recommended Animes'))
+            Obx(() {
+              final recAnimes =
+                  [...popularAnimes, ...trendingAnimes, ...latestAnimes].removeDupes();
+              final ids = animeList.map((e) => e.id).toSet();
+              final data = isLoggedIn.value
+                  ? recAnimes.where((e) => !ids.contains(e.id)).toList()
+                  : recAnimes;
+              return ReusableCarousel(
+                title: "Recommended Anime",
+                data: data,
+                type: ItemType.anime,
+              );
+            }),
+          if (acceptedLists.contains("Recommended Mangas") &&
+              settings.homePageCards.keys.contains('Recommended Mangas'))
+            Obx(() {
+              final recMangas =
+                  [...popularMangas, ...topOngoingMangas, ...topRatedMangas].removeDupes();
+              final ids = mangaList.map((e) => e.id).toSet();
+              final data = isLoggedIn.value
+                  ? recMangas.where((e) => !ids.contains(e.id)).toList()
+                  : recMangas;
+              return ReusableCarousel(
+                title: "Recommended Manga",
+                data: data,
+                type: ItemType.manga,
+              );
+            }),
         ],
       )
     ].obs;

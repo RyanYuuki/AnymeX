@@ -159,7 +159,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                       isManga: true),
                   buildSectionIfNotEmpty("Top Manhua", topManhua,
                       isManga: true),
-                  ...sourceController.novelSections.value,
+                  ...sourceController.novelSections,
                   // Underrated Manga section at the bottom (filtered for logged-in users)
                   Obx(() {
                     final filteredList =
@@ -374,7 +374,11 @@ class MalService extends GetxController implements BaseService, OnlineService {
           });
         }),
         const SizedBox(height: 10),
-        Obx(() => Column(
+        if (acceptedLists.isNotEmpty)
+          Obx(() {
+            mangaList.length;
+            animeList.length;
+            return Column(
               children: acceptedLists.map((e) {
                 return ReusableCarousel(
                   data: filterListByLabel(
@@ -389,7 +393,8 @@ class MalService extends GetxController implements BaseService, OnlineService {
                       : ItemType.anime,
                 );
               }).toList(),
-            )),
+            );
+          }),
       ],
       buildSectionIfNotEmpty("Trending Animes", trendingAnimes),
       buildSectionIfNotEmpty("Popular Animes", popularAnimes),
