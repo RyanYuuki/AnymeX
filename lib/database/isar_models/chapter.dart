@@ -23,11 +23,11 @@ class Chapter {
   String get formattedNumber {
     if (number == null) return '-';
     if (number! % 1 == 0) return number!.toInt().toString();
-    String str = number!.toStringAsFixed(4);
-    while (str.contains('.') && (str.endsWith('0') || str.endsWith('.'))) {
-      str = str.substring(0, str.length - 1);
+    final rounded = double.parse(number!.toStringAsFixed(2));
+    if (rounded == rounded.toInt()) {
+      return rounded.toInt().toString();
     }
-    return str;
+    return rounded.toString().replaceAll(RegExp(r'\.?0+$'), '');
   }
 
   Chapter(
