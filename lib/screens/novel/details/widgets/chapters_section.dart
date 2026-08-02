@@ -3,6 +3,7 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
+import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/manga/widgets/chapter_ranges.dart';
 import 'package:anymex/screens/novel/details/controller/details_controller.dart';
@@ -146,20 +147,79 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
         : 0;
   }
 
-  Chapter? _findContinueChapter(List<Chapter> chapters, int userProgress,
-      Chapter? readChapter, ServiceHandler auth) {
+  bool _isChapterCompleted(Chapter? chapter) {
+    if (chapter == null) return false;
+    final pageNum = chapter.pageNumber;
+    final totalPgs = chapter.totalPages;
+    if (pageNum != null && totalPgs != null && totalPgs > 0) {
+      return pageNum >= totalPgs ||
+          pageNum >= totalPgs - 1 ||
+          (pageNum / totalPgs) >= 0.95;
+    }
+    final currentOffset = chapter.currentOffset;
+    final maxOffset = chapter.maxOffset;
+    if (currentOffset != null && maxOffset != null && maxOffset > 0) {
+      return (currentOffset / maxOffset) >= 0.95;
+    }
+    return false;
+  }
+
+  Chapter? _findContinueChapter(
+    List<Chapter> chapters,
+    OfflineMedia? savedManga,
+    ServiceHandler auth,
+  ) {
+    if (chapters.isEmpty) return null;
+
     if (auth.isLoggedIn.value &&
         auth.serviceType.value != ServicesType.extensions) {
+      final temp = auth.onlineService.mangaList
+          .firstWhereOrNull((e) => e.id.toString() == savedManga?.id.toString());
+      final userProgress =
+          double.tryParse(temp?.episodeCount ?? '')?.toInt() ?? 0;
+
+      final lastRead = savedManga?.currentChapter;
+      if (lastRead != null && !_isChapterCompleted(lastRead)) {
+        final matching = chapters.firstWhereOrNull(
+          (c) =>
+              (c.link != null && c.link == lastRead.link) ||
+              c.number == lastRead.number,
+        );
+        if (matching != null) return matching;
+      }
+
       final candidate = chapters
           .firstWhereOrNull((e) => e.number?.toInt() == userProgress + 1);
       return candidate ??
-          chapters.firstWhereOrNull((e) => e.number?.toInt() == userProgress);
-    } else {
-      return chapters
-              .firstWhereOrNull((e) => e.number?.toInt() == userProgress + 1) ??
-          readChapter ??
-          (chapters.isNotEmpty ? chapters.first : null);
+          chapters
+              .firstWhereOrNull((e) => e.number?.toInt() == userProgress) ??
+          chapters.first;
     }
+
+    final lastRead = savedManga?.currentChapter;
+    if (lastRead == null) {
+      return chapters.first;
+    }
+
+    final matchingIndex = chapters.indexWhere(
+      (c) =>
+          (c.link != null && c.link == lastRead.link) ||
+          c.number == lastRead.number,
+    );
+
+    if (matchingIndex != -1) {
+      if (_isChapterCompleted(lastRead)) {
+        if (matchingIndex + 1 < chapters.length) {
+          return chapters[matchingIndex + 1];
+        } else {
+          return chapters[matchingIndex];
+        }
+      } else {
+        return chapters[matchingIndex];
+      }
+    }
+
+    return chapters.first;
   }
 
   void sortToggle() {
@@ -385,8 +445,7 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
 
     final continueChapter = _findContinueChapter(
       filteredChapters,
-      userProgress,
-      readChapter,
+      savedManga,
       auth,
     );
 

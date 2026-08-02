@@ -54,6 +54,7 @@ class _NovelHomePageState extends State<NovelHomePage> {
                 const SizedBox(height: 10),
                 Obx(() {
                   final sourceController = Get.find<SourceController>();
+                  sourceController.installedNovelExtensions.value;
                   return InstalledExtensionsGridView(
                     sources: sourceController.installedNovelExtensions,
                     itemType: ItemType.novel,

@@ -13,6 +13,7 @@ import 'package:anymex/screens/search/widgets/search_widgets.dart';
 import 'package:anymex/screens/settings/misc/sauce_finder_view.dart';
 import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/widgets/common/anymex_pills.dart';
 import 'package:anymex/widgets/common/cloudflare_webview.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex/utils/logger.dart';
@@ -218,8 +219,12 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
 
     Map<String, dynamic> currentFilters = filters ?? _activeFilters;
     bool hasActiveContent = currentFilters.isNotEmpty;
+    bool hasActiveExtFilters =
+        isExtensionMode && _extensionActiveFilters.isNotEmpty;
 
-    if (searchQuery.isNotEmpty && isExtensionMode && _selectedSource != null) {
+    if ((searchQuery.isNotEmpty || hasActiveExtFilters) &&
+        isExtensionMode &&
+        _selectedSource != null) {
       _extensionBrowseMode = _ExtensionBrowseMode.search;
     }
 
@@ -227,7 +232,11 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         _selectedSource != null &&
         _extensionBrowseMode != _ExtensionBrowseMode.search;
 
-    if (searchQuery.isEmpty && !isAdult && !hasActiveContent && !isExtBrowse) {
+    if (searchQuery.isEmpty &&
+        !isAdult &&
+        !hasActiveContent &&
+        !isExtBrowse &&
+        !hasActiveExtFilters) {
       setState(() {
         _searchState = SearchState.initial;
         _searchResults = null;
@@ -354,8 +363,10 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       if (match != null) {
         try {
           final rawList = await match.future;
-          final mediaList =
-              rawList.map((e) => Media.froDMedia(e, effectiveType)..sourceId = _selectedSource!.id).toList();
+          final mediaList = rawList
+              .map((e) => Media.froDMedia(e, effectiveType)
+                ..sourceId = _selectedSource!.id)
+              .toList();
           _singleSourceCache[cacheKey] = mediaList;
           setState(() {
             _searchResults = List<Media>.from(mediaList);
@@ -379,8 +390,10 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       final rawList = res.list;
       if (!mounted) return;
 
-      final mediaList =
-          rawList.map((e) => Media.froDMedia(e, effectiveType)..sourceId = _selectedSource!.id).toList();
+      final mediaList = rawList
+          .map((e) =>
+              Media.froDMedia(e, effectiveType)..sourceId = _selectedSource!.id)
+          .toList();
       _singleSourceCache[cacheKey] = mediaList;
 
       setState(() {
@@ -409,8 +422,10 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     try {
       final pages = await _selectedSource!.methods.getPopular(1);
       if (!mounted) return;
-      final mediaList =
-          pages.list.map((e) => Media.froDMedia(e, effectiveType)..sourceId = _selectedSource!.id).toList();
+      final mediaList = pages.list
+          .map((e) =>
+              Media.froDMedia(e, effectiveType)..sourceId = _selectedSource!.id)
+          .toList();
       setState(() {
         _searchResults = mediaList;
         _currentPage = 1;
@@ -436,8 +451,10 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     try {
       final pages = await _selectedSource!.methods.getLatestUpdates(1);
       if (!mounted) return;
-      final mediaList =
-          pages.list.map((e) => Media.froDMedia(e, effectiveType)..sourceId = _selectedSource!.id).toList();
+      final mediaList = pages.list
+          .map((e) =>
+              Media.froDMedia(e, effectiveType)..sourceId = _selectedSource!.id)
+          .toList();
       setState(() {
         _searchResults = mediaList;
         _currentPage = 1;
@@ -497,6 +514,9 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
           setState(() {
             _extensionActiveFilters = applied;
             _singleSourceCache.clear();
+            if (applied.isNotEmpty) {
+              _extensionBrowseMode = _ExtensionBrowseMode.search;
+            }
           });
           _performSearch();
         },
@@ -558,18 +578,24 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       if (_selectedSource != null) {
         if (_extensionBrowseMode == _ExtensionBrowseMode.popular) {
           final pages = await _selectedSource!.methods.getPopular(nextPage);
-          results =
-              pages.list.map((e) => Media.froDMedia(e, effectiveType)..sourceId = _selectedSource!.id).toList();
+          results = pages.list
+              .map((e) => Media.froDMedia(e, effectiveType)
+                ..sourceId = _selectedSource!.id)
+              .toList();
         } else if (_extensionBrowseMode == _ExtensionBrowseMode.latest) {
           final pages =
               await _selectedSource!.methods.getLatestUpdates(nextPage);
-          results =
-              pages.list.map((e) => Media.froDMedia(e, effectiveType)..sourceId = _selectedSource!.id).toList();
+          results = pages.list
+              .map((e) => Media.froDMedia(e, effectiveType)
+                ..sourceId = _selectedSource!.id)
+              .toList();
         } else {
           final res = await _selectedSource!.methods
               .search(_lastSearchQuery, nextPage, _extensionActiveFilters);
-          results =
-              res.list.map((e) => Media.froDMedia(e, effectiveType)..sourceId = _selectedSource!.id).toList();
+          results = res.list
+              .map((e) => Media.froDMedia(e, effectiveType)
+                ..sourceId = _selectedSource!.id)
+              .toList();
         }
       } else {
         results = (await _serviceHandler.search(SearchParams(
@@ -797,37 +823,8 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     );
   }
 
-  BorderRadius _getSegmentedBorderRadius({
-    required bool isFirst,
-    required bool isLast,
-    double outerRadius = 16.0,
-    double innerRadius = 7.0,
-  }) {
-    if (isFirst && isLast) {
-      return BorderRadius.circular(outerRadius);
-    }
-    if (isFirst) {
-      return BorderRadius.only(
-        topLeft: Radius.circular(outerRadius),
-        bottomLeft: Radius.circular(outerRadius),
-        topRight: Radius.circular(innerRadius),
-        bottomRight: Radius.circular(innerRadius),
-      );
-    }
-    if (isLast) {
-      return BorderRadius.only(
-        topRight: Radius.circular(outerRadius),
-        bottomRight: Radius.circular(outerRadius),
-        topLeft: Radius.circular(innerRadius),
-        bottomLeft: Radius.circular(innerRadius),
-      );
-    }
-    return BorderRadius.circular(innerRadius);
-  }
-
   Widget _buildControlsSection() {
     final installedSources = effectiveType.extensions;
-    final totalSources = 1 + installedSources.length;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -840,55 +837,36 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
               _buildViewModeToggle(),
             ] else ...[
               Expanded(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  child: Row(
-                    children: [
-                      _buildSourceChip(
-                        label: 'All Sources',
-                        isSelected: _selectedSource == null,
-                        borderRadius: _getSegmentedBorderRadius(
-                          isFirst: true,
-                          isLast: totalSources == 1,
-                        ),
+                child: AnymeXPills(
+                  items: [
+                    PillItem(
+                      label: 'All Sources',
+                      isSelected: _selectedSource == null,
+                      onTap: () {
+                        setState(() => _selectedSource = null);
+                        _performSearch();
+                      },
+                    ),
+                    for (final src in installedSources)
+                      PillItem(
+                        label:
+                            '${src.name ?? "Src"} (${src.lang?.toUpperCase() ?? "ALL"})',
+                        iconUrl: src.iconUrl,
+                        isSelected: _selectedSource?.id == src.id,
                         onTap: () {
                           setState(() {
-                            _selectedSource = null;
+                            _selectedSource = src;
+                            _sourceController.setActiveSource(src);
+                            _extensionBrowseMode = _ExtensionBrowseMode.search;
+                            _extensionActiveFilters = [];
+                            _extensionFiltersLoaded = false;
+                            _extensionFilterList = [];
                           });
+                          _loadExtensionFilters(src);
                           _performSearch();
                         },
                       ),
-                      for (int i = 0; i < installedSources.length; i++) ...[
-                        const SizedBox(width: 3),
-                        _buildSourceChip(
-                          label:
-                              '${installedSources[i].name ?? "Src"} (${installedSources[i].lang?.toUpperCase() ?? "ALL"})',
-                          iconUrl: installedSources[i].iconUrl,
-                          isSelected: _selectedSource?.id == installedSources[i].id,
-                          borderRadius: _getSegmentedBorderRadius(
-                            isFirst: false,
-                            isLast: i == installedSources.length - 1,
-                          ),
-                          onTap: () {
-                            final src = installedSources[i];
-                            setState(() {
-                              _selectedSource = src;
-                              _sourceController.setActiveSource(src);
-                              _extensionBrowseMode =
-                                  _ExtensionBrowseMode.search;
-                              _extensionActiveFilters = [];
-                              _extensionFiltersLoaded = false;
-                              _extensionFilterList = [];
-                            });
-                            _loadExtensionFilters(src);
-                            _performSearch();
-                          },
-                        ),
-                      ],
-                    ],
-                  ),
+                  ],
                 ),
               ),
             ],
@@ -935,251 +913,76 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     final hasFilters = _extensionFilterList.isNotEmpty;
     final hasActiveFilters = _extensionActiveFilters.isNotEmpty;
 
-    final List<Widget Function({required bool isFirst, required bool isLast})> items = [];
-
-    if (widget.source == null) {
-      items.add(({required isFirst, required isLast}) => _buildSourceChip(
-            label: '← All',
-            isSelected: false,
-            borderRadius: _getSegmentedBorderRadius(isFirst: isFirst, isLast: isLast),
-            onTap: () {
-              setState(() {
-                _selectedSource = null;
-                _extensionBrowseMode = _ExtensionBrowseMode.search;
-                _extensionActiveFilters = [];
-                _extensionFilterList = [];
-                _extensionFiltersLoaded = false;
-                _searchResults = null;
-                _searchState = SearchState.initial;
-              });
-            },
-          ));
-    }
-
-    if (hasPopular) {
-      items.add(({required isFirst, required isLast}) => _buildSourceChip(
-            label: 'Popular',
-            isSelected: _extensionBrowseMode == _ExtensionBrowseMode.popular,
-            borderRadius: _getSegmentedBorderRadius(isFirst: isFirst, isLast: isLast),
-            onTap: () {
-              _searchController.clear();
-              setState(() {
-                _extensionBrowseMode = _ExtensionBrowseMode.popular;
-              });
-              _performSearch();
-            },
-          ));
-    }
-
-    if (hasLatest) {
-      items.add(({required isFirst, required isLast}) => _buildSourceChip(
-            label: 'Latest',
-            isSelected: _extensionBrowseMode == _ExtensionBrowseMode.latest,
-            borderRadius: _getSegmentedBorderRadius(isFirst: isFirst, isLast: isLast),
-            onTap: () {
-              _searchController.clear();
-              setState(() {
-                _extensionBrowseMode = _ExtensionBrowseMode.latest;
-              });
-              _performSearch();
-            },
-          ));
-    }
-
-    if (hasFilters) {
-      items.add(({required isFirst, required isLast}) => _buildSourceChip(
-            label: 'Filter',
-            isSelected: hasActiveFilters,
-            icon: Icons.tune_rounded,
-            borderRadius: _getSegmentedBorderRadius(isFirst: isFirst, isLast: isLast),
-            onTap: _showExtensionFilterSheet,
-          ));
-    }
-
-    items.add(({required isFirst, required isLast}) => _buildSourceMoreOptionsMenu(
-          src,
-          borderRadius: _getSegmentedBorderRadius(isFirst: isFirst, isLast: isLast),
-        ));
-        
-
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          for (int i = 0; i < items.length; i++) ...[
-            if (i > 0) const SizedBox(width: 3),
-            items[i](
-              isFirst: i == 0,
-              isLast: i == items.length - 1,
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSourceMoreOptionsMenu(Source src, {BorderRadius? borderRadius}) {
-    final colors = Theme.of(context).colorScheme;
-    final r = borderRadius ?? BorderRadius.circular(16);
-
-    return Material(
-      color: Colors.transparent,
-      borderRadius: r,
-      child: InkWell(
-        borderRadius: r,
-        onTapDown: (details) {
-          final position = details.globalPosition;
-          showMenu<String>(
-            context: context,
-            position: RelativeRect.fromLTRB(
-              position.dx,
-              position.dy + 10,
-              position.dx + 40,
-              position.dy + 100,
-            ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-              side: BorderSide(color: colors.outline.withOpacity(0.12)),
-            ),
-            color: colors.surface,
-            elevation: 6,
-            items: [
-              PopupMenuItem<String>(
-                value: 'settings',
-                height: 40,
-                child: Row(
-                  children: [
-                    Icon(Icons.settings_outlined, size: 18, color: colors.primary),
-                    const SizedBox(width: 12),
-                    Text(
-                      'Extension Settings',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontFamily: 'Poppins',
-                        fontWeight: FontWeight.w500,
-                        color: colors.onSurface,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              PopupMenuItem<String>(
-                value: 'webview',
-                height: 40,
-                child: Row(
-                  children: [
-                    Icon(Icons.public_rounded, size: 18, color: colors.primary),
-                    const SizedBox(width: 12),
-                    Text(
-                      'Open Webview',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontFamily: 'Poppins',
-                        fontWeight: FontWeight.w500,
-                        color: colors.onSurface,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ).then((value) {
-            if (value == 'settings') {
-              navigate(() => SourcePreferenceScreen(source: src));
-            } else if (value == 'webview') {
-              if (src.baseUrl != null && src.baseUrl!.isNotEmpty) {
-                navigate(() => CloudflareBypassWebView(url: src.baseUrl!));
-              } else {
-                snackBar('Base URL not available for this source');
+    final pills = <PillItem>[
+      if (widget.source == null)
+        PillItem(
+          label: '← All',
+          isSelected: false,
+          onTap: () {
+            setState(() {
+              _selectedSource = null;
+              _extensionBrowseMode = _ExtensionBrowseMode.search;
+              _extensionActiveFilters = [];
+              _extensionFilterList = [];
+              _extensionFiltersLoaded = false;
+              _searchResults = null;
+              _searchState = SearchState.initial;
+            });
+          },
+        ),
+      if (hasPopular)
+        PillItem(
+          label: 'Popular',
+          isSelected: _extensionBrowseMode == _ExtensionBrowseMode.popular,
+          onTap: () {
+            _searchController.clear();
+            setState(() {
+              _extensionBrowseMode = _ExtensionBrowseMode.popular;
+              _extensionActiveFilters = [];
+            });
+            _performSearch();
+          },
+        ),
+      if (hasLatest)
+        PillItem(
+          label: 'Latest',
+          isSelected: _extensionBrowseMode == _ExtensionBrowseMode.latest,
+          onTap: () {
+            _searchController.clear();
+            setState(() {
+              _extensionBrowseMode = _ExtensionBrowseMode.latest;
+              _extensionActiveFilters = [];
+            });
+            _performSearch();
+          },
+        ),
+      if (hasFilters)
+        PillItem(
+          label: 'Filter',
+          icon: Icons.tune_rounded,
+          isSelected: hasActiveFilters,
+          onTap: _showExtensionFilterSheet,
+        ),
+      PillItem(
+        isSelected: false,
+        onTap: () {},
+        child: _MoreOptionsPillContent(
+            src: src,
+            onTap: (action) {
+              if (action == 'settings') {
+                navigate(() => SourcePreferenceScreen(source: src));
+              } else if (action == 'webview') {
+                if (src.baseUrl != null && src.baseUrl!.isNotEmpty) {
+                  navigate(() => CloudflareBypassWebView(url: src.baseUrl!));
+                } else {
+                  snackBar('Base URL not available for this source');
+                }
               }
-            }
-          });
-        },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(
-            color: colors.surfaceContainerHighest.withOpacity(0.3),
-            borderRadius: r,
-            border: Border.all(
-              color: colors.onSurface.withOpacity(0.08),
-              width: 0.5,
-            ),
-          ),
-          child: Icon(
-            Icons.more_vert_rounded,
-            size: 16,
-            color: colors.onSurface,
-          ),
-        ),
+            }),
       ),
-    );
-  }
+    ];
 
-  Widget _buildSourceChip({
-    required String label,
-    String? iconUrl,
-    IconData? icon,
-    required bool isSelected,
-    required VoidCallback onTap,
-    BorderRadius? borderRadius,
-  }) {
-    final theme = Theme.of(context);
-    final r = borderRadius ?? BorderRadius.circular(16);
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? theme.colorScheme.primary.opaque(0.15, iReallyMeanIt: true)
-              : theme.colorScheme.surfaceContainerHighest
-                  .opaque(0.3, iReallyMeanIt: true),
-          borderRadius: r,
-          border: Border.all(
-            color: isSelected
-                ? theme.colorScheme.primary.opaque(0.4, iReallyMeanIt: true)
-                : theme.colorScheme.onSurface.opaque(0.08, iReallyMeanIt: true),
-            width: isSelected ? 1.2 : 0.5,
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (icon != null) ...[
-              Icon(
-                icon,
-                size: 14,
-                color: isSelected
-                    ? theme.colorScheme.primary
-                    : theme.colorScheme.onSurface.opaque(0.7),
-              ),
-              const SizedBox(width: 4),
-            ] else if (iconUrl != null && iconUrl.isNotEmpty) ...[
-              ClipRRect(
-                borderRadius: BorderRadius.circular(6),
-                child: AnymeXImage(
-                  width: 16,
-                  height: 16,
-                  imageUrl: iconUrl,
-                ),
-              ),
-              const SizedBox(width: 6),
-            ],
-            AnymexText.semiBold(
-              text: label,
-              size: 12,
-              color: isSelected
-                  ? theme.colorScheme.primary
-                  : theme.colorScheme.onSurface,
-            ),
-          ],
-        ),
-      ),
-    );
+    return AnymeXPills(items: pills);
   }
 
   Widget _buildToggleButton({
@@ -1915,3 +1718,86 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   }
 }
 
+class _MoreOptionsPillContent extends StatelessWidget {
+  final Source src;
+  final void Function(String action) onTap;
+
+  const _MoreOptionsPillContent({
+    required this.src,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
+    return GestureDetector(
+      onTapDown: (details) {
+        final position = details.globalPosition;
+        showMenu<String>(
+          context: context,
+          position: RelativeRect.fromLTRB(
+            position.dx,
+            position.dy + 10,
+            position.dx + 40,
+            position.dy + 100,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(color: colors.outline.withOpacity(0.12)),
+          ),
+          color: colors.surface,
+          elevation: 6,
+          items: [
+            PopupMenuItem<String>(
+              value: 'settings',
+              height: 40,
+              child: Row(
+                children: [
+                  Icon(Icons.settings_outlined,
+                      size: 18, color: colors.primary),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Extension Settings',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w500,
+                      color: colors.onSurface,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            PopupMenuItem<String>(
+              value: 'webview',
+              height: 40,
+              child: Row(
+                children: [
+                  Icon(Icons.public_rounded, size: 18, color: colors.primary),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Open Webview',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w500,
+                      color: colors.onSurface,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ).then((value) {
+          if (value != null) onTap(value);
+        });
+      },
+      child: Icon(
+        Icons.more_vert_rounded,
+        size: 16,
+        color: colors.onSurface,
+      ),
+    );
+  }
+}
