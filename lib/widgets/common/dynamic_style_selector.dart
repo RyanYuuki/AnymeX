@@ -45,8 +45,8 @@ class _DynamicStyleSelectorState<T> extends State<DynamicStyleSelector<T>> {
 
     return ConstrainedBox(
       constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.65,
-        maxWidth: 400,
+        maxHeight: MediaQuery.of(context).size.height * 0.75,
+        maxWidth: 420,
       ),
       child: Column(
         children: [
@@ -86,7 +86,7 @@ class _DynamicStyleSelectorState<T> extends State<DynamicStyleSelector<T>> {
             ),
           ),
           const SizedBox(height: 16),
-          Expanded(
+          Flexible(
             child: ListView.builder(
               shrinkWrap: true,
               physics: const BouncingScrollPhysics(),

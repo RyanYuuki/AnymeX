@@ -1,14 +1,12 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/carousel/carousel_style_registry.dart';
 import 'package:anymex/widgets/common/carousel/carousel_types.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_chip.dart';
+import 'package:anymex/widgets/common/dynamic_style_selector.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:super_sliver_list/super_sliver_list.dart';
 
 void showCarouselStyleSelector(BuildContext context) {
   final selectedIndex =
@@ -35,7 +33,7 @@ void showCarouselStyleSelector(BuildContext context) {
   );
 }
 
-class CarouselStyleSelector extends StatefulWidget {
+class CarouselStyleSelector extends StatelessWidget {
   final int initialIndex;
   final ValueChanged<int> onStyleChanged;
 
@@ -44,13 +42,6 @@ class CarouselStyleSelector extends StatefulWidget {
     required this.initialIndex,
     required this.onStyleChanged,
   });
-
-  @override
-  State<CarouselStyleSelector> createState() => _CarouselStyleSelectorState();
-}
-
-class _CarouselStyleSelectorState extends State<CarouselStyleSelector> {
-  late int _selectedIndex;
 
   static final List<Media> _sampleData = [
     Media(
@@ -98,70 +89,21 @@ class _CarouselStyleSelectorState extends State<CarouselStyleSelector> {
   ];
 
   @override
-  void initState() {
-    super.initState();
-    _selectedIndex = CarouselStyleRegistry.normalizeIndex(widget.initialIndex);
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final style = CarouselStyleRegistry.byIndex(_selectedIndex);
+    final initialStyle = CarouselStyleRegistry.styles[CarouselStyleRegistry.normalizeIndex(initialIndex)];
 
-    return ConstrainedBox(
-      constraints: const BoxConstraints(maxHeight: 560),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: 50,
-            child: SuperListView(
-              scrollDirection: Axis.horizontal,
-              children: List.generate(
-                CarouselStyleRegistry.styles.length,
-                (index) => Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: _buildStyleChip(index),
-                ),
-              ),
-            ),
-          ),
-          10.height(),
-          Text(
-            style.description,
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-          12.height(),
-          Expanded(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: CarouselStyleRegistry.build(
-                  selectedIndex: _selectedIndex,
-                  data: _sampleData,
-                  carouselType: CarouselType.anime,
-                ),
-              ),
-            ),
-          ),
-        ],
+    return DynamicStyleSelector<CarouselStyleDefinition>(
+      values: CarouselStyleRegistry.styles,
+      selectedValue: initialStyle,
+      getTitle: (style) => style.name,
+      getDescription: (style) => style.description,
+      buildPreview: (style) => style.builder(
+        data: _sampleData,
+        carouselType: CarouselType.anime,
       ),
-    );
-  }
-
-  Widget _buildStyleChip(int index) {
-    final style = CarouselStyleRegistry.byIndex(index);
-    final isSelected = index == _selectedIndex;
-
-    return AnymexChip(
-      isSelected: isSelected,
-      label: style.name,
-      onSelected: (selected) {
-        if (!selected) return;
-        setState(() {
-          _selectedIndex = index;
-        });
-        widget.onStyleChanged(index);
+      onValueChanged: (style) {
+        final index = CarouselStyleRegistry.styles.indexOf(style);
+        onStyleChanged(index);
       },
     );
   }

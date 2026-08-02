@@ -1,5 +1,6 @@
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/widgets/common/carousel/themes/big_carousel_classic.dart';
+import 'package:anymex/widgets/common/carousel/themes/big_carousel_portrait.dart';
 import 'package:anymex/widgets/common/carousel/carousel_types.dart';
 import 'package:flutter/widgets.dart';
 
@@ -31,6 +32,12 @@ class CarouselStyleRegistry {
       description: 'Full-width hero banner with compact details and quick synopsis.',
       builder: _buildClassic,
     ),
+    CarouselStyleDefinition(
+      id: 'portrait',
+      name: 'Portrait',
+      description: 'Classic carousel card layout featuring vertical poster cards.',
+      builder: _buildPortrait,
+    ),
   ];
 
   static int normalizeIndex(int index) {
@@ -59,5 +66,13 @@ class CarouselStyleRegistry {
     required CarouselType carouselType,
   }) {
     return BigCarouselClassic(key: key, data: data, carouselType: carouselType);
+  }
+
+  static Widget _buildPortrait({
+    Key? key,
+    required List<Media> data,
+    required CarouselType carouselType,
+  }) {
+    return BigCarouselPortrait(key: key, data: data, carouselType: carouselType);
   }
 }
