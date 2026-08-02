@@ -458,7 +458,6 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
             color: c.onSurface,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            isMarquee: true,
           ),
           const SizedBox(height: 2),
           AnymexText(
