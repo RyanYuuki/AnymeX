@@ -41,6 +41,7 @@ class _NovelHomePageState extends State<NovelHomePage> {
     final double bottomNavBarHeight = MediaQuery.of(context).padding.bottom;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       extendBodyBehindAppBar: true,
       body: Stack(
         children: [
@@ -54,7 +55,7 @@ class _NovelHomePageState extends State<NovelHomePage> {
                 Obx(() {
                   final sourceController = Get.find<SourceController>();
                   return InstalledExtensionsGridView(
-                    sources: sourceController.installedNovelExtensions.value,
+                    sources: sourceController.installedNovelExtensions,
                     itemType: ItemType.novel,
                   );
                 }),
