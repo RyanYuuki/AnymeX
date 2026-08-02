@@ -7,7 +7,9 @@ import 'package:anymex/screens/settings/sub_settings/settings_tap_zones.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_tabbar.dart';
+import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -22,14 +24,13 @@ class TabbedReaderSettings {
     final wasVolumeEnabled = controller.volumeKeysEnabled.value;
     if (wasVolumeEnabled) controller.pauseVolumeKeys();
 
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (ctx) => _TabbedSettingsSheet(
+    AnymexSheet.custom(
+      _TabbedSettingsSheet(
         controller: controller,
         settings: settings,
       ),
+      context,
+      showDragHandle: true,
     ).then((_) {
       if (wasVolumeEnabled) controller.resumeVolumeKeys();
     });
@@ -81,93 +82,62 @@ class _TabbedSettingsSheetState extends State<_TabbedSettingsSheet>
 
   @override
   Widget build(BuildContext context) {
-    final maxH = MediaQuery.of(context).size.height * 0.82;
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-    final theme = Theme.of(context);
+    final maxH = MediaQuery.of(context).size.height * 0.8;
 
-    return Padding(
-      padding: EdgeInsets.fromLTRB(12, 0, 12, 16 + bottomInset),
-      child: Container(
-        constraints: BoxConstraints(maxHeight: maxH),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surface,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: theme.colorScheme.outline.withOpacity(0.1)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 10,
-              offset: const Offset(0, -2),
-            )
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 36,
-                height: 3.5,
-                margin: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.onSurface.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              const Text(
-                'Reader Settings',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Poppins',
-                ),
-              ),
-              const SizedBox(height: 10),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: AnymeXTabBar(
-                  selectTabs: const ['Reading Mode', 'General', 'Color Filter'],
-                  selectedIndex: _selectedIndex,
-                  onTabSelected: (index) {
-                    setState(() {
-                      _selectedIndex = index;
-                      _tabController.animateTo(index);
-                    });
+    return Container(
+      constraints: BoxConstraints(maxHeight: maxH),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const AnymexText(
+            text: 'Reader Settings',
+            size: 18,
+            variant: TextVariant.bold,
+          ),
+          const SizedBox(height: 10),
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
+            child: AnymeXTabBar(
+              selectTabs: const ['Reading Mode', 'General', 'Color Filter'],
+              selectedIndex: _selectedIndex,
+              onTabSelected: (index) {
+                setState(() {
+                  _selectedIndex = index;
+                  _tabController.animateTo(index);
+                });
+              },
+            ),
+          ),
+          Flexible(
+            child: AnimatedSize(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeInOut,
+              alignment: Alignment.topCenter,
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                transitionBuilder:
+                    (Widget child, Animation<double> animation) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: child,
+                  );
+                },
+                child: KeyedSubtree(
+                  key: ValueKey<int>(_selectedIndex),
+                  child: switch (_selectedIndex) {
+                    0 => _ReadingModePage(controller: widget.controller),
+                    1 => _GeneralPage(
+                        controller: widget.controller,
+                        settings: widget.settings),
+                    _ =>
+                      ColorFilterSettingsPage(controller: widget.controller),
                   },
                 ),
               ),
-              Flexible(
-                child: AnimatedSize(
-                  duration: const Duration(milliseconds: 250),
-                  curve: Curves.easeInOut,
-                  alignment: Alignment.topCenter,
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 200),
-                    transitionBuilder:
-                        (Widget child, Animation<double> animation) {
-                      return FadeTransition(
-                        opacity: animation,
-                        child: child,
-                      );
-                    },
-                    child: KeyedSubtree(
-                      key: ValueKey<int>(_selectedIndex),
-                      child: switch (_selectedIndex) {
-                        0 => _ReadingModePage(controller: widget.controller),
-                        1 => _GeneralPage(
-                            controller: widget.controller,
-                            settings: widget.settings),
-                        _ =>
-                          ColorFilterSettingsPage(controller: widget.controller),
-                      },
-                    ),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
