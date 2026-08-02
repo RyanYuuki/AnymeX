@@ -71,7 +71,7 @@ class AboutPage extends StatelessWidget {
             const NestedHeader(title: 'About'),
             Expanded(
               child: SuperListView(
-                padding: const EdgeInsets.fromLTRB(15.0, 20.0, 15.0, 20.0),
+                padding: const EdgeInsets.fromLTRB(15.0, 20.0, 15.0, 30.0),
                 children: [
                   Stack(
                     clipBehavior: Clip.none,

@@ -114,6 +114,7 @@ class _AnymeXImageState extends State<AnymeXImage> {
   }
 
   Future<void> _resolveHeaders() async {
+    if (!Platform.isAndroid) return;
     if (widget.sourceId != null && widget.sourceId != 'N/A' && widget.sourceId!.isNotEmpty) {
       final sourceId = widget.sourceId!;
       bool isAniyomi = _isAniyomiCache[sourceId] ?? false;
@@ -181,7 +182,8 @@ class _AnymeXImageState extends State<AnymeXImage> {
   Widget build(BuildContext context) {
     final isBase64 = _cachedBytes != null;
     final isNetworkImage = isNetworkImageUrl(widget.imageUrl);
-    final useNativeLoading = widget.sourceId != null &&
+    final useNativeLoading = Platform.isAndroid &&
+        widget.sourceId != null &&
         widget.sourceId != 'N/A' &&
         widget.sourceId!.isNotEmpty;
 
