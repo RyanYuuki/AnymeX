@@ -145,6 +145,7 @@ class DownloadIsolatePool {
       taskId: taskId,
       type: _TaskType.m3u8Download,
       params: M3u8DownloadParams(
+        taskId: taskId,
         segments: segments,
         tempDir: tempDir,
         key: key,
@@ -247,6 +248,7 @@ class FileDownloadParams {
 }
 
 class M3u8DownloadParams {
+  final String taskId;
   final List<TsInfo> segments;
   final String tempDir;
   final Uint8List? key;
@@ -257,6 +259,7 @@ class M3u8DownloadParams {
   final ItemType itemType;
 
   M3u8DownloadParams({
+    required this.taskId,
     required this.segments,
     required this.tempDir,
     required this.key,
@@ -532,7 +535,11 @@ Future<void> _processM3u8Download(
       final List<Future<void>> activeTasks = [];
 
       while (queue.isNotEmpty || activeTasks.isNotEmpty) {
+        if (downloadTaskCancellation[params.taskId] == true) {
+          throw DownloadPoolException('M3U8 download cancelled');
+        }
         while (queue.isNotEmpty && activeTasks.length < params.concurrentDownloads) {
+          if (downloadTaskCancellation[params.taskId] == true) break;
           final segment = queue.removeFirst();
           final task = _downloadSegment(segment, params, client).then((_) {
             completed++;
@@ -582,6 +589,9 @@ Future<void> _downloadSegment(
   http.Client client,
 ) async {
   try {
+    if (downloadTaskCancellation[params.taskId] == true) {
+      throw DownloadPoolException('Cancelled');
+    }
     final file = File(path.join(params.tempDir, '${ts.name}.ts'));
     if (file.existsSync() && file.lengthSync() > 0) {
       if (kDebugMode) {
@@ -592,6 +602,9 @@ Future<void> _downloadSegment(
     await file.parent.create(recursive: true);
 
     await _withRetry((attempt) async {
+      if (downloadTaskCancellation[params.taskId] == true) {
+        throw DownloadPoolException('Cancelled');
+      }
       if (kDebugMode) {
         print('[DownloadIsolate] Downloading ${ts.name} (attempt $attempt) -> ${ts.url}');
       }
@@ -606,6 +619,11 @@ Future<void> _downloadSegment(
       final sink = file.openWrite();
       try {
         await for (var chunk in response.stream) {
+          if (downloadTaskCancellation[params.taskId] == true) {
+            await sink.close();
+            if (file.existsSync()) await file.delete();
+            throw DownloadPoolException('Cancelled');
+          }
           sink.add(chunk);
         }
       } finally {
