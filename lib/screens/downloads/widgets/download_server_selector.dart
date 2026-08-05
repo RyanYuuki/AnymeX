@@ -348,90 +348,172 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                   detectLinkType(video.url ?? video.originalUrl ?? '');
               final isHls = linkType == VideoLinkType.hls;
 
-              return AnymexOnTap(
-                  onTap: () => _selectedQuality.value = quality,
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 180),
-                    margin: const EdgeInsets.only(bottom: 8),
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? theme.primaryContainer.opaque(0.35)
-                          : theme.surfaceContainer.opaque(0.3),
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(
-                        color: isSelected
-                            ? theme.primary.opaque(0.5)
-                            : theme.outline.opaque(0.15),
-                        width: isSelected ? 1.5 : 1,
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        AnimatedContainer(
-                          duration: const Duration(milliseconds: 180),
-                          width: 22,
-                          height: 22,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color:
-                                isSelected ? theme.primary : Colors.transparent,
-                            border: Border.all(
-                              color: isSelected
-                                  ? theme.primary
-                                  : theme.outline.opaque(0.4),
-                              width: 2,
-                            ),
-                          ),
-                          child: isSelected
-                              ? Icon(Icons.check_rounded,
-                                  size: 14, color: theme.onPrimary)
-                              : null,
-                        ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: AnymexText(
-                            text: quality,
-                            variant: TextVariant.semiBold,
-                            size: 14,
-                            color: isSelected ? theme.primary : theme.onSurface,
-                          ),
-                        ),
-                        if (isHls)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 7, vertical: 3),
-                            decoration: BoxDecoration(
-                              color: Colors.orange.withOpacity(0.12),
-                              borderRadius: BorderRadius.circular(6),
-                              border: Border.all(
-                                  color: Colors.orange.withOpacity(0.3)),
-                            ),
-                            child: const Text('HLS',
-                                style: TextStyle(
-                                    fontSize: 10,
-                                    color: Colors.orange,
-                                    fontWeight: FontWeight.w600)),
-                          )
-                        else
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 7, vertical: 3),
-                            decoration: BoxDecoration(
-                              color: Colors.green.withOpacity(0.12),
-                              borderRadius: BorderRadius.circular(6),
-                              border: Border.all(
-                                  color: Colors.green.withOpacity(0.3)),
-                            ),
-                            child: const Text('Direct',
-                                style: TextStyle(
-                                    fontSize: 10,
-                                    color: Colors.green,
-                                    fontWeight: FontWeight.w600)),
-                          ),
-                      ],
-                    ),
-                  ));
+                        final subCount = video.subtitles?.length ?? 0;
+                        final audioCount = video.audios?.length ?? 0;
+                        final hasTracksInfo = subCount > 0 || audioCount > 0;
+
+                        return AnymexOnTap(
+                            onTap: () => _selectedQuality.value = quality,
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 180),
+                              margin: const EdgeInsets.only(bottom: 8),
+                              padding: const EdgeInsets.all(14),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? theme.primaryContainer.opaque(0.35)
+                                    : theme.surfaceContainer.opaque(0.3),
+                                borderRadius: BorderRadius.circular(14),
+                                border: Border.all(
+                                  color: isSelected
+                                      ? theme.primary.opaque(0.5)
+                                      : theme.outline.opaque(0.15),
+                                  width: isSelected ? 1.5 : 1,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  AnimatedContainer(
+                                    duration: const Duration(milliseconds: 180),
+                                    width: 22,
+                                    height: 22,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color:
+                                          isSelected ? theme.primary : Colors.transparent,
+                                      border: Border.all(
+                                        color: isSelected
+                                            ? theme.primary
+                                            : theme.outline.opaque(0.4),
+                                        width: 2,
+                                      ),
+                                    ),
+                                    child: isSelected
+                                        ? Icon(Icons.check_rounded,
+                                            size: 14, color: theme.onPrimary)
+                                        : null,
+                                  ),
+                                  const SizedBox(width: 14),
+                                  Expanded(
+                                    child: AnymexText(
+                                      text: quality,
+                                      variant: TextVariant.semiBold,
+                                      size: 14,
+                                      color: isSelected ? theme.primary : theme.onSurface,
+                                    ),
+                                  ),
+                                  if (subCount > 0) ...[
+                                    GestureDetector(
+                                      onTap: () =>
+                                          _showTracksDialog(context, video, theme),
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 6, vertical: 3),
+                                        decoration: BoxDecoration(
+                                          color: theme.primary.withOpacity(0.12),
+                                          borderRadius: BorderRadius.circular(6),
+                                          border: Border.all(
+                                              color: theme.primary.withOpacity(0.3)),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(Icons.subtitles,
+                                                size: 11, color: theme.primary),
+                                            const SizedBox(width: 3),
+                                            Text(
+                                              '$subCount',
+                                              style: TextStyle(
+                                                  fontSize: 10,
+                                                  color: theme.primary,
+                                                  fontWeight: FontWeight.w600),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                  ],
+                                  if (audioCount > 0) ...[
+                                    GestureDetector(
+                                      onTap: () =>
+                                          _showTracksDialog(context, video, theme),
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 6, vertical: 3),
+                                        decoration: BoxDecoration(
+                                          color: Colors.purple.withOpacity(0.12),
+                                          borderRadius: BorderRadius.circular(6),
+                                          border: Border.all(
+                                              color: Colors.purple.withOpacity(0.3)),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Icon(Icons.audiotrack,
+                                                size: 11, color: Colors.purple),
+                                            const SizedBox(width: 3),
+                                            Text(
+                                              '$audioCount',
+                                              style: const TextStyle(
+                                                  fontSize: 10,
+                                                  color: Colors.purple,
+                                                  fontWeight: FontWeight.w600),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                  ],
+                                  if (hasTracksInfo) ...[
+                                    GestureDetector(
+                                      onTap: () =>
+                                          _showTracksDialog(context, video, theme),
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.symmetric(horizontal: 2),
+                                        child: Icon(Icons.info_outline_rounded,
+                                            size: 16,
+                                            color: theme.onSurface.opaque(0.5)),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                  ],
+                                  if (isHls)
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 7, vertical: 3),
+                                      decoration: BoxDecoration(
+                                        color: Colors.orange.withOpacity(0.12),
+                                        borderRadius: BorderRadius.circular(6),
+                                        border: Border.all(
+                                            color: Colors.orange.withOpacity(0.3)),
+                                      ),
+                                      child: const Text('HLS',
+                                          style: TextStyle(
+                                              fontSize: 10,
+                                              color: Colors.orange,
+                                              fontWeight: FontWeight.w600)),
+                                    )
+                                  else
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 7, vertical: 3),
+                                      decoration: BoxDecoration(
+                                        color: Colors.green.withOpacity(0.12),
+                                        borderRadius: BorderRadius.circular(6),
+                                        border: Border.all(
+                                            color: Colors.green.withOpacity(0.3)),
+                                      ),
+                                      child: const Text('Direct',
+                                          style: TextStyle(
+                                              fontSize: 10,
+                                              color: Colors.green,
+                                              fontWeight: FontWeight.w600)),
+                                    ),
+                                ],
+                              ),
+                            ));
             });
           },
         ),
@@ -485,5 +567,142 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
         ),
       );
     });
+  }
+
+  void _showTracksDialog(
+      BuildContext context, hive.Video video, ColorScheme theme) {
+    final subtitles = video.subtitles ?? [];
+    final audios = video.audios ?? [];
+
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: theme.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          constraints: const BoxConstraints(maxWidth: 400),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.video_library_rounded,
+                      color: theme.primary, size: 22),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      video.quality ?? 'Server Tracks',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: theme.onSurface,
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Icon(Icons.close_rounded,
+                        color: theme.onSurface.opaque(0.5)),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Flexible(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Subtitles (${subtitles.length})',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          color: theme.primary,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      if (subtitles.isEmpty)
+                        Text(
+                          'No subtitle tracks available',
+                          style: TextStyle(
+                              fontSize: 12, color: theme.onSurface.opaque(0.5)),
+                        )
+                      else
+                        ...subtitles.map((s) => Container(
+                              margin: const EdgeInsets.only(bottom: 6),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: theme.surfaceContainer.opaque(0.4),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.subtitles_rounded,
+                                      size: 16, color: theme.primary),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      s.label ?? s.file ?? 'Unknown',
+                                      style: TextStyle(
+                                          fontSize: 13,
+                                          color: theme.onSurface),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Audio Tracks (${audios.length})',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          color: theme.primary,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      if (audios.isEmpty)
+                        Text(
+                          'No audio tracks available',
+                          style: TextStyle(
+                              fontSize: 12, color: theme.onSurface.opaque(0.5)),
+                        )
+                      else
+                        ...audios.map((a) => Container(
+                              margin: const EdgeInsets.only(bottom: 6),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: theme.surfaceContainer.opaque(0.4),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.audiotrack_rounded,
+                                      size: 16, color: theme.primary),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      a.label ?? a.file ?? 'Unknown',
+                                      style: TextStyle(
+                                          fontSize: 13,
+                                          color: theme.onSurface),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

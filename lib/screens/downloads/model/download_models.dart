@@ -152,7 +152,8 @@ class DownloadedEpisodeMeta {
   String? get thumbnail => episode.thumbnail;
   Map<String, String> get sortMap => episode.sortMap;
   String get displayId {
-    if (sortMap.isNotEmpty) return 'Ep $number (${sortMap.values.join(', ')})';
+    final validValues = sortMap.values.where((v) => v.trim().isNotEmpty).toList();
+    if (validValues.isNotEmpty) return 'Ep $number (${validValues.join(', ')})';
     return title ?? 'Episode $number';
   }
 }

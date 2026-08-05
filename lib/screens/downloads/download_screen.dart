@@ -1057,8 +1057,10 @@ class _DownloadScreenState extends State<DownloadScreen> {
                 ...currentBatch.map((ep) {
                   final key = ep.link ?? ep.number;
                   final isSelected = controller.selectedEpisodes.contains(key);
-                  final sortLabel = ep.sortMap.isNotEmpty
-                      ? ep.sortMap.entries
+                  final validEntries = ep.sortMap.entries
+                      .where((e) => e.key.trim().isNotEmpty && e.value.trim().isNotEmpty);
+                  final sortLabel = validEntries.isNotEmpty
+                      ? validEntries
                           .map((e) => '${e.key}: ${e.value}')
                           .join(' · ')
                       : null;

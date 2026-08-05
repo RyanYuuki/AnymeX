@@ -91,14 +91,18 @@ extension EpisodeMap on Episode {
     if (sortKeys == null || sortVals == null) return {};
     if (sortKeys!.isEmpty || sortVals!.isEmpty) return {};
 
+    final result = <String, String>{};
     final pairCount = sortKeys!.length < sortVals!.length
         ? sortKeys!.length
         : sortVals!.length;
-    if (pairCount == 0) return {};
 
-    return Map<String, String>.fromIterables(
-      sortKeys!.take(pairCount),
-      sortVals!.take(pairCount),
-    );
+    for (int i = 0; i < pairCount; i++) {
+      final k = sortKeys![i].trim();
+      final v = sortVals![i].trim();
+      if (k.isNotEmpty && v.isNotEmpty) {
+        result[k] = v;
+      }
+    }
+    return result;
   }
 }
