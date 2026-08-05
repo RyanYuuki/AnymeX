@@ -39,7 +39,7 @@ dependencies:
     html: any
     http: ^1.2.2
     http_interceptor: ^2.0.0
-    rhttp: ^0.15.1
+    rhttp: 0.18.0
     hugeicons: ^0.0.7
     flutter_iconly: any
     iconsax: ^0.0.8
@@ -102,10 +102,7 @@ dependencies:
     isar_community: 3.3.0-dev.3
     isar_community_flutter_libs: 3.3.0-dev.3
     sensors_plus: ^7.0.0
-    flutter_discord_rpc_fork:
-        git:
-            url: https://github.com/Schnitzel5/flutter-discord-rpc.git
-            ref: main
+    flutter_discord_rpc: 1.1.0
     firebase_core: ^4.4.0
     firebase_analytics: ^12.1.1
     background_downloader: ^9.5.2

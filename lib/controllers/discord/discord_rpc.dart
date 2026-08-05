@@ -12,7 +12,7 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_discord_rpc_fork/flutter_discord_rpc.dart';
+import 'package:flutter_discord_rpc/flutter_discord_rpc.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 

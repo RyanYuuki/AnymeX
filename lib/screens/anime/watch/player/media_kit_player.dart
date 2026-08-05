@@ -119,7 +119,9 @@ class MediaKitPlayer extends base.BasePlayer {
       await mpv.setProperty("hwdec", config.hwdec);
       await mpv.setProperty("vd-lavc-fast", "yes");
       await mpv.setProperty("vd-lavc-skiploopfilter", "nonkey");
-      await mpv.setProperty("vd-lavc-threads", "4");
+      if (!Platform.isAndroid && !Platform.isIOS) {
+        await mpv.setProperty("vd-lavc-threads", "4");
+      }
       await mpv.setProperty("cache", "yes");
       final savedAudioLayout = PlayerKeys.audioChannelLayout.get<String>('auto');
       if (savedAudioLayout != 'auto') {

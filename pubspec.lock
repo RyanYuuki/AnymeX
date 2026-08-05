@@ -648,15 +648,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.4.1"
-  flutter_discord_rpc_fork:
+  flutter_discord_rpc:
     dependency: "direct main"
     description:
-      path: "."
-      ref: main
-      resolved-ref: "5032c0ac4d257b0fad8d3c6cd05f6d15889fc1e5"
-      url: "https://github.com/Schnitzel5/flutter-discord-rpc.git"
-    source: git
-    version: "1.0.5"
+      name: flutter_discord_rpc
+      sha256: "7ee12a3ff928e85e5e0a60c7c23417a2f1f4e604e4983fc0789ff6562fb15f2b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
   flutter_displaymode:
     dependency: "direct main"
     description:
@@ -822,10 +821,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_rust_bridge
-      sha256: "37ef40bc6f863652e865f0b2563ea07f0d3c58d8efad803cc01933a4b2ee067e"
+      sha256: e87d6b9ee934dcd24a128ccb2bd91905d2d5fe5c06245d6a8f5477d4907a437a
       url: "https://pub.dev"
     source: hosted
-    version: "2.11.1"
+    version: "2.12.0"
   flutter_staggered_animations:
     dependency: "direct main"
     description:
@@ -1738,10 +1737,10 @@ packages:
     dependency: "direct main"
     description:
       name: rhttp
-      sha256: b111638045b730f825a85cb045017b5bd3dfb47b38e98eb293b0519ee6050f2e
+      sha256: "954d5a9aa5a4f1e2a8612e8cb9ecbe4fc0826fcbf0406f40115573e2e92b7dde"
       url: "https://pub.dev"
     source: hosted
-    version: "0.15.1"
+    version: "0.18.0"
   rxdart:
     dependency: "direct main"
     description:

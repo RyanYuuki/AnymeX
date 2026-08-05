@@ -204,22 +204,22 @@ class SubtitlePreTranslator {
     return entries;
   }
   
- /// bunch translate
   static Future<void> _translateBatch(List<String> entries, String targetLang) async {
-  
-    await Future.wait(entries.map((entry) async {
-     
-      if (_translationCache.containsKey(entry)) return;
-      
-      try {
-        final translated = await _translateText(entry, targetLang);
-        if (translated.isNotEmpty) {
-          _translationCache[entry] = translated;
+    const concurrency = 5;
+    for (var i = 0; i < entries.length; i += concurrency) {
+      final slice = entries.skip(i).take(concurrency).toList();
+      await Future.wait(slice.map((entry) async {
+        if (_translationCache.containsKey(entry)) return;
+        try {
+          final translated = await _translateText(entry, targetLang);
+          if (translated.isNotEmpty) {
+            _translationCache[entry] = translated;
+          }
+        } catch (e) {
+          Logger.e('[PreTranslator] Failed to translate entry: $e');
         }
-      } catch (e) {
-        Logger.e('[PreTranslator] Failed to translate entry: $e');
-      }
-    }));
+      }));
+    }
   }
   
   /// pre-translate subtitle text 
