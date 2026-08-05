@@ -197,6 +197,7 @@ class MediaDownloader {
     await mediaDir.create(recursive: true);
     final tempDir = path.join(subDownloadDir!, 'temp_$taskId');
     await Directory(tempDir).create(recursive: true);
+    await File(path.join(tempDir, '.nomedia')).create();
 
     Uint8List? globalKey;
     Uint8List? globalIv;

@@ -1263,9 +1263,34 @@ class DownloadController extends GetxController {
     return null;
   }
 
+  Future<void> _ensureNoMediaInTempDirs(String dirPath) async {
+    try {
+      final dir = Directory(dirPath);
+      if (!await dir.exists()) return;
+      await for (final entity in dir.list(recursive: true, followLinks: false)) {
+        if (entity is Directory) {
+          final isTemp = p.basename(entity.path).startsWith('temp_');
+          bool hasTs = false;
+          if (!isTemp) {
+            try {
+              hasTs = await entity.list().any((e) => e.path.endsWith('.ts'));
+            } catch (_) {}
+          }
+          if (isTemp || hasTs) {
+            final nomedia = File(p.join(entity.path, '.nomedia'));
+            if (!await nomedia.exists()) {
+              await nomedia.create();
+            }
+          }
+        }
+      }
+    } catch (_) {}
+  }
+
   Future<void> _loadIndex() async {
     try {
       final root = await _getRootDir();
+      _ensureNoMediaInTempDirs(root.path);
       final indexFile = File(p.join(root.path, 'metadata.json'));
       if (!await indexFile.exists()) {
         downloadedMedia.clear();
