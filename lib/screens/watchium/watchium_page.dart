@@ -6,7 +6,7 @@ import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex/widgets/watchium/watchium_server_sheet.dart';
@@ -818,7 +818,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                           CircleAvatar(
                             radius: 14,
                             backgroundColor: cs.surfaceContainerHighest,
-                            child: const Icon(Icons.person,
+                            child: Icon(Icons.person,
                                 size: 14, color: cs.onSurfaceVariant),
                           ),
                         const SizedBox(width: 8),
@@ -896,7 +896,6 @@ class _WatchiumPageState extends State<WatchiumPage> {
                                     color: cs.onSurface,
                                   ),
                                 ),
-                              ),
                             ),
                         ],
                       ),
