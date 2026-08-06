@@ -359,7 +359,8 @@ class WatchiumSyncController extends GetxController {
     return WatchiumAnimeContent(
       animeId: pc.anilistData.id,
       animeTitle: pc.anilistData.title,
-      animeCoverImage: pc.anilistData.largePoster,
+      animeCoverImage: pc.anilistData.cover,
+      animePosterImage: pc.anilistData.largePoster,
       episodeNumber: int.tryParse(pc.currentEpisode.value.number) ?? 1,
       totalEpisodes: int.tryParse(pc.anilistData.totalEpisodes),
       anilistId: int.tryParse(pc.anilistData.uniqueId),

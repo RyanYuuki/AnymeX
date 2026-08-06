@@ -105,6 +105,7 @@ class WatchiumAnimeContent {
   final String animeId;
   final String animeTitle;
   final String? animeCoverImage;
+  final String? animePosterImage;
   final int episodeNumber;
   final int? seasonNumber;
   final int? totalEpisodes;
@@ -117,6 +118,7 @@ class WatchiumAnimeContent {
     required this.animeId,
     required this.animeTitle,
     this.animeCoverImage,
+    this.animePosterImage,
     required this.episodeNumber,
     this.seasonNumber,
     this.totalEpisodes,
@@ -131,6 +133,7 @@ class WatchiumAnimeContent {
         animeId: json['animeId'] as String,
         animeTitle: json['animeTitle'] as String,
         animeCoverImage: json['animeCoverImage'] as String?,
+        animePosterImage: json['animePosterImage'] as String?,
         episodeNumber: json['episodeNumber'] as int,
         seasonNumber: json['seasonNumber'] as int?,
         totalEpisodes: json['totalEpisodes'] as int?,
@@ -148,6 +151,7 @@ class WatchiumAnimeContent {
         'animeId': animeId,
         'animeTitle': animeTitle,
         'animeCoverImage': animeCoverImage,
+        'animePosterImage': animePosterImage,
         'episodeNumber': episodeNumber,
         'seasonNumber': seasonNumber,
         'totalEpisodes': totalEpisodes,

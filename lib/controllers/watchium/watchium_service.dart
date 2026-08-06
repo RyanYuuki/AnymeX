@@ -487,6 +487,7 @@ class WatchiumService extends GetxController {
     int? malId,
     int? simklId,
     String? animeCoverImage,
+    String? animePosterImage,
     int? seasonNumber,
     int? totalEpisodes,
     List<WatchiumAnimeServer>? availableServers,
@@ -514,6 +515,7 @@ class WatchiumService extends GetxController {
             'malId': malId,
             'simklId': simklId,
             'animeCoverImage': animeCoverImage,
+            'animePosterImage': animePosterImage,
             'seasonNumber': seasonNumber,
             'totalEpisodes': totalEpisodes,
             'availableServers':
