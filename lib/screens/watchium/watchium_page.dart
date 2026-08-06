@@ -1,3 +1,4 @@
+import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/watchium/watchium_models.dart';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/screens/other_features.dart';
@@ -5,12 +6,14 @@ import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex/widgets/watchium/watchium_server_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:iconsax/iconsax.dart';
 
 class WatchiumPage extends StatefulWidget {
   const WatchiumPage({super.key});
@@ -558,166 +561,375 @@ class _WatchiumPageState extends State<WatchiumPage> {
     });
   }
 
+  Future<void> _joinRoomFromCard(WatchiumRoomState room) async {
+    Logger.i('Join room from card: ${room.code}', 'WATCHIUM_UI');
+    setState(() => _isLoading = true);
+    final ok = await _watchium.joinRoom(room.code);
+    if (mounted) setState(() => _isLoading = false);
+    if (ok) {
+      snackBar('Joined room ${room.code}!');
+      final rs = _watchium.roomState.value;
+      final c = rs?.content;
+      if (c != null && c.availableServers.isNotEmpty && mounted) {
+        showWatchiumServerSheet(context: context, content: c);
+      }
+    } else {
+      errorSnackBar(
+          _watchium.error.value.isEmpty
+              ? 'Failed to join room'
+              : _watchium.error.value);
+    }
+  }
+
+  String _timeAgo(int createdAtMs) {
+    final diff = DateTime.now().millisecondsSinceEpoch - createdAtMs;
+    if (diff < 0) return 'Just now';
+    final mins = diff ~/ 60000;
+    if (mins < 1) return 'Just now';
+    if (mins < 60) return '${mins}m ago';
+    final hours = mins ~/ 60;
+    if (hours < 24) return '${hours}h ago';
+    final days = hours ~/ 24;
+    return '${days}d ago';
+  }
+
   Widget _buildRoomCard(ThemeData theme, WatchiumRoomState room) {
+    final cs = theme.colorScheme;
     final isJoinable = room.members.length < room.maxMembers;
+    final content = room.content;
+    final bannerUrl = content?.animeCoverImage;
+    final posterUrl = content?.animePosterImage ?? content?.animeCoverImage;
+
+    // Find host member
+    final hostMember = room.members.where((m) => m.role == 'host').firstOrNull;
+    final otherMembers = room.members.where((m) => m.role != 'host').toList();
+    final showMemberAvatars = otherMembers.length > 0;
+    final memberCount = room.members.length;
+    final maxShowAvatars = 3;
+    final visibleMembers = otherMembers.take(maxShowAvatars).toList();
+    final remainingCount = otherMembers.length - maxShowAvatars;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: theme.colorScheme.outline.opaque(0.1),
-        ),
+        color: cs.surfaceContainer,
+        borderRadius: BorderRadius.circular(16.multiplyRadius()),
+        border: Border.all(color: cs.outline.opaque(0.1)),
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(12),
-          onTap: isJoinable
-              ? () async {
-                  Logger.i('Join room from card: ${room.code}', 'WATCHIUM_UI');
-                  setState(() => _isLoading = true);
-                  final ok = await _watchium.joinRoom(room.code);
-                  if (mounted) setState(() => _isLoading = false);
-                  if (ok) {
-                    snackBar('Joined room ${room.code}!');
-                    final rs = _watchium.roomState.value;
-                    final c = rs?.content;
-                    if (c != null &&
-                        c.availableServers.isNotEmpty &&
-                        mounted) {
-                      showWatchiumServerSheet(context: context, content: c);
-                    }
-                  } else {
-                    errorSnackBar(
-                        _watchium.error.value.isEmpty
-                            ? 'Failed to join room'
-                            : _watchium.error.value);
-                  }
-                }
-              : null,
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Row(
+      clipBehavior: Clip.antiAlias,
+      child: AnymexOnTap(
+        onTap: isJoinable && !_isLoading
+            ? () => _joinRoomFromCard(room)
+            : null,
+        borderRadius: BorderRadius.circular(16.multiplyRadius()),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Top section: banner bg + poster + info
+            Stack(
               children: [
-                // Anime cover
-                if (room.content?.animeCoverImage != null)
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
+                // Banner background image
+                if (bannerUrl != null && bannerUrl.isNotEmpty)
+                  AspectRatio(
+                    aspectRatio: 16 / 7,
                     child: AnymeXImage(
-                      imageUrl: room.content!.animeCoverImage!,
-                      width: 48,
-                      height: 64,
+                      imageUrl: bannerUrl,
+                      width: double.infinity,
+                      radius: 0,
                       fit: BoxFit.cover,
-                      radius: 8,
                     ),
-                  )
-                else
-                  Container(
-                    width: 48,
-                    height: 64,
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(Icons.tv,
-                        color: theme.colorScheme.onSurface.opaque(0.3)),
+                if (bannerUrl == null || bannerUrl.isEmpty)
+                  AspectRatio(
+                    aspectRatio: 16 / 7,
+                    child: Container(color: cs.surfaceContainerHighest),
                   ),
-                const SizedBox(width: 12),
-                // Room info
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (room.content != null)
-                        AnymexText(
-                          text: room.content!.animeTitle,
-                          size: 13,
-                          variant: TextVariant.semiBold,
-                          maxLines: 1,
+
+                // Gradient overlay
+                Positioned.fill(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.black.opaque(0.1),
+                          Colors.black.opaque(0.3),
+                          Colors.black.opaque(0.85),
+                        ],
+                        stops: const [0.0, 0.45, 1.0],
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Viewers count — top right
+                Positioned(
+                  top: 10,
+                  right: 12,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.black.opaque(0.5),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Iconsax.eye, size: 14, color: Colors.white70),
+                        const SizedBox(width: 4),
+                        Text(
+                          '$memberCount',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                      const SizedBox(height: 2),
-                      if (room.content != null)
-                        AnymexText(
-                          text:
-                              'Episode ${room.content!.episodeNumber}  \u2022  Room ${room.code}',
-                          size: 11,
-                          color: theme.colorScheme.onSurface.opaque(0.6),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Poster + title row
+                Positioned(
+                  left: 12,
+                  right: 12,
+                  bottom: 12,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      // Poster thumbnail
+                      if (posterUrl != null && posterUrl.isNotEmpty)
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(
+                                10.multiplyRadius()),
+                            border:
+                                Border.all(color: Colors.white24, width: 1.5),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.opaque(0.5),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(
+                                8.5.multiplyRadius()),
+                            child: AnymeXImage(
+                              imageUrl: posterUrl,
+                              width: 64,
+                              height: 88,
+                              radius: 0,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
                         )
                       else
-                        AnymexText(
-                          text: 'Room ${room.code}',
-                          size: 11,
-                          color: theme.colorScheme.onSurface.opaque(0.6),
-                        ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Icon(Icons.people_outline,
-                              size: 14,
-                              color: theme.colorScheme.onSurface.opaque(0.5)),
-                          const SizedBox(width: 4),
-                          AnymexText(
-                            text:
-                                '${room.members.length}/${room.maxMembers}',
-                            size: 11,
-                            color: theme.colorScheme.onSurface.opaque(0.5),
+                        Container(
+                          width: 64,
+                          height: 88,
+                          decoration: BoxDecoration(
+                            color: cs.surfaceContainerHighest,
+                            borderRadius:
+                                BorderRadius.circular(10.multiplyRadius()),
+                            border:
+                                Border.all(color: Colors.white24, width: 1.5),
                           ),
-                        ],
+                          child: Icon(Icons.tv,
+                              color: Colors.white54, size: 24),
+                        ),
+                      const SizedBox(width: 12),
+
+                      // Title + meta
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (content != null)
+                              Text(
+                                content.animeTitle,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  height: 1.3,
+                                ),
+                              )
+                            else
+                              Text(
+                                'Room ${room.code}',
+                                style: TextStyle(
+                                  color: Colors.white.opaque(0.8),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            if (content != null) ...[
+                              const SizedBox(height: 4),
+                              Text(
+                                'EP ${content.episodeNumber}${content.totalEpisodes != null ? ' / ${content.totalEpisodes}' : ''}',
+                                style: TextStyle(
+                                  color: Colors.white.opaque(0.6),
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
                       ),
                     ],
                   ),
                 ),
-                // Join button
-                if (isJoinable)
-                  FilledButton.tonal(
-                    onPressed: _isLoading
-                        ? null
-                        : () async {
-                            Logger.i(
-                                'Join room from button: ${room.code}',
-                                'WATCHIUM_UI');
-                            setState(() => _isLoading = true);
-                            final ok =
-                                await _watchium.joinRoom(room.code);
-                            if (mounted) setState(() => _isLoading = false);
-                            if (ok) {
-                              snackBar('Joined room ${room.code}!');
-                              final rs = _watchium.roomState.value;
-                              final c = rs?.content;
-                              if (c != null &&
-                                  c.availableServers.isNotEmpty &&
-                                  mounted) {
-                                showWatchiumServerSheet(
-                                    context: context, content: c);
-                              }
-                            } else {
-                              errorSnackBar(
-                                  _watchium.error.value.isEmpty
-                                      ? 'Failed to join room'
-                                      : _watchium.error.value);
-                            }
-                          },
-                    child: const Text('Join'),
-                  )
-                else
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: AnymexText(
-                      text: 'Full',
-                      size: 12,
-                      color: theme.colorScheme.onSurface.opaque(0.5),
-                    ),
-                  ),
               ],
             ),
-          ),
+
+            // Footer section
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              child: Row(
+                children: [
+                  // Host avatar + name
+                  Expanded(
+                    child: Row(
+                      children: [
+                        if (hostMember != null)
+                          CircleAvatar(
+                            radius: 14,
+                            backgroundImage: hostMember.avatarUrl != null
+                                ? NetworkImage(hostMember.avatarUrl!)
+                                : null,
+                            backgroundColor: cs.surfaceContainerHighest,
+                            child: hostMember.avatarUrl == null
+                                ? Text(
+                                    hostMember.username[0].toUpperCase(),
+                                    style: const TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w700),
+                                  )
+                                : null,
+                          )
+                        else
+                          CircleAvatar(
+                            radius: 14,
+                            backgroundColor: cs.surfaceContainerHighest,
+                            child: const Icon(Icons.person,
+                                size: 14, color: cs.onSurfaceVariant),
+                          ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              AnymexText(
+                                text: hostMember?.username ?? 'Unknown',
+                                size: 13,
+                                variant: TextVariant.semiBold,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              AnymexText(
+                                text: 'Created · ${_timeAgo(room.createdAt)}',
+                                size: 11,
+                                color: cs.onSurfaceVariant,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Member avatars stack
+                  if (showMemberAvatars) ...[
+                    const SizedBox(width: 8),
+                    SizedBox(
+                      height: 22,
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          for (int i = 0;
+                              i < visibleMembers.length;
+                              i++)
+                            Positioned(
+                              left: i * 14.0,
+                              child: CircleAvatar(
+                                radius: 11,
+                                backgroundColor: cs.surfaceContainerHighest,
+                                backgroundImage:
+                                    visibleMembers[i].avatarUrl != null
+                                        ? NetworkImage(
+                                            visibleMembers[i].avatarUrl!)
+                                        : null,
+                                child: visibleMembers[i].avatarUrl == null
+                                    ? Text(
+                                        visibleMembers[i]
+                                            .username[0]
+                                            .toUpperCase(),
+                                        style: const TextStyle(
+                                            fontSize: 9,
+                                            fontWeight: FontWeight.w700),
+                                      )
+                                    : null,
+                              ),
+                          if (remainingCount > 0)
+                            Positioned(
+                              left: visibleMembers.length * 14.0,
+                              child: Container(
+                                width: 22,
+                                height: 22,
+                                decoration: BoxDecoration(
+                                  color: cs.surfaceContainerHighest,
+                                  borderRadius: BorderRadius.circular(11),
+                                ),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  '+$remainingCount',
+                                  style: TextStyle(
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.w700,
+                                    color: cs.onSurface,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                  ],
+
+                  // Join button
+                  if (isJoinable)
+                    AnymexText(
+                      text: 'Join →',
+                      size: 13,
+                      variant: TextVariant.semiBold,
+                      color: cs.primary,
+                    )
+                  else
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: cs.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: AnymexText(
+                        text: 'Full',
+                        size: 11,
+                        color: cs.onSurfaceVariant,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
