@@ -39,7 +39,8 @@ dependencies:
     html: any
     http: ^1.2.2
     http_interceptor: ^2.0.0
-    rhttp: 0.18.0
+    rhttp:
+      path: packages/rhttp
     hugeicons: ^0.0.7
     flutter_iconly: any
     iconsax: ^0.0.8
