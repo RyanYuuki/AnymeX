@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math' show Random;
 import 'package:anymex/utils/oauth_helper.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
 
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
@@ -135,7 +136,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                     return buildUnderratedSection(
                         'Community Recommendations', filteredList,
                         onSeeAll: () =>
-                            navigate(() => CommunityRecommendationsPage(
+                            navigate(() => const CommunityRecommendationsPage(
                                   category: 'anime',
                                   type: ItemType.anime,
                                 )));
@@ -158,7 +159,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                       isManga: true),
                   buildSectionIfNotEmpty("Top Manhua", topManhua,
                       isManga: true),
-                  ...sourceController.novelSections.value,
+                  ...sourceController.novelSections,
                   // Underrated Manga section at the bottom (filtered for logged-in users)
                   Obx(() {
                     final filteredList =
@@ -169,7 +170,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                     return buildUnderratedMangaSection(
                         'Community Recommendations', filteredList,
                         onSeeAll: () =>
-                            navigate(() => CommunityRecommendationsPage(
+                            navigate(() => const CommunityRecommendationsPage(
                                   category: 'manga',
                                   type: ItemType.manga,
                                 )));
@@ -266,7 +267,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
     final offset = (params.page - 1) * 25;
     final token = AuthKeys.malAuthToken.get<String?>();
     final isLoggedIn = token != null && token.isNotEmpty;
-    final fields = 'id,title,main_picture,alternative_titles,start_date,end_date,synopsis,mean,rank,popularity,num_episodes,status,genres,num_chapters,num_volumes,media_type,start_season,average_episode_duration,studios';
+    const fields = 'id,title,main_picture,alternative_titles,start_date,end_date,synopsis,mean,rank,popularity,num_episodes,status,genres,num_chapters,num_volumes,media_type,start_season,average_episode_duration,studios';
     final showNsfw = params.args == true;
     final url = 'https://api.myanimelist.net/v2/$mediaType?q=${Uri.encodeComponent(params.query)}&limit=25&offset=$offset&fields=$fields${showNsfw ? '&nsfw=true' : ''}';
     
@@ -373,7 +374,11 @@ class MalService extends GetxController implements BaseService, OnlineService {
           });
         }),
         const SizedBox(height: 10),
-        Obx(() => Column(
+        if (acceptedLists.isNotEmpty)
+          Obx(() {
+            mangaList.length;
+            animeList.length;
+            return Column(
               children: acceptedLists.map((e) {
                 return ReusableCarousel(
                   data: filterListByLabel(
@@ -388,7 +393,8 @@ class MalService extends GetxController implements BaseService, OnlineService {
                       : ItemType.anime,
                 );
               }).toList(),
-            )),
+            );
+          }),
       ],
       buildSectionIfNotEmpty("Trending Animes", trendingAnimes),
       buildSectionIfNotEmpty("Popular Animes", popularAnimes),
@@ -513,6 +519,21 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
   @override
   Future<void> login(BuildContext context) async {
+    final selectedMethod = await AnymexSheet.custom<String>(
+      loginSheetHelper(
+        context: context,
+        title: 'Login to MyAnimeList',
+        serviceName: 'MyAnimeList',
+        showTokenOption: false,
+      ),
+      context,
+      showDragHandle: true,
+    );
+
+    if (selectedMethod == null || !context.mounted) return;
+
+    final forceWebAuth = selectedMethod == 'browser_external';
+
     String clientId = dotenv.env['MAL_CLIENT_ID'] ?? '';
     String secret = dotenv.env['MAL_CLIENT_SECRET'] ?? '';
     final secureRandom = Random.secure();
@@ -532,6 +553,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
         context: context,
         url: url,
         callbackUrlScheme: 'anymex',
+        forceWebAuth: forceWebAuth,
       );
 
       if (result != null) {
@@ -720,7 +742,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
     final url = Uri.parse(
         'https://api.myanimelist.net/v2/${isAnime ? 'anime' : 'manga'}/$listId/my_list_status');
 
-    String _formatMalDate(DateTime d) =>
+    String formatMalDate(DateTime d) =>
         '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
     final body = {
@@ -731,8 +753,8 @@ class MalService extends GetxController implements BaseService, OnlineService {
         'num_watched_episodes': progress.toString(),
       if (progress != null && !isAnime)
         'num_chapters_read': progress.toString(),
-      if (startedAt != null) 'start_date': _formatMalDate(startedAt),
-      if (completedAt != null) 'finish_date': _formatMalDate(completedAt),
+      if (startedAt != null) 'start_date': formatMalDate(startedAt),
+      if (completedAt != null) 'finish_date': formatMalDate(completedAt),
     };
 
     final req = await http.put(
@@ -842,7 +864,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
               totalEpisodes: savedManga?.chapters?.length.toString() ?? '??'));
     } else {
       final savedAnime = offlineStorage.getAnimeById(id);
-      final number = savedAnime?.currentEpisode?.number?.toInt() ?? 0;
+      final number = savedAnime?.currentEpisode?.number.toInt() ?? 0;
       currentMedia.value = animeList.firstWhere((el) => el.id == id,
           orElse: () => TrackedMedia(
               episodeCount: number.toString(),
@@ -871,3 +893,4 @@ class MalService extends GetxController implements BaseService, OnlineService {
     ]);
   }
 }
+

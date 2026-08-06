@@ -51,7 +51,7 @@ class CommentsDatabase {
           parent.replies ??= [];
           parent.replies!.add(comment);
           replyCount++;
-          log("Added reply ${comment.id} to parent ${parentId} (parent now has ${parent.replies!.length} replies)");
+          log("Added reply ${comment.id} to parent $parentId (parent now has ${parent.replies!.length} replies)");
         } else {
           parentComments.add(comment);
           log("Parent $parentId not found for comment ${comment.id}, treating as parent comment");

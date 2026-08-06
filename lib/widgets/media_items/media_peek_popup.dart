@@ -22,12 +22,10 @@ import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
 import 'package:get/get.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:http/http.dart' as http;
 import 'package:hugeicons/hugeicons.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:anymex/widgets/non_widgets/recommend_button.dart';
 import 'package:anymex/widgets/non_widgets/reasons_sheet.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
@@ -1034,7 +1032,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                           children: [
                             Flexible(
                               child: AnymexText(
-                                text: username!,
+                                text: username,
                                 variant: TextVariant.semiBold,
                                 size: 14,
                                 color: colors.primary,

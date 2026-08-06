@@ -70,10 +70,8 @@ class LocalSourceController extends GetxController
 
     List<String>? savedHistory =
         LocalSourceKeys.watchOfflinePathHistory.get<List<String>>(<String>[]);
-    if (savedHistory != null) {
-      pathHistory.value = savedHistory;
-    }
-
+    pathHistory.value = savedHistory;
+  
     // Initialize download path
     downloadPath.value =
         LocalSourceKeys.watchOfflineDownloadPath.get<String>('');
@@ -81,10 +79,8 @@ class LocalSourceController extends GetxController
     List<String>? savedDownloadHistory = LocalSourceKeys
         .watchOfflineDownloadPathHistory
         .get<List<String>>(<String>[]);
-    if (savedDownloadHistory != null) {
-      downloadPathHistory.value = savedDownloadHistory;
-    }
-
+    downloadPathHistory.value = savedDownloadHistory;
+  
     ever(currentPath, (_) => _saveCurrentPath());
     ever(pathHistory, (_) => _savePathHistory());
     ever(downloadPath, (_) => _saveDownloadPath());

@@ -1,6 +1,5 @@
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 
 class MyAdaptiveWrapper extends StatelessWidget {
   final Widget child;

@@ -103,6 +103,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   String posterColor = '';
   int _sourceRequestVersion = 0;
   Worker? _activeSourceWorker;
+  Worker? _isAnifyWorker;
 
   int _beginSourceRequest() => ++_sourceRequestVersion;
   bool _isStaleSourceRequest(int requestId) =>
@@ -165,6 +166,14 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     _updateAnifyAvailabilityForSource();
     _activeSourceWorker = ever<Source?>(sourceController.activeSource, (_) {
       _updateAnifyAvailabilityForSource();
+    });
+    _isAnifyWorker = ever<bool>(isAnify, (useAnify) {
+      if (useAnify) {
+        applyAnifyCovers(customBaseEpisodes: _renewEpisodeData(_cloneEpisodes(rawEpisodes)));
+      } else {
+        episodeList.assignAll(_renewEpisodeData(_cloneEpisodes(rawEpisodes)));
+        _applyFillerInfo();
+      }
     });
     Future.delayed(const Duration(milliseconds: 500), () {
       _checkAnimePresence();
@@ -257,6 +266,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     _countdownTimer?.cancel();
     controller.dispose();
     _activeSourceWorker?.dispose();
+    _isAnifyWorker?.dispose();
 
     CommentPreloader.to.removePreloadedController(widget.media.id.toString());
     DiscordRPCController.instance.updateBrowsingPresence();
@@ -305,11 +315,12 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
           "Fetch Initiated for Media => ${widget.media.id} with type -> ${widget.media.mediaType}");
 
       final service = widget.media.serviceType.service;
-
-      final tempData = await service.fetchDetails(FetchDetailsParams(
-          id: widget.media.id.toString(), type: ItemType.anime));
-
       final isExtensions = widget.media.serviceType == ServicesType.extensions;
+
+      final tempData = (isExtensions && widget.media.mediaContent != null && widget.media.mediaContent!.isNotEmpty)
+          ? widget.media
+          : await service.fetchDetails(FetchDetailsParams(
+              id: widget.media.id.toString(), type: ItemType.anime));
 
       setState(() {
         if (isExtensions) {
@@ -463,7 +474,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
         setState(() {});
       }
       _updateAnifyAvailabilityForSource();
-      if (disableAnifyForCurrentSource.value) {
+      if (disableAnifyForCurrentSource.value || !isAnify.value) {
         return;
       }
       await applyAnifyCovers(requestId: activeRequestId);
@@ -476,9 +487,10 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     }
   }
 
-  Future<void> applyAnifyCovers({int? requestId}) async {
+  Future<void> applyAnifyCovers({int? requestId, List<Episode>? customBaseEpisodes}) async {
     final activeRequestId = requestId ?? _sourceRequestVersion;
-    final baseEpisodes = List<Episode>.from(episodeList);
+    final baseEpisodes = customBaseEpisodes ?? List<Episode>.from(episodeList);
+    if (baseEpisodes.isEmpty) return;
     final newEps = await AnilistData.fetchEpisodesFromAnify(
       widget.media.id.toString(),
       baseEpisodes,
@@ -611,6 +623,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     return Glow(
       color: posterColor,
       child: Scaffold(
+          resizeToAvoidBottomInset: false,
           extendBody: true,
           bottomNavigationBar: sourceController.shouldShowExtensions.value
               ? _buildMobiledNav()
@@ -892,14 +905,14 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
   Widget _buildProgressContainer(BuildContext context) {
     final int totalEps =
-        int.tryParse(anilistData?.totalEpisodes?.toString() ?? '0') ?? 0;
+        int.tryParse(anilistData?.totalEpisodes.toString() ?? '0') ?? 0;
     final int airedEps = (anilistData?.nextAiringEpisode?.episode ?? 1) - 1;
     final int displayTotal = totalEps > 0 ? totalEps : airedEps;
     final int watchedEps =
         int.tryParse(currentAnime.value?.episodeCount?.toString() ?? '0') ?? 0;
     final int remainingEps = (displayTotal - watchedEps).clamp(0, displayTotal);
     final int? epDuration = int.tryParse(
-        (anilistData?.duration?.toString() ?? '')
+        (anilistData?.duration.toString() ?? '')
             .replaceAll(RegExp(r'[^0-9]'), ''));
     final int totalMins = displayTotal * (epDuration ?? 0);
     final int watchedMins = watchedEps * (epDuration ?? 0);
@@ -939,7 +952,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                       color: context.colors.onSurface.opaque(0.7),
                     ),
                     AnymexTextSpan(
-                      text: anilistData?.totalEpisodes?.toString() ?? '??',
+                      text: anilistData?.totalEpisodes.toString() ?? '??',
                       variant: TextVariant.bold,
                       color: context.colors.primary,
                     ),

@@ -41,6 +41,7 @@ class _NovelHomePageState extends State<NovelHomePage> {
     final double bottomNavBarHeight = MediaQuery.of(context).padding.bottom;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       extendBodyBehindAppBar: true,
       body: Stack(
         children: [
@@ -53,8 +54,9 @@ class _NovelHomePageState extends State<NovelHomePage> {
                 const SizedBox(height: 10),
                 Obx(() {
                   final sourceController = Get.find<SourceController>();
+                  sourceController.installedNovelExtensions.value;
                   return InstalledExtensionsGridView(
-                    sources: sourceController.installedNovelExtensions.value,
+                    sources: sourceController.installedNovelExtensions,
                     itemType: ItemType.novel,
                   );
                 }),

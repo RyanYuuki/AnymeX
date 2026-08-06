@@ -1,4 +1,5 @@
 /// Logo Animation Preview Dialog
+library;
 
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -10,10 +11,10 @@ class LogoAnimationPreviewDialog extends StatefulWidget {
   final Function(LogoAnimationType) onConfirm;
 
   const LogoAnimationPreviewDialog({
-    Key? key,
+    super.key,
     required this.initialAnimation,
     required this.onConfirm,
-  }) : super(key: key);
+  });
 
   @override
   State<LogoAnimationPreviewDialog> createState() => _LogoAnimationPreviewDialogState();

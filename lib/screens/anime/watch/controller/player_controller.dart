@@ -6,6 +6,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
+import 'package:anymex_extension_runtime_bridge/Services/Aniyomi/Models/Source.dart';
 
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
@@ -30,6 +31,7 @@ import 'package:flutter_media_session/flutter_media_session.dart';
 import 'package:flutter_media_session/flutter_media_session_platform_interface.dart';
 
 import 'package:anymex/utils/aniskip.dart' as aniskip;
+import 'package:anymex/utils/media_syncer.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/color_profiler.dart';
 import 'package:anymex/utils/sub_parser.dart';
@@ -207,7 +209,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final Rx<SubtitleTrack?> selectedSubsTrack = Rx(null);
   final Rx<VideoTrack?> selectedQualityTrack = Rx(null);
   final Rx<model.Track> selectedExternalSub = Rx(model.Track());
-  final Rx<model.Track> selectedExternalAudio = Rx(model.Track());
+  final Rxn<model.Track> selectedExternalAudio = Rxn();
   final Rxn<model.Video> selectedVideo = Rxn();
   final Rx<List<model.Track>> externalSubs = Rx([]);
   final RxBool showAllStreamSubtitles = false.obs;
@@ -638,7 +640,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   void _initPhysicalOrientationListener() {
     if (!Platform.isAndroid && !Platform.isIOS) return;
     try {
-      _accelerometerSub = accelerometerEvents.listen((event) {
+      _accelerometerSub = accelerometerEvents
+          .throttleTime(const Duration(milliseconds: 250))
+          .listen((event) {
         final x = event.x;
         final y = event.y;
         if (x.abs() > y.abs()) {
@@ -978,19 +982,36 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     await _basePlayer.setRate(_sessionSpeed);
   }
 
-  void _initializeAniSkip() {
+  void _initializeAniSkip() async {
     isOPSkippedOnce.value = false;
     isEDSkippedOnce.value = false;
     isRecapSkippedOnce.value = false;
     currentSkipInterval.value = null;
     _cancelAutoSkipTimer();
     _autoSkipCancelledForCurrentSegment = false;
+    String malId = anilistData.idMal;
+    final serviceType = anilistData.serviceType;
+
+    if (serviceType.isMal) {
+      malId = anilistData.id;
+    } else if (malId.isEmpty || malId == '0') {
+      final aniId = anilistData.id;
+      if (aniId.isNotEmpty && aniId != '0' && serviceType.isAL && int.tryParse(aniId) != null) {
+        try {
+          final mappedId = await MediaSyncer.getMappedAnimeId(aniId, MappingType.anilist);
+          if (mappedId != null && mappedId.isNotEmpty) {
+            malId = mappedId;
+            anilistData.idMal = mappedId;
+          }
+        } catch (_) {}
+      }
+    }
 
     final episodeLengthSec =
         (currentEpisode.value.durationInMilliseconds ?? 0) ~/ 1000;
 
     final skipQuery = aniskip.SkipSearchQuery(
-      idMAL: anilistData.idMal,
+      idMAL: malId,
       episodeNumber: currentEpisode.value.number,
       episodeLength: episodeLengthSec,
     );
@@ -1182,7 +1203,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     _playerSubscriptions.add(_basePlayer.errorStream.listen((e) {
       if (_isReloadingPlayer.value) return;
-      Logger.i('${e} => ${selectedVideo.value?.headers}');
+      Logger.i('$e => ${selectedVideo.value?.headers}');
       final errorStr = e.toString();
       if (errorStr.contains('Failed to open') &&
           !errorStr.contains('.glsl') &&
@@ -1192,8 +1213,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }));
 
     int subtitleTranslateRequestId = 0;
+    Timer? subtitleTranslateDebounce;
 
-    _playerSubscriptions.add(_basePlayer.subtitleStream.listen((e) async {
+    _playerSubscriptions.add(_basePlayer.subtitleStream.listen((e) {
       if (_isReloadingPlayer.value) return;
       subtitleText.value = e;
       if (!playerSettings.autoTranslate) {
@@ -1203,24 +1225,25 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         return;
       }
 
-      final sanitizedLines = e
-          .map((line) => line
-              .replaceAll(_htmlRx, '')
-              .replaceAll(_assRx, '')
-              .replaceAll(_newlineRx, '\n')
-              .trim())
-          .where((line) => line.isNotEmpty)
-          .toList();
-      final int currentRequestId = ++subtitleTranslateRequestId;
+      subtitleTranslateDebounce?.cancel();
+      subtitleTranslateDebounce = Timer(const Duration(milliseconds: 800), () async {
+        final sanitizedLines = e
+            .map((line) => line
+                .replaceAll(_htmlRx, '')
+                .replaceAll(_assRx, '')
+                .replaceAll(_newlineRx, '\n')
+                .trim())
+            .where((line) => line.isNotEmpty)
+            .toList();
+        final int currentRequestId = ++subtitleTranslateRequestId;
 
-      final cleanedText = sanitizedLines.join('\n');
+        final cleanedText = sanitizedLines.join('\n');
 
-      if (cleanedText.isEmpty && playerSettings.autoTranslate) {
-        translatedSubtitle.value = "";
-        return;
-      }
+        if (cleanedText.isEmpty) {
+          translatedSubtitle.value = '';
+          return;
+        }
 
-      if (playerSettings.autoTranslate && cleanedText.isNotEmpty) {
         final lookupKey = cleanedText
             .replaceAll(_htmlRx, '')
             .replaceAll(_assRx, '')
@@ -1255,7 +1278,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
             SubtitlePreTranslator.manualAdd(lookupKey, sanitizedTranslated);
           }
         } catch (_) {}
-      }
+      });
     }));
 
     _playerSubscriptions.add(_basePlayer.heightStream.listen((height) {
@@ -1645,8 +1668,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   bool _matchesPreferredLanguage(String? label, String preferredLangCode) {
-    if (label == null || label.isEmpty || preferredLangCode == 'none')
+    if (label == null || label.isEmpty || preferredLangCode == 'none') {
       return false;
+    }
     final normLabel = label.toLowerCase();
     final normCode = preferredLangCode.toLowerCase();
     final fullName =
@@ -1786,6 +1810,15 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _revertOrientations();
     if (!isOffline.value) {
       DiscordRPCController.instance.updateMediaPresence(media: anilistData);
+    }
+
+    final active = sourceController.activeSource.value;
+    if (active != null && active is ASource) {
+      try {
+        await active.methods.stopHttpServer();
+      } catch (e) {
+        Logger.e('Error stopping http server: $e');
+      }
     }
 
     await _basePlayer.dispose();
@@ -2051,6 +2084,16 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
   }
 
+  void setExternalAudio(model.Track? track) {
+    if (track == null || (track.file?.isEmpty ?? true)) {
+      selectedExternalAudio.value = null;
+      setAudioTrack(AudioTrack.auto());
+      return;
+    }
+    selectedExternalAudio.value = track;
+    setAudioTrack(AudioTrack.uri(track.file!, title: track.label));
+  }
+
   String _resolveSubtitleUrl(String subtitlePath) {
     final raw = subtitlePath.trim();
     final uri = Uri.tryParse(raw);
@@ -2121,19 +2164,12 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
 
     selectedVideo.value = track;
+    selectedExternalAudio.value = null;
     _extractSubtitles();
     await _switchMedia(track.url.toString(), track.headers,
         startPosition: _basePlayer.state.position);
   }
 
-  void setExternalAudio(model.Track track) {
-    if (track.file?.isEmpty ?? true) {
-      snackBar('Corrupted Audio!');
-      return;
-    }
-    selectedExternalAudio.value = track;
-    setAudioTrack(AudioTrack.uri(track.file!));
-  }
 
   Future<void> loadSubtitleCuesFromUrl(String url) async {
     try {

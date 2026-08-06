@@ -21,7 +21,7 @@ permissions:
 jobs:
   generate-changelog:
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure'
     steps:
       - name: Check Job Statuses
         id: check_jobs
@@ -45,7 +45,8 @@ jobs:
           
           echo "Jobs data retrieved"
           
-          # Only check build-all-platforms jobs, ignore post-release jobs
+          # Only check build-all-platforms jobs, ignore post-release/release jobs.
+          # ALL 5 platforms must succeed — if any platform build fails, skip.
           REQUIRED_JOBS=("build-all-platforms (android, ubuntu-latest)" "build-all-platforms (linux, ubuntu-latest)" "build-all-platforms (windows, windows-latest)" "build-all-platforms (macos, macos-latest)" "build-all-platforms (ios, macos-latest)")
           
           ALL_SUCCESS=true
@@ -56,20 +57,18 @@ jobs:
             if [ -z "$JOB_STATUS" ]; then
               echo "⚠️ Job '$REQUIRED_JOB' not found in workflow run"
               ALL_SUCCESS=false
-              break
             elif [ "$JOB_STATUS" != "success" ]; then
               echo "❌ Job '$REQUIRED_JOB' failed with status: $JOB_STATUS"
               ALL_SUCCESS=false
-              break
             else
               echo "✅ Job '$REQUIRED_JOB' succeeded"
             fi
           done
           
           if [ "$ALL_SUCCESS" = true ]; then
-            echo "✅ All required build jobs succeeded"
+            echo "✅ All platform builds succeeded — proceeding with changelog"
           else
-            echo "❌ Some required build jobs failed, skipping changelog generation"
+            echo "❌ One or more platform builds failed — skipping changelog generation"
           fi
           
           echo "all_jobs_success=$ALL_SUCCESS" >> $GITHUB_OUTPUT

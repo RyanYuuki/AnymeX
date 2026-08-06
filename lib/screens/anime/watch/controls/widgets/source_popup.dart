@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 
-enum _SourceTab { servers, subtitles }
+enum _SourceTab { servers, subtitles, audios }
 
 class SourcePopup extends StatelessWidget {
   final PlayerController controller;
@@ -53,17 +53,27 @@ class _SourcePopupContentState extends State<_SourcePopupContent> {
     final theme = context.theme;
     final cs = theme.colorScheme;
 
-    return Column(
-      children: [
-        _buildHeader(cs, theme),
-        _buildTabBar(cs, theme),
-        Expanded(
-          child: _currentTab == _SourceTab.servers
-              ? _buildServersList(cs, theme)
-              : _buildSubtitlesList(cs, theme),
-        ),
-      ],
-    );
+    return Obx(() {
+      final hasAudios = (widget.controller.selectedVideo.value?.audios
+                  ?.isNotEmpty ??
+              false);
+      if (_currentTab == _SourceTab.audios && !hasAudios) {
+        _currentTab = _SourceTab.servers;
+      }
+      return Column(
+        children: [
+          _buildHeader(cs, theme),
+          _buildTabBar(cs, theme, hasAudios: hasAudios),
+          Expanded(
+            child: switch (_currentTab) {
+              _SourceTab.servers => _buildServersList(cs, theme),
+              _SourceTab.subtitles => _buildSubtitlesList(cs, theme),
+              _SourceTab.audios => _buildAudioList(cs, theme),
+            },
+          ),
+        ],
+      );
+    });
   }
 
   Widget _buildHeader(ColorScheme cs, ThemeData theme) {
@@ -112,7 +122,8 @@ class _SourcePopupContentState extends State<_SourcePopupContent> {
     );
   }
 
-  Widget _buildTabBar(ColorScheme cs, ThemeData theme) {
+  Widget _buildTabBar(ColorScheme cs, ThemeData theme,
+      {required bool hasAudios}) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       padding: const EdgeInsets.all(4),
@@ -140,6 +151,17 @@ class _SourcePopupContentState extends State<_SourcePopupContent> {
             cs: cs,
             theme: theme,
           ),
+          if (hasAudios) ...[  
+            const SizedBox(width: 4),
+            _buildTab(
+              label: 'Audio',
+              icon: Icons.audiotrack_rounded,
+              isSelected: _currentTab == _SourceTab.audios,
+              onTap: () => setState(() => _currentTab = _SourceTab.audios),
+              cs: cs,
+              theme: theme,
+            ),
+          ],
         ],
       ),
     );
@@ -283,6 +305,48 @@ class _SourcePopupContentState extends State<_SourcePopupContent> {
         ),
       ],
     );
+  }
+
+  Widget _buildAudioList(ColorScheme cs, ThemeData theme) {
+    return Obx(() {
+      final audios =
+          widget.controller.selectedVideo.value?.audios ?? [];
+      final selectedFile =
+          widget.controller.selectedExternalAudio.value?.file;
+
+      return ListView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        itemCount: audios.length + 1,
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            final isNoneSelected =
+                selectedFile == null || selectedFile.isEmpty;
+            return _buildListItem(
+              cs: cs,
+              theme: theme,
+              title: 'Default',
+              subtitle: 'Embedded audio',
+              icon: Icons.audiotrack_rounded,
+              isSelected: isNoneSelected,
+              onTap: () => widget.controller.setExternalAudio(null),
+            );
+          }
+
+          final track = audios[index - 1];
+          final isSelected = track.file == selectedFile;
+
+          return _buildListItem(
+            cs: cs,
+            theme: theme,
+            title: track.label ?? 'Track $index',
+            subtitle: 'External audio',
+            icon: Icons.audiotrack_rounded,
+            isSelected: isSelected,
+            onTap: () => widget.controller.setExternalAudio(track),
+          );
+        },
+      );
+    });
   }
 
   Widget _buildAllStreamsToggle(ColorScheme cs) {

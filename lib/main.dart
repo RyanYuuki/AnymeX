@@ -377,14 +377,14 @@ class _MainAppState extends State<MainApp> {
                     child: AnymexTitleBar.titleBar(),
                   ),
                 ),
-                const FpsMeter(),
+                // const FpsMeter(),
               ],
             );
           }
           return Stack(
             children: [
               child!,
-              const FpsMeter(),
+              // const FpsMeter(),
             ],
           );
         },
@@ -645,6 +645,7 @@ class _FilterScreenState extends State<FilterScreen> {
           }
         },
         child: Scaffold(
+            resizeToAvoidBottomInset: false,
             body: IndexedStack(
               index: validIndex,
               children: mobileRoutes,

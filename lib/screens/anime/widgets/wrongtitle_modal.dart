@@ -153,18 +153,18 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                       itemBuilder: (context, index) {
                         final item = results[index];
                         if (item == null) return const SizedBox.shrink();
-                        final carouselData = item.toCarouselData();
+                        final source = widget.isNovel
+                            ? sourceController.activeNovelSource.value
+                            : widget.isManga
+                                ? sourceController.activeMangaSource.value
+                                : sourceController.activeSource.value;
+                        final carouselData = item.toCarouselData(sourceId: source?.id);
                         final itemType = widget.isNovel ? ItemType.novel : (widget.isManga ? ItemType.manga : ItemType.anime);
                         final heroTag = '${item.url}-$index-wrong-title';
 
                         return AnymexOnTap(
                           onTap: () {
                             SourceMapper.interruptMapping();
-                            final source = widget.isNovel
-                                ? sourceController.activeNovelSource.value
-                                : widget.isManga
-                                    ? sourceController.activeMangaSource.value
-                                    : sourceController.activeSource.value;
                             if (source != null && widget.mediaId != null) {
                               sourceController.setActiveSource(source,
                                   mediaId: widget.mediaId);

@@ -48,7 +48,7 @@ class _GistSyncCard extends StatelessWidget {
       final showExitSyncNotifications = ctrl.showExitSyncNotifications.value;
       final hasCloudGist = ctrl.hasCloudGist.value;
       final lastSyncSuccessful = ctrl.lastSyncSuccessful.value;
-      final needsInitialize = hasCloudGist != true;
+      final needsInitialize = hasCloudGist == false;
       final statusColor = _statusColor(
         colors,
         isLogged: isLogged,
@@ -555,7 +555,7 @@ class _GistSyncCard extends StatelessWidget {
                             ),
                           )
                         : Icon(
-                            ctrl.hasCloudGist.value != true
+                            ctrl.hasCloudGist.value == false
                                 ? Icons.cloud_upload_rounded
                                 : Icons.sync_rounded,
                           ),
@@ -564,7 +564,7 @@ class _GistSyncCard extends StatelessWidget {
                         isLogged: ctrl.isLoggedIn.value,
                         isAuthenticating: ctrl.isAuthenticating.value,
                         isSyncing: ctrl.isSyncing.value,
-                        needsInitialize: ctrl.hasCloudGist.value != true,
+                        needsInitialize: ctrl.hasCloudGist.value == false,
                       ),
                     ),
                   ),
@@ -581,7 +581,7 @@ class _GistSyncCard extends StatelessWidget {
                   icon: Icons.open_in_new_rounded,
                   title: 'View Cloud Gist',
                   subtitle: 'Open your AnymeX sync gist on GitHub',
-                  onTap: ctrl.isSyncing.value || ctrl.hasCloudGist.value != true
+                  onTap: ctrl.isSyncing.value || ctrl.hasCloudGist.value == false
                       ? null
                       : () => _openGistInBrowser(ctx, ctrl),
                 ),
@@ -590,7 +590,7 @@ class _GistSyncCard extends StatelessWidget {
                   icon: Icons.download_rounded,
                   title: 'Export Gist JSON',
                   subtitle: 'Save your current cloud progress to a file',
-                  onTap: ctrl.isSyncing.value || ctrl.hasCloudGist.value != true
+                  onTap: ctrl.isSyncing.value || ctrl.hasCloudGist.value == false
                       ? null
                       : () => _exportGistJson(ctx, ctrl),
                 ),
@@ -609,7 +609,7 @@ class _GistSyncCard extends StatelessWidget {
                   title: 'Delete Cloud Gist',
                   subtitle: 'Permanently remove AnymeX sync data',
                   color: ctx.colors.error,
-                  onTap: ctrl.isSyncing.value || ctrl.hasCloudGist.value != true
+                  onTap: ctrl.isSyncing.value || ctrl.hasCloudGist.value == false
                       ? null
                       : () {
                           _showDeleteGistDialog(ctx, ctrl);

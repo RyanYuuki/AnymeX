@@ -3,6 +3,7 @@ import 'package:anymex/controllers/sync/progress_sync_section.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/screens/settings/sub_settings/widgets/backup_and_restore_widgets.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
@@ -49,6 +50,10 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
 
     if (!hasSelected) return;
 
+    setState(() {
+      controller.isBackingUp.value = true;
+    });
+
     try {
       String? password;
       if (usePassword && passwordController.text.isNotEmpty) {
@@ -71,6 +76,10 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
       if (mounted) {
         snackBar("Backup failed: ${e.toString()}");
       }
+    } finally {
+      setState(() {
+        controller.isBackingUp.value = false;
+      });
     }
   }
 
@@ -100,6 +109,9 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
           isEncrypted: isEncrypted,
           onConfirm: (restoreSettings, restoreAuthTokens) async {
             Get.back();
+            setState(() {
+              controller.isRestoring.value = true;
+            });
             try {
               await controller.restoreBackup(
                 path,
@@ -109,12 +121,17 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                 restoreAuthTokens: restoreAuthTokens,
               );
               if (mounted) {
-                snackBar("Backup restored successfully!");
+                snackBar(
+                    "Backup restored successfully! Please restart the app.");
               }
             } catch (e) {
               if (mounted) {
                 snackBar("Restore failed: ${e.toString()}");
               }
+            } finally {
+              setState(() {
+                controller.isRestoring.value = false;
+              });
             }
           },
         ),
@@ -142,59 +159,119 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
 
     return Glow(
       child: Scaffold(
-        body: Column(
+        body: Stack(
           children: [
-            const NestedHeader(title: 'Data Management'),
-            Expanded(
-              child: SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const _SectionHeader(title: "Current Library"),
-                    const SizedBox(height: 16),
-                    Obx(() {
-                      controller.isRestoring.value;
-                      return FutureBuilder(
-                        future: controller.getLibraryStats(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                                  ConnectionState.done &&
-                              snapshot.data != null) {
-                            return LibraryDashboard(stats: snapshot.data!);
-                          } else {
-                            return const CircularProgressIndicator();
-                          }
-                        },
-                      );
-                    }),
-                    const SizedBox(height: 32),
-                    const _SectionHeader(title: "Actions"),
-                    const SizedBox(height: 16),
-                    ActionCard(
-                      title: "Create Backup",
-                      subtitle: "Secure your library to local storage",
-                      icon: Icons.backup_rounded,
-                      color: theme.colorScheme.primary,
-                      onTap: _handleBackup,
+            Column(
+              children: [
+                const NestedHeader(title: 'Data Management'),
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const _SectionHeader(title: "Current Library"),
+                        const SizedBox(height: 16),
+                        Obx(() {
+                          controller.isRestoring.value;
+                          return FutureBuilder(
+                            future: controller.getLibraryStats(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                      ConnectionState.done &&
+                                  snapshot.data != null) {
+                                return LibraryDashboard(stats: snapshot.data!);
+                              } else {
+                                return const CircularProgressIndicator();
+                              }
+                            },
+                          );
+                        }),
+                        const SizedBox(height: 32),
+                        const _SectionHeader(title: "Actions"),
+                        const SizedBox(height: 16),
+                        Container(
+                          decoration: BoxDecoration(
+                            color:
+                                theme.colorScheme.surfaceContainer.opaque(0.4),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 4, vertical: 8),
+                          child: Column(
+                            children: [
+                              CustomTile(
+                                title: "Create Backup",
+                                description:
+                                    "Secure your library to local storage",
+                                icon: Icons.backup_rounded,
+                                onTap: _handleBackup,
+                              ),
+                              const SizedBox(height: 16),
+                              CustomTile(
+                                title: "Restore Data",
+                                description: "Import your .anymex backup file",
+                                icon: Icons.settings_backup_restore_rounded,
+                                onTap: () => _handleRestore(context),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                        const _SectionHeader(title: "Cloud Sync"),
+                        const SizedBox(height: 16),
+                        const ProgressSyncSection(),
+                      ],
                     ),
-                    const SizedBox(height: 16),
-                    ActionCard(
-                      title: "Restore Data",
-                      subtitle: "Import your .anymex backup file",
-                      icon: Icons.settings_backup_restore_rounded,
-                      color: theme.colorScheme.tertiary,
-                      onTap: () => _handleRestore(context),
-                    ),
-                    const SizedBox(height: 32),
-                    const _SectionHeader(title: "Cloud Sync"),
-                    const SizedBox(height: 16),
-                    const ProgressSyncSection(),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
+            Obx(() {
+              if (controller.isBackingUp.value ||
+                  controller.isRestoring.value) {
+                return Container(
+                  color: Colors.black.withOpacity(0.55),
+                  child: Center(
+                    child: Card(
+                      color: theme.colorScheme.surfaceContainer,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 32, vertical: 24),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const CircularProgressIndicator(),
+                            const SizedBox(height: 20),
+                            Text(
+                              controller.isRestoring.value
+                                  ? 'Restoring Backup...'
+                                  : 'Creating Backup...',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Please do not close the app',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurface
+                                    .withOpacity(0.6),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }
+              return const SizedBox.shrink();
+            }),
           ],
         ),
       ),

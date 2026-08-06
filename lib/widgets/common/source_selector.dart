@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:anymex/utils/language.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_tabbar.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
@@ -53,11 +54,8 @@ class SourceSelectorWidget extends StatelessWidget {
   });
 
   void _openSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => _SourceSheetContent(
+    AnymexSheet.custom(
+      _SourceSheetContent(
         activeSource: activeSource,
         installedSources: installedSources,
         isManga: isManga,
@@ -73,6 +71,8 @@ class SourceSelectorWidget extends StatelessWidget {
               }
             : null,
       ),
+      context,
+      showDragHandle: true,
     );
   }
 
@@ -444,40 +444,18 @@ class _SourceSheetContentState extends State<_SourceSheetContent> {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     final tabs = _tabs();
     final filtered = _filtered(tabs);
     final showTabs = tabs.length > 2;
 
-    return Padding(
-      padding: EdgeInsets.fromLTRB(12, 0, 12, 16 + bottomInset),
-      child: Container(
-        decoration: BoxDecoration(
-          color: colors.surface,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: colors.outline.withOpacity(0.1)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 12, bottom: 8),
-                child: Container(
-                  width: 36,
-                  height: 3.5,
-                  decoration: BoxDecoration(
-                    color: colors.onSurface.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 2, 16, 10),
-              child: Row(
-                children: [
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(4, 2, 4, 10),
+          child: Row(
+            children: [
                   Icon(Icons.extension_rounded,
                       size: 20, color: colors.primary),
                   const SizedBox(width: 10),
@@ -643,9 +621,7 @@ class _SourceSheetContentState extends State<_SourceSheetContent> {
             ],
             const SizedBox(height: 12),
           ],
-        ),
-      ),
-    );
+        );
   }
 }
 

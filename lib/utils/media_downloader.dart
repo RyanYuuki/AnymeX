@@ -197,12 +197,14 @@ class MediaDownloader {
     await mediaDir.create(recursive: true);
     final tempDir = path.join(subDownloadDir!, 'temp_$taskId');
     await Directory(tempDir).create(recursive: true);
+    await File(path.join(tempDir, '.nomedia')).create();
 
     Uint8List? globalKey;
     Uint8List? globalIv;
-    if (segments.isNotEmpty && segments.first.key.method != 'NONE') {
-      globalKey = segments.first.key.keyBytes;
-      globalIv = segments.first.key.iv;
+    final firstWithKey = _findFirstWithKey(segments);
+    if (firstWithKey != null) {
+      globalKey = firstWithKey.key.keyBytes;
+      globalIv = firstWithKey.key.iv;
     }
 
     final pendingSegments = tsInfos
@@ -263,12 +265,30 @@ class MediaDownloader {
     final sink = outFile.openWrite();
     try {
       for (final file in files) {
-        await sink.addStream(File(file.path).openRead());
+        final rawBytes = await File(file.path).readAsBytes();
+        final syncIndex = _findTsSyncByte(rawBytes);
+        if (syncIndex > 0) {
+          sink.add(rawBytes.sublist(syncIndex));
+        } else {
+          sink.add(rawBytes);
+        }
       }
     } finally {
       await sink.flush();
       await sink.close();
     }
+  }
+
+  static int _findTsSyncByte(Uint8List bytes) {
+    for (int i = 0; i < bytes.length && i < 4096; i++) {
+      if (bytes[i] == 0x47) {
+        if (i == 0) return 0;
+        if (i + 188 < bytes.length && bytes[i + 188] == 0x47) {
+          return i;
+        }
+      }
+    }
+    return 0;
   }
 
   static Future<String> _fetchText(
@@ -326,6 +346,13 @@ class MediaDownloader {
 
     variants.sort((a, b) => b.bandwidth.compareTo(a.bandwidth));
     return variants.first.uri;
+  }
+
+  static _HlsSegment? _findFirstWithKey(List<_HlsSegment> segments) {
+    for (final s in segments) {
+      if (s.key.method != 'NONE') return s;
+    }
+    return null;
   }
 
   static Future<List<_HlsSegment>> _parseMediaPlaylist(
@@ -419,7 +446,7 @@ class MediaDownloader {
     required String url,
     bool isHls = false,
   }) {
-    final ext = isHls ? '.mp4' : _extensionFor(url);
+    final ext = isHls ? '.ts' : _extensionFor(url);
     final season = sortMap['season'];
 
     if (season != null && season.isNotEmpty) {

@@ -1,6 +1,5 @@
 // ignore_for_file: invalid_use_of_protected_member, prefer_const_constructors, unnecessary_null_comparison
 import 'dart:async';
-import 'dart:math' as math;
 import 'dart:math';
 
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
@@ -21,7 +20,6 @@ import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_chip.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
@@ -33,8 +31,6 @@ import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconsax/iconsax.dart';
-import 'package:super_sliver_list/super_sliver_list.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:anymex/screens/downloads/model/download_models.dart';
 

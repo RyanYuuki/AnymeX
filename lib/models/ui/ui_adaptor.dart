@@ -112,10 +112,23 @@ class UISettings {
     homePageCards = Map<String, bool>.from(homePageCards);
     homePageCards.putIfAbsent('Recommended Animes', () => true);
     homePageCards.putIfAbsent('Recommended Mangas', () => true);
+    if (!homePageCards.values.any((v) => v)) {
+      homePageCards['Recommended Animes'] = true;
+      homePageCards['Recommended Mangas'] = true;
+    }
+
     homePageCardsMal = Map<String, bool>.from(homePageCardsMal);
     homePageCardsMal.putIfAbsent('Recommended Animes', () => true);
     homePageCardsMal.putIfAbsent('Recommended Mangas', () => true);
+    if (!homePageCardsMal.values.any((v) => v)) {
+      homePageCardsMal['Recommended Animes'] = true;
+      homePageCardsMal['Recommended Mangas'] = true;
+    }
+
     homePageCardsSimkl = Map<String, bool>.from(homePageCardsSimkl);
+    if (homePageCardsSimkl.isNotEmpty && !homePageCardsSimkl.values.any((v) => v)) {
+      homePageCardsSimkl[homePageCardsSimkl.keys.first] = true;
+    }
   }
 
   factory UISettings.fromDB() {

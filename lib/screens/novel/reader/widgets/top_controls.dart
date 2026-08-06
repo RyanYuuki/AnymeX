@@ -230,7 +230,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
   }
 
   void _scrollToCurrentChapter() {
-    final currentNumber = widget.controller.currentChapter.value?.number;
+    final currentNumber = widget.controller.currentChapter.value.number;
     if (currentNumber == null) return;
     final index =
         _cachedChapters.indexWhere((c) => c.number == currentNumber);
@@ -359,7 +359,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                 (context, index) {
                   final chapter = _cachedChapters[index];
                   final isCurrent =
-                      widget.controller.currentChapter.value?.number ==
+                      widget.controller.currentChapter.value.number ==
                           chapter.number;
                   return _buildListItem(chapter, isCurrent);
                 },

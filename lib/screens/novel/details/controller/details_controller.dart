@@ -89,7 +89,7 @@ class NovelDetailsController extends GetxController {
   Future<DMedia?> _searchBestMatch(Source source, String query) async {
     try {
       final results = (await source.methods.search(query, 1, [])).list;
-      if (results == null || results.isEmpty) return null;
+      if (results.isEmpty) return null;
       final valid = results.whereType<DMedia>().toList();
       if (valid.isEmpty) return null;
       final lQuery = query.toLowerCase().trim();

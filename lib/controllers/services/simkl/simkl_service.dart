@@ -389,20 +389,24 @@ class SimklService extends GetxController
         );
       }),
       const SizedBox(height: 25),
-      if (isLoggedIn.value)
-        Obx(() => Column(
-              children: acceptedLists.map((e) {
-                final isShowsList = e.contains("Shows") || e.contains("Series");
-                final sourceList = isShowsList ? mangaList : animeList;
-                final filtered = filterListByLabel(sourceList, e);
-                return ReusableCarousel(
-                  data: filtered,
-                  title: e,
-                  variant: DataVariant.anilist,
-                  type:  ItemType.anime,
-                );
-              }).toList(),
-            )),
+      if (isLoggedIn.value && acceptedLists.isNotEmpty)
+        Obx(() {
+          mangaList.length;
+          animeList.length;
+          return Column(
+            children: acceptedLists.map((e) {
+              final isShowsList = e.contains("Shows") || e.contains("Series");
+              final sourceList = isShowsList ? mangaList : animeList;
+              final filtered = filterListByLabel(sourceList, e);
+              return ReusableCarousel(
+                data: filtered,
+                title: e,
+                variant: DataVariant.anilist,
+                type: ItemType.anime,
+              );
+            }).toList(),
+          );
+        }),
       Obx(() => trendingMovies.value.isNotEmpty
           ? ReusableCarousel(
               data: trendingMovies.value.sublist(0, math.min(10, trendingMovies.length)),
@@ -452,7 +456,7 @@ class SimklService extends GetxController
           Obx(() {
             final list = communityService.getFilteredCommunityMovies();
             return buildUnderratedSection('Community Recommendations', list,
-                onSeeAll: () => navigate(() => CommunityRecommendationsPage(
+                onSeeAll: () => navigate(() => const CommunityRecommendationsPage(
                       category: 'movies',
                       type: ItemType.anime,
                     )));
@@ -497,7 +501,7 @@ class SimklService extends GetxController
           Obx(() {
             final list = communityService.getFilteredCommunityShows();
             return buildUnderratedSection('Community Recommendations', list,
-                onSeeAll: () => navigate(() => CommunityRecommendationsPage(
+                onSeeAll: () => navigate(() => const CommunityRecommendationsPage(
                       category: 'shows',
                       type: ItemType.anime,
                     )));

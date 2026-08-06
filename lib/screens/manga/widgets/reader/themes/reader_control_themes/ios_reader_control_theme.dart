@@ -7,6 +7,7 @@ import 'package:anymex/screens/manga/widgets/reader/auto_scroll_menu.dart';
 import 'package:anymex/screens/manga/widgets/reader/tabbed_reader_settings.dart';
 import 'package:anymex/screens/manga/widgets/reader/themes/setup/reader_control_theme.dart';
 import 'package:anymex/screens/manga/widgets/reader/top_controls.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -190,19 +191,10 @@ class _ChapterPill extends StatelessWidget {
   }
 
   void _showChapterSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (_) => DraggableScrollableSheet(
-        initialChildSize: 0.5,
-        minChildSize: 0.3,
-        maxChildSize: 0.9,
-        snap: true,
-        snapSizes: const [0.5],
-        expand: false,
-        builder: (ctx, sc) => ChapterListSheet(scrollController: sc),
-      ),
+    AnymexSheet.custom(
+      const ChapterListSheet(),
+      context,
+      showDragHandle: true,
     );
   }
 }
@@ -245,7 +237,6 @@ class _LiquidBottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-
       final w = MediaQuery.of(context).size.width;
       final pillW = w > 900 ? w * 0.5 : double.infinity;
       final show = controller.showControls.value;
@@ -406,7 +397,6 @@ class _NavBubble extends StatelessWidget {
   }
 }
 
-
 class _LiquidSurface extends StatelessWidget {
   const _LiquidSurface({
     required this.child,
@@ -414,9 +404,9 @@ class _LiquidSurface extends StatelessWidget {
     this.height,
     this.padding,
     this.radius = 20,
-    this.blurSigma = 28,
-    this.tintAlpha = 0.18,
-    this.edgeAlpha = 0.32,
+    this.blurSigma = 20,
+    this.tintAlpha = 0.12,
+    this.edgeAlpha = 0.25,
   });
 
   final Widget child;
@@ -433,23 +423,19 @@ class _LiquidSurface extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(radius),
       child: BackdropFilter(
-        filter: ImageFilter.compose(
-          outer: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
-          inner: ImageFilter.matrix(
-            Matrix4.identity().storage,
-          ),
-        ),
+        filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
         child: Container(
           width: width,
           height: height,
           padding: padding,
           decoration: BoxDecoration(
+            color: const Color(0x66181818),
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Colors.white.withValues(alpha: tintAlpha + 0.06),
-                Colors.white.withValues(alpha: tintAlpha - 0.04),
+                Colors.white.withValues(alpha: tintAlpha + 0.08),
+                Colors.white.withValues(alpha: tintAlpha),
               ],
             ),
             borderRadius: BorderRadius.circular(radius),
@@ -459,13 +445,13 @@ class _LiquidSurface extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.28),
-                blurRadius: 30,
+                color: Colors.black.withValues(alpha: 0.35),
+                blurRadius: 25,
                 spreadRadius: -4,
-                offset: const Offset(0, 12),
+                offset: const Offset(0, 8),
               ),
               BoxShadow(
-                color: Colors.white.withValues(alpha: 0.06),
+                color: Colors.white.withValues(alpha: 0.08),
                 blurRadius: 1,
                 offset: const Offset(0, -1),
               ),

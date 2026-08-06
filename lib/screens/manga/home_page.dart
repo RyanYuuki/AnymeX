@@ -51,6 +51,7 @@ class _MangaHomePageState extends State<MangaHomePage> {
     final double bottomNavBarHeight = MediaQuery.of(context).padding.bottom;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       extendBodyBehindAppBar: true,
       body: Stack(
         children: [

@@ -54,7 +54,7 @@ class _SettingsCommonState extends State<SettingsCommon> {
                 child: Padding(
                   padding: getResponsiveValue(context,
                       mobileValue:
-                          const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0),
+                          const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 30.0),
                       desktopValue:
                           const EdgeInsets.fromLTRB(25.0, 20.0, 25.0, 20.0)),
                   child: Column(
@@ -322,6 +322,12 @@ class _SettingsCommonState extends State<SettingsCommon> {
                     value: value,
                     onChanged: (bool? newValue) {
                       if (newValue != null) {
+                        final activeCount =
+                            homePageCards.values.where((v) => v).length;
+                        if (!newValue && activeCount <= 1) {
+                          snackBar('At least one list card must remain enabled');
+                          return;
+                        }
                         if (targetService == ServicesType.simkl) {
                           settings.updateHomePageCardSimkl(key, newValue);
                         } else if (targetService == ServicesType.mal) {

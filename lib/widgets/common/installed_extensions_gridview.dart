@@ -9,7 +9,6 @@ import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:get/get.dart';
 
 class InstalledExtensionsGridView extends StatefulWidget {
@@ -67,7 +66,7 @@ class _InstalledExtensionsGridViewState
     final title = widget.itemType.name.capitalizeFirst ?? '';
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 40.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

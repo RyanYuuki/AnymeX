@@ -8,16 +8,25 @@ import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 
+import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:get/get.dart';
+
 extension DMediaMapper on DMedia {
   CarouselData toCarouselData({
     DataVariant variant = DataVariant.extension,
     bool isManga = false,
+    String? sourceId,
   }) {
+    final sourceController = Get.find<SourceController>();
+    final activeSource = isManga
+        ? sourceController.activeMangaSource.value
+        : sourceController.activeSource.value;
     return CarouselData(
         id: url,
         title: title,
         poster: cover,
         extraData: '??',
+        source: sourceId ?? activeSource?.id,
         releasing: false,
         servicesType: ServicesType.extensions);
   }

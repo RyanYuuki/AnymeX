@@ -337,7 +337,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                 child: Padding(
                   padding: getResponsiveValue(context,
                       mobileValue:
-                          const EdgeInsets.fromLTRB(14.0, 20.0, 14.0, 20.0),
+                          const EdgeInsets.fromLTRB(14.0, 20.0, 14.0, 30.0),
                       desktopValue:
                           const EdgeInsets.fromLTRB(25.0, 20.0, 25.0, 20.0)),
                   child: Column(

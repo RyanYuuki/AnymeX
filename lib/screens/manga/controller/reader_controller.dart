@@ -910,8 +910,10 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   }
 
   void _savePreferences() {
-    ReaderKeys.readingLayout.set(readingLayout.value.index);
-    ReaderKeys.readingDirection.set(readingDirection.value.index);
+    if (!(autoWebtoonMode.value && _isWebtoon)) {
+      ReaderKeys.readingLayout.set(readingLayout.value.index);
+      ReaderKeys.readingDirection.set(readingDirection.value.index);
+    }
     ReaderKeys.imageWidth.set(pageWidthMultiplier.value);
     ReaderKeys.scrollSpeed.set(scrollSpeedMultiplier.value);
     ReaderKeys.spacedPages.set(spacedPages.value);
@@ -1177,13 +1179,15 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   }
 
   void _onPositionChanged() {
-    if (itemPositionsListener == null || spreads.isEmpty || _isNavigating)
+    if (itemPositionsListener == null || spreads.isEmpty || _isNavigating) {
       return;
+    }
 
     _positionDebounceTimer?.cancel();
     _positionDebounceTimer = Timer(const Duration(milliseconds: 50), () {
-      if (_isNavigating || itemPositionsListener == null || spreads.isEmpty)
+      if (_isNavigating || itemPositionsListener == null || spreads.isEmpty) {
         return;
+      }
 
       final positions = itemPositionsListener!.itemPositions.value;
       if (positions.isEmpty) return;
@@ -2015,9 +2019,18 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   }
 
   void _applyAutoWebtoonMode() {
-    if (autoWebtoonMode.value && _isWebtoon) {
-      readingLayout.value = MangaPageViewMode.continuous;
-      readingDirection.value = MangaPageViewDirection.down;
+    if (autoWebtoonMode.value) {
+      if (_isWebtoon) {
+        readingLayout.value = MangaPageViewMode.continuous;
+        readingDirection.value = MangaPageViewDirection.down;
+      } else {
+        final savedLayout = ReaderKeys.readingLayout.get<int>(0);
+        final savedDir = ReaderKeys.readingDirection.get<int>(1);
+        readingLayout.value = MangaPageViewMode.values[
+            savedLayout.clamp(0, MangaPageViewMode.values.length - 1)];
+        readingDirection.value = MangaPageViewDirection.values[
+            savedDir.clamp(0, MangaPageViewDirection.values.length - 1)];
+      }
     }
   }
 }

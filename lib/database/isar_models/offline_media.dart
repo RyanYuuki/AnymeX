@@ -2,6 +2,8 @@ import 'package:anymex/database/isar_models/track.dart';
 import 'package:anymex/database/isar_models/video.dart';
 import 'package:isar_community/isar.dart';
 
+import 'package:anymex/controllers/settings/settings.dart';
+import 'package:get/get.dart';
 import 'chapter.dart';
 import 'episode.dart';
 
@@ -20,6 +22,22 @@ class OfflineMedia {
   String? name;
   String? english;
   String? japanese;
+
+  @ignore
+  String get displayTitle {
+    if (Get.isRegistered<Settings>() &&
+        Get.find<Settings>().useAlternateTitle.value) {
+      final alt = (jname?.isNotEmpty ?? false)
+          ? jname
+          : ((japanese?.isNotEmpty ?? false)
+              ? japanese
+              : english);
+      if (alt != null && alt.trim().isNotEmpty && alt != '?') {
+        return alt;
+      }
+    }
+    return name ?? '?';
+  }
   String? description;
   String? poster;
   String? cover;

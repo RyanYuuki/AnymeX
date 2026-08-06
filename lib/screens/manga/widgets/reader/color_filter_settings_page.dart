@@ -1,5 +1,4 @@
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

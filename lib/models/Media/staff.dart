@@ -1,6 +1,5 @@
 import 'package:anymex/models/Media/character.dart';
 import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/utils/logger.dart';
 
 class Staff {
   final String? id;

@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
@@ -8,11 +6,16 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/novel/details/details_view.dart';
+import 'package:anymex/screens/extensions/ExtensionSettings/ExtensionSettings.dart';
+import 'package:anymex/screens/search/widgets/extension_filter_sheet.dart';
 import 'package:anymex/screens/search/widgets/inline_search_history.dart';
 import 'package:anymex/screens/search/widgets/search_widgets.dart';
 import 'package:anymex/screens/settings/misc/sauce_finder_view.dart';
 import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/widgets/common/anymex_pills.dart';
+import 'package:anymex/widgets/common/cloudflare_webview.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/future_reusable_carousel.dart';
@@ -28,11 +31,14 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:get/get.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:iconsax/iconsax.dart';
 
 enum ViewMode { grid, list }
 
 enum SearchState { initial, loading, success, error, empty }
+
+enum _ExtensionBrowseMode { search, popular, latest }
 
 class ExtensionSearchItem {
   final Source source;
@@ -68,8 +74,7 @@ class SearchPage extends StatefulWidget {
   State<SearchPage> createState() => _SearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage>
-    with TickerProviderStateMixin {
+class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
   final ServiceHandler _serviceHandler = Get.find<ServiceHandler>();
   final SourceController _sourceController = Get.find<SourceController>();
@@ -90,6 +95,11 @@ class _SearchPageState extends State<SearchPage>
   bool _hasMoreResults = false;
   String _lastSearchQuery = '';
   Map<String, dynamic> _lastApiFilters = {};
+
+  _ExtensionBrowseMode _extensionBrowseMode = _ExtensionBrowseMode.search;
+  List<dynamic> _extensionFilterList = [];
+  List<dynamic> _extensionActiveFilters = [];
+  bool _extensionFiltersLoaded = false;
 
   final FocusNode _searchFocusNode = FocusNode();
 
@@ -112,6 +122,10 @@ class _SearchPageState extends State<SearchPage>
     _selectedSource = widget.source is Source ? widget.source as Source : null;
     _initializeAnimations();
     _initializeData();
+
+    if (_selectedSource != null) {
+      _loadExtensionFilters(_selectedSource!);
+    }
   }
 
   void _initializeAnimations() {
@@ -205,8 +219,24 @@ class _SearchPageState extends State<SearchPage>
 
     Map<String, dynamic> currentFilters = filters ?? _activeFilters;
     bool hasActiveContent = currentFilters.isNotEmpty;
+    bool hasActiveExtFilters =
+        isExtensionMode && _extensionActiveFilters.isNotEmpty;
 
-    if (searchQuery.isEmpty && !isAdult && !hasActiveContent) {
+    if ((searchQuery.isNotEmpty || hasActiveExtFilters) &&
+        isExtensionMode &&
+        _selectedSource != null) {
+      _extensionBrowseMode = _ExtensionBrowseMode.search;
+    }
+
+    final isExtBrowse = isExtensionMode &&
+        _selectedSource != null &&
+        _extensionBrowseMode != _ExtensionBrowseMode.search;
+
+    if (searchQuery.isEmpty &&
+        !isAdult &&
+        !hasActiveContent &&
+        !isExtBrowse &&
+        !hasActiveExtFilters) {
       setState(() {
         _searchState = SearchState.initial;
         _searchResults = null;
@@ -242,7 +272,13 @@ class _SearchPageState extends State<SearchPage>
 
     if (isExtensionMode) {
       if (_selectedSource != null) {
-        await _performSingleSourceSearch(searchQuery);
+        if (_extensionBrowseMode == _ExtensionBrowseMode.popular) {
+          await _performPopularBrowse();
+        } else if (_extensionBrowseMode == _ExtensionBrowseMode.latest) {
+          await _performLatestBrowse();
+        } else {
+          await _performSingleSourceSearch(searchQuery);
+        }
       } else {
         _performAllSourcesSearch(searchQuery);
       }
@@ -300,7 +336,8 @@ class _SearchPageState extends State<SearchPage>
 
   Future<void> _performSingleSourceSearch(String searchQuery) async {
     final queryKey = searchQuery.toLowerCase().trim();
-    final cacheKey = '${_selectedSource!.id}|$queryKey';
+    final filterKey = _extensionActiveFilters.hashCode.toString();
+    final cacheKey = '${_selectedSource!.id}|$queryKey|$filterKey';
 
     if (_singleSourceCache.containsKey(cacheKey)) {
       final cachedList = _singleSourceCache[cacheKey]!;
@@ -318,15 +355,17 @@ class _SearchPageState extends State<SearchPage>
       return;
     }
 
-    if (_allSourcesCache.containsKey(queryKey)) {
+    if (_extensionActiveFilters.isEmpty &&
+        _allSourcesCache.containsKey(queryKey)) {
       final allItems = _allSourcesCache[queryKey]!;
-      final match = allItems
-          .firstWhereOrNull((e) => e.source.id == _selectedSource!.id);
+      final match =
+          allItems.firstWhereOrNull((e) => e.source.id == _selectedSource!.id);
       if (match != null) {
         try {
           final rawList = await match.future;
           final mediaList = rawList
-              .map((e) => Media.froDMedia(e, effectiveType))
+              .map((e) => Media.froDMedia(e, effectiveType)
+                ..sourceId = _selectedSource!.id)
               .toList();
           _singleSourceCache[cacheKey] = mediaList;
           setState(() {
@@ -346,12 +385,15 @@ class _SearchPageState extends State<SearchPage>
     }
 
     try {
-      final res = await _selectedSource!.methods.search(searchQuery, 1, []);
+      final res = await _selectedSource!.methods
+          .search(searchQuery, 1, _extensionActiveFilters);
       final rawList = res.list;
       if (!mounted) return;
 
-      final mediaList =
-          rawList.map((e) => Media.froDMedia(e, effectiveType)).toList();
+      final mediaList = rawList
+          .map((e) =>
+              Media.froDMedia(e, effectiveType)..sourceId = _selectedSource!.id)
+          .toList();
       _singleSourceCache[cacheKey] = mediaList;
 
       setState(() {
@@ -374,6 +416,112 @@ class _SearchPageState extends State<SearchPage>
         _hasMoreResults = false;
       });
     }
+  }
+
+  Future<void> _performPopularBrowse() async {
+    try {
+      final pages = await _selectedSource!.methods.getPopular(1);
+      if (!mounted) return;
+      final mediaList = pages.list
+          .map((e) =>
+              Media.froDMedia(e, effectiveType)..sourceId = _selectedSource!.id)
+          .toList();
+      setState(() {
+        _searchResults = mediaList;
+        _currentPage = 1;
+        _hasMoreResults = mediaList.isNotEmpty;
+        _lastSearchQuery = '';
+        _searchState =
+            mediaList.isEmpty ? SearchState.empty : SearchState.success;
+      });
+      if (_resultsScrollController.hasClients) {
+        _resultsScrollController.jumpTo(0);
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _searchState = SearchState.error;
+        _errorMessage = e.toString();
+        _hasMoreResults = false;
+      });
+    }
+  }
+
+  Future<void> _performLatestBrowse() async {
+    try {
+      final pages = await _selectedSource!.methods.getLatestUpdates(1);
+      if (!mounted) return;
+      final mediaList = pages.list
+          .map((e) =>
+              Media.froDMedia(e, effectiveType)..sourceId = _selectedSource!.id)
+          .toList();
+      setState(() {
+        _searchResults = mediaList;
+        _currentPage = 1;
+        _hasMoreResults = mediaList.isNotEmpty;
+        _lastSearchQuery = '';
+        _searchState =
+            mediaList.isEmpty ? SearchState.empty : SearchState.success;
+      });
+      if (_resultsScrollController.hasClients) {
+        _resultsScrollController.jumpTo(0);
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _searchState = SearchState.error;
+        _errorMessage = e.toString();
+        _hasMoreResults = false;
+      });
+    }
+  }
+
+  Future<void> _loadExtensionFilters(Source source) async {
+    if (_extensionFiltersLoaded) return;
+    try {
+      final filters = await source.methods.getFilterList();
+      if (!mounted) return;
+      setState(() {
+        _extensionFilterList = filters;
+        _extensionFiltersLoaded = true;
+      });
+    } catch (_) {
+      if (mounted) {
+        setState(() => _extensionFiltersLoaded = true);
+      }
+    }
+  }
+
+  void _showExtensionFilterSheet() {
+    if (_extensionFilterList.isEmpty) return;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) => ExtensionFilterSheet(
+        filterList: _extensionFilterList,
+        activeFilters: List.from(_extensionActiveFilters),
+        onReset: () async {
+          final fresh = await _selectedSource!.methods.getFilterList();
+          if (mounted) {
+            setState(() {
+              _extensionFilterList = fresh;
+            });
+          }
+          return fresh;
+        },
+        onApply: (applied) {
+          setState(() {
+            _extensionActiveFilters = applied;
+            _singleSourceCache.clear();
+            if (applied.isNotEmpty) {
+              _extensionBrowseMode = _ExtensionBrowseMode.search;
+            }
+          });
+          _performSearch();
+        },
+      ),
+    );
   }
 
   void _performAllSourcesSearch(String searchQuery) {
@@ -428,11 +576,27 @@ class _SearchPageState extends State<SearchPage>
     try {
       List<Media> results = [];
       if (_selectedSource != null) {
-        final res = await _selectedSource!.methods
-            .search(_lastSearchQuery, nextPage, []);
-        results = res.list
-            .map((e) => Media.froDMedia(e, effectiveType))
-            .toList();
+        if (_extensionBrowseMode == _ExtensionBrowseMode.popular) {
+          final pages = await _selectedSource!.methods.getPopular(nextPage);
+          results = pages.list
+              .map((e) => Media.froDMedia(e, effectiveType)
+                ..sourceId = _selectedSource!.id)
+              .toList();
+        } else if (_extensionBrowseMode == _ExtensionBrowseMode.latest) {
+          final pages =
+              await _selectedSource!.methods.getLatestUpdates(nextPage);
+          results = pages.list
+              .map((e) => Media.froDMedia(e, effectiveType)
+                ..sourceId = _selectedSource!.id)
+              .toList();
+        } else {
+          final res = await _selectedSource!.methods
+              .search(_lastSearchQuery, nextPage, _extensionActiveFilters);
+          results = res.list
+              .map((e) => Media.froDMedia(e, effectiveType)
+                ..sourceId = _selectedSource!.id)
+              .toList();
+        }
       } else {
         results = (await _serviceHandler.search(SearchParams(
               query: _lastSearchQuery,
@@ -517,17 +681,42 @@ class _SearchPageState extends State<SearchPage>
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         body: SafeArea(
+          bottom: false,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
                 child: Row(
                   children: [
-                    IconButton(
-                      onPressed: () => Get.back(),
-                      icon: const Icon(Icons.arrow_back_ios_new),
+                    Material(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.circular(50),
+                      child: InkWell(
+                        onTap: () => Get.back(),
+                        borderRadius: BorderRadius.circular(50),
+                        child: Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: context.colors.surfaceContainerHighest
+                                .opaque(0.35, iReallyMeanIt: true),
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: context.colors.onSurface
+                                  .opaque(0.08, iReallyMeanIt: true),
+                              width: 0.5,
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.arrow_back_ios_new_rounded,
+                            size: 18,
+                            color: context.colors.onSurface,
+                          ),
+                        ),
+                      ),
                     ),
+                    const SizedBox(width: 10),
                     Expanded(child: _buildModernSearchBar()),
                   ],
                 ),
@@ -548,38 +737,34 @@ class _SearchPageState extends State<SearchPage>
         ? 'Search ${_selectedSource!.name}...'
         : 'Search ${effectiveType.name.capitalizeFirst}...';
 
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
-        boxShadow: _searchFocusNode.hasFocus
-            ? [
-                BoxShadow(
-                  color: context.colors.primary.opaque(0.1),
-                  blurRadius: 20,
-                  spreadRadius: 2,
-                ),
-              ]
-            : null,
-      ),
+    final colors = Theme.of(context).colorScheme;
+
+    return SizedBox(
+      height: 44,
       child: TextField(
         controller: _searchController,
         focusNode: _searchFocusNode,
-        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              fontWeight: FontWeight.w500,
-            ),
+        style: TextStyle(
+          fontSize: 14,
+          fontFamily: 'Poppins',
+          fontWeight: FontWeight.w500,
+          color: colors.onSurface,
+        ),
         decoration: InputDecoration(
           filled: true,
-          fillColor: context.colors.surfaceContainer.opaque(.5),
+          fillColor: colors.surfaceContainerHighest.withOpacity(0.35),
           hintText: hintText,
-          hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: context.colors.onSurface.opaque(0.5),
-              ),
+          hintStyle: TextStyle(
+            fontSize: 13,
+            fontFamily: 'Poppins',
+            color: colors.onSurface.withOpacity(0.45),
+          ),
           prefixIcon: Icon(
-            Iconsax.search_normal,
+            IconlyLight.search,
+            size: 18,
             color: _searchFocusNode.hasFocus
-                ? context.colors.primary
-                : context.colors.onSurface.opaque(0.5),
+                ? colors.primary
+                : colors.onSurface.withOpacity(0.5),
           ),
           suffixIcon: _searchController.text.isNotEmpty
               ? IconButton(
@@ -597,8 +782,9 @@ class _SearchPageState extends State<SearchPage>
                     });
                   },
                   icon: Icon(
-                    Iconsax.close_circle,
-                    color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
+                    Icons.cancel_rounded,
+                    size: 18,
+                    color: colors.onSurface.withOpacity(0.5),
                   ),
                 )
               : (!isExtensionMode &&
@@ -606,18 +792,30 @@ class _SearchPageState extends State<SearchPage>
                   ? IconButton(
                       onPressed: _showFilterBottomSheet,
                       icon: Icon(
-                        Iconsax.setting_4,
+                        Icons.tune_rounded,
+                        size: 18,
                         color: _activeFilters.isNotEmpty
-                            ? context.colors.primary
-                            : Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .opaque(0.7),
+                            ? colors.primary
+                            : colors.onSurface.withOpacity(0.5),
                       ),
                     )
                   : null,
           contentPadding:
-              const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(22),
+            borderSide: BorderSide(
+              color: colors.onSurface.withOpacity(0.08),
+              width: 0.5,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(22),
+            borderSide: BorderSide(
+              color: colors.primary.withOpacity(0.4),
+              width: 1.2,
+            ),
+          ),
         ),
         onSubmitted: (query) => _performSearch(query: query),
         onChanged: (value) => setState(() {}),
@@ -633,26 +831,24 @@ class _SearchPageState extends State<SearchPage>
       child: Row(
         children: [
           if (isExtensionMode) ...[
-            Expanded(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Row(
-                  children: [
-                    _buildSourceChip(
+            if (_selectedSource != null) ...[
+              Expanded(child: _buildExtensionSingleSourceControls()),
+              const SizedBox(width: 8),
+              _buildViewModeToggle(),
+            ] else ...[
+              Expanded(
+                child: AnymeXPills(
+                  items: [
+                    PillItem(
                       label: 'All Sources',
                       isSelected: _selectedSource == null,
                       onTap: () {
-                        setState(() {
-                          _selectedSource = null;
-                        });
+                        setState(() => _selectedSource = null);
                         _performSearch();
                       },
                     ),
-                    const SizedBox(width: 8),
-                    for (final src in installedSources) ...[
-                      _buildSourceChip(
+                    for (final src in installedSources)
+                      PillItem(
                         label:
                             '${src.name ?? "Src"} (${src.lang?.toUpperCase() ?? "ALL"})',
                         iconUrl: src.iconUrl,
@@ -661,19 +857,18 @@ class _SearchPageState extends State<SearchPage>
                           setState(() {
                             _selectedSource = src;
                             _sourceController.setActiveSource(src);
+                            _extensionBrowseMode = _ExtensionBrowseMode.search;
+                            _extensionActiveFilters = [];
+                            _extensionFiltersLoaded = false;
+                            _extensionFilterList = [];
                           });
+                          _loadExtensionFilters(src);
                           _performSearch();
                         },
                       ),
-                      const SizedBox(width: 8),
-                    ],
                   ],
                 ),
               ),
-            ),
-            if (_selectedSource != null) ...[
-              const SizedBox(width: 12),
-              _buildViewModeToggle(),
             ],
           ] else ...[
             if (serviceHandler.serviceType.value == ServicesType.anilist ||
@@ -711,57 +906,83 @@ class _SearchPageState extends State<SearchPage>
     );
   }
 
-  Widget _buildSourceChip({
-    required String label,
-    String? iconUrl,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    final theme = Theme.of(context);
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? theme.colorScheme.primary.opaque(0.15, iReallyMeanIt: true)
-              : theme.colorScheme.surfaceContainerHighest
-                  .opaque(0.3, iReallyMeanIt: true),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected
-                ? theme.colorScheme.primary.opaque(0.4, iReallyMeanIt: true)
-                : theme.colorScheme.onSurface
-                    .opaque(0.08, iReallyMeanIt: true),
-            width: isSelected ? 1.2 : 0.5,
-          ),
+  Widget _buildExtensionSingleSourceControls() {
+    final src = _selectedSource!;
+    final hasLatest = src.supportsLatest == true;
+    final hasPopular = src.supportsPopular == true;
+    final hasFilters = _extensionFilterList.isNotEmpty;
+    final hasActiveFilters = _extensionActiveFilters.isNotEmpty;
+
+    final pills = <PillItem>[
+      if (widget.source == null)
+        PillItem(
+          label: '← All',
+          isSelected: false,
+          onTap: () {
+            setState(() {
+              _selectedSource = null;
+              _extensionBrowseMode = _ExtensionBrowseMode.search;
+              _extensionActiveFilters = [];
+              _extensionFilterList = [];
+              _extensionFiltersLoaded = false;
+              _searchResults = null;
+              _searchState = SearchState.initial;
+            });
+          },
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (iconUrl != null && iconUrl.isNotEmpty) ...[
-              ClipRRect(
-                borderRadius: BorderRadius.circular(6),
-                child: AnymeXImage(
-                  width: 16,
-                  height: 16,
-                  imageUrl: iconUrl,
-                ),
-              ),
-              const SizedBox(width: 6),
-            ],
-            AnymexText.semiBold(
-              text: label,
-              size: 12,
-              color: isSelected
-                  ? theme.colorScheme.primary
-                  : theme.colorScheme.onSurface,
-            ),
-          ],
+      if (hasPopular)
+        PillItem(
+          label: 'Popular',
+          isSelected: _extensionBrowseMode == _ExtensionBrowseMode.popular,
+          onTap: () {
+            _searchController.clear();
+            setState(() {
+              _extensionBrowseMode = _ExtensionBrowseMode.popular;
+              _extensionActiveFilters = [];
+            });
+            _performSearch();
+          },
         ),
+      if (hasLatest)
+        PillItem(
+          label: 'Latest',
+          isSelected: _extensionBrowseMode == _ExtensionBrowseMode.latest,
+          onTap: () {
+            _searchController.clear();
+            setState(() {
+              _extensionBrowseMode = _ExtensionBrowseMode.latest;
+              _extensionActiveFilters = [];
+            });
+            _performSearch();
+          },
+        ),
+      if (hasFilters)
+        PillItem(
+          label: 'Filter',
+          icon: Icons.tune_rounded,
+          isSelected: hasActiveFilters,
+          onTap: _showExtensionFilterSheet,
+        ),
+      PillItem(
+        isSelected: false,
+        onTap: () {},
+        child: _MoreOptionsPillContent(
+            src: src,
+            onTap: (action) {
+              if (action == 'settings') {
+                navigate(() => SourcePreferenceScreen(source: src));
+              } else if (action == 'webview') {
+                if (src.baseUrl != null && src.baseUrl!.isNotEmpty) {
+                  navigate(() => CloudflareBypassWebView(url: src.baseUrl!));
+                } else {
+                  snackBar('Base URL not available for this source');
+                }
+              }
+            }),
       ),
-    );
+    ];
+
+    return AnymeXPills(items: pills);
   }
 
   Widget _buildToggleButton({
@@ -1079,9 +1300,11 @@ class _SearchPageState extends State<SearchPage>
       return _buildInitialState();
     }
 
+    final bottomPadding = MediaQuery.of(context).padding.bottom + 32.0;
+
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.only(top: 8, bottom: 24),
+      padding: EdgeInsets.fromLTRB(16, 8, 16, bottomPadding),
       child: Column(
         children: [
           for (final item in _extensionSearchItems)
@@ -1185,8 +1408,7 @@ class _SearchPageState extends State<SearchPage>
             style: ElevatedButton.styleFrom(
               backgroundColor: context.colors.primary,
               foregroundColor: context.colors.onPrimary,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -1247,9 +1469,11 @@ class _SearchPageState extends State<SearchPage>
             MediaQuery.of(context).size.width,
             itemWidth: 115));
 
+    final bottomPadding = MediaQuery.of(context).padding.bottom + 32.0;
+
     return GridView.builder(
       controller: _resultsScrollController,
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.fromLTRB(16, 12, 16, bottomPadding),
       physics: const BouncingScrollPhysics(),
       gridDelegate: _currentViewMode == ViewMode.list
           ? const SliverGridDelegateWithFixedCrossAxisCount(
@@ -1328,6 +1552,8 @@ class _SearchPageState extends State<SearchPage>
                     radius: 0,
                     fadeInDuration: Duration.zero,
                     fadeOutDuration: Duration.zero,
+                    sourceId: media.sourceId,
+                    isAnime: media.mediaType == ItemType.anime,
                   ),
                 ),
               ),
@@ -1489,5 +1715,89 @@ class _SearchPageState extends State<SearchPage>
       default:
         return value.toString();
     }
+  }
+}
+
+class _MoreOptionsPillContent extends StatelessWidget {
+  final Source src;
+  final void Function(String action) onTap;
+
+  const _MoreOptionsPillContent({
+    required this.src,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
+    return GestureDetector(
+      onTapDown: (details) {
+        final position = details.globalPosition;
+        showMenu<String>(
+          context: context,
+          position: RelativeRect.fromLTRB(
+            position.dx,
+            position.dy + 10,
+            position.dx + 40,
+            position.dy + 100,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(color: colors.outline.withOpacity(0.12)),
+          ),
+          color: colors.surface,
+          elevation: 6,
+          items: [
+            PopupMenuItem<String>(
+              value: 'settings',
+              height: 40,
+              child: Row(
+                children: [
+                  Icon(Icons.settings_outlined,
+                      size: 18, color: colors.primary),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Extension Settings',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w500,
+                      color: colors.onSurface,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            PopupMenuItem<String>(
+              value: 'webview',
+              height: 40,
+              child: Row(
+                children: [
+                  Icon(Icons.public_rounded, size: 18, color: colors.primary),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Open Webview',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w500,
+                      color: colors.onSurface,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ).then((value) {
+          if (value != null) onTap(value);
+        });
+      },
+      child: Icon(
+        Icons.more_vert_rounded,
+        size: 16,
+        color: colors.onSurface,
+      ),
+    );
   }
 }

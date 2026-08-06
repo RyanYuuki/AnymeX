@@ -5,7 +5,6 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> fetchSimklCalendarData(RxList<Media> callbackData, {bool isMovies = false}) async {
   final String url = isMovies 

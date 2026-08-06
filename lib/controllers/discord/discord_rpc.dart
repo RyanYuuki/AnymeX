@@ -6,14 +6,13 @@ import 'dart:io';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/database/data_keys/keys.dart';
-import 'package:anymex/database/kv_helper.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_discord_rpc_fork/flutter_discord_rpc.dart';
+import 'package:flutter_discord_rpc/flutter_discord_rpc.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 

@@ -48,6 +48,7 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
     final double bottomNavBarHeight = MediaQuery.of(context).padding.bottom;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       extendBodyBehindAppBar: true,
       body: Stack(
         children: [

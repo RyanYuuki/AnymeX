@@ -52,7 +52,7 @@ class Glow extends StatelessWidget {
         : context.colors;
     final isDesktop = Platform.isWindows;
     final isOled = Provider.of<ThemeProvider>(context).isOled;
-    final ch = isDesktop
+    final ch = (isDesktop && !disabled)
         ? Container(
             margin: const EdgeInsets.only(top: 40),
             child: child,

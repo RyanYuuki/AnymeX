@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/track/track_binding_controller.dart';
 import 'package:anymex/widgets/common/marquee_text.dart';
-import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/downloads/controller/download_controller.dart';
@@ -35,7 +34,12 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
   DownloadedMangaMeta? _mangaMeta;
   final downloadController = Get.find<DownloadController>();
 
-  bool get _isManga => widget.summary.mediaType == 'Manga';
+  DownloadedMediaSummary get _currentSummary =>
+      downloadController.downloadedMedia.firstWhereOrNull(
+          (s) => s.folderName == widget.summary.folderName) ??
+      widget.summary;
+
+  bool get _isManga => _currentSummary.mediaType == 'Manga';
 
   @override
   void initState() {
@@ -46,14 +50,14 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
   Future<void> _refresh() async {
     if (_isManga) {
       final fresh = await downloadController.getMangaMeta(
-        widget.summary.extensionName,
-        widget.summary.folderName,
+        _currentSummary.extensionName,
+        _currentSummary.folderName,
       );
       if (mounted) setState(() => _mangaMeta = fresh);
     } else {
       final fresh = await downloadController.getMediaMeta(
-        widget.summary.extensionName,
-        widget.summary.folderName,
+        _currentSummary.extensionName,
+        _currentSummary.folderName,
       );
       if (mounted) setState(() => _meta = fresh);
     }
@@ -351,8 +355,9 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
   }
 
   Widget _buildHero(BuildContext context, ColorScheme theme) {
+    final summary = _currentSummary;
     final hasPoster =
-        widget.summary.poster != null && widget.summary.poster!.isNotEmpty;
+        summary.poster != null && summary.poster!.isNotEmpty;
     final count = _isManga
         ? (_mangaMeta?.chapters.length ?? '-')
         : (_meta?.episodes.length ?? '-');
@@ -401,7 +406,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                 borderRadius: BorderRadius.circular(14),
                 child: hasPoster
                     ? AnymeXImage(
-                        imageUrl: widget.summary.poster!,
+                        imageUrl: summary.poster!,
                         width: 88,
                         height: 124,
                         fit: BoxFit.cover,
@@ -433,7 +438,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
-                        widget.summary.extensionName.toUpperCase(),
+                        summary.extensionName.toUpperCase(),
                         style: TextStyle(
                           color: theme.primary,
                           fontSize: 9.5,
@@ -444,7 +449,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      widget.summary.title,
+                      summary.title,
                       style: TextStyle(
                         color: theme.onSurface,
                         fontSize: 20,
@@ -599,11 +604,11 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
     required ColorScheme theme,
   }) {
     final trackCtrl = Get.find<TrackBindingController>();
-    final mediaId = widget.summary.folderName;
+    final mediaId = _currentSummary.folderName;
 
     return AnymexOnTap(
       onTap: () async {
-        await showTrackSheet(context, summary: widget.summary);
+        await showTrackSheet(context, summary: _currentSummary);
         if (mounted) setState(() {});
       },
       child: Container(
@@ -894,26 +899,24 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                                         ),
                                       ),
                                       const SizedBox(width: 2),
-                                      Flexible(
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8, vertical: 3),
-                                          decoration: BoxDecoration(
-                                            color: theme.tertiary,
-                                            borderRadius: const BorderRadius.horizontal(
-                                              left: Radius.circular(5),
-                                              right: Radius.circular(8),
-                                            ),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 3),
+                                        decoration: BoxDecoration(
+                                          color: theme.tertiary,
+                                          borderRadius: const BorderRadius.horizontal(
+                                            left: Radius.circular(5),
+                                            right: Radius.circular(8),
                                           ),
-                                          child: MarqueeText(
-                                            (episode.quality ?? 'VIDEO').toUpperCase(),
-                                            style: TextStyle(
-                                              fontFamily: 'Poppins-SemiBold',
-                                              fontSize: 9.0,
-                                              color: theme.tertiary.computeLuminance() > 0.5
-                                                  ? Colors.black
-                                                  : Colors.white,
-                                            ),
+                                        ),
+                                        child: Text(
+                                          (episode.quality ?? 'VIDEO').toUpperCase(),
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-SemiBold',
+                                            fontSize: 9.0,
+                                            color: theme.tertiary.computeLuminance() > 0.5
+                                                ? Colors.black
+                                                : Colors.white,
                                           ),
                                         ),
                                       ),

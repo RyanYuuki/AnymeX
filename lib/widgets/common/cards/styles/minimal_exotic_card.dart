@@ -84,6 +84,8 @@ class MinimalExoticCard extends CarouselCard {
                       imageUrl: itemData.poster ?? '',
                       heroTag: tag,
                       radius: 10,
+                      sourceId: itemData.source,
+                      isAnime: type == ItemType.anime,
                     ),
                     if (variant == DataVariant.library)
                       buildCardBadgeV2(context, variant, type),

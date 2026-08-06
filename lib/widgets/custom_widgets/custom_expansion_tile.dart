@@ -27,27 +27,39 @@ class AnymexExpansionTile extends StatelessWidget {
 
     return AnymexCard(
       clipBehavior: Clip.antiAlias,
-      child: ExpansionTile(
-        collapsedShape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          dividerColor: Colors.transparent,
         ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            top: const Radius.circular(16),
+        child: ExpansionTile(
+          collapsedShape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
           ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          tilePadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+          childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+          iconColor: context.colors.primary,
+          collapsedIconColor: context.colors.onSurfaceVariant,
+          leading: leading,
+          title: AnymexText(
+            text: title,
+            size: 15,
+            variant: TextVariant.semiBold,
+            color: context.colors.onSurface,
+          ),
+          initiallyExpanded: shouldExpand,
+          children: [
+            ExpansionSectionScope(
+              sectionTitle: title,
+              child: SizedBox(
+                width: double.infinity,
+                child: content,
+              ),
+            ),
+          ],
         ),
-        leading: leading,
-        title: AnymexText(
-          text: title,
-          size: 16,
-          variant: TextVariant.semiBold,
-          color: context.colors.primary,
-        ),
-        initiallyExpanded: shouldExpand,
-        childrenPadding: const EdgeInsets.all(8),
-        children: [
-          ExpansionSectionScope(sectionTitle: title, child: content),
-        ],
       ),
     );
   }
@@ -74,16 +86,22 @@ class AnymexCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final settings = Get.find<Settings>();
+    final cardColor = color ??
+        (settings.disableGradient
+            ? context.colors.surfaceContainerLow
+            : context.colors.surfaceContainerLow.opaque(0.35));
+
     return Card(
-      clipBehavior: clipBehavior,
-      color: color ??
-          (settings.disableGradient
-              ? context.colors.surfaceContainerLow
-              : context.colors.surfaceContainerLow.opaque(0.3)),
-      elevation: 2,
-      shadowColor: context.colors.shadow.opaque(0.1),
+      clipBehavior: clipBehavior ?? Clip.antiAlias,
+      color: cardColor,
+      elevation: 0,
       shape: shape ??
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(
+              color: context.colors.outline.opaque(0.08),
+            ),
+          ),
       child: enableAnimation
           ? AnimatedContainer(
               duration: const Duration(milliseconds: 300),

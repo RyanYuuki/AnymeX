@@ -237,7 +237,9 @@ class NovelReaderController extends GetxController {
   void _handleVolumeEvent(String event) {
     if (Get.isBottomSheetOpen == true ||
         Get.isDialogOpen == true ||
-        Get.isOverlaysOpen == true) return;
+        Get.isOverlaysOpen == true) {
+      return;
+    }
     if (showControls.value) {
       toggleControls();
       return;
@@ -453,7 +455,9 @@ class NovelReaderController extends GetxController {
     final currentSegment = ttsSegments[ttsCurrentElement.value];
     if (wordStart < 0 ||
         wordEnd <= wordStart ||
-        wordEnd > currentSegment.length) return;
+        wordEnd > currentSegment.length) {
+      return;
+    }
 
     final normalizedSegment =
         currentSegment.replaceAll(RegExp(r'\s+'), ' ').trim();
@@ -694,8 +698,9 @@ class NovelReaderController extends GetxController {
     final ctrl = Get.isRegistered<GistSyncController>()
         ? Get.find<GistSyncController>()
         : null;
-    if (ctrl == null || !ctrl.isLoggedIn.value || !ctrl.syncEnabled.value)
+    if (ctrl == null || !ctrl.isLoggedIn.value || !ctrl.syncEnabled.value) {
       return;
+    }
     try {
       final chapter = currentChapter.value;
       if (chapter.number == null) return;
@@ -850,10 +855,13 @@ class NovelReaderController extends GetxController {
         chapter.pageNumber == null ||
         chapter.totalPages == null ||
         chapter.totalPages! <= 0 ||
-        chapter.pageNumber! < chapter.totalPages!) return false;
+        chapter.pageNumber! < chapter.totalPages!) {
+      return false;
+    }
     final totalChapters = double.tryParse(media.totalChapters ?? '');
-    if (totalChapters != null && totalChapters > 0)
+    if (totalChapters != null && totalChapters > 0) {
       return chapterNumber >= totalChapters;
+    }
     for (final item in chapters) {
       if (item.number != null && item.number! > chapterNumber) return false;
     }

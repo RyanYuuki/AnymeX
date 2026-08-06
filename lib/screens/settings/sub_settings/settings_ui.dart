@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/settings/widgets/card_selector.dart';
 import 'package:anymex/screens/settings/widgets/history_card_selector.dart';
+import 'package:anymex/screens/settings/widgets/carousel_style_selector.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
@@ -16,7 +17,6 @@ import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 
 class SettingsUi extends StatefulWidget {
   const SettingsUi({super.key});
@@ -126,6 +126,12 @@ class _SettingsUiState extends State<SettingsUi> {
                                   icon: Iconsax.card5,
                                   title: "History Card Style",
                                   description: "Change history card style",
+                                ),
+                                CustomTile(
+                                  onTap: () => showCarouselStyleSelector(context),
+                                  icon: Icons.view_carousel_rounded,
+                                  title: "Carousel Style",
+                                  description: "Change home screen big carousel style",
                                 ),
                                 CustomTile(
                                   icon: Icons.reorder_rounded,

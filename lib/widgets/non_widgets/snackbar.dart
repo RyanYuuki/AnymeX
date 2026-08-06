@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:anymex/widgets/helper/platform_builder.dart';
@@ -240,6 +241,8 @@ class _SnackBarWidgetState extends State<_SnackBarWidget>
     final maxWidth =
         getResponsiveSize(context, mobileSize: w - 32.0, desktopSize: w * 0.38);
 
+    final windowsTopOffset = (_isTop && Platform.isWindows) ? 40.0 : 0.0;
+
     return Positioned.fill(
       child: AnimatedBuilder(
         animation: _entryController,
@@ -251,7 +254,7 @@ class _SnackBarWidgetState extends State<_SnackBarWidget>
               alignment: _isTop ? Alignment.topCenter : Alignment.bottomCenter,
               child: Padding(
                 padding: EdgeInsets.only(
-                  top: _isTop ? topPad + 16 : 0,
+                  top: _isTop ? topPad + 16 + windowsTopOffset : 0,
                   bottom: _isTop ? 0 : bottomPad + 24,
                   left: 16,
                   right: 16,

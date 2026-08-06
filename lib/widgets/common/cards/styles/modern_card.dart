@@ -58,6 +58,8 @@ class ModernCard extends CarouselCard {
               imageUrl: itemData.poster ?? '',
               heroTag: tag,
               radius: 12,
+              sourceId: itemData.source,
+              isAnime: type == ItemType.anime,
             ),
             if (shouldShowTitle())
               Positioned(

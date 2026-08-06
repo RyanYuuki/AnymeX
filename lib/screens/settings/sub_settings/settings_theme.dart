@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math' as math;
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:anymex/constants/contants.dart';
 import 'package:anymex/controllers/settings/settings.dart';
@@ -198,7 +197,8 @@ class _SettingsThemeState extends State<SettingsTheme> {
         body: Column(children: [
           const NestedHeader(title: 'Theme'),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: AnymeXTabBar(
               selectTabs: const ["Theme", "Wallpaper", "Extras"],
               selectedIndex: _selectedTabIndex,
@@ -223,12 +223,13 @@ class _SettingsThemeState extends State<SettingsTheme> {
           ),
           Expanded(
             child: Container(
-              margin: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+              margin: const EdgeInsets.fromLTRB(16, 8, 16, 20),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surface.withOpacity(0.35),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: Theme.of(context).colorScheme.outline.withOpacity(0.12),
+                  color:
+                      Theme.of(context).colorScheme.outline.withOpacity(0.12),
                 ),
               ),
               child: ClipRRect(
@@ -243,15 +244,18 @@ class _SettingsThemeState extends State<SettingsTheme> {
                   },
                   children: [
                     SingleChildScrollView(
-                      padding: const EdgeInsets.all(16.0),
+                      padding:
+                          const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 30.0),
                       child: _buildThemeTab(),
                     ),
                     SingleChildScrollView(
-                      padding: const EdgeInsets.all(16.0),
+                      padding:
+                          const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 30.0),
                       child: _buildWallpaperTab(),
                     ),
                     SingleChildScrollView(
-                      padding: const EdgeInsets.all(16.0),
+                      padding:
+                          const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 30.0),
                       child: _buildExtrasTab(),
                     ),
                   ],
@@ -354,7 +358,8 @@ class _SettingsThemeState extends State<SettingsTheme> {
           }
 
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -427,7 +432,8 @@ class _SettingsThemeState extends State<SettingsTheme> {
               switchValue: settings.retainOriginalColor,
               icon: HugeIcons.strokeRoundedImageComposition,
               title: "Retain Original Color",
-              description: "Enable this if you want to retain the original color of your wallpaper",
+              description:
+                  "Enable this if you want to retain the original color of your wallpaper",
               onChanged: (e) => settings.retainOriginalColor = e,
             ),
             const SizedBox(height: 10),
@@ -536,8 +542,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                             elevation: 0,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30)),
-                            backgroundColor:
-                                context.colors.surfaceContainer,
+                            backgroundColor: context.colors.surfaceContainer,
                           ),
                           child: Text('Cancel',
                               style: TextStyle(
@@ -556,8 +561,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                             elevation: 0,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30)),
-                            backgroundColor:
-                                context.colors.primaryFixed,
+                            backgroundColor: context.colors.primaryFixed,
                           ),
                           child: const Text('Confirm',
                               style: TextStyle(
@@ -615,7 +619,8 @@ class _SettingsThemeState extends State<SettingsTheme> {
                       if (snapshot.hasError) {
                         return Padding(
                           padding: const EdgeInsets.all(16.0),
-                          child: Text('Error loading refresh rates: ${snapshot.error}'),
+                          child: Text(
+                              'Error loading refresh rates: ${snapshot.error}'),
                         );
                       }
 
@@ -632,7 +637,8 @@ class _SettingsThemeState extends State<SettingsTheme> {
                       ];
 
                       return Obx(() {
-                        final preferredMode = settings.preferredDisplayMode.value;
+                        final preferredMode =
+                            settings.preferredDisplayMode.value;
                         final activeMode = settings.activeDisplayMode.value;
 
                         return SuperListView.builder(
@@ -640,10 +646,17 @@ class _SettingsThemeState extends State<SettingsTheme> {
                           itemCount: options.length,
                           itemBuilder: (context, index) {
                             final mode = options[index];
-                            final isSelected = (preferredMode ?? DisplayMode.auto).id == mode.id &&
-                                (preferredMode ?? DisplayMode.auto).width == mode.width &&
-                                (preferredMode ?? DisplayMode.auto).height == mode.height &&
-                                (preferredMode ?? DisplayMode.auto).refreshRate == mode.refreshRate;
+                            final isSelected =
+                                (preferredMode ?? DisplayMode.auto).id ==
+                                        mode.id &&
+                                    (preferredMode ?? DisplayMode.auto).width ==
+                                        mode.width &&
+                                    (preferredMode ?? DisplayMode.auto)
+                                            .height ==
+                                        mode.height &&
+                                    (preferredMode ?? DisplayMode.auto)
+                                            .refreshRate ==
+                                        mode.refreshRate;
                             final isActive = activeMode != null &&
                                 activeMode.id == mode.id &&
                                 activeMode.width == mode.width &&
@@ -654,10 +667,14 @@ class _SettingsThemeState extends State<SettingsTheme> {
                             final String subtitle;
                             if (mode == DisplayMode.auto) {
                               title = 'Auto';
-                              subtitle = isActive ? 'System Managed [Active]' : 'System Managed';
+                              subtitle = isActive
+                                  ? 'System Managed [Active]'
+                                  : 'System Managed';
                             } else {
                               title = '${mode.width}x${mode.height}';
-                              subtitle = isActive ? '${mode.refreshRate.toInt()}Hz [Active]' : '${mode.refreshRate.toInt()}Hz';
+                              subtitle = isActive
+                                  ? '${mode.refreshRate.toInt()}Hz [Active]'
+                                  : '${mode.refreshRate.toInt()}Hz';
                             }
 
                             return Container(
@@ -717,11 +734,9 @@ class _SettingsThemeState extends State<SettingsTheme> {
                   ? Brightness.dark
                   : Brightness.light);
           final ColorScheme lightScheme = ColorScheme.fromSeed(
-              seedColor: context.colors.primary,
-              brightness: Brightness.light);
+              seedColor: context.colors.primary, brightness: Brightness.light);
           final ColorScheme darkScheme = ColorScheme.fromSeed(
-              seedColor: context.colors.primary,
-              brightness: Brightness.dark);
+              seedColor: context.colors.primary, brightness: Brightness.dark);
           bool isSelected = themeMode == theme['label'];
           bool isSystem = theme['label'] == "System";
           return AnymexOnTap(
@@ -745,8 +760,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                           ? context.colors.primary
                           : Colors.transparent,
                     ),
-                    color:
-                        context.colors.surfaceContainerHighest,
+                    color: context.colors.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: ClipRRect(
@@ -983,7 +997,8 @@ class _SettingsThemeState extends State<SettingsTheme> {
     showDialog(
       context: context,
       builder: (context) {
-        Color previewColor = Color(int.parse(initialHex.replaceFirst('#', '0xff')));
+        Color previewColor =
+            Color(int.parse(initialHex.replaceFirst('#', '0xff')));
         HSVColor hsv = HSVColor.fromColor(previewColor);
         double hue = hsv.hue;
         double saturation = hsv.saturation;
@@ -994,7 +1009,9 @@ class _SettingsThemeState extends State<SettingsTheme> {
             bool isValid = true;
             try {
               final hex = controller.text.trim();
-              final normalized = hex.startsWith('#') ? hex.replaceFirst('#', '0xff') : '0xff$hex';
+              final normalized = hex.startsWith('#')
+                  ? hex.replaceFirst('#', '0xff')
+                  : '0xff$hex';
               previewColor = Color(int.parse(normalized));
               final newHsv = HSVColor.fromColor(previewColor);
               hue = newHsv.hue;
@@ -1005,8 +1022,10 @@ class _SettingsThemeState extends State<SettingsTheme> {
             }
 
             void updateColorFromSliders() {
-              previewColor = HSVColor.fromAHSV(1.0, hue, saturation, value).toColor();
-              final hexStr = '#${previewColor.value.toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}';
+              previewColor =
+                  HSVColor.fromAHSV(1.0, hue, saturation, value).toColor();
+              final hexStr =
+                  '#${previewColor.value.toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}';
               controller.value = TextEditingValue(
                 text: hexStr,
                 selection: TextSelection.collapsed(offset: hexStr.length),
@@ -1020,7 +1039,8 @@ class _SettingsThemeState extends State<SettingsTheme> {
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Container(
-                width: getResponsiveValue(context, mobileValue: null, desktopValue: 400.0),
+                width: getResponsiveValue(context,
+                    mobileValue: null, desktopValue: 400.0),
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -1028,7 +1048,8 @@ class _SettingsThemeState extends State<SettingsTheme> {
                   children: [
                     const Text(
                       'Custom Color Picker',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                     ),
                     const SizedBox(height: 16),
                     Center(
@@ -1040,21 +1061,24 @@ class _SettingsThemeState extends State<SettingsTheme> {
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: (isValid ? previewColor : Colors.grey).withOpacity(0.4),
+                              color: (isValid ? previewColor : Colors.grey)
+                                  .withOpacity(0.4),
                               blurRadius: 12,
                               spreadRadius: 2,
                             ),
                           ],
                         ),
                         child: !isValid
-                            ? const Icon(Icons.error_outline, color: Colors.white, size: 30)
+                            ? const Icon(Icons.error_outline,
+                                color: Colors.white, size: 30)
                             : null,
                       ),
                     ),
                     const SizedBox(height: 20),
                     const Text(
                       'Hue',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                     ),
                     const SizedBox(height: 6),
                     Container(
@@ -1096,7 +1120,8 @@ class _SettingsThemeState extends State<SettingsTheme> {
                     const SizedBox(height: 14),
                     const Text(
                       'Saturation',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                     ),
                     const SizedBox(height: 6),
                     Container(
@@ -1133,7 +1158,8 @@ class _SettingsThemeState extends State<SettingsTheme> {
                     const SizedBox(height: 14),
                     const Text(
                       'Lightness',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                     ),
                     const SizedBox(height: 6),
                     Container(
@@ -1143,7 +1169,8 @@ class _SettingsThemeState extends State<SettingsTheme> {
                         gradient: LinearGradient(
                           colors: [
                             Colors.black,
-                            HSVColor.fromAHSV(1.0, hue, saturation, 1.0).toColor(),
+                            HSVColor.fromAHSV(1.0, hue, saturation, 1.0)
+                                .toColor(),
                           ],
                         ),
                       ),
@@ -1282,11 +1309,8 @@ class _SettingsThemeState extends State<SettingsTheme> {
                   boxShadow: isSelected
                       ? [
                           BoxShadow(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .primary
-                                .opaque(Theme.of(context).brightness ==
-                                        Brightness.dark
+                            color: Theme.of(context).colorScheme.primary.opaque(
+                                Theme.of(context).brightness == Brightness.dark
                                     ? 0.3
                                     : 0.4),
                             blurRadius: 20,
@@ -1402,29 +1426,32 @@ class _SettingsThemeState extends State<SettingsTheme> {
                                     Container(
                                       width: 10,
                                       height: 10,
-                                      margin:
-                                          const EdgeInsets.symmetric(horizontal: 2),
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 2),
                                       decoration: BoxDecoration(
                                           color: Colors.red,
-                                          borderRadius: BorderRadius.circular(50)),
+                                          borderRadius:
+                                              BorderRadius.circular(50)),
                                     ),
                                     Container(
                                       width: 10,
                                       height: 10,
-                                      margin:
-                                          const EdgeInsets.symmetric(horizontal: 2),
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 2),
                                       decoration: BoxDecoration(
                                           color: Colors.yellow,
-                                          borderRadius: BorderRadius.circular(50)),
+                                          borderRadius:
+                                              BorderRadius.circular(50)),
                                     ),
                                     Container(
                                       width: 10,
                                       height: 10,
-                                      margin:
-                                          const EdgeInsets.symmetric(horizontal: 2),
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 2),
                                       decoration: BoxDecoration(
                                           color: Colors.green,
-                                          borderRadius: BorderRadius.circular(50)),
+                                          borderRadius:
+                                              BorderRadius.circular(50)),
                                     ),
                                   ],
                                 )),

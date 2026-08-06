@@ -14,7 +14,6 @@ import 'package:anymex/screens/settings/sub_settings/settings_extension_manager.
 import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
-import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex/screens/extensions/widgets/plugin_manager.dart';
@@ -539,7 +538,8 @@ class SourceController extends GetxController implements BaseService {
     if (serviceHandler.serviceType.value != ServicesType.extensions) {
       cacheController.addCache(data.toJson());
     }
-    return Media.froDMedia(data, isAnime ? ItemType.anime : ItemType.manga);
+    return Media.froDMedia(data, isAnime ? ItemType.anime : ItemType.manga)
+      ..sourceId = source.id;
   }
 
   @override
@@ -549,7 +549,7 @@ class SourceController extends GetxController implements BaseService {
     final type = params.isManga ? ItemType.manga : ItemType.anime;
     return (await source!.methods.search(params.query, params.page, []))
         .list
-        .map((e) => Media.froDMedia(e, type))
+        .map((e) => Media.froDMedia(e, type)..sourceId = source.id)
         .toList();
   }
 

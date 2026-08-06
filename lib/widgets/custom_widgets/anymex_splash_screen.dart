@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
 
 /// Splash Screen with Animated Logo
@@ -7,9 +6,9 @@ class AnymeXSplashScreen extends StatefulWidget {
   final VoidCallback? onAnimationComplete;
   
   const AnymeXSplashScreen({
-    Key? key,
+    super.key,
     this.onAnimationComplete,
-  }) : super(key: key);
+  });
 
   @override
   State<AnymeXSplashScreen> createState() => _AnymeXSplashScreenState();

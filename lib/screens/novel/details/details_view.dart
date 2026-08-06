@@ -104,6 +104,7 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
   Widget _buildAndroidLayout(BuildContext context) {
     return Glow(
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         extendBody: true,
         bottomNavigationBar: _buildMobiledNav(),
         body: _commonLayout(context),

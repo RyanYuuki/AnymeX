@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/anime/watch/controls/themes/player_control_themes/default_player_control_theme.dart';
 import 'package:anymex/screens/anime/watch/controls/themes/player_control_themes/ios26_player_control_theme.dart';
+import 'package:anymex/screens/anime/watch/controls/themes/player_control_themes/ios_legacy_player_control_theme.dart';
 import 'package:anymex/screens/anime/watch/controls/themes/player_control_themes/netflix_desktop_player_theme.dart.dart';
 import 'package:anymex/screens/anime/watch/controls/themes/player_control_themes/netflix_mobile_player_theme.dart';
 import 'package:anymex/screens/anime/watch/controls/themes/setup/json_player_control_theme.dart';
@@ -42,6 +43,7 @@ class PlayerControlThemeRegistry {
   static final List<PlayerControlTheme> _builtInThemes = [
     DefaultPlayerControlTheme(),
     Ios26PlayerControlTheme(),
+    IosLegacyPlayerControlTheme(),
     NetflixDesktopPlayerControlTheme(),
     NetflixMobilePlayerControlTheme(),
   ];
@@ -69,6 +71,15 @@ class PlayerControlThemeRegistry {
 
   static PlayerControlTheme resolve(String id) {
     final allThemes = themes;
+    if (id == 'ios' || id == 'ios_legacy') {
+      return allThemes.firstWhere(
+        (theme) => theme.id == 'ios_legacy',
+        orElse: () => allThemes.firstWhere(
+          (theme) => theme.id == 'ios26',
+          orElse: () => allThemes.first,
+        ),
+      );
+    }
     return allThemes.firstWhere(
       (theme) => theme.id == id,
       orElse: () => allThemes.first,

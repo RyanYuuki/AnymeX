@@ -8,9 +8,11 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/widgets/list_editor.dart';
 import 'package:anymex/screens/downloads/model/download_models.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_accounts.dart';
+import 'package:anymex/screens/downloads/controller/download_controller.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
@@ -35,19 +37,15 @@ Future<void> showTrackSheetForMedia(
   String? poster,
   bool isManga = false,
 }) {
-  return showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: context.colors.surface,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
-    ),
-    builder: (_) => _TrackSheet(
+  return AnymexSheet.custom(
+    _TrackSheet(
       mediaId: mediaId,
       title: title,
       poster: poster,
       isManga: isManga,
     ),
+    context,
+    showDragHandle: true,
   );
 }
 
@@ -122,6 +120,26 @@ class _TrackSheetState extends State<_TrackSheet> {
     final binding =
         _ctrl.bindingFromSearchResult(t, result, isAnime: !_isManga);
     await _ctrl.bind(_mediaId, binding);
+
+    try {
+      final newPoster = (result.poster.isNotEmpty && result.poster != '?')
+          ? result.poster
+          : ((result.largePoster.isNotEmpty && result.largePoster != '?')
+              ? result.largePoster
+              : (result.cover ?? ''));
+
+      if (Get.isRegistered<DownloadController>()) {
+        final downloadCtrl = Get.find<DownloadController>();
+        await downloadCtrl.updateDownloadedMediaMetadata(
+          _mediaId,
+          newTitle: result.title,
+          newPoster: newPoster,
+        );
+      }
+    } catch (e) {
+      debugPrint('Error updating downloaded media metadata after tracking: $e');
+    }
+
     if (mounted) {
       setState(() {
         _searchingTracker = null;
@@ -147,26 +165,13 @@ class _TrackSheetState extends State<_TrackSheet> {
     final theme = context.colors;
     final loggedTrackers = _ctrl.loggedInTrackers();
 
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-      ),
-      child: ConstrainedBox(
+    return ConstrainedBox(
         constraints: BoxConstraints(
           maxHeight: MediaQuery.of(context).size.height * 0.85,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              margin: const EdgeInsets.only(top: 10, bottom: 4),
-              width: 42,
-              height: 4,
-              decoration: BoxDecoration(
-                color: theme.outline.withOpacity(0.4),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
             Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -224,8 +229,7 @@ class _TrackSheetState extends State<_TrackSheet> {
               _buildHomeView(context, loggedTrackers),
           ],
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildHomeView(BuildContext context, List<Tracker> trackers) {
@@ -453,12 +457,8 @@ class _TrackSheetState extends State<_TrackSheet> {
     final animeProgress = b.progress.obs;
     final currentAnime = tracked.obs;
 
-    showModalBottomSheet(
-      backgroundColor: Colors.transparent,
-      context: context,
-      isScrollControlled: true,
-      showDragHandle: false,
-      builder: (ctx) => ListEditorModal(
+    AnymexSheet.custom(
+      ListEditorModal(
         animeStatus: animeStatus,
         isManga: !b.isAnime,
         animeScore: animeScore,
@@ -483,6 +483,7 @@ class _TrackSheetState extends State<_TrackSheet> {
           await _ctrl.unbind(_mediaId, b.trackerId);
         },
       ),
+      context,
     ).then((_) {
       handler.changeService(previousServiceType);
       if (mounted) setState(() {});

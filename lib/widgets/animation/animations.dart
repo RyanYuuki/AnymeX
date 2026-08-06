@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 
 class PageAnimation extends StatefulWidget {
   final Widget child;

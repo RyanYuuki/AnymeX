@@ -92,7 +92,8 @@ class _OfflineWatchPageState extends State<OfflineWatchPage> {
           link: widget.episode.path,
         ),
         episodeList: episodes,
-        anilistData: Media(serviceType: ServicesType.simkl)));
+        anilistData: Media(serviceType: ServicesType.simkl)
+          ..title = widget.episode.folderName));
   }
 
   @override
