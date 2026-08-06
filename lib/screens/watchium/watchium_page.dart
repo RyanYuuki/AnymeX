@@ -603,9 +603,9 @@ class _WatchiumPageState extends State<WatchiumPage> {
     // Find host member
     final hostMember = room.members.where((m) => m.role == 'host').firstOrNull;
     final otherMembers = room.members.where((m) => m.role != 'host').toList();
-    final showMemberAvatars = otherMembers.length > 0;
+    final showMemberAvatars = otherMembers.isNotEmpty;
     final memberCount = room.members.length;
-    final maxShowAvatars = 3;
+    const maxShowAvatars = 3;
     final visibleMembers = otherMembers.take(maxShowAvatars).toList();
     final remainingCount = otherMembers.length - maxShowAvatars;
 
@@ -638,6 +638,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                       radius: 0,
                       fit: BoxFit.cover,
                     ),
+                  ),
                 if (bannerUrl == null || bannerUrl.isEmpty)
                   AspectRatio(
                     aspectRatio: 16 / 7,
@@ -877,6 +878,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                                       )
                                     : null,
                               ),
+                            ),
                           if (remainingCount > 0)
                             Positioned(
                               left: visibleMembers.length * 14.0,
@@ -896,6 +898,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                                     color: cs.onSurface,
                                   ),
                                 ),
+                              ),
                             ),
                         ],
                       ),
