@@ -604,7 +604,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
     final hostMember = room.members.where((m) => m.role == 'host').firstOrNull;
     final otherMembers = room.members.where((m) => m.role != 'host').toList();
     final showMemberAvatars = otherMembers.isNotEmpty;
-    final memberCount = room.members.length;
+    final onlineCount = room.members.where((m) => m.online).length;
     const maxShowAvatars = 3;
     final visibleMembers = otherMembers.take(maxShowAvatars).toList();
     final remainingCount = otherMembers.length - maxShowAvatars;
@@ -680,7 +680,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                         Icon(Iconsax.eye, size: 14, color: Colors.white70),
                         const SizedBox(width: 4),
                         Text(
-                          '$memberCount',
+                          '$onlineCount',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 12,
