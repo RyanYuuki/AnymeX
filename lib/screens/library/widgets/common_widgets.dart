@@ -122,16 +122,15 @@ class MediaCard extends StatelessWidget {
   }
 
   void navGate(tag) {
-    if (isManga) {
-      final m = Media.fromOfflineMedia(data, ItemType.manga);
-      if (m.mediaType == ItemType.novel) {
-        navigate(() => NovelDetailsPage(media: m));
-      } else {
-        navigate(() => MangaDetailsPage(media: m, tag: tag));
-      }
+    final mediaTypeIndex = data.mediaTypeIndex ?? (isManga ? 0 : 1);
+    final mediaType = ItemType.values[mediaTypeIndex];
+    final m = Media.fromOfflineMedia(data, mediaType);
+    if (mediaType == ItemType.novel) {
+      navigate(() => NovelDetailsPage(media: m));
+    } else if (mediaType == ItemType.manga) {
+      navigate(() => MangaDetailsPage(media: m, tag: tag));
     } else {
-      navigate(() => AnimeDetailsPage(
-          media: Media.fromOfflineMedia(data, ItemType.anime), tag: tag));
+      navigate(() => AnimeDetailsPage(media: m, tag: tag));
     }
   }
 

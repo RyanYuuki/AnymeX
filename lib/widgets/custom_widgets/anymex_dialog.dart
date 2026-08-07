@@ -48,6 +48,9 @@ class AnymexDialog extends StatelessWidget {
       child: Container(
         width: getResponsiveValue(context,
             mobileValue: double.infinity, desktopValue: 500.0),
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.8,
+        ),
         padding: padding,
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -58,10 +61,14 @@ class AnymexDialog extends StatelessWidget {
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            message != null
-                ? AnymexText(
-                    text: message!, textAlign: TextAlign.center, size: 14)
-                : contentWidget ?? const SizedBox.shrink(),
+            Flexible(
+              child: SingleChildScrollView(
+                child: message != null
+                    ? AnymexText(
+                        text: message!, textAlign: TextAlign.center, size: 14)
+                    : (contentWidget ?? const SizedBox.shrink()),
+              ),
+            ),
             const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,

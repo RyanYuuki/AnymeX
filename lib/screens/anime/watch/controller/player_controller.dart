@@ -395,12 +395,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     if (isOffline.value) {
       _loadLocalSubtitles();
     }
-    ever(selectedVideo, (_) {
-      final audios = selectedVideo.value?.audios ?? [];
-      embeddedAudioTracks.value = audios
-          .map((e) => AudioTrack.uri(e.file ?? '', title: e.label))
-          .toList();
-    });
+    ever(selectedVideo, (_) => _autoSelectAudioTrack());
+    _autoSelectAudioTrack();
     if (PlayerKeys.useLibass.get(false)) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         snackBar(
@@ -2081,6 +2077,21 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     if (playerSettings.autoTranslate && track.file != null) {
       startPreTranslation(subtitleUrl);
+    }
+  }
+
+  void _autoSelectAudioTrack() {
+    final audios = selectedVideo.value?.audios ?? [];
+    embeddedAudioTracks.value = audios
+        .map((e) => AudioTrack.uri(e.file ?? '', title: e.label))
+        .toList();
+    if (audios.isNotEmpty) {
+      final firstAudio = audios.first;
+      if (firstAudio.file != null && firstAudio.file!.isNotEmpty) {
+        setExternalAudio(firstAudio);
+      }
+    } else {
+      selectedExternalAudio.value = null;
     }
   }
 
