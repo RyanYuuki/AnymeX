@@ -255,7 +255,7 @@ class _UserRecommendationsPageState extends State<UserRecommendationsPage>
     }
 
     return GridView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+      padding: const EdgeInsets.fromLTRB(12, 16, 12, 40),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
         crossAxisSpacing: 10,

@@ -1,3 +1,4 @@
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/cloudflare_webview.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
@@ -49,7 +50,7 @@ class LogInterceptor extends Interceptor {
         icon: Icons.warning_amber_rounded,
         iconColor: const Color(0xFFFFB74D),
         onTap: () {
-          Get.to(() => CloudflareBypassWebView(url: response.request.url.toString()));
+          navigate(() => CloudflareBypassWebView(url: response.request.url.toString()));
         },
       );
     }

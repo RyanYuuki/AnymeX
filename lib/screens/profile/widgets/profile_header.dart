@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/fullscreen_image_viewer.dart';
 import 'package:anymex/screens/profile/widgets/hover_action_button.dart';
@@ -495,7 +496,7 @@ class DesktopProfileHeader extends StatelessWidget {
                                             label: 'AniList Settings',
                                             onTap: () {
                                               Navigator.pop(ctx);
-                                              Get.to(() => const SettingsAnilistApi());
+                                              navigate(() => const SettingsAnilistApi());
                                             },
                                           ),
                                         ],
@@ -683,7 +684,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                           label: 'AniList Settings',
                           onTap: () {
                             Navigator.pop(ctx);
-                            Get.to(() => const SettingsAnilistApi());
+                            navigate(() => const SettingsAnilistApi());
                           },
                         ),
                       ],

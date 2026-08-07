@@ -11,6 +11,7 @@ import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/database/isar_models/track.dart' as hive;
 import 'package:anymex/screens/downloads/model/download_models.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/media_downloader.dart';
 import 'package:anymex/utils/download_isolate_pool.dart' as dl;
 import 'package:anymex/database/data_keys/keys.dart';
@@ -259,7 +260,7 @@ class DownloadController extends GetxController {
   void _handleNotificationTap() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (Get.currentRoute != '/ActiveDownloads') {
-        Get.to(() => const ActiveDownloads());
+        navigate(() => const ActiveDownloads());
       }
     });
   }

@@ -2,6 +2,7 @@ import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
 import 'package:anymex/screens/library/online/manga_list.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -100,14 +101,14 @@ class ListStatusCard extends StatelessWidget {
 
                       final data = lists['All'] ?? [];
                       if (isAnime) {
-                        Get.to(() => AnimeList(
+                        navigate(() => AnimeList(
                               data: data,
                               title: "Anime",
                               initialTab: mappedTabForNav,
                               userName: userName,
                             ));
                       } else {
-                        Get.to(() => AnilistMangaList(
+                        navigate(() => AnilistMangaList(
                               data: data,
                               title: "Manga",
                               initialTab: mappedTabForNav,

@@ -111,7 +111,7 @@ class _ExtensionScreenState extends State<ExtensionScreen>
                 IconButton(
                   icon: Icon(Icons.build_outlined,
                       color: theme.primary, size: 20),
-                  onPressed: () => Get.to(() => const ExtensionTestPage()),
+                  onPressed: () => navigate(() => const ExtensionTestPage()),
                   tooltip: "Test Extensions",
                   style: IconButton.styleFrom(
                     padding: const EdgeInsets.all(6),
@@ -568,7 +568,7 @@ class _ExtensionScreenState extends State<ExtensionScreen>
                   isSelected: isSelected,
                   onTap: needsPlugin
                       ? () {
-                          Get.to(() => const SettingsExtensionManager());
+                          navigate(() => const SettingsExtensionManager());
                         }
                       : () {
                           _selectedSourceType.value = type;

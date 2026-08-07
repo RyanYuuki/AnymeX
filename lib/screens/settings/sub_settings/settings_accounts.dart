@@ -5,6 +5,7 @@ import 'package:anymex/controllers/services/storage/anymex_cache_manager.dart';
 import 'package:anymex/models/Service/online_service.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_anilist_api.dart';
 import 'package:anymex/screens/other_features.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
@@ -503,7 +504,7 @@ class TrackingServiceCard extends StatelessWidget {
                   title: const Text('Anilist Settings'),
                   onTap: () {
                     Navigator.pop(context);
-                    Get.to(() => const SettingsAnilistApi());
+                    navigate(() => const SettingsAnilistApi());
                   },
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),

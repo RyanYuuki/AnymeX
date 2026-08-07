@@ -54,7 +54,7 @@ class _SettingsCommonState extends State<SettingsCommon> {
                 child: Padding(
                   padding: getResponsiveValue(context,
                       mobileValue:
-                          const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 30.0),
+                          const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 50.0),
                       desktopValue:
                           const EdgeInsets.fromLTRB(25.0, 20.0, 25.0, 20.0)),
                   child: Column(
