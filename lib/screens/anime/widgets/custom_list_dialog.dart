@@ -42,6 +42,12 @@ class _CustomListDialogState extends State<CustomListDialog> {
     _init();
   }
 
+  bool _isItemInList(CustomList list) {
+    final targetId = widget.original.id;
+    if (targetId.isEmpty) return false;
+    return list.mediaIds?.contains(targetId) ?? false;
+  }
+
   void _init() {
     final raw = isar.customLists
         .filter()
@@ -60,8 +66,7 @@ class _CustomListDialogState extends State<CustomListDialog> {
 
     initialState = {
       for (var list in modifiedLists)
-        list.listName ?? '':
-            list.mediaIds?.contains(widget.original.id) ?? false
+        list.listName ?? '': _isItemInList(list)
     };
   }
 
@@ -284,9 +289,7 @@ class _CustomListDialogState extends State<CustomListDialog> {
                         itemBuilder: (context, index) {
                           final list = filteredLists[index];
                           final listName = list.listName ?? 'Unnamed List';
-                          final isChecked =
-                              list.mediaIds?.contains(widget.original.id) ??
-                                  false;
+                          final isChecked = _isItemInList(list);
                           final itemCount = list.mediaIds?.length ?? 0;
 
                           return Container(

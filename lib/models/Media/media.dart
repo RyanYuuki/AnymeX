@@ -717,10 +717,15 @@ class Media {
   }
 
   factory Media.froDMedia(DMedia manga, ItemType type) {
+    final titleStr = (manga.title != null &&
+            manga.title!.isNotEmpty &&
+            manga.title != 'Unknown Title')
+        ? manga.title!
+        : '';
     return Media(
       id: manga.url ?? '',
-      title: manga.title ?? "Unknown Title",
-      romajiTitle: manga.title ?? "Unknown Title",
+      title: titleStr,
+      romajiTitle: titleStr,
       description: manga.description ?? "No description available.",
       poster: manga.cover ?? "",
       cover: manga.cover,
@@ -742,10 +747,15 @@ class Media {
   }
 
   factory Media.fromDManga(DMedia manga, ItemType type) {
+    final titleStr = (manga.title != null &&
+            manga.title!.isNotEmpty &&
+            manga.title != 'Unknown Title')
+        ? manga.title!
+        : '';
     return Media(
       id: manga.url ?? '',
-      title: manga.title ?? "Unknown Title",
-      romajiTitle: manga.title ?? "Unknown Title",
+      title: titleStr,
+      romajiTitle: titleStr,
       description: manga.description ?? "No description available.",
       poster: manga.cover ?? "",
       cover: manga.cover,

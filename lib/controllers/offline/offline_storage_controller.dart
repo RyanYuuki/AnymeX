@@ -35,16 +35,17 @@ class OfflineStorageController extends GetxController {
   Future<void> _cleanupDuplicateOfflineMedias() async {
     try {
       final allMedias = await isar.offlineMedias.where().findAll();
-      final seenMediaIds = <String>{};
+      final seenKeys = <String>{};
       final idsToDelete = <int>[];
 
       for (final media in allMedias) {
         final mId = media.mediaId;
-        if (mId == null || mId.isEmpty) continue;
-        if (seenMediaIds.contains(mId)) {
+        if (mId == null || mId.isEmpty || mId == '0') continue;
+        final key = '${media.mediaTypeIndex}_$mId';
+        if (seenKeys.contains(key)) {
           idsToDelete.add(media.id);
         } else {
-          seenMediaIds.add(mId);
+          seenKeys.add(key);
         }
       }
 
@@ -80,21 +81,21 @@ class OfflineStorageController extends GetxController {
   Stream<List<OfflineMedia>> watchAnimeLibrary() {
     return isar.offlineMedias
         .filter()
-        .mediaTypeIndexEqualTo(1)
+        .mediaTypeIndexEqualTo(ItemType.anime.index)
         .watch(fireImmediately: true);
   }
 
   Stream<List<OfflineMedia>> watchMangaLibrary() {
     return isar.offlineMedias
         .filter()
-        .mediaTypeIndexEqualTo(0)
+        .mediaTypeIndexEqualTo(ItemType.manga.index)
         .watch(fireImmediately: true);
   }
 
   Stream<List<OfflineMedia>> watchNovelLibrary() {
     return isar.offlineMedias
         .filter()
-        .mediaTypeIndexEqualTo(2)
+        .mediaTypeIndexEqualTo(ItemType.novel.index)
         .watch(fireImmediately: true);
   }
 
@@ -133,7 +134,7 @@ class OfflineStorageController extends GetxController {
     try {
       return isar.offlineMedias
           .filter()
-          .mediaTypeIndexEqualTo(1)
+          .mediaTypeIndexEqualTo(ItemType.anime.index)
           .findAllSync();
     } catch (e) {
       if (e.toString().contains('RangeError') || e.toString().contains('deserialize')) {
@@ -147,7 +148,7 @@ class OfflineStorageController extends GetxController {
     try {
       return isar.offlineMedias
           .filter()
-          .mediaTypeIndexEqualTo(0)
+          .mediaTypeIndexEqualTo(ItemType.manga.index)
           .findAllSync();
     } catch (e) {
       if (e.toString().contains('RangeError') || e.toString().contains('deserialize')) {
@@ -161,7 +162,7 @@ class OfflineStorageController extends GetxController {
     try {
       return isar.offlineMedias
           .filter()
-          .mediaTypeIndexEqualTo(2)
+          .mediaTypeIndexEqualTo(ItemType.novel.index)
           .findAllSync();
     } catch (e) {
       if (e.toString().contains('RangeError') || e.toString().contains('deserialize')) {
@@ -225,7 +226,7 @@ class OfflineStorageController extends GetxController {
       {int offset = 0, int limit = 999999}) async {
     return await isar.offlineMedias
         .filter()
-        .mediaTypeIndexEqualTo(1)
+        .mediaTypeIndexEqualTo(ItemType.anime.index)
         .offset(offset)
         .limit(limit)
         .findAll();
@@ -235,7 +236,7 @@ class OfflineStorageController extends GetxController {
       {int offset = 0, int limit = 999999}) async {
     return await isar.offlineMedias
         .filter()
-        .mediaTypeIndexEqualTo(0)
+        .mediaTypeIndexEqualTo(ItemType.manga.index)
         .offset(offset)
         .limit(limit)
         .findAll();
@@ -245,7 +246,7 @@ class OfflineStorageController extends GetxController {
       {int offset = 0, int limit = 999999}) async {
     return await isar.offlineMedias
         .filter()
-        .mediaTypeIndexEqualTo(2)
+        .mediaTypeIndexEqualTo(ItemType.novel.index)
         .offset(offset)
         .limit(limit)
         .findAll();
@@ -509,6 +510,37 @@ class OfflineStorageController extends GetxController {
             await isar.offlineMedias.put(
               _createOfflineMedia(original, null, null, null, episode),
             );
+          }
+        });
+      } else {
+        await isar.writeTxn(() async {
+          bool updated = false;
+          if ((existing.name == null ||
+                  existing.name == '?' ||
+                  existing.name == 'Unknown Title' ||
+                  existing.name!.isEmpty) &&
+              original.title.isNotEmpty &&
+              original.title != '?' &&
+              original.title != 'Unknown Title') {
+            existing.name = original.title;
+            existing.english = original.title;
+            updated = true;
+          }
+          if ((existing.poster == null ||
+                  existing.poster!.isEmpty ||
+                  existing.poster == '?') &&
+              original.poster.isNotEmpty &&
+              original.poster != '?') {
+            existing.poster = original.poster;
+            updated = true;
+          }
+          if ((existing.season == null || existing.season!.isEmpty) &&
+              original.season.isNotEmpty) {
+            existing.season = original.season;
+            updated = true;
+          }
+          if (updated) {
+            await isar.offlineMedias.put(existing);
           }
         });
       }
@@ -877,13 +909,29 @@ class OfflineStorageController extends GetxController {
     Episode? currentEpisode,
   ) {
     final handler = Get.find<ServiceHandler>();
+    final validTitle = (original.title.isNotEmpty &&
+            original.title != '?' &&
+            original.title != 'Unknown Title')
+        ? original.title
+        : (original.romajiTitle.isNotEmpty &&
+                original.romajiTitle != '?' &&
+                original.romajiTitle != 'Unknown Title'
+            ? original.romajiTitle
+            : '?');
+
+    final validRomaji = (original.romajiTitle.isNotEmpty &&
+            original.romajiTitle != '?' &&
+            original.romajiTitle != 'Unknown Title')
+        ? original.romajiTitle
+        : validTitle;
+
     return OfflineMedia(
       mediaId: original.id,
       idMal: original.idMal,
-      jname: original.romajiTitle,
-      name: original.title,
-      english: original.title,
-      japanese: original.romajiTitle,
+      jname: validRomaji,
+      name: validTitle,
+      english: validTitle,
+      japanese: validRomaji,
       description: original.description,
       poster: original.poster,
       cover: original.cover,
