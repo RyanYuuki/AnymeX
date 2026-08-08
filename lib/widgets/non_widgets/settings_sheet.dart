@@ -9,6 +9,7 @@ import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/screens/settings/settings.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
@@ -26,12 +27,9 @@ class SettingsSheet extends StatelessWidget {
   final serviceHandler = Get.find<ServiceHandler>();
 
   static void show(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (context) => SettingsSheet(),
-    );
+    AnymexSheet(
+      customWidget: SettingsSheet(),
+    ).show(context);
   }
 
   void showServiceSelector(BuildContext context) {
@@ -226,38 +224,22 @@ class SettingsSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = context.colors;
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-    return Padding(
-      padding: EdgeInsets.fromLTRB(12, 0, 12, 16 + bottomInset),
-      child: Container(
-        decoration: BoxDecoration(
-          color: theme.surface,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: theme.outline.opaque(0.1)),
-        ),
-        padding: const EdgeInsets.fromLTRB(14, 16, 14, 0),
-        child: SafeArea(
-          top: false,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 36,
-                height: 3.5,
-                margin: const EdgeInsets.only(bottom: 14),
-                decoration: BoxDecoration(
-                  color: theme.onSurface.opaque(0.15),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              _buildProfileHeader(context, theme),
-              const SizedBox(height: 10),
-              _buildMenuSection(context, theme),
-              const SizedBox(height: 4),
-            ],
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 36,
+          height: 3.5,
+          margin: const EdgeInsets.only(bottom: 14),
+          decoration: BoxDecoration(
+            color: theme.onSurface.opaque(0.15),
+            borderRadius: BorderRadius.circular(10),
           ),
         ),
-      ),
+        _buildProfileHeader(context, theme),
+        const SizedBox(height: 10),
+        _buildMenuSection(context, theme),
+      ],
     );
   }
 
