@@ -1,6 +1,6 @@
 # AnymeX Terms of Service and Disclaimer
 
-**Last Updated: March 12, 2026**
+**Last Updated: August 01, 2026**
 
 ## Introduction
 Welcome to **AnymeX**, a multiservice tracking client designed exclusively for managing and tracking anime, manga, novels, movies, and series through integration with the official APIs of **AniList**, **MyAnimeList (MAL)**, and **Simkl**. These Terms of Service ("ToS") and Disclaimer govern your use of AnymeX. By using AnymeX, you agree to comply with these terms and conditions. If you disagree, please do not use the app.
@@ -49,6 +49,10 @@ AnymeX uses the following services to retrieve supplementary metadata and enrich
 
 ### Novel Reader
 - [**Dictionary API**](https://api.dictionaryapi.dev/api/v2/entries/en/): Used in the novel reader to retrieve word definitions and linguistic information
+
+### Social Features
+- [**Watch Together (Watchium)**](https://github.com/Shebyyy/AnymeX): Real-time synchronized watching feature powered by **Watchium**. Used to coordinate playback, episode sync, and in-room chat among users. See the **Watch Together (Watchium)** section below for details.
+- [**Comments (Commentum v2)**](https://github.com/Shebyyy/AnymeX): Built-in comments system powered by a third-party backend service. See the **Comments System & Comment Policy** section below for details.
 
 ---
 
@@ -114,6 +118,64 @@ AnymeX reserves the right to:
 
 All moderation decisions are final.
 
+## Watch Together (Watchium)
+
+AnymeX includes a **Watch Together** feature powered by **Watchium** that allows users to create or join synchronized viewing rooms. Users can watch content together in real time with episode sync, server sync, and in-room chat.
+
+### How Watch Together Data Is Handled
+
+When you use the Watch Together feature, the following information is processed and stored by Watchium:
+- Your platform user ID (from AniList, MAL, or Simkl)
+- Your username
+- Your profile avatar URL
+- Chat messages you send within rooms
+- Room metadata (room code, anime/episode information, playback state for sync purposes, member list)
+- Room settings (sync mode, password-protected rooms)
+
+AnymeX does NOT store:
+- Your authentication tokens
+- Your passwords
+- Your video playback URLs or streaming sources
+- Your watch history or progress
+- Your IP address
+- Personal data beyond what is listed above
+
+Room data (chat messages, room state) is stored temporarily by Watchium for the purpose of real-time synchronization and may be purged at any time without notice.
+
+### Watch Together Room Rules
+
+The following rules apply to all Watch Together rooms and in-room interactions:
+
+1. **COMMENT RULES APPLY** — All 10 rules from the **Comments System & Comment Policy** (no racism, no spam, no NSFW, English only, no harassment, no illegal content, no minor sexualization, spoiler tags, etc.) apply fully to all chat messages sent within Watch Together rooms.
+
+2. **NO ROOM CODE SPAM** — Do not spam, flood, or mass-distribute room codes in public spaces (Discord, Telegram, Reddit, etc.) to harass, raid, or overwhelm other users or rooms.
+
+3. **NO INAPPROPRIATE ROOM NAMES** — Do not create rooms with titles or descriptions containing hate speech, slurs, explicit content, or misleading information (e.g., impersonating staff or official rooms).
+
+4. **NO BYPASSING ROOM RESTRICTIONS** — Do not attempt to bypass room passwords, member limits, or host-only controls through exploits, alternate accounts, or any other means.
+
+5. **HOST ABUSE** — Hosts must not abuse their powers. This includes repeatedly kicking members without reason, locking rooms to harass others, or using host controls to intentionally disrupt the viewing experience.
+
+6. **NO COORDINATING VIOLATIONS** — Do not use Watch Together rooms to coordinate, plan, or facilitate any activity that violates AnymeX's Terms of Service or applicable law.
+
+7. **RESPECT THE VIEWING EXPERIENCE** — Do not intentionally disrupt synchronized playback (e.g., repeatedly switching episodes, spamming server changes, or exploiting sync mechanics to desync other members).
+
+8. **NO SHARING RESTRICTED CONTENT IN CHAT** — Do not share links to pirated content, illegal material, or repositories/extensions in room chat. This is equivalent to **Comment Rule 7**.
+
+9. **TEMPORARY ROOM DATA** — Users acknowledge that all room data (chat messages, room state, member lists) is stored temporarily by Watchium and may be deleted at any time without notice. Do not rely on room chat for permanent communication.
+
+10. **HOST RESPONSIBILITY** — The room host is expected to maintain a reasonably appropriate environment. AnymeX may intervene if a host's room is used for repeated violations, regardless of the host's own actions.
+
+### Watch Together Moderation & Enforcement
+
+AnymeX reserves the right to:
+- Remove users from rooms for violating these rules
+- Temporarily or permanently ban users from the Watch Together feature
+- Disband rooms that are used for repeated or severe violations
+- Take action without prior notice in cases of severe violations
+
+Failure to follow these rules may result in removal from rooms, temporary Watch Together restrictions, permanent Watch Together bans, or full app restrictions depending on severity. All moderation decisions are final.
+
 ## DMCA Compliance
 AnymeX is designed to be fully compliant with the Digital Millennium Copyright Act (DMCA) and other applicable copyright laws. As a tracking tool, AnymeX does not host, distribute, or provide access to any copyrighted content. Any content accessed by users must be obtained through legitimate, licensed platforms such as Crunchyroll, Funimation, Netflix, Hulu, HIDIVE, or other authorized providers. If you believe that any content accessed through third-party services, repositories, or modules violates your copyright, please direct DMCA notices or legal inquiries to the respective service providers or content hosts, not AnymeX or the Developer. AnymeX does not control, endorse, or facilitate access to such content.
 
@@ -125,6 +187,7 @@ AnymeX prioritizes your privacy and does not collect or store personal informati
   - [MyAnimeList Privacy Policy](https://myanimelist.net/about/privacy_policy)
   - [Simkl Privacy Policy](https://simkl.com/privacy/)
 - **Supplementary Data Services**: AnymeX integrates with additional third-party services (LiveChart, AnimeSchedule, MangaBaka API, MangaUpdates, Chiaki, AnimeThemes, AniSkip, Sprout Anime Recommender, Kuroiru, Google Books, OpenLibrary, and Dictionary API) solely to retrieve informational data such as metadata, schedules, news, recommendations, and word definitions. AnymeX does not transmit personal data to these services beyond what is technically necessary for the data request (e.g., a media ID or search query). Please review the privacy policies of each respective service for further information.
+- **Watch Together (Watchium)**: When using the Watch Together feature, your platform user ID, username, and avatar URL are transmitted to Watchium for room functionality (sync, chat, member management). Chat messages you send are stored by Watchium for the duration of the room session. AnymeX does not transmit your authentication tokens, passwords, IP address, or video playback URLs to Watchium.
 - **No Interaction with Streaming Platforms**: AnymeX does not integrate with or store data related to streaming platforms like Crunchyroll, Funimation, Netflix, Hulu, or HIDIVE. Any interaction with these platforms is outside the scope of AnymeX and subject to their respective privacy policies.
 - **Crash Reports and Analytics**: AnymeX does not collect crash reports or analytics data. If this changes in the future, we will update this document and provide options to opt out where applicable.
 

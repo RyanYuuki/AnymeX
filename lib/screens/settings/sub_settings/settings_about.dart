@@ -296,6 +296,14 @@ class AboutPage extends StatelessWidget {
                         ),
                         CustomListTile(
                           onTap: () async {
+                            await showPolicySheet(
+                                context, PolicyType.watchTogetherPolicy);
+                          },
+                          leading: const Icon(Icons.people_rounded),
+                          title: "Watch Together Policy",
+                        ),
+                        CustomListTile(
+                          onTap: () async {
                             snackBar('Checking for updates!');
                             Get.find<Settings>().checkForUpdates(context);
                           },

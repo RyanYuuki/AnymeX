@@ -123,6 +123,11 @@ final List<_BottomControl> _bottomControls = [
       id: 'aspect_ratio', name: 'Aspect Ratio', icon: Icons.fit_screen),
   const _BottomControl(
       id: 'external_player', name: 'External Player', icon: Icons.launch_rounded),
+  const _BottomControl(
+      id: 'watch_together',
+      name: 'Watch Together',
+      icon: Icons.people_outline_rounded,
+      defaultPosition: 'right'),
 ];
 
 class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStateMixin {
@@ -186,6 +191,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
     } else {
       _migrateLegacyButtons();
       _pruneRemovedButtons();
+      _addNewButtons();
     }
     _initializeAnimations();
     _checkShadersAvailability();
@@ -294,6 +300,26 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
     _buttonConfigs.removeWhere((id, _) => !allKnownIds.contains(id));
     if (_buttonConfigs.length != initialConfigCount) changed = true;
 
+    if (changed) _saveButtonConfig();
+  }
+
+  /// Adds any new buttons that were added in app updates but aren't
+  /// in the user's saved config yet (auto-migration for new buttons).
+  void _addNewButtons() {
+    final allUserIds = {
+      ..._leftButtonIds,
+      ..._rightButtonIds,
+      ..._hiddenButtonIds,
+    };
+    bool changed = false;
+    for (final control in _bottomControls) {
+      if (!allUserIds.contains(control.id)) {
+        final position = control.defaultPosition == 'left' ? _leftButtonIds : _rightButtonIds;
+        position.add(control.id);
+        _buttonConfigs[control.id] = {'visible': true};
+        changed = true;
+      }
+    }
     if (changed) _saveButtonConfig();
   }
 

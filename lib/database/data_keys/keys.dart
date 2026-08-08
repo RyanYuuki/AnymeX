@@ -1,5 +1,6 @@
 import 'package:anymex/database/kv_helper.dart';
 export 'package:anymex/database/kv_helper.dart';
+export 'watchium_keys.dart';
 
 enum General {
   shouldAskForTrack,
