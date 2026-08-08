@@ -64,7 +64,7 @@ class SettingsSheet extends StatelessWidget {
         },
     ];
 
-    Get.bottomSheet(
+    AnymexSheet.custom(
       ConstrainedBox(
         constraints: BoxConstraints(
           maxHeight: MediaQuery.of(Get.context!).size.height * 0.95,
@@ -75,7 +75,6 @@ class SettingsSheet extends StatelessWidget {
             color: theme.colorScheme.surface,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
           ),
-          padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             child: Column(
@@ -217,7 +216,7 @@ class SettingsSheet extends StatelessWidget {
           ),
         ),
       ),
-      isScrollControlled: true,
+      context,
     );
   }
 
