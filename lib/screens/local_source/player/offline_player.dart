@@ -7,7 +7,9 @@ import 'package:anymex/screens/anime/watch/controls/themes/setup/themed_controls
 import 'package:anymex/screens/anime/watch/controls/widgets/double_tap_seek.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/overlay.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/speed_popup.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/subtitle_text.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/sync_subs_popup.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/tracks_popup.dart';
 import 'package:anymex/screens/anime/widgets/media_indicator.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/shader_osd.dart';
@@ -18,6 +20,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anymex/screens/downloads/model/download_models.dart';
 import 'package:anymex/database/isar_models/track.dart' as hive;
+
+import 'package:flutter/foundation.dart';
 
 class LocalEpisode {
   final String folderName;
@@ -60,8 +64,8 @@ class _OfflineWatchPageState extends State<OfflineWatchPage> {
             ))
         .toList();
 
-    final currentIndex = widget.episodeList
-        .indexWhere((e) => e.path == widget.episode.path);
+    final currentIndex =
+        widget.episodeList.indexWhere((e) => e.path == widget.episode.path);
     final currentEpisodeNumber =
         currentIndex >= 0 ? (currentIndex + 1).toString() : '1';
 
@@ -70,10 +74,11 @@ class _OfflineWatchPageState extends State<OfflineWatchPage> {
       final parentDir = File(widget.episode.path).parent;
       final metaFile = File(p.join(parentDir.path, 'metadata.json'));
       if (metaFile.existsSync()) {
-        final raw = jsonDecode(metaFile.readAsStringSync()) as Map<String, dynamic>;
+        final raw =
+            jsonDecode(metaFile.readAsStringSync()) as Map<String, dynamic>;
         final meta = DownloadedMediaMeta.fromJson(raw);
-        final epMeta = meta.episodes.firstWhereOrNull((e) => 
-            e.filePath == widget.episode.path || 
+        final epMeta = meta.episodes.firstWhereOrNull((e) =>
+            e.filePath == widget.episode.path ||
             e.fileName == p.basename(widget.episode.path));
         offlineSubtitles = epMeta?.subtitles;
       }
@@ -94,6 +99,13 @@ class _OfflineWatchPageState extends State<OfflineWatchPage> {
         episodeList: episodes,
         anilistData: Media(serviceType: ServicesType.simkl)
           ..title = widget.episode.folderName));
+
+    if (kDebugMode && controller.subtitleText.isEmpty) {
+      controller.subtitleText.value = [
+        'Sample Subtitle Line 1 (Subtitle Settings Check)',
+        'Sample Subtitle Line 2 (Margin & Style Preview)'
+      ];
+    }
   }
 
   @override
@@ -153,7 +165,21 @@ class _OfflineWatchPageState extends State<OfflineWatchPage> {
                 top: 0,
                 bottom: 0,
                 left: 0,
+                child: SyncSubsPopup(controller: controller),
+              ),
+              Positioned(
+                right: 0,
+                top: 0,
+                bottom: 0,
+                left: 0,
                 child: EpisodesPane(controller: controller),
+              ),
+              Positioned(
+                right: 0,
+                top: 0,
+                bottom: 0,
+                left: 0,
+                child: SpeedPopup(controller: controller),
               ),
             ],
           ],
