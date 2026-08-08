@@ -669,12 +669,29 @@ class Media {
       }
     }
 
-    String rawReleaseDate = json['release_date'] ?? json['date'] ?? json['released'] ?? '';
-    String releaseDate = rawReleaseDate;
-    if (rawReleaseDate.isNotEmpty) {
-      final match = RegExp(r'^(\d{4})-(\d{2})-(\d{2})').firstMatch(rawReleaseDate.trim());
+    String rawDate = json['date']?.toString() ?? json['release_date']?.toString() ?? json['released']?.toString() ?? '';
+    String releaseDate = rawDate.trim();
+    if (rawDate.isNotEmpty) {
+      final match = RegExp(r'^(\d{4})-(\d{2})-(\d{2})').firstMatch(rawDate.trim());
       if (match != null) {
-        releaseDate = '${match.group(3)}-${match.group(2)}-${match.group(1)}';
+        releaseDate = '${match.group(1)}-${match.group(2)}-${match.group(3)}';
+      }
+    }
+
+    NextAiringEpisode? nextAiring;
+    if (json['date'] != null) {
+      final parsedDate = DateTime.tryParse(json['date'].toString());
+      if (parsedDate != null) {
+        final epObj = json['episode'];
+        final epNumRaw = epObj is Map ? epObj['episode'] : null;
+        final epNum = epNumRaw is int ? epNumRaw : (int.tryParse(epNumRaw?.toString() ?? '') ?? 1);
+        final airingSeconds = parsedDate.millisecondsSinceEpoch ~/ 1000;
+        final nowSeconds = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+        nextAiring = NextAiringEpisode(
+          airingAt: airingSeconds,
+          timeUntilAiring: airingSeconds - nowSeconds,
+          episode: epNum,
+        );
       }
     }
 
@@ -712,6 +729,7 @@ class Media {
       mediaType: type,
       serviceType: ServicesType.simkl,
       aired: releaseDate,
+      nextAiringEpisode: nextAiring,
       genres: [],
     );
   }

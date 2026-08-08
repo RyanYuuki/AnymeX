@@ -95,6 +95,37 @@ class _CalendarState extends State<Calendar>
   String _norm(String t) =>
       t.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
 
+  bool _isSameDate(Media media, DateTime date) {
+    if (media.nextAiringEpisode != null) {
+      final airDate = DateTime.fromMillisecondsSinceEpoch(
+          media.nextAiringEpisode!.airingAt * 1000);
+      return airDate.year == date.year &&
+          airDate.month == date.month &&
+          airDate.day == date.day;
+    }
+    final rawAired = media.aired.trim();
+    if (rawAired.isEmpty) return false;
+    try {
+      final parsed = DateTime.tryParse(rawAired);
+      if (parsed != null) {
+        return parsed.day == date.day && parsed.month == date.month;
+      }
+      final parts = rawAired.split('-');
+      if (parts.length == 3) {
+        if (parts[0].length == 4) {
+          final m = int.parse(parts[1]);
+          final d = int.parse(parts[2]);
+          return d == date.day && m == date.month;
+        } else if (parts[2].length == 4) {
+          final d = int.parse(parts[0]);
+          final m = int.parse(parts[1]);
+          return d == date.day && m == date.month;
+        }
+      }
+    } catch (_) {}
+    return false;
+  }
+
   DubAnimeInfo? _getDubInfo(Media m) {
     if (!isAnilist) return null;
     
@@ -206,20 +237,7 @@ class _CalendarState extends State<Calendar>
             tabs: dateTabs.map((date) {
               return Obx(() {
                 var list = (includeList ? listData : rawData)
-                    .where((media) {
-                      if (media.nextAiringEpisode != null) {
-                        return DateTime.fromMillisecondsSinceEpoch(
-                                media.nextAiringEpisode!.airingAt * 1000)
-                            .day ==
-                        date.day;
-                      } else {
-                        try {
-                          return DateTime.parse(media.aired).day == date.day;
-                        } catch (e) {
-                          return false;
-                        }
-                      }
-                    })
+                    .where((media) => _isSameDate(media, date))
                     .toList();
 
                 if (isDubMode.value && isAnilist && !isFetching.value) {
@@ -246,20 +264,7 @@ class _CalendarState extends State<Calendar>
               }
 
               var filteredList = (includeList ? listData : rawData)
-                  .where((media) {
-                    if (media.nextAiringEpisode != null) {
-                      return DateTime.fromMillisecondsSinceEpoch(
-                              media.nextAiringEpisode!.airingAt * 1000)
-                          .day ==
-                      date.day;
-                    } else {
-                      try {
-                        return DateTime.parse(media.aired).day == date.day;
-                      } catch (e) {
-                        return false;
-                      }
-                    }
-                  })
+                  .where((media) => _isSameDate(media, date))
                   .toList();
 
               if (isDubMode.value && isAnilist) {

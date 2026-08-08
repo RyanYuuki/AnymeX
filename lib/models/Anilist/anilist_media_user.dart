@@ -134,8 +134,19 @@ class TrackedMedia {
   }
 
   factory TrackedMedia.fromSimklShow(Map<String, dynamic> json) {
-    final show = json['show'];
+    final show = json['show'] ?? {};
     final ids = show['ids'] ?? {};
+    final rawDate = json['last_watched_at'] ?? json['user_updated_at'] ?? json['updated_at'];
+    final updatedTime = rawDate != null
+        ? (DateTime.tryParse(rawDate.toString())?.millisecondsSinceEpoch ?? 0)
+        : 0;
+    final year = int.tryParse(show['year']?.toString() ?? '') ?? 0;
+    final rawScore = json['user_rating'] ?? show['ratings']?['simkl']?['rating'];
+    final scoreStr = rawScore != null
+        ? (double.tryParse(rawScore.toString()) != null
+            ? (double.parse(rawScore.toString()) * 10).toString()
+            : null)
+        : null;
 
     return TrackedMedia(
       id: '${ids['simkl']}*SERIES',
@@ -155,15 +166,29 @@ class TrackedMedia {
       mediaStatus:
           json['not_aired_episodes_count'] == 0 ? "completed" : "airing",
       rating: null,
-      score: json['user_rating'] != null ? (json['user_rating'] * 10).toString() : null,
+      score: scoreStr,
       format: null,
       mediaListId: '${ids['simkl']}*SERIES',
+      updatedAt: updatedTime,
+      startYear: year,
     );
   }
 
   factory TrackedMedia.fromSimklMovie(Map<String, dynamic> json) {
-    final show = json['movie'];
+    final show = json['movie'] ?? {};
     final ids = show['ids'] ?? {};
+    final rawDate = json['last_watched_at'] ?? json['user_updated_at'] ?? json['updated_at'];
+    final updatedTime = rawDate != null
+        ? (DateTime.tryParse(rawDate.toString())?.millisecondsSinceEpoch ?? 0)
+        : 0;
+    final year = int.tryParse(show['year']?.toString() ?? '') ?? 0;
+    final rawScore = json['user_rating'] ?? show['ratings']?['simkl']?['rating'];
+    final scoreStr = rawScore != null
+        ? (double.tryParse(rawScore.toString()) != null
+            ? (double.parse(rawScore.toString()) * 10).toString()
+            : null)
+        : null;
+
     return TrackedMedia(
       id: '${ids['simkl']}*MOVIE',
       title: show['title'],
@@ -179,9 +204,11 @@ class TrackedMedia {
       mediaStatus:
           json['not_aired_episodes_count'] == 0 ? "COMPLETED" : "AIRING",
       rating: null,
-      score: json['user_rating'] != null ? (json['user_rating'] * 10).toString() : null,
+      score: scoreStr,
       format: null,
       mediaListId: '${ids['simkl']}*MOVIE',
+      updatedAt: updatedTime,
+      startYear: year,
     );
   }
 
