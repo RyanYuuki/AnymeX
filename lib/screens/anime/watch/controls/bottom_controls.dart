@@ -9,6 +9,7 @@ import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/services/cast/widgets/cast_device_dialog.dart';
 import 'package:get/get.dart';
 
 
@@ -326,6 +327,12 @@ class BottomControls extends StatelessWidget {
         icon: Icons.launch_rounded,
         onPressed: () => controller.launchExternalPlayer(),
         tooltip: 'External Player',
+        compact: true,
+      ),
+      'cast': ControlButton(
+        icon: Icons.cast_rounded,
+        onPressed: () => CastDeviceDialog.show(context, controller),
+        tooltip: 'Cast to Device',
         compact: true,
       ),
     };
