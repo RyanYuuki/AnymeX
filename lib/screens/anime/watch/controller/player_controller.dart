@@ -693,6 +693,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     SystemChrome.setPreferredOrientations([orientation]);
     currentOrientation.value = orientation;
     isLeftLandscaped = orientation != DeviceOrientation.landscapeRight;
+    Future.delayed(const Duration(milliseconds: 300), () {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    });
   }
 
   Duration overlayAnimationDuration(int milliseconds) {
