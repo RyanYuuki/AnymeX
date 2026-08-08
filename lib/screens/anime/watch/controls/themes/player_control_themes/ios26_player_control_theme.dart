@@ -2,11 +2,13 @@ import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
+import 'package:anymex/screens/anime/watch/controller/player_utils.dart';
 import 'package:anymex/screens/anime/watch/controls/themes/setup/player_control_theme.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/decoder_quick_button.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
+import 'package:anymex/services/cast/widgets/cast_device_dialog.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -101,6 +103,20 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                               );
                             },
                           ),
+                          if (Platform.isAndroid || Platform.isIOS) ...[
+                            const SizedBox(width: 4),
+                            _Ios26CapsuleIconButton(
+                              icon: CupertinoIcons.square_on_square,
+                              tooltip: 'Picture in Picture',
+                              onPressed: () => controller.enterPip(),
+                            ),
+                          ],
+                          const SizedBox(width: 4),
+                          _Ios26CapsuleIconButton(
+                            icon: CupertinoIcons.arrow_up_right_square,
+                            tooltip: 'External Player',
+                            onPressed: () => controller.launchExternalPlayer(),
+                          ),
                         ],
                       ),
                     ),
@@ -114,10 +130,29 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                             horizontal: 8,
                             vertical: 6,
                           ),
-                          child: _Ios26CapsuleIconButton(
-                            icon: CupertinoIcons.fullscreen,
-                            tooltip: 'Fullscreen',
-                            onPressed: controller.toggleFullScreen,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              _Ios26CapsuleIconButton(
+                                icon: CupertinoIcons.device_phone_portrait,
+                                tooltip: 'Toggle Orientation',
+                                onPressed: () => controller.toggleOrientation(),
+                              ),
+                              const SizedBox(width: 4),
+                              _Ios26CapsuleIconButton(
+                                icon: Icons.fit_screen,
+                                tooltip: 'Aspect Ratio',
+                                onPressed: () => controller.toggleVideoFit(),
+                              ),
+                              if (!_isMobilePlatform) ...[
+                                const SizedBox(width: 4),
+                                _Ios26CapsuleIconButton(
+                                  icon: CupertinoIcons.fullscreen,
+                                  tooltip: 'Fullscreen',
+                                  onPressed: controller.toggleFullScreen,
+                                ),
+                              ],
+                            ],
                           ),
                         ),
                       ],
@@ -154,7 +189,7 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   _Ios26GlassCircleButton(
-                    icon: CupertinoIcons.backward_end_fill,
+                    icon: Icons.skip_previous_rounded,
                     tooltip: 'Previous Episode',
                     size: 52,
                     onPressed: controller.canGoBackward.value
@@ -169,7 +204,7 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                       )),
                   const SizedBox(width: 20),
                   _Ios26GlassCircleButton(
-                    icon: CupertinoIcons.forward_end_fill,
+                    icon: Icons.skip_next_rounded,
                     tooltip: 'Next Episode',
                     size: 52,
                     onPressed: controller.canGoForward.value
@@ -269,22 +304,54 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                                           ),
                                         ),
                                         const SizedBox(height: 2),
-                                        Text(
-                                          _getTitleText(controller),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 19,
-                                            fontWeight: FontWeight.w700,
-                                            letterSpacing: -0.2,
-                                            shadows: [
-                                              Shadow(
-                                                color: Colors.black45,
-                                                blurRadius: 8,
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                _getTitleText(controller),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 19,
+                                                  fontWeight: FontWeight.w700,
+                                                  letterSpacing: -0.2,
+                                                  shadows: [
+                                                    Shadow(
+                                                      color: Colors.black45,
+                                                      blurRadius: 8,
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
-                                            ],
-                                          ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Obx(() {
+                                              final pos = PlayerUtils.formatDuration(
+                                                  controller.currentPosition.value);
+                                              final dur = PlayerUtils.formatDuration(
+                                                  controller.episodeDuration.value);
+                                              return Container(
+                                                padding: const EdgeInsets.symmetric(
+                                                    horizontal: 8, vertical: 3),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.black.withOpacity(0.35),
+                                                  borderRadius: BorderRadius.circular(8),
+                                                  border: Border.all(
+                                                      color: Colors.white.withOpacity(0.15)),
+                                                ),
+                                                child: Text(
+                                                  '$pos / $dur',
+                                                  style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w600,
+                                                    letterSpacing: 0.2,
+                                                  ),
+                                                ),
+                                              );
+                                            }),
+                                          ],
                                         ),
                                       ],
                                     ),
@@ -334,11 +401,31 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                                     _Ios26GlassPillButton(
                                       label: 'Episodes',
                                       onPressed: () {
+                                        controller.isTracksPaneOpened.value = false;
+                                        controller.isSpeedPaneOpened.value = false;
+                                        controller.isSyncSubsPaneOpened.value = false;
+                                        controller.isSourcePaneOpened.value = false;
                                         controller.isEpisodePaneOpened.value =
-                                            !controller
-                                                .isEpisodePaneOpened.value;
+                                            !controller.isEpisodePaneOpened.value;
                                       },
                                     ),
+                                    const SizedBox(width: 8),
+                                    _Ios26GlassPillButton(
+                                      label: 'Tracks',
+                                      onPressed: () {
+                                        controller.isEpisodePaneOpened.value = false;
+                                        controller.isSpeedPaneOpened.value = false;
+                                        controller.isSyncSubsPaneOpened.value = false;
+                                        controller.isSourcePaneOpened.value = false;
+                                        controller.isTracksPaneOpened.value =
+                                            !controller.isTracksPaneOpened.value;
+                                      },
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Obx(() => _Ios26GlassPillButton(
+                                          label: controller.skipButtonLabel,
+                                          onPressed: controller.performSkipAction,
+                                        )),
                                     if (!controller.isOffline.value) ...[
                                       const SizedBox(width: 8),
                                       _Ios26GlassPillButton(
@@ -368,13 +455,15 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       _Ios26CapsuleIconButton(
-                                        icon:
-                                            CupertinoIcons.captions_bubble_fill,
-                                        tooltip: 'Subtitles',
+                                        icon: CupertinoIcons.timer,
+                                        tooltip: 'Sync Subtitles',
                                         onPressed: () {
-                                          controller.isTracksPaneOpened.value =
-                                              !controller
-                                                  .isTracksPaneOpened.value;
+                                          controller.isEpisodePaneOpened.value = false;
+                                          controller.isTracksPaneOpened.value = false;
+                                          controller.isSpeedPaneOpened.value = false;
+                                          controller.isSourcePaneOpened.value = false;
+                                          controller.isSyncSubsPaneOpened.value =
+                                              !controller.isSyncSubsPaneOpened.value;
                                         },
                                       ),
                                       const SizedBox(width: 4),
@@ -384,6 +473,26 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                                         onPressed: () =>
                                             PlayerBottomSheets.showAudioTracks(
                                                 context, controller),
+                                      ),
+                                      const SizedBox(width: 4),
+                                      _Ios26CapsuleIconButton(
+                                        icon: CupertinoIcons.speedometer,
+                                        tooltip: 'Playback Speed',
+                                        onPressed: () {
+                                          controller.isEpisodePaneOpened.value = false;
+                                          controller.isTracksPaneOpened.value = false;
+                                          controller.isSpeedPaneOpened.value = false;
+                                          controller.isSourcePaneOpened.value = false;
+                                          controller.isSpeedPaneOpened.value =
+                                              !controller.isSpeedPaneOpened.value;
+                                        },
+                                      ),
+                                      const SizedBox(width: 4),
+                                      _Ios26CapsuleIconButton(
+                                        icon: CupertinoIcons.tv,
+                                        tooltip: 'Cast to Device',
+                                        onPressed: () =>
+                                            CastDeviceDialog.show(context, controller),
                                       ),
                                       const SizedBox(width: 4),
                                       _Ios26CapsuleIconButton(
@@ -513,22 +622,25 @@ class _Ios26CapsuleIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const double size = 32;
-    return Tooltip(
-      message: tooltip,
+    const double size = 38;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(19),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onPressed,
-          customBorder: const CircleBorder(),
-          child: Container(
-            width: size,
-            height: size,
-            alignment: Alignment.center,
-            child: Icon(
-              icon,
-              size: size * 0.58,
-              color: Colors.white.withOpacity(0.95),
+          borderRadius: BorderRadius.circular(19),
+          child: Tooltip(
+            message: tooltip,
+            child: Container(
+              width: size,
+              height: size,
+              alignment: Alignment.center,
+              child: Icon(
+                icon,
+                size: 20,
+                color: Colors.white.withOpacity(0.95),
+              ),
             ),
           ),
         ),
@@ -652,7 +764,7 @@ class _Ios26GlassMainPlayButton extends StatelessWidget {
                     : Icon(
                         isPlaying
                             ? CupertinoIcons.pause_fill
-                            : CupertinoIcons.play_fill,
+                            : Icons.play_arrow_rounded,
                         size: 38,
                         color: Colors.white,
                       ),
