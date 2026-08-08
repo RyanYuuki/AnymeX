@@ -21,10 +21,12 @@ class SpeedPopup extends StatelessWidget {
     return Obx(() => EpisodeSidePane(
           isVisible: controller.isSpeedPaneOpened.value,
           onOverlayTap: _closePane,
-          child: _SpeedPopupContent(
-            controller: controller,
-            onClose: _closePane,
-          ),
+          child: controller.isSpeedPaneOpened.value
+              ? _SpeedPopupContent(
+                  controller: controller,
+                  onClose: _closePane,
+                )
+              : const SizedBox.shrink(),
         ));
   }
 }

@@ -1218,6 +1218,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     _playerSubscriptions.add(_basePlayer.subtitleStream.listen((e) {
       if (_isReloadingPlayer.value) return;
+      if (kDebugMode && e.isEmpty && subtitleText.isNotEmpty) {
+        return;
+      }
       subtitleText.value = e;
       if (!playerSettings.autoTranslate) {
         if (translatedSubtitle.value.isNotEmpty) {

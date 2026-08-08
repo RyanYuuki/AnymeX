@@ -19,10 +19,12 @@ class SyncSubsPopup extends StatelessWidget {
     return Obx(() => EpisodeSidePane(
           isVisible: controller.isSyncSubsPaneOpened.value,
           onOverlayTap: _closePane,
-          child: _SyncSubsContent(
-            controller: controller,
-            onClose: _closePane,
-          ),
+          child: controller.isSyncSubsPaneOpened.value
+              ? _SyncSubsContent(
+                  controller: controller,
+                  onClose: _closePane,
+                )
+              : const SizedBox.shrink(),
         ));
   }
 }
