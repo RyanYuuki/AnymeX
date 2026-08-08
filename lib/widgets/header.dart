@@ -15,6 +15,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
+import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -380,7 +381,7 @@ class Header extends StatelessWidget {
     } else if (type == PageType.extensions) {
       list.add(
         _PillIconButton(
-          onPressed: () => Get.to(() => const ExtensionTestPage()),
+          onPressed: () => navigate(() => const ExtensionTestPage()),
           icon: Icon(Icons.build_outlined, color: context.colors.primary, size: 18),
           context: context,
         ),
@@ -519,13 +520,10 @@ class Header extends StatelessWidget {
 
   void _showSortingSettings(
           BuildContext context, LibraryController controller) =>
-      showModalBottomSheet(
-        context: context,
-        backgroundColor: Colors.transparent,
-        isScrollControlled: true,
-        builder: (context) {
-          return LibrarySettingsSheet(controller: controller);
-        },
+      AnymexSheet.custom(
+        LibrarySettingsSheet(controller: controller),
+        context,
+        showDragHandle: true,
       );
 }
 
@@ -565,82 +563,54 @@ class LibrarySettingsSheetState extends State<LibrarySettingsSheet>
 
   @override
   Widget build(BuildContext context) {
-    final maxH = MediaQuery.of(context).size.height * 0.75;
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    final maxH = MediaQuery.of(context).size.height * 0.7;
     final theme = Theme.of(context);
 
-    return Padding(
-      padding: EdgeInsets.fromLTRB(12, 0, 12, 16 + bottomInset),
-      child: Container(
-        constraints: BoxConstraints(maxHeight: maxH),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surface,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: theme.colorScheme.outline.withOpacity(0.1)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.15),
-              blurRadius: 16,
-              offset: const Offset(0, -2),
-            )
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 36,
-                height: 3.5,
-                margin: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.onSurface.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              const Text(
-                'Library Settings',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Poppins',
-                ),
-              ),
-              const SizedBox(height: 10),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: AnymeXTabBar(
-                  selectTabs: _tabs,
-                  selectedIndex: _selectedIndex,
-                  activeColor: theme.colorScheme.secondary,
-                  activeTextColor: theme.colorScheme.onSecondary,
-                  inactiveTextColor: theme.colorScheme.onSurfaceVariant,
-                  onTabSelected: (index) {
-                    setState(() {
-                      _selectedIndex = index;
-                      _tabController.animateTo(index);
-                    });
-                  },
-                ),
-              ),
-              const SizedBox(height: 10),
-              Flexible(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                  child: AnimatedSize(
-                    duration: const Duration(milliseconds: 200),
-                    curve: Curves.easeInOut,
-                    child: [
-                      _buildSortTab(),
-                      _buildLayoutTab(),
-                    ][_selectedIndex],
-                  ),
-                ),
-              ),
-            ],
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: maxH),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text(
+            'Library Settings',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Poppins',
+            ),
           ),
-        ),
+          const SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: AnymeXTabBar(
+              selectTabs: _tabs,
+              selectedIndex: _selectedIndex,
+              activeColor: theme.colorScheme.secondary,
+              activeTextColor: theme.colorScheme.onSecondary,
+              inactiveTextColor: theme.colorScheme.onSurfaceVariant,
+              onTabSelected: (index) {
+                setState(() {
+                  _selectedIndex = index;
+                  _tabController.animateTo(index);
+                });
+              },
+            ),
+          ),
+          const SizedBox(height: 10),
+          Flexible(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              child: AnimatedSize(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeInOut,
+                child: [
+                  _buildSortTab(),
+                  _buildLayoutTab(),
+                ][_selectedIndex],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

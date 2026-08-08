@@ -22,7 +22,8 @@ class NovelDetailsController extends GetxController {
 
   late final SourceController sourceController;
 
-  Rx<Media> media = Rx(Media(serviceType: ServicesType.extensions));
+  Rx<Media> media = Rx(Media(
+      serviceType: ServicesType.extensions, mediaType: ItemType.novel));
   Rx<OfflineMedia?> offlineMedia = Rx(OfflineMedia());
   RxList<Chapter> chapters = RxList<Chapter>([]);
   Rx<bool> isLoading = Rx(true);
@@ -31,7 +32,6 @@ class NovelDetailsController extends GetxController {
   RxBool isSyncing = false.obs;
   RxString searchedTitle = ''.obs;
 
-  // Cached source media from last fetch — reused by syncDetails so it never re-fetches.
   Media? _cachedSourceMedia;
 
   bool get hasInitialSource => initialSource != null;
@@ -41,12 +41,26 @@ class NovelDetailsController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    initialMedia.mediaType = ItemType.novel;
     sourceController = Get.find<SourceController>();
     activeSource.value = initialSource ??
         sourceController.activeNovelSource.value ??
         (sourceController.installedNovelExtensions.isNotEmpty
             ? sourceController.installedNovelExtensions.first
             : null);
+
+    media.value = Media(
+      id: initialMedia.id,
+      title: initialMedia.title,
+      romajiTitle: initialMedia.romajiTitle,
+      description: initialMedia.description,
+      poster: initialMedia.poster,
+      cover: initialMedia.cover,
+      mediaType: ItemType.novel,
+      serviceType: ServicesType.extensions,
+      season: activeSource.value?.name ?? '',
+    );
+
     getOfflineMedia();
     _fetchChaptersOnly(url: initialMedia.id);
   }
@@ -65,19 +79,30 @@ class NovelDetailsController extends GetxController {
     try {
       final data = await source.methods.getDetail(DMedia(url: url));
       final fetched = Media.fromDManga(data, ItemType.novel);
-      chapters.value = fetched.altMediaContent ?? [];
-
-      // Build cache — keep initialMedia title/poster so UI stays consistent
-      fetched.title = initialMedia.title;
-      fetched.poster = initialMedia.poster;
-      fetched.season = source.name ?? '';
-      _cachedSourceMedia = fetched;
-
-      // On first load populate the media display
-      if ((media.value.title ?? '').isEmpty) {
-        media.value = fetched;
-        CommentPreloader.to.preloadComments(media.value);
+      if (fetched.id.isEmpty || fetched.id == '0') {
+        fetched.id = url;
       }
+      fetched.mediaType = ItemType.novel;
+      fetched.season = source.name ?? '';
+      if (fetched.title.isEmpty ||
+          fetched.title == '?' ||
+          fetched.title == 'Unknown Title') {
+        fetched.title = initialMedia.title;
+      }
+      if (fetched.romajiTitle.isEmpty ||
+          fetched.romajiTitle == '?' ||
+          fetched.romajiTitle == 'Unknown Title') {
+        fetched.romajiTitle = initialMedia.romajiTitle.isNotEmpty
+            ? initialMedia.romajiTitle
+            : initialMedia.title;
+      }
+      if (fetched.poster.isEmpty) {
+        fetched.poster = initialMedia.poster;
+      }
+      chapters.value = fetched.altMediaContent ?? [];
+      _cachedSourceMedia = fetched;
+      media.value = fetched;
+      CommentPreloader.to.preloadComments(media.value);
     } catch (e) {
       errorSnackBar('Failed to fetch chapters');
     } finally {

@@ -20,7 +20,6 @@ import 'package:anymex/widgets/common/cards/card_gate.dart';
 import 'package:anymex/widgets/exceptions/empty_library.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -264,12 +263,10 @@ class _LibraryContent extends StatelessWidget {
       navigateWithAnimation(() => MangaDetailsPage(
           media: Media.fromOfflineMedia(item, ItemType.manga), tag: tag));
     } else {
-      final source =
-          sourceController.getNovelExtensionByName(item.season ?? '');
-      if (source == null) {
-        errorSnackBar('Install ${item.season} extension');
-        return;
-      }
+      final sourceName = item.season ?? '';
+      final source = sourceName.isNotEmpty
+          ? sourceController.getNovelExtensionByName(sourceName)
+          : null;
 
       navigateWithAnimation(() => NovelDetailsPage(
           source: source,

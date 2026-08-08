@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/screens/extensions/ExtensionSettings/ExtensionSettings.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -88,7 +89,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
     if (source is CloudStreamSource && source.hasSettings) {
       await CloudStreamSourceMethods(source).openNativeSettings();
     } else {
-      Get.to(() => SourcePreferenceScreen(source: source));
+      navigate(() => SourcePreferenceScreen(source: source));
     }
   }
 

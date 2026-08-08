@@ -54,7 +54,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: cb159403e22e91912d4764fae84ee6c91011fe46
+      resolved-ref: "29f741ed2c84fdbaf027548f1a7b6e1cb0ac541d"
       url: "https://github.com/RyanYuuki/AnymeXExtensionRuntimeBridge.git"
     source: git
     version: "1.6.1"
@@ -1736,10 +1736,9 @@ packages:
   rhttp:
     dependency: "direct main"
     description:
-      name: rhttp
-      sha256: "954d5a9aa5a4f1e2a8612e8cb9ecbe4fc0826fcbf0406f40115573e2e92b7dde"
-      url: "https://pub.dev"
-    source: hosted
+      path: "packages/rhttp"
+      relative: true
+    source: path
     version: "0.18.0"
   rxdart:
     dependency: "direct main"

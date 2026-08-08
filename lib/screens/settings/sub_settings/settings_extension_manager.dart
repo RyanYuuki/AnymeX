@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/extensions/widgets/plugin_manager.dart';
 import 'package:anymex/screens/other_features.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
@@ -164,7 +165,8 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
           setState(() {
             _needsRestart = true;
           });
-          successSnackBar('Plugin re-downloaded successfully. Please restart to apply.');
+          successSnackBar(
+              'Plugin re-downloaded successfully. Please restart to apply.');
         }
       }
     } catch (error) {
@@ -211,13 +213,17 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: isCurrent
-                        ? theme.colorScheme.primaryContainer.opaque(0.35, iReallyMeanIt: true)
-                        : theme.colorScheme.surfaceContainer.opaque(0.3, iReallyMeanIt: true),
+                        ? theme.colorScheme.primaryContainer
+                            .opaque(0.35, iReallyMeanIt: true)
+                        : theme.colorScheme.surfaceContainer
+                            .opaque(0.3, iReallyMeanIt: true),
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
                       color: isCurrent
-                          ? theme.colorScheme.primary.opaque(0.5, iReallyMeanIt: true)
-                          : theme.colorScheme.outline.opaque(0.15, iReallyMeanIt: true),
+                          ? theme.colorScheme.primary
+                              .opaque(0.5, iReallyMeanIt: true)
+                          : theme.colorScheme.outline
+                              .opaque(0.15, iReallyMeanIt: true),
                       width: isCurrent ? 1.5 : 1,
                     ),
                   ),
@@ -235,7 +241,8 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                           border: Border.all(
                             color: isCurrent
                                 ? theme.colorScheme.primary
-                                : theme.colorScheme.outline.opaque(0.4, iReallyMeanIt: true),
+                                : theme.colorScheme.outline
+                                    .opaque(0.4, iReallyMeanIt: true),
                             width: 2,
                           ),
                         ),
@@ -266,7 +273,8 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                               style: TextStyle(
                                 fontFamily: 'Poppins',
                                 fontSize: 12,
-                                color: theme.colorScheme.onSurface.withOpacity(0.6),
+                                color: theme.colorScheme.onSurface
+                                    .withOpacity(0.6),
                               ),
                             ),
                           ],
@@ -300,7 +308,8 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
           setState(() {
             _needsRestart = true;
           });
-          successSnackBar('Rollback to ${release.tagName} successful. Restart app to apply.');
+          successSnackBar(
+              'Rollback to ${release.tagName} successful. Restart app to apply.');
         }
       }
     } catch (error) {
@@ -360,7 +369,8 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                       ),
                       Obx(() {
                         final _ = bridge.isReady.value;
-                        final isInstalled = bridge.isReady.value || _isLoadedFromStorage.value;
+                        final isInstalled =
+                            bridge.isReady.value || _isLoadedFromStorage.value;
                         return Container(
                           decoration: BoxDecoration(
                             color:
@@ -449,6 +459,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                           ),
                         );
                       }),
+                      40.height()
                     ],
                   ),
                 ),
@@ -474,7 +485,8 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
           (status != "Idle" &&
               !isReady &&
               (status.contains("Extracting") || status.contains("Finalizing")));
-      final isActive = isReady || _isPluginInstalled || _isLoadedFromStorage.value;
+      final isActive =
+          isReady || _isPluginInstalled || _isLoadedFromStorage.value;
 
       return Container(
         width: double.infinity,

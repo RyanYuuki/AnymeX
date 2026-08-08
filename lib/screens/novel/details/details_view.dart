@@ -57,6 +57,7 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
   @override
   void initState() {
     super.initState();
+    widget.media.mediaType = ItemType.novel;
     pageController = PageController();
     controller = Get.put(NovelDetailsController(
         initialSource: widget.source, initialMedia: widget.media));
@@ -295,7 +296,24 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
               color: Colors.transparent,
               child: InkWell(
                 onTap: () {
-                  showCustomListDialog(context, controller.media.value);
+                  final mediaToSave = controller.media.value;
+                  if (mediaToSave.id == '0' || mediaToSave.id.isEmpty) {
+                    mediaToSave.id = controller.initialMedia.id;
+                  }
+                  if (mediaToSave.title.isEmpty ||
+                      mediaToSave.title == '?' ||
+                      mediaToSave.title == 'Unknown Title') {
+                    mediaToSave.title = controller.initialMedia.title;
+                  }
+                  if (mediaToSave.poster.isEmpty || mediaToSave.poster == '?') {
+                    mediaToSave.poster = controller.initialMedia.poster;
+                  }
+                  if (mediaToSave.season.isEmpty) {
+                    mediaToSave.season =
+                        controller.activeSource.value?.name ?? '';
+                  }
+                  mediaToSave.mediaType = ItemType.novel;
+                  showCustomListDialog(context, mediaToSave);
                 },
                 borderRadius: BorderRadius.circular(16),
                 child: Row(

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/screens/other_features.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/glow.dart';
@@ -179,7 +180,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                 action: Platform.isIOS
                     ? null
                     : IconButton(
-                        onPressed: () => Get.to(() => const SettingsExtensionManager()),
+                        onPressed: () => navigate(() => const SettingsExtensionManager()),
                         icon: const Icon(Icons.settings_suggest_rounded),
                         tooltip: 'Extension Manager',
                       ),
@@ -203,7 +204,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
               action: Platform.isIOS
                   ? null
                   : IconButton(
-                      onPressed: () => Get.to(() => const SettingsExtensionManager()),
+                      onPressed: () => navigate(() => const SettingsExtensionManager()),
                       icon: const Icon(Icons.settings_suggest_rounded),
                       tooltip: 'Extension Manager',
                     ),
@@ -587,7 +588,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
             ),
             const SizedBox(height: 20),
             FilledButton.icon(
-              onPressed: () => Get.to(() => const SettingsExtensionManager()),
+              onPressed: () => navigate(() => const SettingsExtensionManager()),
               icon: const Icon(Icons.download_rounded),
               label: const Text('Go to Plugin Downloader'),
               style: FilledButton.styleFrom(

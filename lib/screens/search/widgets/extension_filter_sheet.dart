@@ -1,3 +1,4 @@
+import 'package:anymex/utils/function.dart';
 import 'package:anymex_extension_runtime_bridge/Services/Mangayomi/Eval/dart/model/filter.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
@@ -183,6 +184,7 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
               itemBuilder: (ctx, i) => _buildFilter(i),
             ),
           ),
+          40.height(),
         ],
       ),
     );

@@ -323,7 +323,7 @@ class ChipTabs extends StatelessWidget {
                       label: 'History ($historyCount)',
                       isSelected: controller.selectedListIndex.value == -1,
                       onTap: () => controller.selectList(-1),
-                      onLongPress: () => Get.to(
+                      onLongPress: () => navigate(
                           () => HistoryEditor(type: controller.type.value)),
                       icon: Icon(
                         controller.selectedListIndex.value == -1

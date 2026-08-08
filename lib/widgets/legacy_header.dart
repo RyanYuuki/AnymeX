@@ -150,7 +150,7 @@ class Header extends StatelessWidget {
                             .secondaryContainer
                             .opaque(0.50),
                         child: IconButton(
-                          onPressed: () => Get.to(() => const ExtensionTestPage()),
+                          onPressed: () => navigate(() => const ExtensionTestPage()),
                           icon: Icon(
                             Icons.build_outlined,
                             color: context.colors.primary,

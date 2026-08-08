@@ -245,17 +245,17 @@ class _SettingsThemeState extends State<SettingsTheme> {
                   children: [
                     SingleChildScrollView(
                       padding:
-                          const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 30.0),
+                          const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 50.0),
                       child: _buildThemeTab(),
                     ),
                     SingleChildScrollView(
                       padding:
-                          const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 30.0),
+                          const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 50.0),
                       child: _buildWallpaperTab(),
                     ),
                     SingleChildScrollView(
                       padding:
-                          const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 30.0),
+                          const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 50.0),
                       child: _buildExtrasTab(),
                     ),
                   ],
