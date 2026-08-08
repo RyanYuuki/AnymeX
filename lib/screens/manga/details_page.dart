@@ -859,6 +859,12 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                     startedAt: startedAt,
                     completedAt: completedAt,
                     isPrivate: isPrivate));
+            currentManga.value?.score = score.toString();
+            currentManga.value?.watchingStatus = status;
+            currentManga.value?.episodeCount = progress.toString();
+            currentManga.value?.startedAt = startedAt;
+            currentManga.value?.completedAt = completedAt;
+            currentManga.value?.isPrivate = isPrivate;
             setState(() {});
           },
           onDelete: (s) async {

@@ -61,8 +61,18 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
   final anilistAuth = Get.find<ServiceHandler>();
   late final List<String> _allTabs;
 
+  List<TrackedMedia> get activeMediaList {
+    final base = widget.data ?? anilistAuth.animeList;
+    if (anilistAuth.serviceType.value == ServicesType.simkl && widget.data == null) {
+      final combined = [...anilistAuth.animeList, ...anilistAuth.mangaList];
+      final seen = <String>{};
+      return combined.where((e) => e.id != null && seen.add(e.id!)).toList();
+    }
+    return base;
+  }
+
   List<String> get tabs {
-    final animeList = widget.data ?? anilistAuth.animeList;
+    final animeList = activeMediaList;
     return _allTabs.where((tab) {
       if (tab == 'ALL') return true;
       return _getFilteredList(animeList, tab).isNotEmpty;
@@ -199,7 +209,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
   }
 
   void _collectGenres() {
-    final animeList = widget.data ?? anilistAuth.animeList;
+    final animeList = activeMediaList;
     final genres = <String>{..._anilistGenres};
     for (final entry in animeList) {
       genres.addAll(entry.genres);
@@ -271,7 +281,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
   void _openRandom() {
     final orderedTabs = _isReversed ? tabs.reversed.toList() : tabs;
     final currentTabName = orderedTabs[_tabController?.index ?? 0];
-    final animeList = widget.data ?? anilistAuth.animeList;
+    final animeList = activeMediaList;
     final items = _applyFilters(_getFilteredList(animeList, currentTabName));
     if (items.isEmpty) return;
     final random = items[Random().nextInt(items.length)];
@@ -482,7 +492,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final animeList = widget.data ?? anilistAuth.animeList;
+    final animeList = activeMediaList;
     final userName = widget.userName ?? anilistAuth.profileData.value.name;
     final orderedTabs = _isReversed ? tabs.reversed.toList() : tabs;
 

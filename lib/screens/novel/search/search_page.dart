@@ -70,11 +70,7 @@ class _NovelSearchPageState extends State<NovelSearchPage>
     _initializeData();
   }
 
-  void _initializeAnimations() {
-    _searchFocusNode.addListener(() {
-      setState(() {});
-    });
-  }
+  void _initializeAnimations() {}
 
   void _initializeData() {
     _searchController.text = '';
