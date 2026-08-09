@@ -466,53 +466,53 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                                     ),
                                   ),
                                 ),
-                                const SizedBox(width: 7),
-                                _buildActionIconButton(
-                                  context: context,
-                                  icon: Icons.share_rounded,
-                                  onTap: _showShareOptions,
-                                ),
-                                const SizedBox(width: 7),
-                                _buildActionIconButton(
-                                  context: context,
-                                  icon: HugeIcons.strokeRoundedLibrary,
-                                  onTap: () {
-                                    showCustomListDialog(
-                                      context,
-                                      anilistData!,
-                                    );
-                                  },
-                                ),
-                              ] else ...[
-                                _buildActionIconButton(
-                                  context: context,
-                                  icon: Icons.track_changes_rounded,
-                                  onTap: () => showTrackSheetForMedia(
-                                    context,
-                                    mediaId: widget.media.id,
-                                    title: widget.media.title,
-                                    poster: widget.media.poster,
-                                    isManga: true,
-                                  ),
-                                ),
-                                const SizedBox(width: 7),
-                                _buildActionIconButton(
-                                  context: context,
-                                  icon: Icons.share_rounded,
-                                  onTap: _showShareOptions,
-                                ),
-                                const SizedBox(width: 7),
-                                Expanded(
-                                  child: AnymexButton2(
-                                    onTap: () {
-                                      showCustomListDialog(
-                                          context, anilistData!);
-                                    },
-                                    label: 'Add to Library',
-                                    icon: HugeIcons.strokeRoundedLibrary,
-                                  ),
-                                )
-                              ]
+                                 const SizedBox(width: 7),
+                                 _buildActionIconButton(
+                                   context: context,
+                                   icon: HugeIcons.strokeRoundedLibrary,
+                                   onTap: () {
+                                     showCustomListDialog(
+                                       context,
+                                       anilistData!,
+                                     );
+                                   },
+                                 ),
+                                 const SizedBox(width: 7),
+                                 _buildActionIconButton(
+                                   context: context,
+                                   icon: Icons.share_rounded,
+                                   onTap: _showShareOptions,
+                                 ),
+                               ] else ...[
+                                 Expanded(
+                                   child: AnymexButton2(
+                                     onTap: () {
+                                       showCustomListDialog(
+                                           context, anilistData!);
+                                     },
+                                     label: 'Add to Library',
+                                     icon: HugeIcons.strokeRoundedLibrary,
+                                   ),
+                                 ),
+                                 const SizedBox(width: 7),
+                                 _buildActionIconButton(
+                                   context: context,
+                                   icon: Icons.track_changes_rounded,
+                                   onTap: () => showTrackSheetForMedia(
+                                     context,
+                                     mediaId: widget.media.id,
+                                     title: widget.media.title,
+                                     poster: widget.media.poster,
+                                     isManga: true,
+                                   ),
+                                 ),
+                                 const SizedBox(width: 7),
+                                 _buildActionIconButton(
+                                   context: context,
+                                   icon: Icons.share_rounded,
+                                   onTap: _showShareOptions,
+                                 ),
+                               ]
                             ],
                           );
                         }),
