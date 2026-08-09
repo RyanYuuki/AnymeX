@@ -96,6 +96,7 @@ class MediaKitPlayer extends base.BasePlayer {
         hwdec: config.hwdec,
         enableHardwareAcceleration: config.hwdec != 'no',
         androidAttachSurfaceAfterVideoParameters: true,
+        enableAndroidSurfaceProducer: false,
       ),
     );
 
