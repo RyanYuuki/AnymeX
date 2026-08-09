@@ -39,19 +39,42 @@ class Glow extends StatelessWidget {
     this.disabled = false,
   });
 
+  static final Map<String, ColorScheme> _colorSchemeCache = {};
+
+  ColorScheme _getTheme(BuildContext context, Settings settings) {
+    if (color.isEmpty || !settings.usePosterColor) {
+      return context.colors;
+    }
+    final brightnessName = Theme.of(context).brightness.name;
+    final key = '${color}_$brightnessName';
+    return _colorSchemeCache.putIfAbsent(key, () {
+      final parsedColor = _parseColor(color) ?? context.colors.primary;
+      return ColorScheme.fromSeed(
+        brightness: Theme.of(context).brightness,
+        seedColor: parsedColor,
+      );
+    });
+  }
+
+  static Color? _parseColor(String hex) {
+    try {
+      final clean = hex.replaceAll('#', '').trim();
+      if (clean.length == 6) {
+        return Color(int.parse('0xFF$clean'));
+      } else if (clean.length == 8) {
+        return Color(int.parse('0x$clean'));
+      }
+    } catch (_) {}
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final settings = Get.find<Settings>();
-    final theme = color.isNotEmpty && settings.usePosterColor
-        ? ColorScheme.fromSeed(
-            brightness: Theme.of(context).brightness,
-            seedColor: Color(
-              int.parse(color.replaceAll('#', '0xFF')),
-            ),
-          )
-        : context.colors;
+    final theme = _getTheme(context, settings);
     final isDesktop = Platform.isWindows;
     final isOled = Provider.of<ThemeProvider>(context).isOled;
+
     final ch = (isDesktop && !disabled)
         ? Container(
             margin: const EdgeInsets.only(top: 40),
@@ -61,7 +84,9 @@ class Glow extends StatelessWidget {
 
     if (disabled || (isOled && isDesktop)) {
       return Container(
-          color: isOled ? Colors.black : Colors.transparent, child: ch);
+        color: isOled ? Colors.black : theme.surface,
+        child: ch,
+      );
     }
 
     return Obx(() {
@@ -70,28 +95,36 @@ class Glow extends StatelessWidget {
 
       Widget content;
       if (liquidMode) {
-        content = LiquidMode(
-          isOled: isOled,
+        content = _buildLiquidMode(
+          context: context,
           theme: theme,
-          gradientVariant: GradientVariant.subtle,
+          isOled: isOled,
           child: ch,
         );
       } else {
         content = Stack(
           children: [
-            if (settings.disableGradient || isOled)
-              Container(
+            Positioned.fill(
+              child: Container(
                 color: isOled ? Colors.black : theme.surface,
-              )
-            else
-              LightweightGlow(begin: begin, end: end, child: const SizedBox.expand()),
-            ch
+              ),
+            ),
+            if (!settings.disableGradient && !isOled)
+              Positioned.fill(
+                child: _buildLightweightGlow(
+                  theme: theme,
+                  begin: begin,
+                  end: end,
+                ),
+              ),
+            ch,
           ],
         );
       }
 
       final useGrain = settings.useGrainTexture;
       final intensity = settings.grainIntensity;
+
       return Stack(
         children: [
           content,
@@ -108,23 +141,13 @@ class Glow extends StatelessWidget {
       );
     });
   }
-}
 
-class LiquidMode extends StatelessWidget {
-  final GradientVariant gradientVariant;
-  final ColorScheme theme;
-  final bool isOled;
-  final Widget child;
-
-  const LiquidMode(
-      {super.key,
-      required this.child,
-      this.gradientVariant = GradientVariant.subtle,
-      required this.theme,
-      this.isOled = false});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildLiquidMode({
+    required BuildContext context,
+    required ColorScheme theme,
+    required bool isOled,
+    required Widget child,
+  }) {
     final imagePath = settingsController.liquidBackgroundPath.isEmpty
         ? 'assets/images/bg_glass.webp'
         : "file://${settingsController.liquidBackgroundPath}";
@@ -138,20 +161,19 @@ class LiquidMode extends StatelessWidget {
       child: Stack(
         children: [
           Positioned.fill(
-            child: Obx(() {
-              return _CachedColorFilteredImage(
-                color: settingsController.retainOriginalColor
-                    ? null
-                    : theme.primary.opaque(0.6),
-                imagePath: imagePath,
-              );
-            }),
+            child: Obx(() => _buildCachedColorFilteredImage(
+                  context: context,
+                  imagePath: imagePath,
+                  color: settingsController.retainOriginalColor
+                      ? null
+                      : theme.primary.opaque(0.6),
+                )),
           ),
           Positioned.fill(
             child: isOled
                 ? Container(color: Colors.black)
-                : _OptimizedGradientOverlay(
-                    gradientVariant: gradientVariant,
+                : _buildGradientOverlay(
+                    gradientVariant: GradientVariant.subtle,
                     theme: theme,
                   ),
           ),
@@ -160,30 +182,22 @@ class LiquidMode extends StatelessWidget {
       ),
     );
   }
-}
 
-class _OptimizedGradientOverlay extends StatelessWidget {
-  final GradientVariant gradientVariant;
-  final ColorScheme theme;
-
-  const _OptimizedGradientOverlay({
-    required this.gradientVariant,
-    required this.theme,
-  });
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildGradientOverlay({
+    required GradientVariant gradientVariant,
+    required ColorScheme theme,
+  }) {
     return RepaintBoundary(
       child: Container(
         decoration: BoxDecoration(
-          gradient: _getGradient(),
+          gradient: _getGradient(gradientVariant, theme),
         ),
       ),
     );
   }
 
-  Gradient _getGradient() {
-    switch (gradientVariant) {
+  Gradient _getGradient(GradientVariant variant, ColorScheme theme) {
+    switch (variant) {
       case GradientVariant.subtle:
         return LinearGradient(
           begin: Alignment.topLeft,
@@ -294,124 +308,57 @@ class _OptimizedGradientOverlay extends StatelessWidget {
         );
     }
   }
-}
 
-class _CachedColorFilteredImage extends StatelessWidget {
-  final Color? color;
-  final String imagePath;
-
-  const _CachedColorFilteredImage({
-    this.color,
-    required this.imagePath,
-  });
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildCachedColorFilteredImage({
+    required BuildContext context,
+    required String imagePath,
+    Color? color,
+  }) {
     final isFile = imagePath.startsWith('file://');
     final image = isFile
         ? Image.file(
             File(imagePath.replaceFirst('file://', '')),
-            fit: getResponsiveValue(context,
-                mobileValue: BoxFit.fitHeight, desktopValue: BoxFit.cover),
+            fit: getResponsiveValue(
+              context,
+              mobileValue: BoxFit.fitHeight,
+              desktopValue: BoxFit.cover,
+            ),
             filterQuality: FilterQuality.low,
           )
         : Image.asset(
             imagePath,
-            fit: getResponsiveValue(context,
-                mobileValue: BoxFit.fitHeight, desktopValue: BoxFit.cover),
+            fit: getResponsiveValue(
+              context,
+              mobileValue: BoxFit.fitHeight,
+              desktopValue: BoxFit.cover,
+            ),
             filterQuality: FilterQuality.low,
           );
 
     return color != null
         ? ColorFiltered(
-            colorFilter: ColorFilter.mode(color!, BlendMode.color),
+            colorFilter: ColorFilter.mode(color, BlendMode.color),
             child: image,
           )
         : image;
   }
-}
 
-class PureGradientGlow extends StatelessWidget {
-  final Widget child;
-  final Alignment begin;
-  final Alignment end;
-
-  const PureGradientGlow({
-    super.key,
-    required this.child,
-    this.begin = Alignment.topLeft,
-    this.end = Alignment.bottomRight,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = context.colors;
-
+  Widget _buildLightweightGlow({
+    required ColorScheme theme,
+    required Alignment begin,
+    required Alignment end,
+  }) {
     return RepaintBoundary(
       child: Container(
         decoration: BoxDecoration(
-          gradient: RadialGradient(
-            center: Alignment.topLeft,
-            radius: 2.0,
+          gradient: LinearGradient(
             colors: [
-              theme.primary.opaque(0.15),
-              theme.primaryContainer.opaque(0.12),
-              theme.secondary.opaque(0.08),
-              theme.surface.opaque(0.05),
-              Colors.transparent,
+              theme.surface.opaque(0.3),
+              theme.primary.opaque(0.4),
             ],
-            stops: const [0.0, 0.3, 0.6, 0.8, 1.0],
+            begin: begin,
+            end: end,
           ),
-        ),
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: begin,
-              end: end,
-              colors: [
-                theme.surface.opaque(0.85),
-                theme.surface.opaque(0.7),
-                theme.primary.opaque(0.4),
-                theme.surface.opaque(0.6),
-              ],
-              stops: const [0.0, 0.4, 0.7, 1.0],
-            ),
-          ),
-          child: child,
-        ),
-      ),
-    );
-  }
-}
-
-class LightweightGlow extends StatelessWidget {
-  final Widget child;
-  final Alignment begin;
-  final Alignment end;
-
-  const LightweightGlow({
-    super.key,
-    required this.child,
-    this.begin = Alignment.topLeft,
-    this.end = Alignment.bottomRight,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = context.colors;
-
-    return RepaintBoundary(
-      child: Container(
-        color: theme.surface,
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [theme.surface.opaque(0.3), theme.primary.opaque(0.4)],
-              begin: begin,
-              end: end,
-            ),
-          ),
-          child: child,
         ),
       ),
     );

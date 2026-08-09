@@ -159,19 +159,24 @@ class ThemeProvider extends ChangeNotifier {
   }
 
   void _updateTheme() {
+    final lightSeed = ColorScheme.fromSeed(
+        seedColor: _seedColor,
+        brightness: Brightness.light,
+        dynamicSchemeVariant: dynamicSchemeVariantList[selectedVariantIndex]);
+    final darkSeed = ColorScheme.fromSeed(
+        seedColor: _seedColor,
+        brightness: Brightness.dark,
+        dynamicSchemeVariant: dynamicSchemeVariantList[selectedVariantIndex]);
+
     _lightTheme = lightMode.copyWith(
       scaffoldBackgroundColor: isOled ? Colors.white : Colors.transparent,
-      colorScheme: ColorScheme.fromSeed(
-          seedColor: _seedColor,
-          brightness: Brightness.light,
-          dynamicSchemeVariant: dynamicSchemeVariantList[selectedVariantIndex]),
+      canvasColor: isOled ? Colors.white : lightSeed.surface,
+      colorScheme: lightSeed,
     );
     _darkTheme = darkMode.copyWith(
       scaffoldBackgroundColor: isOled ? Colors.black : Colors.transparent,
-      colorScheme: ColorScheme.fromSeed(
-          seedColor: _seedColor,
-          brightness: Brightness.dark,
-          dynamicSchemeVariant: dynamicSchemeVariantList[selectedVariantIndex]),
+      canvasColor: isOled ? Colors.black : darkSeed.surface,
+      colorScheme: darkSeed,
     );
     syncStatusBar();
     notifyListeners();
