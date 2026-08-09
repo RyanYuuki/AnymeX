@@ -13,7 +13,7 @@ class CenterControls extends StatelessWidget {
   bool _isFollowMode() {
     try {
       final watchium = Get.find<WatchiumService>();
-      return watchium.followHost.value && !watchium.isHost.value;
+      return watchium.inRoom.value && watchium.followHost.value && !watchium.isHost.value;
     } catch (_) {
       return false;
     }
