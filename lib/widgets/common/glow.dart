@@ -29,6 +29,7 @@ class Glow extends StatelessWidget {
   final Alignment end;
   final String color;
   final bool disabled;
+  final bool isTabScreen;
 
   const Glow({
     super.key,
@@ -37,6 +38,7 @@ class Glow extends StatelessWidget {
     this.end = Alignment.bottomRight,
     this.color = '',
     this.disabled = false,
+    this.isTabScreen = false,
   });
 
   static final Map<String, ColorScheme> _colorSchemeCache = {};
@@ -84,7 +86,11 @@ class Glow extends StatelessWidget {
 
     if (disabled || (isOled && isDesktop)) {
       return Container(
-        color: isOled ? Colors.black : theme.surface,
+        color: isOled
+            ? Colors.black
+            : isTabScreen
+                ? Colors.transparent
+                : theme.surface,
         child: ch,
       );
     }

@@ -26,11 +26,9 @@ import 'package:hugeicons/hugeicons.dart';
 class ExtensionScreen extends StatefulWidget {
   const ExtensionScreen({
     super.key,
-    this.disableGlow = false,
     this.isTabScreen = false,
   });
 
-  final bool disableGlow;
   final bool isTabScreen;
   @override
   State<ExtensionScreen> createState() => _ExtensionScreenState();
@@ -151,7 +149,8 @@ class _ExtensionScreenState extends State<ExtensionScreen>
     );
 
     return Glow(
-      disabled: widget.disableGlow,
+      disabled: widget.isTabScreen,
+      isTabScreen: widget.isTabScreen,
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: Colors.transparent,

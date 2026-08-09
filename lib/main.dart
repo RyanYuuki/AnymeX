@@ -447,7 +447,7 @@ class _FilterScreenState extends State<FilterScreen> {
       case 'Library':
         return const MyLibrary();
       case 'Extensions':
-        return const ExtensionScreen(disableGlow: true, isTabScreen: true);
+        return const ExtensionScreen(isTabScreen: true);
       default:
         return const HomePage();
     }
